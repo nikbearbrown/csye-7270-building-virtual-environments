@@ -4,7 +4,7 @@
 
 **What this is.** The honest process log for the work in this folder, written the way the course asks students to write theirs: what was tried, what went wrong, what changed, and who did what, the human or the AI.
 
-**What it records so far.** The folder was set up on 2026-09-25. The same day, the design thinking for my Assignment 2 example started: the game is *Clawd Closes the Loop*, and its enemies are bugs drawn from the ways agentic AI actually fails. No art, sound, or music has been generated yet.
+**What it records so far.** The folder was set up on 2026-09-25. The same day, the design thinking for my Assignment 2 example started: the game is *Clawd Closes the Loop*, and its enemies are bugs drawn from the ways agentic AI actually fails. I rejected most of Claude's creature ideas as forced and kept three directions: a **termite** that eats the game's foundations if not stopped early, a **blood-sucking parasite** for prompt injection (not a wasp), and **ants** as workers. No art, sound, or music has been generated yet.
 
 Every push to GitHub is listed at the bottom with its date and commit note.
 
@@ -45,10 +45,35 @@ Every push to GitHub is listed at the bottom with its date and commit note.
     | Conflicting writes | Twin Ants | Two ants tear apart the platform you need |
 
   - Three failures didn't fit as bugs: credential leakage, excess permissions, and unbounded cost. They are about access and budget, not something to dodge, so they would be HUD meters or level rules.
-- **What I did:** Kept the list as the enemy pool for the concept, the storyboard, and the character sheets.
-- **What Claude or another person contributed:** Claude Code (Opus 5.5) wrote the failure list, all eleven creature ideas, and the "behavior acts out the failure" rule. It proposed three creatures as the strongest set: the Loop Beetle (easy to read), the Checkmark Mimic (it teaches the verify step my earlier design draft was missing), and the Parasite Wasp (it is both the malware and the vague path from the original concept). I chose the game and asked the questions. I have **not yet** decided which creatures go in.
-- **What I understand now / still do not understand:** The bugs are good teaching when the player learns the agent's lesson by beating them. The Checkmark Mimic is the clearest case: players learn not to trust a green tick. Still open: whether one main character plus three enemies is too much to generate consistently at this scope, and whether the enemies need character sheets of their own or one shared sheet.
-- **Evidence and next step:** This entry; the design draft of the game is in `walker-jumpman-clawd/design/` (not in this repository). Next: pick the enemies, then write `CONCEPT.md`, the storyboard, and Clawd's character sheet before generating anything.
+- **What I did:** Kept the list as the enemy pool for the concept, the storyboard, and the character sheets. Then I went through every suggestion and judged it:
+
+    | Suggestion | My verdict |
+    |---|---|
+    | Loop Beetle (retry loop) | Makes absolutely no sense. Forced. |
+    | Mirage Moth (hallucinated fact) | Makes no sense. Forced. |
+    | Silent Tick (ignored error) | Better done as something clock-like: a clock or a stopwatch. |
+    | Checkmark Mimic (unverified success) | Makes no sense. |
+    | **Termite (weakened test)** | **I like it.** It destroys your foundations if you don't get rid of it early. |
+    | Brood Mother (compounding error) | Makes no sense. |
+    | Memory Moth (context loss) | What is a memory moth? Makes no sense. |
+    | **Parasite Wasp (prompt injection)** | **The parasite idea is interesting; the wasp is wrong.** Prompt injection is adversarial, something trying to bite into you. Most people don't associate wasps with parasites. Something that sucks your blood, like a mosquito, is a better metaphor for draining something away from you. |
+    | Vine Centipede (scope creep) | Forced. Scope creep is a good challenge, but not as a centipede or cricket. |
+    | Shed-Skin Cricket (stale state) | Forced. |
+    | **Twin Ants (conflicting writes)** | **Maybe.** I like ants because they're little workers; they just work and work and work. Hold ants for something later. |
+
+  - **Termite, as I see it now:** a termite-like character whose bug eats away at the game over time. If you don't get rid of your termites quickly and early, they destroy your foundation. What exactly it eats, I haven't decided.
+  - **Parasite:** a blood-sucking parasite for prompt injection, something adversarial that drains you. I haven't settled the direction or the creature. I asked Claude for alternatives to the wasp (below).
+  - **Plan for today:** make ant figures, make a parasite (not a wasp), and make a termite character.
+- **What Claude or another person contributed:** Claude Code (Opus 5.5) wrote the failure list, all eleven creature ideas, and the "behavior acts out the failure" rule. It proposed three creatures as the strongest set: the Loop Beetle (easy to read), the Checkmark Mimic (it teaches the verify step my earlier design draft was missing), and the Parasite Wasp (it is both the malware and the vague path from the original concept). I chose the game and asked the questions. I rejected eight of the eleven creatures as forced, including all three of Claude's "strongest set" picks except the parasite idea, and I rejected the wasp as the parasite. The termite's foundation-eating role, the clock for ignored errors, the mosquito direction, and the ants-as-workers idea are mine. After my notes, Claude suggested parasites that read as draining at a glance:
+  - **Mosquito:** the one everyone knows; it flies in, drinks, and leaves, and its whine is a ready sound cue before it bites.
+  - **Tick:** latches on and visibly **swells** as it drains, so the player can see how much has been taken. It clashes with the clock "tick" for ignored errors, so one of the two needs another name.
+  - **Leech:** clings, stretches, and drains slowly; hard to shake off, which fits an injected instruction that keeps steering you.
+  - **Flea:** tiny, jumps between hosts, and comes in numbers, if the parasite should spread.
+  - **Bedbug:** hides in the furniture of the level and comes out when you rest.
+
+  I haven't chosen among these yet.
+- **What I understand now / still do not understand:** A creature has to fit the failure the way a termite fits rotten foundations: the metaphor has to be one most people already carry, not one invented to match a label. Most of the first list failed that test. Still open: which parasite; what the termite actually eats in the game; what the ants' job is; how the clock for ignored errors works in play; how scope creep becomes a challenge without being a creature; whether one main character plus three enemies is too much to generate consistently at this scope, and whether the enemies need character sheets of their own or one shared sheet.
+- **Evidence and next step:** This entry; the design draft of the game is in `walker-jumpman-clawd/design/` (not in this repository). Next, today: ant figures, a parasite, and a termite character. Then `CONCEPT.md`, the storyboard, and the character sheets before generating the final assets.
 
 ---
 
@@ -58,3 +83,4 @@ Every push to GitHub is listed at the bottom with its date and commit note.
 |---|---|
 | 2026-09-25 | Add fall-2026 roster and nik-bear-brown example folder |
 | 2026-09-25 | Log Assignment 2 design thinking; record standing push approval |
+| 2026-09-25 | Log my verdicts on the bug creatures; termite, parasite, ants kept |
