@@ -1,5 +1,7 @@
 # Separate Canvas pastes
 
+> **On GitHub:** the HTML fragments are not committed. The Markdown sources are the course content: [Module 1 lesson](../modules/01-walker-and-godot/lesson.md), [Assignment 1](../assignments/01-extend-walker-jumpman.md), [Assignment 2](../assignments/02-generate-walker-art-sound-music.md). To make the Canvas pastes, run `node scripts/build-canvas-pastes.cjs` (needs pandoc); it writes the `.html` files into this folder.
+
 1. **Canvas Page:** Module 1 — Walker and Godot. Paste the content of `01-module-1-walker-and-godot.html` into the page's HTML editor. It includes “What is Walker?” and “What is Godot?”, the learning loop, setup, and ungraded practice assessments.
 2. **Canvas Assignment:** Assignment 1 - Extend Walker Jumpman. Set the assignment to **100 points**, then paste `02-assignment-1-extend-walker-jumpman.html` into its HTML editor. Use the course's 10-day cadence when setting the Canvas deadline. Enable file-upload submission for the source ZIP and submission note.
 
