@@ -32,6 +32,7 @@ No commit ID in the row: a commit can't contain its own ID.
 
 ## Pushing from this folder
 
+- **Standing approval (granted by Professor Bear, 2026-09-25):** after any substantive change to this folder, commit and push it to `main` without asking again, once the log is updated. This covers **only** `fall-2026/nik-bear-brown/` (and `fall-2026/README.md` when its roster changes). Anything else in this repo, or any other repo, still needs his word for each push.
 - Stage **only** `fall-2026/nik-bear-brown/` (and `fall-2026/README.md` when its roster changes). The repo often has other uncommitted instructor edits; never sweep them in.
 - Git on this machine is already authenticated. Never ask for, accept, or write down a GitHub token.
 
