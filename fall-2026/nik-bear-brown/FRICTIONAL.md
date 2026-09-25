@@ -41,6 +41,8 @@ Everything I say in a session is recorded here or in the matching assignment's l
   13. "Create an assignment-2 folder in each of those." · "Also put a blank FRICTIONAL.md into all of the assignment two folders."
   14. "Everything I say goes into the FRICTIONAL.md log."
   15. "Push the latest updates to Assignment 2 to GitHub, and then I'll put it in Canvas." (It was already pushed; the Canvas HTML paste was rebuilt from that version and copied to my clipboard.)
+  16. "Look at AAX … we created two character sheets for Dorothy … use the riff skill from brutalist.art, and also the video that we created, to show that in spite of creating a character sheet, which looked pretty on model for all the pictures, when we actually tried to render it, the film looked pretty off model. For this assignment it's not to render it yet, just to be aware of that. The assignment is just to make the sheet. Comment on the sheet, whether it looks on model or off model. In the video, riff in a much more succinct way using the Liam persona: show the character sheet, talk about it, riff about it. Then just play the video as is, with the music." Then: "All the other images in the directory are slices I took of the actual video."
+     - Claude Code built the film in `youtube/claude-liam-csye-7270-character-sheet-off-model/`: the two sheets judged on model, the film played unedited with its music, then a sheet-versus-film comparison from my slices (face and hair drift, costume holds best), verdict, and a Your Turn prompt. It dropped a claim about the hem getting longer because the frame cut off at the hips. The AAX folder was only read.
 - **What happened:**
   - Assignment 2 went through three versions: first tied to Walker Jumpman's art, then retargeted to each student's own game (my correction in 5), then given the 10-pose and storyboard rules (6, 7).
   - The first push excluded the Canvas export and the two third-party books before I said so; my two messages confirmed it. The QC frame sweeps (1.4 GB) were also left out.
@@ -63,3 +65,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-09-25 | Add assignment-2 folders for everyone; rename mine to match |
 | 2026-09-25 | Record everything I said today; rule: all my words go in the log |
 | 2026-09-25 | Log my request to post Assignment 2 to Canvas |
+| 2026-09-25 | Log my request for the on-model/off-model riff film |
