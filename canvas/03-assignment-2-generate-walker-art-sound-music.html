@@ -1,0 +1,338 @@
+<div style="line-height: 1.6; overflow-wrap: anywhere;">
+<h2 id="assignment-2---generate-walker-jumpmans-art-sound-and-music">Assignment 2 - Generate Walker Jumpman's Art, Sound, and Music</h2>
+<p>CSYE 7270 · Fall 2026 · <strong>100 points</strong></p>
+<p>Assignments follow a <strong>10-day cadence</strong>. Use this assignment's due date in Canvas. The syllabus's <strong>10% daily late penalty</strong> applies.</p>
+<p><strong>Required viewing:</strong> <a href="https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz">AI Policy for Professor Bear's Courses | Using AI Responsibly in Class</a>.</p>
+<p><strong>In one paragraph:</strong> you will design your game's look and sound on paper first, then use generative models to make them, then put them in the game without breaking how it plays. The design lives in a storyboard and a character sheet. The generation is logged prompt by prompt, including what you threw away and why. The result is judged in the running game, not in the image folder. Your Frictional log is where the design thinking shows: what you wanted, what the model gave you, and what you decided.</p>
+<h3 id="your-task">Your task</h3>
+<p>Start from <strong>your own Assignment 1 project</strong> (your <code>walker-</code> repository). Replace its placeholder presentation with generated art, sound effects, and music, integrated into the actual Godot game. Before generating anything, make a <strong>storyboard</strong> of the play experience and a <strong>character sheet</strong> for your main character. Use them as the specification that your prompts and edits must meet.</p>
+<p>This is a new revision of your Assignment 1 game, not a new game. Keep Assignment 1's controls, movement and jump tuning, collider, level geometry, retry, pause, and completion unless you explicitly justify a change and test it. Tag or otherwise identify your Assignment 1 submitted revision so the difference is traceable.</p>
+<p>Claude Code assistance is expected. Use your Northeastern access and free or locally run generative models; <strong>no purchased API credits or paid generation service is required</strong>, and paid output earns no bonus. Claude can write code, prompts, and scripts, but it is not itself an image or audio generator: code-drawn or SVG art written by Claude is welcome in your game, and it does not satisfy the generative-model requirement below.</p>
+<h4 id="what-counts-as-a-generated-asset">What counts as a generated asset</h4>
+<p>Each of the three categories needs <strong>at least one asset in the running game that a generative model produced</strong>:</p>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Category</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Minimum in the running game</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Art</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Your main character's in-game appearance (sprite frames or a sprite sheet) <strong>or</strong> at least two environment assets (background, tiles, hazard, finish marker).</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Sound effects</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">At least <strong>four</strong> game events, each with its own sound: jump, landing, failure (hazard or fall), and finish.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Music</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">At least <strong>one</strong> loop that plays during play and repeats without an audible click or gap.</td>
+</tr>
+</tbody>
+</table>
+<p>You may edit any generated output by hand (cleanup, recolor, trim, loop point, slicing into frames, background removal). Record every edit. A model output that you redraw completely is your art, which is fine, and the log must say so.</p>
+<p>Walker's asset tools include free local helpers you may use: background removal (<code>rembg_matting.py</code>), sheet slicing (<code>grid_slice.py</code>), and loop-frame finding (<code>find_loop_frame.py</code>). Its image, video, and 3D generation commands call paid services. They are optional and not required.</p>
+<h4 id="rights-and-responsible-use">Rights and responsible use</h4>
+<ul>
+<li>Do not prompt with, or feed in as reference, a named living artist's style, a copyrighted character, a brand, or existing music or recordings.</li>
+<li>Do not clone or imitate a real person's voice. Synthetic voices from a free local text-to-speech model are allowed if you choose to add voice.</li>
+<li>Record each model's name, version, and license or terms of use in <code>SOURCES.md</code>. Some open models carry non-commercial or attribution terms. That is acceptable for coursework, and you must state it.</li>
+<li>Never commit API keys or account credentials.</li>
+</ul>
+<h3 id="1-predict--design-before-you-generate">1. Predict — design before you generate</h3>
+<p>Commit these before your first generation. Retain the original versions; add later revisions rather than rewriting the record.</p>
+<h4 id="storyboardmd--the-play-experience-in-order"><code>STORYBOARD.md</code> — the play experience, in order</h4>
+<p>A storyboard shows the key moments of play in sequence: what the player sees, hears, and does. Make <strong>at least six panels</strong>, covering at least: the start screen or spawn, a first jump, a failure and retry, a landing in your Assignment 1 extension, the finish, and one moment you care about. Hand sketches photographed from paper are fine and often faster.</p>
+<p>For each panel record:</p>
+<ul>
+<li><strong>The picture:</strong> a sketch or thumbnail, in <code>design/storyboard/</code>.</li>
+<li><strong>Player action and game state:</strong> what the player is doing, and which existing state the game is in.</li>
+<li><strong>What the player should see:</strong> the character pose and the environment elements on screen.</li>
+<li><strong>What the player should hear:</strong> the sound event and the music state (playing, paused, quieter, stopped).</li>
+<li><strong>Asset IDs:</strong> the asset or assets this panel depends on, matching your asset log.</li>
+<li><strong>The design reason:</strong> the one thing this moment should communicate to the player.</li>
+</ul>
+<h4 id="character-sheetmd--the-specification-for-your-character"><code>CHARACTER-SHEET.md</code> — the specification for your character</h4>
+<p>The character sheet is the contract your generated character must meet. Put the image or images in <code>design/character/</code>. Include:</p>
+<ul>
+<li><strong>Silhouette test:</strong> the character filled solid black at actual in-game size. The starter's logical viewport is 640 × 360; your character must read at that size.</li>
+<li><strong>Facing:</strong> right-facing and left-facing. Plan to flip one direction at runtime rather than generating both.</li>
+<li><strong>States:</strong> one pose per state your game shows (for example idle, walk or run, jump, failure, celebrate). Note which poses are single frames and which loop.</li>
+<li><strong>Collider overlay:</strong> your current collision box drawn over each pose at the same scale, with a note on any art that extends beyond it and why that is fair to the player.</li>
+<li><strong>Palette:</strong> three to six colors with hex values, checked against your level's background so the character stays visible.</li>
+<li><strong>Consistency rules:</strong> what must stay identical across every frame (proportions, eye position, outline weight), so you can judge generated frames against it.</li>
+</ul>
+<h4 id="change-briefmd--the-plan-and-the-predictions"><code>CHANGE-BRIEF.md</code> — the plan and the predictions</h4>
+<p>Add an Assignment 2 section to your existing brief:</p>
+<ul>
+<li>The art style you chose and why it serves your game, in two or three sentences.</li>
+<li>The event-to-sound map: each sound, the exact game event that triggers it, and how you will prevent double triggers.</li>
+<li>Music behavior on pause, failure, retry, and finish.</li>
+<li>What must remain unchanged from Assignment 1.</li>
+<li><strong>At least three predicted failure cases</strong> and how you will check them. For example: the jump sound fires twice on a held jump; the character's frames drift in proportion from one pose to the next; the music loop clicks at the seam; the new art hides a hazard edge; the game is no longer readable with sound muted.</li>
+</ul>
+<h3 id="2-build-it--generate-against-the-design">2. Build It — generate against the design</h3>
+<h4 id="generate-in-inspectable-steps">Generate in inspectable steps</h4>
+<p>Work from the character sheet and storyboard, not from a blank prompt box. Keep an <strong>asset log</strong> (a table in <code>SOURCES.md</code> or a separate <code>ASSET-LOG.md</code>) with one row per generation you kept or seriously considered:</p>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Field</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">What to record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Asset ID</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Matches your storyboard and character sheet.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Model and version</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Where it ran (local or institution-provided) and its license or terms.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Prompt and settings</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">The exact prompt, negative prompt if any, seed, size, duration, and other settings needed to reproduce it.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Outcome</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Accepted, edited, or rejected, with the reason judged against the sheet or storyboard.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Edits</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">What you changed by hand or with which tool.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Where used</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">The file path in the game and the storyboard panel it serves.</td>
+</tr>
+</tbody>
+</table>
+<p>Keep rejected outputs as small thumbnails or a contact sheet, not full-size files. The rejections are evidence of design judgment, and graders will read them.</p>
+<p>Practical guidance:</p>
+<ul>
+<li>For characters, generate one reference image first, check it against the character sheet, then derive every pose from it. Consistency comes from the reference, not from repeating the text prompt.</li>
+<li>Prompt for a solid background color and remove it afterwards. Prompting for "transparent" usually produces a drawn checkerboard.</li>
+<li>Scale art to in-game size before judging it. Detail that disappears at 640 × 360 is not detail.</li>
+<li>For sound effects, keep them short and trim silence from the front so they feel immediate.</li>
+<li>For music, generate longer than you need and cut a loop at a bar boundary. Check the seam by listening to at least three repetitions.</li>
+<li>Deliver game audio as <strong>OGG or WAV</strong>. The course keeps MP3 and MP4 files out of GitHub, and Godot imports OGG with loop settings directly.</li>
+</ul>
+<h4 id="integrate-into-the-game-without-changing-how-it-plays">Integrate into the game without changing how it plays</h4>
+<ul>
+<li><strong>Art:</strong> replace or supplement the drawing in <code>godot/features/player/player.gd</code> and <code>godot/game/session.gd</code>. Keep the collider and movement tuning from Assignment 1. Make sure the sprite flips with facing, changes with state, and lines up with the collider while standing, moving, and in the air. For pixel art, check the texture import filter so frames do not blur.</li>
+<li><strong>Sound:</strong> trigger each effect from the existing state change that already represents the event. Sound must never decide game state; a missing or muted sound must not change what happens.</li>
+<li><strong>Music:</strong> loop it, and implement the pause and finish behavior you predicted. Provide a way to mute music and effects, separately if you can.</li>
+<li><strong>Readability without sound:</strong> the game must remain understandable muted, as it was in Assignment 1.</li>
+</ul>
+<p>Ask Claude to propose a plan before editing, then implement one bounded change at a time:</p>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code>Read my README, CHANGE-BRIEF.md, STORYBOARD.md, and CHARACTER-SHEET.md.
+Use Walker&#39;s brief → build → playtest → inspect → revise workflow.
+Locate the character drawing, collider, state changes for jump, landing,
+failure, and finish, and the relevant tests. Propose the smallest plan
+to integrate my generated character, my four sound events, and my
+music loop. Do not edit yet. After I approve a step, implement only that
+step, show the diff, run the existing checks, and tell me what still
+requires human listening or playtesting.</code></pre>
+<p>This is a prompt to Claude Code, not an installed shell command. You decide whether to accept the plan.</p>
+<h3 id="3-use-it--play-it-listen-to-it-compare-it-to-the-design">3. Use It — play it, listen to it, compare it to the design</h3>
+<p>Play the game yourself with normal controls, with sound on and then muted. Record actual results in <code>TEST-REPORT.md</code>, with the source revision and engine version:</p>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Check</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Evidence to collect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Unchanged behavior</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Assignment 1's mechanics and keyboard checks still pass; controls, tuning, collider, retry, pause, and completion behave as before.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Character against the sheet</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">In-game screenshots of each state, left- and right-facing, beside the character sheet poses; any visual/collision mismatch noted.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Storyboard against the game</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Each storyboard panel beside an in-game screenshot of the same moment; differences listed and explained.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Sound events</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Each of the four events produces exactly one sound per occurrence, including a held jump, repeated retries, and a hazard touched twice in one attempt.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Music</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">The loop repeats without a click or gap; pause, failure, retry, and finish behave as predicted.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Muted play</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">The level can still be completed and understood with all sound muted.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Automated checks</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Commands and results, plus at least one <strong>new</strong> automated check for your audio or art integration (for example, counting sound triggers per event during a scripted route).</td>
+</tr>
+</tbody>
+</table>
+<p>Do not delete a failing assertion or weaken an expected result merely to obtain a green report.</p>
+<p>Include <strong>at least one documented inspect-and-revise cycle</strong> driven by an observation: a regenerated asset, a changed prompt, a moved loop point, a palette change after the silhouette test. If another person plays or listens, record their actual feedback; do not invent a playtester. Your own playtest is required, and an automated route does not replace it.</p>
+<h3 id="4-ship-it--source-and-explainer">4. Ship It — source and explainer</h3>
+<h4 id="make-one-required-brutalist-godot-explainer">Make one required Brutalist Godot explainer</h4>
+<p>Use the course-provided <a href="https://github.com/nikbearbrown/brutalist.art">Brutalist</a> <strong><code>godot-gamedev</code></strong> workflow with the <strong><code>walker</code></strong> modifier. This film explains how your game's art and audio were made and wired in. Ask Claude Code to read the installed skill instructions and follow them. If your checkout lacks the skill, request the course-provided version before proceeding.</p>
+<p>Make <strong>one</strong> landscape film that:</p>
+<ol type="1">
+<li>Identifies your Assignment 1 starting revision and what this revision adds.</li>
+<li>Traces <strong>one asset from design to game</strong>: storyboard panel or character sheet → prompt → raw output → edits → in-game result.</li>
+<li>Shows the character in the running game in at least two states, and the four sound events occurring in real play.</li>
+<li>Includes <strong>at least one clearly labeled segment where the game's own audio is audible without narration over it</strong>. Check the skill's audio policy first; if it silences captured gameplay by default, ask for the course-provided method rather than dubbing sounds in afterwards.</li>
+<li>Explains at least one cause-and-effect connection between a source change and what the player sees or hears.</li>
+<li>States what you tested, what remains uncertain, one concrete next improvement, the human and AI contributions, <strong>which model produced which asset</strong>, and the game revision shown.</li>
+</ol>
+<p>Use the Walker opening/summary and Verdict → Your Turn → regular outro. AI narration, including Liam, is allowed. Label reconstructed interface views, scripted-input captures, and held frames accurately. Do not present a raw generation as in-game footage.</p>
+<p>Follow the skill's native <strong>4K landscape</strong> rendering and quality checks, then watch and listen to the final export. Duration should follow the explanation; there is no minimum runtime. A second film, a vertical Short, paid media generation, and public YouTube publication are <strong>not required</strong>.</p>
+<h4 id="post-the-version-on-github">Post the version on GitHub</h4>
+<p>Your submitted source includes:</p>
+<ul>
+<li>The modified Godot project and its <strong>used</strong> generated assets (OGG/WAV/PNG), within the size limits; exclude caches and credentials.</li>
+<li><code>README.md</code>: project name, Assignment 1 revision, starter credit, engine version, run instructions, controls including mute, changes, known limitations, and final-film link.</li>
+<li><code>STORYBOARD.md</code>, <code>CHARACTER-SHEET.md</code> and their images, <code>CHANGE-BRIEF.md</code>, <code>TEST-REPORT.md</code>, <code>FRICTIONAL.md</code>, <code>SOURCES.md</code> with the asset log, and rejected-output thumbnails.</li>
+<li>The film's beat sheet, script/prompts, and relevant evidence/coverage records.</li>
+</ul>
+<p>Keep MP3, MP4, and files over 25 MB out of GitHub. Store them in the designated course media storage and link them from the README. Identify the exact film by filename and SHA-256 checksum. Test reviewer access to the source and media.</p>
+<p>Use commit messages that describe a meaningful change and its purpose or check. For example: <code>Add jump and landing sounds; verify one trigger per jump</code>.</p>
+<h3 id="5-verify-and-submit-to-canvas">5. Verify and submit to Canvas</h3>
+<p>Run the project from a fresh copy of the revision you are submitting and confirm every used asset is present. Submit a source ZIP of that same GitHub revision, excluding caches, credentials, and large media, together with <code>SUBMISSION.md</code>:</p>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code>Assignment: Assignment 2 - Generate Walker Jumpman&#39;s Art, Sound, and Music
+Student:
+Project name:
+GitHub repository/folder URL:
+Assignment 1 revision this builds on:
+Submitted commit SHA:
+Game-source revision shown in the film:
+Godot version and operating system:
+Generative models used (name, version, where run, license):
+Final film URL and filename:
+Final film SHA-256:
+Summary of my changes:
+Known limitations:</code></pre>
+<p>It is fine to render from a game-source commit and then add the film documentation in a final commit. Identify both revisions and verify that the final commit does not change the demonstrated game source. Canvas, GitHub, and the film must refer to the same submitted work.</p>
+<h3 id="rubric--100-points">Rubric — 100 points</h3>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Component</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top; width: 15%; min-width: 4em;" scope="col">Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Implementation and explanation</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">60</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Frictional — honest log of the design thinking</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">GitHub version posting matching Canvas</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Relative Quartile</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">20</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>Total</strong></td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>100</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="implementation-and-explanation--60-points">Implementation and explanation — 60 points</h4>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Criterion</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top; width: 15%; min-width: 4em;" scope="col">Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Design before generation: storyboard with at least six complete panels (5); character sheet with silhouette test, facing, states, collider overlay, palette, and consistency rules (5); both committed before the first generation (2).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">12</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Generated art in the game: meets the character sheet or storyboard it was made for (6); correct facing, states, and visual/collision alignment with Assignment 1 behavior preserved (5); reproducible asset log with accepted and rejected outputs (3).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">14</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Generated sound and music in the game: four event sounds, each firing once per event (6); a seamless music loop with the predicted pause/finish behavior (4); mute works and the game stays readable muted (2); reproducible asset log entries (2).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">14</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Verification: Assignment 1 checks still pass, plus one new automated check (4); human playtest with sound on and muted, storyboard-versus-game comparison (3); an evidence-based revision and an honest limitation (3).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Brutalist explainer: accurate design-to-game trace of one asset (4); real gameplay with audible game audio (3); models, contributions, and limits stated (2); readable, audible final film using the required workflow (1).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>Subtotal</strong></td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>60</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Award partial credit for demonstrated work within each criterion. Claims must be defensible; attractive assets do not repair an incorrect explanation or a broken game.</p>
+<h4 id="frictional--honest-log-of-the-design-thinking--10-points">Frictional — honest log of the design thinking — 10 points</h4>
+<p>In <code>FRICTIONAL.md</code>, keep a dated log of the design as it happened. This assignment's log should show the thinking, not only the steps: what you were trying to make the player see or hear, what you asked the model for, what came back, and what you decided.</p>
+<ul>
+<li><strong>3 points:</strong> Specific, honest accounts of attempts: the prompt or setting you tried, what you expected, and what the model actually produced.</li>
+<li><strong>3 points:</strong> Your judgment in response: why you accepted, edited, or rejected an output against the storyboard or character sheet, what you changed next, and what you still have not resolved.</li>
+<li><strong>2 points:</strong> Explicit human/AI contributions, separating Claude's contributions (code, prompts, plans) from the generative models' outputs and from your own decisions and edits.</li>
+<li><strong>2 points:</strong> Traceability to asset-log rows, commits, prompts, screenshots, or tests.</li>
+</ul>
+<p>An unsuccessful attempt can earn full Frictional credit. More hours, more entries, or invented struggle do not earn extra credit. If a generation was usable on the first try, say so and explain how you judged it. Label retrospective notes honestly. AI may organize your notes; it must not manufacture experience or taste.</p>
+<h4 id="github-version-posting-matching-canvas--10-points">GitHub version posting matching Canvas — 10 points</h4>
+<ul>
+<li><strong>4 points:</strong> Required, accessible game source, used assets, and documentation are actually posted.</li>
+<li><strong>3 points:</strong> Canvas identifies the exact submitted commit and the Assignment 1 revision, with matching source files and clear run instructions.</li>
+<li><strong>3 points:</strong> Accessible film link, identified media version, and film source/evidence correspond to the submitted game.</li>
+</ul>
+<h4 id="relative-quartile--20-points">Relative Quartile — 20 points</h4>
+<p>Assigned after the instructor and TAs review the full comparison group. It compares specificity, substantive improvement, demonstrated understanding, evidence, honesty about verification, usability, and professional communication. These are comparative considerations, not extra point categories.</p>
+<p>Meeting the stated criteria can earn the other <strong>80 points</strong>; it does not guarantee these <strong>20 points</strong>. A coherent, readable game with modest assets outranks a gallery of striking images that do not fit the game. Paid-tool access and simply using Brutalist earn no automatic comparative bonus.</p>
+<h3 id="you-must-be-able-to-explain-it">You must be able to explain it</h3>
+<p>Use <code>SOURCES.md</code> to credit the starter, your Assignment 1 revision, every generative model and its terms, collaborators, and tools. Describe what AI contributed to the game code, the prompts, the assets, the script, and the narration, along with what you personally decided, checked, changed, or rejected.</p>
+<p>The instructor or a TA may ask you to reproduce an asset from your log, or to explain why you rejected one. Inability to explain reduces points under the relevant criteria. Misrepresenting authorship, provenance, or verification is an academic-integrity matter under the <a href="https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz">course AI policy video</a> and the course/university policies.</p>
+<h3 id="appendix--starting-templates">Appendix — starting templates</h3>
+<p>Copy these into your repository and fill them in. They are prompts for your thinking, not forms to pad.</p>
+<h4 id="storyboardmd-panel"><code>STORYBOARD.md</code> panel</h4>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code>## Panel 3 — First failure
+![sketch](design/storyboard/03-first-failure.png)
+- Player action and state: runs into the spikes; PLAYING → DYING
+- See: failure pose, hazard stays visible, cause message
+- Hear: failure sound (SFX-FAIL); music ducks, resumes on retry
+- Assets: CHAR-FAIL, SFX-FAIL, MUS-LOOP
+- Design reason: the player should know exactly what killed them and want one more try</code></pre>
+<h4 id="character-sheetmd-sections"><code>CHARACTER-SHEET.md</code> sections</h4>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code># Character sheet — &lt;name&gt;
+- Concept in one sentence:
+- Silhouette at in-game size: design/character/silhouette.png
+- Facing: right drawn, left flipped at runtime
+- States: idle (loop) · run (loop) · jump (single) · fail (single) · celebrate (loop)
+- Collider overlay: design/character/collider.png — art beyond the box and why it is fair:
+- Palette: #______ #______ #______ (checked against the level background)
+- Consistency rules: same proportions, eye height, outline weight in every frame</code></pre>
+<h4 id="frictionalmd-entry"><code>FRICTIONAL.md</code> entry</h4>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code>## 2026-10-__ — character reference
+- Wanted: a character that reads as &lt;idea&gt; at 640 × 360 (sheet: silhouette, palette)
+- Asked: &lt;model, version&gt; — prompt &quot;&lt;…&gt;&quot;, seed &lt;…&gt; (asset log row CHAR-REF-03)
+- Got: &lt;what actually came back&gt;
+- Decided: rejected / edited / accepted, because &lt;judged against the sheet&gt;
+- Next: &lt;what I changed&gt;
+- Human / Claude / model: &lt;who did what&gt;
+- Still unresolved:</code></pre>
+</div>

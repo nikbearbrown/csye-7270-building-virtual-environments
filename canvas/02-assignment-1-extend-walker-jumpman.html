@@ -1,0 +1,199 @@
+<div style="line-height: 1.6; overflow-wrap: anywhere;">
+<h2 id="assignment-1---extend-walker-jumpman">Assignment 1 - Extend Walker Jumpman</h2>
+<p>CSYE 7270 · Fall 2026 · <strong>100 points</strong></p>
+<p>Assignments follow a <strong>10-day cadence</strong>. Use this assignment's due date in Canvas. The syllabus's <strong>10% daily late penalty</strong> applies.</p>
+<p><strong>Required viewing:</strong> <a href="https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz">AI Policy for Professor Bear's Courses | Using AI Responsibly in Class</a>.</p>
+<h3 id="your-task">Your task</h3>
+<p>Start with <a href="https://github.com/nikbearbrown/walker-jumpman">walker-jumpman</a>. Give its main character a new visual identity and extend its actual playable level. Preserve the basic control/retry experience, test your changes, and explain the result in a rendered film using Brutalist's Godot workflow.</p>
+<p>This is an extension of the starter, not a new game built from an empty project. Credit the starter and identify your additions. Your project name must begin with <strong><code>walker-</code></strong>, for example <code>walker-jumpman-maya-k</code>. Do your work in your own copy or course-authorized repository, not directly in the instructor's source repository.</p>
+<p>Claude Code assistance is expected. Use your Northeastern access; no purchased API credits or paid asset-generation service is required. You remain responsible for the implementation and must be able to explain the code, design decisions, tests, and film.</p>
+<h3 id="1-predict">1. Predict</h3>
+<p>Before implementation, write a short change brief in <code>CHANGE-BRIEF.md</code>:</p>
+<ul>
+<li>Your character concept and the visual features that will distinguish it from the starter.</li>
+<li>The new section of level and the decisions it asks the player to make.</li>
+<li>What must remain unchanged: controls, movement/jump tuning, collision behavior, retry, pause, and completion, unless you explicitly justify a necessary change.</li>
+<li>At least two predicted failure cases and how you will check them.</li>
+</ul>
+<p>Retain the original predictions. Add later revisions rather than rewriting the record to make every prediction look correct.</p>
+<h3 id="2-build-it">2. Build It</h3>
+<h4 id="replace-the-main-characters-visual-identity">Replace the main character's visual identity</h4>
+<p>Create a recognizable character concept with a meaningful change in shape, silhouette, or visible features—not only a name or color change. Original geometric drawing is sufficient. Imported art is optional; you must document its source and permission to use it.</p>
+<p>The starter draws its character in <code>godot/features/player/player.gd</code>; it does not use an existing sprite sheet. Inspect <code>_draw()</code> before choosing your approach. Preserve the movement parameters and collider for the initial visual change. Make the new appearance read sensibly against the collision boundary, including while facing left and right and while jumping. Explain any necessary departure from the original collider or behavior and test it explicitly.</p>
+<h4 id="extend-the-actual-playable-level">Extend the actual playable level</h4>
+<p>Add a new playable section beyond the starter route with <strong>at least two new landings that require jumps</strong>. The extension must add a clear player decision or challenge, not merely stretch an empty floor. Move the finish so the player must complete the new section to win. Retain a usable route through the original section and preserve failure/retry behavior.</p>
+<p>Inspect <code>godot/levels/first_steps.json</code> and the code that reads and draws it in <code>godot/game/session.gd</code>. A wider level may require camera, bounds, background, labels, and finish-marker changes. In this starter, some drawing coordinates are hard-coded: moving data alone does not guarantee that a hazard or label will be drawn in the correct place. Keep what the player sees consistent with what the physics checks.</p>
+<p>Do not change jump strength or remove collision checks simply to make an impossible extension pass. Revise the geometry first. Keep the scope small enough to inspect and complete in this assignment window. Multiplayer, new game engines, paid assets, and a standalone exported application are not required.</p>
+<h4 id="work-in-inspectable-increments">Work in inspectable increments</h4>
+<p>Ask Claude to propose a plan before editing, then implement one bounded change at a time. For example:</p>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code>Read this project&#39;s README, build report, and my CHANGE-BRIEF.md.
+Use Walker&#39;s brief → build → playtest → inspect → revise workflow.
+First locate the character drawing and collider, level data, drawing code,
+camera bounds, finish logic, and relevant tests. Propose the smallest plan
+for my character replacement and level extension. Do not edit yet.
+After I approve a step, implement only that step, show the diff, run the
+relevant checks, and tell me what still requires human playtesting.</code></pre>
+<p>This is a prompt to Claude Code, not an installed shell command. You decide whether to accept the plan.</p>
+<h3 id="3-use-it">3. Use It</h3>
+<p>Play the modified game yourself using normal controls. Record the actual result of each check in <code>TEST-REPORT.md</code>, with the source revision and engine version:</p>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Check</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Evidence to collect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Startup and controls</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Project runs; movement, jump, pause/resume, and restart still work.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Character appearance</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Left/right, standing, and jumping views; no misleading visual/collision mismatch.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Extended route</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">A normal playable route reaches both new landings and the relocated finish.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Failure and recovery</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">A real hazard or missed landing produces the expected retry; replay works after completion.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Camera and presentation</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">The extension and important landing/finish information remain visible and readable.</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Automated checks</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Commands, results, and any failed or updated tests, with an explanation.</td>
+</tr>
+</tbody>
+</table>
+<p>Ask Claude to run the existing mechanics and keyboard checks where available. Preserve the earlier results. The supplied route fixture was authored for the original layout; extending the level may require an updated route test. Explain what changed in the fixture and add a check for the extension. Do not delete a failing assertion or weaken an expected result merely to obtain a green report.</p>
+<p>Include at least one documented inspect-and-revise cycle based on an observation. It may address clarity or usability even if no crash occurs. If you can have another person play, record their actual feedback; do not invent a playtester. Your own playtest is required, and an automated input route does not replace it.</p>
+<h3 id="4-ship-it--source-and-explainer">4. Ship It — source and explainer</h3>
+<h4 id="make-one-required-brutalist-godot-explainer">Make one required Brutalist Godot explainer</h4>
+<p>Use the course-provided <a href="https://github.com/nikbearbrown/brutalist.art">Brutalist</a> <strong><code>godot-walkthrough</code></strong> workflow with the <strong><code>walker</code></strong> modifier. The original skill spelling is <strong><code>godot-waikthrough</code></strong>. Ask Claude Code to read the installed skill instructions and follow them; do not assume the skill name is a standalone executable. If your checkout lacks the skill, request the course-provided version before proceeding.</p>
+<p>Make <strong>one</strong> landscape film that:</p>
+<ol type="1">
+<li>Identifies the starter, your character concept, and your level extension.</li>
+<li>Shows the actual modified game being played, including the new landings, a failure/recovery, and completion.</li>
+<li>Explains at least one cause-and-effect connection between a source change and the behavior on screen.</li>
+<li>States what you tested, what remains uncertain, and one concrete next improvement.</li>
+<li>Identifies human and AI contributions and the game revision being demonstrated.</li>
+</ol>
+<p>Use the Walker opening/summary and Verdict → Your Turn → regular outro. AI narration, including Liam, is allowed. Label reconstructed interface views, scripted-input captures, and held frames accurately. Preserve actual gameplay evidence; do not fake a completion or change the game solely to conceal a defect in the film.</p>
+<p>Follow the skill's native <strong>4K landscape</strong> rendering and quality checks, then watch the final export. Keep important details readable and narration intelligible. Duration should follow the explanation; there is no minimum runtime to fill. A second film, a vertical Short, paid media generation, and public YouTube publication are <strong>not required</strong>.</p>
+<p>The film is part of the 60-point implementation-and-explanation category below. It is not a fifth grading category and does not substitute for working source.</p>
+<h4 id="post-the-version-on-github">Post the version on GitHub</h4>
+<p>Your submitted source includes:</p>
+<ul>
+<li>The modified Godot project and any permitted source assets; exclude generated caches and credentials.</li>
+<li><code>README.md</code>: project name, starter credit, engine version, run instructions, controls, changes, known limitations, and final-film link.</li>
+<li><code>CHANGE-BRIEF.md</code>, <code>TEST-REPORT.md</code>, <code>FRICTIONAL.md</code>, and <code>SOURCES.md</code>.</li>
+<li>The film's beat sheet, script/prompts, and relevant evidence/coverage records.</li>
+</ul>
+<p>Keep MP3, MP4, and files over 25 MB out of GitHub. Store them in the designated course media storage and link them from the README. Identify the exact film by filename and SHA-256 checksum so its version can be checked. Test reviewer access to the source and media.</p>
+<p>Use commit messages that describe a meaningful change and its purpose or check. For example: <code>Extend final landing; update route test and verify retry</code>. When useful, add a commit-body note distinguishing your decision from Claude's implementation. Commit count is not a measure of learning.</p>
+<h3 id="5-verify-and-submit-to-canvas">5. Verify and submit to Canvas</h3>
+<p>Run the project from a fresh copy of the revision you are submitting. Confirm that required assets are present and that the film depicts that game source. Do not treat a working local folder as proof that everything was posted.</p>
+<p>Submit a source ZIP of that same GitHub revision, excluding caches, credentials, and large media, together with a short <code>SUBMISSION.md</code> or equivalent submission note containing:</p>
+<pre class="text" style="white-space: pre-wrap; overflow-wrap: anywhere; background-color: #f4f4f4; padding: 1em;"><code>Assignment: Assignment 1 - Extend Walker Jumpman
+Student:
+Project name:
+GitHub repository/folder URL:
+Submitted commit SHA:
+Game-source revision shown in the film:
+Godot version and operating system:
+Final film URL and filename:
+Final film SHA-256:
+Summary of my changes:
+Known limitations:</code></pre>
+<p>It is fine to render from a game-source commit and then make a final submission commit adding the film documentation. Identify both revisions and verify that the final commit does not change the demonstrated game source. Put the final submitted SHA in the Canvas note; do not try to embed a commit's own SHA into that same commit.</p>
+<p>Canvas, GitHub, and the film must refer to the same submitted work. Identify later changes as a new revision rather than silently replacing the submitted evidence.</p>
+<h3 id="rubric--100-points">Rubric — 100 points</h3>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Component</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top; width: 15%; min-width: 4em;" scope="col">Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Implementation and explanation</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">60</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Frictional — honest log</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">GitHub version posting matching Canvas</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Relative Quartile</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">20</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>Total</strong></td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>100</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="implementation-and-explanation--60-points">Implementation and explanation — 60 points</h4>
+<table style="border-collapse: collapse; width: 100%; margin: 1em 0;">
+<thead>
+<tr>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;" scope="col">Criterion</th>
+<th style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top; width: 15%; min-width: 4em;" scope="col">Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Character: distinct visual identity (8); readable states and sensible visual/collision alignment with preserved or justified behavior (7).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">15</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Level: two new jump landings and a meaningful extension (12); reachable relocated finish and consistent camera/bounds/visuals (8).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">20</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Verification: documented baseline and automated/regression checks (5); actual human playtest of route, failure/recovery, and replay (5); evidence-based revision and an honest limitation (5).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">15</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">Brutalist explainer: accurate explanation of your changes (4); actual mechanism/gameplay shown (3); traceable evidence and stated limits (2); readable, audible final film using the required workflow (1).</td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;">10</td>
+</tr>
+<tr>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>Subtotal</strong></td>
+<td style="border: 1px solid #999; padding: 0.6em; text-align: left; vertical-align: top;"><strong>60</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Award partial credit for demonstrated work within each criterion. Claims must be defensible; attractive presentation does not repair an incorrect explanation.</p>
+<h4 id="frictional--honest-log--10-points">Frictional — honest log — 10 points</h4>
+<p>In <code>FRICTIONAL.md</code>, record actual attempts, expectations, difficulties or checks, responses, and learning. Distinguish your work from the AI's work.</p>
+<ul>
+<li><strong>3 points:</strong> Specific, honest accounts of what you tried and what happened.</li>
+<li><strong>3 points:</strong> What you checked, changed, or learned in response, including unresolved questions.</li>
+<li><strong>2 points:</strong> Explicit human/AI contributions, including what you accepted, modified, or rejected.</li>
+<li><strong>2 points:</strong> Traceability to relevant commits, prompts, tests, or observations.</li>
+</ul>
+<p>An unsuccessful attempt can earn full Frictional credit. More hours, more entries, or invented struggle do not earn extra credit. If something worked immediately, say so and explain how you checked it. Label retrospective notes honestly. AI may organize your notes; it must not manufacture experience or understanding.</p>
+<h4 id="github-version-posting-matching-canvas--10-points">GitHub version posting matching Canvas — 10 points</h4>
+<ul>
+<li><strong>4 points:</strong> Required, accessible game source and documentation are actually posted.</li>
+<li><strong>3 points:</strong> Canvas identifies the exact submitted commit and supplies the matching source files and clear run instructions.</li>
+<li><strong>3 points:</strong> Accessible film link, identified media version, and film source/evidence correspond to the submitted game.</li>
+</ul>
+<h4 id="relative-quartile--20-points">Relative Quartile — 20 points</h4>
+<p>Assigned after the instructor and TAs review the full comparison group. It compares specificity, substantive improvement, demonstrated understanding, evidence, honesty about verification, usability, and professional communication. These are comparative considerations, not extra point categories.</p>
+<p>Meeting the stated criteria can earn the other <strong>80 points</strong>; it does not guarantee these <strong>20 points</strong>. The course's announced comparison-group and tie/late-work rules govern placement. Production polish matters only as professional communication. A plain, precise explanation outranks a beautiful one that misrepresents the work. Paid-tool access and simply using Brutalist earn no automatic comparative bonus.</p>
+<h3 id="you-must-be-able-to-explain-it">You must be able to explain it</h3>
+<p>Use <code>SOURCES.md</code> to credit the starter, assets, collaborators, and tools. Describe what AI contributed to the game, script, beat sheet, visuals, and narration, along with what you personally decided, checked, changed, or rejected.</p>
+<p>The instructor or a TA may ask you to explain any part of your submission. Inability to explain reduces points under the relevant criteria. Misrepresenting authorship or verification is an academic-integrity matter under the <a href="https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz">course AI policy video</a> and the course/university policies.</p>
+</div>
