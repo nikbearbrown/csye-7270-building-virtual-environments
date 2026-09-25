@@ -68,6 +68,17 @@ Every push that touches this assignment is listed at the bottom with its date an
   - **What Claude did:** it didn't push my three photos. The repo is public and I have no source or license for them, which is exactly what my Assignment 2 tells students to record. It kept them on my machine in `reference/local-only/`, which git ignores. It found two openly licensed Macrotermes soldier photos on Wikimedia Commons and made [`reference/README.md`](reference/README.md), which shows them from Commons with the photographers' credit and license, without copying them into the repo.
   - **Open:** where my three photos came from, so they can go up with credit, or stay local.
   - **My decision:** "Okay, I'll redo the images using AI. And then you can upload those. If you're concerned about it, I think they're from Wikimedia Commons. But I'll go ahead and just redo them with AI." So the three web photos stay local, and my own AI-generated termite images go up instead, logged with the model, prompt, and settings like any other Assignment 2 asset.
+  - **The AI versions:** I made them and said: "Attached are AI versions. Non-copyright versions of that kind of termite." One image, three soldiers: a dark-red big head seen from above at an angle, a black-headed one from straight above, and a smaller golden one. Saved as [`reference/termite-soldiers-ai-01.jpg`](reference/termite-soldiers-ai-01.jpg), asset ID **TERM-REF-01**, shown on the reference page.
+
+    | Field | TERM-REF-01 |
+    |---|---|
+    | Model and version | Not yet recorded |
+    | Prompt and settings | Not yet recorded |
+    | Based on | My three web photos of Macrotermes soldiers, redone with AI |
+    | Outcome | Accepted as a reference for the termite's look; not an in-game asset |
+    | Where used | `reference/README.md` |
+
+    **Claude noted (not yet checked by me):** the poses follow the web photos closely, so an image made from them may still count as derived from those photos. If they are from Wikimedia Commons as I think, finding their pages would settle it and give them credit.
 - **What Claude or another person contributed:** Claude Code (Opus 5.5) wrote the failure list, all eleven creature ideas, and the "behavior acts out the failure" rule. It proposed three creatures as the strongest set: the Loop Beetle (easy to read), the Checkmark Mimic (it teaches the verify step my earlier design draft was missing), and the Parasite Wasp (it is both the malware and the vague path from the original concept). I chose the game and asked the questions. I rejected eight of the eleven creatures as forced, including all three of Claude's "strongest set" picks except the parasite idea, and I rejected the wasp as the parasite. The termite's foundation-eating role, the clock for ignored errors, the mosquito direction, and the ants-as-workers idea are mine. After my notes, Claude suggested parasites that read as draining at a glance:
   - **Mosquito:** the one everyone knows; it flies in, drinks, and leaves, and its whine is a ready sound cue before it bites.
   - **Tick:** latches on and visibly **swells** as it drains, so the player can see how much has been taken. It clashes with the clock "tick" for ignored errors, so one of the two needs another name.
@@ -92,3 +103,4 @@ Every push that touches this assignment is listed at the bottom with its date an
 | 2026-09-25 | Log my termite question and the candidate species |
 | 2026-09-25 | Add Macrotermes soldier reference; log my termite pick |
 | 2026-09-25 | Log my decision to redo the termite images with AI |
+| 2026-09-25 | Add my AI termite reference image (TERM-REF-01) |
