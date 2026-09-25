@@ -4,11 +4,12 @@ A place for the public work of Nik Bear Brown's examples — CSYE 7270, Fall 202
 
 ## Executive summary
 
-**What this is.** Professor Bear's worked examples for CSYE 7270, kept the same way students keep theirs: each assignment in its own folder, with a process log in [`FRICTIONAL.md`](FRICTIONAL.md).
+**What this is.** Professor Bear's worked examples for CSYE 7270, kept the same way students keep theirs: each assignment in its own subfolder (`assignment-01/`, `assignment-02/`, …) with its own `FRICTIONAL.md` process log.
 
-**Where it stands.** The folder was created on 2026-09-25. No assignment work is here yet.
+**Where it stands.** Created on 2026-09-25. Assignment 2 is at the design stage: the game is *Clawd Closes the Loop*, with a termite, a parasite, and ants as its first creatures. No assets generated yet.
 
 | Folder or file | What it is |
 |---|---|
-| [`FRICTIONAL.md`](FRICTIONAL.md) | The process log: what was tried, what went wrong, who did what, and every push |
+| [`assignment-02/`](assignment-02/) | Assignment 2, *Generate Art, Sound, and Music for Your Game*, with its own [`FRICTIONAL.md`](assignment-02/FRICTIONAL.md) |
+| [`FRICTIONAL.md`](FRICTIONAL.md) | The folder's own log: setup and changes to the folder itself |
 | [`CLAUDE.md`](CLAUDE.md) | Rules Claude Code follows in this folder |

@@ -1,10 +1,10 @@
 # CLAUDE.md — nik-bear-brown/ (Professor Bear's example folder)
 
-This folder is the instructor's public example work for CSYE 7270, Fall 2026. It keeps the same process record students keep. **Every substantive change here is logged in `FRICTIONAL.md`, and every push adds a line to it.** The repo-root `AGENTS.md` still governs everything else.
+This folder is the instructor's public example work for CSYE 7270, Fall 2026. It keeps the same process record students keep. **Each assignment lives in its own subfolder (`assignment-01/`, `assignment-02/`, …) with its own `FRICTIONAL.md`.** Every substantive change is logged in the log of the assignment it belongs to, and every push adds a line to that log. The top-level `FRICTIONAL.md` is only for changes to the folder itself (setup, layout, rules). The repo-root `AGENTS.md` still governs everything else.
 
-## Rule 1 — log every substantive change in FRICTIONAL.md
+## Rule 1 — log every substantive change in the right FRICTIONAL.md
 
-Before you report a task in this folder as done, update `FRICTIONAL.md` in the same change set.
+Before you report a task in this folder as done, update the matching log in the same change set: `assignment-XX/FRICTIONAL.md` for work on that assignment, the top-level `FRICTIONAL.md` for changes to the folder itself. Create an assignment's subfolder and its log when work on that assignment starts, not before; no empty placeholder folders.
 
 **Substantive** means a new or deleted file or folder, a change to what a result says, a bug found or fixed, or a decision, a reversal, or something that went wrong. Typo and formatting fixes that don't change meaning are not substantive.
 
@@ -22,7 +22,7 @@ Write what happened, not what was hoped. Never invent a prediction, a result, an
 
 ## Rule 2 — one line per GitHub push
 
-Every push that touches this folder adds a row to the `## GitHub pushes` table, in the same commit being pushed:
+Every push adds a row to the `## GitHub pushes` table of each log it touches (the assignment's log, or the top-level log for folder changes), in the same commit being pushed:
 
 ```
 | YYYY-MM-DD | <commit subject, exactly as committed> |
