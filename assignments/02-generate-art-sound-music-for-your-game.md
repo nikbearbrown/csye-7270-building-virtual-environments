@@ -57,9 +57,19 @@ Walker's `/gdd` skill can help: `/gdd v1` runs a vision intake and `/gdd v2` dra
 
 A storyboard shows the key moments of play in sequence: what the player sees, hears, and does. Make **at least six panels**, covering at least: the first thing the player sees, the core action, a success, a failure, a moment of recovery or retry, and the end of a play session. Hand sketches photographed from paper are fine and often faster.
 
+Across the whole storyboard:
+
+- **At least three views (shot sizes):** for example a wide or establishing shot of the whole space, a medium shot of the character in action, and a close-up of a face, a hand, a prop, or a key UI element.
+- **At least three camera angles:** for example eye level, high angle or bird's-eye, low angle, over-the-shoulder, or a tilted (Dutch) angle.
+- **Motion indicated on at least two panels:** arrows for character or object movement, motion lines for speed, and a note for any camera move (pan, zoom, shake, follow).
+- **Frame shape:** your choice. **16:9 is recommended**, since that is the shape of most screens and of the course films. Keep one frame shape throughout.
+
+Gameplay panels should show what the game's camera actually shows. The other views and angles can be moments the player sees outside normal play (a title screen, an intro, a cutscene, a transition) or design shots that establish how the world and character should feel. Label which is which.
+
 For each panel record:
 
 - **The picture:** a sketch or thumbnail, in `design/storyboard/`.
+- **Shot:** the view (wide, medium, close-up), the angle, any motion or camera move, and whether it is a gameplay view or a design view.
 - **Player action:** what the player is doing, and what the game is doing in response.
 - **What the player should see:** the character state and the environment elements on screen.
 - **What the player should hear:** the sound event and the music state (playing, quieter, changed, stopped).
@@ -251,7 +261,7 @@ It is fine to render from a source commit and then add the film documentation in
 
 | Criterion | Points |
 |---|---:|
-| Design before generation: a concept with core loop, pillars, and art and audio direction (3); a storyboard with at least six complete panels (4); a character sheet with at least 10 distinct labeled poses, silhouette test, orientation, collision overlay, palette, and consistency rules (4); all committed before the first generation (1). | 12 |
+| Design before generation: a concept with core loop, pillars, and art and audio direction (3); a storyboard with at least six complete panels using at least three views, three angles, and motion on at least two panels (4); a character sheet with at least 10 distinct labeled poses, silhouette test, orientation, collision overlay, palette, and consistency rules (4); all committed before the first generation (1). | 12 |
 | Generated art in the slice: meets the character sheet, storyboard, and pillars it was made for (6); readable states, correct orientation, and sensible art/collision alignment (5); reproducible asset log with accepted and rejected outputs (3). | 14 |
 | Generated sound and music in the slice: four event sounds, each firing once per event (6); a seamless music loop with the predicted pause and end behavior (4); mute works and the slice stays readable muted (2); reproducible asset log entries (2). | 14 |
 | Verification: the slice runs from a fresh copy, plus one automated check you added (4); human playtest with sound on and muted, storyboard-versus-slice comparison (3); an evidence-based revision and an honest limitation (3). | 10 |
@@ -298,6 +308,7 @@ Copy these into your repository and fill them in. They are prompts for your thin
 ```text
 ## Panel 4 — First failure
 ![sketch](design/storyboard/04-first-failure.png)
+- Shot: medium · eye level · gameplay view · motion: fall arrow down the gap, camera shake on impact
 - Player action: misjudges the gap and falls; the game resets to the last safe spot
 - See: hurt pose, the cause stays visible, a short message
 - Hear: failure sound (SFX-FAIL); music dips, returns on retry
