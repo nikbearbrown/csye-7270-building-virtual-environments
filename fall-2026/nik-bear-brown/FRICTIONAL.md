@@ -40,6 +40,7 @@ Everything I say in a session is recorded here or in the matching assignment's l
   12. "Lower kebab case, first name last initial, and a folder for everyone in the class." (With the Canvas people list pasted.)
   13. "Create an assignment-2 folder in each of those." · "Also put a blank FRICTIONAL.md into all of the assignment two folders."
   14. "Everything I say goes into the FRICTIONAL.md log."
+  15. "Push the latest updates to Assignment 2 to GitHub, and then I'll put it in Canvas." (It was already pushed; the Canvas HTML paste was rebuilt from that version and copied to my clipboard.)
 - **What happened:**
   - Assignment 2 went through three versions: first tied to Walker Jumpman's art, then retargeted to each student's own game (my correction in 5), then given the 10-pose and storyboard rules (6, 7).
   - The first push excluded the Canvas export and the two third-party books before I said so; my two messages confirmed it. The QC frame sweeps (1.4 GB) were also left out.
@@ -61,3 +62,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-09-25 | Move Assignment 2 notes into assignment-2/ with its own log |
 | 2026-09-25 | Add assignment-2 folders for everyone; rename mine to match |
 | 2026-09-25 | Record everything I said today; rule: all my words go in the log |
+| 2026-09-25 | Log my request to post Assignment 2 to Canvas |
