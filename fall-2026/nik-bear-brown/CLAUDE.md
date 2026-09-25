@@ -1,6 +1,14 @@
 # CLAUDE.md — nik-bear-brown/ (Professor Bear's example folder)
 
-This folder is the instructor's public example work for CSYE 7270, Fall 2026. It keeps the same process record students keep. **Each assignment lives in its own subfolder (`assignment-1/`, `assignment-2/`, …) with its own `FRICTIONAL.md`.** Every substantive change is logged in the log of the assignment it belongs to, and every push adds a line to that log. The top-level `FRICTIONAL.md` is only for changes to the folder itself (setup, layout, rules). The repo-root `AGENTS.md` still governs everything else.
+This folder is the instructor's public example work for CSYE 7270, Fall 2026. It keeps the same process record students keep. **Each assignment lives in its own subfolder (`assignment-1/`, `assignment-2/`, …) with its own `FRICTIONAL.md`.** Every substantive change is logged in the log of the assignment it belongs to, and every push adds a line to that log. The top-level `FRICTIONAL.md` holds everything that is not one assignment's work: course materials, setup, layout, and rules. The repo-root `AGENTS.md` still governs everything else.
+
+## Rule 0 — everything Professor Bear says goes in the log
+
+Everything Professor Bear says in a working session about this course or this folder is recorded in a `FRICTIONAL.md`, the same day:
+- **Work on an assignment** goes in that assignment's log (`assignment-N/FRICTIONAL.md`).
+- **Everything else** (course materials, repository setup, folders, rules, decisions, questions) goes in the top-level `FRICTIONAL.md`.
+- **Use his words.** Quote or closely paraphrase what he said, in order. Fix only dictation errors (say so if a word was guessed). Keep Claude's summaries, proposals, and actions clearly separate from what he said.
+- **Nothing is dropped for being small.** A one-line question or a correction ("wrong repo") is recorded too.
 
 ## Rule 1 — log every substantive change in the right FRICTIONAL.md
 
