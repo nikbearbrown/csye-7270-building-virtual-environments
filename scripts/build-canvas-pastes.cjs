@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, '..');
 const pairs = [
   ['modules/01-walker-and-godot/lesson.md', 'canvas/01-module-1-walker-and-godot.html'],
   ['assignments/01-extend-walker-jumpman.md', 'canvas/02-assignment-1-extend-walker-jumpman.html'],
-  ['assignments/02-generate-walker-art-sound-music.md', 'canvas/03-assignment-2-generate-walker-art-sound-music.html'],
+  ['assignments/02-generate-art-sound-music-for-your-game.md', 'canvas/03-assignment-2-generate-art-sound-music-for-your-game.html'],
 ];
 for (const [source, target] of pairs) {
   let html = execFileSync('pandoc', [path.join(root, source), '--from=gfm', '--to=html5', '--wrap=none', '--shift-heading-level-by=1'], {encoding: 'utf8'});

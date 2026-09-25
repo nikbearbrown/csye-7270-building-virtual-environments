@@ -1,6 +1,6 @@
 # Separate Canvas pastes
 
-> **On GitHub:** the HTML fragments are not committed. The Markdown sources are the course content: [Module 1 lesson](../modules/01-walker-and-godot/lesson.md), [Assignment 1](../assignments/01-extend-walker-jumpman.md), [Assignment 2](../assignments/02-generate-walker-art-sound-music.md). To make the Canvas pastes, run `node scripts/build-canvas-pastes.cjs` (needs pandoc); it writes the `.html` files into this folder.
+> **On GitHub:** the HTML fragments are not committed. The Markdown sources are the course content: [Module 1 lesson](../modules/01-walker-and-godot/lesson.md), [Assignment 1](../assignments/01-extend-walker-jumpman.md), [Assignment 2](../assignments/02-generate-art-sound-music-for-your-game.md). To make the Canvas pastes, run `node scripts/build-canvas-pastes.cjs` (needs pandoc); it writes the `.html` files into this folder.
 
 1. **Canvas Page:** Module 1 — Walker and Godot. Paste the content of `01-module-1-walker-and-godot.html` into the page's HTML editor. It includes “What is Walker?” and “What is Godot?”, the learning loop, setup, and ungraded practice assessments.
 2. **Canvas Assignment:** Assignment 1 - Extend Walker Jumpman. Set the assignment to **100 points**, then paste `02-assignment-1-extend-walker-jumpman.html` into its HTML editor. Use the course's 10-day cadence when setting the Canvas deadline. Enable file-upload submission for the source ZIP and submission note.
@@ -23,6 +23,6 @@ The lesson and assignment are deliberately separate. This folder is the manual-p
 
 ## Assignment 2 paste (added 2026-09-25)
 
-3. **Canvas Assignment:** Assignment 2 - Generate Walker Jumpman's Art, Sound, and Music. Set it to **100 points** and paste `03-assignment-2-generate-walker-art-sound-music.html`. Enable file-upload submission for the source ZIP and submission note. Markdown source: `assignments/02-generate-walker-art-sound-music.md`.
+3. **Canvas Assignment:** Assignment 2 - Generate Art, Sound, and Music for Your Game. Set it to **100 points** and paste `03-assignment-2-generate-art-sound-music-for-your-game.html`. Enable file-upload submission for the source ZIP and submission note. Markdown source: `assignments/02-generate-art-sound-music-for-your-game.md`.
 
-Open items for instructor review: the assignment does not name a covered module because only Module 1 is drafted; the 60-point subdivision (12 / 14 / 14 / 10 / 10) is a drafting choice; `godot-gamedev` is chosen as the required explainer because this assignment is about how assets were made and wired in; students need a course-provided way to keep game audio audible in the film if the skill silences captured gameplay by default.
+Open items for instructor review: the assignment does not name a covered module because only Module 1 is drafted; the 60-point subdivision (12 / 14 / 14 / 10 / 10) is a drafting choice; students may pick any game and prove assets in a small playable slice rather than extending Walker Jumpman; `godot-gamedev` is chosen as the required explainer because this assignment is about how assets were made and wired in; students need a course-provided way to keep game audio audible in the film if the skill silences captured gameplay by default.
