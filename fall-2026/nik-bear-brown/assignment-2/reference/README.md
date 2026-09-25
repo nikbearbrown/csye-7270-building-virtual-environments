@@ -8,7 +8,13 @@ The images below are shown from Wikimedia Commons, not copied into this reposito
 
 ![Three big-headed termite soldiers, AI-generated](termite-soldiers-ai-01.jpg)
 
-Three termite soldiers in the Macrotermes style, generated with AI from my three web photos so they can be shared here. **Reference only**, not a game asset yet. Model, prompt, and settings: not yet recorded.
+Three termite soldiers in the Macrotermes style, generated with AI from my three web photos so they can be shared here. **Reference only**, not a game asset yet. Made with Gemini (version, prompt, and settings not yet recorded).
+
+## Pixel-art versions (TERM-REF-02)
+
+![The same three termite soldiers as pixel art](termite-soldiers-pixel-02.jpg)
+
+The same three soldiers redone as pixel art with Gemini: closer to what could become a game sprite. **Reference only.** Prompt and settings: not yet recorded.
 
 ## Macrotermitinae soldier, Okavango Delta
 

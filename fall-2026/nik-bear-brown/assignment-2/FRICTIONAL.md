@@ -78,6 +78,19 @@ Every push that touches this assignment is listed at the bottom with its date an
     | Outcome | Accepted as a reference for the termite's look; not an in-game asset |
     | Where used | `reference/README.md` |
 
+    **Model:** Gemini, by voice. That's how I found out what happened next.
+
+  - **Gemini misheard me.** I said: "This is what happens when Gemini misheard me. I said 'create those termites,' and it thought I said 'Kratos termites,' and made Kratos God of War termites." It produced two sketchbook-style images of termites with Kratos's face, beard, and red tattoo, one with wings, surrounded by axes, a Spartan helmet, and omega symbols. It also made a **pixel-art** version of my three termites, which I kept.
+
+    | Asset | Model | Outcome |
+    |---|---|---|
+    | TERM-REF-02, pixel-art termites ([`reference/termite-soldiers-pixel-02.jpg`](reference/termite-soldiers-pixel-02.jpg)) | Gemini, by voice | **Accepted** as a reference; closer to a game sprite than TERM-REF-01 |
+    | Kratos termites, two versions | Gemini, by voice ("those" heard as "Kratos") | **Rejected.** Wrong request, and a copyrighted character (Sony's God of War). Kept on my machine only, in `reference/local-only/`, not published |
+
+    Two of the five images I sent were repeats: one was TERM-REF-01 again, and the two pixel-art images were identical.
+
+    **Claude noted (not yet checked by me):** this is the "misread task" failure from my own list of agent bugs, happening to me: the model did something confident and detailed with the wrong instruction, and nothing in the output said it had guessed. It's also why "can you hear me speak?" mattered earlier: voice goes through a transcription step first, and that step can be wrong.
+
     **Claude noted (not yet checked by me):** the poses follow the web photos closely, so an image made from them may still count as derived from those photos. If they are from Wikimedia Commons as I think, finding their pages would settle it and give them credit.
 - **What Claude or another person contributed:** Claude Code (Opus 5.5) wrote the failure list, all eleven creature ideas, and the "behavior acts out the failure" rule. It proposed three creatures as the strongest set: the Loop Beetle (easy to read), the Checkmark Mimic (it teaches the verify step my earlier design draft was missing), and the Parasite Wasp (it is both the malware and the vague path from the original concept). I chose the game and asked the questions. I rejected eight of the eleven creatures as forced, including all three of Claude's "strongest set" picks except the parasite idea, and I rejected the wasp as the parasite. The termite's foundation-eating role, the clock for ignored errors, the mosquito direction, and the ants-as-workers idea are mine. After my notes, Claude suggested parasites that read as draining at a glance:
   - **Mosquito:** the one everyone knows; it flies in, drinks, and leaves, and its whine is a ready sound cue before it bites.
@@ -104,3 +117,4 @@ Every push that touches this assignment is listed at the bottom with its date an
 | 2026-09-25 | Add Macrotermes soldier reference; log my termite pick |
 | 2026-09-25 | Log my decision to redo the termite images with AI |
 | 2026-09-25 | Add my AI termite reference image (TERM-REF-01) |
+| 2026-09-25 | Add pixel-art termite reference (TERM-REF-02); log the Kratos mishearing |
