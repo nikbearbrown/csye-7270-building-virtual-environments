@@ -54,6 +54,16 @@ Every push that touches this assignment is listed at the bottom with its date an
   - **Termite, as I see it now:** a termite-like character whose bug eats away at the game over time. If you don't get rid of your termites quickly and early, they destroy your foundation. What exactly it eats, I haven't decided.
   - **Parasite:** a blood-sucking parasite for prompt injection, something adversarial that drains you. I haven't settled the direction or the creature. I asked Claude for alternatives to the wasp (below).
   - **Plan for today:** make ant figures, make a parasite (not a wasp), and make a termite character.
+- **Later the same day, the termite:** I asked, "What kinds of termites are there? I want to design the termite. I assume there are many kinds of termites. I'm looking for a handful of scary-looking termites that I can go searching on the web and use as a basis for making a termite obstacle in my game."
+  - **Claude's answer (not yet checked by me):** termites come in castes, and the scary ones are mostly **soldiers**. Search terms it suggested:
+    - **Macrotermes soldier:** African mound builders; big dark armored heads and long sickle jaws.
+    - **Formosan subterranean termite** (*Coptotermes formosanus*): known as one of the most destructive to buildings, so the closest real match to "eats your foundations."
+    - **Snapping termite soldier** (*Termes*, *Pericapritermes*): twisted jaws that snap shut.
+    - **Nasute termite soldier** (*Nasutitermes*): a nozzle head that sprays sticky defensive fluid.
+    - **Cryptotermes soldier:** a flat, dark head used as a plug to block the tunnel.
+    - **Exploding termites:** *Globitermes sulphureus* soldiers and *Neocapritermes taracua* old workers, which burst to defend the colony.
+    - **Termite queen:** a huge swollen pale body, a possible boss.
+  - It also pointed out game hooks from real termite life: workers eat unseen, soldiers are the visible threat, and a swarm of winged termites is the real-world warning sign of an infestation. I haven't decided on any of this yet.
 - **What Claude or another person contributed:** Claude Code (Opus 5.5) wrote the failure list, all eleven creature ideas, and the "behavior acts out the failure" rule. It proposed three creatures as the strongest set: the Loop Beetle (easy to read), the Checkmark Mimic (it teaches the verify step my earlier design draft was missing), and the Parasite Wasp (it is both the malware and the vague path from the original concept). I chose the game and asked the questions. I rejected eight of the eleven creatures as forced, including all three of Claude's "strongest set" picks except the parasite idea, and I rejected the wasp as the parasite. The termite's foundation-eating role, the clock for ignored errors, the mosquito direction, and the ants-as-workers idea are mine. After my notes, Claude suggested parasites that read as draining at a glance:
   - **Mosquito:** the one everyone knows; it flies in, drinks, and leaves, and its whine is a ready sound cue before it bites.
   - **Tick:** latches on and visibly **swells** as it drains, so the player can see how much has been taken. It clashes with the clock "tick" for ignored errors, so one of the two needs another name.
@@ -75,3 +85,4 @@ Every push that touches this assignment is listed at the bottom with its date an
 | 2026-09-25 | Log my verdicts on the bug creatures; termite, parasite, ants kept |
 | 2026-09-25 | Move Assignment 2 notes into assignment-2/ with its own log |
 | 2026-09-25 | Add assignment-2 folders for everyone; rename mine to match |
+| 2026-09-25 | Log my termite question and the candidate species |
