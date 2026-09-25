@@ -1,10 +1,10 @@
 # CLAUDE.md — nik-bear-brown/ (Professor Bear's example folder)
 
-This folder is the instructor's public example work for CSYE 7270, Fall 2026. It keeps the same process record students keep. **Each assignment lives in its own subfolder (`assignment-01/`, `assignment-02/`, …) with its own `FRICTIONAL.md`.** Every substantive change is logged in the log of the assignment it belongs to, and every push adds a line to that log. The top-level `FRICTIONAL.md` is only for changes to the folder itself (setup, layout, rules). The repo-root `AGENTS.md` still governs everything else.
+This folder is the instructor's public example work for CSYE 7270, Fall 2026. It keeps the same process record students keep. **Each assignment lives in its own subfolder (`assignment-1/`, `assignment-2/`, …) with its own `FRICTIONAL.md`.** Every substantive change is logged in the log of the assignment it belongs to, and every push adds a line to that log. The top-level `FRICTIONAL.md` is only for changes to the folder itself (setup, layout, rules). The repo-root `AGENTS.md` still governs everything else.
 
 ## Rule 1 — log every substantive change in the right FRICTIONAL.md
 
-Before you report a task in this folder as done, update the matching log in the same change set: `assignment-XX/FRICTIONAL.md` for work on that assignment, the top-level `FRICTIONAL.md` for changes to the folder itself. Create an assignment's subfolder and its log when work on that assignment starts, not before; no empty placeholder folders.
+Before you report a task in this folder as done, update the matching log in the same change set: `assignment-N/FRICTIONAL.md` for work on that assignment, the top-level `FRICTIONAL.md` for changes to the folder itself. Create an assignment's subfolder and its log when work on that assignment starts, not before; no empty placeholder folders.
 
 **Substantive** means a new or deleted file or folder, a change to what a result says, a bug found or fixed, or a decision, a reversal, or something that went wrong. Typo and formatting fixes that don't change meaning are not substantive.
 

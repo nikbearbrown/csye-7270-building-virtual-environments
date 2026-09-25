@@ -73,4 +73,5 @@ Every push that touches this assignment is listed at the bottom with its date an
 |---|---|
 | 2026-09-25 | Log Assignment 2 design thinking; record standing push approval |
 | 2026-09-25 | Log my verdicts on the bug creatures; termite, parasite, ants kept |
-| 2026-09-25 | Move Assignment 2 notes into assignment-02/ with its own log |
+| 2026-09-25 | Move Assignment 2 notes into assignment-2/ with its own log |
+| 2026-09-25 | Add assignment-2 folders for everyone; rename mine to match |

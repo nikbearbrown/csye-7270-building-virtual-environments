@@ -4,7 +4,7 @@
 
 **What this is.** The honest process log for the work in this folder, written the way the course asks students to write theirs: what was tried, what went wrong, what changed, and who did what, the human or the AI.
 
-**What it records so far.** Setting up this folder on 2026-09-25. Each assignment keeps its own log in its own subfolder: [Assignment 2](assignment-02/FRICTIONAL.md). This file holds only changes to the folder itself.
+**What it records so far.** Setting up this folder on 2026-09-25. Each assignment keeps its own log in its own subfolder: [Assignment 2](assignment-2/FRICTIONAL.md). This file holds only changes to the folder itself.
 
 Pushes that change the folder itself are listed at the bottom. Pushes for an assignment are listed in that assignment's log.
 
@@ -29,4 +29,5 @@ Pushes that change the folder itself are listed at the bottom. Pushes for an ass
 | Date | Commit note |
 |---|---|
 | 2026-09-25 | Add fall-2026 roster and nik-bear-brown example folder |
-| 2026-09-25 | Move Assignment 2 notes into assignment-02/ with its own log |
+| 2026-09-25 | Move Assignment 2 notes into assignment-2/ with its own log |
+| 2026-09-25 | Add assignment-2 folders for everyone; rename mine to match |
