@@ -72,10 +72,37 @@ If your game has no character, make the sheet for the main thing the player cont
 
 - **Silhouette test:** the character filled solid black at its actual on-screen size in your chosen viewport. It must read at that size.
 - **Facing or orientation:** the directions it appears in, and which you will flip or rotate at runtime instead of generating.
-- **States:** one pose per state your game shows (for example idle, move, act, hurt, win). Note which poses loop and which play once.
+- **At least 10 distinct poses** of the same character, drawn or generated from one reference so proportions hold. A full production model sheet is not required. A mirrored copy of a pose does not count as a new pose, and several frames of one loop count once unless they are genuinely different key poses (the contact and passing poses of a walk are two). Label each pose with the game state it serves, and note which poses loop and which play once. Choose poses your game will actually use; the suggestions below are a menu, not a checklist.
 - **Collision overlay:** the collision shape you plan to use, drawn over each pose at the same scale, with a note on any art beyond it and why that is fair to the player.
 - **Palette:** three to six colors with hex values, checked against your environment so the character stays visible.
 - **Consistency rules:** what must stay identical in every frame (proportions, eye position, outline weight, silhouette), so you can judge generated frames against it.
+
+#### Suggested poses
+
+Pick at least 10 that fit your game. For a side-view game, draw them in profile; for top-down or 3D, pick the view the player actually sees.
+
+| Group | Pose | Why a game needs it |
+|---|---|---|
+| Reference | **Neutral turnaround:** front, side, three-quarter, and back at the same height, with a height bar | Locks proportions; every later pose is checked against it. Counts as one pose. |
+| Reference | **Silhouette at game size** | Proves the shape reads before any detail is added. |
+| Rest | **Idle** (breathing or blinking) | The pose the player sees most. |
+| Rest | **Waiting / bored** (after a few seconds of no input) | Personality at no gameplay cost. |
+| Movement | **Walk: contact** and **walk: passing** | The two key poses a walk cycle is built from. |
+| Movement | **Run** (leaning forward, longer stride) | Tells the player speed changed. |
+| Movement | **Jump anticipation** (crouch) | Makes the jump feel intentional. |
+| Movement | **Rising** and **falling** | Lets the player read the arc and time the landing. |
+| Movement | **Landing** (squash) | Confirms contact with the ground. |
+| Movement | **Climb, swim, crouch, or dash** | Only if your game has that verb. |
+| Action | **Core action** (attack, cast, throw, interact, pick up, shoot) | The verb your core loop is built on. |
+| Action | **Core action follow-through** | Shows the action happened and when control returns. |
+| Reaction | **Hurt / hit** | Tells the player they took damage and from which side. |
+| Reaction | **Fail / defeat** | The failure moment in your storyboard. |
+| Reaction | **Recover / respawn** | The return to control after failure. |
+| Emotion | **Success / celebrate** | The completion moment in your storyboard. |
+| Emotion | **Expression row:** neutral, happy, surprised, worried, determined | Portraits for dialogue or UI, if your game has them. Counts as one pose per distinct expression. |
+| Props | **Holding the main prop** (tool, weapon, lantern) with a prop callout | Keeps the prop's size and grip consistent. |
+
+A reasonable set for a platformer: turnaround, idle, walk contact, walk passing, run, jump anticipation, rising, falling, landing, hurt, fail, celebrate. For a top-down action game: turnaround, idle, walk, dash, attack, attack follow-through, hurt, defeat, interact, celebrate.
 
 ### `CHANGE-BRIEF.md` — the plan and the predictions
 
@@ -224,7 +251,7 @@ It is fine to render from a source commit and then add the film documentation in
 
 | Criterion | Points |
 |---|---:|
-| Design before generation: a concept with core loop, pillars, and art and audio direction (3); a storyboard with at least six complete panels (4); a character sheet with silhouette test, orientation, states, collision overlay, palette, and consistency rules (4); all committed before the first generation (1). | 12 |
+| Design before generation: a concept with core loop, pillars, and art and audio direction (3); a storyboard with at least six complete panels (4); a character sheet with at least 10 distinct labeled poses, silhouette test, orientation, collision overlay, palette, and consistency rules (4); all committed before the first generation (1). | 12 |
 | Generated art in the slice: meets the character sheet, storyboard, and pillars it was made for (6); readable states, correct orientation, and sensible art/collision alignment (5); reproducible asset log with accepted and rejected outputs (3). | 14 |
 | Generated sound and music in the slice: four event sounds, each firing once per event (6); a seamless music loop with the predicted pause and end behavior (4); mute works and the slice stays readable muted (2); reproducible asset log entries (2). | 14 |
 | Verification: the slice runs from a fresh copy, plus one automated check you added (4); human playtest with sound on and muted, storyboard-versus-slice comparison (3); an evidence-based revision and an honest limitation (3). | 10 |
@@ -285,7 +312,13 @@ Copy these into your repository and fill them in. They are prompts for your thin
 - Concept in one sentence:
 - Silhouette at on-screen size: design/character/silhouette.png
 - Orientation: right drawn, left flipped at runtime
-- States: idle (loop) · move (loop) · act (single) · hurt (single) · win (loop)
+- Reference: design/character/turnaround.png (front, side, three-quarter, back, height bar)
+- Poses (at least 10, each labeled with its game state):
+  1. idle (loop)            6. rising (single)
+  2. walk contact (loop)    7. falling (single)
+  3. walk passing (loop)    8. landing (single)
+  4. run (loop)             9. hurt (single)
+  5. jump anticipation      10. celebrate (loop)
 - Collision overlay: design/character/collision.png — art beyond the shape and why it is fair:
 - Palette: #______ #______ #______ (checked against the environment)
 - Consistency rules: same proportions, eye height, outline weight in every frame
