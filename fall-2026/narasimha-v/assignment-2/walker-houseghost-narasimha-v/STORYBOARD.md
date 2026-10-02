@@ -1,7 +1,7 @@
 # HOUSEGHOST — Storyboard (Night 1 slice)
 
 Frame shape: 16:9 throughout. Sketches live in `design/storyboard/` (01–06).
-Views used: wide, medium, close-up. Angles used: eye level, low angle, high angle, Dutch tilt. Motion indicated on panels 2, 5, 6.
+Views used: wide, medium, close-up. Angles used: eye level, low angle, high angle, Dutch tilt. Motion arrows appear on panels 2, 5, 6 where they clarify the beat — kept by choice; optional per the 2026-10-02 assignment update.
 
 ## Panel 1 — Moving day
 ![sketch](design/storyboard/01-moving-day.png)

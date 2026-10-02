@@ -7,7 +7,7 @@
 | CHAR-GHOST-REF | Turnaround reference (generates all poses) | all |
 | CHAR-GHOST-IDLE | Idle drift, ghost state | 1, 4 |
 | CHAR-GHOST-DRIFT | Drift-move, ghost state | 1 |
-| CHAR-GHOST-WALK | Walk contact + passing, remembered state | 3, 5 |
+| CHAR-GHOST-WALK | Walk (one stride, static image), remembered state | 3, 5 |
 | CHAR-GHOST-FLIP | Flip transition pose | 2 |
 | CHAR-GHOST-REACH | Kind-contact reach, remembered state | 3 |
 | CHAR-GHOST-SCARE | Scare pose, ghost state | (alt of 3) |

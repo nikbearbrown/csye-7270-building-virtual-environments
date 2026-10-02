@@ -46,9 +46,21 @@
 
 ---
 
+### 2026-10-02 — The assignment changed under us (in our favor), and write access arrived
+
+- **Date and what I was working on:** 2026-10-02: reacting to an updated assignment spec, and the professor's answer to my access email.
+- **I tried / expected:** I expected to spend today picking the character's final look and fighting Gemini/ChatGPT for frame-to-frame animation consistency — our #1 flagged risk.
+- **What happened:** Two external changes. First, Professor Brown answered my email by sending a collaborator invite; I accepted, and a permissions check now shows `push: true` — students push directly to their folders (option 1 from my email). Second, the assignment was updated: animation is explicitly not required and earns nothing (stated twice, including in the quartile section); each character state is one static image the game swaps; walk is one pose instead of contact+passing; storyboard motion arrows became optional.
+- **What I did:** I asked whether we should animate anyway for marks, and accepted the argument against it: the spec says twice it pays nothing, and multi-frame generation reintroduces the consistency risk the update just deleted. Decision: static images per state, with motion done as engine code (tweens for idle bob, the 180° flip, fade-and-scatter on dispersal) — credited as code, not as generated animation. I had the docs aligned: character sheet 12→11 poses (walk merged, loop/once labels removed, static-image rule stated), storyboard motion line marked optional-by-choice, change brief's walk asset reworded. Pushing remains manual-only on my explicit say-so; nothing has been pushed yet.
+- **What Claude or another person contributed:** Claude diffed the old and new assignment texts, listed the eight concrete changes, proposed the static-image + engine-motion approach, and made the edits. The animate-or-not decision and the keep-it-local decision were mine.
+- **What I understand now / still do not understand:** The update removes our hardest generation problem; 11 single images from one reference is achievable where animation frames were not. Still open: the character's final look (the two-state instant-read formula — mist-legs ghost upright, solid warm boy inverted — is agreed in conversation; the outfit and slow-burn prop are not yet locked in the sheet).
+- **Evidence and next step:** Evidence: this commit's diff against yesterday's docs — the original versions are retained in history per the assignment's "add later revisions rather than rewriting the record." Next step: lock the look, update the sheet, then the first reference generation.
+
+---
+
 ## GitHub pushes
 
-_No pushes yet — commits are local on branch `assignment-2-narasimha-v` while the access question from the 2026-10-01 email to Professor Brown is open. This table fills in when pushing begins._
+_No pushes yet — commits are local on branch `assignment-2-narasimha-v`; pushing happens only on my explicit instruction. This table fills in when pushing begins._
 
 | Date | Commit note |
 |---|---|

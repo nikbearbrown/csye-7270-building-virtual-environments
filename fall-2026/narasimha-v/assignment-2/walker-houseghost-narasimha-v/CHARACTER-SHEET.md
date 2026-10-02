@@ -12,20 +12,19 @@
 
 Every pose exists in **two palettes from one linework**: GHOST state (upright world — translucent, cold blue-white #AFC8D8 at ~60% opacity, soft edge) and REMEMBERED state (inverted world — solid, warm skin and mustard sweater, lamplit). State swap is the character's most important visual beat.
 
-## Poses (12, each labeled with its game state)
+## Poses (11 — one static image per game state; the game swaps the image on state change. Animation not required per the 2026-10-02 assignment update; any motion is engine code (tweens, rotation, fade), not generated frames.)
 
-1. **Turnaround reference** — proportions contract (one pose)
-2. **Idle drift** (loop) — upright world; hovering a few pixels off the floor, slow bob
-3. **Walk contact** (loop key) — inverted world; real footsteps, he only walks where he was alive
-4. **Walk passing** (loop key) — inverted world
-5. **Flip transition** (single) — tucked roll, sweater flaring, used for the 180° world turn
-6. **Reach / kind contact** (single) — arm extended, fingers almost touching; the game's core verb
-7. **Scare pose** (single) — both arms out, mouth open; deliberately childish, a kid playing monster — the scary option should look a little heartbreaking
-8. **Noticed / freeze** (single) — head snapped toward the viewer, shoulders up; plays when the child looks at him
-9. **Searching / peering** (loop) — leaning around a corner in the memory-house
-10. **Dispersed / hurt** (single) — form scattering like breath on glass; Hollow contact or scare backfire
-11. **Hide / curl** (single) — knees up, head down; recovery state after dispersal
-12. **Fully seen / goodbye** (single) — standing straight, waving, small smile; reserved for the game's ending, when the child speaks the found name aloud
+1. **Turnaround reference** — proportions contract (counts as one pose)
+2. **Idle drift** — upright world; hovering a few pixels off the floor (engine tween bobs the static image)
+3. **Walk** — one representative stride, inverted world; he only walks where he was alive
+4. **Flip transition** — tucked roll, sweater flaring; shown during the engine's 180° world turn
+5. **Reach / kind contact** — arm extended, fingers almost touching; the game's core verb
+6. **Scare pose** — both arms out, mouth open; deliberately childish, a kid playing monster — the scary option should look a little heartbreaking
+7. **Noticed / freeze** — head snapped toward the viewer, shoulders up; shown when the child looks at him
+8. **Searching / peering** — leaning around a corner in the memory-house
+9. **Dispersed / hurt** — form scattering like breath on glass; Hollow contact or scare backfire
+10. **Hide / curl** — knees up, head down; recovery state after dispersal
+11. **Fully seen / goodbye** — standing straight, waving, small smile; reserved for the game's ending, when the child speaks the found name aloud
 
 ## Supporting cast (design rules; full sheets are semester work)
 
@@ -34,7 +33,7 @@ Every pose exists in **two palettes from one linework**: GHOST state (upright wo
 - **The wife:** warm but faded, like a photo left in the sun; forever unpacking picture frames whose photos we never quite see; hums the music-box lullaby without knowing why.
 - **The Hollow (identity unrevealed):** one silhouette, two readings. At distance: too tall, arms too long, hair drifting as if underwater, a face like frosted glass. Every element must reinterpret as motherly once the truth lands — the arms were reaching, the hair is how he last saw her, the glass face is his memory refusing her. No design element may be scary in a way that can't later be read as love.
 
-Loop/once noted per pose above. A mirrored copy counts as nothing; walk contact and walk passing are the two genuine keys of one cycle.
+A mirrored copy counts as nothing, and minor variations of one pose count once. Every pose is a single static image judged against the turnaround.
 
 ## Collision overlay
 
@@ -53,10 +52,10 @@ design/character/collision.png — one capsule, 40×80 px at game scale, centere
 
 Checked against environments: the ghost-state blue must never appear in upright-world wall colors (walls stay brown/gray); the sweater mustard must never appear in memory-world furniture (furniture stays deep amber/wood). These two exclusions are environment-palette rules, not just character rules.
 
-## Consistency rules (what every generated frame is judged against)
+## Consistency rules (what every generated pose image is judged against)
 
 - Head = 1/3 of total height; sweater hem at mid-thigh; same three-shape silhouette in every pose
-- Eyes: two dark ovals, no whites, same vertical position relative to head in every frame
+- Eyes: two dark ovals, no whites, same vertical position relative to head in every pose
 - Outline: uniform weight, no outline on the glow edge in ghost state
-- The sweater's drift direction must oppose current gravity in every frame
-- One reference image generates all poses; any frame that drifts in proportion from the turnaround is rejected regardless of how good it looks alone
+- The sweater's drift direction must oppose current gravity in every pose
+- One reference image generates all poses; any pose that drifts in proportion from the turnaround is rejected regardless of how good it looks alone
