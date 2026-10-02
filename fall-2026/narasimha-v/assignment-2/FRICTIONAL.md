@@ -56,6 +56,16 @@
 - **What I understand now / still do not understand:** The update removes our hardest generation problem; 11 single images from one reference is achievable where animation frames were not. Still open: the character's final look (the two-state instant-read formula — mist-legs ghost upright, solid warm boy inverted — is agreed in conversation; the outfit and slow-burn prop are not yet locked in the sheet).
 - **Evidence and next step:** Evidence: this commit's diff against yesterday's docs — the original versions are retained in history per the assignment's "add later revisions rather than rewriting the record." Next step: lock the look, update the sheet, then the first reference generation.
 
+### 2026-10-02 — Locking the look: the School Picture Boy
+
+- **Date and what I was working on:** 2026-10-02, the character's final visual design — the last decision blocking generation.
+- **I tried / expected:** I asked for two characters, one per world, expecting to generate two separate designs.
+- **What happened:** Claude corrected the framing: it is one boy in two states, not two characters — one reference image, two renders — because the assignment's "two states" requirement is best served by a state contrast, and two separate designs would double the consistency risk with no-seed models. It then pitched three grounded candidates: the Bedtime Kid (pajamas, one slipper, shoes carried in hand — clothes that contradict "he ran away"), the School Picture Boy (the faded school photograph the town kept vs. the real kid no photo captured), and the Winter Boy (coat over pajamas, frost-rimmed, tied to the frost doom meter). I asked for its single recommendation as a creative director rather than a menu.
+- **What I did:** I accepted the School Picture Boy and locked it. The reasoning I found convincing: the two states restate the game's thesis every time the world flips (how you are remembered vs. who you were), it loads an object we had already planted — the wife's endlessly unpacked picture frames now hold his school photo, which the recognition arc converges on — and "faded school portrait" plus "same boy in warm color" are strong, reliable prompts for Gemini/ChatGPT. I kept Claude's added safeguard that the photo treatment alone would not read as a ghost at 96 px, so the GHOST state also gets mist below the knee, no shadow, and a slight drift.
+- **What Claude or another person contributed:** Claude proposed all three candidates, made the one-character-two-states argument, recommended the School Picture Boy with its reasoning, and rewrote the character sheet (concept line, silhouette shapes, two-state rule, palette, consistency rules, collision note) to match. The choice was mine. Still no generative model has produced anything.
+- **What I understand now / still do not understand:** I understand why a costume that contradicts the official story does more narrative work than a costume that merely looks sad. Unresolved until the first generation: whether the sepia photo-grain treatment survives downscaling to 96 px, and whether the GHOST render is better generated directly or derived from the REMEMBERED render by hand edits — the sheet allows either, and the asset log will record which was used.
+- **Evidence and next step:** Evidence: the LOOK LOCKED status note and palette table in CHARACTER-SHEET.md, committed before any generation. Next step: generate the reference image, judge it against the sheet, then derive poses.
+
 ---
 
 ## GitHub pushes
@@ -68,3 +78,4 @@ _Pushes happen only on my explicit instruction; commits accumulate locally betwe
 | 2026-10-01 | Record the day's real design debate in FRICTIONAL — game choice by argument, push-access discovery and email, the nameless-boy decision, four candidate looks |
 | 2026-10-02 | Align docs with the updated assignment: static state images, walk as one pose, motion arrows optional; decision not to animate logged |
 | 2026-10-02 | Log the first push in this table; scope verified — every touched file under fall-2026/narasimha-v/ |
+| 2026-10-02 | Lock the character look (School Picture Boy) in the sheet before any generation |
