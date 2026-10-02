@@ -60,7 +60,11 @@
 
 ## GitHub pushes
 
-_No pushes yet — commits are local on branch `assignment-2-narasimha-v`; pushing happens only on my explicit instruction. This table fills in when pushing begins._
+_Pushes happen only on my explicit instruction; commits accumulate locally between them. One row per commit._
 
 | Date | Commit note |
 |---|---|
+| 2026-10-01 | Add HOUSEGHOST design docs before any generation — concept, storyboard, character sheet (look marked as an open decision), change brief, README, SOURCES; zero generated assets exist at this commit |
+| 2026-10-01 | Record the day's real design debate in FRICTIONAL — game choice by argument, push-access discovery and email, the nameless-boy decision, four candidate looks |
+| 2026-10-02 | Align docs with the updated assignment: static state images, walk as one pose, motion arrows optional; decision not to animate logged |
+| 2026-10-02 | Log the first push in this table; scope verified — every touched file under fall-2026/narasimha-v/ |
