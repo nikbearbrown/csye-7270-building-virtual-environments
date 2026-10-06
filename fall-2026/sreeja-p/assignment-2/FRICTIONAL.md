@@ -74,6 +74,108 @@
   - Prompts are verbatim in STORYBOARD.md, "Revision 2026-10-02"; asset log rows SB-01 … SB-06 are in SOURCES.md; rejected thumbnails are in `walker-ninja-firefighter-joe/rejected/`.
   - Next: generate the character's three candidate looks and pick one.
 
+### 2026-10-02 — character look exploration
+
+- **Date and what I was working on:** 2026-10-02. Exploring Extinguisho's look in ChatGPT (Plus, Instant mode), in a new chat separate from the storyboard.
+- **I tried / expected:** to push the ninja side harder by combining ancient ninja / kung-fu style with firefighter gear. I expected a few clear options to choose from.
+- **What happened:**
+  - **CHAR-EXPLORE-01:** a concept sheet with four looks (A Shinobi Smoke-Eater, B Shaolin Fire Monk, C Samurai Fireguard, D Kung-fu Master in Turnout), each with poses.
+  - **CHAR-EXPLORE-02:** three builds of A (lean, heavy, balanced). They still looked cartoonish, on a gray background.
+  - **CHAR-EXPLORE-03:** three realism levels with soot and ash. They came back crusty and battle-worn on cream, and the red suit and yellow helmet still read under the grime. He was posed in a three-quarter turn instead of the side view I asked for.
+- **What I did:**
+  - Chose look A, then A3's balanced athletic build.
+  - Asked for him to be more muscular and strong, more realistic instead of comic-book, crusty and ashy, with his deadpan, grumpy mood in the prompt, on a white/cream background.
+  - Picked three poses I liked from the four-look sheet: A's dashing lunge, B's low palm-forward stance, and D's wide pushing stance.
+- **What Claude or another person contributed:** Claude Code:
+  - suggested the four look options and the pose options;
+  - wrote the prompts from my choices;
+  - warned that realistic detail may not read at the sprite's ~32 px size and that it departs from the comic-book art direction in CONCEPT.md;
+  - recorded the iterations.
+  
+  ChatGPT generated the images. Choosing A, A3, the realistic and crusty direction, and the poses were my decisions.
+- **What I understand now / still do not understand:**
+  - Asking for several variations side by side makes it easier to judge one change at a time (build, then realism).
+  - Still open: which realism level (R1–R3) to use; whether realistic detail survives at game size; and the CHAR-EXPLORE-01 prompt still needs to be copied into the log.
+- **Evidence and next step:**
+  - Prompts are in CHARACTER-SHEET.md, "Revision 2026-10-02"; asset log rows CHAR-EXPLORE-01 … 03 are in SOURCES.md; thumbnails are in `design/character/explore/`.
+  - Next: pick R1, R2, or R3, then test it at game size.
+- **Update, same session:**
+  - The R2 and R3 body, ash, and hand skin looked realistic, but all three faces still looked cartoonish. I asked for R2 and R3 combined with a fully realistic face (CHAR-EXPLORE-04). It came back realistic, with a stern face.
+  - Claude then shrank it to the real 32 px game size. The silhouette and headband still read, but the soot turns the red suit muddy and the yellow helmet into a few dull pixels, and the face is not visible at all (`design/character/size-test/`).
+  - So the realistic version works as the master reference and for close-ups. How to make the in-game sprite frames is still my decision to make.
+- **Update, later the same day:**
+  - **Turnaround (CHAR-REF-01):** generated from the realistic image, with front, side, three-quarter, and back views and a height bar. The "side" view was nearly three-quarter.
+  - **True side profile (CHAR-REF-02):** asked for separately, because every in-game pose is seen from the side. It came back as a real profile and is now the reference image I attach to every pose prompt.
+  - **Expression sheet (CHAR-EXPR-01):** grumpy, bored, serious, devastated. Grumpy and serious looked almost the same, bored had no yawn, and devastated was too subtle.
+  - **My decision:** add both hands on his head for devastated. Claude pointed out this also matters in the game, because at 32 px only body language shows, so the burned pose gets the same gesture.
+  - Asked for a revised sheet (CHAR-EXPR-02). The pose prompts are written and logged in CHARACTER-SHEET.md; poses are next.
+  - **CHAR-EXPR-02 result:** bored now yawns behind his hand, and devastated clutches his smoking helmet with both hands, both as I wanted. But grumpy still doesn't look grumpy; it looks sleepy.
+  - I'm letting it be for now and will revisit, because grumpy is his default face in most poses. Claude suggested asking for an active glare with a hard brow instead of droopy eyelids; that prompt tweak is logged in CHARACTER-SHEET.md.
+- **Update, sprite approach (provisional):**
+  - **The question:** the realistic look is muddy at game size. Should I (A) shrink it as it is, or (B) first make one brighter, cleaner, game-readable version of the same character and make every pose from it?
+  - **Honestly:** I didn't yet understand what sprite frames are or how A or B would look in play. I chose B because Claude recommended it, as a test, not out of my own taste yet. If it doesn't read in the game, I'll switch to A or explore other options. I want to come back and review this decision.
+  - Sent the B prompt (CHAR-REF-03, verbatim in CHARACTER-SHEET.md, "Sprite approach"). Claude wrote it; ChatGPT generated the image; the result isn't checked yet.
+  - Also downloaded both expression sheets: v1 kept as a reject thumbnail, v2 as `design/character/expressions.png`.
+- **Update, CHAR-REF-03 result and character size:**
+  - **Got:** the same character, with brighter red and yellow, lighter soot, and a clean outline.
+  - **First test, 32 px:** B's helmet and suit kept their colors better than A's, but **neither one looked like my character to me.** That made me ask whether the in-game character is supposed to look like the generated images. Claude checked the assignment: yes, the in-game appearance must be the generated art and meet the character sheet. The art is fine; the character is just too small.
+  - **Claude's correction:** the 32 px test was harsher than the real game, which shows him at about 64 px. Claude mocked up the real 1280×720 window at 64 px and at 128 px.
+  - **Decided:**
+    - He needs to be **bigger** in the game. I'll pick the exact size when we put him in the game and I can see it.
+    - **B**, because it's brighter and better, and at the bigger size it stands out from the flames more than A.
+  - **Human / Claude / model:** ChatGPT generated CHAR-REF-03; Claude wrote the prompt and made the size mock-ups; noticing the mismatch, choosing B, and making him bigger were my decisions.
+  - **Still unresolved:** the exact size, and how much the level (platforms, jumps, fire) has to change to fit a bigger character.
+
+### 2026-10-05 — pose 1 (idle)
+
+- **Date and what I was working on:** generated pose 1 on Saturday 2026-10-03; downloaded and checked it with Claude on 2026-10-05.
+- **I tried / expected:** the CHAR-IDLE prompt from CHARACTER-SHEET.md (verbatim there), sent in ChatGPT with `side-profile-game.png` attached. I expected his low kung-fu ready stance in a true side profile, the same character as the reference.
+- **What happened:**
+  - The gear, colors, and grumpy face all match the reference, and the stance reads strongly as kung fu.
+  - But his chest and hips turn toward the camera (about three-quarter), even though the prompt said "TRUE SIDE PROFILE… chest not turned toward the camera." That's predicted failure F1, and the same drift as the turnaround's side view.
+- **What I did:** not decided yet: accept with the note, or regenerate with a stronger side-view instruction.
+- **Also, the assignment changed:** it now says animation is not required; each state can be one static image that the game swaps in. My 12 single-pose plan already fits this.
+- **What Claude or another person contributed:** Claude wrote the pose prompt from my pose picks, checked the result against the reference, and pointed out the three-quarter drift. ChatGPT generated the image. The pose choice was mine; the accept/regenerate decision is mine to make.
+- **What I understand now / still do not understand:** writing "true side profile" in the prompt doesn't guarantee it; the model drifts toward three-quarter for dynamic poses. Still open: whether three-quarter is acceptable in my side-view game.
+- **Evidence and next step:** CHARACTER-SHEET.md, "CHAR-IDLE — pose 1"; asset log row CHAR-IDLE in SOURCES.md. Next: decide on pose 1, then pose 2 (run).
+- **Update, decision on pose 1:**
+  - I realized we already had a standing pose that is a true side profile: `side-profile-game.png`. That becomes **idle**. Claude added that its narrow shape fits the collision box, which matters for the pose on screen most.
+  - I kept pose 1 anyway, as **respawn / ready** (CHAR-RESPAWN, storyboard panel 5): he snaps back into his stance after a retry.
+  - I'm still generating the other planned poses (2–12).
+  - The CHARACTER-SHEET entry heading was renamed to "Pose 1, sent as CHAR-IDLE, now CHAR-RESPAWN"; the original "what I wanted" text is kept as written.
+- **Update, pose 2 (run):**
+  - **Tried:** because pose 1 drifted to three-quarter, Claude suggested one more header sentence: "His body is turned fully sideways… only one eye is visible."
+  - **My mistake:** I sent only the header and forgot the "Pose:" line. It came back as a calm walk. At first Claude and I judged it as "a walk, not the dash we asked for"; my screenshot of the chat then showed the dash was never asked for.
+  - **What it did show:** the new sentence works. It's a true side profile.
+  - **Decided:** replace it with a real run. I attached the walk image itself and asked ChatGPT to edit only the pose, to keep the side view. It came back as a low ninja dash in true side view, and I accepted it.
+  - **Human / Claude / model:** Claude wrote the header sentence and the edit prompt; ChatGPT generated both images; noticing that the walk wasn't what I wanted, and replacing it, were my decisions.
+  - **What I understand now:** editing an existing good image keeps its view better than starting again from the reference. Still unresolved: the wide run pose sticks out far past the collision box.
+- **Update, poses 3 and 4:**
+  - Attached `side-profile-game.png` for both, with the revised header.
+  - **Pose 3 (crane stance, jump crouch):** usable on the first try. Judged against the reference: same gear and colors, side view with only a very slight chest turn. Accepted.
+  - **Pose 4 (flying kick, rising):** the kick itself reads well, but it drifted back to **three-quarter**, with the chest facing the camera, and the body stayed upright instead of horizontal. So the "fully sideways" sentence helps for standing poses but not reliably for big action poses. Decision pending.
+  - **Pose 4b:** I attached the drifted image and asked ChatGPT to change only the camera angle (Claude wrote the edit prompt). It came back mostly side-on: the tank and axe are back on his left side, with only a little chest showing from his spread arms. I accepted 4b; the first try is a reject thumbnail. This is the second time editing an image fixed the view where a new prompt didn't.
+  - **Pose 5 (falling):** usable on the first try: cross-legged, arms folded, calm, true side profile. Accepted. It carries *Too cool to care* well; he's falling and couldn't care less.
+  - **Pose 6 (landing):** the pose and side view were right, but the dust puff from my own planned prompt came back as a cream-brown cloud that would leave a messy edge when the background is removed. I asked for an edit removing the dust (6b) and accepted it.
+  - **Pose 7 (hose), planned change:** Claude checked the game code: the game already draws the water stream itself (`session.gd`). So I agreed to drop "water blasting out" from the prompt; the pose shows him holding the nozzle with no water.
+  - **Pose 7 result:** the stance and side view were right, but **I noticed the hose ran off the left edge of the image.** Cut out for the game, it would end in mid-air behind him. I asked for the hose to stay in frame and connect to his tank. Claude wrote that edit prompt; the result (7b) has the hose looping from the nozzle to the bottom of the tank, and I accepted it.
+  - **Pose 8 (rescue grab):** Claude pointed out that the game draws the survivors (a person and a dog), so I agreed to leave the person out of the image. It came back in true side view, but the hand is a fist, so it reads more like a punch, and an extra thigh pouch appeared. Claude suggested an edit; **I accepted it as is.**
+- **Update, design change: the toss goes up.**
+  - **What happened:** pose 9 (toss) came back as asked: a sideways toss over the shoulder, mid-yawn, true side view.
+  - **What I decided:** looking at it, I changed the design. The toss should be **exaggerated and go upward**: he launches the survivor sky-high without looking, and they fall into the bag. It's funnier and pushes *Too cool to care*.
+  - **What Claude did:** wrote the edit prompt (9b) from my idea, and pointed out that the image can only show his throw. The survivor's flight up and drop into the bag has to be drawn by the game, which is a small, optional code addition for the build.
+  - **Docs updated** as dated revisions, with the originals kept: STORYBOARD.md (panel 3b's sketch still shows the old sideways toss) and CHANGE-BRIEF.md.
+  - **Still unresolved:** whether there's time to code the survivor's upward arc. Without it, the survivor simply appears in the bag, as in A1.
+  - **9b result:** arm flung up overhead, yawn kept, extra pouch gone, true side view. Accepted.
+  - **Pose 10 skipped (my decision):** "walking away with a dazed person in the bag" can't be one image. His art has no bag, and a baked-in person would be wrong for the dog. The set still has 12 poses plus the turnaround.
+- **Update, pose 11 (burned):**
+  - **Before sending:** Claude suggested two prompt changes, which I agreed to: heavy soot instead of "scorched black head to toe" (so he's still recognizable), and thin dark smoke instead of a cloud (so the background removal stays clean).
+  - **Result:** the hands-on-helmet horror came back in side view, but the smoke touched the top edge.
+  - **Front view?** I asked whether the burned pose was supposed to be front-facing. Claude checked: only the storyboard close-up and the expression portrait face the camera; the in-game pose was always side view. I kept side view.
+  - **Edit attempt:** shorten the smoke. Both versions ChatGPT offered fixed the smoke but turned him three-quarter. I rejected them.
+  - **Hand edit instead:** Claude faded the top rows of try 1 into the background with a short script, so the smoke fades out. Side view kept; logged as an edit.
+  - **What I understand now:** an edit can fix one thing and break another (the view), so every edit has to be rechecked against the reference.
+
 ---
 
 ## GitHub pushes
@@ -83,3 +185,4 @@
 | 2026-10-01 | Add concept, character sheet, change brief, and sources before generation |
 | 2026-10-02 | Add storyboard text: six panels, shots, angles, and motion |
 | 2026-10-02 | Add storyboard sketches, prompt log, and rejected thumbnails |
+| 2026-10-05 | Add character reference, poses 1-9 and 11, and prompt logs with rejects |
