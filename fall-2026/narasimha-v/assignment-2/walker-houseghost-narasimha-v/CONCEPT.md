@@ -9,9 +9,16 @@ You are the ghost of a boy the world believes ran away, haunting the house a new
 
 ## Core loop
 
-**The action:** flip into the inverted memory-house, find something true (a relic, a route, a memory), flip back, and spend it on a contact — a touch the living can notice.
-**The decision each time:** kind contact or scary contact. Scary is fast (recognition jumps) but alerts the father and feeds the Hollow. Kind is slow and safe.
-**The risk:** every contact tears a calendar day. The anniversary arrives whether you are ready or not, and the frost that comes with it eats the memory-rooms you still need.
+**Revision 2026-10-06 — the flip, as built.** The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, and the world changes what it is showing.
+
+- **Normal — the comfortable lie.** He looks like a living boy, and the room is warm, lamplit and lived in. This is how he still sees himself and how he remembers the house.
+- **Inverted — what is actually there.** He becomes the ghost, and the room becomes the stripped, boxed-up bedroom the new family moved into.
+
+**The action:** walk and jump through the house, flipping between the two worlds to get past what blocks you. Furniture the memory has is solid only while normal; clutter the emptied house has is solid only while inverted. A stack you cannot pass on the floor is clear along the ceiling, and a stack hanging from the ceiling sends you back down — so the route alternates between the two truths.
+
+**The decision each time:** at the music box, a gentle touch or a loud one. Gentle is slow and safe; loud is faster recognition but costs more days and wakes the house.
+
+**The risk:** every contact tears days off the calendar toward the anniversary. The night ends either because the child finally sees you, or because the anniversary arrives first.
 
 ## Design pillars
 

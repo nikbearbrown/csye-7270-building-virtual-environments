@@ -13,6 +13,8 @@
 | ENV-ROOM-EMPTY | The bedroom, stripped (upright world) | 1, 4 | Built — `assets/art/env_room_empty.png` |
 | ENV-ROOM-MEMORY | The same bedroom, remembered (inverted world) | 2, 3 | Built — `assets/art/env_room_memory.png` |
 | UI-GLOW | Marker for an available contact | 3 | Built — code-drawn, not a generated asset |
+| PLAT-PLANK | Platform boards, warm and cold | 1–4 | Built — **code-drawn placeholder**, needs a generated replacement |
+| PLAT-CRATES | Blocking stacks of boxes | 1–4 | Built — **code-drawn placeholder**, needs a generated replacement |
 | SFX-FLIP | World flip (held breath, reversed swell) | 2 | Wired, file pending |
 | SFX-CONTACT | Contact (music-box chime with a paper tear inside) | 4 | Wired, file pending |
 | SFX-FROST | A day tearing off (crystalline crackle) | 4 | Wired, file pending |
@@ -61,5 +63,9 @@
 
 ### Found while building, not predicted
 
-6. **The core verb was unreachable.** The music box sat at the room's vertical centre while the player walks four hundred pixels below it, so a contact could never be made by playing. Found by a probe that walks the player with the real input action; fixed by moving the music box onto the floor and out of the rotating room.
-7. **The collision shape did not match the art.** The capsule was specified as 40 × 80 px before any art existed and covers only the shins of the 320 px sprite that was made. Found while drawing the required collision overlay; corrected to 52 × 250 px, with the character sheet recording the correction.
+6. **The core verb was unreachable.** The music box sat at the room's vertical centre while the player walks four hundred pixels below it, so a contact could never be made by playing. Found by a probe that walks the player with the real input action; fixed by moving the music box out of reach of the floor entirely, so the only route to it is along the ceiling.
+7. **The collision shape did not match the art.** The capsule was specified as 40 × 80 px before any art existed and covers only the shins of the 320 px sprite that was made. Found while drawing the required collision overlay; corrected to 52 × 250 px.
+8. **The capsule was teleported into the floor on the first flip.** An early version of gravity inversion moved the collision shape from above the node to below it when the world turned over, which dropped it inside the floor collider and squeezed the player out through the bottom of the room. Fixed by centring both the sprite and the capsule on the node, so a flip turns the picture over and moves nothing.
+9. **A blocker was placed on the floor when the route it blocks runs along the ceiling.** The inverted-world blocker was positioned at floor height, so an inverted player walking the ceiling strolled straight past it. Found by a probe that reported the player reaching x=4656 when it should have stopped at 3640; fixed by hanging it from the ceiling, after which the probe stops at 3519 as intended.
+10. **The movement read as teleporting rather than walking.** Two causes, both real: the walk cycle only ran in the normal state, so as the ghost he slid with his legs frozen, and the stride was 62 px per frame, under five frames a second at full speed. The cycle now runs in both worlds and the stride is 30 px, about ten frames a second.
+11. **The level art is not coherent.** The platforms and blockers are drawn in code and read as placeholder shapes against the painted rooms. Open; generated props are specified and not yet made.

@@ -32,15 +32,18 @@ Or open `godot/project.godot` in the Godot editor and press Play.
 
 ## What the slice demonstrates
 
-One bedroom, two worlds. The boy exists in two states — a pale, translucent ghost whose legs dissolve into mist in the living world, and a solid, warm, ordinary child in the world he remembers — and the game swaps those static images when the world turns over. The room turns with him: the same window, the same door, the same hanging bulb, stripped bare in one world and lived-in in the other, so the flip reads as one place rather than two pictures. The boy stays upright through the turn, so his controls never reverse and he ends up walking the ceiling of the room as he remembers it.
+**One house, two truths.** The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, while the room cross-dissolves between the two worlds.
 
-He walks with a four-frame cycle whose frames advance by ground covered rather than by a clock, so his stride matches his speed and his feet never slide. The cycle belongs to the remembered state alone: **the ghost does not walk, he drifts.** He jumps with coyote time, input buffering and an early-release cut, squashes on landing in proportion to the impact, and leans into a run. All of that motion is engine code moving one static image per state — no animation frames beyond the walk poses, which the character sheet required anyway.
+- **Normal** — he looks like a living boy, and the bedroom is warm, lamplit and lived in. The comfortable lie.
+- **Inverted** — he becomes the ghost, and the room is the stripped, boxed-up one the new family moved into. What is actually there.
 
-The stacked moving boxes are a one-way platform that is solid **only in the upright world**, because that is the only world they exist in: level geometry obeys the same rule the art does.
+**The level is built around that.** Three room-widths wide with a camera that follows, ten platforms and two blockers grouped by world. Furniture the memory has is solid only while normal; clutter the emptied house has is solid only while inverted. The memory world is blocked at floor level partway along, and the ceiling route is blocked further on, so getting to the far end means turning the world over and back again. What you can stand on depends on which truth you are standing in.
 
-At the music box, a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar toward the anniversary; the loud one costs more and wakes the house. The night ends either because the child finally sees you or because the anniversary arrives first.
+He walks with a four-frame cycle in both worlds, advancing by ground covered rather than by a clock so his stride always matches his speed. He jumps with coyote time, input buffering and an early-release cut, squashes on landing in proportion to the impact, and leans into a run.
 
-Each world has its own music, and the flip cuts straight from one to the other: a tense arpeggiated score for the room where he is dead and unseen, a music-box lullaby over an organic groove for the room where he was alive. They share key and tempo, so the cut lands without a lurch. Four sound events are wired to real game events, and music and effects mute independently without changing anything the game does.
+At the music box — out of reach from the floor, reachable only by walking the ceiling — a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar; the loud one costs more. The night ends either because the child sees you or because the anniversary arrives first.
+
+Each world has its own music and the flip cuts between them. Four sound events are wired to real game events, and music and effects mute independently without changing anything the game does.
 
 ## Generated assets in the slice
 
@@ -67,6 +70,7 @@ Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, da
 - **The ghost reads faint against the grey upright room.** This was predicted in CHANGE-BRIEF as a failure case and is visible in `evidence/01-upright-ghost.png`. The planned fix is a rim light on the ghost sprite rather than a change to the room; it has not been done.
 - The slice covers storyboard panels 1 to 4. Panels 5 and 6 — the hallway that corrects itself and the father at the cellar door — are semester work beyond this assignment.
 - Three of the fourteen character-sheet poses (reach, scare, goodbye) are specified but not generated; the slice expresses those states through image swaps and engine motion instead.
+- **The platforms and crate stacks are drawn in code and look like placeholder art** against the painted rooms. Generated props are needed to make the level art coherent; the asset log marks them as code-drawn so they are never mistaken for generated assets.
 - The human playtest with sound on and then muted is still outstanding, and an automated input sequence does not substitute for it.
 
 ## Credits

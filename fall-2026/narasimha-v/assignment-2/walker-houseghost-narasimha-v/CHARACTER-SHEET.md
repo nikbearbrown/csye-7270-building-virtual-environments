@@ -27,7 +27,7 @@
 
 One character, two static images. The game swaps the image when the world turns over; no animation, per the 2026-10-02 assignment update. Motion in the slice is engine code only — a slow vertical drift, the 180° world rotation, fades.
 
-| | GHOST — upright world | REMEMBERED — inverted world |
+| | REMEMBERED — normal world | GHOST — inverted world |
 |---|---|---|
 | Colour | Drained to pale cold grey and washed blue | Full warm colour, lamplit |
 | Edge | Soft, translucent, dissolving | Solid, outlined |
@@ -53,8 +53,8 @@ Result: the shape reads at game size. The hair mass is the dominant silhouette e
 Generated and in the slice:
 
 1. **Turnaround reference** — front, side, three-quarter, back at one height (counts as one pose); `design/character/model-sheet-8-views.png`
-2. **Idle drift, ghost** — upright world, hovering, legs dissolving into mist; `godot/assets/art/char_ghost.png`
-3. **Idle, remembered** — inverted world, solid and grounded; `godot/assets/art/char_remembered.png`
+2. **Idle drift, ghost** — inverted world, hovering, legs dissolving into mist; `godot/assets/art/char_ghost.png`
+3. **Idle, remembered** — normal world, solid and grounded; `godot/assets/art/char_remembered.png`
 4. **Walk: contact** — right leg forward, heel down, arms opposite; `char_walk_1.png`
 5. **Walk: passing** — legs together, torso lifted; `char_walk_2.png`
 6. **Walk: contact mirrored** — left leg forward, arms swapped; `char_walk_3.png`
