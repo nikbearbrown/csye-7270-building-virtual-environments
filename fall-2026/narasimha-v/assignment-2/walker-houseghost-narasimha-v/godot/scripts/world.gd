@@ -1,7 +1,13 @@
 extends Node2D
 ## Night 1 slice. Owns which way up the world is and announces changes.
+##
+## The room turns over; the boy does not. He stays upright and his controls
+## never reverse, so after a flip he is walking the ceiling of the room as he
+## remembers it — which is what the concept describes a ghost doing.
+##
 ## Sound never decides state here: every audio cue listens to a signal that is
-## emitted after the state has already changed.
+## emitted after the state has already changed, so a muted or missing sound
+## cannot alter what the game does.
 
 signal world_flipped(is_inverted: bool)
 
@@ -11,8 +17,13 @@ var is_inverted := false
 var _flipping := false
 
 @onready var _world_root: Node2D = $WorldRoot
-@onready var _room_upright: ColorRect = $WorldRoot/Rooms/RoomUpright
-@onready var _room_inverted: ColorRect = $WorldRoot/Rooms/RoomInverted
+@onready var _room_upright: Sprite2D = $WorldRoot/RoomUpright
+@onready var _room_memory: Sprite2D = $WorldRoot/RoomMemory
+@onready var _player: CharacterBody2D = $Player
+
+
+func _ready() -> void:
+	world_flipped.connect(_player.set_inverted)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -31,7 +42,7 @@ func flip() -> void:
 	is_inverted = not is_inverted
 
 	_room_upright.visible = not is_inverted
-	_room_inverted.visible = is_inverted
+	_room_memory.visible = is_inverted
 	world_flipped.emit(is_inverted)
 
 	var target_rotation := PI if is_inverted else 0.0
