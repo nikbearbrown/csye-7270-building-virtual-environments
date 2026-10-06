@@ -79,3 +79,9 @@ Rule: game code emits a signal for the event; an audio node listens and plays th
 Player 5 HP, 1 s invulnerability · fireball 1 damage, 0.35 s cooldown · heal once, 1 s channel · wolf 2 HP, 0.5 s growl, 1 damage · boss 10 HP, 0.7 s growl, 2.5–3 s between lunges, 0.8 s pause after each, 2 damage · stalactite 1 damage, 0.6 s shake before falling.
 
 - 2026-10-01: Revision 1 appended to CHARACTER-SHEET.md (tunic mid-thigh, thicker staff shaft; CHAR-REF v2 accepted, v1 and v3 rejected).
+
+## Revision 2 — 2026-10-06 (slice scope and the revised assignment)
+- Re-read the assignment: the slice proves the assets work together in the engine; it is not the whole game. Level cut to about two screens: start, one narrow pit, one wolf, the exit.
+- The revised assignment no longer requires animation: each state is one static image swapped on state change. Run uses run_contact only; wolf defeat is a white flash, swap to the down image, then disappear (particles skipped).
+- This still covers every required state and event: idle, run, rise, fall (walking and jumping the pit); cast + SFX-CAST; hurt + SFX-HURT (wolf lunge); SFX-WOLF-DOWN (wolf defeated); fail + SFX-FAIL + music stop + restart (pit uses the fall image, HP 0 uses the kneeling fail image); win + SFX-CLEAR + music end (exit).
+- Moved out of the slice to the full game: the boss, more wolves, a second pit, the heal spell, spikes and stalactites. Storyboard P6 (boss) is not covered and will be named in TEST-REPORT.
