@@ -1,15 +1,22 @@
-[gd_scene load_steps=7 format=3 uid="uid://bhghost0slice"]
+[gd_scene load_steps=11 format=3 uid="uid://bhghost0slice"]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="Texture2D" path="res://assets/art/env_room_empty.png" id="2_empty"]
 [ext_resource type="Texture2D" path="res://assets/art/env_room_memory.png" id="3_memory"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="4_player"]
+[ext_resource type="Script" path="res://scripts/contact_point.gd" id="5_contact"]
+[ext_resource type="Script" path="res://scripts/meters.gd" id="6_meters"]
+[ext_resource type="Script" path="res://scripts/audio.gd" id="7_audio"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="8_hud"]
 
 [sub_resource type="RectangleShape2D" id="Floor_1"]
 size = Vector2(2400, 200)
 
 [sub_resource type="RectangleShape2D" id="Wall_1"]
 size = Vector2(40, 1200)
+
+[sub_resource type="CircleShape2D" id="Contact_1"]
+radius = 150.0
 
 [node name="Bedroom" type="Node2D"]
 script = ExtResource("1_world")
@@ -24,6 +31,22 @@ texture = ExtResource("2_empty")
 [node name="RoomMemory" type="Sprite2D" parent="WorldRoot"]
 visible = false
 scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="MusicBox" type="Area2D" parent="WorldRoot"]
+position = Vector2(-480, 0)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldRoot/MusicBox"]
+shape = SubResource("Contact_1")
+
+[node name="Glow" type="Sprite2D" parent="WorldRoot/MusicBox"]
+visible = false
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(0.35, 0.35)
 texture = ExtResource("3_memory")
 
 [node name="Solids" type="StaticBody2D" parent="."]
@@ -44,3 +67,93 @@ shape = SubResource("Wall_1")
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
 position = Vector2(700, 940)
+
+[node name="Meters" type="Node" parent="."]
+script = ExtResource("6_meters")
+
+[node name="Audio" type="Node" parent="."]
+script = ExtResource("7_audio")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("8_hud")
+
+[node name="Frost" type="ColorRect" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.78, 0.86, 0.92, 0)
+mouse_filter = 2
+
+[node name="Days" type="Label" parent="HUD"]
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 900.0
+offset_bottom = 70.0
+pivot_offset = Vector2(0, 17)
+theme_override_colors/font_color = Color(0.86, 0.88, 0.9, 0.92)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "DAYS UNTIL THE ANNIVERSARY   7 / 7"
+
+[node name="Recognition" type="Label" parent="HUD"]
+offset_left = 48.0
+offset_top = 76.0
+offset_right = 900.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(0.86, 0.88, 0.9, 0.92)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "SEEN   ○  ○  ○  ○  "
+
+[node name="Mutes" type="Label" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -560.0
+offset_top = 36.0
+offset_right = -48.0
+offset_bottom = 70.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.76, 0.4, 0.95)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 2
+
+[node name="Hint" type="Label" parent="HUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -78.0
+offset_right = -48.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 0.7)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="Banner" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -90.0
+offset_right = 500.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+vertical_alignment = 1
