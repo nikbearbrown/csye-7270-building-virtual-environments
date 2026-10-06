@@ -24,21 +24,30 @@ var is_inverted := false
 var _flipping := false
 
 @onready var _world_root: Node2D = $WorldRoot
-@onready var _room_upright: Sprite2D = $WorldRoot/RoomUpright
-@onready var _room_memory: Sprite2D = $WorldRoot/RoomMemory
+@onready var _rooms_memory: Array = _tiles("RoomMemory")
+@onready var _rooms_empty: Array = _tiles("RoomEmpty")
 @onready var _player: CharacterBody2D = $Player
 @onready var _contact: Area2D = $MusicBox
 @onready var _meters: Node = $Meters
 @onready var _audio: Node = $Audio
 @onready var _hud: CanvasLayer = $HUD
-@onready var _box_top: StaticBody2D = $BoxTop
+
+
+
+## The background is tiled across the level, one copy of each room per screen.
+func _tiles(prefix: String) -> Array:
+	var out := []
+	for child in $WorldRoot.get_children():
+		if child.name.begins_with(prefix):
+			out.append(child)
+	return out
 
 
 func _ready() -> void:
 	world_flipped.connect(_player.set_inverted)
 	world_flipped.connect(_contact.set_inverted)
 	world_flipped.connect(_audio.set_world_inverted)
-	world_flipped.connect(_set_box_top_solid)
+	world_flipped.connect(_apply_world_geometry)
 	world_flipped.connect(func(_inv): _refresh_hint())
 
 	_contact.contact_landed.connect(_on_contact_landed)
@@ -47,8 +56,8 @@ func _ready() -> void:
 	_meters.night_ended.connect(_on_night_ended)
 	_audio.counted.connect(func(_e, _n): _hud.set_mutes(_audio.music_muted, _audio.sfx_muted))
 
-	_room_memory.visible = true
-	_room_upright.visible = false
+	_show_rooms(false)
+	_apply_world_geometry(false)
 	_hud.set_days(_meters.days_left, _meters.DAYS_AT_START)
 	_hud.set_recognition(0, _meters.RECOGNITION_TO_WIN)
 	_hud.set_frost(0.0)
@@ -83,19 +92,22 @@ func flip() -> void:
 	world_flipped.emit(is_inverted)
 	_audio.play("flip")
 
-	# Both rooms stay upright and the camera never moves. The truth dissolves
+	# Both rooms stay upright and the camera never rotates. The truth dissolves
 	# in over the lie, which reads far more smoothly than turning the picture
 	# over and never disorients the player.
-	var appearing: Sprite2D = _room_upright if is_inverted else _room_memory
-	var leaving: Sprite2D = _room_memory if is_inverted else _room_upright
-	appearing.visible = true
-	appearing.modulate.a = 0.0
+	var appearing: Array = _rooms_empty if is_inverted else _rooms_memory
+	var leaving: Array = _rooms_memory if is_inverted else _rooms_empty
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(appearing, "modulate:a", 1.0, FLIP_SECONDS)
-	tween.tween_property(leaving, "modulate:a", 0.0, FLIP_SECONDS)
+	for r in appearing:
+		r.visible = true
+		r.modulate.a = 0.0
+		tween.tween_property(r, "modulate:a", 1.0, FLIP_SECONDS)
+	for r in leaving:
+		tween.tween_property(r, "modulate:a", 0.0, FLIP_SECONDS)
 	await tween.finished
-	leaving.visible = false
-	leaving.modulate.a = 1.0
+	for r in leaving:
+		r.visible = false
+		r.modulate.a = 1.0
 	_flipping = false
 
 
@@ -127,11 +139,29 @@ func _on_night_ended(reason: String) -> void:
 	_refresh_hint()
 
 
-## The stacked moving boxes are solid only in the upright world, because that
-## is the only world they exist in. Level geometry obeys the same rule the art
-## does: what you can stand on depends on which way up you are.
-func _set_box_top_solid(is_inverted: bool) -> void:
-	_box_top.get_node("CollisionShape2D").set_deferred("disabled", is_inverted)
+## What you can stand on depends on which world you are in. Furniture that only
+## the memory has is solid only while normal; clutter that only the emptied
+## house has is solid only while inverted. A blocker you cannot pass on one side
+## is clear on the other, so the route alternates between the two worlds.
+func _apply_world_geometry(is_inverted: bool) -> void:
+	for node in get_tree().get_nodes_in_group("plat_normal"):
+		_set_solid(node, not is_inverted)
+	for node in get_tree().get_nodes_in_group("plat_inverted"):
+		_set_solid(node, is_inverted)
+
+
+func _set_solid(body: Node, on: bool) -> void:
+	body.get_node("Shape").set_deferred("disabled", not on)
+	body.get_node("Art").visible = on
+
+
+func _show_rooms(is_inverted: bool) -> void:
+	for r in _rooms_memory:
+		r.visible = not is_inverted
+		r.modulate.a = 1.0
+	for r in _rooms_empty:
+		r.visible = is_inverted
+		r.modulate.a = 1.0
 
 
 func _refresh_hint() -> void:

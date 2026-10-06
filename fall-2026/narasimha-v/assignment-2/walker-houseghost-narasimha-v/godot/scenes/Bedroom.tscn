@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bhghost0slice"]
+[gd_scene load_steps=18 format=3 uid="uid://bhghost0slice"]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="Texture2D" path="res://assets/art/env_room_empty.png" id="2_empty"]
@@ -9,18 +9,24 @@
 [ext_resource type="Script" path="res://scripts/audio.gd" id="7_audio"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="8_hud"]
 [ext_resource type="Texture2D" path="res://assets/art/ui_glow.png" id="9_glow"]
+[ext_resource type="Texture2D" path="res://assets/art/plat_plank_warm.png" id="10_warm"]
+[ext_resource type="Texture2D" path="res://assets/art/plat_plank_cold.png" id="11_cold"]
+[ext_resource type="Texture2D" path="res://assets/art/plat_crates.png" id="12_crates"]
 
 [sub_resource type="RectangleShape2D" id="Floor_1"]
-size = Vector2(2400, 200)
+size = Vector2(6160, 200)
 
 [sub_resource type="RectangleShape2D" id="Ceiling_1"]
-size = Vector2(2400, 200)
+size = Vector2(6160, 200)
 
 [sub_resource type="RectangleShape2D" id="Wall_1"]
-size = Vector2(40, 1200)
+size = Vector2(60, 1400)
 
-[sub_resource type="RectangleShape2D" id="BoxTop_1"]
-size = Vector2(330, 36)
+[sub_resource type="RectangleShape2D" id="Plat_1"]
+size = Vector2(240, 34)
+
+[sub_resource type="RectangleShape2D" id="Block_1"]
+size = Vector2(190, 420)
 
 [sub_resource type="CircleShape2D" id="Contact_1"]
 radius = 150.0
@@ -29,52 +35,225 @@ radius = 150.0
 script = ExtResource("1_world")
 
 [node name="WorldRoot" type="Node2D" parent="."]
-position = Vector2(960, 540)
 
-[node name="RoomUpright" type="Sprite2D" parent="WorldRoot"]
+[node name="RoomMemory0" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(960, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="RoomMemory1" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(2880, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="RoomMemory2" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(4800, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="RoomEmpty0" type="Sprite2D" parent="WorldRoot"]
+visible = false
+position = Vector2(960, 540)
 scale = Vector2(1.14833, 1.14833)
 texture = ExtResource("2_empty")
 
-[node name="RoomMemory" type="Sprite2D" parent="WorldRoot"]
+[node name="RoomEmpty1" type="Sprite2D" parent="WorldRoot"]
 visible = false
+position = Vector2(2880, 540)
 scale = Vector2(1.14833, 1.14833)
-texture = ExtResource("3_memory")
+texture = ExtResource("2_empty")
+
+[node name="RoomEmpty2" type="Sprite2D" parent="WorldRoot"]
+visible = false
+position = Vector2(4800, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("2_empty")
 
 [node name="Solids" type="StaticBody2D" parent="."]
 collision_layer = 1
 collision_mask = 0
 
 [node name="Floor" type="CollisionShape2D" parent="Solids"]
-position = Vector2(960, 1040)
+position = Vector2(2880, 1040)
 shape = SubResource("Floor_1")
 
 [node name="Ceiling" type="CollisionShape2D" parent="Solids"]
-position = Vector2(960, 40)
+position = Vector2(2880, 40)
 shape = SubResource("Ceiling_1")
 
 [node name="WallLeft" type="CollisionShape2D" parent="Solids"]
-position = Vector2(230, 540)
+position = Vector2(-20, 540)
 shape = SubResource("Wall_1")
 
 [node name="WallRight" type="CollisionShape2D" parent="Solids"]
-position = Vector2(1690, 540)
+position = Vector2(5780, 540)
 shape = SubResource("Wall_1")
 
-[node name="BoxTop" type="StaticBody2D" parent="."]
-position = Vector2(1125, 772)
+[node name="Plat0" type="StaticBody2D" parent="." groups=["plat_both"]]
+position = Vector2(430, 772)
 collision_layer = 1
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BoxTop"]
-shape = SubResource("BoxTop_1")
+[node name="Shape" type="CollisionShape2D" parent="Plat0"]
+shape = SubResource("Plat_1")
 one_way_collision = true
-one_way_collision_margin = 12.0
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat0"]
+texture = ExtResource("10_warm")
+
+[node name="Plat1" type="StaticBody2D" parent="." groups=["plat_both"]]
+position = Vector2(760, 640)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat1"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat1"]
+texture = ExtResource("10_warm")
+
+[node name="Plat2" type="StaticBody2D" parent="." groups=["plat_normal"]]
+position = Vector2(2180, 772)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat2"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat2"]
+texture = ExtResource("10_warm")
+
+[node name="Plat3" type="StaticBody2D" parent="." groups=["plat_normal"]]
+position = Vector2(2520, 620)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat3"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat3"]
+texture = ExtResource("10_warm")
+
+[node name="Plat4" type="StaticBody2D" parent="." groups=["plat_inverted"]]
+position = Vector2(2150, 330)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat4"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat4"]
+texture = ExtResource("11_cold")
+
+[node name="Plat5" type="StaticBody2D" parent="." groups=["plat_inverted"]]
+position = Vector2(2520, 470)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat5"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat5"]
+texture = ExtResource("11_cold")
+
+[node name="Plat6" type="StaticBody2D" parent="." groups=["plat_both"]]
+position = Vector2(4150, 772)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat6"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat6"]
+texture = ExtResource("10_warm")
+
+[node name="Plat7" type="StaticBody2D" parent="." groups=["plat_normal"]]
+position = Vector2(4480, 610)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat7"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat7"]
+texture = ExtResource("10_warm")
+
+[node name="Plat8" type="StaticBody2D" parent="." groups=["plat_inverted"]]
+position = Vector2(4150, 360)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat8"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat8"]
+texture = ExtResource("11_cold")
+
+[node name="Plat9" type="StaticBody2D" parent="." groups=["plat_both"]]
+position = Vector2(4820, 470)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Plat9"]
+shape = SubResource("Plat_1")
+one_way_collision = true
+one_way_collision_margin = 14.0
+
+[node name="Art" type="Sprite2D" parent="Plat9"]
+texture = ExtResource("10_warm")
+
+[node name="Block0" type="StaticBody2D" parent="." groups=["plat_normal"]]
+position = Vector2(1850, 730)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Block0"]
+shape = SubResource("Block_1")
+
+[node name="Art" type="Sprite2D" parent="Block0"]
+texture = ExtResource("12_crates")
+
+[node name="Block1" type="StaticBody2D" parent="." groups=["plat_inverted"]]
+position = Vector2(3640, 350)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Block1"]
+shape = SubResource("Block_1")
+
+[node name="Art" type="Sprite2D" parent="Block1"]
+texture = ExtResource("12_crates")
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
-position = Vector2(620, 815)
+position = Vector2(220, 815)
+
+[node name="Camera" type="Camera2D" parent="Player"]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+limit_left = 0
+limit_right = 5760
+limit_top = 0
+limit_bottom = 1080
 
 [node name="MusicBox" type="Area2D" parent="."]
-position = Vector2(1400, 300)
+position = Vector2(5340, 300)
 monitoring = true
 collision_layer = 0
 collision_mask = 2

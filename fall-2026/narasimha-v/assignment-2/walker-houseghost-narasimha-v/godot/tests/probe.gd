@@ -4,13 +4,12 @@ func _init():
 	var s = load("res://scenes/Bedroom.tscn").instantiate()
 	root.add_child(s)
 	var p = s.get_node("Player"); var mb = s.get_node("MusicBox")
-	await create_timer(0.5).timeout
-	print("upright rest y=", round(p.global_position.y), " (815 = feet on the floor at 940)")
-	s.flip(); await create_timer(1.8).timeout
-	print("inverted rest y=", round(p.global_position.y), " (265 = feet on the ceiling at 140)")
-	p.global_position.x = 1400
-	await create_timer(0.5).timeout
-	print("at the box, inverted -> inside=", mb._player_inside, " available=", mb._available())
-	s.flip(); await create_timer(1.8).timeout
-	print("flipped back, upright -> y=", round(p.global_position.y), " available=", mb._available(), " (false: the box is out of reach down here)")
+	await create_timer(0.4).timeout
+	s.flip(); await create_timer(1.4).timeout
+	p.global_position = Vector2(5340, 265)
+	await create_timer(0.6).timeout
+	print("player=", p.global_position, " layer=", p.collision_layer)
+	print("box=", mb.global_position, " mask=", mb.collision_mask, " monitoring=", mb.monitoring)
+	print("shape disabled=", mb.get_node("CollisionShape2D").disabled, " radius=", mb.get_node("CollisionShape2D").shape.radius)
+	print("overlapping=", mb.get_overlapping_bodies(), " inside=", mb._player_inside)
 	quit()
