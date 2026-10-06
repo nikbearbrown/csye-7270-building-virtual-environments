@@ -48,6 +48,7 @@ Four sound events and a music loop are wired to real game events, and both can b
 |---|---|
 | `godot/assets/art/char_ghost.png` | The boy, GHOST state |
 | `godot/assets/art/char_remembered.png` | The boy, REMEMBERED state |
+| `godot/assets/art/char_walk_1..4.png` | Four walk poses, sliced from one generated cycle sheet |
 | `godot/assets/art/env_room_empty.png` | The bedroom, stripped (upright world) |
 | `godot/assets/art/env_room_memory.png` | The bedroom, remembered (inverted world) |
 
@@ -67,4 +68,4 @@ Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, da
 
 ## Credits
 
-See [SOURCES.md](SOURCES.md). Claude Code wrote the engine code, the prompts, and the documents, and performed the local image edits (background keying, silhouette generation). ChatGPT image generation produced the character design, model sheet, both state sprites, and both backgrounds; earlier rejected attempts used Gemini. Every design decision, rejection, and acceptance is mine, argued out in [FRICTIONAL.md](../FRICTIONAL.md).
+See [SOURCES.md](SOURCES.md). Claude Code wrote the engine code, the prompts, and the documents, and performed the local image edits (background keying, silhouette generation). ChatGPT image generation produced the character design, the eight-view model sheet, both state sprites, the four-frame walk cycle, and both backgrounds; earlier rejected attempts used Gemini. The glow marking the music box is drawn in code and satisfies no generative requirement, which the asset log states. Every design decision, rejection, and acceptance is mine, argued out in [FRICTIONAL.md](../FRICTIONAL.md).
