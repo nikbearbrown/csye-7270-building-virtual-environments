@@ -48,27 +48,40 @@ Side profile facing **right** is the drawn view, which is the view a side-scroll
 
 Result: the shape reads at game size. The hair mass is the dominant silhouette element, the body stays narrow beneath it, and the ragged sweater hem and hanging threads break the outline so the figure never becomes a solid blob. Facial detail is lost at this size, which is expected and acceptable — the character is identified by hair mass and posture, not by face.
 
-## Poses (11, one static image per game state)
+## Poses (14, one static image per game state)
+
+Generated and in the slice:
 
 1. **Turnaround reference** — front, side, three-quarter, back at one height (counts as one pose); `design/character/model-sheet-8-views.png`
-2. **Idle drift** — upright world, hovering, the pose the player sees most
-3. **Walk** — one representative stride, remembered world
-4. **Flip transition** — curled, clothes and hair flaring, shown during the world turn
-5. **Reach / kind contact** — arm extended, fingers almost touching: the core verb
-6. **Scare pose** — arms out, mouth open; deliberately childish, a boy playing monster
-7. **Noticed / freeze** — head snapped toward the viewer, shoulders up
-8. **Searching / peering** — leaning around a corner in the memory-house
-9. **Dispersed / hurt** — form scattering like breath on glass
-10. **Hide / curl** — knees up, head down; recovery after dispersal
-11. **Fully seen / goodbye** — standing straight, small wave; reserved for the ending
+2. **Idle drift, ghost** — upright world, hovering, legs dissolving into mist; `godot/assets/art/char_ghost.png`
+3. **Idle, remembered** — inverted world, solid and grounded; `godot/assets/art/char_remembered.png`
+4. **Walk: contact** — right leg forward, heel down, arms opposite; `char_walk_1.png`
+5. **Walk: passing** — legs together, torso lifted; `char_walk_2.png`
+6. **Walk: contact mirrored** — left leg forward, arms swapped; `char_walk_3.png`
+7. **Walk: passing, second** — legs together, opposite leg lifting; `char_walk_4.png`
+8. **Ghost high angle** — looked down on; from the model sheet
+9. **Ghost low angle** — looked up at; from the model sheet
+10. **Ghost close-up** — head and shoulders, for the moment of being noticed; from the model sheet
+11. **Ghost floating, arms limp** — the drifting full body; from the model sheet
 
-The model sheet covers poses 1, 2 and 9–11 across its eight views. A mirrored copy counts as nothing, and minor variations of one pose count once.
+Specified and not yet generated (semester work beyond this slice):
+
+12. **Reach / kind contact** — arm extended, fingers almost touching: the core verb
+13. **Scare pose** — arms out, mouth open; deliberately childish, a boy playing monster
+14. **Fully seen / goodbye** — standing straight, small wave; reserved for the ending
+
+
+A mirrored copy counts as nothing, and minor variations of one pose count once. Left-facing movement is the right-facing art flipped at runtime, never a separate generation.
 
 ## Collision overlay
 
-`design/character/collision.png` — one capsule, **40 × 80 px** at game scale, centred on the torso, identical in both states and rotated with the world.
+`design/character/collision.png` — the capsule drawn over four poses at the same scale, with the floor line marked.
 
-Art outside the capsule and why it is fair: the drifting hair, the hanging sweater threads, and — in the GHOST state — the mist the legs dissolve into all extend beyond the capsule and never collide. In the ghost state the capsule's base sits where his feet would be if he were standing, not where the mist ends, so the player's footing is consistent between states even though the art is not. Nothing the player must dodge ever occupies those pixels, so the generous collision shape only ever works in the player's favour.
+One capsule, **52 x 250 px**, centred 125 px above the feet, identical in every pose and in both states. The sprite is 320 px tall, so the capsule covers the torso and legs and stops short of the hair.
+
+**Revision 2026-10-06:** this was specified as 40 x 80 px before the art existed, which turned out to cover only the shins of a 320 px sprite. The mismatch was found while drawing this overlay and corrected in `Player.tscn` rather than papered over in the document.
+
+Art outside the capsule and why it is fair: the hair mass, the hanging sweater threads, and, in the GHOST state, the mist the legs dissolve into all extend beyond the capsule and never collide. In the ghost state the capsule's base sits where his feet would be if he were standing, not where the mist ends, so footing is consistent between states even though the art is not. Art that drifts against gravity reads as atmosphere, and letting it pass through walls is fair because nothing the player must dodge ever occupies those pixels; the capsule is never wider than the body, so a generous shape can only work in the player's favour.
 
 ## Palette
 
