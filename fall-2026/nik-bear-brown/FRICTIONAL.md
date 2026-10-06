@@ -114,6 +114,20 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded; waiting on my review. I still need someone to run the MCP route once before release.
 - **Evidence and next step:** `assignments/03-first-3d-assets-with-blender-mcp.md` and the "Canvas course build" section of `STATUS.md`. The new files are in the course repository but not committed or pushed. Next: read the assignment, run the MCP route once, and decide whether it is the right length.
 
+### 2026-10-06 — A film of Assignment 3 (lecture skill, Liam persona)
+
+- **Date and what I was working on:** 2026-10-06. Making a film of the new Assignment 3, "Your First 3D Game Assets with Claude, the Blender MCP, and Blender".
+- **I tried / expected:** My request, in my words (dictation errors fixed): "Use the lecture skill, Liam persona, to make a film on this." I pasted the full text of Assignment 3 below it.
+- **What happened:**
+  - Claude Code read the whole assignment and planned one film in seven acts that follows the assignment's own order: three simple assets, learn Blender's window first, write the brief before you build, connect Claude to Blender, build the assets, export / import / check, ship it and how it is graded. Liam narrates in for me. It is about 13 minutes of narration, 80 beats, and it is not built to a master yet.
+  - A sub-agent ran the real tools to get pictures that are not drawings: it built the crate, the lantern and the coin with a Blender script, captured the real Blender window, and ran a headless check in Godot on them. The three assets measure 60, 202 and 180 triangles, under the 500 limit.
+  - That evidence caught four things the assignment and my first narration got wrong. A crate whose origin is in the middle sinks half its height at floor level, and a crate lifted by exactly that amount sits, so the floor-gap check passes it and only an origin check catches it. The installer in the MCP project's README lets you pick which client to set up; it does not set up every client. The next version after 2.1.1 came three days later, not nine; 2.1.9 came nine days later. Blender's factory settings keep one backup, `.blend1`. The narration is corrected; the installer wording in the assignment is corrected too.
+  - The film cannot show the MCP route running, because nobody on the course has run it. Those steps are shown as the typed commands, labelled "documented, not run". The assets in the film come from the script route, and the film says so.
+- **What I did:** Made the request above.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) planned the acts and wrote the narration; Opus 5.5 sub-agents are building the pictures, one act each. Nothing is published, and nothing will be without my word.
+- **What I understand now / still do not understand:** Not yet recorded; I have not watched it. I still need someone to run the MCP route once before release.
+- **Evidence and next step:** `youtube/claude-liam-lecture-first-3d-assets-blender-mcp/` (narration, `ACTS.md`, `EVIDENCE-INDEX.md`). Next: Claude Code finishes the 4K master and stops; I watch it before anything is posted.
+
 ---
 
 ## GitHub pushes
@@ -131,3 +145,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-06 | Log my request to rebuild the course modules into a full Godot, Walker and Claude Code course |
 | 2026-10-06 | Log my request to push the course repo to GitHub |
 | 2026-10-06 | Log my request for a very basic Blender assignment as Assignment 3 |
+| 2026-10-06 | Log my request for a film of Assignment 3 |
