@@ -2,9 +2,15 @@ extends Node2D
 ## Night 1 slice. Owns which way up the world is, wires the pieces together,
 ## and announces changes.
 ##
-## The room turns over; the boy does not. He stays upright and his controls
-## never reverse, so after a flip he is walking the ceiling of the room as he
-## remembers it — which is what the concept describes a ghost doing.
+## The camera never rotates. Flipping reverses gravity, so the boy falls upward
+## and stands on the ceiling, and the world changes what it is showing:
+##
+##   normal   - he looks like a living boy in the warm remembered room.
+##              This is the comfortable lie, the way he still sees himself.
+##   inverted - he is the ghost, and the room is the stripped empty one the
+##              new family moved into. This is what is actually there.
+##
+## The world shows you what you expect; turn it over to see what is there.
 ##
 ## Ordering rule, applied everywhere below: state changes first, signal second,
 ## sound third. Audio is always a consequence, so a muted or missing sound can
@@ -12,7 +18,7 @@ extends Node2D
 
 signal world_flipped(is_inverted: bool)
 
-const FLIP_SECONDS := 0.6
+const FLIP_SECONDS := 0.35   ## cross-dissolve between the two truths
 
 var is_inverted := false
 var _flipping := false
@@ -41,6 +47,8 @@ func _ready() -> void:
 	_meters.night_ended.connect(_on_night_ended)
 	_audio.counted.connect(func(_e, _n): _hud.set_mutes(_audio.music_muted, _audio.sfx_muted))
 
+	_room_memory.visible = true
+	_room_upright.visible = false
 	_hud.set_days(_meters.days_left, _meters.DAYS_AT_START)
 	_hud.set_recognition(0, _meters.RECOGNITION_TO_WIN)
 	_hud.set_frost(0.0)
@@ -72,16 +80,22 @@ func flip() -> void:
 	_flipping = true
 	is_inverted = not is_inverted
 
-	_room_upright.visible = not is_inverted
-	_room_memory.visible = is_inverted
 	world_flipped.emit(is_inverted)
 	_audio.play("flip")
 
-	var target_rotation := PI if is_inverted else 0.0
-	var tween := create_tween()
-	tween.tween_property(_world_root, "rotation", target_rotation, FLIP_SECONDS) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	# Both rooms stay upright and the camera never moves. The truth dissolves
+	# in over the lie, which reads far more smoothly than turning the picture
+	# over and never disorients the player.
+	var appearing: Sprite2D = _room_upright if is_inverted else _room_memory
+	var leaving: Sprite2D = _room_memory if is_inverted else _room_upright
+	appearing.visible = true
+	appearing.modulate.a = 0.0
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(appearing, "modulate:a", 1.0, FLIP_SECONDS)
+	tween.tween_property(leaving, "modulate:a", 0.0, FLIP_SECONDS)
 	await tween.finished
+	leaving.visible = false
+	leaving.modulate.a = 1.0
 	_flipping = false
 
 
@@ -124,6 +138,6 @@ func _refresh_hint() -> void:
 	if _meters.ended:
 		_hud.set_hint("")
 	elif is_inverted:
-		_hud.set_hint("SPACE to jump  ·  F to turn back  ·  at the music box: tap E to touch it gently, hold E to make it loud")
+		_hud.set_hint("You are falling upward  ·  walk the ceiling to the music box  ·  tap E to touch it gently, hold E to make it loud  ·  F to come back down")
 	else:
 		_hud.set_hint("Arrows or A/D to move  ·  SPACE to jump  ·  F to turn the world over")

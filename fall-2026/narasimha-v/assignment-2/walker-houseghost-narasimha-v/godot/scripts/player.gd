@@ -6,7 +6,7 @@ extends CharacterBody2D
 ## walking. Extra pose images, when they exist, are swapped in by state; they
 ## are never played as animation frames.
 
-enum State { GHOST, REMEMBERED }
+enum State { REMEMBERED, GHOST }
 
 const SPEED := 300.0
 const ACCELERATION := 2200.0
@@ -27,8 +27,11 @@ const LEAN_RADIANS := 0.10
 signal landed(fall_speed: float)
 signal jumped
 
-var state: State = State.GHOST
+var state: State = State.REMEMBERED
 var _facing := 1
+## +1 pulls toward the bottom of the screen, -1 toward the top. Flipping the
+## world inverts it, so the boy falls upward and lands on what was the ceiling.
+var _gravity_dir := 1.0
 var _coyote := 0.0
 var _buffer := 0.0
 var _was_on_floor := true
@@ -39,6 +42,7 @@ var _sprite_home_y := 0.0
 var _drift_tween: Tween
 
 @onready var _sprite: Sprite2D = $Sprite2D
+@onready var _collision: CollisionShape2D = $CollisionShape2D
 @onready var _tex_ghost: Texture2D = preload("res://assets/art/char_ghost.png")
 @onready var _tex_remembered: Texture2D = preload("res://assets/art/char_remembered.png")
 
@@ -69,12 +73,15 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0.0, FRICTION * delta)
 
-	# Vertical.
+	# Vertical. Gravity and the jump both follow _gravity_dir, and up_direction
+	# tells CharacterBody2D which surface counts as the floor.
+	up_direction = Vector2(0, -_gravity_dir)
 	if is_on_floor():
 		_coyote = COYOTE_SECONDS
 	else:
 		_coyote = maxf(0.0, _coyote - delta)
-		velocity.y = minf(velocity.y + GRAVITY * delta, MAX_FALL)
+		velocity.y += GRAVITY * _gravity_dir * delta
+		velocity.y = clampf(velocity.y, -MAX_FALL, MAX_FALL)
 
 	if Input.is_action_just_pressed("jump"):
 		_buffer = BUFFER_SECONDS
@@ -82,16 +89,16 @@ func _physics_process(delta: float) -> void:
 		_buffer = maxf(0.0, _buffer - delta)
 
 	if _buffer > 0.0 and _coyote > 0.0:
-		velocity.y = JUMP_VELOCITY
+		velocity.y = JUMP_VELOCITY * _gravity_dir
 		_buffer = 0.0
 		_coyote = 0.0
 		jumped.emit()
 
 	# Releasing the key early cuts the hop short, so height is expressive.
-	if Input.is_action_just_released("jump") and velocity.y < 0.0:
+	if Input.is_action_just_released("jump") and velocity.y * _gravity_dir < 0.0:
 		velocity.y *= JUMP_CUT
 
-	var fall_speed := velocity.y
+	var fall_speed := velocity.y * _gravity_dir
 	move_and_slide()
 
 	if is_on_floor() and not _was_on_floor:
@@ -116,7 +123,7 @@ func _update_body(delta: float, direction: float) -> void:
 	if walking:
 		_stop_drift()
 		_step_phase += delta * 9.0 * speed_ratio
-		_sprite.position.y = _sprite_home_y - absf(sin(_step_phase)) * STEP_PIXELS
+		_sprite.position.y = _sprite_home_y - absf(sin(_step_phase)) * STEP_PIXELS * _gravity_dir
 	elif is_on_floor() and _drift_tween == null:
 		_step_phase = 0.0
 		_start_drift()
@@ -156,10 +163,22 @@ func _land(fall_speed: float) -> void:
 		_start_drift()
 
 
-## Called by the world when it turns over. The state is set here and the image
-## swapped; no sound is played from this script, so audio can never drive state.
+## Called by the world when it turns over. Gravity reverses, so the boy falls
+## upward and lands on what was the ceiling — which, because the memory room is
+## drawn rotated, is the floor of his own bedroom. The state image is swapped
+## here too; no sound is played from this script, so audio can never drive state.
 func set_inverted(is_inverted: bool) -> void:
-	state = State.REMEMBERED if is_inverted else State.GHOST
+	_gravity_dir = -1.0 if is_inverted else 1.0
+	up_direction = Vector2(0, -_gravity_dir)
+	velocity.y = 0.0
+	# The sprite and the capsule are both centred on the node, so a flip only
+	# turns the picture over; nothing moves. An earlier version shifted the
+	# capsule instead, which dropped it inside the floor collider on the first
+	# flip and squeezed the player out through the bottom of the room.
+	_sprite.flip_v = is_inverted
+	# Inverted is the truth: he stops looking like a living boy and becomes what
+	# he actually is.
+	state = State.GHOST if is_inverted else State.REMEMBERED
 	_apply_state()
 
 
@@ -180,7 +199,7 @@ func _apply_state() -> void:
 func _start_drift() -> void:
 	_stop_drift()
 	_drift_tween = create_tween().set_loops()
-	_drift_tween.tween_property(_sprite, "position:y", _sprite_home_y - DRIFT_PIXELS, DRIFT_SECONDS) \
+	_drift_tween.tween_property(_sprite, "position:y", _sprite_home_y - DRIFT_PIXELS * _gravity_dir, DRIFT_SECONDS) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_drift_tween.tween_property(_sprite, "position:y", _sprite_home_y, DRIFT_SECONDS) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)

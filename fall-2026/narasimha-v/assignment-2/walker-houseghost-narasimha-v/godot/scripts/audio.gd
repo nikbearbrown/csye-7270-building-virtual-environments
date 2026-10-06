@@ -20,9 +20,10 @@ const PATHS := {
 ## One track per world. They share key and tempo, so the flip can cut straight
 ## from one to the other without a musical lurch: the two worlds sound like one
 ## piece of music turning over.
+## The warm track belongs to the lie, the tense one to the truth.
 const MUSIC_PATHS := {
-	"upright": "res://assets/music/mus_upright.wav",
-	"memory":  "res://assets/music/mus_memory.wav",
+	"normal":   "res://assets/music/mus_memory.wav",
+	"inverted": "res://assets/music/mus_upright.wav",
 }
 
 var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0}
@@ -32,7 +33,7 @@ var missing: Array[String] = []
 
 var _players := {}
 var _music := {}                 ## world -> AudioStreamPlayer
-var _current_world := "upright"
+var _current_world := "normal"
 
 
 func _ready() -> void:
@@ -114,7 +115,7 @@ func _play_world_music(world: String) -> void:
 ## world only, and the flip hard-cuts it rather than crossfading, because the
 ## cut is what makes the flip feel like crossing a threshold.
 func set_world_inverted(is_inverted: bool) -> void:
-	_current_world = "memory" if is_inverted else "upright"
+	_current_world = "inverted" if is_inverted else "normal"
 	_play_world_music(_current_world)
 
 
