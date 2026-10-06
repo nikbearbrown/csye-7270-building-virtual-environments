@@ -21,7 +21,7 @@ const MAX_FALL := 2000.0
 const DRIFT_PIXELS := 6.0
 const DRIFT_SECONDS := 2.2
 const STEP_PIXELS := 4.0
-const STRIDE_PIXELS := 62.0   ## ground covered per walk frame, so the feet never skate
+const STRIDE_PIXELS := 30.0   ## ground covered per walk frame — about ten frames a second at full speed, so the legs read as walking rather than stuttering
 const LEAN_RADIANS := 0.10
 
 signal landed(fall_speed: float)
@@ -135,19 +135,16 @@ func _update_body(delta: float, direction: float) -> void:
 ## matches the speed and the feet never slide. The cycle is only used in the
 ## remembered state; the ghost keeps his single drifting image.
 func _update_walk_frame(delta: float, walking: bool) -> void:
-	if state != State.REMEMBERED:
-		return
 	if not walking:
 		_stride_distance = 0.0
-		if _walk_frame != 0:
-			_walk_frame = 0
-			_sprite.texture = _walk_frames[0]
+		_walk_frame = 0
+		_apply_state()          # back to the idle image for this world
 		return
 	_stride_distance += absf(velocity.x) * delta
 	while _stride_distance >= STRIDE_PIXELS:
 		_stride_distance -= STRIDE_PIXELS
 		_walk_frame = (_walk_frame + 1) % _walk_frames.size()
-		_sprite.texture = _walk_frames[_walk_frame]
+	_sprite.texture = _walk_frames[_walk_frame]
 
 
 func _land(fall_speed: float) -> void:
@@ -186,11 +183,10 @@ func _apply_state() -> void:
 	match state:
 		State.GHOST:
 			_sprite.texture = _tex_ghost
-			_sprite.modulate = Color(1, 1, 1, 0.9)
+			# Drained and see-through: the same boy, rendered as what he is.
+			_sprite.modulate = Color(0.72, 0.80, 0.92, 0.82)
 		State.REMEMBERED:
-			_walk_frame = 0
-			_stride_distance = 0.0
-			_sprite.texture = _walk_frames[0]
+			_sprite.texture = _tex_remembered
 			_sprite.modulate = Color(1, 1, 1, 1)
 
 
