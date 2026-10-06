@@ -176,6 +176,45 @@
   - **Hand edit instead:** Claude faded the top rows of try 1 into the background with a short script, so the smoke fades out. Side view kept; logged as an edit.
   - **What I understand now:** an edit can fix one thing and break another (the view), so every edit has to be rechecked against the reference.
 
+
+### 2026-10-06 — pose 12 (celebrate)
+
+- **Date and what I was working on:** 2026-10-06. Finishing the last pose, then putting Extinguisho into the game for the first time.
+- **I tried / expected:** pose 12 as a deadpan kung-fu bow for the end of the level (panel 6).
+- **What happened:**
+  - **Try 1** (2026-10-05) came back as an upright salute with palms together: no bow, nearly the same shape as idle.
+  - I asked twice in the same chat to edit it into a bow. Both times ChatGPT returned an error and no image. The chat had become very long.
+  - **Try 2:** I started a **new chat**, attached `side-profile-game.png`, and sent Claude's prompt with the bow written into the pose line. It came back as a clear forward bow, side view, matching gear.
+- **What I did:** rejected try 1 (thumbnail kept), accepted 12b. Its palms are together rather than fist-in-palm, which I judged minor because it still reads as a bow and differs from idle at game size.
+- **What Claude or another person contributed:** Claude wrote the 12b prompt and checked the result against the reference. ChatGPT generated both images. Rejecting try 1, starting a new chat, and accepting 12b were my decisions.
+- **What I understand now / still do not understand:** a very long chat can stop working; a new chat with the reference attached and the full prompt worked on the first try.
+- **Evidence and next step:** CHARACTER-SHEET.md, "Pose 12"; SOURCES rows CHAR-BOW. Next: play the game with the new character and judge size, box, and colors.
+
+
+### 2026-10-06 — Extinguisho in the game: step 1 and playtest 1
+
+- **Date and what I was working on:** 2026-10-06. First time the generated character is in the game.
+- **I tried / expected:** Claude's step 1: one generated image per movement state (idle, run, jump crouch, rising, falling, landing), 64 px tall in the game, collision box 20×40. I expected to judge his size, the box, and his colors.
+- **Decisions before the build (mine):**
+  - **Collision box A (20×40)** instead of a 58 px tall box. Claude's overlay showed the crouching poses are only 41–49 px tall, so a tall box would kill him by flames that never visibly touch him; with A his helmet can stick out above the box, which only forgives.
+  - Size 64 px and the palette: accepted for now, to judge in the game.
+  - Hide the empty rescue bag until the first rescue (Claude suggested; I agreed).
+- **What happened (my playtest):** the run and the flying kick look fine. But: the intro text was hidden behind him; nothing happened to him when the fire got him; the jump flashed too many poses (crane, kick, meditating fall) in a short time; hosing looked like he was peeing on the fire; the bag sat near his knees; and there was no grab, toss, or fall into the bag. Details and causes are in TEST-REPORT.md, "Playtest 1".
+- **What I decided:** the jump should be the kick and then the landing pose. Claude proposed keeping the meditating fall only for walking off a ledge, so it is still used; I agreed. Everything else goes into step 2.
+- **What Claude or another person contributed:** Claude wrote the code (`player.gd`, one line in `session.gd`), the background-removal script (`tools/make_sprites.py`), ran the tests (41/41 pass), and explained each cause. The playtest observations are mine.
+- **What I understand now / still do not understand:** passing tests didn't show any of these problems; only playing did. Still open: whether 64 px is the right size.
+- **Evidence and next step:** TEST-REPORT.md, "Playtest 1". Next: step 2 (action poses, rescue toss, hose nozzle, bag position).
+
+
+### 2026-10-06 — step 2, playtest 2 (slower), and the background
+
+- **I tried / expected:** step 2 fixed everything from playtest 1. Playing it, the toss was nice and funny, but the movement and pose changes felt like too much, and I still didn't see the burned pose or the landing.
+- **What happened:** Claude checked: burned did show, but only 0.55 s, and it is dark and subtle at game size (predicted failure F3); the landing showed only 0.13 s. When I asked to slow him down (run speed 160 → 120), the tests showed the burning-street jump became impossible.
+- **What I decided:** option A from Claude's tested options: speed 120 with a floatier jump (64 px, 0.8 s in the air), which kept the level beatable. Landing and burned hold longer. For ENV-BG I accepted the image, and asked that the other game elements stay visible on it; Claude recolored the ledges and level text.
+- **What Claude or another person contributed:** Claude wrote the code and test changes, tested speed/gravity options, and found the hidden bow (the end card covered it) in a screenshot. ChatGPT generated ENV-BG. The slowdown, option A, and accepting ENV-BG were my decisions.
+- **What I understand now / still do not understand:** slowing the run changes the level too, because jump distance depends on speed; the tests caught it before I played. Still open: whether burned reads well enough on the dark background, and the exact ENV-BG prompt for the log.
+- **Evidence and next step:** TEST-REPORT.md, step 2, Playtest 2, ENV-BG; SOURCES row ENV-BG. Next: playtest 3, then sounds and mute.
+
 ---
 
 ## GitHub pushes
@@ -186,3 +225,4 @@
 | 2026-10-02 | Add storyboard text: six panels, shots, angles, and motion |
 | 2026-10-02 | Add storyboard sketches, prompt log, and rejected thumbnails |
 | 2026-10-05 | Add character reference, poses 1-9 and 11, and prompt logs with rejects |
+| 2026-10-06 | Add action poses, slower run, and ENV-BG backdrop; verify 41/41 tests |
