@@ -21,16 +21,18 @@ var _flipping := false
 @onready var _room_upright: Sprite2D = $WorldRoot/RoomUpright
 @onready var _room_memory: Sprite2D = $WorldRoot/RoomMemory
 @onready var _player: CharacterBody2D = $Player
-@onready var _contact: Area2D = $WorldRoot/MusicBox
+@onready var _contact: Area2D = $MusicBox
 @onready var _meters: Node = $Meters
 @onready var _audio: Node = $Audio
 @onready var _hud: CanvasLayer = $HUD
+@onready var _box_top: StaticBody2D = $BoxTop
 
 
 func _ready() -> void:
 	world_flipped.connect(_player.set_inverted)
 	world_flipped.connect(_contact.set_inverted)
 	world_flipped.connect(_audio.set_world_inverted)
+	world_flipped.connect(_set_box_top_solid)
 	world_flipped.connect(func(_inv): _refresh_hint())
 
 	_contact.contact_landed.connect(_on_contact_landed)
@@ -111,10 +113,17 @@ func _on_night_ended(reason: String) -> void:
 	_refresh_hint()
 
 
+## The stacked moving boxes are solid only in the upright world, because that
+## is the only world they exist in. Level geometry obeys the same rule the art
+## does: what you can stand on depends on which way up you are.
+func _set_box_top_solid(is_inverted: bool) -> void:
+	_box_top.get_node("CollisionShape2D").set_deferred("disabled", is_inverted)
+
+
 func _refresh_hint() -> void:
 	if _meters.ended:
 		_hud.set_hint("")
 	elif is_inverted:
-		_hud.set_hint("Stand at the music box · tap E to touch it gently · hold E to make it loud")
+		_hud.set_hint("SPACE to jump  ·  F to turn back  ·  at the music box: tap E to touch it gently, hold E to make it loud")
 	else:
-		_hud.set_hint("SPACE to turn the world over")
+		_hud.set_hint("Arrows or A/D to move  ·  SPACE to jump  ·  F to turn the world over")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bhghost0slice"]
+[gd_scene load_steps=13 format=3 uid="uid://bhghost0slice"]
 
 [ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
 [ext_resource type="Texture2D" path="res://assets/art/env_room_empty.png" id="2_empty"]
@@ -8,12 +8,16 @@
 [ext_resource type="Script" path="res://scripts/meters.gd" id="6_meters"]
 [ext_resource type="Script" path="res://scripts/audio.gd" id="7_audio"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="8_hud"]
+[ext_resource type="Texture2D" path="res://assets/art/ui_glow.png" id="9_glow"]
 
 [sub_resource type="RectangleShape2D" id="Floor_1"]
 size = Vector2(2400, 200)
 
 [sub_resource type="RectangleShape2D" id="Wall_1"]
 size = Vector2(40, 1200)
+
+[sub_resource type="RectangleShape2D" id="BoxTop_1"]
+size = Vector2(330, 36)
 
 [sub_resource type="CircleShape2D" id="Contact_1"]
 radius = 150.0
@@ -33,22 +37,6 @@ visible = false
 scale = Vector2(1.14833, 1.14833)
 texture = ExtResource("3_memory")
 
-[node name="MusicBox" type="Area2D" parent="WorldRoot"]
-position = Vector2(-480, 0)
-monitoring = true
-collision_layer = 0
-collision_mask = 2
-script = ExtResource("5_contact")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldRoot/MusicBox"]
-shape = SubResource("Contact_1")
-
-[node name="Glow" type="Sprite2D" parent="WorldRoot/MusicBox"]
-visible = false
-modulate = Color(1, 0.95, 0.78, 0.7)
-scale = Vector2(0.35, 0.35)
-texture = ExtResource("3_memory")
-
 [node name="Solids" type="StaticBody2D" parent="."]
 collision_layer = 1
 collision_mask = 0
@@ -65,8 +53,34 @@ shape = SubResource("Wall_1")
 position = Vector2(1690, 540)
 shape = SubResource("Wall_1")
 
+[node name="BoxTop" type="StaticBody2D" parent="."]
+position = Vector2(1125, 772)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoxTop"]
+shape = SubResource("BoxTop_1")
+one_way_collision = true
+one_way_collision_margin = 12.0
+
 [node name="Player" parent="." instance=ExtResource("4_player")]
-position = Vector2(700, 940)
+position = Vector2(620, 940)
+
+[node name="MusicBox" type="Area2D" parent="."]
+position = Vector2(1320, 900)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MusicBox"]
+shape = SubResource("Contact_1")
+
+[node name="Glow" type="Sprite2D" parent="MusicBox"]
+visible = false
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("9_glow")
 
 [node name="Meters" type="Node" parent="."]
 script = ExtResource("6_meters")

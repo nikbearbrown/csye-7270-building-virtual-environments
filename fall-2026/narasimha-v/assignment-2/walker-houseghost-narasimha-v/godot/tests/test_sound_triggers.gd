@@ -19,7 +19,7 @@ func _init() -> void:
 
 	var audio = scene.get_node("Audio")
 	var meters = scene.get_node("Meters")
-	var contact = scene.get_node("WorldRoot/MusicBox")
+	var contact = scene.get_node("MusicBox")
 
 	print("\n--- HOUSEGHOST sound trigger check ---")
 

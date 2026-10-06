@@ -12,16 +12,21 @@ func _init():
 	_shot("02-midflip")
 	await create_timer(0.8).timeout
 	_shot("03-inverted-remembered")
-	# A kind contact: recognition up, a day torn, frost deepens.
-	var contact = scene.get_node("WorldRoot/MusicBox")
-	contact._player_inside = true
-	contact._resolve(false)
-	await create_timer(1.4).timeout
-	_shot("04-after-contact")
-	# Spend the rest of the calendar to show the end state and heavy frost.
+	# Walk to the music box using the real input action, then contact it.
+	var mb = scene.get_node("MusicBox")
+	Input.action_press("move_right")
+	for i in 300:
+		await physics_frame
+		if mb._player_inside: break
+	Input.action_release("move_right")
+	await create_timer(0.3).timeout
+	_shot("04-at-the-music-box")
+	mb._resolve(false)
+	await create_timer(1.2).timeout
+	_shot("05-after-contact")
 	scene.get_node("Meters").spend(5, 0)
-	await create_timer(1.6).timeout
-	_shot("05-anniversary-end")
+	await create_timer(1.8).timeout
+	_shot("06-anniversary-end")
 	quit()
 
 func _shot(name):
