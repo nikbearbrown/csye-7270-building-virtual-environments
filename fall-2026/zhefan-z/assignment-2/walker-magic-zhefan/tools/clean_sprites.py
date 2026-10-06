@@ -62,25 +62,132 @@ def rotate_hue(h, target, deg):
     return (h + max(-step, min(step, d))) % 1.0
 
 
-def ramp(hex_color):
+def ramp(hex_color, shade_v=0.72):
     """Base colour plus one shade and one highlight step (shade cooler, highlight warmer)."""
     r, g, b = (v / 255 for v in hex_rgb(hex_color))
     h, s, v = colorsys.rgb_to_hsv(r, g, b)
-    shade = colorsys.hsv_to_rgb(rotate_hue(h, 250 / 360, 8), min(1.0, s * 1.15 + 0.05), v * 0.72)
+    shade = colorsys.hsv_to_rgb(rotate_hue(h, 250 / 360, 8), min(1.0, s * 1.15 + 0.05), v * shade_v)
     light = colorsys.hsv_to_rgb(rotate_hue(h, 50 / 360, 8), s * 0.8, min(1.0, v * 1.18 + 0.04))
     to8 = lambda c: tuple(round(x * 255) for x in c)
     return [to8(shade), hex_rgb(hex_color), to8(light)]
 
 
-def sheet_palette():
+def sheet_palette(revision=None):
+    """CHARACTER-SHEET palette. `revision` (from sprites.json) may replace a ramp with explicit colours
+    (e.g. skin: base + given shade, no light step) or lift a shade step (shade_v per key)."""
+    rev = revision or {}
     names, cols = [], []
     for k, h in SHEET_KEYS.items():
-        for step, c in zip(("shade", "base", "light"), ramp(h)):
+        explicit = rev.get("explicit_ramps", {}).get(k)
+        if explicit:
+            steps = list(explicit.items())
+        else:
+            steps = list(zip(("shade", "base", "light"), ramp(h, rev.get("shade_v", {}).get(k, 0.72))))
+        for step, c in steps:
             names.append(f"{k}-{step}")
-            cols.append(c)
+            cols.append(hex_rgb(c) if isinstance(c, str) else c)
     names.append("outline")
     cols.append(hex_rgb(OUTLINE))
     return names, np.array(cols, dtype=np.uint8)
+
+
+def hsv_arrays(rgb):
+    hsv = np.asarray(Image.fromarray(rgb).convert("HSV")).astype(np.float64)
+    return hsv[..., 0] * 360 / 255, hsv[..., 1] / 255, hsv[..., 2] / 255
+
+
+def red_mask(rgb, fg):
+    h, s, v = hsv_arrays(rgb)
+    return fg & ((h < 15) | (h > 335)) & (s > 0.55) & (v > 0.45)
+
+
+def block_fraction(mask, y_edges, x_edges):
+    """Fraction of each output block covered by a source mask (same block grid as block_majority)."""
+    H, W = mask.shape
+    out = np.zeros((len(y_edges) - 1, len(x_edges) - 1))
+    ys = [(max(0, int(round(a))), min(H, int(round(b)))) for a, b in zip(y_edges[:-1], y_edges[1:])]
+    xs = [(max(0, int(round(a))), min(W, int(round(b)))) for a, b in zip(x_edges[:-1], x_edges[1:])]
+    for i, (y0, y1) in enumerate(ys):
+        if y1 <= y0:
+            continue
+        for j, (x0, x1) in enumerate(xs):
+            if x1 > x0:
+                out[i, j] = mask[y0:y1, x0:x1].mean()
+    return out
+
+
+def apply_mage_revision(rgb, fg, lab, names, pal, f, rev):
+    """Palette revision 1 colour rules, applied to the source labels before downscaling.
+    Returns the new labels and pixel counts for the log."""
+    lab = lab.copy()
+    h, s, v = hsv_arrays(rgb)
+    # Skin-toned source pixels may only become skin (never gold or hair).
+    skin_idx = [names.index(n) for n in names if n.startswith("skin-")]
+    sk = fg & ((h <= 40) | (h >= 340)) & (s >= 0.12) & (s <= 0.45) & (v > 0.6)
+    if sk.any():
+        d = ((srgb_to_lab(rgb[sk])[:, None, :] - srgb_to_lab(pal[skin_idx])[None]) ** 2).sum(-1)
+        lab[sk] = np.array(skin_idx)[d.argmin(1)]
+    # Thick dark regions are fill (stockings, brim), not outline: outline-coloured pixels that survive a
+    # morphological opening wider than an outline stroke become the tunic shade or, if bluish, the indigo shade.
+    out_i = names.index("outline")
+    size = max(3, int(round(rev["dark_fill_open_frac"] * f)))
+    dark = lab == out_i
+    thick = ndimage.binary_opening(dark, structure=np.ones((size, size), bool))
+    rgbi = rgb.astype(np.int32)
+    bluish = thick & (rgbi[..., 2] > rgbi[..., 0] + 8)
+    lab[bluish] = names.index("indigo-shade")
+    lab[thick & ~bluish] = names.index("tunic-shade")
+    ys, xs = np.where(fg)
+    top, bot = ys.min(), ys.max()
+    rows = np.arange(lab.shape[0])[:, None]
+    # Hat brim: too thin to survive the opening, but its dark navy is clearly bluer than the
+    # purple-black outline, so in the upper body it becomes the (lifted) indigo shade at any thickness.
+    brim = dark & ~thick & (rgbi[..., 2] > rgbi[..., 0] + rev["brim_blue_margin"]) & (rows < top + 0.45 * (bot - top))
+    lab[brim] = names.index("indigo-shade")
+    # Boots: warm brown in the lower legs, lifted from the tunic shade to the tunic base (the sheet's boot colour).
+    L = srgb_to_lab(rgb)[..., 0]
+    boots = (fg & (lab == names.index("tunic-shade")) & (h >= 10) & (h <= 40) & (rgbi[..., 0] - rgbi[..., 2] >= 25)
+             & (L >= 28) & (L <= 50) & (rows > top + rev["boots_below_frac"] * (bot - top)))
+    lab[boots] = names.index("tunic-base")
+    return lab, {"skin_px_forced": int(sk.sum()), "dark_fill_px_to_tunic_shade": int((thick & ~bluish).sum()),
+                 "dark_fill_px_to_indigo_shade": int(bluish.sum()), "dark_fill_open_px": size,
+                 "brim_px_to_indigo_shade": int(brim.sum()), "boot_px_to_tunic_base": int(boots.sum())}
+
+
+def fix_staff_head(out, crystal_frac, names):
+    """Solid crystal (red base + one highlight pixel) inside a solid wood branch: no dithering."""
+    cells = crystal_frac >= 0.35
+    if not cells.any():
+        cells = crystal_frac == crystal_frac.max()
+    ys, xs = np.where(cells)
+    cy0, cy1, cx0, cx1 = ys.min(), ys.max(), xs.min(), xs.max()
+    ch, cw = cy1 - cy0 + 1, cx1 - cx0 + 1
+    y0, y1 = max(0, cy0 - max(1, round(0.6 * ch))), min(out.shape[0], cy1 + max(1, round(0.4 * ch)) + 1)
+    x0, x1 = max(0, cx0 - max(1, round(0.8 * cw))), min(out.shape[1], cx1 + max(1, round(0.8 * cw)) + 1)
+    staffish = {names.index(n) for n in names if n.split("-")[0] in ("tunic", "red", "gold")} | {names.index("outline")}
+    out = out.copy()
+    op = out >= 0
+    pad = np.pad(op, 1, constant_values=False)
+    edge = op & ~(pad[:-2, 1:-1] & pad[2:, 1:-1] & pad[1:-1, :-2] & pad[1:-1, 2:])
+    changed = 0
+    for yy in range(y0, y1):
+        for xx in range(x0, x1):
+            if not op[yy, xx]:
+                continue
+            if cells[yy, xx]:
+                new = names.index("red-base")
+            elif out[yy, xx] not in staffish:
+                continue  # never recolour hair, hat or skin that happens to sit inside the box
+            elif edge[yy, xx]:
+                new = names.index("outline")
+            else:
+                new = names.index("tunic-shade")
+            changed += int(out[yy, xx] != new)
+            out[yy, xx] = new
+    hy, hx = min(zip(ys, xs))  # highlight: top-most (then left-most) crystal pixel
+    out[hy, hx] = names.index("red-light")
+    return out, {"crystal_cells": int(cells.sum()), "staff_head_box_out": [int(x0), int(y0), int(x1), int(y1)],
+                 "staff_head_px_changed": changed, "crystal_highlight_out": [int(hx), int(hy)]}
 
 
 def extracted_palette(pixels, n, keep_accent=False):
@@ -341,8 +448,9 @@ def process_mage(cfg, k, debug, log):
         band = (int(face_cx - 0.30 * fig_h), int(face_cx + 0.22 * fig_h))
         ground = ov.get("ground_y", lowest_in_band(fg, *band))
         cx = ov.get("center_x", face_cx)
-        frames[name] = dict(path=path, a=a, fg=fg, lab=lab, stats=stats, glow_px=glow_px, bbox=(x0, y0, x1, y1),
-                            face=face, face_w=face_w, face_h=face_h, ground=ground, cx=cx, band=band, ov=ov, src=fc["src"])
+        frames[name] = dict(path=path, a=a, rgb=rgb, fg=fg, lab=lab, stats=stats, glow_px=glow_px, bbox=(x0, y0, x1, y1),
+                            face=face, face_w=face_w, face_h=face_h, ground=ground, cx=cx, band=band, ov=ov, src=fc["src"],
+                            fc=fc)
 
     idle = frames["idle"]
     f_idle = (idle["ground"] - idle["bbox"][1] + 1) / cfg["idle_height_px"]
@@ -360,11 +468,41 @@ def process_mage(cfg, k, debug, log):
     aoy = int(np.ceil(up)) + pad
     H = aoy + int(np.ceil(max(down, 0))) + pad
 
+    # Landmarks, scale, canvas and anchors above come from the original palette, so the palette
+    # revision below can only change colours, never geometry.
+    rev = cfg.get("palette_revision")
+    if rev:
+        names, pal = sheet_palette(rev)
+        lut = label_lut(pal)
     outdir = REPO / cfg["out"]
     sheet_items = []
     for name, fr in frames.items():
-        out = render_anchored(fr["lab"], fr["f"], (fr["cx"], fr["ground"] + 1), (W, H), (half, aoy), len(pal))
+        ax, ay, f = fr["cx"], fr["ground"] + 1, fr["f"]
+        x_edges = ax + (np.arange(W + 1) - half) * f
+        y_edges = ay + (np.arange(H + 1) - aoy) * f
+        extra = {}
+        lab = fr["lab"]
+        if rev:
+            lab, extra = apply_mage_revision(fr["rgb"], fr["fg"], to_labels(fr["rgb"], fr["fg"], lut), names, pal, f, rev)
+        out = block_majority(lab, y_edges, x_edges, len(pal))
         out, outline_px = add_outline(out, names.index("outline"))
+        if rev and fr["fc"].get("crystal_src"):
+            cx0, cy0, cx1, cy1 = fr["fc"]["crystal_src"]
+            cm = np.zeros(fr["fg"].shape, bool)
+            cm[cy0:cy1, cx0:cx1] = red_mask(fr["rgb"], fr["fg"])[cy0:cy1, cx0:cx1]
+            out, info_head = fix_staff_head(out, block_fraction(cm, y_edges, x_edges), names)
+            extra.update(info_head, crystal_src=fr["fc"]["crystal_src"])
+        if rev and fr["fc"].get("eyes_open"):
+            fx0, fy0, fx1, fy1 = fr["face"]
+            hh, ss, vv = hsv_arrays(fr["rgb"][fy0:fy1 + 1, fx0:fx1 + 1])
+            eye = fr["fg"][fy0:fy1 + 1, fx0:fx1 + 1] & ((hh < 20) | (hh > 330)) & (ss > 0.4) & (vv > 0.3)
+            ey, ex = np.where(eye)
+            ox = half + (fx0 + ex.mean() - ax) / f
+            oy = aoy + (fy0 + ey.mean() - ay) / f
+            ex0, ey0 = int(round(ox - 1)), int(round(oy - 1))
+            out[ey0:ey0 + 2, ex0:ex0 + 2] = names.index("red-base")
+            extra.update(eye_src=[round(float(fx0 + ex.mean()), 1), round(float(fy0 + ey.mean()), 1)],
+                         eye_2x2_out=[ex0, ey0])
         img = render(out, pal)
         info = save_png(img, outdir / f"mage_{name}.png")
         op = np.asarray(img)[..., 3] > 0
@@ -379,7 +517,7 @@ def process_mage(cfg, k, debug, log):
             "scale_src_px_per_px": round(fr["f"], 3), "face_w_out": round(fr["face_w"] / fr["f"], 2),
             "face_h_out": round(fr["face_h"] / fr["f"], 2),
             "out_height_px": int(ys.max() - ys.min() + 1), "outline_px": outline_px, "canvas": [W, H],
-            "anchor_out": [half, aoy], **info,
+            "anchor_out": [half, aoy], **extra, **info,
         })
         sheet_items.append((name, img, aoy))
         if debug:
@@ -389,8 +527,18 @@ def process_mage(cfg, k, debug, log):
                 ("v", fr["band"][0], (255, 140, 0)), ("v", fr["band"][1], (255, 140, 0)),
             ], debug / f"mage_{name}.png")
     sheet = contact_sheet(sheet_items, outdir / "mage-contact-sheet-4x.png", marker=cfg["idle_height_px"])
-    return {"palette": dict(zip(names, ("#" + rgb_hex(c) for c in pal))), "f_idle": round(f_idle, 3),
+    meta = {"palette": dict(zip(names, ("#" + rgb_hex(c) for c in pal))), "f_idle": round(f_idle, 3),
             "face_width_target_px": round(face_target, 2), "canvas": [W, H], "contact_sheet": sheet}
+    if rev:
+        meta["observed_issue"] = rev["observed_issue"]
+        meta["palette_revision"] = rev["note"]
+        bgp = REPO / "assets" / "sprites" / "env" / "cave_bg.png"
+        if bgp.exists():
+            L = srgb_to_lab(np.asarray(Image.open(bgp).convert("RGB")).reshape(-1, 3))[:, 0]
+            meta["cave_L*"] = {"p5": round(float(np.percentile(L, 5)), 1), "p50": round(float(np.percentile(L, 50)), 1)}
+        meta["L*_of_dark_steps"] = {n: round(float(srgb_to_lab(pal[names.index(n)])[0]), 1)
+                                    for n in ("outline", "indigo-shade", "tunic-shade", "tunic-base")}
+    return meta
 
 
 def process_wolf(cfg, k, debug, log):
