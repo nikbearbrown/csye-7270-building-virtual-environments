@@ -101,3 +101,16 @@ Hardware: NVIDIA GeForce RTX 5060 Laptop GPU (8 GB), Windows 11.
 - **Run loop:** RUN-CONTACT v3 + RUN-PASSING v1, chosen after comparing loop previews.
 - **CHAR-RUN-PASSING v1:** hat about 5% smaller than in the other frames, and less forward lean than RUN-CONTACT v3. During cleanup, scale by head height and re-check the run loop in the engine.
 - Model weights and the ComfyUI install live in `E:\7270\tools\`, outside this repo, and are not committed.
+
+## Original commit SHAs
+
+Author and committer of the imported commits were rewritten to `zhefan-z <noreply>` for the course repo, to follow the fall-2026 rule "no IDs and no full names"; author and commit dates and file contents are unchanged. The originals are the permanent record in zhef-z/walker-magic-zhefan, frozen at `920d969`.
+
+| Course-repo SHA | Original SHA (zhef-z/walker-magic-zhefan) | Author date | Commit |
+|---|---|---|---|
+| `7371b257cbca6b7e6b049153d7f3f00d1866153d` | `6697b805420ac46b925d17fd4dbc00330fae239f` | 2026-10-01T17:00:58-04:00 | Add concept, storyboard, character sheet and change brief before any generation |
+| `26668d6661269f00a2297c2bf60b4b0e6a1c8b17` | `c4fabafbb31f2e1b475b77b84912d5aad0e6274b` | 2026-10-01T18:07:05-04:00 | Add CHAR-REF v1-v3, idle and run contact from Gemini, Revision 1, SOURCES draft |
+| `24e8c629ceaeb35c539673c2f05741c2514025f6` | `2a90b0bafe44c3fd41c684d3845936dcea670278` | 2026-10-01T18:16:12-04:00 | Add CHAR-RUN-PASSING v1 from Gemini |
+| `a40b5346b8441d436a1d530121ecd429fce51d7c` | `95b9bb85b7412649d8fb18f87a902c7aa5f3e42c` | 2026-10-01T18:33:03-04:00 | Add remaining accepted Gemini poses, fix passing frame (v1 screenshot, v0 rejected) |
+| `7f195585fca2767d5362c1c3b9a0f9b6ef35d2df` | `a67239c4c44aadf1a008cc18af99f37058abe596` | 2026-10-03T03:14:11-04:00 | WIP checkpoint: sprite cleanup, SFX generation scripts, SOURCES and rejected thumbnails |
+| `511fcbf19080690aed407b888e266ff047f38aec` | `920d96914fa34e3682cafa236fdaf5a04cb6c662` | 2026-10-06T15:43:40-04:00 | Add FRICTIONAL pointer to the course-repo log |
