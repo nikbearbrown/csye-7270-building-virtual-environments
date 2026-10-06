@@ -23,15 +23,24 @@ Or open `godot/project.godot` in the Godot editor and press Play.
 | Action | Key |
 |---|---|
 | Move | ← → or A / D |
-| Flip the world | Space |
-| Contact | E |
+| Jump | Space, W, or ↑ |
+| Turn the world over | F or ↓ |
+| Contact the music box | E — tap for a gentle touch, hold for a loud one |
 | Mute music | M |
 | Mute sound effects | N |
 | Restart the scene | R |
 
 ## What the slice demonstrates
 
-One bedroom, two worlds. The boy exists in two states — a pale, translucent ghost whose legs dissolve into mist in the living world, and a solid, warm, ordinary child in the world he remembers — and the game swaps between those two static images when the world turns over. The room swaps with him: the same window, the same door, the same hanging bulb, stripped bare in one world and lived-in in the other, so the flip reads as one place rather than two pictures. Four sound events fire from real game events, a music-box lullaby loops underneath, and both can be muted independently without changing anything the game does.
+One bedroom, two worlds. The boy exists in two states — a pale, translucent ghost whose legs dissolve into mist in the living world, and a solid, warm, ordinary child in the world he remembers — and the game swaps those static images when the world turns over. The room turns with him: the same window, the same door, the same hanging bulb, stripped bare in one world and lived-in in the other, so the flip reads as one place rather than two pictures. The boy stays upright through the turn, so his controls never reverse and he ends up walking the ceiling of the room as he remembers it.
+
+He walks with a four-frame cycle whose frames advance by ground covered rather than by a clock, so his stride matches his speed and his feet never slide. The cycle belongs to the remembered state alone: **the ghost does not walk, he drifts.** He jumps with coyote time, input buffering and an early-release cut, squashes on landing in proportion to the impact, and leans into a run. All of that motion is engine code moving one static image per state — no animation frames beyond the walk poses, which the character sheet required anyway.
+
+The stacked moving boxes are a one-way platform that is solid **only in the upright world**, because that is the only world they exist in: level geometry obeys the same rule the art does.
+
+At the music box, a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar toward the anniversary; the loud one costs more and wakes the house. The night ends either because the child finally sees you or because the anniversary arrives first.
+
+Four sound events and a music loop are wired to real game events, and both can be muted independently without changing anything the game does.
 
 ## Generated assets in the slice
 
@@ -50,11 +59,11 @@ Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, da
 
 ## Status and known limitations
 
-- The slice is in build: the project runs, the world flip and the player are in, and the contact interaction, meters, HUD and audio wiring are still being assembled.
-- Audio has not been generated yet, so the four event sounds and the music loop are not in the scene.
+- **Audio has not been generated yet.** The four event sounds and the music loop are wired to fixed filenames and the slice runs silent without them, printing a notice. This is deliberate: sound must never decide state, and the slice proves it by working without any.
+- **The ghost reads faint against the grey upright room.** This was predicted in CHANGE-BRIEF as a failure case and is visible in `evidence/01-upright-ghost.png`. The planned fix is a rim light on the ghost sprite rather than a change to the room; it has not been done.
 - The slice covers storyboard panels 1 to 4. Panels 5 and 6 — the hallway that corrects itself and the father at the cellar door — are semester work beyond this assignment.
-- The character sheet lists eleven poses; the model sheet supplies the turnaround and the ghost views, and the remaining poses are not yet generated as separate images.
-- At the character's real on-screen size of 96 px the face is not legible; the design deliberately carries its read in the hair mass and posture instead. The silhouette test in `design/character/` records this.
+- Three of the fourteen character-sheet poses (reach, scare, goodbye) are specified but not generated; the slice expresses those states through image swaps and engine motion instead.
+- The human playtest with sound on and then muted is still outstanding, and an automated input sequence does not substitute for it.
 
 ## Credits
 
