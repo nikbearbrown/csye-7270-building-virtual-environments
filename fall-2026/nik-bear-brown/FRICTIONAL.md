@@ -69,6 +69,22 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded; waiting on my review.
 - **Evidence and next step:** The chapters, examples and `pantry/chapter-spec.md` are in the course repository but not committed or pushed. They wait for my word. Next: review the chapters, do the human checks each one lists, and decide whether to publish the `/gdd` skill.
 
+### 2026-10-06 — Reworking every module into a full Godot, Walker and Claude Code course
+
+- **Date and what I was working on:** 2026-10-06. Turning the old Spring 2026 Canvas course (the `.imscc`) into a complete new CSYE 7270 course, module by module, built around Godot, Walker and Claude Code.
+- **I tried / expected:** My request, in my words (dictation errors fixed): "Look at the Building Virtual Environments course, CSYE 7270. In particular, the Canvas IMSCC file. Also, look at the Walker directory. Walker helps use Claude Code to build game art, to build animations, to build games using Godot. All of the modules need to be reworked to have examples using Godot to do it, and Walker. So, for example, building a game design document, doing animation, doing particle effects, doing whatever with Godot and Claude Code and Walker. Take your time. Build out a full course, step by step, modeled on the old Canvas course, integrated with Walker, Godot and Claude Code." I pasted the path of the `.imscc`, the path of the Walker folder, and a listing of the course folder.
+- **What happened:**
+  - Claude Code found that most of the base already existed: the sixteen chapters, Module 1, and Assignments 1 and 2. What was missing was Modules 0 and 2–15 as Canvas lecture pages, Assignments 3–10, anything to test understanding, and a way to get it into Canvas.
+  - It read the old export's modules, pages, assignments and quizzes. The old course was a skeleton: most pages were short link lists, and only three pages (Game AI, Unity ML-Agents, CgFX) had real teaching text. It kept the skeleton (Lecture, Assignment, Links per module) and replaced the content.
+  - It built: 17 lecture pages (Module 14 has a second page for its labs), 16 Helpful-links pages, 16 ungraded practice quizzes (96 questions), Assignments 3–10, a course map, an old-to-new map, and a script that builds an importable Canvas package and per-page HTML pastes. Twelve sub-agents wrote the pages and assignments from the chapters.
+  - Then independent sub-agents checked it. Three answered all 96 quiz questions blind and matched the answer key, but they also found the quizzes could be passed by length alone: the correct choice was the longest in 81 of 96 questions. The wrong choices were rewritten (now 17 of 96) and a second blind check matched 96 of 96 again. Other agents checked every number and quotation in the lessons against the chapters (56 fixes) and the assignments against the chapters and the Godot docs (12 fixes), and 230 links were checked live.
+  - The checks also found errors in my chapters, which were not edited. The main one: twelve chapters still say a Walker build "is not public" right beside a paragraph saying it is public. The full list is in `STATUS.md`.
+  - Things it decided without asking, for me to check: an assignment appears in the first module it covers (and again in the second); every assignment is individual, because the group project has no assignment yet; the Canvas package imports unpublished with no due dates; and Assignment 4 tells students to keep the unreleased `/gdd` skill out of their pushed repositories.
+- **What I did:** Made the request above. I have not yet reviewed any of it.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) planned the course, wrote the build contract, the checker, the packager, the course map and the old-to-new map, restructured Module 1's lesson (my 10 September text kept; the original is in `pantry/backups/`), and coordinated sub-agents (Sonnet 5.5 and Opus 5.5) that wrote and checked the modules and assignments. Nothing was run in Godot except one headless test of `walker-2d-bullet-shower`. Not checked by me.
+- **What I understand now / still do not understand:** Not yet recorded; waiting on my review. Questions for me are in `STATUS.md`, the biggest being that Assignment 10 is probably too much for its 8 to 10 days.
+- **Evidence and next step:** `STATUS.md` ("Canvas course build — 2026-10-06"), `modules/README.md`, `canvas/README.md`, `canvas/OLD-TO-NEW.md`. Everything is in the course repository but not committed or pushed, except this log. The Canvas package has never been imported into a live Canvas. Next: review it, decide the open questions, and push when ready.
+
 ---
 
 ## GitHub pushes
@@ -83,3 +99,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-09-25 | Log my request for the on-model/off-model riff film |
 | 2026-09-25 | Log my request for the riff film's YouTube text |
 | 2026-09-27 | Log my request to adapt the course chapters to Godot |
+| 2026-10-06 | Log my request to rebuild the course modules into a full Godot, Walker and Claude Code course |
