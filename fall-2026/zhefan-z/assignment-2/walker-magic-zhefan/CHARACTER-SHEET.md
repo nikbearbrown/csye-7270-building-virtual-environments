@@ -76,3 +76,9 @@ Check: the hat/capelet indigo must stay at least one value step brighter than th
 ## Revision 1 — 2026-10-01 (after reference generation)
 - Tunic length: accepted at mid-thigh instead of knee-length. The generated reference (CHAR-REF v2) drew it shorter; at 64 px the shorter tunic shows more leg and makes the run and jump poses easier to read, so I kept it.
 - Staff thickness: shaft made thicker in v2 after the 64 px check showed the v1 staff breaking into loose pixels.
+
+## Revision 2 — 2026-10-06 (sheet images produced after generation)
+- `design/character/silhouette.png` and `design/character/collision.png` were produced after generation, from the cleaned sprites in `assets/sprites/mage/` (script: `tools/sheet_images.py`), not before generation as the Draft v1 header implies.
+- Silhouette: idle filled solid black at 64 px on the actual cave background (1x, 640x360), standing on the ground tiles at three screen positions. Cave L* behind the silhouette (median): 5.5 at x=128, 8.2 at x=320, 17.3 at x=512. The shape reads in all three; it is weakest at x=128, against the darkest part of the cave.
+- Collision: every pose at 64 px with the 14x44 rectangle at canvas x 24–38, y 23–67 (feet to chin, centred on the body column x=31), identical in every pose. Idle's chin is 0.2 px from the rectangle top; cast, hurt and win 0.4 px above it; rise (crouched) and fail (kneeling) about 7 px below it, so in those two poses the rectangle top overlaps the head.
+- Pose count: run_contact (legs at their widest stride, front heel down) and run_passing (legs together under the body, one foot planted) are two distinct key poses with different silhouettes, not minor variations of one pose, so the sheet keeps 10 poses. The slice shows run_contact for the run state; run_passing is kept on the sheet as the second key pose of the stride.
