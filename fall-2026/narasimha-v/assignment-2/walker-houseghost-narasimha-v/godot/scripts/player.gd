@@ -21,6 +21,7 @@ const MAX_FALL := 2000.0
 const DRIFT_PIXELS := 6.0
 const DRIFT_SECONDS := 2.2
 const STEP_PIXELS := 4.0
+const STRIDE_PIXELS := 62.0   ## ground covered per walk frame, so the feet never skate
 const LEAN_RADIANS := 0.10
 
 signal landed(fall_speed: float)
@@ -32,12 +33,23 @@ var _coyote := 0.0
 var _buffer := 0.0
 var _was_on_floor := true
 var _step_phase := 0.0
+var _stride_distance := 0.0
+var _walk_frame := 0
 var _sprite_home_y := 0.0
 var _drift_tween: Tween
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _tex_ghost: Texture2D = preload("res://assets/art/char_ghost.png")
 @onready var _tex_remembered: Texture2D = preload("res://assets/art/char_remembered.png")
+
+## The walk cycle belongs to the remembered boy alone. The ghost never walks —
+## he drifts — which is both the truth of the character and the art we have.
+@onready var _walk_frames: Array[Texture2D] = [
+	preload("res://assets/art/char_walk_1.png"),
+	preload("res://assets/art/char_walk_2.png"),
+	preload("res://assets/art/char_walk_3.png"),
+	preload("res://assets/art/char_walk_4.png"),
+]
 
 
 func _ready() -> void:
@@ -100,13 +112,35 @@ func _update_body(delta: float, direction: float) -> void:
 		target_lean = -LEAN_RADIANS * 1.4 * signf(velocity.x) * speed_ratio
 	_sprite.rotation = lerpf(_sprite.rotation, target_lean, 10.0 * delta)
 
-	if is_on_floor() and absf(direction) > 0.01:
+	var walking := is_on_floor() and absf(direction) > 0.01
+	if walking:
 		_stop_drift()
 		_step_phase += delta * 9.0 * speed_ratio
 		_sprite.position.y = _sprite_home_y - absf(sin(_step_phase)) * STEP_PIXELS
 	elif is_on_floor() and _drift_tween == null:
 		_step_phase = 0.0
 		_start_drift()
+
+	_update_walk_frame(delta, walking)
+
+
+## Frames advance by ground covered, not by a clock, so the stride always
+## matches the speed and the feet never slide. The cycle is only used in the
+## remembered state; the ghost keeps his single drifting image.
+func _update_walk_frame(delta: float, walking: bool) -> void:
+	if state != State.REMEMBERED:
+		return
+	if not walking:
+		_stride_distance = 0.0
+		if _walk_frame != 0:
+			_walk_frame = 0
+			_sprite.texture = _walk_frames[0]
+		return
+	_stride_distance += absf(velocity.x) * delta
+	while _stride_distance >= STRIDE_PIXELS:
+		_stride_distance -= STRIDE_PIXELS
+		_walk_frame = (_walk_frame + 1) % _walk_frames.size()
+		_sprite.texture = _walk_frames[_walk_frame]
 
 
 func _land(fall_speed: float) -> void:
@@ -135,7 +169,9 @@ func _apply_state() -> void:
 			_sprite.texture = _tex_ghost
 			_sprite.modulate = Color(1, 1, 1, 0.9)
 		State.REMEMBERED:
-			_sprite.texture = _tex_remembered
+			_walk_frame = 0
+			_stride_distance = 0.0
+			_sprite.texture = _walk_frames[0]
 			_sprite.modulate = Color(1, 1, 1, 1)
 
 
