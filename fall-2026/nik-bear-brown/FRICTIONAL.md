@@ -100,6 +100,20 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded; I have not read it.
 - **Evidence and next step:** The three commits on `main` from today. Next: read the course on GitHub, then decide the open questions in `STATUS.md`.
 
+### 2026-10-06 — A very basic Blender assignment as Assignment 3
+
+- **Date and what I was working on:** 2026-10-06. Changing the next CSYE 7270 assignment (Assignment 3) into a gentle first Blender assignment.
+- **I tried / expected:** My request, in my words (dictation errors fixed): "The next assignment for CSYE 7270 should be a very basic one, using Claude, the Blender MCP and Blender to make a very simple model. The basic idea behind the assignment is just to get familiar with the Blender interface, and how Claude plus the MCP plus Blender can make game assets. The 20% as usual will be awarded for how well it's done, but 80 points for basically building a moderately complex, not too complex, model, because this is their very first time typically using Blender or 3D software. So a 100-point assignment, with the 20-point qualitative score as usual. The basic idea is that they should use Claude, the Blender MCP and Blender to make a game asset or two, let's say three simple 3D assets, and preferably some that they think for their game."
+- **What happened:**
+  - Claude Code had already written an Assignment 3 on a Blender prop. It was much heavier: colliders, physics layers, and tests that had to catch deliberate breakage. It replaced it with your version and saved the old one in `pantry/backups/` so it can be reused later.
+  - The new Assignment 3 is "Your First 3D Game Assets with Claude, the Blender MCP, and Blender": three simple assets for the student's game, built with Claude through the MCP, at least one edit made by hand in Blender's window, six notes on the interface in the student's own words, each asset exported as `.glb` and shown in a small Godot 3D scene. It keeps the 60 / 10 / 10 / 20 split and the required film. Assignment 3 now covers Module 3 only, so Module 4 (collision and physics) has no assignment of its own until Assignment 4.
+  - An independent check found that the MCP project had changed nine days after the chapter was written. Version 2.1.1 became 2.1.9, three tools the chapter names were removed, the add-on now starts its server automatically, and the README now leads with a one-line installer. The assignment and Module 3's lesson were corrected. Nobody on the course has run the MCP route, so the assignment tells students that, and lets them fall back to the script route after about two hours.
+  - Claude Code settled some things without asking: a ceiling of six shapes and 500 triangles per asset so students' work is comparable; the film is kept because the syllabus requires one per assignment; a student whose honest MCP attempt fails can still earn up to 6 of the 8 process points.
+- **What I did:** Made the request above.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) wrote the assignment and updated the lesson, course map and package; an Opus 5.5 sub-agent fact-checked it against the project's live README and the Blender manual and fixed seven errors. Not checked by me.
+- **What I understand now / still do not understand:** Not yet recorded; waiting on my review. I still need someone to run the MCP route once before release.
+- **Evidence and next step:** `assignments/03-first-3d-assets-with-blender-mcp.md` and the "Canvas course build" section of `STATUS.md`. The new files are in the course repository but not committed or pushed. Next: read the assignment, run the MCP route once, and decide whether it is the right length.
+
 ---
 
 ## GitHub pushes
@@ -116,3 +130,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-09-27 | Log my request to adapt the course chapters to Godot |
 | 2026-10-06 | Log my request to rebuild the course modules into a full Godot, Walker and Claude Code course |
 | 2026-10-06 | Log my request to push the course repo to GitHub |
+| 2026-10-06 | Log my request for a very basic Blender assignment as Assignment 3 |
