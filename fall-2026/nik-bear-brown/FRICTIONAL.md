@@ -85,6 +85,21 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded; waiting on my review. Questions for me are in `STATUS.md`, the biggest being that Assignment 10 is probably too much for its 8 to 10 days.
 - **Evidence and next step:** `STATUS.md` ("Canvas course build — 2026-10-06"), `modules/README.md`, `canvas/README.md`, `canvas/OLD-TO-NEW.md`. Everything is in the course repository but not committed or pushed, except this log. The Canvas package has never been imported into a live Canvas. Next: review it, decide the open questions, and push when ready.
 
+### 2026-10-06 — Pushing the course repository so I can read it
+
+- **Date and what I was working on:** 2026-10-06. Getting the rebuilt course, the chapters and the examples onto GitHub so I can read them there.
+- **I tried / expected:** My request, in my words: "Push the course repo. I'd like to read it on GitHub."
+- **What happened:**
+  - Because the repository is public, Claude Code checked what would go up first. It found local file paths in its own build spec and made them repository-relative. Two recorded sessions matched a key pattern; the matches were pieces of base64 text, not keys. One Codex transcript still shows file paths from Blender's own error output, which is how it was recorded. Nothing was over 5 MB.
+  - It left one thing out: the build files for my 25 September on-model/off-model riff film (`youtube/claude-liam-csye-7270-character-sheet-off-model/`), because I asked for the course and not that film. It stays on my machine until I say otherwise.
+  - The remote had moved while I was away (a student's Assignment 2 pull requests were merged), so my earlier log commit was rebased onto it. Nothing was overwritten.
+  - It pushed three commits: the Canvas course (modules, Assignments 3 to 10, build spec, checker, packager), then the chapters and examples, then this log.
+  - A second session I started to fix the chapter errors was editing the chapters at the same time. The chapters on GitHub are as they were at the push; its fixes will arrive in a later commit.
+- **What I did:** Asked for the push.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) ran the pre-push checks, made the commits and pushed. I have not yet read anything on GitHub.
+- **What I understand now / still do not understand:** Not yet recorded; I have not read it.
+- **Evidence and next step:** The three commits on `main` from today. Next: read the course on GitHub, then decide the open questions in `STATUS.md`.
+
 ---
 
 ## GitHub pushes
@@ -100,3 +115,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-09-25 | Log my request for the riff film's YouTube text |
 | 2026-09-27 | Log my request to adapt the course chapters to Godot |
 | 2026-10-06 | Log my request to rebuild the course modules into a full Godot, Walker and Claude Code course |
+| 2026-10-06 | Log my request to push the course repo to GitHub |
