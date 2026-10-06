@@ -5,6 +5,8 @@ extends CharacterBody2D
 ## (canvas 31,67) is the body origin at the feet, and the 14x44 rectangle spans canvas x 24-38, y 23-67.
 
 signal failed(reason: String)
+## SFX-CAST listens to this. Emitted once per cast, after the cooldown check and the spawn.
+signal cast_fired(origin: Vector2, direction: Vector2)
 
 enum State { IDLE, RUN, RISE, FALL, CAST, HURT, FAIL, WIN }
 
@@ -19,17 +21,24 @@ const TEXTURES := {
 	State.WIN: preload("res://assets/sprites/mage/mage_win.png"),
 }
 
+const FIREBALL := preload("res://features/fireball/fireball.tscn")
+## The crystal in the cast image, relative to the feet (canvas 42,7 minus anchor 31,67); mirrored with facing.
+const STAFF_TIP := Vector2(11, -60)
+
 var state: State = State.IDLE
 var facing := 1                 # 1 = right (as drawn), -1 = left (flip_h)
 var is_failing := false
 
-## Headless tests drive the player through `scripted` instead of the keyboard:
-## {"move": -1..1, "jump_pressed": bool (one frame), "jump_held": bool}
+## Headless tests drive the player through `scripted` instead of the keyboard and mouse:
+## {"move": -1..1, "jump_pressed": bool (one frame), "jump_held": bool,
+##  "cast_pressed": bool (one frame), "aim": global position}
 var use_scripted := false
-var scripted := {"move": 0.0, "jump_pressed": false, "jump_held": false}
+var scripted := {"move": 0.0, "jump_pressed": false, "jump_held": false, "cast_pressed": false, "aim": Vector2.ZERO}
 
 var _coyote := 0.0
 var _jump_buffer := 0.0
+var _cast_cooldown := 0.0
+var _cast_hold := 0.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -59,18 +68,40 @@ func _physics_process(delta: float) -> void:
 
 	var accel := Tuning.GROUND_ACCEL if is_on_floor() else Tuning.AIR_ACCEL
 	velocity.x = move_toward(velocity.x, move * Tuning.RUN_SPEED, accel * delta)
-	if move != 0.0:
+	_cast_cooldown = maxf(_cast_cooldown - delta, 0.0)
+	_cast_hold = maxf(_cast_hold - delta, 0.0)
+	# Facing follows movement, except while the cast image is up (she faces where she cast).
+	if move != 0.0 and _cast_hold == 0.0:
 		facing = 1 if move > 0.0 else -1
+	if _read_cast_pressed() and _cast_cooldown == 0.0:
+		cast(_read_aim())
 
 	move_and_slide()
 	_update_state()
+
+
+## One fireball from the crystal toward `aim`. Turns to face the aim point first.
+func cast(aim: Vector2) -> void:
+	facing = 1 if aim.x >= global_position.x else -1
+	var origin := global_position + Vector2(STAFF_TIP.x * facing, STAFF_TIP.y)
+	var dir := aim - origin
+	dir = dir.normalized() if dir.length() > 1.0 else Vector2(facing, 0)
+	var fireball: Fireball = FIREBALL.instantiate()
+	fireball.direction = dir
+	fireball.position = origin
+	get_parent().add_child(fireball)
+	_cast_cooldown = Tuning.CAST_COOLDOWN
+	_cast_hold = Tuning.CAST_HOLD
+	cast_fired.emit(origin, dir)
 
 
 func _update_state() -> void:
 	if state in [State.FAIL, State.WIN]:
 		return
 	var next: State
-	if is_on_floor():
+	if _cast_hold > 0.0:
+		next = State.CAST
+	elif is_on_floor():
 		next = State.IDLE if absf(velocity.x) < 5.0 else State.RUN
 	else:
 		next = State.RISE if velocity.y < 0.0 else State.FALL
@@ -123,3 +154,18 @@ func _read_jump_held() -> bool:
 	if use_scripted:
 		return bool(scripted.jump_held)
 	return Input.is_action_pressed("jump")
+
+
+## Just-pressed only: holding the button does not repeat (CHANGE-BRIEF guard for SFX-CAST).
+func _read_cast_pressed() -> bool:
+	if use_scripted:
+		var pressed: bool = scripted.cast_pressed
+		scripted.cast_pressed = false
+		return pressed
+	return Input.is_action_just_pressed("cast")
+
+
+func _read_aim() -> Vector2:
+	if use_scripted:
+		return scripted.aim
+	return get_global_mouse_position()

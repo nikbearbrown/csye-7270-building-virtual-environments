@@ -10,3 +10,5 @@ const JUMP_CUT_VELOCITY := -120.0 # releasing jump early caps the upward speed (
 const MAX_FALL_SPEED := 420.0
 const COYOTE_TIME := 0.08         # jump still allowed this long after leaving an edge
 const JUMP_BUFFER := 0.10         # a jump pressed this long before landing still counts
+const CAST_COOLDOWN := 0.35       # CHANGE-BRIEF tuning
+const CAST_HOLD := 0.25           # how long the cast image stays up after a cast

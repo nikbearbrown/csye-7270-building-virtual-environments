@@ -3,8 +3,10 @@ extends SceneTree
 ## Usage (from the project folder):
 ##   Godot_v4.7.2-stable_win64_console.exe --path . -s res://tests/capture_scene.gd -- <out_dir> [collisions]
 ## With "collisions", collision shapes are drawn as in Debug > Visible Collision Shapes.
-## Each line of the optional plan file <out_dir>/plan.txt is: name x y state facing(1|-1); without it,
-## one frame of the starting view is saved as start.png.
+## Each line of the optional plan file <out_dir>/plan.txt is either
+##   name x y state facing(1|-1)            show one state's image at (x, y)
+##   name fire aim_x aim_y wait_frames      cast at the aim point (mouse moved there), save after n frames
+## Without it, one frame of the starting view is saved as start.png.
 
 var out_dir := ""
 
@@ -42,6 +44,17 @@ func run() -> void:
 	for line in FileAccess.get_file_as_string(plan).split("\n", false):
 		var p := line.split(" ", false)
 		var player: CharacterBody2D = main.player
+		if p[1] == "fire":
+			var aim := Vector2(float(p[2]), float(p[3]))
+			player.set_physics_process(true)
+			player.use_scripted = true
+			root.warp_mouse(aim)  # starting view: world x == screen x
+			player.scripted.aim = aim
+			player.scripted.cast_pressed = true
+			for i in int(p[4]):
+				await physics_frame
+			await save(p[0])
+			continue
 		player.capture_pose(Vector2(float(p[1]), float(p[2])), p[3], int(p[4]))
 		await frames(3)
 		await save(p[0])
