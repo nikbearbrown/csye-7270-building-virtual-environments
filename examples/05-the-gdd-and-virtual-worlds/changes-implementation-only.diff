@@ -1,0 +1,487 @@
+diff --git a/godot/checkpoint/checkpoint_pad.gd b/godot/checkpoint/checkpoint_pad.gd
+new file mode 100644
+index 0000000..e65b35b
+--- /dev/null
++++ b/godot/checkpoint/checkpoint_pad.gd
+@@ -0,0 +1,18 @@
++class_name CheckpointPad
++extends Area3D
++
++var activation_count: int = 0
++var respawn_point: Vector3 = Vector3.ZERO
++
++func _ready() -> void:
++	body_entered.connect(_on_body_entered)
++
++func _on_body_entered(body: Node3D) -> void:
++	if activation_count > 0:
++		return
++	if not body is Player:
++		return
++	activation_count += 1
++	# Snap XZ to pad centre; use player's Y (floor level when walking in)
++	respawn_point = Vector3(global_position.x, body.global_position.y, global_position.z)
++	body.respawn_point = respawn_point
+diff --git a/godot/checkpoint/checkpoint_pad.gd.uid b/godot/checkpoint/checkpoint_pad.gd.uid
+new file mode 100644
+index 0000000..7acb1cc
+--- /dev/null
++++ b/godot/checkpoint/checkpoint_pad.gd.uid
+@@ -0,0 +1 @@
++uid://b3gag4lf2om4d
+diff --git a/godot/checkpoint/checkpoint_pad.tscn b/godot/checkpoint/checkpoint_pad.tscn
+new file mode 100644
+index 0000000..a8810f5
+--- /dev/null
++++ b/godot/checkpoint/checkpoint_pad.tscn
+@@ -0,0 +1,25 @@
++[gd_scene format=3]
++
++[ext_resource type="Script" path="res://checkpoint/checkpoint_pad.gd" id="1"]
++
++[sub_resource type="BoxShape3D" id="1"]
++size = Vector3(1.5, 0.2, 1.5)
++
++[sub_resource type="BoxMesh" id="2"]
++size = Vector3(1.5, 0.2, 1.5)
++
++[sub_resource type="StandardMaterial3D" id="3"]
++albedo_color = Color(0.067, 0.784, 0.267, 1)
++emission_enabled = true
++emission = Color(0.067, 0.784, 0.267, 1)
++emission_energy_multiplier = 0.4
++
++[node name="CheckpointPad" type="Area3D"]
++script = ExtResource("1")
++
++[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
++shape = SubResource("1")
++
++[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
++mesh = SubResource("2")
++surface_material_override/0 = SubResource("3")
+diff --git a/godot/game.tscn b/godot/game.tscn
+index 45a604f..72fd73e 100644
+--- a/godot/game.tscn
++++ b/godot/game.tscn
+@@ -5,6 +5,7 @@
+ [ext_resource type="PackedScene" uid="uid://4qlk3xltj22q" path="res://enemy/enemy.tscn" id="3_nhwvs"]
+ [ext_resource type="PackedScene" uid="uid://c0q5hsswj8dqf" path="res://player/player.tscn" id="4_ray4s"]
+ [ext_resource type="PackedScene" uid="uid://7bwmwbaeosl3" path="res://touch_screen_ui/touch_screen_ui.tscn" id="5_7jktm"]
++[ext_resource type="PackedScene" path="res://checkpoint/checkpoint_pad.tscn" id="6_cpkpd"]
+ 
+ [sub_resource type="PhysicsMaterial" id="1"]
+ friction = 0.0
+@@ -266,4 +267,7 @@ physics_material_override = SubResource("4")
+ [node name="Player" parent="." unique_id=1924695937 instance=ExtResource("4_ray4s")]
+ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -9.49833, -3.84189, 3.9334)
+ 
++[node name="CheckpointPad" parent="." unique_id=1357924680 instance=ExtResource("6_cpkpd")]
++transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.498, -5.9, 7.933)
++
+ [node name="TouchScreenUI" parent="." unique_id=1997271132 instance=ExtResource("5_7jktm")]
+diff --git a/godot/player/player.gd b/godot/player/player.gd
+index 54c0b0e..e08a615 100644
+--- a/godot/player/player.gd
++++ b/godot/player/player.gd
+@@ -28,6 +28,7 @@ var shoot_blend: float = 0.0
+ var coins: int = 0
+ 
+ @onready var initial_position := position
++@onready var respawn_point := position
+ @onready var _camera := $Target/Camera3D as Camera3D
+ @onready var _animation_tree := $AnimationTree as AnimationTree
+ 
+@@ -35,7 +36,7 @@ var coins: int = 0
+ func _physics_process(delta: float) -> void:
+ 	if Input.is_action_pressed(&"reset_position") or global_position.y < -12:
+ 		# Player hit the reset button or fell off the map.
+-		position = initial_position
++		position = respawn_point
+ 		velocity = Vector3.ZERO
+ 		# We teleported the player on the lines above. Reset interpolation
+ 		# to prevent it from interpolating from the old player position
+diff --git a/tests/floor_probe.gd b/tests/floor_probe.gd
+new file mode 100644
+index 0000000..e23e2d7
+--- /dev/null
++++ b/tests/floor_probe.gd
+@@ -0,0 +1,54 @@
++extends SceneTree
++
++# Read-only probe: raycasts downward at candidate pad positions near player start.
++# Candidates avoid the input_probe forward-walk path (X in [-9.5,-4.7], Z≈3.93).
++func _initialize() -> void:
++	call_deferred("run_probe")
++
++func run_probe() -> void:
++	var game := load("res://game.tscn").instantiate() as Node3D
++	root.add_child(game)
++	current_scene = game
++	await physics_frame
++	await physics_frame
++	await physics_frame
++
++	var space_state := root.get_world_3d().direct_space_state
++	var start := Vector2(-9.498, 3.933)
++
++	# Candidate XZ positions, all off the +X forward-walk path
++	var candidates: Array[Vector2] = [
++		Vector2(-9.498, 6.933),   # +3 m Z
++		Vector2(-9.498, 7.933),   # +4 m Z (primary target)
++		Vector2(-9.498, 8.933),   # +5 m Z
++		Vector2(-9.498, 9.933),   # +6 m Z
++		Vector2(-9.498, 0.933),   # -3 m Z
++		Vector2(-9.498, -0.067),  # -4 m Z
++		Vector2(-7.498, 6.933),   # +2m X +3m Z diagonal
++		Vector2(-11.498, 6.933),  # -2m X +3m Z diagonal
++	]
++
++	for c in candidates:
++		var dist: float = (c - start).length()
++		var query := PhysicsRayQueryParameters3D.create(
++			Vector3(c.x, 20.0, c.y),
++			Vector3(c.x, -20.0, c.y)
++		)
++		var hit := space_state.intersect_ray(query)
++		var floor_y: float = -999.0
++		var normal_str := "none"
++		if not hit.is_empty():
++			floor_y = (hit["position"] as Vector3).y
++			normal_str = str(hit["normal"])
++		print(JSON.stringify({
++			"x": c.x, "z": c.y,
++			"dist_from_start_m": snappedf(dist, 0.001),
++			"floor_hit": not hit.is_empty(),
++			"floor_y": snappedf(floor_y, 0.001),
++			"normal": normal_str
++		}))
++
++	current_scene = null
++	game.queue_free()
++	await process_frame
++	quit(0)
+diff --git a/tests/test_checkpoint.gd b/tests/test_checkpoint.gd
+new file mode 100644
+index 0000000..33f745a
+--- /dev/null
++++ b/tests/test_checkpoint.gd
+@@ -0,0 +1,318 @@
++extends SceneTree
++
++# AC-01 checkpoint-pad acceptance test.
++# Drives the player exclusively via Input.action_press / action_release.
++# Criterion 5 is the only exception: it writes player.position directly and is
++# labelled as a constructed fixture throughout.
++# Prints one JSON line per criterion; exits 1 if any criterion fails.
++
++var _game: Node3D
++var _player: Player
++var _pad: Node        # CheckpointPad (Area3D); accessed via get() to avoid type dependency
++var _camera: Camera3D
++var _all_pass := true
++
++func _initialize() -> void:
++	call_deferred("run_tests")
++
++func run_tests() -> void:
++	_game = load("res://game.tscn").instantiate()
++	root.add_child(_game)
++	current_scene = _game
++	_player = _game.get_node("Player") as Player
++	_pad    = _game.get_node("CheckpointPad")
++	_camera = _player.get_node("Target/Camera3D") as Camera3D
++
++	# Let physics settle before any checks
++	await physics_frame
++	await physics_frame
++	await physics_frame
++
++	var r1 := _check_c1()
++	_emit(r1)
++
++	var r2 := await _check_c2()
++	_emit(r2)
++
++	# C3 drives the player to the pad, so C4/C5 run after activation
++	var r3 := await _check_c3()
++	_emit(r3)
++
++	var r4 := await _check_c4()
++	_emit(r4)
++
++	var r5 := await _check_c5()
++	_emit(r5)
++
++	# C6 uses a fresh game instance so the pad is not yet activated
++	_teardown()
++	await process_frame
++
++	_game = load("res://game.tscn").instantiate()
++	root.add_child(_game)
++	current_scene = _game
++	_player = _game.get_node("Player") as Player
++	await physics_frame
++	await physics_frame
++
++	var r6 := await _check_c6()
++	_emit(r6)
++
++	_teardown()
++	await process_frame
++	quit(0 if _all_pass else 1)
++
++
++# ── helpers ──────────────────────────────────────────────────────────────────
++
++func _emit(result: Dictionary) -> void:
++	print(JSON.stringify(result))
++	if not result.get("pass", false):
++		_all_pass = false
++
++func _teardown() -> void:
++	_game.process_mode = Node.PROCESS_MODE_DISABLED
++	_stop_audio(_game)
++	current_scene = null
++	_game.queue_free()
++
++func _stop_audio(node: Node) -> void:
++	if node is AudioStreamPlayer or node is AudioStreamPlayer2D or node is AudioStreamPlayer3D:
++		node.stop()
++	for child in node.get_children():
++		_stop_audio(child)
++
++# Navigate player toward target_world XZ using camera-relative input actions.
++# Returns true while player is more than close_dist from target.
++func _navigate_toward(target: Vector3, close_dist: float) -> bool:
++	var delta := Vector3(target.x - _player.global_position.x,
++	                     0.0,
++	                     target.z - _player.global_position.z)
++	var dist := delta.length()
++	if dist < close_dist:
++		for a in [&"move_forward", &"move_back", &"move_left", &"move_right"]:
++			Input.action_release(a)
++		return false
++	delta = delta.normalized()
++	var cam_r := _camera.global_basis.x
++	cam_r.y = 0.0
++	cam_r = cam_r.normalized()
++	var cam_f := -_camera.global_basis.z
++	cam_f.y = 0.0
++	cam_f = cam_f.normalized()
++	var mr := delta.dot(cam_r)
++	var mf := delta.dot(cam_f)
++	for a in [&"move_forward", &"move_back", &"move_left", &"move_right"]:
++		Input.action_release(a)
++	if mf >  0.15: Input.action_press(&"move_forward")
++	elif mf < -0.15: Input.action_press(&"move_back")
++	if mr >  0.15: Input.action_press(&"move_right")
++	elif mr < -0.15: Input.action_press(&"move_left")
++	return true
++
++
++# ── criteria ─────────────────────────────────────────────────────────────────
++
++func _check_c1() -> Dictionary:
++	# C1: pad is an Area3D on walkable floor, 3–6 m from start, not on probe path,
++	#     collision footprint >= 1.5 m x 1.5 m.
++	var cshape := _pad.get_node("CollisionShape3D") as CollisionShape3D
++	var box    := cshape.shape as BoxShape3D
++	var fprint_ok := box.size.x >= 1.5 and box.size.z >= 1.5
++
++	var pad_pos: Vector3 = _pad.get("global_position")
++	var start   := _player.initial_position
++	var horiz   := Vector2(pad_pos.x - start.x, pad_pos.z - start.z).length()
++	var dist_ok := horiz >= 3.0 and horiz <= 6.0
++
++	# Not on the probe path (Z ≈ 3.93, X in [-9.5, -4.7])
++	var z_close    := absf(pad_pos.z - 3.933) < 0.5
++	var x_in_range := pad_pos.x > -9.5 and pad_pos.x < -4.7
++	var off_path   := not (z_close and x_in_range)
++
++	# Walkable floor below pad. Exclude the Area3D itself so this cannot pass by
++	# raycasting into the checkpoint's own collision shape.
++	var space := root.get_world_3d().direct_space_state
++	var qry   := PhysicsRayQueryParameters3D.create(
++		pad_pos + Vector3(0, 1.0, 0),
++		pad_pos + Vector3(0, -3.0, 0))
++	qry.exclude = [_pad.get_rid()]
++	var hit    := space.intersect_ray(qry)
++	var floor_y := -INF
++	var floor_normal_y := 0.0
++	if not hit.is_empty():
++		floor_y = (hit["position"] as Vector3).y
++		floor_normal_y = (hit["normal"] as Vector3).y
++	var mesh := _pad.get_node("MeshInstance3D") as MeshInstance3D
++	var box_mesh := mesh.mesh as BoxMesh
++	var pad_bottom := pad_pos.y - box_mesh.size.y * 0.5
++	var on_floor := not hit.is_empty() \
++		and floor_normal_y > 0.7 \
++		and absf(pad_bottom - floor_y) < 0.05
++
++	var pass_val := fprint_ok and dist_ok and off_path and on_floor
++	return {
++		"criterion": 1, "pass": pass_val,
++		"footprint_ge_1p5": fprint_ok, "footprint_xz": [box.size.x, box.size.z],
++		"dist_from_start_m": snappedf(horiz, 0.001), "dist_in_range": dist_ok,
++		"off_probe_path": off_path, "on_walkable_floor": on_floor,
++		"floor_y": snappedf(floor_y, 0.001),
++		"floor_normal_y": snappedf(floor_normal_y, 0.001),
++		"pad_bottom_y": snappedf(pad_bottom, 0.001),
++		"pad_pos": [snappedf(pad_pos.x,0.001), snappedf(pad_pos.y,0.001), snappedf(pad_pos.z,0.001)]
++	}
++
++
++func _check_c2() -> Dictionary:
++	# C2: before activation, holding reset_position 5 frames → within 0.2 m of level start.
++	for _i in range(5):
++		Input.action_press(&"reset_position")
++		await physics_frame
++		await process_frame
++	Input.action_release(&"reset_position")
++
++	var dist := _player.global_position.distance_to(_player.initial_position)
++	return {
++		"criterion": 2, "pass": dist < 0.2,
++		"dist_from_start_m": snappedf(dist, 0.0001), "threshold_m": 0.2
++	}
++
++
++func _check_c3() -> Dictionary:
++	# C3: player reaches pad (input only) within 600 frames; activation fires exactly once;
++	#     re-entering does not fire a second time.
++	var pad_pos: Vector3 = _pad.get("global_position")
++	var reached_frame := -1
++	var nav_actions := [&"move_forward", &"move_back", &"move_left", &"move_right"]
++
++	for frame in range(600):
++		await physics_frame
++		if (_pad.get("activation_count") as int) > 0:
++			reached_frame = frame
++			for a in nav_actions:
++				Input.action_release(a)
++			break
++		_navigate_toward(pad_pos, 0.3)
++		await process_frame
++
++	if reached_frame < 0:
++		for a in nav_actions:
++			Input.action_release(a)
++		return {
++			"criterion": 3, "pass": false,
++			"reason": "did_not_reach_pad_within_600_frames",
++			"activation_count": _pad.get("activation_count")
++		}
++
++	# Walk away so body_exited fires, then walk back to trigger body_entered again
++	var exited := false
++	for _i in range(300):
++		await physics_frame
++		_navigate_toward(_player.initial_position, 0.3)
++		await process_frame
++		exited = exited or _player not in _pad.get_overlapping_bodies()
++	for a in nav_actions:
++		Input.action_release(a)
++
++	# Brief pause so area detects the exit
++	for _i in range(10):
++		await physics_frame
++		await process_frame
++
++	# Walk back into the pad
++	var reentered := false
++	for _i in range(300):
++		await physics_frame
++		_navigate_toward(pad_pos, 0.3)
++		await process_frame
++		reentered = reentered or _player in _pad.get_overlapping_bodies()
++	for a in nav_actions:
++		Input.action_release(a)
++
++	var count_final := _pad.get("activation_count") as int
++	var once_only   := exited and reentered and count_final == 1
++
++	return {
++		"criterion": 3, "pass": reached_frame >= 0 and once_only,
++		"reached_in_frames": reached_frame,
++		"activation_count_after_reentry": count_final,
++		"exited_pad": exited,
++		"reentered_pad": reentered,
++		"once_only": once_only
++	}
++
++
++func _check_c4() -> Dictionary:
++	# C4: after activation, holding reset_position 5 frames → within 0.2 m of pad's respawn_point.
++	var pad_rs: Vector3 = _pad.get("respawn_point")
++
++	for _i in range(5):
++		Input.action_press(&"reset_position")
++		await physics_frame
++		await process_frame
++	Input.action_release(&"reset_position")
++
++	var dist := _player.global_position.distance_to(pad_rs)
++	return {
++		"criterion": 4, "pass": dist < 0.2,
++		"dist_from_pad_respawn_m": snappedf(dist, 0.0001), "threshold_m": 0.2,
++		"pad_respawn_point": [snappedf(pad_rs.x,0.001), snappedf(pad_rs.y,0.001), snappedf(pad_rs.z,0.001)]
++	}
++
++
++func _check_c5() -> Dictionary:
++	# C5 — CONSTRUCTED FIXTURE (labelled): writes player.position directly to test the
++	# fall branch (global_position.y < -12) of the same reset code path.
++	# This is not a fall a player would make; it tests the code, not a gameplay scenario.
++	var pad_rs: Vector3 = _pad.get("respawn_point")
++
++	# Constructed fixture: teleport player below fall threshold
++	_player.position = Vector3(_player.position.x, -13.0, _player.position.z)
++
++	# Wait 2 physics frames; fall branch should trigger in frame 1
++	await physics_frame
++	await process_frame
++	await physics_frame
++	await process_frame
++
++	var dist := _player.global_position.distance_to(pad_rs)
++	return {
++		"criterion": 5, "pass": dist < 0.2,
++		"label": "constructed_fixture_fall_branch",
++		"note": "player.position written directly; tests code path, not gameplay",
++		"dist_from_pad_respawn_m": snappedf(dist, 0.0001), "threshold_m": 0.2
++	}
++
++
++func _check_c6() -> Dictionary:
++	# C6: regression — with pad present but NOT activated, reset still returns to level start.
++	# (Full regression for input_probe.gd and feature_route.gd: run those scripts separately.)
++	var start := _player.initial_position
++
++	# Move player away from start
++	for _i in range(80):
++		Input.action_press(&"move_forward")
++		await physics_frame
++		await process_frame
++	Input.action_release(&"move_forward")
++
++	var pos_before := _player.global_position
++	var moved_ok := pos_before.distance_to(start) > 0.5
++
++	# Hold reset — pad not activated, so respawn_point == initial_position
++	for _i in range(5):
++		Input.action_press(&"reset_position")
++		await physics_frame
++		await process_frame
++	Input.action_release(&"reset_position")
++
++	var dist := _player.global_position.distance_to(start)
++	var reset_ok := dist < 0.2
++
++	return {
++		"criterion": 6, "pass": moved_ok and reset_ok,
++		"label": "regression_reset_before_pad_activation",
++		"moved_before_reset": moved_ok,
++		"dist_from_start_after_reset_m": snappedf(dist, 0.0001),
++		"note": "full regression: also run input_probe.gd and feature_route.gd"
++	}

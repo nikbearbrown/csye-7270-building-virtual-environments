@@ -1,0 +1,35 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== Brain: FSM ===
+--- Test 1: Patrol -> Chase -> Search -> Patrol ---
+PASS initial mode is Patrol
+PASS selected FSM is initialized and can process after startup
+FIXTURE: player → (280, 360)  dist=120 < sight_radius=200, LOS clear
+PASS mode -> Chase when player in sight (0.1 s)
+FIXTURE: player → (800, 560)  dist >> lose_radius=350
+PASS mode -> Search when player beyond lose_radius (0.1 s)
+PASS mode -> Patrol after Search completes (1.3 s)
+--- Test 2: player hidden behind obstacle stays in Patrol ---
+FIXTURE: player → (900, 360)  behind obstacle, LOS blocked
+PASS player hidden behind obstacle does not trigger Chase
+--- Test 3: player between sight_radius and lose_radius stays Chase >=1s ---
+FIXTURE: player → (280, 360)  trigger Chase
+FIXTURE: player → (400, 360)  dist≈240, sight_radius<dist<lose_radius, LOS clear
+PASS player between sight_radius and lose_radius: mode stays Chase for >=1 s
+=== Brain: BT ===
+--- Test 1: Patrol -> Chase -> Search -> Patrol ---
+PASS initial mode is Patrol
+PASS inactive FSM remains uninitialized and cannot process after startup
+FIXTURE: player → (280, 360)  dist=120 < sight_radius=200, LOS clear
+PASS mode -> Chase when player in sight (0.1 s)
+FIXTURE: player → (800, 560)  dist >> lose_radius=350
+PASS mode -> Search when player beyond lose_radius (0.1 s)
+PASS mode -> Patrol after Search completes (1.2 s)
+--- Test 2: player hidden behind obstacle stays in Patrol ---
+FIXTURE: player → (900, 360)  behind obstacle, LOS blocked
+PASS player hidden behind obstacle does not trigger Chase
+--- Test 3: player between sight_radius and lose_radius stays Chase >=1s ---
+FIXTURE: player → (280, 360)  trigger Chase
+FIXTURE: player → (400, 360)  dist≈240, sight_radius<dist<lose_radius, LOS clear
+PASS player between sight_radius and lose_radius: mode stays Chase for >=1 s
+RESULT 14 checks; 0 failures

@@ -1,0 +1,27 @@
+Implemented the requested animation-driven hitbox windows:
+
+- `attack_fast`: monitoring `true` at 0.0 s, `false` at 0.15 s.
+- `attack_medium`: monitoring `true` at 0.05 s, `false` at 0.25 s.
+- Both tracks use Discrete update mode.
+- Removed the attack-start `monitoring = true`.
+- Preserved the Idle `monitoring = false`.
+- No other files changed and no commit was made.
+
+Test results:
+
+- `test_sword_timing.gd`: 20 checks, 3 failures.
+- `test_input.gd`: 18 checks, 0 failures.
+- `test_combo.gd`: 11 checks, 0 failures.
+
+Every `FAIL` line:
+
+- `FAIL single: hitbox turns on at frame 1 (actual 2)`
+  - **Asked-for change.** Monitoring is now enabled by the animation’s 0.0-second key rather than synchronously in `attack()`. Godot applies that animation key on the following animation-processing frame.
+
+- `FAIL single: hitbox turns off at frame 56 (actual 20)`
+  - **Asked-for change.** The new 0.15-second key disables the hitbox during recovery instead of leaving it active until the attack returns to Idle.
+
+- `FAIL every combo swing has at least one hitbox-on frame`
+  - **Change not asked for.** The second combo swing replays `attack_fast` while that same animation is already at 0.25 seconds. Godot does not restart it, so it never crosses the new 0.0-second `true` key; monitoring remains false after the first swing’s 0.15-second key. Correcting that would require changing combo/animation restart behavior outside the requested scope.
+
+Godot also printed log-file and macOS certificate errors in each run, but these were not test `FAIL` lines and did not prevent the suites from executing.

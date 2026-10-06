@@ -1,0 +1,458 @@
+diff --git a/BENCH.md b/BENCH.md
+new file mode 100644
+index 0000000..f5cb954
+--- /dev/null
++++ b/BENCH.md
+@@ -0,0 +1,35 @@
++# Failure-flash visual bench
++
++This is a human visual check. Headless Godot validates the scene and uniforms,
++but its dummy renderer cannot establish what the shader actually draws.
++
++1. Import `godot/project.godot` in Godot, then open
++   `res://tests/flash_bench.tscn`. Run that scene or use the editor's 2D view.
++2. Confirm the background is `#f6f3ec` and the three copies are labelled
++   `flash_amount 0.0`, `0.5`, and `1.0`.
++3. Take a screenshot without rescaling or color correction. Sample a pixel well
++   inside the body and one well inside an eye on each copy (avoid edges).
++4. Run the CPU reference table with:
++
++   ```sh
++   godot --headless --path godot --script res://tests/flash_model.gd --fixed-fps 60
++   ```
++
++5. Compare the sampled RGB hex values with `FLASH_MODEL_COLORS` in its output.
++   Allow one step per channel at `0.5`: a half-way value such as 82.5 can round
++   to 82 or 83. (Human review addition.)
++   Alpha cannot be established from a screenshot against an opaque background;
++   inspect the clear area around Clawd separately if alpha evidence is needed.
++
++Expected model values:
++
++| Source | 0.0 | 0.5 | 1.0 |
++| --- | --- | --- | --- |
++| body `#dd775b` | `#dd775b` | `#815653` | `#25354a` |
++| eyes `#000000` | `#000000` | `#131b25` | `#25354a` |
++
++A mismatch means the rendered shader path does not implement CLAUDE.md rule 4
++for these code-drawn rectangles. It does not, by itself, identify whether the
++cause is shader input (`COLOR` versus a texture sample), material placement,
++renderer behavior, screenshot color management, or pixel sampling. Preserve the
++screenshot and sampled coordinates before changing the implementation.
+diff --git a/FRICTIONAL.md b/FRICTIONAL.md
+index 801a7ea..d8eed1b 100644
+--- a/FRICTIONAL.md
++++ b/FRICTIONAL.md
+@@ -99,3 +99,48 @@ human versus AI contributions · one next step.
+ 
+ An unsuccessful test is useful when it says what did not work and informs the
+ next decision. Do not invent a failure just to fill this log.
++
++## Session 2 — failure-flash evidence before repair (September 27, 2026)
++
++- **Human contribution:** the prompt author supplied two review findings,
++  required a specification-level timing test and CPU color model, and scoped
++  this session to evidence only—no shader or player repair. (Human review: the
++  agent's draft named Bear here; nothing in the repository or the prompt said
++  who the human was, and Bear did not do this work.)
++- **Prediction:** a 33-process-frame fade should be too slow at 30 fps and too
++  fast at 144 fps, while appearing acceptable at 60 fps. A shader that samples
++  `TEXTURE` may not tint Clawd's `draw_rect()` output; headless mode cannot
++  resolve that visual question.
++- **AI contribution:** added a real-fall sampler that accumulates process delta,
++  a rule-4 CPU model, a static three-material editor bench, its headless scene
++  test, and the human pixel-sampling procedure in `BENCH.md`.
++- **Actual result:** the timing relationship and last pre-retry value failed at
++  30 fps; 60 fps passed; the timing relationship failed at 144 fps. The model
++  and bench structure tests passed. The original 25 mechanics, nine keyboard,
++  and 1,950 Clawd checks still passed. These are scripted checks, not a human
++  visual review or playtest; the bench screenshot and pixel samples remain for
++  a human to produce.
++
++## Session 2 — failure-flash repair (September 27, 2026)
++
++- **Human contribution:** the prompt author scoped the repair to the shader
++  color source and time-based fade, required the complete pinned-frame-rate
++  test matrix, and prohibited test edits and commits. (Human review: the agent
++  again named Bear; Bear did not do this work.)
++- **Prediction and design:** keep the effect owned by the player but read the
++  session's authoritative game-time retry countdown. A second player timer
++  could drift from the actual retry; the shared countdown also makes an R-key
++  restart clear the effect without changing input or session logic.
++- **AI contribution:** changed the shader to mix from incoming `COLOR`, replaced
++  the 33-frame counter with `retry_remaining / 0.55`, and ran the requested 14
++  headless test invocations. All passed with no shader-parser error: 25 mechanics,
++  nine keyboard, 1,950 Clawd, the flash/model/bench checks, and both real-fall
++  verifiers at 30, 60, and 144 fps.
++- **Actual tooling failure:** the first matrix wrapper used zsh's read-only
++  `status` parameter. The first 25-check suite passed, then the wrapper stopped.
++  Renaming that wrapper variable and rerunning the full matrix succeeded.
++- Headless checks do not render pixels. Human checks still cover whether the
++  CanvasItem shader visibly tints `draw_rect()` output in GL Compatibility,
++  preserves transparent surroundings, leaves the level/HUD/background alone,
++  reads correctly through the fade, and clears visibly on R. No human playtest
++  or visual approval is claimed.
+diff --git a/godot/features/player/player.gd b/godot/features/player/player.gd
+index 5711d6d..e539388 100644
+--- a/godot/features/player/player.gd
++++ b/godot/features/player/player.gd
+@@ -3,6 +3,7 @@ extends CharacterBody2D
+ const Tuning = preload("res://features/player/tuning.gd")
+ const ClawdArt = preload("res://features/player/clawd_art.gd")
+ const FlashShader = preload("res://features/player/clawd_flash.gdshader")
++const FLASH_SECONDS := 0.55
+ var animation_seconds: float = 0.0
+ var animation_name: String = "idle"
+ var tuning = Tuning.new()
+@@ -88,9 +89,9 @@ func _update_flash() -> void:
+ 	if not material is ShaderMaterial:
+ 		return
+ 	var mat := material as ShaderMaterial
+-	var amount := 0.0
+-	if get_parent().player_animation_context() == "failed":
+-		amount = clampf(get_parent().retry_remaining / 0.55, 0.0, 1.0)
++	# The player owns the effect, using the session's game-time retry clock.
++	var game := get_parent()
++	var amount := clampf(game.retry_remaining / FLASH_SECONDS, 0.0, 1.0) if game.player_animation_context() == "failed" else 0.0
+ 	mat.set_shader_parameter("flash_amount", amount)
+ 
+ func _process(delta: float) -> void:
+diff --git a/godot/tests/flash_bench.gd b/godot/tests/flash_bench.gd
+new file mode 100644
+index 0000000..143fafd
+--- /dev/null
++++ b/godot/tests/flash_bench.gd
+@@ -0,0 +1,17 @@
++@tool
++extends Node2D
++## Static visual bench: no gameplay, input, animation, or timers.
++
++const Art = preload("res://features/player/clawd_art.gd")
++@export var draw_clawd := false
++
++
++func _draw() -> void:
++	if draw_clawd:
++		Art.paint(self, "idle", 0.5, Vector2.ZERO, 1.0)
++	else:
++		draw_rect(Rect2(0, 0, 640, 360), Color("f6f3ec"))
++
++
++func _ready() -> void:
++	queue_redraw()
+diff --git a/godot/tests/flash_bench.tscn b/godot/tests/flash_bench.tscn
+new file mode 100644
+index 0000000..816f05e
+--- /dev/null
++++ b/godot/tests/flash_bench.tscn
+@@ -0,0 +1,64 @@
++[gd_scene load_steps=6 format=3]
++
++[ext_resource type="Script" path="res://tests/flash_bench.gd" id="1_script"]
++[ext_resource type="Shader" path="res://features/player/clawd_flash.gdshader" id="2_shader"]
++
++[sub_resource type="ShaderMaterial" id="ShaderMaterial_0"]
++shader = ExtResource("2_shader")
++shader_parameter/flash_amount = 0.0
++
++[sub_resource type="ShaderMaterial" id="ShaderMaterial_05"]
++shader = ExtResource("2_shader")
++shader_parameter/flash_amount = 0.5
++
++[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
++shader = ExtResource("2_shader")
++shader_parameter/flash_amount = 1.0
++
++[node name="FlashBench" type="Node2D"]
++script = ExtResource("1_script")
++
++[node name="Amount0" type="Node2D" parent="."]
++position = Vector2(120, 190)
++material = SubResource("ShaderMaterial_0")
++script = ExtResource("1_script")
++draw_clawd = true
++
++[node name="Amount05" type="Node2D" parent="."]
++position = Vector2(320, 190)
++material = SubResource("ShaderMaterial_05")
++script = ExtResource("1_script")
++draw_clawd = true
++
++[node name="Amount1" type="Node2D" parent="."]
++position = Vector2(520, 190)
++material = SubResource("ShaderMaterial_1")
++script = ExtResource("1_script")
++draw_clawd = true
++
++[node name="Label0" type="Label" parent="."]
++offset_left = 72.0
++offset_top = 228.0
++offset_right = 168.0
++offset_bottom = 255.0
++text = "flash_amount 0.0"
++horizontal_alignment = 1
++theme_override_colors/font_color = Color(0.145098, 0.207843, 0.290196, 1)
++
++[node name="Label05" type="Label" parent="."]
++offset_left = 272.0
++offset_top = 228.0
++offset_right = 368.0
++offset_bottom = 255.0
++text = "flash_amount 0.5"
++horizontal_alignment = 1
++theme_override_colors/font_color = Color(0.145098, 0.207843, 0.290196, 1)
++
++[node name="Label1" type="Label" parent="."]
++offset_left = 472.0
++offset_top = 228.0
++offset_right = 568.0
++offset_bottom = 255.0
++text = "flash_amount 1.0"
++horizontal_alignment = 1
++theme_override_colors/font_color = Color(0.145098, 0.207843, 0.290196, 1)
+diff --git a/godot/tests/flash_model.gd b/godot/tests/flash_model.gd
+new file mode 100644
+index 0000000..2835150
+--- /dev/null
++++ b/godot/tests/flash_model.gd
+@@ -0,0 +1,51 @@
++extends SceneTree
++## CPU reference model for CLAUDE.md rule 4. This models the specification,
++## not the current shader implementation.
++
++const FLASH_COLOR := Color("25354a")
++const SAMPLES := [0.0, 0.5, 1.0]
++var failures := 0
++
++
++func model(vertex_color: Color, amount: float) -> Color:
++	return Color(
++		lerpf(vertex_color.r, FLASH_COLOR.r, amount),
++		lerpf(vertex_color.g, FLASH_COLOR.g, amount),
++		lerpf(vertex_color.b, FLASH_COLOR.b, amount),
++		vertex_color.a
++	)
++
++
++func hex_rgb(color: Color) -> String:
++	return "#%02x%02x%02x" % [roundi(color.r * 255.0), roundi(color.g * 255.0), roundi(color.b * 255.0)]
++
++
++func check(id: String, passed: bool, observed) -> void:
++	print(JSON.stringify({"id": id, "status": "PASS" if passed else "FAIL", "observed": observed}))
++	if not passed:
++		failures += 1
++
++
++func _initialize() -> void:
++	var colors := {"body": Color("dd775b"), "eyes": Color("000000")}
++	var table := {}
++	for name in colors:
++		var row := {}
++		for amount in SAMPLES:
++			row[str(amount)] = hex_rgb(model(colors[name], amount))
++		table[name] = row
++	print("FLASH_MODEL_COLORS: ", JSON.stringify(table))
++
++	for name in colors:
++		var source: Color = colors[name]
++		var at_zero := model(source, 0.0)
++		var at_one := model(source, 1.0)
++		check("%s at 0.0 preserves RGB and alpha" % name, at_zero.is_equal_approx(source), at_zero)
++		check("%s at 1.0 is flash RGB with alpha unchanged" % name,
++			Vector3(at_one.r, at_one.g, at_one.b).is_equal_approx(Vector3(FLASH_COLOR.r, FLASH_COLOR.g, FLASH_COLOR.b)) and is_equal_approx(at_one.a, source.a), at_one)
++
++	# Transparent input remains transparent even though its hidden RGB is mixed.
++	var transparent := model(Color(0.8, 0.2, 0.4, 0.0), 1.0)
++	check("transparent alpha stays transparent", is_zero_approx(transparent.a), transparent)
++	print("FLASH_MODEL failures=", failures)
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_flash_bench.gd b/godot/tests/test_flash_bench.gd
+new file mode 100644
+index 0000000..9c5f597
+--- /dev/null
++++ b/godot/tests/test_flash_bench.gd
+@@ -0,0 +1,48 @@
++extends SceneTree
++
++const BENCH := preload("res://tests/flash_bench.tscn")
++const SHADER_PATH := "res://features/player/clawd_flash.gdshader"
++var failures := 0
++
++
++func check(id: String, passed: bool, observed) -> void:
++	print(JSON.stringify({"id": id, "status": "PASS" if passed else "FAIL", "observed": observed}))
++	if not passed:
++		failures += 1
++
++
++func _initialize() -> void:
++	run.call_deferred()
++
++
++func run() -> void:
++	var bench := BENCH.instantiate()
++	root.add_child(bench)
++	await process_frame
++	var expected := {"Amount0": 0.0, "Amount05": 0.5, "Amount1": 1.0}
++	var material_ids := []
++	for node_name in expected:
++		var copy: Node2D = bench.get_node(node_name)
++		var material := copy.material as ShaderMaterial
++		var amount: float = material.get_shader_parameter("flash_amount") if material else -1.0
++		check("%s has a ShaderMaterial" % node_name, material != null, str(material))
++		if material:
++			material_ids.append(material.get_instance_id())
++		check("%s flash_amount is fixed at %.1f" % [node_name, expected[node_name]], is_equal_approx(amount, expected[node_name]), amount)
++	check("the three copies have distinct ShaderMaterials", material_ids.size() == 3 and material_ids[0] != material_ids[1] and material_ids[0] != material_ids[2] and material_ids[1] != material_ids[2], material_ids)
++
++	var shader: Shader = load(SHADER_PATH)
++	var uniforms := shader.get_shader_uniform_list()
++	var by_name := {}
++	for uniform in uniforms:
++		by_name[uniform.name] = uniform
++	var amount_uniform: Dictionary = by_name.get("flash_amount", {})
++	var color_uniform: Dictionary = by_name.get("flash_color", {})
++	check("shader uniform names are intact", by_name.size() == 2 and by_name.has("flash_amount") and by_name.has("flash_color"), by_name.keys())
++	check("flash_amount uniform is float", amount_uniform.get("type") == TYPE_FLOAT, amount_uniform)
++	check("flash_color uniform is Color", color_uniform.get("type") == TYPE_COLOR, color_uniform)
++
++	bench.queue_free()
++	await process_frame
++	print("FLASH_BENCH_TEST failures=", failures)
++	quit(1 if failures else 0)
+diff --git a/godot/tests/verify_flash_spec.gd b/godot/tests/verify_flash_spec.gd
+new file mode 100644
+index 0000000..241e15d
+--- /dev/null
++++ b/godot/tests/verify_flash_spec.gd
+@@ -0,0 +1,129 @@
++extends SceneTree
++## Black-box timing evidence for CLAUDE.md failure-flash rule 1.
++## This deliberately does not read retry_remaining or reproduce the player's
++## frame counter. Time is accumulated only from process-frame deltas observed
++## after a real fall begins.
++
++const Game = preload("res://game/session.gd")
++const FADE_SECONDS := 0.55
++var failures := 0
++
++
++class Sampler extends Node:
++	## A high priority value makes this run after the game and player _process().
++	var game: Node2D
++	var material: ShaderMaterial
++	var rows: Array[Dictionary] = []
++	var frame := 0
++	var failure_time := 0.0
++	var was_dying := false
++
++	func _ready() -> void:
++		process_priority = 1000
++
++	func _process(delta: float) -> void:
++		frame += 1
++		var dying: bool = game.state == Game.State.DYING
++		if dying:
++			if not was_dying:
++				failure_time = 0.0
++			failure_time += delta
++		rows.append({
++			"frame": frame,
++			"delta": delta,
++			"state": game.state,
++			"failure_time": failure_time if dying else 0.0,
++			"flash": float(material.get_shader_parameter("flash_amount")),
++		})
++		was_dying = dying
++
++
++func check(id: String, passed: bool, observed) -> void:
++	print(JSON.stringify({"id": id, "status": "PASS" if passed else "FAIL", "observed": observed}))
++	if not passed:
++		failures += 1
++
++
++func _initialize() -> void:
++	run.call_deferred()
++
++
++func run() -> void:
++	var game: Node2D = Game.new()
++	game.test_mode = true
++	root.add_child(game)
++	await process_frame
++	game.start_session()
++	for i in range(4):
++		await process_frame
++
++	var material := game.player.material as ShaderMaterial
++	check("Clawd carries a ShaderMaterial", material != null, str(material))
++	if material == null:
++		game.queue_free()
++		await process_frame
++		print("VERIFY_FLASH_SPEC failures=", failures)
++		quit(1)
++		return
++
++	var sampler := Sampler.new()
++	sampler.game = game
++	sampler.material = material
++	root.add_child(sampler)
++	await process_frame
++	sampler.rows.clear()
++
++	# Cause a real failure; session.gd detects this in its regular physics loop.
++	game.player.position.y = float(game.level.fall_y) + 5.0
++	var guard := 0
++	while guard < 500:
++		await process_frame
++		guard += 1
++		var saw_dying := sampler.rows.any(func(row): return row.state == Game.State.DYING)
++		if saw_dying and sampler.rows[-1].state == Game.State.PLAYING:
++			break
++
++	var dying: Array[Dictionary] = sampler.rows.filter(func(row): return row.state == Game.State.DYING)
++	var after: Array[Dictionary] = []
++	if not dying.is_empty():
++		after = sampler.rows.filter(func(row): return row.state == Game.State.PLAYING and row.frame > dying[-1].frame)
++
++	var physics_tick := 1.0 / float(Engine.physics_ticks_per_second)
++	var max_error := 0.0
++	var worst := {}
++	var within_tolerance := not dying.is_empty()
++	for row in dying:
++		var expected := clampf(1.0 - row.failure_time / FADE_SECONDS, 0.0, 1.0)
++		# Human review: a correct fade can trail the ideal line by one physics
++		# tick (the countdown moves in ticks) plus one frame (the failure is
++		# seen inside a frame). max(delta, tick) failed the known-good
++		# Chapter 6 driver at 144 fps (error 0.0369 > 0.0303).
++		var tolerance: float = (row.delta + physics_tick) / FADE_SECONDS
++		var error: float = absf(row.flash - expected)
++		if error > max_error:
++			max_error = error
++			worst = {"frame": row.frame, "t": row.failure_time, "flash": row.flash, "expected": expected, "error": error, "tolerance": tolerance}
++		if error > tolerance + 0.0001:
++			within_tolerance = false
++
++	var summary := {
++		"frames_in_failure": dying.size(),
++		"accumulated_game_time": dying[-1].failure_time if not dying.is_empty() else 0.0,
++		"first_flash": dying[0].flash if not dying.is_empty() else null,
++		"last_flash_before_retry": dying[-1].flash if not dying.is_empty() else null,
++		"first_flash_after_retry": after[0].flash if not after.is_empty() else null,
++		"max_error": max_error,
++		"worst_sample": worst,
++	}
++	print("FLASH_SPEC_SAMPLES: ", JSON.stringify(summary))
++	check("real fall produced failure samples", not dying.is_empty(), dying.size())
++	check("time-linear flash stays within one frame plus one physics tick", within_tolerance, worst)
++	check("first failure frame flash >= 0.96", not dying.is_empty() and dying[0].flash >= 0.96, dying[0].flash if not dying.is_empty() else null)
++	check("last failure frame flash <= 0.07", not dying.is_empty() and dying[-1].flash <= 0.07, dying[-1].flash if not dying.is_empty() else null)
++	check("flash is 0 on first frame after retry", not after.is_empty() and is_zero_approx(after[0].flash), after[0].flash if not after.is_empty() else null)
++
++	sampler.queue_free()
++	game.queue_free()
++	await process_frame
++	print("VERIFY_FLASH_SPEC failures=", failures)
++	quit(1 if failures else 0)

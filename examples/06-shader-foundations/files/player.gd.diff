@@ -1,0 +1,40 @@
+diff --git a/godot/features/player/player.gd b/godot/features/player/player.gd
+index 0beb103..5711d6d 100644
+--- a/godot/features/player/player.gd
++++ b/godot/features/player/player.gd
+@@ -2,6 +2,7 @@ extends CharacterBody2D
+ 
+ const Tuning = preload("res://features/player/tuning.gd")
+ const ClawdArt = preload("res://features/player/clawd_art.gd")
++const FlashShader = preload("res://features/player/clawd_flash.gdshader")
+ var animation_seconds: float = 0.0
+ var animation_name: String = "idle"
+ var tuning = Tuning.new()
+@@ -29,6 +30,9 @@ func _ready() -> void:
+ 	collider.shape = shape
+ 	collider.position = Vector2(0, -14)
+ 	add_child(collider)
++	var mat := ShaderMaterial.new()
++	mat.shader = FlashShader
++	material = mat
+ 
+ func reset_at(spawn: Vector2) -> void:
+ 	position = spawn
+@@ -80,7 +84,17 @@ func visual_animation() -> String:
+ 	if absf(velocity.x) > 8: return "walk"
+ 	return "idle"
+ 
++func _update_flash() -> void:
++	if not material is ShaderMaterial:
++		return
++	var mat := material as ShaderMaterial
++	var amount := 0.0
++	if get_parent().player_animation_context() == "failed":
++		amount = clampf(get_parent().retry_remaining / 0.55, 0.0, 1.0)
++	mat.set_shader_parameter("flash_amount", amount)
++
+ func _process(delta: float) -> void:
++	_update_flash()
+ 	if get_parent().player_animation_context() == "paused": return
+ 	var next_animation := visual_animation()
+ 	if next_animation != animation_name:

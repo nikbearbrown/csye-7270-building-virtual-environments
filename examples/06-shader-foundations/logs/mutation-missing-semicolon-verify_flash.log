@@ -1,0 +1,32 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+--Main Shader--
+    7 |  vec4 col = COLOR;
+    8 |  col.rgb = mix(col.rgb, flash_color.rgb, flash_amount)
+E   9->  COLOR = col;
+   10 | }
+   11 | 
+SHADER ERROR: Expected a ';'.
+          at: (null) (:9)
+          GDScript backtrace (most recent call first):
+              [0] uniform_checks (res://tests/verify_flash.gd:43)
+              [1] run (res://tests/verify_flash.gd:67)
+ERROR: Shader compilation failed.
+   at: shader_set_code (servers/rendering/dummy/storage/material_storage.cpp:192)
+   GDScript backtrace (most recent call first):
+       [0] uniform_checks (res://tests/verify_flash.gd:43)
+       [1] run (res://tests/verify_flash.gd:67)
+{"id":"uniform list has both uniforms (parse succeeded)","observed":[],"status":"FAIL"}
+{"id":"flash_amount is float with a 0..1 range hint","observed":{},"status":"FAIL"}
+{"id":"flash_color is a Color uniform","observed":{},"status":"FAIL"}
+{"id":"flash_color default is #25354a (from source text)","observed":[0.1451,0.20784,0.2902,1.0],"status":"PASS"}
+{"id":"Clawd carries the flash ShaderMaterial","observed":"():<ShaderMaterial#-9223372007544977920>","status":"PASS"}
+{"id":"flash is 0 while playing","observed":3,"status":"PASS"}
+{"average_frame_rate":60.0,"first_flash":1.0,"frames_in_failure":34,"last_flash_before_retry":0.0000000000000000883131951406374,"max_gap_vs_countdown":0.0,"seconds_in_failure":0.566666666666667}
+{"id":"first failure frame flash >= 0.96","observed":1.0,"status":"PASS"}
+{"id":"flash equals countdown / 0.55 on every failure frame","observed":0.0,"status":"PASS"}
+{"id":"failure lasts 0.55 s of game time (within one 30 fps frame)","observed":0.566666666666667,"status":"PASS"}
+{"id":"last failure frame flash <= 0.07","observed":0.0000000000000000883131951406374,"status":"PASS"}
+{"id":"flash is 0 on the first frame after the retry","observed":0.0,"status":"PASS"}
+{"id":"R during failure: flash was on, then 0 in the next frame","observed":[0.787878787878788,{"delta":0.0166666666666667,"flash":0.0,"frame":51,"remaining":0.0,"state":1}],"status":"PASS"}
+VERIFY_FLASH failures=3

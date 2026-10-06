@@ -1,0 +1,48 @@
+You are working in a scratch copy of walker-jumpman-clawd (Godot 4.7.2,
+GDScript, project in godot/). Do not change any file except the one you
+create: CLAUDE.md at the repository root.
+
+Read AGENTS.md, README.md, CHANGE-BRIEF.md, godot/project.godot,
+godot/game/session.gd, godot/features/player/player.gd,
+godot/features/player/clawd_art.gd and the test scripts in godot/tests/.
+
+Write CLAUDE.md, under 120 lines, in this order:
+1. The first line is exactly: @AGENTS.md
+2. "Project context": engine version, renderer, main scene, how Clawd is
+   drawn, which script owns the session state machine and the retry
+   countdown, Clawd's collision shape, and the exact headless test commands.
+   Give a file reference for every fact. Do not guess.
+3. "Effect specification": copy the block between SPEC BEGIN and SPEC END
+   below word for word.
+4. "Out of scope": what this change must not touch, in your own words,
+   consistent with the spec.
+5. "Unconfirmed": anything you could not confirm from the files.
+
+Do not write a shader and do not edit any script. Stop after CLAUDE.md.
+
+SPEC BEGIN
+Failure flash (Chapter 6)
+Visible effect: when a run fails (spikes or a fall), Clawd is tinted toward a
+flash color, then fades back to normal by the moment the retry happens.
+1. One float uniform, flash_amount, 0.0 to 1.0, drives the effect. It is 1.0
+   on the first frame of the failure and reaches 0.0 when the retry starts.
+   The fade is linear in time and lasts the same wall-clock time at 30, 60
+   and 144 frames per second.
+2. Pressing R during the failure ends the flash at once. In every state
+   except the failure, flash_amount is 0.0.
+3. A second uniform, flash_color, is a color with default #25354a (the
+   level's ink). Not white: the background is #f6f3ec, and white against it
+   has a contrast ratio of about 1.1 to 1.
+4. At flash_amount 0.0 Clawd looks exactly as before: same body color, same
+   black eyes, same transparent surroundings. At 1.0 every visible pixel of
+   Clawd is flash_color; transparent pixels stay transparent.
+5. Only Clawd changes. The level, background, HUD and gallery do not.
+6. No change to collision, movement, input, the session state machine, the
+   0.55 s retry delay, or any existing test's expectations. Presentation
+   code may read session state; it never writes it.
+7. It must work in this project's renderer.
+8. Evidence: a new headless test proves the shader is accepted by Godot's
+   shader parser in a headless run, the two uniforms exist with the right
+   types, and flash_amount obeys rules 1 and 2 at 30 and 144 fps. How it
+   looks is a human check.
+SPEC END

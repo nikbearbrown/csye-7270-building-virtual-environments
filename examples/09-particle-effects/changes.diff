@@ -1,0 +1,268 @@
+diff --git a/godot/main.gd b/godot/main.gd
+index bd74c2e..b46d48d 100644
+--- a/godot/main.gd
++++ b/godot/main.gd
+@@ -9,6 +9,8 @@ func game_over():
+ 	$HUD.show_game_over()
+ 	$Music.stop()
+ 	$DeathSound.play()
++	$DeathBurst.global_position = $Player.global_position
++	$DeathBurst.restart()
+ 
+ 
+ func new_game():
+diff --git a/godot/main.tscn b/godot/main.tscn
+index c84519c..1c28d5a 100644
+--- a/godot/main.tscn
++++ b/godot/main.tscn
+@@ -13,6 +13,38 @@ _data = {
+ }
+ point_count = 5
+ 
++[sub_resource type="Gradient" id="2"]
++colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
++
++[sub_resource type="GradientTexture1D" id="3"]
++gradient = SubResource("2")
++
++[sub_resource type="Curve" id="4"]
++_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
++point_count = 2
++
++[sub_resource type="CurveTexture" id="5"]
++curve = SubResource("4")
++
++[sub_resource type="Gradient" id="7"]
++colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
++
++[sub_resource type="GradientTexture2D" id="8"]
++gradient = SubResource("7")
++width = 16
++height = 16
++fill = 1
++fill_from = Vector2(0.5, 0.5)
++
++[sub_resource type="ParticleProcessMaterial" id="6"]
++particle_flag_disable_z = true
++spread = 180.0
++initial_velocity_min = 150.0
++initial_velocity_max = 300.0
++gravity = Vector3(0, 0, 0)
++scale_curve = SubResource("5")
++color_ramp = SubResource("3")
++
+ [node name="Main" type="Node" unique_id=1975992027]
+ script = ExtResource("1_0r6n5")
+ mob_scene = ExtResource("2_50pww")
+@@ -52,6 +84,15 @@ stream = ExtResource("5_55d8h")
+ [node name="DeathSound" type="AudioStreamPlayer" parent="." unique_id=1715684712]
+ stream = ExtResource("6_hp1r0")
+ 
++[node name="DeathBurst" type="GPUParticles2D" parent="."]
++emitting = false
++one_shot = true
++explosiveness = 1.0
++amount = 32
++lifetime = 0.6
++texture = SubResource("8")
++process_material = SubResource("6")
++
+ [connection signal="hit" from="Player" to="." method="game_over"]
+ [connection signal="timeout" from="MobTimer" to="." method="_on_MobTimer_timeout"]
+ [connection signal="timeout" from="ScoreTimer" to="." method="_on_ScoreTimer_timeout"]
+diff --git a/godot/tests/particle_cost.gd b/godot/tests/particle_cost.gd
+new file mode 100644
+index 0000000..8fc5b87
+--- /dev/null
++++ b/godot/tests/particle_cost.gd
+@@ -0,0 +1,91 @@
++extends SceneTree
++
++const AMOUNTS := [1000, 10000, 50000]
++const WARM_UP_FRAMES := 60
++const TIMED_FRAMES := 300
++const REPEATS := 3
++
++
++func _initialize() -> void:
++	call_deferred("run")
++
++
++func wait_frames(count: int) -> void:
++	for _frame in count:
++		await process_frame
++
++
++func time_frames(count: int) -> float:
++	var started_usec := Time.get_ticks_usec()
++	await wait_frames(count)
++	var elapsed_usec := Time.get_ticks_usec() - started_usec
++	return elapsed_usec / 1000.0 / count
++
++
++func make_gpu_particles(amount: int) -> GPUParticles2D:
++	var material := ParticleProcessMaterial.new()
++	material.initial_velocity_min = 50.0
++	material.initial_velocity_max = 100.0
++	material.gravity = Vector3(0.0, 98.0, 0.0)
++
++	var particles := GPUParticles2D.new()
++	particles.amount = amount
++	particles.lifetime = 1.0
++	particles.process_material = material
++	particles.emitting = true
++	return particles
++
++
++func make_cpu_particles(amount: int) -> CPUParticles2D:
++	var particles := CPUParticles2D.new()
++	particles.amount = amount
++	particles.lifetime = 1.0
++	particles.initial_velocity_min = 50.0
++	particles.initial_velocity_max = 100.0
++	particles.gravity = Vector2(0.0, 98.0)
++	particles.emitting = true
++	return particles
++
++
++func benchmark_case(container: Node2D, type_name: String, amount: int) -> void:
++	var means: Array[float] = []
++	for _repeat in REPEATS:
++		var emitter: Node2D
++		if type_name == "GPUParticles2D":
++			emitter = make_gpu_particles(amount)
++		else:
++			emitter = make_cpu_particles(amount)
++
++		container.add_child(emitter)
++		await wait_frames(WARM_UP_FRAMES)
++		means.append(await time_frames(TIMED_FRAMES))
++		emitter.queue_free()
++		await wait_frames(2)
++
++	var total := 0.0
++	for value in means:
++		total += value
++	print(
++		"%s amount=%d: min=%.6f ms/frame, mean=%.6f ms/frame, max=%.6f ms/frame"
++		% [type_name, amount, means.min(), total / means.size(), means.max()]
++	)
++
++
++func run() -> void:
++	print("Rendering method: ", RenderingServer.get_current_rendering_method())
++	print("Video adapter: ", RenderingServer.get_video_adapter_name())
++	print("Headless Godot uses a dummy renderer, so GPU particle simulation and all drawing are not measured.")
++
++	var container := Node2D.new()
++	root.add_child(container)
++	await wait_frames(WARM_UP_FRAMES)
++	var baseline := await time_frames(TIMED_FRAMES)
++	print("Empty scene baseline: %.6f ms/frame" % baseline)
++
++	for type_name in ["GPUParticles2D", "CPUParticles2D"]:
++		for amount in AMOUNTS:
++			await benchmark_case(container, type_name, amount)
++
++	container.queue_free()
++	await process_frame
++	quit()
+diff --git a/godot/tests/test_particles.gd b/godot/tests/test_particles.gd
+new file mode 100644
+index 0000000..947ccd4
+--- /dev/null
++++ b/godot/tests/test_particles.gd
+@@ -0,0 +1,93 @@
++extends SceneTree
++
++var failures := 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(ok: bool, label: String) -> void:
++	if not ok:
++		failures += 1
++	print("PASS " if ok else "FAIL ", label)
++
++func click(button: Button) -> void:
++	for down in [true, false]:
++		var event := InputEventMouseButton.new()
++		event.position = button.get_global_rect().get_center()
++		event.global_position = event.position
++		event.button_index = MOUSE_BUTTON_LEFT
++		event.pressed = down
++		root.push_input(event, true)
++		await process_frame
++
++func run() -> void:
++	seed(123)
++	root.size = Vector2i(480, 720)
++	var game: Node = load("res://main.tscn").instantiate()
++	root.add_child(game)
++	await process_frame
++	await process_frame
++
++	var player: Area2D = game.get_node("Player")
++	var burst: GPUParticles2D = game.get_node("DeathBurst")
++
++	# Static property checks — independent of rendering or gameplay state.
++	check(burst.texture is GradientTexture2D, "texture is GradientTexture2D (soft round dot)")
++	var mat := burst.process_material as ParticleProcessMaterial
++	check(mat != null and mat.particle_flag_disable_z, "particle_flag_disable_z enabled for 2D")
++
++	# Before any game starts the burst must be silent.
++	check(not burst.emitting, "not emitting at load, before Start")
++
++	await click(game.get_node("HUD/StartButton"))
++	await process_frame
++
++	# Still quiet after Start; fire has not been triggered yet.
++	check(not burst.emitting, "not emitting after Start, before hit")
++
++	# Capture the player's position now; force a hit with a frozen mob.
++	var hit_pos := player.global_position
++	var mob: RigidBody2D = load("res://mob.tscn").instantiate()
++	mob.position = player.position
++	mob.freeze = true
++	game.add_child(mob)
++	await create_timer(0.15).timeout
++
++	# Headless note: GPUParticles2D.emitting reads back through the dummy
++	# RenderingServer which always returns false in --headless mode.
++	# These three checks verify CPU-side state that IS observable without a display.
++	check(burst.emitting, "emitting after hit")
++	check(burst.is_visible_in_tree(), "burst is_visible_in_tree after hit")
++	check(burst.global_position.is_equal_approx(hit_pos), "burst global_position equals player hit position")
++
++	# Wait up to lifetime + 0.5 s for the one-shot finished signal.
++	# Use a Dictionary so the lambda captures a reference, not a value copy —
++	# GDScript lambdas cannot reassign an outer local variable.
++	var sig := {"done": false}
++	burst.finished.connect(func(): sig.done = true, CONNECT_ONE_SHOT)
++	await create_timer(burst.lifetime + 0.5).timeout
++	check(sig.done, "finished signal arrives within lifetime + 0.5 s")
++
++	# Wait out the rest of the HUD game-over flow before the restart button appears.
++	# From mob addition: 0.15 + 1.1 + 1.1 = 2.35 s total, matching test_input.gd.
++	await create_timer(1.1).timeout
++	await click(game.get_node("HUD/StartButton"))
++	await process_frame
++
++	# Force a second death to confirm the burst re-fires.
++	var mob2: RigidBody2D = load("res://mob.tscn").instantiate()
++	mob2.position = player.position
++	mob2.freeze = true
++	game.add_child(mob2)
++	await create_timer(0.15).timeout
++
++	check(burst.emitting, "emits again on second death")
++
++	game.get_node("Music").stop()
++	game.get_node("DeathSound").stop()
++	await create_timer(0.25).timeout
++	print("RESULT failures=", failures, "; headless state and collision fixture, not footage")
++	print("SCREEN CHECK (requires display): 32 white particles spray in all directions from")
++	print("  the player's position at death, shrink and fade to transparent over 0.6 s,")
++	print("  and the burst repeats identically on the second death.")
++	quit(1 if failures else 0)

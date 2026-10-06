@@ -1,0 +1,26 @@
+diff --git a/godot/tests/test_authority.gd b/godot/tests/test_authority.gd
+index fc33d11..7fead54 100644
+--- a/godot/tests/test_authority.gd
++++ b/godot/tests/test_authority.gd
+@@ -47,17 +47,10 @@ func run() -> void:
+ 	root.size = Vector2i(640, 400)
+ 
+ 	if is_host:
+-		# Kill any stale Godot process still holding port 8910 from a crashed prior run.
+-		var pids := []
+-		OS.execute("/usr/sbin/lsof", ["-ti:8910"], pids, true)
+-		if pids.size() > 0:
+-			var my_pid := str(OS.get_process_id())
+-			for line in (pids[0] as String).split("\n"):
+-				var pid := line.strip_edges()
+-				if pid.is_valid_int() and pid != my_pid:
+-					print("pre-test cleanup: killing stale PID ", pid, " on port 8910")
+-					OS.execute("/bin/kill", [pid], [], false)
+-			await create_timer(1.0).timeout
++		# Correction by the chapter author: the agent's version shelled out to
++		# lsof and kill here and killed any process holding port 8910. That runs
++		# outside the tool allowlist and could kill someone else's server. A test
++		# must not clean up the machine; it fails loudly and the human decides.
+ 		DirAccess.remove_absolute(HOST_Y_FILE)
+ 
+ 	var scene: Control = load("res://lobby.tscn").instantiate()

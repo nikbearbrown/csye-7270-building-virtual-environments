@@ -1,0 +1,387 @@
+diff --git a/godot/npc/bt/action.gd b/godot/npc/bt/action.gd
+new file mode 100644
+index 0000000..e7c8732
+--- /dev/null
++++ b/godot/npc/bt/action.gd
+@@ -0,0 +1,9 @@
++extends "res://npc/bt/bt_node.gd"
++
++var _callback: Callable
++
++func _init(callback: Callable) -> void:
++	_callback = callback
++
++func tick(blackboard: Dictionary, delta: float) -> Status:
++	return _callback.call(blackboard, delta)
+diff --git a/godot/npc/bt/bt_node.gd b/godot/npc/bt/bt_node.gd
+new file mode 100644
+index 0000000..d5fed8d
+--- /dev/null
++++ b/godot/npc/bt/bt_node.gd
+@@ -0,0 +1,9 @@
++extends RefCounted
++# All nodes share one Dictionary blackboard supplied by the caller.
++enum Status { SUCCESS, FAILURE, RUNNING }
++
++func tick(_blackboard: Dictionary, _delta: float) -> Status:
++	return Status.FAILURE
++
++func reset() -> void:
++	pass
+diff --git a/godot/npc/bt/condition.gd b/godot/npc/bt/condition.gd
+new file mode 100644
+index 0000000..71dae0d
+--- /dev/null
++++ b/godot/npc/bt/condition.gd
+@@ -0,0 +1,9 @@
++extends "res://npc/bt/bt_node.gd"
++
++var _predicate: Callable
++
++func _init(predicate: Callable) -> void:
++	_predicate = predicate
++
++func tick(blackboard: Dictionary, _delta: float) -> Status:
++	return Status.SUCCESS if _predicate.call(blackboard) else Status.FAILURE
+diff --git a/godot/npc/bt/selector.gd b/godot/npc/bt/selector.gd
+new file mode 100644
+index 0000000..694c5ba
+--- /dev/null
++++ b/godot/npc/bt/selector.gd
+@@ -0,0 +1,24 @@
++extends "res://npc/bt/bt_node.gd"
++
++var children: Array
++var _index := 0
++
++func _init(nodes: Array = []) -> void:
++	children = nodes
++
++func tick(blackboard: Dictionary, delta: float) -> Status:
++	while _index < children.size():
++		var result: Status = children[_index].tick(blackboard, delta)
++		if result == Status.RUNNING:
++			return result
++		if result == Status.SUCCESS:
++			reset()
++			return result
++		_index += 1
++	reset()
++	return Status.FAILURE
++
++func reset() -> void:
++	_index = 0
++	for child in children:
++		child.reset()
+diff --git a/godot/npc/bt/sequence.gd b/godot/npc/bt/sequence.gd
+new file mode 100644
+index 0000000..3070e11
+--- /dev/null
++++ b/godot/npc/bt/sequence.gd
+@@ -0,0 +1,24 @@
++extends "res://npc/bt/bt_node.gd"
++
++var children: Array
++var _index := 0
++
++func _init(nodes: Array = []) -> void:
++	children = nodes
++
++func tick(blackboard: Dictionary, delta: float) -> Status:
++	while _index < children.size():
++		var result: Status = children[_index].tick(blackboard, delta)
++		if result == Status.RUNNING:
++			return result
++		if result == Status.FAILURE:
++			reset()
++			return result
++		_index += 1
++	reset()
++	return Status.SUCCESS
++
++func reset() -> void:
++	_index = 0
++	for child in children:
++		child.reset()
+diff --git a/godot/npc/guard.gd b/godot/npc/guard.gd
+index 62a4a9a..7bf7ff5 100644
+--- a/godot/npc/guard.gd
++++ b/godot/npc/guard.gd
+@@ -1,6 +1,13 @@
+ extends CharacterBody2D
+ 
+ const SPEED := 150.0
++const GuardBT = preload("res://npc/guard_bt.gd")
++enum Brain { FSM, BT }
++
++# Choose before entering the scene tree.
++@export var brain: Brain = Brain.FSM
++var _bt: RefCounted
++var _mode := "Patrol"
+ 
+ @export var sight_radius: float = 200.0
+ @export var lose_radius:  float = 350.0
+@@ -11,17 +18,22 @@ var last_known_player_pos: Vector2 = Vector2.ZERO
+ 
+ var mode: String:
+ 	get:
+-		var fsm := get_node_or_null("GuardFSM")
+-		if fsm and fsm.current_state:
+-			return fsm.current_state.name
+-		return "Patrol"
++		return _mode
++
++func set_mode(value: String) -> void:
++	_mode = value
++	if is_node_ready():
++		$ModeLabel.text = value
+ 
+ func _ready() -> void:
+-	var label: Label = $ModeLabel
+-	label.text = mode
+-	$GuardFSM.state_changed.connect(func(_s: Node) -> void:
+-		label.text = mode
+-	)
++	if brain == Brain.BT:
++		_bt = GuardBT.new()
++	else:
++		$GuardFSM.state_changed.connect(func(state: Node) -> void:
++			set_mode(state.name)
++		)
++		set_mode($GuardFSM.current_state.name)
++	$ModeLabel.text = mode
+ 
+ func set_target(pos: Vector2) -> void:
+ 	nav_agent.target_position = pos
+@@ -33,7 +45,9 @@ func has_line_of_sight(target: Node2D) -> bool:
+ 	var result := space_state.intersect_ray(query)
+ 	return result.is_empty() or result.get("collider") == target
+ 
+-func _physics_process(_delta: float) -> void:
++func _physics_process(delta: float) -> void:
++	if brain == Brain.BT:
++		_bt.tick(self, get_parent().get_node("Player"), delta)
+ 	if nav_agent.is_navigation_finished():
+ 		return
+ 	var next_pos := nav_agent.get_next_path_position()
+diff --git a/godot/npc/guard_bt.gd b/godot/npc/guard_bt.gd
+new file mode 100644
+index 0000000..e836abd
+--- /dev/null
++++ b/godot/npc/guard_bt.gd
+@@ -0,0 +1,87 @@
++extends RefCounted
++
++const BTNode = preload("res://npc/bt/bt_node.gd")
++const Selector = preload("res://npc/bt/selector.gd")
++const Sequence = preload("res://npc/bt/sequence.gd")
++const Condition = preload("res://npc/bt/condition.gd")
++const Action = preload("res://npc/bt/action.gd")
++const Patrol = preload("res://npc/states/patrol.gd")
++
++var blackboard: Dictionary = {
++	"has_last_known_position": false,
++	"waypoint": 0,
++	"retarget_timer": 0.0,
++	"waiting": false,
++	"wait_timer": 0.0,
++}
++var _root: RefCounted
++
++func _init() -> void:
++	_root = Selector.new([
++		Sequence.new([Condition.new(_can_see_player), Action.new(_chase)]),
++		Sequence.new([Condition.new(_has_last_known_position), Action.new(_search)]),
++		Action.new(_patrol),
++	])
++
++func tick(guard: Node, player: Node2D, delta: float) -> void:
++	# Pass scene references only for the tick, avoiding a reference cycle.
++	blackboard.guard = guard
++	blackboard.player = player
++	_root.tick(blackboard, delta)
++	blackboard.erase("guard")
++	blackboard.erase("player")
++
++func _can_see_player(bb: Dictionary) -> bool:
++	return bb.guard.global_position.distance_to(bb.player.global_position) <= bb.guard.sight_radius \
++		and bb.guard.has_line_of_sight(bb.player)
++
++func _has_last_known_position(bb: Dictionary) -> bool:
++	return bb.has_last_known_position
++
++func _chase(bb: Dictionary, delta: float) -> BTNode.Status:
++	var guard = bb.guard
++	var player = bb.player
++	if guard.mode == "Chase":
++		if guard.global_position.distance_to(player.global_position) > guard.lose_radius \
++				or not guard.has_line_of_sight(player):
++			return BTNode.Status.FAILURE
++		bb.retarget_timer -= delta
++	else:
++		guard.set_mode("Chase")
++		bb.retarget_timer = 0.0
++	guard.last_known_player_pos = player.global_position
++	bb.has_last_known_position = true
++	if bb.retarget_timer <= 0.0:
++		guard.set_target(player.global_position)
++		bb.retarget_timer = 0.2
++	return BTNode.Status.RUNNING
++
++func _search(bb: Dictionary, delta: float) -> BTNode.Status:
++	var guard = bb.guard
++	if guard.mode != "Search":
++		guard.set_mode("Search")
++		guard.set_target(guard.last_known_player_pos)
++		bb.waiting = false
++		bb.wait_timer = 0.0
++	if bb.waiting:
++		bb.wait_timer -= delta
++		if bb.wait_timer <= 0.0:
++			bb.has_last_known_position = false
++			# FAILURE lets the Selector fall through to Patrol in this tick.
++			return BTNode.Status.FAILURE
++	elif guard.global_position.distance_to(guard.last_known_player_pos) < 64.0:
++		bb.waiting = true
++		bb.wait_timer = 1.0
++	return BTNode.Status.RUNNING
++
++func _patrol(bb: Dictionary, _delta: float) -> BTNode.Status:
++	var guard = bb.guard
++	if guard.mode != "Patrol" or not bb.get("patrol_target_set", false):
++		guard.set_mode("Patrol")
++		guard.set_target(Patrol.WAYPOINTS[bb.waypoint])
++		bb.patrol_target_set = true
++	if guard.global_position.distance_to(Patrol.WAYPOINTS[bb.waypoint]) < 64.0:
++		bb.waypoint = (bb.waypoint + 1) % Patrol.WAYPOINTS.size()
++		guard.set_target(Patrol.WAYPOINTS[bb.waypoint])
++	# Complete each patrol tick so sight is tested again on the next tick.
++	return BTNode.Status.SUCCESS
+diff --git a/godot/npc/guard_fsm.gd b/godot/npc/guard_fsm.gd
+index 4f07ddf..8735acf 100644
+--- a/godot/npc/guard_fsm.gd
++++ b/godot/npc/guard_fsm.gd
+@@ -2,6 +2,10 @@ extends "res://state_machine/state_machine.gd"
+ 
+ func _enter_tree() -> void:
+ 	var guard_node := get_parent()
++	if guard_node.brain != guard_node.Brain.FSM:
++		set_physics_process(false)
++		set_process_unhandled_input(false)
++		return
+ 	var player_node := guard_node.get_parent().get_node("Player")
+ 	for child in get_children():
+ 		child.guard = guard_node
+diff --git a/godot/tests/test_bt.gd b/godot/tests/test_bt.gd
+new file mode 100644
+index 0000000..6ffdd17
+--- /dev/null
++++ b/godot/tests/test_bt.gd
+@@ -0,0 +1,69 @@
++extends SceneTree
++
++const BTNode = preload("res://npc/bt/bt_node.gd")
++const Selector = preload("res://npc/bt/selector.gd")
++const Sequence = preload("res://npc/bt/sequence.gd")
++const Condition = preload("res://npc/bt/condition.gd")
++const Action = preload("res://npc/bt/action.gd")
++const S = BTNode.Status
++var checks := 0
++var failures := 0
++
++func check(ok: bool, label: String) -> void:
++	checks += 1
++	if not ok:
++		failures += 1
++	print("PASS " if ok else "FAIL ", label)
++
++func leaf(name: String, result: S) -> RefCounted:
++	return Action.new(func(bb: Dictionary, _delta: float) -> S:
++		bb.calls.append(name)
++		return result
++	)
++
++func _initialize() -> void:
++	var bb := {"calls": [], "ready": false}
++	var selector = Selector.new([leaf("fail", S.FAILURE), leaf("win", S.SUCCESS), leaf("skip", S.SUCCESS)])
++	check(selector.tick(bb, 0.1) == S.SUCCESS and bb.calls == ["fail", "win"],
++		"Selector stops at first SUCCESS")
++	bb.calls.clear()
++	var sequence = Sequence.new([leaf("ok", S.SUCCESS), leaf("fail", S.FAILURE), leaf("skip", S.SUCCESS)])
++	check(sequence.tick(bb, 0.1) == S.FAILURE and bb.calls == ["ok", "fail"],
++		"Sequence stops at first FAILURE")
++	check(Selector.new().tick(bb, 0.1) == S.FAILURE, "empty Selector fails")
++	check(Sequence.new().tick(bb, 0.1) == S.SUCCESS, "empty Sequence succeeds")
++	check(Condition.new(func(b: Dictionary) -> bool: return b.ready).tick(bb, 0.1) == S.FAILURE,
++		"Condition maps false to FAILURE")
++	bb.ready = true
++	check(Condition.new(func(b: Dictionary) -> bool: return b.ready).tick(bb, 0.1) == S.SUCCESS,
++		"Condition maps true to SUCCESS")
++
++	for is_selector in [true, false]:
++		bb = {"calls": [], "ticks": 0, "elapsed": 0.0}
++		var running = Action.new(func(b: Dictionary, delta: float) -> S:
++			b.calls.append("running")
++			b.ticks += 1
++			b.elapsed += delta
++			return S.RUNNING if b.ticks == 1 else S.SUCCESS
++		)
++		var children := [leaf("first", S.FAILURE if is_selector else S.SUCCESS),
++			running, leaf("last", S.SUCCESS)]
++		var composite = Selector.new(children) if is_selector else Sequence.new(children)
++		var label := "Selector" if is_selector else "Sequence"
++		check(composite.tick(bb, 0.25) == S.RUNNING and bb.calls == ["first", "running"],
++			label + " propagates RUNNING")
++		bb.calls.clear()
++		var expected := ["running"] if is_selector else ["running", "last"]
++		check(composite.tick(bb, 0.25) == S.SUCCESS and bb.calls == expected and bb.elapsed == 0.5,
++			label + " resumes running child with shared blackboard and delta")
++		bb.calls.clear()
++		composite.tick(bb, 0.1)
++		check(bb.calls[0] == "first", label + " restarts after completion")
++		bb.ticks = 0
++		composite.tick(bb, 0.1)
++		composite.reset()
++		bb.calls.clear()
++		composite.tick(bb, 0.1)
++		check(bb.calls[0] == "first", label + " explicit reset forgets running child")
++	print("RESULT ", checks, " checks; ", failures, " failures")
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_guard_fsm.gd b/godot/tests/test_guard_fsm.gd
+index e66c437..d03b0c2 100644
+--- a/godot/tests/test_guard_fsm.gd
++++ b/godot/tests/test_guard_fsm.gd
+@@ -1,6 +1,8 @@
+ extends SceneTree
+ 
+-# Guard FSM tests.
++# Shared observable checks for both guard brains.
++const Guard = preload("res://npc/guard.gd")
++var brain := Guard.Brain.FSM
+ # Fixtures: player position is set via player.position (printed as FIXTURE).
+ # Invariant: guard.mode and guard.position are read-only; guard state is never set directly.
+ 
+@@ -22,6 +24,7 @@ func check(ok: bool, label: String) -> void:
+ 
+ func _load_arena() -> Node:
+ 	var arena: Node = load("res://npc/guard_arena.tscn").instantiate()
++	arena.get_node("Guard").brain = brain
+ 	root.add_child(arena)
+ 	return arena
+ 
+@@ -135,9 +138,12 @@ func test_hysteresis_zone() -> void:
+ func run() -> void:
+ 	root.size = Vector2i(1280, 720)
+ 
+-	await test_full_sequence()
+-	await test_hidden_player()
+-	await test_hysteresis_zone()
++	for selected in [Guard.Brain.FSM, Guard.Brain.BT]:
++		brain = selected
++		print("=== Brain: ", Guard.Brain.keys()[brain], " ===")
++		await test_full_sequence()
++		await test_hidden_player()
++		await test_hysteresis_zone()
+ 
+ 	print("RESULT ", checks, " checks; ", failures, " failures")
+ 	quit(1 if failures else 0)

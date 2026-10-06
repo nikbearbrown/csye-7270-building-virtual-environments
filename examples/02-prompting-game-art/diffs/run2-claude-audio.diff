@@ -1,0 +1,258 @@
+diff --git a/godot/game/main.tscn b/godot/game/main.tscn
+index 980d7a5..a36e97f 100644
+--- a/godot/game/main.tscn
++++ b/godot/game/main.tscn
+@@ -1,6 +1,10 @@
+-[gd_scene load_steps=2 format=3]
++[gd_scene load_steps=3 format=3]
+ 
+ [ext_resource type="Script" path="res://game/session.gd" id="1"]
++[ext_resource type="Script" path="res://audio/audio_cues.gd" id="2"]
+ 
+ [node name="WalkerJumpman" type="Node2D"]
+ script = ExtResource("1")
++
++[node name="AudioCues" type="Node" parent="."]
++script = ExtResource("2")
+diff --git a/godot/tests/test_audio_cues.gd b/godot/tests/test_audio_cues.gd
+new file mode 100644
+index 0000000..09ad6b2
+--- /dev/null
++++ b/godot/tests/test_audio_cues.gd
+@@ -0,0 +1,149 @@
++extends SceneTree
++## Audio-cue headless test.
++## Run: godot --headless --path godot --script res://tests/test_audio_cues.gd --fixed-fps 60
++
++const Game      = preload("res://game/session.gd")
++const AudioCues = preload("res://audio/audio_cues.gd")
++
++var game: Node2D
++var cues: Node
++var checks: int  = 0
++var failures: int = 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func steps(n: int) -> void:
++	for _i in range(n):
++		await physics_frame
++		await process_frame
++
++func check(label: String, passed: bool) -> void:
++	checks += 1
++	print("%s  %s" % ["PASS" if passed else "FAIL", label])
++	if not passed:
++		failures += 1
++
++func wait_for_floor(max_steps: int = 90) -> void:
++	var waited := 0
++	while not game.player.is_on_floor() and waited < max_steps:
++		await steps(1)
++		waited += 1
++
++# ----- scene helpers --------------------------------------------------------
++
++func fresh_with_cues() -> void:
++	if is_instance_valid(game):
++		game.queue_free()
++		await process_frame
++	game = Game.new()
++	game.test_mode = true
++	root.add_child(game)        # game._ready() runs → player created
++	cues = AudioCues.new()
++	game.add_child(cues)        # cues._ready() runs with player already alive
++	game.start_session()
++	game.player.test_control = true
++	await steps(3)
++
++func fresh_without_cues() -> void:
++	if is_instance_valid(game):
++		game.queue_free()
++		await process_frame
++	game = Game.new()
++	game.test_mode = true
++	root.add_child(game)
++	game.start_session()
++	game.player.test_control = true
++	await steps(3)
++
++# ----- shared input sequence ------------------------------------------------
++# Three jumps, one spike death, auto-retry, pause, resume.
++
++func do_three_jumps() -> void:
++	for _i in range(3):
++		game.player.test_jump_pressed = true
++		game.player.test_jump_held   = true
++		await steps(1)
++		game.player.test_jump_held = false
++		await wait_for_floor(90)
++		await steps(4)          # settle on floor before next jump
++
++func do_spike_death() -> void:
++	game.player.position = Vector2(330.0, 310.0)
++	await steps(4)              # contact_settle_ticks=2, then death
++
++func do_retry_wait() -> void:
++	await steps(40)             # 0.55 s retry @ 60 fps ≈ 33 frames
++
++func do_pause_resume() -> void:
++	game.set_paused(true)
++	await steps(3)
++	game.set_paused(false)
++	await steps(3)
++
++# ----- main -----------------------------------------------------------------
++
++func run() -> void:
++	# ── Part A: with AudioCues ──────────────────────────────────────────────
++	await fresh_with_cues()
++
++	await do_three_jumps()
++	check("jump-cues: 3 jumps → exactly 3 play() calls", cues.jump_plays == 3)
++
++	await do_spike_death()
++	check("fail-cue: spike death → exactly 1 play() call", cues.fail_plays == 1)
++	check("fail-cue: game is DYING after spike", game.state == Game.State.DYING)
++
++	await do_retry_wait()
++
++	# Music import settings (loaded fresh from the imported resource)
++	var wav := load("res://audio/placeholder/music_loop.wav") as AudioStreamWAV
++	check("music-loop: resource loads as AudioStreamWAV", wav != null)
++	if wav != null:
++		check("music-loop: loop_mode == LOOP_FORWARD",
++			wav.loop_mode == AudioStreamWAV.LOOP_FORWARD)
++		check("music-loop: loop_begin == 0", wav.loop_begin == 0)
++		check("music-loop: loop_end == 176399 (last sample of 4 s @ 44100)",
++			wav.loop_end == 176399)
++
++	# Effects have looping disabled
++	var j_wav := load("res://audio/placeholder/jump.wav") as AudioStreamWAV
++	check("jump.wav: loop_mode == LOOP_DISABLED",
++		j_wav != null and j_wav.loop_mode == AudioStreamWAV.LOOP_DISABLED)
++	var f_wav := load("res://audio/placeholder/fail.wav") as AudioStreamWAV
++	check("fail.wav: loop_mode == LOOP_DISABLED",
++		f_wav != null and f_wav.loop_mode == AudioStreamWAV.LOOP_DISABLED)
++
++	# Pause / resume changes stream_paused on the music player
++	game.set_paused(true)
++	await steps(3)
++	var paused_flag: bool = cues._music_stream.stream_paused
++	game.set_paused(false)
++	await steps(3)
++	var resumed_flag: bool = not cues._music_stream.stream_paused
++	check("music pauses while PAUSED", paused_flag)
++	check("music resumes when PLAYING resumes", resumed_flag)
++
++	# Record outcome with cues present
++	var with_state:  int = game.state
++	var with_deaths: int = game.deaths
++
++	game.queue_free()
++	await process_frame
++
++	# ── Part B: same inputs without AudioCues ───────────────────────────────
++	await fresh_without_cues()
++
++	await do_three_jumps()
++	await do_spike_death()
++	await do_retry_wait()
++	await do_pause_resume()
++
++	check("no-cues: game.state matches with-cues run",  game.state  == with_state)
++	check("no-cues: game.deaths matches with-cues run", game.deaths == with_deaths)
++
++	game.queue_free()
++	await process_frame
++
++	print("\ntest_audio_cues: %d/%d passed" % [checks - failures, checks])
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_audio_cues.gd.uid b/godot/tests/test_audio_cues.gd.uid
+new file mode 100644
+index 0000000..677c8e4
+--- /dev/null
++++ b/godot/tests/test_audio_cues.gd.uid
+@@ -0,0 +1 @@
++uid://dp5hn8cjwvtqx
+diff --git a/tools/make_test_tones.py b/tools/make_test_tones.py
+new file mode 100644
+index 0000000..4cc610c
+--- /dev/null
++++ b/tools/make_test_tones.py
+@@ -0,0 +1,74 @@
++#!/usr/bin/env python3
++"""
++Write 16-bit mono 44.1 kHz WAV test tones to godot/audio/placeholder/.
++
++  jump.wav         80 ms   900 Hz sine,  72 complete cycles
++                   Period = 49 samples (44100/900 = 49, exact integer)
++                   3528 samples / 49 = 72 cycles
++
++  fail.wav        250 ms   300 Hz sine,  75 complete cycles
++                   Period = 147 samples (44100/300 = 147, exact integer)
++                   11025 samples / 147 = 75 cycles
++
++  music_loop.wav    4.0 s  100 Hz sine, 400 complete cycles
++                   Period = 441 samples (44100/100 = 441, exact integer)
++                   176400 samples / 441 = 400 cycles exactly
++                   Zero crossing at sample 0 (sin(0) = 0); the mathematical
++                   function returns to phase 0 at t = 4.000 s (100 * 4 = 400
++                   integer), giving a seamless Forward loop from first to last
++                   sample.  The loop seam audibility is a human check.
++
++All output uses Python standard-library modules only (math, os, struct, wave).
++
++Godot 4 WAV importer edit/loop_mode values (different from AudioStreamWAV.LoopMode):
++  0 = Detect from file (reads SMPL chunk)  1 = Disabled  2 = Forward
++  3 = Ping-pong  4 = Backward
++music_loop.wav.import uses edit/loop_mode=2 (Forward).
++"""
++
++import math
++import os
++import struct
++import wave
++
++SR = 44_100           # sample rate (Hz)
++AMPLITUDE = 0.5       # half scale; well below clip
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++OUT_DIR = os.path.join(_HERE, "..", "godot", "audio", "placeholder")
++
++
++def _sine_bytes(freq_hz: float, n_samples: int) -> bytes:
++    """Return little-endian 16-bit PCM bytes for one channel of a sine wave."""
++    two_pi_f = 2.0 * math.pi * freq_hz / SR
++    raw = [round(AMPLITUDE * 32767.0 * math.sin(two_pi_f * k))
++           for k in range(n_samples)]
++    return struct.pack(f"<{n_samples}h", *raw)
++
++
++def write_tone(name: str, freq_hz: float, n_samples: int) -> None:
++    os.makedirs(OUT_DIR, exist_ok=True)
++    path = os.path.join(OUT_DIR, name)
++    data = _sine_bytes(freq_hz, n_samples)
++    with wave.open(path, "wb") as w:
++        w.setnchannels(1)     # mono
++        w.setsampwidth(2)     # 16-bit
++        w.setframerate(SR)
++        w.writeframes(data)
++    duration_ms = n_samples * 1000 / SR
++    cycles = n_samples / (SR / freq_hz)
++    first = data[0:2]
++    last  = data[-2:]
++    s0 = struct.unpack("<h", first)[0]
++    sN = struct.unpack("<h", last)[0]
++    print(f"  {name}: {n_samples} samples  {duration_ms:.1f} ms  "
++          f"{freq_hz:.0f} Hz  {cycles:.0f} cycles  "
++          f"sample[0]={s0}  sample[N-1]={sN}")
++
++
++if __name__ == "__main__":
++    print(f"Output: {os.path.abspath(OUT_DIR)}")
++    write_tone("jump.wav",        900.0,    3_528)   #  80 ms, period=49
++    write_tone("fail.wav",        300.0,   11_025)   # 250 ms, period=147
++    write_tone("music_loop.wav",  100.0,  176_400)   #   4 s,  period=441
++    print("Done.")

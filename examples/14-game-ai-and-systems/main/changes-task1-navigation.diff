@@ -1,0 +1,483 @@
+diff --git a/HANDOFF.md b/HANDOFF.md
+new file mode 100644
+index 0000000..3466f1e
+--- /dev/null
++++ b/HANDOFF.md
+@@ -0,0 +1,158 @@
++# Handoff — Task 1 of 3: guard navigation
++
++## Files changed (all new, nothing modified)
++
++| File | Role |
++|------|------|
++| `godot/npc/guard.gd` | Guard CharacterBody2D script: `set_target(pos)` + physics-frame NavAgent follow |
++| `godot/npc/guard.gd.uid` | UID stub (Godot falls back to path; see note below) |
++| `godot/npc/guard_arena.gd` | Root Node2D script: builds NavigationPolygon procedurally in `_ready()` |
++| `godot/npc/guard_arena.gd.uid` | UID stub |
++| `godot/npc/guard_arena.tscn` | 1280×720 arena scene (walls, obstacle, nav region, Player instance, Guard) |
++| `godot/tests/test_guard_nav.gd` | Headless SceneTree test: 4 checks + 1 observation |
++| `godot/tests/test_guard_nav.gd.uid` | UID stub |
++
++No existing files were touched.
++
++---
++
++## Exact test commands and their real output
++
++All three commands were run from the repo root (`godot/` is the Godot project directory):
++
++### New test — guard navigation
++```
++godot --headless --path godot --script res://tests/test_guard_nav.gd
++```
++```
++--- Check 3: same-frame set_target before nav-map sync ---
++WARNING: res://npc/guard_arena.tscn:3 - ext_resource, invalid UID: uid://b9n3kx5p1yhmw
++         - using text path instead: res://npc/guard_arena.gd
++WARNING: res://npc/guard_arena.tscn:4 - ext_resource, invalid UID: uid://cgr1a0dv3npfd
++         - using text path instead: res://npc/guard.gd
++OBSERVE same-frame: nav_finished_before_tick=false reachable_before_tick=false
++                    moved_after_0.3s=true guard.position=(194.1835, 347.9354)
++--- Check 1: guard navigates around obstacle ---
++[same UID warnings omitted for brevity]
++PASS guard reaches far-side target within 20.0s
++PASS guard never enters obstacle collision bounds
++--- Check 2: unreachable target inside obstacle ---
++[same UID warnings omitted]
++PASS target inside obstacle: is_target_reachable() == false
++PASS guard rests outside obstacle bounds for unreachable target (pos=(632.3198, 240.1188))
++RESULT 4 checks; 0 failures
++```
++Exit code **0**.
++
++### Existing test — input / state machine
++```
++godot --headless --path godot --script res://test_input.gd
++```
++18/18 PASS, exit **0** (identical to previous log).
++
++### Existing test — combo / sword
++```
++godot --headless --path godot --script res://test_combo.gd
++```
++11/11 PASS, exit **0** (identical to previous log).
++
++---
++
++## Check 3 — actual same-frame behaviour (observation only)
++
++When `set_target()` is called in the same call frame as `root.add_child(arena)`, before a
++single physics tick has executed:
++
++* `NavigationAgent2D.is_navigation_finished()` → **false**
++* `NavigationAgent2D.is_target_reachable()` → **false** (map not yet synced)
++* After 0.3 s: guard **has moved** to ~(194, 348); Godot deferred the path request and
++  computed it on the first physics frame. The guard was not stuck at its origin.
++
++Conclusion: Godot 4.7 silently defers the first path query when the nav map has not yet
++synced. There is no error; movement begins on the next physics tick.
++
++---
++
++## Arena layout (for Tasks 2 and 3)
++
++```
++(0,0)─────────────────────────────(1280,0)
++│  walls 20 px thick on all four sides    │
++│                                         │
++│  Guard start:  (160, 360)               │
++│  Player start: (200, 560)               │
++│                                         │
++│        ┌────────────────┐               │
++│        │ StaticBody2D   │               │
++│        │ obstacle       │               │
++│        │ 240×200        │               │
++│        │ centre(640,360)│               │
++│        └────────────────┘               │
++│                                         │
++(0,720)───────────────────────────(1280,720)
++```
++
++* Obstacle collision bounds: x 520–760, y 260–460
++* Navigation hole (obstacle + 20 px margin): x 500–780, y 240–480
++* Walkable nav region: (20,20)–(1260,700) minus the hole
++* Guard: `CharacterBody2D`, `CircleShape2D` radius 16, speed 150 px/s,
++  `target_desired_distance = 48`, `path_desired_distance = 8`
++
++---
++
++## Navigation polygon implementation detail
++
++`guard_arena.gd._build_nav_polygon()` sets `NavigationPolygon.vertices` directly and
++calls `add_polygon()` 12 times (CCW triangles). The triangulation decomposes the arena
++into four rectangular strips (top, left, right, bottom) using a fan from v0 and v10
++respectively. Every pair of adjacent strips shares a full edge (same two vertex indices,
++reversed), which is required for Godot's navigation graph to connect them:
++
++```
++Top strip fan from v0:  T1(0,1,5)  T2(0,5,4)  T3(0,4,3)  T4(0,3,2)
++Left strip:             T5(2,3,7)  T6(2,7,6)
++Right strip:            T7(4,5,9)  T8(4,9,8)
++Bottom strip fan v10:   T9(10,6,7) T10(10,7,8) T11(10,8,9) T12(10,9,11)
++```
++
++Key shared edges: T4↔T5 via (3,2)/(2,3); T2↔T7 via (5,4)/(4,5);
++T6↔T9 via (7,6)/(6,7); T8↔T11 via (9,8)/(8,9).
++
++`make_polygons_from_outlines()` is **not** used (deprecated in Godot 4.2).
++
++---
++
++## UID warnings
++
++The three new `.uid` stub files contain hand-crafted UIDs that are not registered in
++`.godot/uid_cache.bin`. Godot 4 emits `invalid UID — using text path instead` warnings
++but loads the resources correctly by path. This does not affect test results. A full
++editor import would register the UIDs and silence the warnings.
++
++---
++
++## What the next task may rely on
++
++* `res://npc/guard_arena.tscn` — loads successfully headless; contains a working
++  Guard node at path `Guard` with `set_target(Vector2)` and a child
++  `NavigationAgent2D`.
++* Guard navigates around the centre obstacle without penetrating it.
++* `NavigationAgent2D.is_target_reachable()` correctly returns `false` for any point
++  inside the nav hole (x 500–780, y 240–480).
++* The Player instance is present but stationary (no input given in the test).
++* Navigation map synchronises after the first physics frame; same-frame `set_target()`
++  works but produces `is_target_reachable() == false` until the first tick completes.
++
++---
++
++## What is still unverified
++
++* Visual rendering, sprite, or colour appearance of the guard or obstacle (headless only).
++* Dynamic retargeting: what happens if `set_target()` is called repeatedly while the
++  guard is already navigating.
++* Physics interaction between Guard and Player (both are CharacterBody2D; no avoidance
++  is configured on the NavigationAgent2D).
++* Navigation correctness when the guard's start position is very close to the nav-hole
++  boundary.
++* Performance with multiple simultaneous guards.
++* Whether UID warnings disappear after a full editor import pass.
+diff --git a/godot/npc/guard.gd b/godot/npc/guard.gd
+new file mode 100644
+index 0000000..0717221
+--- /dev/null
++++ b/godot/npc/guard.gd
+@@ -0,0 +1,18 @@
++extends CharacterBody2D
++
++const SPEED := 150.0
++
++@onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
++
++func set_target(pos: Vector2) -> void:
++	nav_agent.target_position = pos
++
++func _physics_process(_delta: float) -> void:
++	if nav_agent.is_navigation_finished():
++		return
++	var next_pos := nav_agent.get_next_path_position()
++	var to_next := next_pos - global_position
++	if to_next.length_squared() < 1.0:
++		return
++	velocity = to_next.normalized() * SPEED
++	move_and_slide()
+diff --git a/godot/npc/guard.gd.uid b/godot/npc/guard.gd.uid
+new file mode 100644
+index 0000000..7f44da6
+--- /dev/null
++++ b/godot/npc/guard.gd.uid
+@@ -0,0 +1 @@
++uid://cgr1a0dv3npfd
+\ No newline at end of file
+diff --git a/godot/npc/guard_arena.gd b/godot/npc/guard_arena.gd
+new file mode 100644
+index 0000000..9fb5c48
+--- /dev/null
++++ b/godot/npc/guard_arena.gd
+@@ -0,0 +1,61 @@
++extends Node2D
++
++# Arena: 1280x720, walls 20px thick → walkable (20,20)-(1260,700)
++# Obstacle: 240x200 centered at (640,360) → collision (520,260)-(760,460)
++# Nav hole: obstacle + 20px guard-radius margin → (500,240)-(780,480)
++
++func _ready() -> void:
++	_build_nav_polygon()
++
++func _build_nav_polygon() -> void:
++	var region: NavigationRegion2D = $NavigationRegion2D
++	var poly := NavigationPolygon.new()
++
++	# 12 vertices: two points on the top/bottom boundary rows, four on each
++	# of the two middle rows (flanking the obstacle hole).
++	#
++	# Row 0 (y=20):   v0=(20,20)   v1=(1260,20)
++	# Row 1 (y=240):  v2=(20,240)  v3=(500,240)  v4=(780,240)  v5=(1260,240)
++	# Row 2 (y=480):  v6=(20,480)  v7=(500,480)  v8=(780,480)  v9=(1260,480)
++	# Row 3 (y=700):  v10=(20,700) v11=(1260,700)
++	#
++	# Triangles are chosen so every strip-pair shares a full edge (same two
++	# vertex indices, reversed), giving a fully-connected navigation graph.
++	poly.vertices = PackedVector2Array([
++		Vector2(20, 20),    # 0
++		Vector2(1260, 20),  # 1
++		Vector2(20, 240),   # 2
++		Vector2(500, 240),  # 3
++		Vector2(780, 240),  # 4
++		Vector2(1260, 240), # 5
++		Vector2(20, 480),   # 6
++		Vector2(500, 480),  # 7
++		Vector2(780, 480),  # 8
++		Vector2(1260, 480), # 9
++		Vector2(20, 700),   # 10
++		Vector2(1260, 700), # 11
++	])
++
++	# Top strip (y 20-240), fan from v0.  Generates edges 5-4, 4-3, 3-2
++	# that are shared as the top edges of right-strip, (unused mid), left-strip.
++	poly.add_polygon(PackedInt32Array([0, 1, 5])) # T1: shares (1,5)→boundary
++	poly.add_polygon(PackedInt32Array([0, 5, 4])) # T2: shares (5,4) with T7
++	poly.add_polygon(PackedInt32Array([0, 4, 3])) # T3: (internal top-strip)
++	poly.add_polygon(PackedInt32Array([0, 3, 2])) # T4: shares (3,2) with T5
++
++	# Left strip (x 20-500, y 240-480).  Top edge (2,3) shared with T4.
++	poly.add_polygon(PackedInt32Array([2, 3, 7])) # T5: shares (7,2) with T6
++	poly.add_polygon(PackedInt32Array([2, 7, 6])) # T6: shares (7,6) with T9
++
++	# Right strip (x 780-1260, y 240-480).  Top edge (4,5) shared with T2.
++	poly.add_polygon(PackedInt32Array([4, 5, 9])) # T7: shares (9,4) with T8
++	poly.add_polygon(PackedInt32Array([4, 9, 8])) # T8: shares (9,8) with T11
++
++	# Bottom strip (y 480-700), fan from v10.  Generates edges (6,7), (7,8),
++	# (8,9) shared with left/mid/right strips above.
++	poly.add_polygon(PackedInt32Array([10, 6, 7]))  # T9:  shares (6,7) with T6
++	poly.add_polygon(PackedInt32Array([10, 7, 8]))  # T10: (internal bottom)
++	poly.add_polygon(PackedInt32Array([10, 8, 9]))  # T11: shares (8,9) with T8
++	poly.add_polygon(PackedInt32Array([10, 9, 11])) # T12: boundary
++
++	region.navigation_polygon = poly
+diff --git a/godot/npc/guard_arena.gd.uid b/godot/npc/guard_arena.gd.uid
+new file mode 100644
+index 0000000..bac60c0
+--- /dev/null
++++ b/godot/npc/guard_arena.gd.uid
+@@ -0,0 +1 @@
++uid://b9n3kx5p1yhmw
+\ No newline at end of file
+diff --git a/godot/npc/guard_arena.tscn b/godot/npc/guard_arena.tscn
+new file mode 100644
+index 0000000..2a4908c
+--- /dev/null
++++ b/godot/npc/guard_arena.tscn
+@@ -0,0 +1,72 @@
++[gd_scene format=3 uid="uid://c8vk9p2t0r6mn"]
++
++[ext_resource type="Script" uid="uid://b9n3kx5p1yhmw" path="res://npc/guard_arena.gd" id="1_arena"]
++[ext_resource type="Script" uid="uid://cgr1a0dv3npfd" path="res://npc/guard.gd" id="2_guard"]
++[ext_resource type="PackedScene" uid="uid://dsqn0vre7npvu" path="res://player/Player.tscn" id="3_player"]
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_top"]
++size = Vector2(1280, 20)
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_bot"]
++size = Vector2(1280, 20)
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_left"]
++size = Vector2(20, 720)
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_right"]
++size = Vector2(20, 720)
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle"]
++size = Vector2(240, 200)
++
++[sub_resource type="CircleShape2D" id="CircleShape2D_guard"]
++radius = 16.0
++
++[node name="GuardArena" type="Node2D"]
++script = ExtResource("1_arena")
++
++[node name="WallTop" type="StaticBody2D" parent="."]
++position = Vector2(640, 10)
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="WallTop"]
++shape = SubResource("RectangleShape2D_wall_top")
++
++[node name="WallBottom" type="StaticBody2D" parent="."]
++position = Vector2(640, 710)
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="WallBottom"]
++shape = SubResource("RectangleShape2D_wall_bot")
++
++[node name="WallLeft" type="StaticBody2D" parent="."]
++position = Vector2(10, 360)
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
++shape = SubResource("RectangleShape2D_wall_left")
++
++[node name="WallRight" type="StaticBody2D" parent="."]
++position = Vector2(1270, 360)
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
++shape = SubResource("RectangleShape2D_wall_right")
++
++[node name="Obstacle" type="StaticBody2D" parent="."]
++position = Vector2(640, 360)
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacle"]
++shape = SubResource("RectangleShape2D_obstacle")
++
++[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
++
++[node name="Player" parent="." instance=ExtResource("3_player")]
++position = Vector2(200, 560)
++
++[node name="Guard" type="CharacterBody2D" parent="."]
++position = Vector2(160, 360)
++script = ExtResource("2_guard")
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="Guard"]
++shape = SubResource("CircleShape2D_guard")
++
++[node name="NavigationAgent2D" type="NavigationAgent2D" parent="Guard"]
++target_desired_distance = 48.0
++path_desired_distance = 8.0
+diff --git a/godot/tests/test_guard_nav.gd b/godot/tests/test_guard_nav.gd
+new file mode 100644
+index 0000000..d6191e5
+--- /dev/null
++++ b/godot/tests/test_guard_nav.gd
+@@ -0,0 +1,120 @@
++extends SceneTree
++
++# Obstacle collision bounds (used for penetration checks in tests 1 and 2).
++# The StaticBody2D obstacle is 240x200 centred at (640,360).
++const OBS_L := 520.0
++const OBS_R := 760.0
++const OBS_T := 260.0
++const OBS_B := 460.0
++
++var failures := 0
++var checks := 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(ok: bool, label: String) -> void:
++	checks += 1
++	if not ok:
++		failures += 1
++	print("PASS " if ok else "FAIL ", label)
++
++func inside_obstacle(pos: Vector2) -> bool:
++	return pos.x > OBS_L and pos.x < OBS_R and pos.y > OBS_T and pos.y < OBS_B
++
++func run() -> void:
++	root.size = Vector2i(1280, 720)
++
++	# ------------------------------------------------------------------ #
++	# Check 3 — same-frame target request before navigation map sync.     #
++	# Observe actual behaviour; no PASS/FAIL assertion on the outcome.    #
++	# ------------------------------------------------------------------ #
++	print("--- Check 3: same-frame set_target before nav-map sync ---")
++	var arena3: Node = load("res://npc/guard_arena.tscn").instantiate()
++	root.add_child(arena3)
++	var guard3: CharacterBody2D = arena3.get_node("Guard")
++	var agent3: NavigationAgent2D = guard3.get_node("NavigationAgent2D")
++	var pos3_before := guard3.global_position
++	# Call set_target in the same frame – nav map has not synced yet.
++	guard3.set_target(Vector2(1080, 360))
++	# Record the path status immediately (before any physics tick).
++	var finished_before := agent3.is_navigation_finished()
++	var reachable_before := agent3.is_target_reachable()
++	await create_timer(0.3).timeout
++	var pos3_after := guard3.global_position
++	var moved3 := pos3_after.distance_to(pos3_before) > 5.0
++	print("OBSERVE same-frame: nav_finished_before_tick=", finished_before,
++		" reachable_before_tick=", reachable_before,
++		" moved_after_0.3s=", moved3,
++		" guard.position=", pos3_after)
++	arena3.queue_free()
++	await process_frame
++
++	# ------------------------------------------------------------------ #
++	# Check 1 — guard reaches target on far side of obstacle; no         #
++	# recorded position lies inside the obstacle collision bounds.        #
++	# ------------------------------------------------------------------ #
++	print("--- Check 1: guard navigates around obstacle ---")
++	var arena1: Node = load("res://npc/guard_arena.tscn").instantiate()
++	root.add_child(arena1)
++	var guard1: CharacterBody2D = arena1.get_node("Guard")
++
++	# Wait for navigation map to synchronise (one physics frame is enough
++	# per Godot docs; one extra frame adds safety).
++	await process_frame
++	await process_frame
++
++	var target1 := Vector2(1080, 360)
++	guard1.set_target(target1)
++
++	var inside_obs := false
++	var reached := false
++	var elapsed := 0.0
++	const TIME_LIMIT := 20.0
++
++	while elapsed < TIME_LIMIT:
++		await create_timer(0.1).timeout
++		elapsed += 0.1
++		var gp := guard1.global_position
++		if inside_obstacle(gp):
++			inside_obs = true
++			print("WARN guard inside obstacle at t=", elapsed, " pos=", gp)
++		if gp.distance_to(target1) < 64.0:
++			reached = true
++			break
++
++	check(reached, "guard reaches far-side target within " + str(TIME_LIMIT) + "s")
++	check(not inside_obs, "guard never enters obstacle collision bounds")
++	arena1.queue_free()
++	await process_frame
++
++	# ------------------------------------------------------------------ #
++	# Check 2 — target inside obstacle: is_target_reachable() is false;  #
++	# guard stops at closest reachable point without pushing into solid.  #
++	# ------------------------------------------------------------------ #
++	print("--- Check 2: unreachable target inside obstacle ---")
++	var arena2: Node = load("res://npc/guard_arena.tscn").instantiate()
++	root.add_child(arena2)
++	var guard2: CharacterBody2D = arena2.get_node("Guard")
++	var agent2: NavigationAgent2D = guard2.get_node("NavigationAgent2D")
++
++	await process_frame
++	await process_frame
++
++	guard2.set_target(Vector2(640, 360))  # centre of obstacle
++	await create_timer(0.5).timeout       # let the path request resolve
++
++	var reachable2 := agent2.is_target_reachable()
++	check(not reachable2, "target inside obstacle: is_target_reachable() == false")
++
++	await create_timer(4.0).timeout  # give guard time to settle
++
++	var gp2 := guard2.global_position
++	check(not inside_obstacle(gp2),
++		"guard rests outside obstacle bounds for unreachable target (pos=" + str(gp2) + ")")
++
++	arena2.queue_free()
++	await process_frame
++
++	print("RESULT ", checks, " checks; ", failures, " failures")
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_guard_nav.gd.uid b/godot/tests/test_guard_nav.gd.uid
+new file mode 100644
+index 0000000..0ce6ae2
+--- /dev/null
++++ b/godot/tests/test_guard_nav.gd.uid
+@@ -0,0 +1 @@
++uid://dhnv2p8q0yxr3
+\ No newline at end of file

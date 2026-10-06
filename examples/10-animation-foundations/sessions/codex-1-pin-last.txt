@@ -1,0 +1,69 @@
+Created only [godot/tests/test_sword_timing.gd](<scratch>/ch10/walker-2d-finite-state-machine/godot/tests/test_sword_timing.gd:1). No game files were changed and nothing was committed.
+
+### What controls the timing
+
+- Hitbox on/off is controlled by code, not the attack animation tracks:
+  - Entering `ATTACK` sets `visible` and `monitoring` true at [sword.gd:62](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:62).
+  - Entering `IDLE` sets both false at [sword.gd:57](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:57).
+  - `SETUP` has a `monitoring = true` key at [Sword.tscn:44](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/Sword.tscn:44), but none of the attack animations key `monitoring`.
+
+- The combo buffer opens through the `attack_fast` method key at 0.10 seconds:
+  - Animation method keys: [Sword.tscn:149](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/Sword.tscn:149).
+  - Times `0.1` and `0.25`: [Sword.tscn:156](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/Sword.tscn:156).
+  - The 0.10 key invokes `set_attack_input_listening`, implemented at [sword.gd:91](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:91).
+  - Only input received while listening is registered: [sword.gd:71](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:71).
+
+- The next swing may start after the 0.25-second method key invokes `set_ready_for_next_attack`:
+  - Method/key association: [Sword.tscn:156](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/Sword.tscn:156).
+  - Setter: [sword.gd:96](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:96).
+  - Physics starts the next attack once input is registered and readiness is true: [sword.gd:80](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:80).
+  - A registered input can also chain at animation completion: [sword.gd:110](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:110).
+
+- Initial F input pushes the player’s Attack state at [player_state_machine.gd:33](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/player_state_machine.gd:33). Sword completion pops it through [attack.gd:7](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/states/combat/attack.gd:7).
+
+The measured constants are at [test_sword_timing.gd:9](<scratch>/ch10/walker-2d-finite-state-machine/godot/tests/test_sword_timing.gd:9), and every-frame recording is at [test_sword_timing.gd:133](<scratch>/ch10/walker-2d-finite-state-machine/godot/tests/test_sword_timing.gd:133).
+
+### ANOMALIES
+
+- Swing 2 starts `attack_fast` at animation position `0.25`, travels `0°`, and finishes at the original animation’s endpoint. Calling `play("attack_fast")` while that animation is already playing does not restart it.
+- Swing 1 begins with rotation `0°`, despite the animation’s time-zero rotation key being `-80°`.
+- At 120 Hz, the 0.10 and 0.25 method keys are observed on frames 14 and 32, rather than the nominal frames 12 and 30.
+- The hitbox remains enabled for the entire Attack state; there is no narrower animation-keyed damage window.
+
+### Real output
+
+```text
+ERROR: Failed to open 'user://logs/godot2026-09-27T15.02.23.log'.
+   at: copy (core/io/dir_access.cpp:429)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1035)
+TIMING
+PASS single: hitbox turns on at frame 1 (actual 1)
+PASS single: hitbox turns off at frame 56 (actual 56)
+PASS single: combo buffer opens at frame 14 (actual 14)
+PASS single: ready_for_next_attack at frame 32 (actual 32)
+PASS single: player returns to Idle at frame 56 (actual 56)
+PASS combo: exactly three swing starts were observed (actual 3)
+PASS combo: swing 1 starts frame=1 animation=attack_fast position=0.000000 rotation=0.000000
+PASS combo: swing 1 rotation travel is 255.000000 degrees (actual 254.999977)
+PASS combo: swing 2 starts frame=32 animation=attack_fast position=0.250000 rotation=75.000000
+PASS combo: swing 2 rotation travel is 0.000000 degrees (actual 0.000000)
+PASS combo: swing 3 starts frame=56 animation=attack_medium position=0.000000 rotation=75.000000
+PASS combo: swing 3 rotation travel is 215.000000 degrees (actual 215.000008)
+PASS early: tap five frames into swing chains = false
+INVARIANT
+PASS hitbox is never on outside Attack
+PASS in Idle the sword is hidden and not monitoring
+PASS every combo swing has at least one hitbox-on frame
+PASS swing 3 plays attack_medium with damage 3
+PASS a fourth tap does not start a fourth swing
+PASS whole combo is one push and one pop of Attack
+PASS next attack after combo starts at combo 1
+RESULT 20 checks; 0 failures
+```
+
+The Godot log and certificate messages are environment warnings; the command exited successfully.

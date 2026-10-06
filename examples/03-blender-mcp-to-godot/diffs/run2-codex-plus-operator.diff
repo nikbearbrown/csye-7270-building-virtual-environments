@@ -1,0 +1,305 @@
+diff --git a/godot/props/checkpoint_post.glb b/godot/props/checkpoint_post.glb
+index 52d2229..1c811c9 100644
+Binary files a/godot/props/checkpoint_post.glb and b/godot/props/checkpoint_post.glb differ
+diff --git a/godot/props/checkpoint_post.glb.import b/godot/props/checkpoint_post.glb.import
+index 315c0b7..f83b088 100644
+--- a/godot/props/checkpoint_post.glb.import
++++ b/godot/props/checkpoint_post.glb.import
+@@ -39,13 +39,7 @@ import_script/path=""
+ materials/extract=0
+ materials/extract_format=0
+ materials/extract_path=""
+-_subresources={
+-"nodes/Collision-convcolonly": {
+-"generate/physics": true,
+-"generate/physics_body_type": 0,
+-"generate/physics_shape_type": 1
+-}
+-}
++_subresources={}
+ gltf/naming_version=2
+ gltf/embedded_image_handling=1
+ gltf/texture_map_mode=0
+diff --git a/godot/tests/debug_options.gd b/godot/tests/debug_options.gd
+deleted file mode 100644
+index 56184cd..0000000
+--- a/godot/tests/debug_options.gd
++++ /dev/null
+@@ -1,14 +0,0 @@
+-## Prints what import options the scene importer actually exposes for a GLB.
+-extends SceneTree
+-
+-func _initialize() -> void:
+-	# Ask ResourceImporterScene what options it recognises
+-	var importer := ResourceImporterScene.new()
+-	var opts := []
+-	importer.get_import_options("", opts, 0)
+-	for o in opts:
+-		if "use_name" in str(o.get("name","")) or "suffix" in str(o.get("name","")) \
+-		   or "physics" in str(o.get("name","")) or "body" in str(o.get("name","")) \
+-		   or "collision" in str(o.get("name","")).to_lower():
+-			print(o)
+-	quit(0)
+diff --git a/godot/tests/debug_options.gd.uid b/godot/tests/debug_options.gd.uid
+deleted file mode 100644
+index c07ab53..0000000
+--- a/godot/tests/debug_options.gd.uid
++++ /dev/null
+@@ -1 +0,0 @@
+-uid://6k8m5yf8p1vn
+diff --git a/godot/tests/debug_tree.gd b/godot/tests/debug_tree.gd
+deleted file mode 100644
+index 33f2013..0000000
+--- a/godot/tests/debug_tree.gd
++++ /dev/null
+@@ -1,18 +0,0 @@
+-extends SceneTree
+-func _initialize() -> void:
+-	var ps := preload("res://props/checkpoint_post.glb")
+-	var inst := ps.instantiate()
+-	root.add_child(inst)
+-	await process_frame
+-	_print_tree(inst, "")
+-	quit(0)
+-
+-func _print_tree(n: Node, indent: String) -> void:
+-	var extra := ""
+-	if n is CollisionShape3D:
+-		var cs := n as CollisionShape3D
+-		if cs.shape:
+-			extra = " shape=" + cs.shape.get_class()
+-	print(indent + n.get_class() + " [" + n.name + "]" + extra)
+-	for c in n.get_children():
+-		_print_tree(c, indent + "  ")
+diff --git a/godot/tests/debug_tree.gd.uid b/godot/tests/debug_tree.gd.uid
+deleted file mode 100644
+index 1e84a0d..0000000
+--- a/godot/tests/debug_tree.gd.uid
++++ /dev/null
+@@ -1 +0,0 @@
+-uid://dvqd1w2co0ka
+diff --git a/godot/tests/test_checkpoint_post.gd b/godot/tests/test_checkpoint_post.gd
+index d8443f4..ab25866 100644
+--- a/godot/tests/test_checkpoint_post.gd
++++ b/godot/tests/test_checkpoint_post.gd
+@@ -3,15 +3,13 @@
+ ## Run:  godot --headless --path godot --script tests/test_checkpoint_post.gd
+ ## Exit 0 = all PASS, non-zero = failure count.
+ ##
+-## Floor level at the post position (x=-6.5, z=3.9334) was confirmed at y=-4.0
+-## by a downward ray fired before the post StaticBody3D was created.
+-
+ extends SceneTree
+ 
+ # ─── constants ───────────────────────────────────────────────────────────────
+ 
+ const POST_GLB     := "res://props/checkpoint_post.glb"
+ const GAME_TSCN    := "res://game.tscn"
++const PLAYER_TSCN  := "res://player/player.tscn"
+ 
+ # Expected dimensions from Blender build script (Blender Z → Godot Y after Y-up export)
+ const EXPECT_HEIGHT := 1.80    # Blender Z 0→1.80  = Godot Y extent
+@@ -19,11 +17,10 @@ const EXPECT_DEPTH  := 0.60    # Blender Y ±0.30   = Godot Z extent
+ const EXPECT_WIDTH  := 0.78    # Blender X −0.30→0.48 (base + pennant)
+ const TOL           := 0.01    # 1 cm tolerance
+ 
+-# Player capsule height (CapsuleShape3D height = 2.1 in player.tscn)
+-const PLAYER_CAP_H  := 2.10
+-
+-# World position of the post placed in game.tscn (Y = confirmed floor level)
+-const POST_WORLD    := Vector3(-6.5, -4.0, 3.9334)
++const PENNANT_ROOT_X := 0.08
++const PENNANT_TIP_X  := 0.48
++const PENNANT_MIN_Y  := 1.55
++const FLOOR_TOL      := 0.02
+ 
+ # ─── state ───────────────────────────────────────────────────────────────────
+ 
+@@ -216,16 +213,34 @@ func _test_prop_scene() -> void:
+ 			"collision Y_max ≥ %.2f (covers pole top)  [got %.3f]" % [EXPECT_HEIGHT - 0.05, cy_max]
+ 		)
+ 		# Collision X should NOT reach the pennant tip (0.48); base is ±0.30
++		var collider_x_at_pennant := -INF
++		for pt in pts:
++			if pt.y >= PENNANT_MIN_Y - TOL:
++				collider_x_at_pennant = max(collider_x_at_pennant, pt.x)
++		var pennant_length_inside := maxf(
++			0.0,
++			minf(PENNANT_TIP_X, collider_x_at_pennant) - PENNANT_ROOT_X
++		)
++		print("  pennant length inside collider: %.4f m" % pennant_length_inside)
+ 		_check(
+-			cx_max <= 0.35,
+-			"collision X_max ≤ 0.35 (base only, not pennant at 0.48)  [got %.3f]" % cx_max
++			pennant_length_inside <= TOL,
++			"no pennant length lies inside collider  [overlap %.4f m]" % pennant_length_inside
+ 		)
+ 
+ 	# ── Prop shorter than player capsule ─────────────────────────────────────
++	var player := preload(PLAYER_TSCN).instantiate()
++	var capsule_height := -1.0
++	for collision_shape in _collect(player, CollisionShape3D):
++		var shape := (collision_shape as CollisionShape3D).shape
++		if shape is CapsuleShape3D:
++			capsule_height = (shape as CapsuleShape3D).height
++			break
++	_check(capsule_height > 0.0, "player scene has a capsule collision shape")
+ 	_check(
+-		EXPECT_HEIGHT < PLAYER_CAP_H,
+-		"prop height %.2f m < player capsule %.2f m" % [EXPECT_HEIGHT, PLAYER_CAP_H]
++		EXPECT_HEIGHT < capsule_height,
++		"prop height %.2f m < player capsule %.2f m" % [EXPECT_HEIGHT, capsule_height]
+ 	)
++	player.free()
+ 
+ 	inst.queue_free()
+ 	print()
+@@ -241,27 +256,35 @@ func _test_game_scene() -> void:
+ 		_fail("could not get physics space state")
+ 		return
+ 
+-	# Ray from 2 m above the post's top, to 2 m below its base.
+-	var from := POST_WORLD + Vector3(0.0,  2.0 + EXPECT_HEIGHT, 0.0)
+-	var to   := POST_WORLD + Vector3(0.0, -2.0,                  0.0)
++	var game := root.get_child(root.get_child_count() - 1)
++	var post := game.get_node_or_null("CheckpointPost") as Node3D
++	if post == null:
++		_fail("game scene has a CheckpointPost")
++		return
++	var post_world := post.global_position
++	var exclusions: Array[RID] = []
++	for body in _collect(post, StaticBody3D):
++		exclusions.append((body as StaticBody3D).get_rid())
++
++	# Start just above the base and exclude the post itself, so only the
++	# supporting level geometry can satisfy this check.
++	var from := post_world + Vector3(0.0, 0.5, 0.0)
++	var to   := post_world + Vector3(0.0, -2.0, 0.0)
+ 	var qry  := PhysicsRayQueryParameters3D.create(from, to)
++	qry.exclude = exclusions
+ 	var hit  := space_state.intersect_ray(qry)
+ 
+ 	print("  ray from=%s  to=%s" % [str(from), str(to)])
+ 
+-	_check(not hit.is_empty(), "downward ray hits something (post or floor is solid)")
++	_check(not hit.is_empty(), "downward ray hits supporting floor with post excluded")
+ 
+ 	if not hit.is_empty():
+ 		var hit_y: float = hit.position.y
+-		var post_top_y := POST_WORLD.y + EXPECT_HEIGHT
+-		print("  ray hit at y=%.4f  (post base y=%.4f, post top y≈%.4f)"
+-			  % [hit_y, POST_WORLD.y, post_top_y])
+-
+-		# Hit should be at the top of the collision box, not just the floor.
++		print("  ray hit at y=%.4f  (post base y=%.4f)" % [hit_y, post_world.y])
+ 		_check(
+-			hit_y > POST_WORLD.y + 0.2,
+-			"ray hits above base level — post collision is solid above floor  [hit_y=%.4f > %.4f]"
+-			% [hit_y, POST_WORLD.y + 0.2]
++			absf(hit_y - post_world.y) <= FLOOR_TOL,
++			"floor is within %.2f m of post base  [distance %.4f m]"
++			% [FLOOR_TOL, absf(hit_y - post_world.y)]
+ 		)
+ 
+ 	print()
+diff --git a/tools/blender/build_checkpoint_post.log b/tools/blender/build_checkpoint_post.log
+index 6bd99dc..c54b9d3 100644
+--- a/tools/blender/build_checkpoint_post.log
++++ b/tools/blender/build_checkpoint_post.log
+@@ -9,16 +9,16 @@
+ 
+ Exporting to: <scratch>/walker-3d-platformer-asset/godot/props/checkpoint_post.glb
+ INFO Draco mesh compression is available, use library at /Applications/Blender.app/Contents/Resources/5.1/scripts/addons_core/io_scene_gltf2/libextern_draco.dylib
+-14:28:00 | INFO: Starting glTF 2.0 export
+-14:28:00 | INFO: Extracting primitive: Base
+-14:28:00 | INFO: Primitives created: 1
+-14:28:00 | INFO: Extracting primitive: Pole
+-14:28:00 | INFO: Primitives created: 1
+-14:28:00 | INFO: Extracting primitive: Pennant
+-14:28:00 | INFO: Primitives created: 1
+-14:28:00 | INFO: Extracting primitive: Collision-convcolonly
+-14:28:00 | INFO: Primitives created: 1
+-14:28:00 | INFO: Finished glTF 2.0 export in 0.009251117706298828 s
++15:00:55 | INFO: Starting glTF 2.0 export
++15:00:55 | INFO: Extracting primitive: Base
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Extracting primitive: Pole
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Extracting primitive: Pennant
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Extracting primitive: Collision
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Finished glTF 2.0 export in 0.014611959457397461 s
+ 
+ Done.
+ 
+diff --git a/tools/blender/build_checkpoint_post.py b/tools/blender/build_checkpoint_post.py
+index 0b4b6cc..5ecc69c 100644
+--- a/tools/blender/build_checkpoint_post.py
++++ b/tools/blender/build_checkpoint_post.py
+@@ -12,7 +12,7 @@ Geometry (Blender / +Z-up):
+   Base          0.6 x 0.6 x 0.1 m   Z 0.00 → 0.10
+   Pole          8-sided, r=0.08 m    Z 0.10 → 1.80
+   Pennant       flat XZ-plane quad   X 0.08 → 0.48, Z 1.55 → 1.80
+-  ColBox        -convcolonly box     X ±0.30, Y ±0.30, Z 0.00 → 1.80
++  Collider      convex tapered hull  base ±0.30, pole ±0.08, Z 0.00 → 1.80
+ 
+ Materials: PostMetal (Base + Pole), FlagCloth (Pennant)
+ """
+@@ -145,7 +145,20 @@ pennant_mesh.materials.append(mat_cloth)
+ 
+ # Name both the mesh data AND the object with the suffix so Godot's importer
+ # detects it regardless of whether it checks the glTF mesh name or node name.
+-col_mesh = build_box_mesh("Collision-convcolonly", (-0.3, -0.3, 0.0), (0.3, 0.3, 1.8))
++col_mesh = bpy.data.meshes.new("Collision")
++bm = bmesh.new()
++for x in (-0.3, 0.3):
++    for y in (-0.3, 0.3):
++        for z in (0.0, 0.1):
++            bm.verts.new((x, y, z))
++for x in (-0.08, 0.08):
++    for y in (-0.08, 0.08):
++        for z in (0.1, 1.8):
++            bm.verts.new((x, y, z))
++bmesh.ops.convex_hull(bm, input=list(bm.verts))
++bm.to_mesh(col_mesh)
++bm.free()
++col_mesh.update()
+ col_obj  = new_obj("Collision-convcolonly", col_mesh)
+ # No visual material — collision-only mesh
+ 
+diff --git a/tools/blender/inspect_glb.py b/tools/blender/inspect_glb.py
+deleted file mode 100644
+index a8aebe3..0000000
+--- a/tools/blender/inspect_glb.py
++++ /dev/null
+@@ -1,29 +0,0 @@
+-import struct
+-import json
+-import sys
+-
+-path = "godot/props/checkpoint_post.glb"
+-with open(path, "rb") as f:
+-    magic = f.read(4)
+-    version = struct.unpack('<I', f.read(4))[0]
+-    length  = struct.unpack('<I', f.read(4))[0]
+-    chunk_len  = struct.unpack('<I', f.read(4))[0]
+-    chunk_type = struct.unpack('<I', f.read(4))[0]
+-    raw = f.read(chunk_len).rstrip(b'\x00')
+-    data = json.loads(raw)
+-
+-print("=== glTF nodes ===")
+-for i, n in enumerate(data.get('nodes', [])):
+-    print(f"  [{i}] name={n.get('name','?')!r}  mesh={n.get('mesh','none')}")
+-
+-print("\n=== glTF meshes ===")
+-for i, m in enumerate(data.get('meshes', [])):
+-    print(f"  [{i}] name={m.get('name','?')!r}  prims={len(m.get('primitives',[]))}")
+-
+-print("\n=== glTF materials ===")
+-for i, m in enumerate(data.get('materials', [])):
+-    print(f"  [{i}] name={m.get('name','?')!r}")
+-
+-print("\n=== glTF scenes ===")
+-for i, s in enumerate(data.get('scenes', [])):
+-    print(f"  [{i}] nodes={s.get('nodes','?')}")

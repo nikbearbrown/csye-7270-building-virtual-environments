@@ -1,0 +1,41 @@
+This is a scratch copy of walker-3d-graphics-settings, a Walker adaptation of
+Godot's 3d/graphics_settings demo (Godot 4.7.2, GDScript, project in godot/).
+Inspect before editing. Always run Godot with --headless; never add
+--rendering-driver. A headless run uses a dummy renderer: it draws nothing.
+
+Task: audit the Dutch ship's materials and textures, then write a headless
+test that pins what you found. Do not change any material, scene or .import
+file in this task.
+
+1. Read godot/polyhaven/dutch_ship_medium_1k.gltf (the materials, textures
+   and images arrays), every .import file in godot/polyhaven/, and the
+   lighting and environment in godot/3d_scene.tscn and godot/settings.gd.
+2. Write godot/MATERIALS.md with:
+   - one table row per material slot actually used by each of the three
+     imported materials: slot, texture file, channel, whether the data is
+     color (sRGB) or non-color (linear) per the glTF 2.0 rules, and the
+     texture's import settings (compress/mode, compress/normal_map,
+     mipmaps/generate, detect_3d/compress_to);
+   - the material flags that change the look (transparency, alpha scissor,
+     cull mode, metallic and roughness scalars);
+   - the lights and environment effects that light the ship, and which of
+     them the settings UI can switch;
+   - findings: anything in the files that looks wrong, wasteful or unused,
+     each with the evidence line;
+   - attribution, using exactly these facts, which I checked on
+     polyhaven.com and api.polyhaven.com on 2026-09-27: "Dutch Ship Medium"
+     from Poly Haven; credits James Ray Cock (model, textures, cleanup),
+     Rico Cilliers (sails model, textures), Nicolò Zubbini (original
+     model); license CC0 1.0; published 2022-05-25.
+3. Write godot/tests/test_materials.gd (extends SceneTree) that loads the
+   imported ship scene headlessly and asserts the table: every slot's
+   texture path and channel, the flags and scalars, the import settings
+   read from the .import files with ConfigFile, and a pixel check that each
+   *_nor_gl texture is a plausible tangent-space normal map (decode with
+   Image.load_from_file; blue above 0.5 on at least 95% of sampled texels)
+   while each *_diff texture is not. Print one PASS/FAIL line per check and
+   exit 1 on any failure.
+4. Run it with: godot --headless --path godot --script res://tests/test_materials.gd --fixed-fps 60
+   and the existing: godot --headless --path godot --script res://test_settings.gd --fixed-fps 60
+   Show the real output. Say what the test cannot establish headlessly.
+Do not commit.

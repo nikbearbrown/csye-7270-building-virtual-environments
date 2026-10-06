@@ -1,0 +1,7 @@
+extends SceneTree
+func _initialize() -> void:
+	print("4194326 = ", OS.get_keycode_string(4194326), "  KEY_CTRL=", KEY_CTRL, " KEY_F9=", KEY_F9)
+	print("4194320 = ", OS.get_keycode_string(4194320), "  87 = ", OS.get_keycode_string(87))
+	print("JOY_BUTTON_RIGHT_SHOULDER=", JOY_BUTTON_RIGHT_SHOULDER, " JOY_BUTTON_LEFT_STICK=", JOY_BUTTON_LEFT_STICK, " JOY_BUTTON_B=", JOY_BUTTON_B, " JOY_BUTTON_Y=", JOY_BUTTON_Y)
+	print("JOY_AXIS_TRIGGER_RIGHT=", JOY_AXIS_TRIGGER_RIGHT, " MOUSE_BUTTON_LEFT=", MOUSE_BUTTON_LEFT, " MOUSE_BUTTON_RIGHT=", MOUSE_BUTTON_RIGHT)
+	quit(0)

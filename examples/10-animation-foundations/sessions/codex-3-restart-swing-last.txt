@@ -1,0 +1,30 @@
+Added one line to [sword.gd](<scratch>/ch10/walker-2d-finite-state-machine/godot/player/weapon/sword.gd:65):
+
+```gdscript
+$AnimationPlayer.seek(0.0)
+```
+
+This makes every swing restart its selected animation. No commit was created.
+
+Test results:
+
+- `test_sword_timing.gd`: 10 failures
+- `test_input.gd`: 0 failures
+- `test_combo.gd`: 0 failures
+
+Every `FAIL` line:
+
+| FAIL line | Follows from change? | Designer approval? |
+|---|---|---|
+| `FAIL single: hitbox turns off at frame 56 (actual 19)` | Not originally—the baseline already failed at frame 20. This change shifts it one frame earlier. | Yes; hitbox-window timing is gameplay behavior. |
+| `FAIL single: combo buffer opens at frame 14 (actual 13)` | Yes; baseline was frame 14. | Yes; it changes the input buffer window. |
+| `FAIL single: ready_for_next_attack at frame 32 (actual 31)` | Yes; baseline was frame 32. | Yes; it changes when chaining becomes available. |
+| `FAIL single: player returns to Idle at frame 56 (actual 55)` | Yes; baseline was frame 56. | Yes; it shortens the attack state by one frame. |
+| `FAIL combo: swing 1 starts frame=1 animation=attack_fast position=0.000000 rotation=0.000000` | Yes; baseline passed. Seeking changes the sampled starting state. | Yes; starting pose/timing is visible behavior. |
+| `FAIL combo: swing 1 rotation travel is 255.000000 degrees (actual 174.999985)` | Yes; baseline travel was approximately 255°. | Yes; the visible swing arc changes. |
+| `FAIL combo: swing 2 starts frame=32 animation=attack_fast position=0.250000 rotation=75.000000` | Yes, intentionally: swing 2 now restarts at `0.0` instead of `0.25`. | Yes; this is the requested behavioral correction. |
+| `FAIL combo: swing 2 rotation travel is 0.000000 degrees (actual 289.749779)` | Yes, intentionally: swing 2 now actually plays. | Yes; this is the newly restored second-swing motion. |
+| `FAIL combo: swing 3 starts frame=56 animation=attack_medium position=0.000000 rotation=75.000000` | Yes; baseline passed. Its sampled transition pose changes. | Yes; starting pose/timing is visible behavior. |
+| `FAIL combo: swing 3 rotation travel is 215.000000 degrees (actual 195.000000)` | Yes; baseline travel was approximately 215°. | Yes; the visible swing arc changes. |
+
+The key invariant now passes: `every combo swing has at least one hitbox-on frame`.
