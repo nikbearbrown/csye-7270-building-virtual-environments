@@ -128,6 +128,18 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded; I have not watched it. I still need someone to run the MCP route once before release.
 - **Evidence and next step:** `youtube/claude-liam-lecture-first-3d-assets-blender-mcp/` (narration, `ACTS.md`, `EVIDENCE-INDEX.md`). Next: I watch the master, someone runs the MCP route once so the "documented, not run" steps can become real, and only then does anything get posted. `BUILD-LOG.md` in the film folder lists the open items.
 
+### 2026-10-06 — Say "3D model" or "AI model", never just "model"
+
+- **Date and what I was working on:** 2026-10-06. Watching the first cut of the Assignment 3 film.
+- **I tried / expected:** My feedback, in my words (dictation errors fixed): "The video in general looks great. But because you're talking about two models: when you talk about an AI model specifically, say AI model; when you talk about a 3D model specifically, say 3D model. In this particular video, when you refer to an AI model, have Liam say AI model, and when you're referring to a 3D model, have Liam say 3D model."
+- **What happened:**
+  - Claude Code went through every sentence of the narration. Every spoken "model" meant a 3D model, so each now says "three-D model" (the film's own spelling for Liam). Nothing in the film refers to an AI model except the protocol's name, "Model Context Protocol", which is a proper name and stays. The on-screen words match: "3D models" in the opening line, the key-terms card and the service labels.
+  - Eight beats were re-voiced, and the pictures for those beats were retimed to the new audio, because the extra word shifts every cue after it.
+- **What I did:** Gave the feedback above.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) edited the narration and re-voiced it; the act builders retimed their pictures.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `narration.py` and `BUILD-LOG.md` in the film folder. Next: I watch the new master.
+
 ---
 
 ## GitHub pushes
@@ -147,3 +159,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-06 | Log my request for a very basic Blender assignment as Assignment 3 |
 | 2026-10-06 | Log my request for a film of Assignment 3 |
 | 2026-10-06 | Update the Assignment 3 film entry: master built, nothing published |
+| 2026-10-06 | Log my feedback: say "3D model" or "AI model", never just "model" |
