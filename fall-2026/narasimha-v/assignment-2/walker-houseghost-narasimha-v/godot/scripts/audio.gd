@@ -17,7 +17,13 @@ const PATHS := {
 	"frost":   "res://assets/sfx/sfx_frost.ogg",
 	"correct": "res://assets/sfx/sfx_correct.ogg",
 }
-const MUSIC_PATH := "res://assets/music/mus_lullaby.ogg"
+## One track per world. They share key and tempo, so the flip can cut straight
+## from one to the other without a musical lurch: the two worlds sound like one
+## piece of music turning over.
+const MUSIC_PATHS := {
+	"upright": "res://assets/music/mus_upright.wav",
+	"memory":  "res://assets/music/mus_memory.wav",
+}
 
 var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0}
 var music_muted := false
@@ -25,7 +31,8 @@ var sfx_muted := false
 var missing: Array[String] = []
 
 var _players := {}
-var _music: AudioStreamPlayer
+var _music := {}                 ## world -> AudioStreamPlayer
+var _current_world := "upright"
 
 
 func _ready() -> void:
@@ -39,12 +46,26 @@ func _ready() -> void:
 		add_child(player)
 		_players[event] = player
 
-	_music = AudioStreamPlayer.new()
-	_music.name = "music"
-	var music_stream := _load_or_note(MUSIC_PATH)
-	if music_stream:
-		_music.stream = music_stream
-	add_child(_music)
+	for world in MUSIC_PATHS:
+		var player := AudioStreamPlayer.new()
+		player.name = "music_%s" % world
+		var stream := _load_or_note(MUSIC_PATHS[world])
+		if stream:
+			# Loop forward over the whole file. Set here rather than relying on
+			# the import setting, which does not survive a reimport reliably,
+			# and with loop_end given explicitly because it defaults to zero,
+			# which produces a zero-length loop that stops instantly. Each file
+			# was cut with two seconds of its own tail crossfaded back over its
+			# head, so the seam is inaudible wherever the playhead wraps.
+			if stream is AudioStreamWAV:
+				stream.loop_begin = 0
+				stream.loop_end = int(stream.get_length() * stream.mix_rate)
+				stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			player.stream = stream
+		add_child(player)
+		_music[world] = player
+
+	_play_world_music(_current_world)
 
 
 func _load_or_note(path: String) -> AudioStream:
@@ -76,24 +97,34 @@ func play(event: String) -> void:
 
 
 func start_music() -> void:
-	if _music.stream and not music_muted:
-		_music.play()
+	_play_world_music(_current_world)
+
+
+func _play_world_music(world: String) -> void:
+	for w in _music:
+		var player: AudioStreamPlayer = _music[w]
+		if w == world:
+			if player.stream and not music_muted and not player.playing:
+				player.play()
+		elif player.playing:
+			player.stop()
 
 
 ## Predicted behaviour from CHANGE-BRIEF: the lullaby belongs to the remembered
 ## world only, and the flip hard-cuts it rather than crossfading, because the
 ## cut is what makes the flip feel like crossing a threshold.
 func set_world_inverted(is_inverted: bool) -> void:
-	if is_inverted:
-		start_music()
-	else:
-		_music.stop()
+	_current_world = "memory" if is_inverted else "upright"
+	_play_world_music(_current_world)
 
 
 func set_music_muted(value: bool) -> void:
 	music_muted = value
 	if music_muted:
-		_music.stop()
+		for w in _music:
+			_music[w].stop()
+	else:
+		_play_world_music(_current_world)
 
 
 func set_sfx_muted(value: bool) -> void:
@@ -104,10 +135,11 @@ func set_sfx_muted(value: bool) -> void:
 ## stop. It is the only clean musical resolution in the slice, reserved for
 ## endings.
 func finish_music() -> void:
-	if not _music.playing:
-		return
-	var tween := create_tween()
-	tween.tween_property(_music, "volume_db", -40.0, 2.5)
-	await tween.finished
-	_music.stop()
-	_music.volume_db = 0.0
+	for w in _music:
+		var player: AudioStreamPlayer = _music[w]
+		if player.playing:
+			var tween := create_tween()
+			tween.tween_property(player, "volume_db", -40.0, 2.5)
+			await tween.finished
+			player.stop()
+			player.volume_db = 0.0

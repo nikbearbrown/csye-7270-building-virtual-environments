@@ -3,24 +3,17 @@ func _init():
 	await process_frame
 	var s = load("res://scenes/Bedroom.tscn").instantiate()
 	root.add_child(s)
-	var p = s.get_node("Player")
-	await create_timer(0.3).timeout
-	s.flip(); await create_timer(1.0).timeout   # remembered state
-	Input.action_press("move_right")
-	var seen := {}
-	for i in 240:
-		await physics_frame
-		seen[p._walk_frame] = true
-	Input.action_release("move_right")
-	print("walk frames used while moving: ", seen.keys())
-	await create_timer(0.4).timeout
-	print("frame when stopped: ", p._walk_frame)
-	s.flip(); await create_timer(1.0).timeout   # back to ghost
-	Input.action_press("move_left")
-	var ghost_frames := {}
-	for i in 120:
-		await physics_frame
-		ghost_frames[p._walk_frame] = true
-	Input.action_release("move_left")
-	print("ghost state frame stays: ", ghost_frames.keys(), " (should be [0] - ghosts drift, they do not walk)")
+	await create_timer(0.6).timeout
+	var a = s.get_node("Audio")
+	var up = a.get_node("music_upright"); var mem = a.get_node("music_memory")
+	print("missing: ", a.missing)
+	print("start      -> upright=", up.playing, " memory=", mem.playing)
+	s.flip(); await create_timer(1.2).timeout
+	print("inverted   -> upright=", up.playing, " memory=", mem.playing)
+	s.flip(); await create_timer(1.2).timeout
+	print("back up    -> upright=", up.playing, " memory=", mem.playing)
+	a.set_music_muted(true); await create_timer(0.4).timeout
+	print("M muted    -> upright=", up.playing, " memory=", mem.playing)
+	a.set_music_muted(false); await create_timer(0.6).timeout
+	print("M unmuted  -> upright=", up.playing, " memory=", mem.playing)
 	quit()
