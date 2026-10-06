@@ -1,0 +1,72 @@
+{
+  "title": "Module 6 practice assessment",
+  "description": "Ungraded practice for Module 6, Shader foundations. Take it as often as you like, and read the feedback on every question, including the ones you get right.",
+  "questions": [
+    {
+      "prompt": "An agent's shader test reports 11 checks, 0 failures and exits 0. You delete one semicolon from the shader and rerun, and it still reports 11 passing checks. What does that show?",
+      "choices": [
+        "Godot reused a cached copy of the shader from the first run, so the edited file was never read and the 11 passing checks still describe the old shader.",
+        "Exit code 0 means Godot accepted the shader, since a failed compile makes the run exit non-zero, so the semicolon was harmless in practice and the 11 checks are sound.",
+        "Headless runs skip Godot's shader parser altogether, so a syntax error can only show up with a window open, and a headless test could not have seen it.",
+        "Its uniform checks are set-then-get round trips that pass whether or not the shader parsed; the `SHADER ERROR` line and an empty uniform list are what show the failure."
+      ],
+      "answer": 3,
+      "feedback": "A `ShaderMaterial` stores a parameter whether or not its shader parsed, and a broken shader still exits 0. The failure appeared only as `SHADER ERROR: Expected a ';'.` in the log and as an empty `get_shader_uniform_list()`; a stale cache or a skipped parser would have left no such line. See \"What Godot checks, and what a headless run can see\" and \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "Clawd is drawn by `draw_rect()` calls with no texture. In a `canvas_item` `fragment()`, which starting line keeps his body and eye colours?",
+      "choices": [
+        "`vec4 col = COLOR;`, because in `fragment()` it arrives holding the vertex colour multiplied by the texture colour.",
+        "`vec4 col = texture(TEXTURE, UV);`, because `TEXTURE` is the default texture the item was drawn with and so carries each rectangle's colour.",
+        "`vec4 col = texture(SCREEN_TEXTURE, SCREEN_UV);`, the form most older tutorials use to read what has already been drawn on screen.",
+        "Either `COLOR` or `texture(TEXTURE, UV)`, since both parse, both look reasonable and only the flash mix after them differs."
+      ],
+      "answer": 0,
+      "feedback": "Clawd's colours live in the vertex colour, which `COLOR` carries and `texture(TEXTURE, UV)` discards. Both lines parse, so only looking tells them apart, and Godot 4 removed `SCREEN_TEXTURE` altogether in favour of a `hint_screen_texture` uniform. See \"Inside a canvas_item shader\"."
+    },
+    {
+      "prompt": "Which rule in the failure-flash spec can a headless test not establish?",
+      "choices": [
+        "Rule 1: `flash_amount` fades linearly in game time and lasts the same wall-clock time at 30, 60 and 144 frames per second, to within the tolerance the check allows.",
+        "Rule 2: pressing R during the failure ends the flash at once, and `flash_amount` is 0.0 in every state except the failure.",
+        "Rule 4: at `flash_amount` 0.0 Clawd looks exactly as before, with the same body colour and black eyes, and at 1.0 every visible pixel is `flash_color`.",
+        "Rule 3: `flash_color` is a colour uniform whose default, read from the shader source, is `#25354a`, the level's ink, rather than white against the `#f6f3ec` background."
+      ],
+      "answer": 2,
+      "feedback": "Rules 1 and 2 are about values that game code sets, which a headless test can sample with real frames at pinned rates and a real key event; at 30 fps the first value is 0.970, so rule 1 is checked within a stated tolerance. Rule 3's type comes from the uniform list and its default from the source text. Rule 4 is about pixels, and a headless run has no GPU and no pixel readback."
+    },
+    {
+      "prompt": "A GDScript call `mat.set_shader_parameter(\"flash_amout\", 1.0)` misspells the uniform name. What happens?",
+      "choices": [
+        "Godot reports a `SHADER ERROR` the first time the material is used, because the called name matches no uniform in the shader, and the effect never appears.",
+        "Nothing is reported: the real `flash_amount` keeps its default of 0.0, so the flash never appears and no log line, error or warning points at the typo.",
+        "Godot raises a script error on that line and stops the run, because `set_shader_parameter()` checks each name against the shader's uniform list.",
+        "Nothing is reported, but the typo is caught the next time `get_shader_uniform_list()` runs, because it returns an empty list when a script names an undeclared uniform."
+      ],
+      "answer": 1,
+      "feedback": "The parameter name is a case-sensitive string that nothing checks at parse time, so a typo is a silent no-op and the uniform keeps its default. An empty `get_shader_uniform_list()` means the shader failed to parse, not that a call used a wrong name. See \"Uniforms: the contract with GDScript\" and \"What Godot checks, and what a headless run can see\"."
+    },
+    {
+      "prompt": "The agent's first `test_flash.gd` failed at `--fixed-fps 30` by exactly one frame. Its fix was to call `_update_flash()` directly after setting `retry_remaining` by hand. Why is the passing result weaker than it looks?",
+      "choices": [
+        "The test now checks only the two endpoints of the countdown, 0.55 and 0.0, so the middle of the fade, where a non-linear curve would show, goes untested.",
+        "The 0.0606 gap was a real one-frame lag in the player's driver code at 30 fps, and calling `_update_flash()` directly hides that defect instead of fixing it.",
+        "Pinning `--fixed-fps` leaves the physics clock at 60 Hz, so a 30 and a 144 fps run count down the same retry timer and could never differ in the first place.",
+        "The test no longer runs frames, so `--fixed-fps` is irrelevant and rule 8's check at 30 and 144 fps is no longer measured, even though the summary still reports both runs."
+      ],
+      "answer": 3,
+      "feedback": "Driving the function by hand removes real frames from the test, so it passes at any rate and measures none of them, even though the agent's summary still reported runs at both 30 and 144. The 0.0606 gap was the test reading the material mid-frame rather than a driver defect, and the hand-set values 0.55, 0.275 and 0.0 do cover the middle of the fade. See \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "Which command keeps a frame-counted shader check genuinely headless and repeatable?",
+      "choices": [
+        "`timeout 120 godot --display-driver headless --path godot --script res://tests/verify_flash.gd --fixed-fps 60`, the long form of the same flag, which the command-line docs spell out for headless mode",
+        "`timeout 120 godot --headless --path godot --script res://tests/verify_flash.gd --fixed-fps 60`, which uses `--headless` exactly as written and pins the frame rate",
+        "`timeout 120 godot --headless --rendering-driver metal --path godot --script res://tests/verify_flash.gd --fixed-fps 60`, to match the Mac's GPU",
+        "`timeout 120 godot --headless --path godot --script res://tests/verify_flash.gd`, since a headless run is already repeatable without pinning"
+      ],
+      "answer": 1,
+      "feedback": "Use `--headless` exactly as written, wrap the run in `timeout`, and pin `--fixed-fps`. On the course Mac, `--display-driver headless` alone and `--headless` with `--rendering-driver` both fell back to the macOS window server, and an unpinned run ties frame-counted checks to whatever rate the machine reaches. See \"What Godot checks, and what a headless run can see\"."
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "title": "Module 4 practice assessment",
+  "description": "Ungraded practice for Module 4. Take it as often as you like, and read the feedback after each question; it points back to the lesson section that explains the answer.",
+  "questions": [
+    {
+      "prompt": "In Dodge the Creeps, the Player (an `Area2D`) has `collision_layer` 1 and `collision_mask` 1, and each Mob has `collision_layer` 1 and `collision_mask` 0. The Player still notices mobs. Which statement explains why?",
+      "choices": [
+        "Both sides must agree: the Player's mask 1 covers the Mob's layer, and the Mob's mask of 0 is read as 'scan every layer', so the contact is reported to both objects.",
+        "Detection runs from the scanner's mask to the other object's layer, and the Player's mask 1 includes the Mob's layer 1; the Mob's mask of 0 only means the Mob scans nothing.",
+        "An `Area2D` detects bodies by overlap alone, so neither side's mask decides what the Player notices; layers and masks matter only for `RigidBody2D` collisions.",
+        "Objects notice each other when they share a layer: Player and Mob both sit on layer 1, so contact is reported both ways, and the Mob's mask of 0 only affects what the Mob collides with."
+      ],
+      "answer": 1,
+      "feedback": "Object A detects object B only if B is in a layer A scans, so the rule is asymmetric. The Player scans layer 1 and the Mob sits on layer 1; the Mob's mask of 0 only means the Mob scans nothing, which is why mobs pass through each other. See \"Layers and masks\" in the lesson."
+    },
+    {
+      "prompt": "Claude Code put the shield pickup on physics layer 3, and Codex put it on layer 2. In `.tscn` files and in code, which `collision_layer` values are correct for layer 3 and for layer 2?",
+      "choices": [
+        "3 and 2, because the value in the field is the layer number shown in the editor and in Layer Names.",
+        "4 and 3, because the value in the field is the layer number shown in the editor plus one.",
+        "8 and 4, because layer n has the bit value 2 raised to the power n, so layer 1 is 2.",
+        "4 and 2, because layer n has the bit value 2 raised to the power n minus 1, so layer 1 is 1."
+      ],
+      "answer": 3,
+      "feedback": "The editor and `project.godot` count layers from 1, but the fields in code and scene files are bitmasks, so layer n is 2^(n-1): layer 3 is 4 and layer 2 is 2. Writing 3 for layer 3 would put the object on layers 1 and 2. The matching player masks were 5 (layers 1 and 3) and 3 (layers 1 and 2)."
+    },
+    {
+      "prompt": "A creep is still overlapping the Player when a 3-second shield ends, and the game's only death path is `_on_body_entered`. What happens if the code does nothing else, and what did both agents do about it?",
+      "choices": [
+        "The Player survives, because `body_entered` fires only when an overlap begins; both agents re-checked `get_overlapping_bodies()` when the shield ended.",
+        "The Player dies at once, because `body_entered` fires on every physics tick while an overlap lasts; both agents only had to clear the shield flag when the timer ran out.",
+        "The Player dies as soon as the creep next moves, because a moving `RigidBody2D` re-emits `body_entered`; both agents relied on that and added no expiry code.",
+        "The Player survives, because `body_entered` fires only when an overlap begins; both agents toggled the Player's collision shape off and on so the engine reported the overlap again."
+      ],
+      "answer": 0,
+      "feedback": "The signal fires on entry, and nothing new enters when the shield expires, so a guard on `body_entered` alone lets you stand inside a creep. Both agents added an expiry check over the overlap list rather than toggling anything; the human work was proving that check fires at the right moment. See \"The question\" and \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "You shorten the shield from 3.0 s to 0.5 s and rerun Claude Code's own `test_shield.gd`. It still passes 7 of 7. Which conclusion is the most defensible?",
+      "choices": [
+        "The mutation never took effect: Claude Code's duration is the `wait_time` of a `ShieldTimer` node, so editing `SHIELD_DURATION` in `player.gd` changed nothing at all.",
+        "The test is right and the specification is too loose: a 0.5 s shield also satisfies 'hit within 10 physics frames after expiry', so only the spec needs tightening and the test can stay.",
+        "The check labelled \"hit fires within 10 physics frames after shield expires\" starts counting about 3.35 s after the mob is placed, so it measures less than it claims.",
+        "The test is flaky because it ran without `--fixed-fps 60`; with the flag pinning every frame to 1/60 s, it would have failed on the shortened shield, so rerun it with the flag."
+      ],
+      "answer": 2,
+      "feedback": "That check began counting about 3.35 s after the mob was placed, long after a 0.5 s shield had expired. The reviewer's check pins the hit to physics ticks since collection: 181 ticks for the real code, 31 for the mutant. The mutation did take effect, and the flag matters for repeatability, but the weakness was in what the test measured."
+    },
+    {
+      "prompt": "In a fresh clone you run `test_shield.gd` before `godot --headless --path godot --import`. It prints seven `PASS` lines and exits with code 0, but the same log holds 55 `ERROR` lines about textures and sounds that failed to load. What do you conclude?",
+      "choices": [
+        "The run is probably clean: seven `PASS` lines and exit code 0 are the verdict, and the 55 `ERROR` lines about missing images and sounds can be noted for later.",
+        "The clone is missing the texture and sound files that `.gitignore` kept out of Git; commit them and the 55 errors will go away.",
+        "The errors come from real-time frame timing: rerun with `--fixed-fps 60`, and trust the exit code once the `ERROR` lines stop appearing.",
+        "The run is not clean: import the assets, rerun, and read the log, because exit code 0 does not mean there were no errors."
+      ],
+      "answer": 3,
+      "feedback": "Godot must import PNG and OGG assets into `.godot/` before a script can load them, and until then loads fail while the process still exits 0. After the import, the same three test files ran with zero errors, so no file was missing. See \"Verify\" and the third item under \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "In `walker-2d-bullet-shower`, after 60 physics frames a bullet's physics body sits at y = 272.394 while its drawing is at y = 256.3463. What caused this, and why might playing the game never reveal it?",
+      "choices": [
+        "`PhysicsServer2D.body_create()` defaults to a rigid body, so gravity moved the body about 16 px while the drawing stayed put; you would only notice bullets that sometimes hit you from below.",
+        "The bullets' `collision_mask` is 0, so the physics server ignored the script's position updates and the body drifted; a player would only notice some bullets passing through.",
+        "`_draw()` runs on the rendering clock, not the physics tick, so the art lags the body by a frame; a player would only sometimes see a bullet hit slightly late.",
+        "The bodies were created as static, so they never followed the script's position updates while the drawing did; a player would only sometimes meet a bullet that cannot hurt them."
+      ],
+      "answer": 0,
+      "feedback": "The art is not the collider: the drawing stayed put while gravity integrated the rigid body downward by about 16 pixels. The Walker fix is one line setting the body mode to static, after which the log records 500 of 500 bodies aligned; a collision mask of 0 or a late `_draw()` would not move a body that far. See \"The art is not the collider\"."
+    }
+  ]
+}

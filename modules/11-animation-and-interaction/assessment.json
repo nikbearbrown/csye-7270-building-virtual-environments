@@ -1,0 +1,72 @@
+{
+  "title": "Module 11 practice assessment",
+  "description": "This quiz is ungraded: take it as often as you like. Read the feedback after each question, because it points back to the lesson section that teaches the idea.",
+  "questions": [
+    {
+      "prompt": "An agent builds a state machine whose five transitions each have an `advance_expression`, and leaves `advance_mode` at its Godot 4.7.2 default. What happens in the running game?",
+      "choices": [
+        "Each transition fires as soon as its expression turns true, because giving a transition an `advance_expression` switches it to Auto when the scene loads.",
+        "None of them fires on its own: Enabled means a transition is used only during `travel()`, so the machine stays where it is until code calls `travel()`.",
+        "Each transition fires once, the first time its expression turns true, and then switches itself to Disabled so the machine cannot loop between two states.",
+        "Each transition fires, but one tree update late: Enabled queues the expression check for the next frame instead of evaluating it in the current one."
+      ],
+      "answer": 1,
+      "feedback": "The default `advance_mode` is Enabled, which means a transition is used only during `travel()`; Auto is the mode that evaluates its condition or expression. This is the mistake the first agent made, and it caught it only after the state failed to follow the jump (see \"The state machine, taken apart\")."
+    },
+    {
+      "prompt": "In the trace from \"The question\", the robot is on the floor on one tick and rising on the next, yet the state reads `fall` the whole time. On an earlier hop in a different trace, the same machine did see the landing. Which explanation fits all of the evidence?",
+      "choices": [
+        "`is_on_floor()` reports the result of the previous `move_and_slide()`, so the tree sees every landing one tick late and `fall` always wins.",
+        "The transitions out of `fall` kept the default `advance_mode` of Enabled, so only `travel()` can use them and the machine cannot leave `fall` by itself.",
+        "At `--fixed-fps 60` the physics rate drops to 60 ticks per second, so some landings are skipped entirely and the tree never gets a floor sample.",
+        "The landing and the next takeoff fell inside one rendered frame, so the tree never saw the floor contact, and `fall` had no transition out for a rising robot."
+      ],
+      "answer": 3,
+      "feedback": "The platformer runs 120 physics ticks per second and the test renders 60 frames, so each frame holds two ticks and a landing plus the next takeoff can fall between two tree updates. That is also why only some hops fail, which the every-landing and never-fires explanations cannot account for; the fix was a `fall` to `jump` transition with `not is_on_floor() and velocity.y > 0.0` (see \"Where timing gaps come from\")."
+    },
+    {
+      "prompt": "After the agent edited only the test's own timing, checks 2a and 2b began to fail, and it reported \"this is a test fix\". What should you do first?",
+      "choices": [
+        "Log `is_on_floor()`, `velocity.y` and the current state on every physics tick of the hop, and only then decide whether the test or the scene is at fault.",
+        "Revert the reset the agent added and shorten the pre-jump run from 40 frames to 5 instead, then rerun; a green run confirms the test timing was at fault.",
+        "Widen the allowance in check 2 beyond the cross-fade plus two frames until 2a and 2b pass at the current timing, then record the wider allowance as the pin.",
+        "Ask the agent to justify \"test fix\" in writing, citing the lines it changed; if its reasoning is consistent with the diff, accept the diagnosis and move on."
+      ],
+      "answer": 0,
+      "feedback": "A check that flips when only timing changed is the signature of a timing-dependent bug, and the agent chose \"test, not setup\" without a trace. Reverting, widening the allowance or accepting a written justification would at best move the landing back onto the lucky tick or leave an unverified claim standing (see \"What the agents got wrong\")."
+    },
+    {
+      "prompt": "You add the `fall` to `jump` transition and your strengthened test passes. Which extra evidence best shows the test could have caught the original bug?",
+      "choices": [
+        "Three more passing runs at `--fixed-fps 60`, all 14 of 14, which show that the pass is stable rather than the result of one lucky tick.",
+        "The test's `physics_tick_offset` argument: running the held-jump sequence at offsets 0 and 1 covers both landings, so the bug would surely have shown.",
+        "The same test, run at both tick offsets, fails on a throwaway copy that has the pre-fix `player.tscn`, and passes on the fixed scene as it did before.",
+        "The Walker input probe reporting jump, movement, projectile and reset all true on the fixed scene, which shows nothing else broke."
+      ],
+      "answer": 2,
+      "feedback": "A test that passes on the broken version has not tested the fix: the recorded run put the old scene back and saw 2a and 2b fail at both offsets, then pass on the fixed scene. Repeat passes, a two-offset design and a regression probe show stability or coverage, not that the test catches this bug."
+    },
+    {
+      "prompt": "The final `test_motion_states.gd` passes 14 of 14 at `--fixed-fps 60`. Which of these does that pass NOT establish?",
+      "choices": [
+        "That, with Space held through three landings, the machine enters `jump` on every hop at both tick offsets.",
+        "That a reset pressed mid-rise takes the machine out of `jump` within the cross-fade plus two frames, and back to `ground` after the landing.",
+        "That the machine stays in `ground` for the whole of a direction reversal at full speed, under the scripted inputs.",
+        "That the 0.1 s cross-fades read as weight rather than as a stutter, or that the robot feels any better to play than before."
+      ],
+      "answer": 3,
+      "feedback": "The scripted test checks the machine's state against the robot's physics under its inputs. Whether a 0.1 s blend reads as weight or as a stutter, and whether the robot feels better, are HUMAN CHECKs; the traces even showed a 0.1 s lag at one tick offset that the test passes (see \"Verify\")."
+    },
+    {
+      "prompt": "You replace the platformer's jump clip with one made by a video-generation tool. Which statement is supported by this module?",
+      "choices": [
+        "The state logic stays yours and the same state-based test still applies, since it never looks at a pixel; whether the new clip reads as a jump needs play.",
+        "The state-based test must be rewritten around the new clip, because a generated clip brings its own timing and the transition expressions have to be re-derived from its frames.",
+        "A motion-capture export can go straight in: Godot lists FBX and BVH among its 3D imports and retargets the skeleton onto the robot's bones, leaving only loop trimming.",
+        "The generator's output already carries clean foot contacts and a root-motion decision, so only a loop trim is needed before the robot can use it."
+      ],
+      "answer": 0,
+      "feedback": "What generation never supplies is the state logic, so the test that checks state against the player's actions still applies whatever made the clip. An MP4 is pixels, BVH is not on Godot's 3D import list, and retargeting, foot contacts and the root-motion decision remain yours; whether the clip reads as a jump is a HUMAN CHECK (see \"Generated motion: what it can supply, and what it cannot\")."
+    }
+  ]
+}

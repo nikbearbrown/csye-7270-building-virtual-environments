@@ -1,0 +1,72 @@
+{
+  "title": "Module 8 practice assessment",
+  "description": "Ungraded practice for Module 8, Shader verification. Take it as often as you like, and read the feedback on every question, including the ones you get right.",
+  "questions": [
+    {
+      "prompt": "At `--fixed-fps 60` the seeded change passes the three original suites and the timing check from Module 6. Why does the timing check pass?",
+      "choices": [
+        "The timing check's tolerance is wide enough at 60 fps to absorb the difference between counting 33 frames and counting 0.55 s of game time.",
+        "At 60 fps the check samples only a handful of frames across the failure, and the counter and the countdown happen to agree on those frames.",
+        "At exactly 60 fps a 33-frame counter and a 0.55 s countdown are the same function (33 x 1/60 = 0.55), so only other frame rates expose the timing bug.",
+        "Physics ticks at 60 Hz whatever the frame rate, so a counter tied to physics steps matches the countdown at every rate, and the 30 and 144 fps failures come from the test."
+      ],
+      "answer": 2,
+      "feedback": "33 frames is 0.55 s at 60 fps, 1.1 s at 30 and about 0.23 s at 144, and the 60 fps run's largest gap was 2.2 x 10^-16, so neither a tolerance nor sparse sampling explains the pass. The evidence has to come from other rates. See \"Five families of plausible-but-incorrect change\"."
+    },
+    {
+      "prompt": "Which evidence can actually show that the `texture(TEXTURE, UV)` line breaks Clawd's colours?",
+      "choices": [
+        "Bench screenshots from the seeded and fixed commits, with body and eye pixels on each copy sampled by a colour picker and compared with the CPU model's table.",
+        "A `SHADER ERROR` grep that comes back clean across every log, since a shader that reads the wrong built-in would be reported the first time it is used.",
+        "A spec oracle that stays within tolerance at 30, 60 and 144 fps, since it samples the exact value the shader receives on every frame.",
+        "The CPU model's table by itself, since `mix(vertex_rgb, flash_rgb, amount)` says what each pixel should be and the seeded shader would deviate from it."
+      ],
+      "answer": 0,
+      "feedback": "The wrong-input bug parses, keeps its contract and receives correct values; it changes only what the GPU draws, which a headless run cannot read. The model says what the GPU should do, not what it did, so rung 5 of the ladder, a person with a display, is the evidence. See \"The ladder of evidence for a shader change\"."
+    },
+    {
+      "prompt": "Your new timing oracle rejects the known-good Module 6 code at 144 fps, with error 0.0369 against a tolerance of 0.0303. What should you conclude and do?",
+      "choices": [
+        "The known-good code has a real timing defect at 144 fps, since the one-frame-or-one-tick tolerance is the spec; change `player.gd` until the error is under 0.0303 at 144 fps.",
+        "Switch the oracle's reference to `retry_remaining / 0.55`, which the known-good code matches at 30, 60 and 144 fps, and keep that as the spec check from then on.",
+        "Loosen the tolerance just enough for the known-good code to pass at 144 fps, then move on, since passing on known-good code is what testing the test requires.",
+        "The oracle is wrong, not the code: derive the tolerance the clocks force (about a frame plus a physics tick), then confirm the revised oracle still fails the seeded commit."
+      ],
+      "answer": 3,
+      "feedback": "A new check must fail on a known-bad version and pass on a known-good one, so loosening it blindly proves only half. A correct flash following a 60 Hz countdown can trail the ideal line by a physics tick plus the frame that detected the failure, so the corrected tolerance passed all three rates, and `retry_remaining` is the implementation, not the spec. See \"Test the spec, not the implementation, and then test the test\"."
+    },
+    {
+      "prompt": "Which oracle checks that the flash fades linearly in game time, in a way that survives a refactor of how the player drives its fade?",
+      "choices": [
+        "Require `flash_amount` to equal exactly 1.0 on the first failure frame at each of 30, 60 and 144 fps, and exactly 0.0 on the first frame after the retry.",
+        "Compare `flash_amount` with 1 - t/0.55, where t is game time summed from frame deltas since the failure began, within the tolerance the clocks force.",
+        "Compare `flash_amount` with 1 - n/33, where n counts rendered frames since the failure began, within one frame of tolerance at each of the three pinned rates.",
+        "Set `retry_remaining` by hand to a few values and expect `flash_amount` to equal `retry_remaining / 0.55` for each, within one physics tick."
+      ],
+      "answer": 1,
+      "feedback": "Only the 1 - t/0.55 line encodes the spec rather than one implementation. The frame-count line is the seeded bug written as a test, the hand-set version was the agent's `test_flash.gd` and also fails a correct fade driven by its own clock, and an exact 1.0 breaks at 30 fps, where two physics ticks run per frame and the first value is 0.970. See \"Test the spec, not the implementation, and then test the test\"."
+    },
+    {
+      "prompt": "Claude's review said Clawd \"becomes white\" after the seeded shader change. How should a reviewer treat that statement?",
+      "choices": [
+        "As an unobserved prediction: the documentation predicts only that his colours are not preserved at 0.0, and the bench screenshot decides what he looks like.",
+        "As established, because the review reached the right verdict and cited both the frame counter and the `texture(TEXTURE, UV)` line, with line references, as evidence.",
+        "As nearly established: a second reviewer, Codex, reached the same do-not-merge verdict on the same change, and two agents agreeing counts as evidence until a screenshot is taken.",
+        "As false: Clawd has no texture, so the shader has nothing to sample, and at 0.0 he looks the same as before, his colours held by the vertex colour."
+      ],
+      "answer": 0,
+      "feedback": "The review stated it as fact, observed nothing, and no documentation it cited says so; the documented point is that `COLOR` is lost, so the colours are not preserved at 0.0. Two agents predicting white is still prediction, and having no texture is the reason the colours are lost, not a reason nothing changes. See \"What the agents got wrong\" and Use It, step 2."
+    },
+    {
+      "prompt": "`test_flash_bench.gd` passes on both the seeded and the fixed commit. What does that pass establish?",
+      "choices": [
+        "That the shader draws Clawd's body and eyes correctly at 0.0, 0.5 and 1.0, since the test loads the bench and reads each copy's material and its uniform list.",
+        "That the bench is built as intended (three distinct materials at 0.0, 0.5 and 1.0, with an intact uniform list), and nothing about what it displays.",
+        "That the CPU model's predicted hex colours, such as `#815653` at 0.5, match what the bench shows, within a step per channel.",
+        "That the seeded `TEXTURE` change is harmless at these three amounts, because a change that altered Clawd's colours would have failed the bench test."
+      ],
+      "answer": 1,
+      "feedback": "The test checks structure: materials, amounts and uniform names and types. None of that touches which input the shader reads, so it cannot see the bug. The model's table gives the values to look for, and the screenshot supplies the observation. See Use It, steps 1 and 2."
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "title": "Module 10 practice assessment",
+  "description": "Ungraded practice for Module 10, Animation foundations. Take it as often as you like and read the feedback; it is there to teach, not to grade.",
+  "questions": [
+    {
+      "prompt": "The Walker build's combo test passes 11 of 11, including `second swing starts`, which asserts `sword.combo_count == 2`. Stepping the scene frame by frame shows the blade holding at 75° during swing two. What does the passing check establish?",
+      "choices": [
+        "That the blade swung a second time, because the test drives real key presses through `Input.parse_input_event` instead of calling `attack()` directly.",
+        "That swing two's clip restarted from 0.0, because a `combo_count` of 2 is only reachable after `play()` has been called a second time.",
+        "Only that a script counter reached 2; the blade can be motionless, so a check has to record the playhead or `rotation_degrees` on every frame.",
+        "That swing two began on a particular frame, because the combo test counts frames the same way the pinned timing test does."
+      ],
+      "answer": 2,
+      "feedback": "The counter really went to 2 and the blade really did not swing: the test checked a number in a script, not a motion on screen. Real key presses make the counter honest but not the blade, `play()` on a clip that is already playing does not restart it, and the older tests wait in game seconds, so they cannot pin a frame (see \"The question\" and \"When animation runs, and how to count frames\")."
+    },
+    {
+      "prompt": "Swing two calls `play(\"attack_fast\")` while `attack_fast` is already playing at 0.25 s. What does Godot do, and what was the one-line fix?",
+      "choices": [
+        "Nothing restarts it: the clip keeps playing on from 0.25 s, so the blade never swings, and the one-line fix was to call `seek(0.0)` after `play()`.",
+        "It restarts from 0.0, but the deferred method callback delays the first key by a frame, so the fix was to set `callback_mode_method` to immediate.",
+        "It resumes only if the clip is paused and otherwise queues a restart for the end of the frame, so the fix was to call `stop()` before every `play()`.",
+        "It rewinds on the next physics tick instead of the next idle frame, because `AnimationPlayer` defaults to physics callbacks, so the fix was to set `callback_mode_process` to idle."
+      ],
+      "answer": 0,
+      "feedback": "The class reference says `play()` with the animation already assigned resumes it if paused; nothing restarts a clip that is already playing, so swing two ran on from 0.25 s. `AnimationPlayer` already defaults to idle callbacks, and no method or process setting makes that call restart the clip; adding `$AnimationPlayer.seek(0.0)` after `play()` did (see \"When animation runs, and how to count frames\")."
+    },
+    {
+      "prompt": "Codex moved the hitbox window into `monitoring` keys exactly as asked, and the pinned check printed three FAIL lines: `hitbox turns on at frame 1 (actual 2)`, `hitbox turns off at frame 56 (actual 20)` and `every combo swing has at least one hitbox-on frame`. Only the third was not a change the prompt asked for. What explains it, and why does it matter?",
+      "choices": [
+        "The key at 0.15 s lands two frames late, so swing one's window closes before the blade arrives; the older tests would have caught it, because they read `sword.monitoring` every frame.",
+        "The one-frame shift in the first line pushed swing two's window past the end of its clip, so its hitbox turned on late; the older tests passed only because they check the first swing.",
+        "The deferred method callback ran the `monitoring` change after swing two's first hit had been read; the older tests passed only because they never press F twice.",
+        "Swing two replays `attack_fast` at 0.25 s and never crosses the new 0.0 s key, so its hitbox never turns on; the older tests still pass and would ship a combo whose second hit cannot land."
+      ],
+      "answer": 3,
+      "feedback": "The first two lines were asked for: the 0.0 s key applies on the next processed frame, and the window now ends at 0.15 s. The third exposed a latent bug, because swing two replays a clip that never restarts; the older 18-check and 11-check tests still passed, so only the pinned invariant caught it (see \"What the agents got wrong\")."
+    },
+    {
+      "prompt": "The final pinned test passes 20 of 20 with `--fixed-fps 120`, but without it failed 7, 9 and 9 checks in three runs, while the seven INVARIANT checks passed every time. What does that show?",
+      "choices": [
+        "The pinned numbers were measured on a busy machine, so re-measuring them in real time, without the flag, would give frame numbers that pass on every later run.",
+        "Frame-number pins only mean something with a pinned time step, while invariants do not depend on frame numbers and survived machine load, so a pin test needs both kinds.",
+        "`await process_frame` loops count frames exactly even in real time, so the failures come from the older `create_timer` waits, which should be replaced with frame counts.",
+        "The sword change is timing-dependent and flaky under load, so it should be reverted until the real-time run passes 20 of 20 on every attempt."
+      ],
+      "answer": 1,
+      "feedback": "With `--fixed-fps 120` one rendered frame is one physics tick, so frames can be counted exactly; without it they are whatever length the machine produces, and the frame numbers differ on every run, so re-measuring them in real time cannot work. Invariants such as \"the hitbox is never on outside Attack\" survive machine load, which is why the pin test separates TIMING from INVARIANT (see \"When animation runs, and how to count frames\")."
+    },
+    {
+      "prompt": "A method-track key sits at 0.1 s, which is frame 12 at 120 fps on paper. In the recorded runs it was observed on frame 14. Which pair of facts accounts for the two extra frames?",
+      "choices": [
+        "The key snaps to the clip's `step` of 0.05 s, which adds one frame, and the project's physics tick runs at 60 Hz, which adds another.",
+        "The deferred method callback runs at the end of the frame, and `--fixed-fps` adds one more frame because it disables real-time synchronization.",
+        "The playhead is still 0.0 on the first processed frame after `play()`, and the deferred method callback runs at the end of the frame in which the key was crossed.",
+        "The playhead is still 0.0 on the first processed frame after `play()`, and `AnimationPlayer` defaults to physics callbacks, which skip a frame at 120 ticks per second."
+      ],
+      "answer": 2,
+      "feedback": "One frame comes from the start of playback (the playhead is still 0.0 on the first processed frame) and one from the deferred method callback, which batches calls until after that frame's scripts have run. `AnimationPlayer` defaults to idle processing in 4.7.2, the project runs 120 ticks per second, and `--fixed-fps` makes every frame exactly 1/n s (see \"When animation runs, and how to count frames\")."
+    },
+    {
+      "prompt": "In `walker-3d-ik`, two `SkeletonIK3D` checks failed even though the targets moved and both solvers reported `is_running()`. What was wrong, and what fixed it?",
+      "choices": [
+        "The FABRIK script's `update_mode` setter turned on `_process` when physics updates were requested, so the solver ran off schedule; a one-line `set_physics_process(true)` fixed it.",
+        "The test read `get_bone_global_pose()` after a timer, between skeleton updates; reading it in a `skeleton_updated` handler fixed it with no change to the game.",
+        "The `AnimationMixer` overwrote the IK pose after the solver ran, so the fix was to move the solver node below the `AnimationPlayer` in the scene tree.",
+        "`SkeletonIK3D` is Deprecated and cannot be checked headless, like the captured-mouse checks, so the two failures were accepted as a backend limit and left failing."
+      ],
+      "answer": 1,
+      "feedback": "The scheduling bug was a different, real one in the FABRIK script. The `SkeletonIK3D` failures were a sampling trap: a modification always runs after the `AnimationMixer`, and the final pose exists when `skeleton_updated` fires, so reading it there made all 12 checks pass with no change to the game (see \"The counterweight: walker-3d-ik\")."
+    }
+  ]
+}

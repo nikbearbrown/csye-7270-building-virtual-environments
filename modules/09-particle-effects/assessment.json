@@ -1,0 +1,72 @@
+{
+  "title": "Module 9 practice assessment",
+  "description": "Ungraded practice for Module 9, Particle effects. Take it as often as you like and read the feedback; it is there to teach, not to grade.",
+  "questions": [
+    {
+      "prompt": "A headless test prints `PASS emitting after hit` for a death burst that is a child of `Player`, and `player.gd` calls `hide()` at the moment of death. What follows?",
+      "choices": [
+        "The burst is visible: `hide()` affects only the node it is called on, so the child keeps drawing while `emitting` is true, and the passing line is reasonable evidence.",
+        "It can be emitting yet invisible: a hidden parent hides its children, so the test should also assert `is_visible_in_tree()`, and only a person at a screen confirms it was seen.",
+        "It is invisible, but the fix is `visible = true` on the burst itself, since the burst's own visibility flag takes precedence over a hidden parent.",
+        "It is visible but misplaced: with `local_coords` false the particles stay where they were born, so the burst plays at the player's spawn point rather than the death spot."
+      ],
+      "answer": 1,
+      "feedback": "A particle node inherits its parent's visibility, so a burst under a player that calls `hide()` can be `emitting` and still invisible; a child's own `visible` flag does not override a hidden parent, and `local_coords` only decides whether living particles follow a moving emitter. That is why `DeathBurst` is a child of `Main` and the test asserts `is_visible_in_tree()`; only a person at a screen can confirm it was seen (see \"Triggering an effect from gameplay\")."
+    },
+    {
+      "prompt": "You want sparks that each leave a small puff when they die. Which setup gives that in Godot 4.7.2?",
+      "choices": [
+        "A `CPUParticles2D` whose `sub_emitter` path points at a second `CPUParticles2D`, with `sub_emitter_mode` set to `AT_END`, since the CPU node has near-feature parity with the GPU node.",
+        "A `GPUParticles2D` with `trail_enabled` set to true, which spawns a puff behind each spark when it dies, though only outside the Compatibility renderer.",
+        "A `GPUParticles2D` whose `ParticleProcessMaterial` sets `sub_emitter_mode` to `AT_START`, with `sub_emitter` pointing at a second `GPUParticles2D` that draws the puff.",
+        "A `GPUParticles2D` whose `sub_emitter` path points at a second `GPUParticles2D`, and whose `ParticleProcessMaterial` has `sub_emitter_mode` set to `AT_END`."
+      ],
+      "answer": 3,
+      "feedback": "Sub-emitters are a GPU-node feature: the CPU classes have no `sub_emitter` property (checked with `ClassDB` on 4.7.2), and the mode that fires when a particle dies is `AT_END`, set on the `ParticleProcessMaterial`. `trail_enabled` is a different feature, and any other `sub_emitter_mode` picks a different moment (see \"Four nodes, two families\" and \"Beyond the checkboxes, and where the cost lands\")."
+    },
+    {
+      "prompt": "Codex's cost script printed 6.90 ms per frame for every case, including the empty scene. What is the right reading?",
+      "choices": [
+        "It measured the engine's idle sleep: headless Godot sleeps toward a 6,900 µs frame period unless a fixed frame rate is set, so rerun with `--fixed-fps 60`.",
+        "The first frame's delta includes time from before the effect started, so 60 warm-up frames were too few; raising the warm-up to several hundred frames would separate the cases.",
+        "The dummy renderer caps every case at one frame period, so the GPU rows are meaningless, but the CPU rows are valid readings and need no rerun.",
+        "`Time.get_ticks_usec()` reads wall-clock time while particle time is frame time, so the script should sum each frame's `delta` instead of timing 300 frames."
+      ],
+      "answer": 0,
+      "feedback": "An identical number for an empty scene and 50,000 particles means the instrument is wrong, not the particles: any work under 6.9 ms hides inside the idle sleep, so the CPU rows are no more valid than the GPU rows until a fixed frame rate is set. The prompt did not name `--fixed-fps 60`; with it, the CPU cases came out at 0.035, 0.33 and 1.61 ms (see \"What the agents got wrong\")."
+    },
+    {
+      "prompt": "Claude Code said the one failing check was a headless limitation: the dummy renderer never advances particle lifetime timers. Which evidence showed that explanation was wrong?",
+      "choices": [
+        "Running the failing check again with `--fixed-fps 60`, which removes the dummy renderer's idle sleep and so rules the renderer out as the cause.",
+        "The agent's own \"Expected headless output\" table, in which two of three predicted failures did not occur, so its explanation of the third had to be wrong too.",
+        "A probe run before any agent: a one-shot `GPUParticles2D` with `lifetime = 0.5` emitted `finished` about 0.5 s after `restart()` in headless Godot 4.7.2.",
+        "The 14 passing checks in `test_input.gd`, which include timed spawning, so timers evidently advance headless and particle timers must advance as well."
+      ],
+      "answer": 2,
+      "feedback": "A probe run before any agent showed `finished` firing headless, so the fault had to be in the test: a GDScript lambda cannot reassign an outer local variable, so the test read a flag that never changed. The mispredicted table shows the agent was guessing, but not that this explanation was false, and neither `--fixed-fps` nor `test_input.gd` says anything about particle timers (see \"What the agents got wrong\")."
+    },
+    {
+      "prompt": "A death burst passes every state check in `test_particles.gd`. According to the class reference and the official 2D particles demo, which two settings could still leave it as a few specks, some moving along an axis the 2D camera never shows?",
+      "choices": [
+        "A null `texture` (1×1-pixel squares) and `local_coords` left false (living particles stay where they were born instead of following the emitter).",
+        "A null `texture` (1×1-pixel squares) and `particle_flag_disable_z` left false (part of each velocity points into Z, an axis a 2D camera never shows).",
+        "`particle_flag_disable_z` left false (part of each velocity points into Z) and `fixed_fps` left at its default of 30 (motion updates in visible steps).",
+        "An `explosiveness` of 1 with `one_shot` true (all 32 particles are born in the same instant, so they overlap as a few specks)."
+      ],
+      "answer": 1,
+      "feedback": "With no texture, particles are 1×1-pixel squares, and `ParticleProcessMaterial` is shared with 3D, so without Disable Z part of each velocity points into Z. A state check reads neither, which is why the agent's first burst passed; `local_coords` and `fixed_fps` cause other effects, and `explosiveness = 1` with `one_shot` is exactly what a burst is meant to have (see \"Defaults that bite in 2D\")."
+    },
+    {
+      "prompt": "With `--fixed-fps 60`, 50,000 `GPUParticles2D` cost 0.0024 ms per frame headless and 50,000 `CPUParticles2D` cost 1.61 ms. What may you conclude?",
+      "choices": [
+        "GPU particles are far cheaper than CPU particles, so 50,000 of them are safe on a phone, since 0.0024 ms is well under any frame budget.",
+        "The CPU row transfers: 1.61 ms per frame for 50,000 particles is roughly what a phone would pay, because the per-particle price belongs to the node.",
+        "The GPU row is real but tiny, the CPU-side cost of submitting 50,000 particles, so only drawing is left unmeasured and fill rate is the one cost to check.",
+        "The CPU row is a real simulation cost on the machine that ran it; the GPU row is a dummy renderer doing nothing, so GPU cost needs a real GPU and the Profiler."
+      ],
+      "answer": 3,
+      "feedback": "CPU particle nodes simulate on the CPU, so their time shows up in a headless run, but only as a figure for that machine. GPU simulation and drawing do not exist under the dummy renderer, so that row (about the same as an empty scene) is a property of the instrument, not of GPU particles (see \"Beyond the checkboxes, and where the cost lands\")."
+    }
+  ]
+}

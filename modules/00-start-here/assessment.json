@@ -1,0 +1,72 @@
+{
+  "title": "Module 0 practice assessment",
+  "description": "This practice quiz is ungraded: take it as often as you like and read the feedback on every question, right or wrong. It checks the judgment calls in Start Here, not just the commands.",
+  "questions": [
+    {
+      "prompt": "Claude Code first explained the failing regression test by saying the `.godot/` import cache was missing. Which result from the twelve-run experiment on the untouched game rules that explanation out?",
+      "choices": [
+        "In the runs tested, all three real-time runs without the cache failed, while all three real-time runs with the cache present passed.",
+        "The two real-time runs without the cache that passed produced the same counts as the six `--fixed-fps 60` runs.",
+        "All three real-time runs with the cache present failed, while two of three real-time runs without it passed.",
+        "All six `--fixed-fps 60` runs passed, but only in the clones where the import cache had been rebuilt first."
+      ],
+      "answer": 2,
+      "feedback": "Real-time runs failed with the cache present (3 of 3) and passed twice without it, and all six `--fixed-fps 60` runs passed either way, so the time step, not the cache, decided the result. The choice that reverses the cache columns restates Claude Code's explanation instead of the table. See \"Frames are not seconds\"."
+    },
+    {
+      "prompt": "A `## Checks` paragraph was appended to a fresh clone's `AGENTS.md`, and the identical prompt was given to Codex again. What did that recorded re-run show?",
+      "choices": [
+        "Codex imported first, ran the route with `--fixed-fps 60` and matched the baseline counts exactly, in 9 shell commands against 12 the first time.",
+        "Claude Code, given the same paragraph and prompt, also imported first, pinned `--fixed-fps 60` and matched the baseline counts on its first try.",
+        "Codex ran the route with `--fixed-fps 60` but skipped the import, since the paragraph only explained the flag, and still matched the baseline counts.",
+        "Codex matched the baseline counts exactly, but the extra instructions made the re-run slower, at 5 minutes and 12 shell commands against 3.5 minutes and 9."
+      ],
+      "answer": 0,
+      "feedback": "The paragraph fixed how the checks were run: Codex imported, pinned `--fixed-fps 60` and hit the baseline counts exactly, using fewer commands and less time than before. Claude Code was not re-run with the paragraph, so nothing recorded shows it would behave the same. See Build It, Step 6."
+    },
+    {
+      "prompt": "A headless run of a Godot test ends with exit code 0, but the terminal printed several `ERROR` lines. What is the right conclusion?",
+      "choices": [
+        "Not clean yet: rerun with `--fixed-fps 60`, because `ERROR` lines usually come from frame timing, and trust the exit code once they stop appearing.",
+        "Probably clean for the tested state: the test's own checks set the exit code, so engine `ERROR` lines matter only if one of those checks also fails.",
+        "Not clean yet: run `godot --headless --path godot --import` and rerun; after that the exit code can be trusted as the verdict without reading the log.",
+        "Not clean yet: read the `ERROR` lines before trusting the result, because Godot can print script and shader errors while the process still exits 0."
+      ],
+      "answer": 3,
+      "feedback": "Script and shader errors can print while the process still exits 0; one clean-clone run exited 0 with 55 `ERROR` lines because the project had not been imported. Importing and pinning the time step are good habits, but neither lets you skip reading the error output. See the first-run traps in Build It."
+    },
+    {
+      "prompt": "You pre-approve `Bash(godot *)` for an agent. Which statement about that rule is supported?",
+      "choices": [
+        "It is a narrow grant, because it names a single program; only a rule such as `Bash(env *)`, which runs any command, widens what the agent can start.",
+        "It is still a wide grant: `godot --script` runs any GDScript, and GDScript can call `OS.execute()` to start other programs.",
+        "It also covers `WALKER_EVIDENCE_DIR=... godot ...`, because a variable prefix is ignored when the rest of the command matches `godot *`.",
+        "It also approves `cd godot && godot --import`, because a compound command is allowed when at least one of its parts matches a rule."
+      ],
+      "answer": 1,
+      "feedback": "An allow rule bounds programs, and a program that runs code is no boundary: `godot --script` can run GDScript that calls `OS.execute()`. A compound command or a variable prefix is refused unless every part matches a rule, which is why the agent's `cd ... && godot ...` and `WALKER_EVIDENCE_DIR=...` forms were refused. See \"What the agent may touch\" and \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "Claude Code's `score_check.gd` passed, and its report said each score matches the wall contacts. Which statement about that test is supported by the chapter?",
+      "choices": [
+        "It counts wall contacts through the same `area_entered` signal the scoreboard uses and never reads the labels, so it would pass with both hidden.",
+        "It reads each label's text and compares it with the wall contacts on each side, so it would fail if a label showed the wrong number.",
+        "It shows the labels are readable at 640x400, because it replays the regression route in that viewport and a hidden label would fail it.",
+        "It writes the expected totals into the scoreboard and then checks the labels, so it proves the display path but not the signal path."
+      ],
+      "answer": 0,
+      "feedback": "Reading the labels was Codex's test, not Claude Code's. A test that shares the scoreboard's signal and never reads the display cannot tell you the labels are right, and no headless check can tell you they are legible. See \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "A test script you pass to `godot --headless --script` hits a script error before it reaches `quit()`, and you did not wrap the command in `timeout`. What should you expect?",
+      "choices": [
+        "Godot prints the error and exits with code 1 by itself, so the exit status usually catches a broken script without a time limit.",
+        "Godot prints the error and exits with code 0, the same misleading status that lets `ERROR` lines slip past a clean-looking run.",
+        "Godot logs the error, skips the failing function and carries on, so the script still reaches `quit()` and reports the checks that ran.",
+        "Headless Godot keeps running with no window to close, so the run can hang indefinitely, as one test did for thirty minutes."
+      ],
+      "answer": 3,
+      "feedback": "With no window to close, a script that never reaches `quit()` can run forever; one test sat for thirty minutes. Prefix headless runs with `timeout 120` so a hang becomes a failure you can see, and do not confuse this with exit code 0 hiding errors. See the first-run traps in Build It."
+    }
+  ]
+}

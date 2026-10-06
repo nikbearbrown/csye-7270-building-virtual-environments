@@ -1,0 +1,72 @@
+{
+  "title": "Module 7 practice assessment",
+  "description": "Ungraded practice for Module 7, Materials and textures. Take it as often as you like, and read the feedback on every question, including the ones you get right.",
+  "questions": [
+    {
+      "prompt": "The ship's `arm` textures carry ambient occlusion in their red channel, yet all three imported materials load with `ao_enabled=false`. What would actually make that red channel affect the ship's lighting?",
+      "choices": [
+        "Raising `ao_light_affect` from its default of 0.0 toward 1.0, which is what currently keeps the occlusion from reaching the ship's direct and ambient lighting.",
+        "A material has to read it: an occlusion slot aimed at the `arm` file, or an `ORMMaterial3D` using it, with AO on; importing the texture is not enough.",
+        "Re-importing the `arm` textures as VRAM Compressed instead of Lossless, since Lossless is the 2D mode and throws away the occlusion data in the red channel.",
+        "Godot reads AO from the blue channel of a packed texture, so each `arm` file would have to be repacked with occlusion moved from red to blue."
+      ],
+      "answer": 1,
+      "feedback": "None of the glTF materials points an occlusion slot at the `arm` files, so the red channel is imported and uploaded but nothing reads it, and the ORM path emits AO only when `ao_enabled` is on. `ao_light_affect` only sets how far AO reaches direct light, Lossless does not remove data, and glTF and Poly Haven both put occlusion in red. See \"The question\" and \"StandardMaterial3D, ORMMaterial3D, ShaderMaterial\"."
+    },
+    {
+      "prompt": "A flat normal-map texel (128, 128, 255) is sampled through `source_color` in a custom shader. What is the consequence?",
+      "choices": [
+        "Nothing changes: 128 is the midpoint of 0 to 255 under either decoding, so the texel still unpacks to (0.004, 0.004, 1.0) and the surface stays flat.",
+        "The surface still looks flat, but the whole material renders about 22% darker, because sRGB decoding scales all three channels down by the same factor.",
+        "The normal map is rejected at import because the uniform lacks `hint_normal`, and the shader falls back to a flat normal of (0, 0, 1) for the whole surface.",
+        "The surface is treated as tilted about 38.8 degrees, so a light shining along the true normal lights it at 0.779 instead of 1.0, and the shading is lopsided."
+      ],
+      "answer": 3,
+      "feedback": "Decoded as sRGB, 0.502 becomes 0.216 and unpacks to (-0.568, -0.568, 1.0), a tilted vector, so the lighting is about 22% too dark and lopsided rather than uniformly dimmer. The data and the file were right; one word in the uniform declaration was wrong. See \"Colour versus data\"."
+    },
+    {
+      "prompt": "Codex's change gave the hull an external `ORMMaterial3D` and its test passed 100 checks, yet no AO appeared. Which explanation matches the record?",
+      "choices": [
+        "Its test asserted that the ORM texture was bound and the AO channel was red, but neither turns AO on, so `ao_enabled` stayed false while 100 checks passed.",
+        "The importer ignored the external material because `_subresources` was written as a flat key, so the hull stayed an internal `StandardMaterial3D` and AO never loaded.",
+        "The hand-typed UID pointed at a different resource, so Godot fell back to a material without AO, which a 100-check test then failed to notice.",
+        "AO was on but its effect is tiny: the red channel averages 0.99 and AO only darkens ambient light, so the `ao_enabled=false` reading is misleading."
+      ],
+      "answer": 0,
+      "feedback": "The ORM code path reads the red channel for AO only when the AO feature is on, and the test checked properties that do not switch it on. One assertion on `ao_enabled`, confirmed by mutation, caught it. The flat key was Claude's earlier attempt, and the two UIDs were the same resource. See \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "An agent wires a texture into a material by editing a `.tscn` and runs only headless commands. What should you expect of that texture's `.import` file?",
+      "choices": [
+        "Godot detects the texture's 3D use during `--import` and switches `compress/mode` from 0 (Lossless) to 2 (VRAM Compressed) by itself, since the texture is now used in a 3D material.",
+        "The importer sees the `_nor_gl` suffix and sets `compress/normal_map` to 1 (Enable) on the next `--import`, since the file is clearly a normal map.",
+        "It stays byte-identical, because Detect 3D and Normal Map: Detect fire only when the editor's renderer draws the texture in a 3D material, and headless never does.",
+        "Godot rewrites it on every `--import` run to match whichever materials now reference the texture, so a fresh import leaves the settings consistent."
+      ],
+      "answer": 2,
+      "feedback": "Detection is driven by renderer callbacks that never run headless; in the course experiment both `.import` files stayed byte-identical. After the first real editor session, read the `git diff` of your `.import` files. See \"Texture import: the half an agent forgets\"."
+    },
+    {
+      "prompt": "The imported hull material has metallic and roughness scalars of 1.0. What happens to those scalars if it is converted to an `ORMMaterial3D`?",
+      "choices": [
+        "They still multiply the ORM channels, as in `StandardMaterial3D`, so the conversion keeps the look unless a scalar was set below 1.0.",
+        "They stop entering the shader, so the converted hull should look different, because the ORM channels are now used at full strength instead of scaled.",
+        "They multiply the ORM channels only while `ao_enabled` is on, so switching AO on also brings the metallic and roughness scalars back.",
+        "They no longer enter the shader, so the converted look is preserved only if both scalars were 1.0, which they are for the ship."
+      ],
+      "answer": 3,
+      "feedback": "In `StandardMaterial3D` the scalar multiplies the texture; in `ORMMaterial3D` the channels are used directly and the scalars never enter, whether AO is on or off. The ship's scalars are 1.0 because glTF's default metallic factor is 1.0, so the look survives the conversion. See \"StandardMaterial3D, ORMMaterial3D, ShaderMaterial\"."
+    },
+    {
+      "prompt": "Before you A/B the hull's texture ambient occlusion by eye, why do you switch SSAO off?",
+      "choices": [
+        "SSAO is a separate post-process in the `Environment`, so with it on you could not tell whether a difference came from the texture AO or from SSAO.",
+        "SSAO overrides a material's `ao_enabled` whenever it is on, so the hull's texture AO would be ignored and toggling it in the A/B comparison would show nothing.",
+        "SSAO supplies the ambient light that texture AO darkens, so leaving it on would change the baseline the A/B comparison starts from.",
+        "SSAO is a setting on the hull's material that reads the same `arm` red channel, so leaving it on would count that occlusion twice in the A/B comparison."
+      ],
+      "answer": 0,
+      "feedback": "Screen-space AO is a post-process in the `Environment`, separate from a material's AO texture, so a judgement of the texture needs it off. The ambient light comes from the grey background colour, not from SSAO, and the demo's `control.tscn` ships SSAO off already; confirm that. See \"Decals, lighting and global illumination\" and Use It, step 1."
+    }
+  ]
+}

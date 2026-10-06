@@ -1,0 +1,72 @@
+{
+  "title": "Module 12 practice assessment",
+  "description": "This quiz is ungraded: take it as often as you like. Read the feedback after each question, because it points back to the lesson section that teaches the idea.",
+  "questions": [
+    {
+      "prompt": "A headless test prints `PASS hitsound_plays_on_perfect` because `HitSound.playing` was true at one instant after a Perfect. What has that proved?",
+      "choices": [
+        "That the click reached the SFX bus at roughly the level the generator wrote, since a player that is playing has already been routed.",
+        "That the click is audible and in time with the music, since `playing` is true only while the stream is reaching an output.",
+        "Only that a flag was true at one instant; routing, level, Miss silence, pause and restart, and audibility are all untested.",
+        "That a Miss would stay silent, since the handler is written to play `HitSound` for Perfect and Good and for nothing else."
+      ],
+      "answer": 2,
+      "feedback": "A `playing` flag is a single observation: it shows neither routing nor level, nor that a Miss stays silent, nor behavior on pause and restart, and under the Dummy driver it says nothing about audibility. A Perfect-only test cannot vouch for a Miss, whatever the handler is written to do (see \"The question\" and the table in \"Verify\")."
+    },
+    {
+      "prompt": "Headless, a held 0.5-amplitude tone reads -6.02 dB on a bus meter, but a 60 ms click reads -200 dB on every frame, while an `AudioEffectCapture` on the same bus records the click. What explains this?",
+      "choices": [
+        "The meter holds only the peak of the last 512-frame step of each 4,096-frame burst, so a 60 ms click can be fully mixed without ever showing on it.",
+        "A capture hears audio before the bus's volume and mute while the meter hears it after, so the click had been muted on the SFX bus by the time the meter read it.",
+        "The meter averages the level over each roughly 93 ms burst, so a 60 ms click, which fills only part of one, averages down to the floor while a held tone does not.",
+        "Headless Godot mixes the click only on the frame after `play()` returns, so the meter was read one burst too early; reading it 93 ms later would have shown the click."
+      ],
+      "answer": 0,
+      "feedback": "Dummy means no device, not no mixing. The meter reports the peak of the last 512-frame step of each burst, so a 60 ms sound can be fully mixed without showing on it, while a capture effect records every step; the held tone and the click share a bus and fader, which rules out muting or attenuation (see \"What a headless run can hear\")."
+    },
+    {
+      "prompt": "An agent's test prints `PASS peak_sfx_rises_after_perfect (SKIP: Dummy driver ...)`, written before the test had ever run. How should you treat that line?",
+      "choices": [
+        "As an acceptable skip, provided the reason is printed: the project settings say Dummy disables all audio playback and recording, so no meter can read anything headless.",
+        "As a pass for the routing half only: the bus-layout checks above it passed, so the SKIP excuses just the level measurement and the rest can count.",
+        "As a pass once it survives three real-time runs, since a SKIP branch that triggers identically every time is deterministic rather than flaky.",
+        "As a false pass: a check that cannot run must print SKIP and must not count, and the belief behind it, that headless Godot cannot meter audio, was never tested."
+      ],
+      "answer": 3,
+      "feedback": "A SKIP that prints PASS is a false pass. The belief was also wrong: the Dummy driver does meter a held tone, and for a short click the right instrument is a capture effect, so passing routing checks elsewhere cannot excuse it and repeat runs cannot make it real (see \"What the agents got wrong\")."
+    },
+    {
+      "prompt": "You want to prove that muting the SFX bus keeps the click out of the output. Where should the capture effect go, and what should you expect?",
+      "choices": [
+        "On the SFX bus itself: a capture there goes silent when SFX is muted, because the mute applies to every effect on that bus, capture included.",
+        "On Master, with Music muted so Master carries only SFX: its capture goes silent when SFX is muted, and a capture on SFX still hears the click.",
+        "On Master with the music left playing: its capture goes silent when SFX is muted, because Master carries only what the SFX bus sends.",
+        "On no bus: read the SFX bus meter, which falls to -200 dB when SFX is muted and rises above -40 dB after a Perfect when it is not."
+      ],
+      "answer": 1,
+      "feedback": "A capture on a bus hears the audio before that bus's volume and mute, so a capture on SFX still hears the click when SFX is muted. To test the mute, capture on the bus it sends to, Master, with Music muted so only SFX can reach it; the meter is the wrong instrument for a 60 ms click (see \"What a headless run can hear\")."
+    },
+    {
+      "prompt": "`hitsound_plays_on_perfect` failed one run in ten. The check awaited one frame after `note_hit` and then read `HitSound.playing`. What is the best fix, and why?",
+      "choices": [
+        "Await three frames instead of one, so the click has certainly started by the time the check reads `playing` and the one-in-ten failure disappears.",
+        "Read the SFX bus meter after each hit instead of `playing`, since the meter is refreshed on every mix step and cannot miss a short sound.",
+        "Read `playing` immediately after `emit()`, before any `await`: the driver mixes about 93 ms at a time, so a 60 ms click can end between two frames.",
+        "Test the trigger on the long song player instead, since a long stream stays `playing` across many frames and cannot end between two reads."
+      ],
+      "answer": 2,
+      "feedback": "The Dummy driver mixes about 93 ms at a time, so a 60 ms click can start and finish between two frames and `playing` can already be false; reading it right after the signal removes the dependence on frame timing. Waiting longer makes it worse, the meter misses short clicks, and the song player is not what `note_hit` triggers (see \"What the agents got wrong\")."
+    },
+    {
+      "prompt": "Which of these questions can the final 25-check test NOT answer?",
+      "choices": [
+        "Whether the click lands on the beat as the player hears it; headless audio has no device, no real latency and no listener to judge.",
+        "Whether, with Music muted so Master carries only SFX, muting the SFX bus silences a Perfect's click on Master.",
+        "Whether pressing R reloads the scene with `HitSound` silent and the song position under one second, and whether P freezes the song until a second P.",
+        "Whether Perfect and Good both start `HitSound` while Miss does not, and the click reaches the SFX bus above -12 dBFS after a Perfect."
+      ],
+      "answer": 0,
+      "feedback": "The test checks routing, triggering, level at the bus, mute, restart and pause. Whether anyone can hear the click, whether it sounds good, and whether it lands on the beat as heard are HUMAN CHECKs that need headphones and a real device (see \"Verify\")."
+    }
+  ]
+}

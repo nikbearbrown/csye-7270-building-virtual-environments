@@ -1,0 +1,72 @@
+{
+  "title": "Module 3 practice assessment",
+  "description": "This practice assessment is ungraded. Take it as often as you like, and read the feedback after each question.",
+  "questions": [
+    {
+      "prompt": "You build a pole in Blender by scaling a 2 m cube to (0.1, 0.1, 0.9) and export without applying the scale. The pole looks right in the running game. What does a Godot test see?",
+      "choices": [
+        "A `MeshInstance3D` with unit scale and a 0.2 x 0.2 x 1.8 m mesh, so the pole lies on its side with its 1.8 m along Godot's Z axis.",
+        "A `MeshInstance3D` with unit scale and a 0.2 x 1.8 x 0.2 m mesh, because the exporter applies the object's scale to the vertices itself.",
+        "An import error: Godot refuses glTF nodes that carry a non-unit scale such as (0.1, 0.9, 0.1), so the pole never reaches the scene at all.",
+        "A `MeshInstance3D` with scale (0.1, 0.9, 0.1) and a 2.0 x 2.0 x 2.0 m mesh, although its size in the scene is 0.2 x 1.8 x 0.2 m."
+      ],
+      "answer": 3,
+      "feedback": "This is the `no_apply` line in The question: the drawn size is right, but the mesh is a 2 m cube wearing a scale, and anything generated from the mesh inherits it (The ideas, section 3). Lying on its side is the `no_yup` failure, from forgetting the +Y Up export option."
+    },
+    {
+      "prompt": "A Blender script raises an exception when you run `Blender -b --factory-startup --python script.py`. What exit code do you get, and what makes the failure visible to a script?",
+      "choices": [
+        "Exit code 0 without `--python-exit-code 1`; with that flag the same exception makes Blender exit 1, which a script can test.",
+        "A non-zero exit code on its own, because background mode (`-b`) treats any exception raised by `--python` as fatal.",
+        "Exit code 0 in both cases, so the only way for a script to detect the failure is to search the log for the word Error.",
+        "Exit code 1 by default; `--python-exit-code 1` only controls whether Blender prints the Python traceback to the terminal."
+      ],
+      "answer": 0,
+      "feedback": "Without `--python-exit-code 1`, Blender exits 0 when a script raises: the chapter ran `raise ValueError` both ways and got 0 and 1 (The ideas, section 1). Background mode does not make exceptions fatal, and exit 139 was a different failure, a segmentation fault from Blender's Metal GPU check inside Codex's sandbox."
+    },
+    {
+      "prompt": "You copy `enemy/enemy.glb.import` as the `.import` file for your post and name the collision mesh `Collision-convcolonly`. What does Godot build?",
+      "choices": [
+        "A `StaticBody3D` holding a `ConvexPolygonShape3D`, with the mesh removed, exactly as the `-convcolonly` suffix describes.",
+        "A `StaticBody3D` holding a concave shape, because `use_name_suffixes=false` makes Godot fall back to the default concave collision.",
+        "A visible `MeshInstance3D` named `Collision-convcolonly`, with no `StaticBody3D` and no collision shape anywhere in the scene.",
+        "A visible `MeshInstance3D` with a child `StaticBody3D` holding a convex shape, the way the `-convcol` suffix behaves."
+      ],
+      "answer": 2,
+      "feedback": "The demo's import has `nodes/use_node_type_suffixes=false`, which turns the suffix hints off, so the collider arrives as a visible box that does not collide (The ideas, section 5; What the agents got wrong). A fresh import with Godot's default of true builds the `StaticBody3D`."
+    },
+    {
+      "prompt": "The agent's test prints `no pennant length lies inside collider [overlap 0.0000 m]`, yet sampling the pennant with the physics server finds 55 of 1,066 points inside. Why did the check pass?",
+      "choices": [
+        "The physics server counts points lying exactly on the hull's surface as inside, so the 55 points are a rounding artifact and 0.0000 m is correct.",
+        "It checked only the hull's vertices at the pennant's height, which are the pole's corners, and never tested the hull's slanted faces.",
+        "The test allowed a tolerance of a few centimetres on the overlap, so a 3 cm sliver of pennant was counted as zero.",
+        "The pennant moved when Godot imported it, so the test compared the hull with a pennant at the wrong position in the scene."
+      ],
+      "answer": 1,
+      "feedback": "The vertices at that height are the pole's corners, so the check never looked at the hull's slanted faces, where a 3 cm sliver of pennant sits (What the agents got wrong). The sliver reaches x = 0.11 m, past the pole's 0.08 m, so it is real overlap, not rounding or tolerance; a different method found what the agent's could not."
+    },
+    {
+      "prompt": "The agent's final floor check shoots a ray down from 2 m above the post and reports that it hit something at y = -2.2. Why does that not show the post stands on the floor?",
+      "choices": [
+        "The ray stopped on the post's own collider, so it proves the post is solid and says nothing about what is under it.",
+        "A ray cannot detect a `GridMap`, so a floor check needs a different kind of test, such as comparing the post's y with the stage's tile height.",
+        "The hit at y = -2.2 is where the floor is, 1.8 m above the post's base at y = -4.0, so the post is sunk into the stage.",
+        "The ray's x and z were constants rather than read from `game.tscn`, so it may have missed the post and landed on a different tile."
+      ],
+      "answer": 0,
+      "feedback": "The ray needs to exclude the post's own `StaticBody3D`; with it excluded, the floor was found at y = -4.0, 0.0 m from the post's base (What the agents got wrong). The `GridMap` stage is detected like any collision, so the method was fine and the target was wrong."
+    },
+    {
+      "prompt": "You consider the community Blender MCP route. Which approach is supported by the chapter's evidence and warnings?",
+      "choices": [
+        "Use Blender Lab's server, whose guards on LLM-generated code let you skip reading what it runs, and keep the transcript of tool calls as your record.",
+        "Keep the port on `localhost`; since the server is local, Rodin, Hunyuan3D and Tripo run locally too and cost nothing, and the transcript of tool calls is enough.",
+        "Keep the port on `localhost`, leave Rodin, Hunyuan3D and Tripo off unless you approve the spend, and copy each executed script into a file Git can diff.",
+        "Set `DISABLE_TELEMETRY=true`, which also stops the agent's scripts from reading files or reaching the network, then use the MCP route for assets you must regenerate."
+      ],
+      "answer": 2,
+      "feedback": "The README says the socket has no authentication or encryption, both projects execute agent-written Python without guards, and the generation services call remote services (The ideas, section 1). The MCP route leaves only a transcript of tool calls, so you must copy each `execute_blender_code` body into a script yourself; `BLENDER_MCP_SAFE_MODE=1`, not the telemetry setting, is the documented switch that blocks scripts from touching files, other programs or the network."
+    }
+  ]
+}
