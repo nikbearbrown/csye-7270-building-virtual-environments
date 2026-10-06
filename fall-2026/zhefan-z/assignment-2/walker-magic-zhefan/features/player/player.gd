@@ -7,6 +7,8 @@ extends CharacterBody2D
 signal failed(reason: String)
 ## SFX-CAST listens to this. Emitted once per cast, after the cooldown check and the spawn.
 signal cast_fired(origin: Vector2, direction: Vector2)
+## SFX-HURT listens to this. Emitted only when a hit lands (not while invulnerable).
+signal hurt(hp: int)
 
 enum State { IDLE, RUN, RISE, FALL, CAST, HURT, FAIL, WIN }
 
@@ -28,6 +30,8 @@ const STAFF_TIP := Vector2(11, -60)
 var state: State = State.IDLE
 var facing := 1                 # 1 = right (as drawn), -1 = left (flip_h)
 var is_failing := false
+var hp := Tuning.MAX_HP
+var invulnerable := 0.0         # seconds left
 
 ## Headless tests drive the player through `scripted` instead of the keyboard and mouse:
 ## {"move": -1..1, "jump_pressed": bool (one frame), "jump_held": bool,
@@ -39,6 +43,7 @@ var _coyote := 0.0
 var _jump_buffer := 0.0
 var _cast_cooldown := 0.0
 var _cast_hold := 0.0
+var _hurt_hold := 0.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -59,22 +64,31 @@ func _physics_process(delta: float) -> void:
 		velocity.y = minf(velocity.y + Tuning.GRAVITY * delta, Tuning.MAX_FALL_SPEED)
 
 	_jump_buffer = Tuning.JUMP_BUFFER if jump_pressed else maxf(_jump_buffer - delta, 0.0)
-	if _jump_buffer > 0.0 and _coyote > 0.0:
+	if _jump_buffer > 0.0 and _coyote > 0.0 and _hurt_hold == 0.0:
 		velocity.y = Tuning.JUMP_VELOCITY
 		_jump_buffer = 0.0
 		_coyote = 0.0
-	if not jump_held and velocity.y < Tuning.JUMP_CUT_VELOCITY:
+	if not jump_held and velocity.y < Tuning.JUMP_CUT_VELOCITY and _hurt_hold == 0.0:
 		velocity.y = Tuning.JUMP_CUT_VELOCITY
 
-	var accel := Tuning.GROUND_ACCEL if is_on_floor() else Tuning.AIR_ACCEL
-	velocity.x = move_toward(velocity.x, move * Tuning.RUN_SPEED, accel * delta)
 	_cast_cooldown = maxf(_cast_cooldown - delta, 0.0)
 	_cast_hold = maxf(_cast_hold - delta, 0.0)
-	# Facing follows movement, except while the cast image is up (she faces where she cast).
-	if move != 0.0 and _cast_hold == 0.0:
-		facing = 1 if move > 0.0 else -1
-	if _read_cast_pressed() and _cast_cooldown == 0.0:
-		cast(_read_aim())
+	_hurt_hold = maxf(_hurt_hold - delta, 0.0)
+	invulnerable = maxf(invulnerable - delta, 0.0)
+	sprite.visible = invulnerable == 0.0 or int(invulnerable / Tuning.BLINK_PERIOD) % 2 == 0
+
+	var cast_pressed := _read_cast_pressed()
+	if _hurt_hold > 0.0:
+		# Knocked back: no control until the hold ends.
+		velocity.x = move_toward(velocity.x, 0.0, Tuning.AIR_ACCEL * 0.5 * delta)
+	else:
+		var accel := Tuning.GROUND_ACCEL if is_on_floor() else Tuning.AIR_ACCEL
+		velocity.x = move_toward(velocity.x, move * Tuning.RUN_SPEED, accel * delta)
+		# Facing follows movement, except while the cast image is up (she faces where she cast).
+		if move != 0.0 and _cast_hold == 0.0:
+			facing = 1 if move > 0.0 else -1
+		if cast_pressed and _cast_cooldown == 0.0:
+			cast(_read_aim())
 
 	move_and_slide()
 	_update_state()
@@ -99,7 +113,9 @@ func _update_state() -> void:
 	if state in [State.FAIL, State.WIN]:
 		return
 	var next: State
-	if _cast_hold > 0.0:
+	if _hurt_hold > 0.0:
+		next = State.HURT
+	elif _cast_hold > 0.0:
 		next = State.CAST
 	elif is_on_floor():
 		next = State.IDLE if absf(velocity.x) < 5.0 else State.RUN
@@ -114,6 +130,25 @@ func _set_state(next: State) -> void:
 	sprite.flip_h = facing < 0
 
 
+## A wolf lunge. Ignored while invulnerable or failing; the invulnerability starts in the same call
+## (CHANGE-BRIEF guard for SFX-HURT). HP 0 fails with the kneeling image.
+func take_damage(amount: int, from_x: float) -> void:
+	if is_failing or invulnerable > 0.0:
+		return
+	hp = maxi(hp - amount, 0)
+	invulnerable = Tuning.INVULNERABLE_TIME
+	_hurt_hold = Tuning.HURT_HOLD
+	_cast_hold = 0.0
+	var away := 1.0 if global_position.x >= from_x else -1.0
+	velocity = Vector2(Tuning.KNOCKBACK.x * away, Tuning.KNOCKBACK.y)
+	facing = -int(away)   # she faces what hit her
+	hurt.emit(hp)
+	if hp == 0:
+		fail("Out of HP")
+	else:
+		_set_state(State.HURT)
+
+
 ## Pit kill zone (by_pit = true, shows the fall image) or HP 0 (kneeling fail image).
 ## The `is_failing` flag makes a second call in the same or a later frame a no-op.
 func fail(reason: String, by_pit := false) -> void:
@@ -121,6 +156,7 @@ func fail(reason: String, by_pit := false) -> void:
 		return
 	is_failing = true
 	velocity = Vector2.ZERO
+	sprite.visible = true
 	set_physics_process(false)
 	state = State.FAIL
 	sprite.texture = TEXTURES[State.FALL if by_pit else State.FAIL]

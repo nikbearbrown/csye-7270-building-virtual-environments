@@ -26,6 +26,8 @@ func _ready() -> void:
 	camera.position = VIEW / 2
 	if player:
 		player.failed.connect(_on_player_failed)
+		for wolf in get_tree().get_nodes_in_group("wolves"):
+			wolf.target = player
 
 
 func _process(_delta: float) -> void:
