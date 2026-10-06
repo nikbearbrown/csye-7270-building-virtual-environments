@@ -17,7 +17,8 @@
 | SFX-CONTACT | Contact (music-box chime with a paper tear inside) | 4 | Wired, file pending |
 | SFX-FROST | A day tearing off (crystalline crackle) | 4 | Wired, file pending |
 | SFX-CORRECT | The house reacting to a loud contact (wood groan, de-tuned note) | 4 | Wired, file pending |
-| MUS-LULLABY | Music-box lullaby loop, inverted world only | 2, 3 | Wired, file pending |
+| MUS-UPRIGHT | Tense arpeggiated score, upright world | 1, 4 | Built — `assets/music/mus_upright.wav` |
+| MUS-MEMORY | Music-box lullaby over an afro-polyrhythmic groove, inverted world | 2, 3 | Built — `assets/music/mus_memory.wav` |
 | CHAR-GHOST-REACH, CHAR-GHOST-SCARE, CHAR-GHOST-HURT | Contact, scare and dispersed poses | 3, 5 | Specified, not generated — the slice shows these states by image swap and engine motion |
 | CHAR-CHILD-PLAY, CHAR-CHILD-LOOKUP | The child, playing and looking up | 1, 4 | Specified, not in the slice |
 | CHAR-FATHER-BACK, CHAR-HOLLOW-GLIMPSE | The father at the cellar door, the Hollow glimpsed | 5, 6 | Specified, semester work |
@@ -39,20 +40,22 @@
 
 **Rule, enforced in code:** sound never decides state. Every trigger above is played *after* the game has already changed state and emitted a signal. An automated assertion covers this directly: with sound effects muted, a flip still counts as having happened, because the audio layer only observes. The slice also runs with all five audio files absent — it prints a notice and plays silently.
 
-## Music behavior
+## Music behaviour
 
-- **Plays:** MUS-LULLABY loops only while inverted; hard-cut on flip (no crossfade — the cut IS the threshold).
-- **Pause:** all audio ducks to silence except the clock tick; lullaby resumes at its loop position on unpause.
-- **Failure (Hollow touch / scare backfire):** lullaby stops mid-phrase; silence until the player flips upright; next inversion restarts it de-tuned one step further.
-- **Success (contact lands):** lullaby continues; SFX-CONTACT plays over it.
-- **End of slice:** lullaby finishes its current phrase once, cleanly, then stops. The only clean musical resolution in the slice.
-- **Mute:** M toggles music, N toggles SFX, independently.
+**Revision 2026-10-06 — as built.** The plan had one track for the inverted world and silence upright; there are now two tracks, one per world.
+
+- **Plays:** MUS-UPRIGHT from the moment the slice starts and whenever the world is upright; MUS-MEMORY whenever it is inverted. Never both.
+- **On the flip:** a hard cut, not a crossfade — the abruptness is what makes the flip feel like a threshold. The two tracks share key and tempo so the cut does not lurch.
+- **Failure (the anniversary arrives first):** the current track fades out over 2.5 s and stops.
+- **Success (the child sees you):** the same clean fade — the only musical resolution in the slice, reserved for endings.
+- **Mute:** M stops both tracks; unmuting resumes the track belonging to the world the player is currently in. N mutes effects independently. Neither changes any game state.
+- **Looping:** each file is a 32 s body with two seconds of its own tail crossfaded equal-power back over its head, so the seam is inaudible wherever the playhead wraps. `loop_mode` is set in code with an explicit `loop_end`; enabling the mode alone produces a zero-length loop that stops instantly.
 
 ## Predicted failure cases, the checks, and what actually happened
 
 1. **Generated poses drift in proportion from the reference.** Check: compare each accepted image against the model sheet; reject anything whose head height or proportions drift. **Outcome: this happened repeatedly and was the main cause of rejection.** Five character references were rejected before one was accepted (asset log CHAR-REF-01 to 05). The accepted walk cycle held proportions well enough to use, and was additionally normalised to a common height and canvas so the figure does not jitter between frames.
 2. **The character disappears against a room.** Check: screenshot at game resolution and confirm the character reads; if not, adjust the art, not the room. **Outcome: partly failed and not yet fixed.** Green was reserved for the character and excluded from both rooms, which works in the remembered world. In the upright world the ghost is pale on grey and reads faint — visible in `evidence/01-upright-ghost.png`. The planned fix is a rim light on the ghost sprite; it is an open limitation, recorded in the README.
-3. **The music loop clicks at the seam.** Check: cut at a bar boundary, listen to at least three repetitions, and set Godot's OGG loop flag so the engine loops rather than a script timer. **Outcome: not yet testable — the music has not been generated.**
+3. **The music loop clicks at the seam.** Check: cut at a bar boundary, listen to repetitions, and set the loop flag so the engine loops rather than a script timer. **Outcome: solved differently, and a new failure was found.** Rather than relying on cutting exactly on a bar line, each track is cut with two seconds of its own tail crossfaded back over its head, which makes the seam inaudible wherever it wraps. The unpredicted failure: setting Godot's `loop_mode` alone stopped playback instantly, because `loop_end` defaults to zero and produced a zero-length loop. Verified in engine — the loop wraps from 31.4 s to 0.8 s still playing. Human listening confirmation is still outstanding.
 4. **A sound fires twice on one event.** Check: an automated script asserts one sound per event under mashing and held input. **Outcome: a real defect was caught.** The contact cooldown guarded only the input path, so the resolve function could still fire twice when called directly; the guard now lives inside the function. The check also caught a flaw in itself — it measured waits in frames, and headless frames are not real time. Five assertions now pass.
 5. **The slice is unreadable muted.** Check: play it with all audio off and confirm the cost is still legible. **Outcome: designed for and visible in the captures, but the human playtest is still outstanding.** The calendar counter jolts when a day is torn, recognition pips fill, and a frost vignette deepens as the anniversary nears — none of which depend on sound. The slice currently runs silent by necessity, which has made this easy to observe but does not substitute for a real playtest with the audio present and then muted.
 

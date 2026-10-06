@@ -30,7 +30,16 @@ Soft-painted 2D interiors with heavy, honest shadow: the upright house in dim de
 
 ## Audio direction
 
-The player should feel like an intruder in their own home: quiet, held-breath, listening. Upright world: near-silence — house settling, a clock, the family's muffled life through walls. Inverted world: a music-box lullaby loop, warm but slightly worn, as if played too many times. The lullaby de-tunes a little each time a calendar day tears away — the soundtrack itself is the doom meter. Music never plays in both worlds at once; the flip hard-cuts the mix, which makes the flip feel like crossing a real threshold. On pause: all audio ducks to silence except the clock. On the slice's fail state (the Hollow touches you): the lullaby stops mid-phrase and does not resume until the player flips upright. On the slice's end: the lullaby completes its phrase once, cleanly, then stops — the only clean resolution in the game's audio, reserved for endings.
+The player should feel like an intruder in their own home: quiet, held-breath, listening.
+
+**Revision 2026-10-06 — two tracks, one per world.** The original direction gave the inverted world a lullaby and left the upright world near-silent. Hearing it built, the silence read as unfinished rather than tense, so each world now owns a piece of music and the flip cuts between them.
+
+- **Upright, where he is dead and unseen:** a tense, driving arpeggiated synth score. Cold and glassy, propulsive but restrained, with a percussive pulse built from the house's own sounds — a ticking clock, a dripping tap, a floorboard creak, a muffled heartbeat. The tension comes from repetition, never from volume.
+- **Inverted, where he was alive:** a music-box lullaby over an organic polyrhythmic groove — hand drums, shakers, rim clicks, a syncopated sub-bass. Warm and moving on the surface, grieving underneath. The remembered room has a pulse because it is the world he was alive in; the dead room does not get one.
+
+Both share key and tempo, so the flip cuts straight from one to the other with no musical lurch: the two worlds sound like one piece of music turning over. The cut is deliberate rather than a crossfade, because the abruptness is what makes the flip feel like crossing a threshold.
+
+Music never plays in both worlds at once. On the slice's ending the current track fades once, cleanly — the only clean musical resolution in the slice, reserved for endings. M mutes music and N mutes effects, independently, and neither changes anything the game does.
 
 ## The name
 

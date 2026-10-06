@@ -10,7 +10,7 @@ Views used: wide, medium, close-up. Angles used: eye level, low angle, high angl
 - Shot: wide · eye level · gameplay view (the game camera's normal framing)
 - Player action: first control — drifting through his old bedroom, now stripped: a bare mattress on a metal frame, taped moving boxes, a pale rectangle on the wallpaper where something used to stand
 - See: the ghost pale and translucent, legs dissolving into mist, drifting slightly above the carpet; flat grey daylight through a curtainless window; dents in the carpet where furniture stood
-- Hear: near-silence — house settling, a clock, muffled voices through the wall; no music
+- Hear: MUS-UPRIGHT — a tense, driving arpeggio over a pulse built from the house's own sounds; no warmth in it
 - Assets: CHAR-GHOST, ENV-ROOM-EMPTY
 - Design reason (pillar: the house is a witness): establish the quiet world and that the player is the intruder in his own room — the space says a child was removed, not that a child lived
 
@@ -19,8 +19,8 @@ Views used: wide, medium, close-up. Angles used: eye level, low angle, high angl
 - Shot: medium · eye level rolling to inverted · gameplay view · motion: 180° camera roll arrows, ghost silhouette held center through the turn
 - Player action: presses the invert key; the room rotates around the ghost
 - See: mid-rotation, both rooms half-visible — the stripped bedroom becoming the lamplit one, the same window and door turning through the same positions; the ghost gaining solidity and warm colour through the turn
-- Hear: SFX-FLIP (held breath, reversed room-tone swell); the lullaby fades in as the roll completes
-- Assets: CHAR-GHOST, CHAR-REMEMBERED, ENV-ROOM-EMPTY, ENV-ROOM-MEMORY, SFX-FLIP, MUS-LULLABY
+- Hear: SFX-FLIP (held breath, reversed room-tone swell); the music cuts straight from the upright score to the memory lullaby as the roll completes
+- Assets: CHAR-GHOST, CHAR-REMEMBERED, ENV-ROOM-EMPTY, ENV-ROOM-MEMORY, SFX-FLIP, MUS-MEMORY
 - Design reason (pillar: the flip is the fear): the transition itself is the signature image and the scariest beat — crossing a threshold, not pressing a button
 
 ## Panel 3 — The music box

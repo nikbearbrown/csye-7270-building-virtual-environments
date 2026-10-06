@@ -40,7 +40,7 @@ The stacked moving boxes are a one-way platform that is solid **only in the upri
 
 At the music box, a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar toward the anniversary; the loud one costs more and wakes the house. The night ends either because the child finally sees you or because the anniversary arrives first.
 
-Four sound events and a music loop are wired to real game events, and both can be muted independently without changing anything the game does.
+Each world has its own music, and the flip cuts straight from one to the other: a tense arpeggiated score for the room where he is dead and unseen, a music-box lullaby over an organic groove for the room where he was alive. They share key and tempo, so the cut lands without a lurch. Four sound events are wired to real game events, and music and effects mute independently without changing anything the game does.
 
 ## Generated assets in the slice
 
@@ -51,6 +51,8 @@ Four sound events and a music loop are wired to real game events, and both can b
 | `godot/assets/art/char_walk_1..4.png` | Four walk poses, sliced from one generated cycle sheet |
 | `godot/assets/art/env_room_empty.png` | The bedroom, stripped (upright world) |
 | `godot/assets/art/env_room_memory.png` | The bedroom, remembered (inverted world) |
+| `godot/assets/music/mus_upright.wav` | Music for the upright world — tense, driving, no warmth |
+| `godot/assets/music/mus_memory.wav` | Music for the remembered world — a lullaby over an organic groove |
 
 Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, date, verdict and any hand edits. Rejected attempts are kept as thumbnails in `design/character/rejects/`.
 
@@ -60,7 +62,8 @@ Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, da
 
 ## Status and known limitations
 
-- **Audio has not been generated yet.** The four event sounds and the music loop are wired to fixed filenames and the slice runs silent without them, printing a notice. This is deliberate: sound must never decide state, and the slice proves it by working without any.
+- **The four sound effects have not been generated yet.** They are wired to fixed filenames and the slice runs without them, printing a notice. This is deliberate: sound must never decide state, and the slice proves it by working when the files are absent. Both music tracks are in and verified.
+- **The music loop has been verified in code but not yet by a human ear.** The engine confirms it wraps from 31.4 s to 0.8 s still playing; whether the seam is inaudible to a listener is still to be checked.
 - **The ghost reads faint against the grey upright room.** This was predicted in CHANGE-BRIEF as a failure case and is visible in `evidence/01-upright-ghost.png`. The planned fix is a rim light on the ghost sprite rather than a change to the room; it has not been done.
 - The slice covers storyboard panels 1 to 4. Panels 5 and 6 — the hallway that corrects itself and the father at the cellar door — are semester work beyond this assignment.
 - Three of the fourteen character-sheet poses (reach, scare, goodbye) are specified but not generated; the slice expresses those states through image swaps and engine motion instead.
