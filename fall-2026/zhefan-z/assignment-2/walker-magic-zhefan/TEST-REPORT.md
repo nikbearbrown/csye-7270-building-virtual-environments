@@ -10,7 +10,7 @@
 | **Character against the sheet** | Pass, with differences listed below. Every state and both facings, in engine beside the accepted pose. | `design/checks/engine/states-vs-sheet.png`; `design/character/collision.png` |
 | **Storyboard against the slice** | P1, P2, P3, P4, P5 and P7 covered; **P6 (boss) not covered** (cut in CHANGE-BRIEF Revision 2). Differences listed below. | `design/checks/engine/P*.png` beside `design/storyboard/*.svg` |
 | **Sound events** | Pass. Five events, each exactly one sound per occurrence, including rapid repeats and a held input: automated (`test_sound_triggers.gd`) and heard in playtest 5. | Automated checks; playtest 5 |
-| **Music** | Pass. The loop repeats without a click or gap (3x preview and playtest 5); pause resumes from the same point, fail stops it, the exit stops it and leaves silence, as predicted. The level at -8 dB is not yet confirmed (playtest 5). | `assets/audio/MUSIC-EDIT-LOG.md`; playtest 5 |
+| **Music** | Pass. The loop repeats without a click or gap (3x preview and playtest 5); pause resumes from the same point, fail stops it, the exit stops it and leaves silence, as predicted. At -8 dB on the Music bus the music sits well under the effects (playtest 5). | `assets/audio/MUSIC-EDIT-LOG.md`; playtest 5 |
 | **Muted play** | Pass. Every event reads with both buses muted (playtest 6; also playtest 4 before audio existed). | Playtests 4 and 6 |
 | **Automated check** | Pass. `test_sound_triggers.gd` counts sound triggers per event during a scripted route through the slice and in edge cases: `WALKER TESTS: 11 checks / 0 failures`. | Automated checks |
 
@@ -40,6 +40,7 @@ In-engine frames: `design/checks/engine/states-vs-sheet.png` (row 1: accepted Ge
 3. **Head-size measure**: the first sprite scaling used face height, which varied about 20% with hair and hat; switched to face width, which is stable within 1% (`tools/clean_sprites.py`).
 4. **Thin outlines**: the staff turned entirely into outline colour and vanished on the cave tone; outlines are now only drawn where the shape keeps a fill pixel behind them.
 5. **Music source**: Suno could not be used without paying (0 downloads on the free account); switched to Google Gemini (Lyria) (CHANGE-BRIEF, SOURCES.md).
+6. **Cast pose design**: CHAR-CAST v1 thrust the staff forward across her body, and the author realised a forward-pointing pose does not fit mouse aiming in any direction; the cast was redesigned as a raised staff. v2 did not raise it and had a yellow-green glow too close to the green screen; v3 was accepted, and v4 came back unchanged (SOURCES.md).
 
 ## Playtest notes (human)
 
@@ -72,7 +73,7 @@ In-engine frames: `design/checks/engine/states-vs-sheet.png` (row 1: accepted Ge
 - **Who / how:** the author, keyboard and mouse in the 1280x720 window, with the final SFX OGGs and MUS-LOOP.ogg.
 - **Covered:** every sound event in play, fast clicks and holding cast, the music loop over repeats, Esc pause, a fail, the exit, M and N.
 - **Result:** every event made exactly one sound, including fast clicks and holding cast; the music looped with no click; pause, fail and clear behaved as predicted (CHANGE-BRIEF music behaviour); M and N each muted only their own bus.
-- **Music level (Music bus at -8 dB):** not yet stated; the author's note still listed all three options ("sits well under the effects / is too quiet / too loud"). To be filled in.
+- **Music level (Music bus at -8 dB):** sits well under the effects; kept at -8 dB.
 
 ### Playtest 6 — 2026-10-07, muted, final audio (source revision `74c0443`)
 - **Who / how:** the author, with both buses muted (M and N).
@@ -85,7 +86,7 @@ In-engine frames: `design/checks/engine/states-vs-sheet.png` (row 1: accepted Ge
 - Storyboard P6 (boss) is not covered by the slice (CHANGE-BRIEF Revision 2); neither are the heal spell, spikes and stalactites.
 - No title screen (storyboard P1 shows one); the slice starts in play.
 - Final audio is in: the five SFX OGGs (Stable Audio Open) and MUS-LOOP.ogg (Google Gemini, Lyria). The code-made placeholder tones (`audio/placeholder_tones.gd`) remain only as a fallback if an OGG is missing; none is used in the current slice.
-- The Music bus is at -8 dB as a starting mix value (music under the SFX); the author's verdict on the level is still to be recorded (playtest 5).
+- The Music bus is at -8 dB, confirmed in playtest 5 (the music sits well under the effects).
 - When the game window is closed, Godot prints "2 resources still in use at exit" for `MUS-LOOP.ogg` (see below).
 
 ## Automated checks

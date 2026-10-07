@@ -56,7 +56,6 @@ Also `test_player.gd`, `test_cast.gd`, `test_wolf.gd`, `test_flow.gd`, `test_aud
 - The HUD uses Godot's smooth built-in font, which clashes a little with the pixel art.
 - The fixed collision box covers part of the head in the RISE and FAIL poses.
 - The exit, HP hearts, crosshair and the dark pit fill are code-drawn, not generated.
-- The Music bus level (-8 dB) is a starting mix value.
 - Closing the game prints a harmless "resources still in use at exit" message for the music file.
 
 Full list: `TEST-REPORT.md` → Known limitations.

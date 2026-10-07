@@ -153,7 +153,7 @@ def export():
         "| Godot import | loop enabled on import (`MUS-LOOP.ogg.import`: `loop=true`) |",
         "| Level | no gain applied to the file: the source is mastered to -0.05 dBFS and Vorbis overshoots by a few samples "
         "(peak above), so the engine's Music bus is set to -8 dB (`default_bus_layout.tres`): it sits the music about 6 dB "
-        "under the SFX's loudest windows (-15.75 dBFS) and keeps the overshoot below full scale. A starting value, tuned by playtest. |",
+        "under the SFX's loudest windows (-15.75 dBFS) and keeps the overshoot below full scale. Confirmed in playtest 5: the music sits well under the effects. |",
         "| Reproducibility | each encode gets a random Ogg stream serial number, so the file hash changes on every export; "
         "the decoded audio is identical sample for sample (checked by encoding twice). |",
         "| Listening check | 3x preview (`E:\\7270\\tools\\music_raw\\preview\\MUS-LOOP-preview-3x.wav`): the author heard both seams "

@@ -9,7 +9,10 @@
 
 ## SOURCES.md
 - [x] Fill in the Google Gemini model name and version from the Gemini app. — "Google Gemini app, model shown in the app: Gemini 3.8 Flash" (images and music; the Lyria version was not shown).
-- [ ] Reasons for the rejected CHAR-CAST attempts v1, v2 and v4 (marked TODO).
+- [x] Reasons for the rejected CHAR-CAST attempts v1, v2 and v4.
 
 ## TEST-REPORT.md
-- [ ] The author's verdict on the music level at -8 dB (playtest 5).
+- [x] The author's verdict on the music level at -8 dB (playtest 5): sits well under the effects; kept.
+
+## FRICTIONAL.md (instructor's file, `../FRICTIONAL.md`)
+- [ ] Waiting for the author's draft covering the design and generation work from the chat with Claude; then merge in the Claude Code session notes.
