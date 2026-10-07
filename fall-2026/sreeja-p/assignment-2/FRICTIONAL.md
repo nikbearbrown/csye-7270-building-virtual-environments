@@ -215,6 +215,16 @@
 - **What I understand now / still do not understand:** slowing the run changes the level too, because jump distance depends on speed; the tests caught it before I played. Still open: whether burned reads well enough on the dark background, and the exact ENV-BG prompt for the log.
 - **Evidence and next step:** TEST-REPORT.md, step 2, Playtest 2, ENV-BG; SOURCES row ENV-BG. Next: playtest 3, then sounds and mute.
 
+
+### 2026-10-07 — finishing the character sheet
+
+- **Date and what I was working on:** 2026-10-07. The required character-sheet parts that were still missing: silhouette at game size, collision overlay, palette hex values, consistency check.
+- **What happened:** Claude made them from the exact in-game images with a script (`tools/make_sheet_extras.py`), so they show what the game draws. The silhouette was first drawn on the dark backdrop, where black shapes were hard to judge, so it moved to a plain light background (the test is about shape). I looked at all three images before committing.
+- **What they showed:** every state has its own shape at 64 px; the upright poses (idle, burned, toss, bow) differ only by arms and head. The 20×40 box sits on the torso and legs in every pose. The palette check confirmed predicted failure F2: next to the fire the red suit and yellow helmet nearly vanish and the dark outline carries him; on the dark backdrop the yellow and red carry him. No recolor needed.
+- **What Claude or another person contributed:** Claude wrote the script, measured the contrast ratios, and wrote the sheet section from my earlier decisions (option A box, 64 px size, palette option A). I reviewed the images and the text and approved them.
+- **Still unresolved:** the 64 px size is "to confirm" in my next playtest.
+- **Evidence:** CHARACTER-SHEET.md, "Revision 2026-10-07"; `design/character/silhouette.png`, `collision.png`, `palette.png`; `evidence/screens-web/`.
+
 ---
 
 ## GitHub pushes
@@ -226,3 +236,4 @@
 | 2026-10-02 | Add storyboard sketches, prompt log, and rejected thumbnails |
 | 2026-10-05 | Add character reference, poses 1-9 and 11, and prompt logs with rejects |
 | 2026-10-06 | Add action poses, slower run, and ENV-BG backdrop; verify 41/41 tests |
+| 2026-10-07 | Add silhouette, collision overlay, and palette from in-game art; finish character sheet |
