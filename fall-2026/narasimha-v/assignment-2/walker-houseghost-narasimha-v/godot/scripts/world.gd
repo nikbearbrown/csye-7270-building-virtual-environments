@@ -162,9 +162,9 @@ func _on_recognition_changed(recognition: int) -> void:
 
 func _on_night_ended(reason: String) -> void:
 	if reason == "seen":
-		_hud.show_banner("SHE SAW YOU.\n\nR to play again")
+		_hud.show_banner("SHE SAW YOU.\n\nSomeone in this house knows you were here.\n\nR to play again")
 	else:
-		_hud.show_banner("THE ANNIVERSARY ARRIVED FIRST.\n\nR to play again")
+		_hud.show_banner("THE DAY CAME, AND NOBODY SAW YOU.\n\nEvery touch, and every fall, cost you one.\n\nR to play again")
 	_audio.finish_music()
 	_refresh_hint()
 

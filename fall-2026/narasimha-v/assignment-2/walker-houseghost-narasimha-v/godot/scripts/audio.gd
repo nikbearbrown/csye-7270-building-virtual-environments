@@ -26,15 +26,15 @@ const PATHS := {
 const LEVELS := {
 	"flip":     0.0,
 	"contact":  0.0,
-	"frost":   -3.0,
-	"correct":  0.0,
-	"land":    -9.0,
-	"jump":    -11.0,
+	"frost":    0.0,
+	"correct": -2.0,
+	"land":    -8.0,
+	"jump":    -10.0,
 }
 
 ## How far the music steps back while a sound plays, and for how long. Without
 ## this the quieter story sounds sit underneath the score and are never heard.
-const DUCK_DB := -9.0
+const DUCK_DB := -15.0      ## the score steps well back, or short sounds are simply lost under it
 const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "land": 0.25, "jump": 0.25}
 ## One track per world. They share key and tempo, so the flip can cut straight
 ## from one to the other without a musical lurch: the two worlds sound like one
