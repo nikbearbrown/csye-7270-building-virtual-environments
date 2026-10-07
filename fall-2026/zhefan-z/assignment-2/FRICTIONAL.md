@@ -258,4 +258,5 @@ Pushes of the branch `zhefan-z/assignment-2` to nikbearbrown/csye-7270-building-
 | 2026-10-07 | `5266946` FRICTIONAL corrections (Claude Code summary lines marked; the wolf head noticed by the author; thumbnails made by Claude in claude.ai) |
 | 2026-10-07 | `60c1003` film reel scaffolding, valid 4K probe, image prompts in SOURCES, HANDOFF · `196aecc` merge of main |
 | 2026-10-07 | `37d38f0` takes run-01 to run-04 recorded and checked; prompt answers logged |
-| 2026-10-07 | Final submission: `fc5ad4c` film assembly · README Film, SUBMISSION, TODO closed, this entry · merge of main; the final head SHA is in the Canvas note |
+| 2026-10-07 | Final submission: `fc5ad4c` film assembly · README Film, SUBMISSION, TODO closed, this entry · `1425c17` merge of main |
+| 2026-10-07 | Removed the two tracked `.pyc` caches, added `__pycache__/` and `*.pyc` to the project `.gitignore`; this is the submitted commit (SHA in the Canvas note) |
