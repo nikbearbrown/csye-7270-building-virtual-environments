@@ -27,13 +27,23 @@ const PATHS := {
 ## The mix. Every file is normalised to the same peak, so these numbers alone
 ## decide what sits forward and what sits under. Footsteps are deliberately
 ## quiet: they fire constantly and would exhaust the ear at story-beat level.
+##
+## Normalising to the same PEAK is not the same as to the same loudness. The
+## footsteps are dense and the story sounds are spiky, so at matched peaks the
+## steps measured 5 dB louder than the flip by RMS — and they were missing from
+## this table entirely, which meant the most frequent sound in the game played
+## at full level while the comment above claimed it was quiet. They have real
+## entries now, and everything is 3 dB down from where it was.
 const LEVELS := {
-	"flip":     0.0,
-	"contact":  0.0,
-	"frost":    0.0,
-	"correct": -2.0,
-	"land":    -8.0,
-	"jump":    -10.0,
+	"flip":     -3.0,
+	"contact":  -3.0,
+	"frost":    -3.0,
+	"correct":  -5.0,
+	"land":    -11.0,
+	"jump":    -13.0,
+	"fall":     -9.0,    ## a death: still the loudest thing here, deliberately
+	"step":     -9.0,    ## constant, so it sits well under every story beat
+	"ghoststep": -11.0,  ## quieter again; he is not meant to sound solid
 }
 
 ## How far the music steps back while a sound plays, and for how long. Without
