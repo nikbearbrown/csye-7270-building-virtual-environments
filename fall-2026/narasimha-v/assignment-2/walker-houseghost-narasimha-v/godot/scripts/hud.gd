@@ -10,11 +10,14 @@ extends CanvasLayer
 @onready var _banner: Label = $Banner
 @onready var _hint: Label = $Hint
 @onready var _opening: Label = $Opening
+@onready var _note: Label = $Note
+var _note_tween: Tween
 
 
 func _ready() -> void:
 	_banner.visible = false
 	_opening.visible = false
+	_note.visible = false
 	_frost.color = Color(0.78, 0.86, 0.92, 0.0)
 
 
@@ -72,6 +75,22 @@ func show_opening(lines: Array) -> void:
 	out.tween_property(_opening, "modulate:a", 0.0, 1.2)
 	await out.finished
 	_opening.visible = false
+	_note.visible = false
+
+
+## A line of his, held for a few seconds and then let go. Deliberately low on
+## the screen and quiet, so it reads as a thought rather than an instruction.
+func show_note(text: String) -> void:
+	_note.text = text
+	_note.visible = true
+	if _note_tween and is_instance_valid(_note_tween):
+		_note_tween.kill()
+	_note.modulate.a = 0.0
+	_note_tween = create_tween()
+	_note_tween.tween_property(_note, "modulate:a", 1.0, 0.8)
+	_note_tween.tween_interval(3.4)
+	_note_tween.tween_property(_note, "modulate:a", 0.0, 1.2)
+	_note_tween.tween_callback(func(): _note.visible = false)
 
 
 func set_hint(text: String) -> void:

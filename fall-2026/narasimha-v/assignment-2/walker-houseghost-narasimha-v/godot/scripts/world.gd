@@ -18,6 +18,19 @@ extends Node2D
 
 signal world_flipped(is_inverted: bool)
 
+## Lines of his, placed where they mean something and shown once each. They are
+## not instructions; nothing here tells the player what to press. They are what
+## he thinks when he passes a particular spot in his own house.
+const NOTES := [
+	{ "x":  980, "world": "memory",   "text": "They took my name off the door." },
+	{ "x": 1480, "world": "truth",    "text": "She used to wind this for me." },
+	{ "x": 2200, "world": "memory",   "text": "None of this is here any more." },
+	{ "x": 3150, "world": "truth",    "text": "I never put them on." },
+	{ "x": 3400, "world": "truth",    "text": "These are theirs. All of it is theirs now." },
+	{ "x": 5120, "world": "truth",    "text": "I wrote my name under here." },
+]
+var _notes_shown := {}
+
 const FLIP_SECONDS := 0.35   ## cross-dissolve between the two truths
 
 var is_inverted := false
@@ -32,6 +45,15 @@ var _flipping := false
 @onready var _audio: Node = $Audio
 @onready var _hud: CanvasLayer = $HUD
 @onready var _lost_above: Area2D = $LostAbove
+@onready var _child: Sprite2D = $Child
+
+## Her posture is the recognition meter. She is only in the real house, because
+## that is the only house she lives in.
+const CHILD_POSES := [
+	preload("res://assets/art/child_1.png"),   # playing, absorbed, has not heard anything
+	preload("res://assets/art/child_2.png"),   # looking up: something made a sound
+	preload("res://assets/art/child_3.png"),   # facing you, eyes wide: she has seen
+]
 
 
 
@@ -51,6 +73,7 @@ func _ready() -> void:
 		relic.contact_landed.connect(_on_contact_landed)
 	world_flipped.connect(_audio.set_world_inverted)
 	world_flipped.connect(_apply_world_geometry)
+	world_flipped.connect(func(inv): _child.visible = inv)
 	world_flipped.connect(func(_inv): _refresh_hint())
 
 	_lost_above.body_entered.connect(_on_fell_out_of_the_truth)
@@ -120,17 +143,40 @@ func _open() -> void:
 		"I need one of them to see me.",
 	])
 
-	# and then the memory closes over it
+	# The memory closes over the truth rather than replacing it. He fades out of
+	# the ceiling as a ghost and fades in on the floor as a boy, with the rooms
+	# dissolving across the same two seconds, so the change reads as one world
+	# becoming another rather than as two pictures being swapped.
 	await get_tree().create_timer(0.5).timeout
+	_audio.play("flip")
+
+	var fade_out := create_tween()
+	fade_out.tween_property(_player, "modulate:a", 0.0, 0.7)
+	for r in _rooms_memory:
+		r.visible = true
+		r.modulate.a = 0.0
+	var bloom := create_tween().set_parallel(true)
+	for r in _rooms_memory:
+		bloom.tween_property(r, "modulate:a", 1.0, 1.6)
+	for r in _rooms_empty:
+		bloom.tween_property(r, "modulate:a", 0.0, 1.6)
+	await fade_out.finished
+
 	is_inverted = false
-	_show_rooms(false)
 	_apply_world_geometry(false)
 	_player.set_inverted(false)
 	_audio.set_world_inverted(false)
-	_audio.play("flip")
 	_player.global_position = Vector2(620.0, 815.0)
 	_player.velocity = Vector2.ZERO
-	await get_tree().create_timer(0.8).timeout
+	_child.visible = false
+
+	var fade_in := create_tween()
+	fade_in.tween_property(_player, "modulate:a", 1.0, 0.9)
+	await bloom.finished
+	for r in _rooms_empty:
+		r.visible = false
+		r.modulate.a = 1.0
+	await fade_in.finished
 
 	_player.controllable = true
 	_refresh_hint()
@@ -220,6 +266,18 @@ func _on_day_torn(days_left: int) -> void:
 
 func _on_recognition_changed(recognition: int) -> void:
 	_hud.set_recognition(recognition, _meters.RECOGNITION_TO_WIN)
+	# She hears before she sees. One relic and she looks up; all three and she
+	# is looking straight at where you are.
+	var pose := 0
+	if recognition >= _meters.RECOGNITION_TO_WIN:
+		pose = 2
+	elif recognition > 0:
+		pose = 1
+	if _child.texture != CHILD_POSES[pose]:
+		_child.texture = CHILD_POSES[pose]
+		var tween := create_tween()
+		_child.modulate.a = 0.25
+		tween.tween_property(_child, "modulate:a", 1.0, 0.6)
 
 
 func _on_night_ended(reason: String) -> void:
@@ -261,6 +319,25 @@ func _show_rooms(is_inverted: bool) -> void:
 
 func _process(_delta: float) -> void:
 	_audio.set_drifting(is_inverted and absf(_player.velocity.x) > 10.0)
+	_check_notes()
+
+
+## A note appears when he reaches the spot it belongs to, in the world it
+## belongs to, and never again.
+func _check_notes() -> void:
+	if not _player.controllable or _meters.ended:
+		return
+	var here := "truth" if is_inverted else "memory"
+	for i in NOTES.size():
+		if _notes_shown.has(i):
+			continue
+		var note: Dictionary = NOTES[i]
+		if note["world"] != here:
+			continue
+		if absf(_player.global_position.x - float(note["x"])) < 180.0:
+			_notes_shown[i] = true
+			_hud.show_note(note["text"])
+			return
 
 
 func _refresh_hint() -> void:
