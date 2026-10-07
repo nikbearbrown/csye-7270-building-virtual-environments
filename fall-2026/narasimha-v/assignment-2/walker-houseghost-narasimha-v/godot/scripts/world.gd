@@ -134,6 +134,7 @@ func _open() -> void:
 	_apply_world_geometry(true)
 	_player.set_inverted(true)
 	_audio.set_world_inverted(true)
+	_child.visible = true
 	_player.global_position = Vector2(620.0, 265.0)
 	await get_tree().create_timer(2.2).timeout
 
