@@ -68,9 +68,18 @@ func run() -> void:
 		routing[p.name] = String(p.bus)
 	check("players-routed-to-buses", routing["MUS-LOOP"] == "Music" and routing["SFX-CAST"] == "SFX" and routing["SFX-CLEAR"] == "SFX",
 		{"routing": routing})
-	check("placeholders-in-use-until-oggs-exist", audio.placeholder.size() == 6
-		and (audio.music.stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_FORWARD,
-		{"placeholders": audio.placeholder.keys(), "music_loop": (audio.music.stream as AudioStreamWAV).loop_mode})
+	# Each sound uses its OGG when the file exists, otherwise the code-made placeholder; music must loop.
+	var sources := {}
+	var ok := true
+	for id: String in AudioDirector.SFX_IDS + ["MUS-LOOP"]:
+		var path := (AudioDirector.MUSIC_PATH if id == "MUS-LOOP" else AudioDirector.SFX_DIR + id + ".ogg")
+		var stream: AudioStream = audio.music.stream if id == "MUS-LOOP" else (audio.get_node(id) as AudioStreamPlayer).stream
+		var has_file := ResourceLoader.exists(path)
+		sources[id] = "ogg" if stream is AudioStreamOggVorbis else "placeholder"
+		ok = ok and (has_file == (stream is AudioStreamOggVorbis)) and (has_file != audio.placeholder.has(id))
+	var music_loops := (audio.music.stream as AudioStreamOggVorbis).loop if audio.music.stream is AudioStreamOggVorbis \
+		else (audio.music.stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_FORWARD
+	check("ogg-when-present-else-placeholder-music-loops", ok and music_loops, {"sources": sources, "music_loops": music_loops})
 	var fail_len := (audio.get_node("SFX-FAIL") as AudioStreamPlayer).stream.get_length()
 	check("fail-sound-shorter-than-reload", fail_len < main.RELOAD_DELAY, {"sfx_fail_s": fail_len, "reload_s": main.RELOAD_DELAY})
 	check("music-starts-on-load", audio.music.playing and audio.plays["MUS-LOOP"] == 1, {"playing": audio.music.playing})
