@@ -51,6 +51,10 @@ func _ready() -> void:
 	world_flipped.connect(func(_inv): _refresh_hint())
 
 	_contact.contact_landed.connect(_on_contact_landed)
+	# Movement has its own voice now. Both fire from signals the player emits
+	# after the physics has already happened, so they report rather than cause.
+	_player.jumped.connect(func(): _audio.play("jump"))
+	_player.landed.connect(func(_speed): _audio.play("land"))
 	_meters.day_torn.connect(_on_day_torn)
 	_meters.recognition_changed.connect(_on_recognition_changed)
 	_meters.night_ended.connect(_on_night_ended)

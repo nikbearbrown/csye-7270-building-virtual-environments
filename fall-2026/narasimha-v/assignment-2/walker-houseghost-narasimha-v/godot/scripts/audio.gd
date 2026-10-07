@@ -12,10 +12,24 @@ extends Node
 signal counted(event: String, total: int)
 
 const PATHS := {
-	"flip":    "res://assets/sfx/sfx_flip.ogg",
-	"contact": "res://assets/sfx/sfx_contact.ogg",
-	"frost":   "res://assets/sfx/sfx_frost.ogg",
-	"correct": "res://assets/sfx/sfx_correct.ogg",
+	"flip":    "res://assets/sfx/sfx_flip.wav",
+	"contact": "res://assets/sfx/sfx_contact.wav",
+	"frost":   "res://assets/sfx/sfx_frost.wav",
+	"correct": "res://assets/sfx/sfx_correct.wav",
+	"land":    "res://assets/sfx/sfx_land.wav",
+	"jump":    "res://assets/sfx/sfx_jump.wav",
+}
+
+## The mix. Every file is normalised to the same peak, so these numbers alone
+## decide what sits forward and what sits under. Footsteps are deliberately
+## quiet: they fire constantly and would exhaust the ear at story-beat level.
+const LEVELS := {
+	"flip":    -5.0,
+	"contact":  -2.0,
+	"frost":    -7.0,
+	"correct":  -3.0,
+	"land":    -15.0,
+	"jump":    -17.0,
 }
 ## One track per world. They share key and tempo, so the flip can cut straight
 ## from one to the other without a musical lurch: the two worlds sound like one
@@ -26,7 +40,7 @@ const MUSIC_PATHS := {
 	"inverted": "res://assets/music/mus_upright.wav",
 }
 
-var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0}
+var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0, "land": 0, "jump": 0}
 var music_muted := false
 var sfx_muted := false
 var missing: Array[String] = []
@@ -45,6 +59,7 @@ func _ready() -> void:
 		var player := AudioStreamPlayer.new()
 		player.name = "sfx_%s" % event
 		player.bus = "Master"
+		player.volume_db = LEVELS.get(event, 0.0)
 		var stream := _load_or_note(PATHS[event])
 		if stream:
 			player.stream = stream

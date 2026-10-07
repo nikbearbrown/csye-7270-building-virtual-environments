@@ -70,6 +70,24 @@ func _init() -> void:
 		"muted SFX still counts the event (state is unchanged by audio)",
 		audio.counts["flip"] - muted_before)
 
+	# 6. One jump press, one jump sound and one landing sound. The key is held
+	#    for the whole arc, so a retrigger mid-air would show up here.
+	audio.set_sfx_muted(false)
+	if scene.is_inverted:
+		scene.flip()
+		await _settle()
+	var j0: int = audio.counts["jump"]
+	var l0: int = audio.counts["land"]
+	Input.action_press("jump")
+	await _settle(1.4)
+	Input.action_release("jump")
+	await _settle(0.4)
+	_expect(audio.counts["jump"] == j0 + 1,
+		"a held jump fires one jump sound", audio.counts["jump"] - j0)
+	_expect(audio.counts["land"] == l0 + 1,
+		"landing from that jump fires one land sound", audio.counts["land"] - l0)
+
+
 	print("--- %d checks, %d failed ---\n" % [_checks, _failures])
 	quit(1 if _failures > 0 else 0)
 
