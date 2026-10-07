@@ -225,6 +225,24 @@
 - **Still unresolved:** the 64 px size is "to confirm" in my next playtest.
 - **Evidence:** CHARACTER-SHEET.md, "Revision 2026-10-07"; `design/character/silhouette.png`, `collision.png`, `palette.png`; `evidence/screens-web/`.
 
+
+### 2026-10-07 — retrospective note: order of the first commits (written by Claude from my account and the git history)
+
+- **What the history shows:** the 2026-10-01 commit (`3a07143`, 16:08) contained only the design docs (CONCEPT, CHARACTER-SHEET, CHANGE-BRIEF, SOURCES) and **no generated images**. The storyboard text was written on 2026-10-01 but committed on 2026-10-02 at 10:22 (`1f2b5c6`). Storyboard panel 1 was generated and saved at 10:20, **two minutes before** that commit. Panels 2–6 and every character image came after it.
+- **Why (my account):** I generated panel 1 while I was checking that I had access to image generation and that it worked, before committing the storyboard text.
+- **What it means for the rubric:** CONCEPT, CHARACTER-SHEET, and CHANGE-BRIEF were committed before any generation; the storyboard text was not, by two minutes. I'm stating it rather than hiding it.
+- **Also recorded today:** ChatGPT Plus is on OpenAI's free student offer (4 months), so no money was paid for generation (SOURCES updated). Gemini was planned but never used.
+
+
+### 2026-10-07 — critical review, the punchline face, and ENV-FIRE
+
+- **What happened:** I asked Claude to be critical and compare everything to the requirements. Biggest gaps: no sound or music in the slice yet; ENV-FIRE promised in our asset list but missing; *Failure is a punchline* weak in play; some asset-log gaps; README and SUBMISSION missing. Claude wrote the review into a working checklist.
+- **Decisions (mine):** don't reuse the crane as a "waiting" pose (it stays on the sheet); **do** make failure funnier by popping up the DEVASTATED portrait I already generated when he burns, instead of a big-head sprite (Claude's recommendation; no new generation needed); make ENV-FIRE now.
+- **ENV-FIRE attempt:** in a new chat I sent Claude's prompts A (single flame) and B (wide cluster) exactly, then edited B with my own words "make the flames taller" (Bb). All three came back on flat green with crisp edges and no glow, as asked. **Not as asked:** the style is comic flames rather than "semi-realistic painted". I accepted all three because a hazard has to read at a glance and comic flames suit the punchline.
+- **What Claude or another person contributed:** Claude wrote the flame prompts, keyed out the green (`tools/make_env.py`), drew the flames over the unchanged hazard rectangles, cropped the portrait, wrote the pop-up, and re-ran the tests (41/41). ChatGPT generated the flames (and earlier the portrait). The decisions above were mine.
+- **Still unresolved:** whether the comic flames clash with the painted character in play; sound and music.
+- **Evidence:** SOURCES rows ENV-FIRE-A, -B, -Bb and "CHAR-EXPR-02 reused"; TEST-REPORT "DEVASTATED pop-up and ENV-FIRE"; CHANGE-BRIEF revision 2026-10-07.
+
 ---
 
 ## GitHub pushes
@@ -237,3 +255,4 @@
 | 2026-10-05 | Add character reference, poses 1-9 and 11, and prompt logs with rejects |
 | 2026-10-06 | Add action poses, slower run, and ENV-BG backdrop; verify 41/41 tests |
 | 2026-10-07 | Add silhouette, collision overlay, and palette from in-game art; finish character sheet |
+| 2026-10-07 | Add generated flames, DEVASTATED pop-up, README and submission drafts; verify 41/41 tests |
