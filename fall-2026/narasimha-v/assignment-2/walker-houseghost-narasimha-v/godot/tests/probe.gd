@@ -3,11 +3,15 @@ func _init():
 	await process_frame
 	var s = load("res://scenes/Bedroom.tscn").instantiate()
 	root.add_child(s)
-	var p = s.get_node("Player"); var h = s.get_node("HUD")
-	await create_timer(11.0).timeout
-	print("control after the safety window: ", p.controllable, "  at ", p.global_position)
-	Input.action_press("move_right"); await create_timer(0.6).timeout
-	print("moving: x=", round(p.global_position.x), " vel=", round(p.velocity.x))
-	print("cue on screen at x=", round(h._cue.position.x), " (should be roughly 800-1100, i.e. in view)")
-	Input.action_release("move_right")
+	var p = s.get_node("Player"); var h = s.get_node("HUD"); var m = s.get_node("Meters")
+	while not p.controllable: await create_timer(0.1).timeout
+	s.flip(); await create_timer(1.4).timeout
+	var relics = s.get_tree().get_nodes_in_group("relic")
+	for i in relics.size():
+		var r = relics[i]
+		p.global_position = Vector2(r.global_position.x, 265)
+		await create_timer(0.4).timeout
+		r._resolve(false)
+		await create_timer(0.5).timeout
+		print("relic %d -> found=%d  note='%s'" % [i+1, m.recognition, h._note.text])
 	quit()

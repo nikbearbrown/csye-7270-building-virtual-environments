@@ -23,11 +23,20 @@ signal world_flipped(is_inverted: bool)
 ## he thinks when he passes a particular spot in his own house.
 const NOTES := [
 	{ "x":  980, "world": "memory",   "text": "They took my name off the door." },
-	{ "x": 1480, "world": "truth",    "text": "She used to wind this for me." },
-	{ "x": 2200, "world": "memory",   "text": "None of this is here any more." },
-	{ "x": 3150, "world": "truth",    "text": "I never put them on." },
-	{ "x": 3400, "world": "truth",    "text": "These are theirs. All of it is theirs now." },
-	{ "x": 5120, "world": "truth",    "text": "I wrote my name under here." },
+	{ "x": 1480, "world": "truth",    "text": "My mother wound this one. It still turns for me." },
+	{ "x": 2200, "world": "memory",   "text": "None of this is here any more. Only I can still see it." },
+	{ "x": 3150, "world": "truth",    "text": "My shoes. Still by the door. I never put them on." },
+	{ "x": 3400, "world": "truth",    "text": "These are theirs. I cannot move anything of theirs." },
+	{ "x": 5120, "world": "truth",    "text": "Under this board is my name, where I scratched it." },
+]
+
+## What he thinks the moment after a relic answers him. The whole causal chain
+## the game was missing lives in these three lines: he moves a thing of his,
+## she experiences it, and the third one carries his name.
+const AFTER_CONTACT := [
+	"She heard that. She will say the house is settling.",
+	"Twice now. She has stopped saying it.",
+	"She is looking at where I am.",
 ]
 var _notes_shown := {}
 
@@ -164,7 +173,8 @@ func _open() -> void:
 	await _hud.show_opening([
 		"They told everyone I ran away.",
 		"I never left this house.",
-		"If anyone sees me, they will know that.",
+		"I cannot touch her. Only my own things still move for me.",
+		"If she sees them move, she will know I was here.",
 	], self)
 
 	if _skip_opening:
@@ -306,6 +316,9 @@ func _on_contact_landed(kind: String, days_cost: int) -> void:
 	# a beat of held silence: the room has noticed, and is listening back
 	_audio.hush(1.8)
 	_has_contacted = true
+	var found: int = mini(_meters.recognition, AFTER_CONTACT.size()) - 1
+	if found >= 0:
+		_hud.show_note(AFTER_CONTACT[found])
 	_refresh_hint()
 	if kind == "scary":
 		# The loud way to be seen also wakes the house: the room corrects itself.
