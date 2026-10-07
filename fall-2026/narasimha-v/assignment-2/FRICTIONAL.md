@@ -194,6 +194,26 @@ The entries below are dated and in order, written as the work happened. Nothing 
 - **What I understand now / still do not understand:** An editor holding a scene in memory will happily show you a build that no longer exists, and I lost real time to that twice. I also understand that a line of writing which seems clear to its author is not evidence of anything — two readers found the same sentence confusing and neither of them was wrong. Unresolved: whether the rewritten lines land, which I cannot judge either, for the same reason.
 - **Evidence and next step:** Evidence: the probe output showing the character at 752, 902 and 1052 while I believed he was frozen; the terminal run command now recorded in TEST-REPORT.md section 1; the rewritten lines in CONCEPT.md with the original kept beside them. Next step: play the current build from a terminal, then the storyboard sketches and the film.
 
+### 2026-10-07 — Reading at my own speed, and a key that means "I have read this"
+
+- **Date and what I was working on:** 2026-10-07 — the opening text, after finding it unreadable in practice.
+- **I tried / expected:** I expected the opening to work now that it existed. Instead there was too much appearing and disappearing too quickly to actually read, and when I pressed a key to deal with that, the whole thing got skipped.
+- **What happened:** Both halves of that were wrong in the same way. The lines advanced on a timer, which means reading against a clock set by someone who already knew the words. And a key press was wired to skip, which is backwards: pressing a key means "I have read this", not "stop showing me this". I also wanted the story available later, since four lines at the start is not much to hold on to while learning a game.
+- **What I did:** I asked for the opening to advance only when I press something, and for I to bring the story back at any point.
+- **What Claude or another person contributed:** Claude made each line wait for a key and say so, with "press any key to begin" on the last, and bound I to reopen the same four lines mid-game, holding the player still while they read. It put the words in a single constant shared by the opening and the recap so the two cannot drift apart, and removed the ten-second safety timer it had added earlier, on the reasoning that a sequence which only ever waits cannot overrun. The automated check then hung forever, because it waited for control to be handed over and the opening now waits for a key that a headless run never sends; it was taught to read the lines the way a player would, and gained a thirteenth assertion that control arrives once the opening has been read.
+- **What I understand now / still do not understand:** Pacing someone else's reading is a guess, and mine was wrong by a wide margin. Unresolved: whether four lines is the right amount, which I cannot judge, having written them.
+- **Evidence and next step:** Evidence: the probe showing the opening waiting on line one, advancing once per press through all four, and I opening and closing the story without stranding the player. Next step: the storyboard images.
+
+### 2026-10-07 — The bug I kept blaming on the editor
+
+- **Date and what I was working on:** 2026-10-07, late — the movement failure I had now reported four times.
+- **I tried / expected:** I expected to be told about the stale editor again. Claude had twice attributed this to Godot holding an old scene in memory, which was plausible, and twice I had gone away and tried again and hit the same wall.
+- **What happened:** I said it still was not moving. Rather than reasoning about it further, Claude put a diagnostic line on screen printing the four values that could possibly block movement, and asked for one screenshot while I held the right arrow. The screenshot read: control not handed over, the opening not waiting for a key, no overlay open, and the input axis at 1.0. My key presses were arriving. The sequence itself had stalled.
+- **What I did:** I kept reporting it instead of accepting the explanation, which turned out to be the right call. The same report four times deserved to be investigated rather than explained away.
+- **What Claude or another person contributed:** Claude found the cause in its own code, which it had written three sessions earlier. The opening awaits several tweens in turn, and the player's fade-in is created before the room dissolve is awaited; both last about nine tenths of a second. If the fade-in finished first, its finished signal had already fired by the time the code waited for it, and awaiting a signal that has already happened waits forever. Which of the two won depended on frame timing, so the identical build handed over control on its machine and stranded me on mine. It rewrote the dissolve to run from one clock with plain timers, so there is no signal left to miss, verified it across three consecutive runs, and removed the diagnostic.
+- **What I understand now / still do not understand:** **The earlier entry blaming the stale editor was wrong, at least for this report, and is left standing rather than edited because that is what the record is for.** I also understand something sharper now about the automated checks: three of them passed while I could not move, because they drive input directly and never exercise the real frame timing. Passing tests and a person who cannot play are not a contradiction; they are measuring different things.
+- **Evidence and next step:** Evidence: the screenshot reading `controllable=false awaiting_key=false story_open=false axis=1.0 vel.x=0`, which settled in one image what four rounds of reasoning had not; the three verification runs after the fix, each handing over control with the character moving at full speed. Next step: the storyboard images, then the film.
+
 ---
 
 ## GitHub pushes
@@ -237,3 +257,7 @@ _Pushes happen only on my explicit instruction; commits accumulate locally betwe
 | 2026-10-07 | Let the player cut through the opening, and keep the house quiet until then |
 | 2026-10-07 | Teach the verb where it is needed; record the external playtest |
 | 2026-10-07 | Never let the opening strand the player, and say the lie plainly |
+| 2026-10-07 | Give the relics a reason to exist, and real objects to be |
+| 2026-10-07 | Stand the music box on the shelf it belongs on |
+| 2026-10-07 | Let the player read the opening at their own speed, and read it again |
+| 2026-10-07 | Fix the opening stranding the player: a race on tween finished signals |

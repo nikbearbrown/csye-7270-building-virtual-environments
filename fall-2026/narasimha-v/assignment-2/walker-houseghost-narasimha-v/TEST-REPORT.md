@@ -14,14 +14,16 @@ Run from a clean checkout with:
 godot --path godot
 ```
 
-**Run it from a terminal rather than from the editor.** Godot keeps an open scene in memory, so an editor that has been left running while the files changed will play an older build; twice during development a report of "the character will not move" turned out to be a stale editor rather than a fault in the game, confirmed each time by driving the real input actions in a fresh headless run. A terminal launch is also how a grader will run it.
+**Run it from a terminal rather than from the editor.** Godot keeps an open scene in memory, so an editor left running while the files change will play an older build. A terminal launch is also how a grader will run it.
+
+**A correction worth recording.** A repeated report of "the character will not move" was twice attributed to that stale editor, and that diagnosis was wrong. The real cause was a race between two tween `finished` signals in the opening sequence: awaiting one that has already fired waits forever, and which of the two fired first depended on frame timing. The same build therefore handed over control on one machine and froze on another. It was found by putting the four relevant values on screen and asking for a single screenshot, after four rounds of reasoning had not found it.
 
 | Check | Result |
 |---|---|
 | Project opens on Godot 4.7.2 with no missing resources | Pass — headless boot reports no errors |
 | Main scene loads and runs | Pass |
-| Opening sequence plays and hands over control | Pass — 8.3 s if left alone; any key press cuts through it, measured at 3.4 s when a key is pressed at 1.5 s |
-| Control is handed over even if the opening stalls | Pass — a ten-second timer calls the same hand-over function the normal path uses, so no sequencing fault in the intro can strand the player |
+| Opening sequence plays and hands over control | Pass — each line waits for a key press, so the opening is read at the player's pace and cannot overrun |
+| Read the story again (I) during play | Pass — holds the player still while open, returns control when closed |
 | Move left and right | Pass |
 | Jump | Pass |
 | Flip the world | Pass |
@@ -53,7 +55,9 @@ PASS  and the air stops when he stops
 --- 12 checks, 0 failed ---
 ```
 
-**What this check cannot do, stated plainly.** It verifies that an event fires exactly once and that muting changes no game state. It cannot hear, see, or understand. Every audio fault and every comprehension fault in this project was found by a person playing, while these assertions passed throughout. That is the single most useful thing the project taught about verification.
+**What this check cannot do, stated plainly.** It verifies that an event fires exactly once and that muting changes no game state. It cannot hear, see, or understand. Every audio fault and every comprehension fault in this project was found by a person playing, while these assertions passed throughout.
+
+It also cannot catch a timing race. Three runs of this check passed while a player could not move at all, because it drives input directly and never exercises the real frame timing of the opening sequence. Passing tests and a person who cannot play are not a contradiction; they are measuring different things. That is the single most useful thing this project taught about verification.
 
 ## 3. Another person played it
 
