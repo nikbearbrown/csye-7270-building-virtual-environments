@@ -14,8 +14,10 @@ You are the ghost of a boy the world believes ran away, haunting the house a new
 It now opens on the house as it really is — grey, emptied, a living child sitting on the floor playing, a ghost hanging from the ceiling above her who she does not look up at. Three lines are laid over that image, one at a time:
 
 > They told everyone I ran away.
-> A new family sleeps in my room now.
-> I need one of them to see me.
+> I never left this house.
+> If anyone sees me, they will know that.
+
+**Revision 2026-10-07.** The first wording of these lines was *they told everyone I ran away · a new family sleeps in my room now · I need one of them to see me*, and it did not survive being read by anyone who did not already know the story. It never said what being seen would achieve, and "them" was carrying a reference back to a family mentioned a line earlier. The replacement gives each line one idea and makes the last one connect the goal to its reason: being seen is the thing that proves the lie is a lie.
 
 Then the memory blooms in over the truth, he fades from ghost to boy, and control is handed across. Twelve seconds. **Not one word of it explains a mechanic** — it establishes a situation, which is a different thing, and it is the only way the player can know what they want.
 

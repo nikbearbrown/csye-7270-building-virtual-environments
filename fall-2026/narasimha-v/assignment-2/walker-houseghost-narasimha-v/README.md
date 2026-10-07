@@ -16,7 +16,7 @@ Requires Godot 4.7.x. No plugins, no .NET, no downloaded dependencies.
 godot --path godot
 ```
 
-Or open `godot/project.godot` in the Godot editor and press Play.
+Or open `godot/project.godot` in the Godot editor and press Play — but if the editor has been left open while the files changed, choose **Reload from disk** when prompted, never "Ignore external changes". An editor holding a stale scene will happily play a build that no longer exists.
 
 ## Controls
 
@@ -25,7 +25,7 @@ Or open `godot/project.godot` in the Godot editor and press Play.
 | Move | ← → or A / D |
 | Jump | Space, W, or ↑ |
 | Turn the world over | F or ↓ |
-| Contact the music box | E — tap for a gentle touch, hold for a loud one |
+| Contact a relic | E — tap for a gentle touch, hold for a loud one |
 | Mute music | M |
 | Mute sound effects | N |
 | Restart the scene | R |
@@ -39,6 +39,8 @@ Or open `godot/project.godot` in the Godot editor and press Play.
 **Three things of his are still in the house** — the music box his mother wound, his shoes still by the door, a floorboard with his name under it. Each is out of reach from the floor and each calls across the level with the sound of a music box playing by itself, so finding them needs the flip. A relic's light goes out once it has been answered, so the lit ones are always the ones left.
 
 **What blocks you is different in each world.** His bookshelf clutters the memory and was taken out of the real house years ago; the family's moving boxes clutter the truth and were never his. And the floor of the real house has been pulled apart: three gaps must be jumped, and falling through one costs a night, out of the same meter that being seen costs.
+
+**Nothing is explained in a list of controls.** A prompt appears beside the thing it refers to, only while it can be acted on, and stops appearing once used: the arrow keys until you first move, **F** when you are standing below something you cannot reach from the floor, **E** once you have turned the world over and can take it. That replaced a hint line listing every control at all times, which an external playtester read once and then stopped seeing — she finished a session without ever learning the game's central verb.
 
 **She is how you know it is working.** Absorbed in her rabbit at first; looking up and to one side once you have found one thing; facing you with her eyes wide when you have found all three. She is the recognition meter, and the only saturated colour in a grey room.
 

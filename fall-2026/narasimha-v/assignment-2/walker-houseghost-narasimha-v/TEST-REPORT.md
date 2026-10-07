@@ -14,11 +14,14 @@ Run from a clean checkout with:
 godot --path godot
 ```
 
+**Run it from a terminal rather than from the editor.** Godot keeps an open scene in memory, so an editor that has been left running while the files changed will play an older build; twice during development a report of "the character will not move" turned out to be a stale editor rather than a fault in the game, confirmed each time by driving the real input actions in a fresh headless run. A terminal launch is also how a grader will run it.
+
 | Check | Result |
 |---|---|
 | Project opens on Godot 4.7.2 with no missing resources | Pass — headless boot reports no errors |
 | Main scene loads and runs | Pass |
 | Opening sequence plays and hands over control | Pass — 8.3 s if left alone; any key press cuts through it, measured at 3.4 s when a key is pressed at 1.5 s |
+| Control is handed over even if the opening stalls | Pass — a ten-second timer calls the same hand-over function the normal path uses, so no sequencing fault in the intro can strand the player |
 | Move left and right | Pass |
 | Jump | Pass |
 | Flip the world | Pass |
