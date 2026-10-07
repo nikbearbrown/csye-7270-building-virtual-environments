@@ -10,9 +10,10 @@ Assignment 2 for CSYE 7270, by Jingyao Y, with Claude Code assistance.
 | Sources and asset log | [SOURCES](downfall-godot/SOURCES.md) |
 | Frictional log | [FRICTIONAL.md](FRICTIONAL.md) |
 | Design images | `downfall-godot/design/`: storyboard frames, character captures, silhouette, collision overlay, pose sheet, thumbnails of raw and rejected generations |
-| Generated audio | `downfall-godot/audio/`: Gemini music and stings (OGG), prompts, cut log, cutting scripts |
+| Generated audio | `downfall-godot/audio/`: Gemini music and stings (OGG), the two event WAVs, prompts, cut log, cutting scripts |
+| Game | `downfall-godot/`: the Godot project (`project.godot`, `game/`, `entities/`, `world/`, `ui/`, `tests/`, `art/`, `godot_assets/`) |
 | Film sources | `downfall-godot/youtube/claude-liam-downfall-gamedev/`: beat sheet, generator scripts, capture script and input logs, source ledger, fact check, QC report |
 
-**The game itself is not copied here.** Its source is https://github.com/coldfish432/GodotGame at `100dce3`. Paths the documents cite, such as `game/`, `art/` and `tests/`, are paths in that repository.
+**The Godot project is in `downfall-godot/`**. It holds all code, tests and scenes, plus every asset the game loads (949 files); open `downfall-godot/project.godot` in Godot 4.7.2. Its game files are identical to https://github.com/coldfish432/GodotGame at `100dce3`. That repository also keeps the generation batch history (previews, revision rounds, originals), which is not copied here.
 
-The two generated WAV event sounds and the film's MP4/MP3 files are excluded by this repository's media rule. Their SHA-256 hashes are recorded in `audio/asset_log.json` and `SUBMISSION.md`.
+The film's MP4/MP3 files are excluded by this repository's media rule; the film's SHA-256 is in `SUBMISSION.md`. The two generated WAV cues are force-added, because the game loads them.

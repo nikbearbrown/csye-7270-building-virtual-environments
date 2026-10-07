@@ -19,7 +19,7 @@ The whole game is the playable slice:
 
 ## Run
 
-Clone https://github.com/coldfish432/GodotGame at `100dce3` (the game is not in this folder), then:
+Open this folder's `project.godot` in Godot 4.7.2 (the same game files are in https://github.com/coldfish432/GodotGame at `100dce3`), or run:
 
 Open `project.godot` in Godot 4.7.2 and press F5 (main scene `game/main.tscn`), or run:
 
