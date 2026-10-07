@@ -113,6 +113,16 @@
 - **Still unresolved:** the human playtest with sound on and muted has not been recorded.
 
 
+
+## 2026-10-07 (live) — human playtest
+
+- **Wanted:** check, by playing, that the slice works and stays readable with sound on and with sound muted.
+- **Did:** the author played the game with normal controls, once with sound on and once muted.
+- **Got:** it passed both times, by the author's own report.
+- **Human / Claude / model:**
+  - the author played and judged the result;
+  - Claude only recorded the report.
+
 ---
 
 ## GitHub pushes
@@ -122,3 +132,4 @@
 | 2026-10-07 | `coldfish432/GodotGame` `main` → `100dce3`: game code and assets only (game-only rebuild of the history whose film revision is `111bf6e`; game files identical). |
 | 2026-10-07 | This branch (`Jingyao_Y`): assignment documents, design images, generated audio and film sources for Assignment 2. |
 | 2026-10-07 | Added the Godot project (code and used assets) to this branch, then the film link https://youtu.be/n6yPUyUQEaM. |
+| 2026-10-07 | Recorded the author's playtest (sound on and muted: passed). |

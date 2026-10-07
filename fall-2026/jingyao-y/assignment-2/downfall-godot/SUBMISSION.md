@@ -72,7 +72,6 @@ Full details are in [SOURCES.md](SOURCES.md).
 - **Character sheet:** 7 distinct poses, not 10. No turnaround.
 - **Event sounds:** the hatch and shelf sounds were not generated.
 - **Mute:** no separate music/SFX toggles; the buses exist but share one mute.
-- **Human playtest:** none recorded yet, with sound on or muted.
 - **Flaky capture:** `capture_v1` failed once on a random map and passed on reruns.
 - **Reproducibility:** no seeds are recorded for the image generations, and some early prompts are lost.
 - **Film outro:** silent; this pipeline's outro card has no jingle.

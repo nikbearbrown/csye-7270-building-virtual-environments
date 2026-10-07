@@ -41,7 +41,7 @@ On 2026-10-07, `tests/run_all.ps1 -Visual` was run on the exact file set submitt
 
 The same ZIP that goes to Canvas was also unpacked into an empty folder. There, `test_v1` (73/73), `test_audio` and `test_relic_icons` (12/12) passed again.
 
-**Not covered by this result:** the human playtest with sound on and muted (see *Human playtest* below).
+The human playtest is reported separately: it passed with sound on and muted (see *Human playtest* below).
 
 ## Automated results (latest evidence files, all 2026-10-07 unless noted)
 
@@ -71,9 +71,9 @@ the console; **no saved result exists for them.**
 | Storyboard vs. game | See [STORYBOARD.md](STORYBOARD.md); its panels *are* the captures. The recovery-ward moment has no capture. |
 | Sound events, exactly once per event | `tests/test_audio.gd` counts every `FieldAudio.play()` call (counted before the headless early return). One walk into the warehouse: lights-on 4 (one per bank), hatch 4 and shelf 4 (one per built rack); one walk out: lights-off 1; standing in the room or leaving adds none. Two settles give one sting. **Hatch and shelf files are not generated yet**, so those two are counted but silent. HIT, LOOT and BUILD still have no guard. |
 | Music loop | Loop points in code equal `audio/asset_log.json` (checked by the test). Seam measured on the decoded OGGs (`SOURCES.md`, *Generated audio*). Pause, death, extraction, next-floor and boot-settle behavior match CHANGE-BRIEF's predictions (`test_audio.gd`); field pause holds the position (0.000 s moved over 30 frames). **The seam has not been listened to by a person yet** (`audio/_check/*_x3.ogg`). |
-| Muted play | Settings → 静音 mutes the Master bus; the test checks mute and unmute. Every audio event has a visual equivalent (CHANGE-BRIEF, *Mute*). **No muted human play-through yet.** |
+| Muted play | Settings → 静音 mutes the Master bus; the test checks mute and unmute. Every audio event has a visual equivalent (CHANGE-BRIEF, *Mute*). The author's muted pass on 2026-10-07 passed. |
 | Automated check added | `tests/test_audio.gd` (26 checks), in `run_all.ps1` headless and `-Visual`. |
-| Human playtest, sound on and muted | **No record for this assignment.** Nothing is invented here. |
+| Human playtest, sound on and muted | **Passed**, as reported by the author on 2026-10-07 (see *Human playtest*). |
 
 ## Inspect-and-revise cycles
 
@@ -90,7 +90,6 @@ These already exist in the record:
 - Loop seams checked by measurement only, not yet by ear.
 - Fewer than 10 poses.
 - No silhouette or collision overlay images.
-- No human playtest notes.
 - No film.
 - Uses copyrighted IP.
 
@@ -121,4 +120,6 @@ These are scripted input, **not** a human playtest.
 
 ## Human playtest
 
-**Still not recorded.** The author needs to play with sound on and then muted, and write down what they actually saw and heard. Nothing here stands in for that.
+**Passed (2026-10-07). Reported by the author, Yuan Jingya.** The author played the game with normal controls twice, first with sound on and then with all sound muted. Everything worked, and the game stayed understandable with sound muted.
+
+This is the author's own report. It is not an automated run, and Claude did not observe it. The film was recorded before this playtest, so its verdict still calls the playtest "pending".
