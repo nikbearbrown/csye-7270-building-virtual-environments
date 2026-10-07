@@ -132,16 +132,27 @@ func _load_or_note(path: String) -> AudioStream:
 
 ## The heart. Inaudible at seven days, impossible to ignore at one: pressure
 ## the player feels before they can name it, and no timer on screen.
+const HEART_STARTS_AT := 4   ## days remaining when the heart first becomes audible
+
 func set_days_left(days_left: int, total: int) -> void:
-	var urgency := 1.0 - float(days_left) / float(maxi(1, total))
 	if _heart == null:
 		return
-	_heart.volume_db = lerpf(-34.0, -9.0, urgency)
-	_heart_rate = lerpf(0.95, 2.1, urgency)
+	# Silent until the night is genuinely short. A sound that is always there
+	# is wallpaper; one that arrives is information, and the player should
+	# notice it starting rather than wonder what has been ticking all along.
+	if days_left > HEART_STARTS_AT:
+		_heart.volume_db = -80.0
+		_heart_rate = 0.0
+		return
+	var urgency := 1.0 - float(maxi(0, days_left)) / float(HEART_STARTS_AT)
+	_heart.volume_db = lerpf(-24.0, -8.0, urgency)
+	_heart_rate = lerpf(1.0, 2.2, urgency)
 
 
 func _process(delta: float) -> void:
 	if _heart == null or _heart.stream == null or sfx_muted:
+		return
+	if _heart_rate <= 0.0:
 		return
 	_heart_timer -= delta * _heart_rate
 	if _heart_timer <= 0.0:

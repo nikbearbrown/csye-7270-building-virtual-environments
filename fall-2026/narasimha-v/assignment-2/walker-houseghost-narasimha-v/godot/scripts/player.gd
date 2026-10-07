@@ -279,7 +279,12 @@ func _apply_state() -> void:
 			# Drained and see-through: the same boy, rendered as what he is.
 			_sprite.modulate = Color(0.72, 0.80, 0.92, 0.82)
 		State.REMEMBERED:
-			_sprite.texture = _tex_remembered
+			# The idle is the cycle's own legs-together pose rather than a
+			# separate standing drawing. The standing one is 340 px tall where
+			# the walk frames are 303-317, so switching between them read as
+			# the boy shrinking the moment he moved, even though their heads
+			# measured the same size.
+			_sprite.texture = _walk_frames[2]
 			_sprite.modulate = Color(1, 1, 1, 1)
 
 
