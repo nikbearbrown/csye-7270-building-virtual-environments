@@ -13,8 +13,9 @@
 | ENV-ROOM-EMPTY | The bedroom, stripped (upright world) | 1, 4 | Built — `assets/art/env_room_empty.png` |
 | ENV-ROOM-MEMORY | The same bedroom, remembered (inverted world) | 2, 3 | Built — `assets/art/env_room_memory.png` |
 | UI-GLOW | Marker for an available contact | 3 | Built — code-drawn, not a generated asset |
-| PLAT-PLANK | Platform boards, warm and cold | 1–4 | Built — **code-drawn placeholder**, needs a generated replacement |
-| PLAT-CRATES | Blocking stacks of boxes | 1–4 | Built — **code-drawn placeholder**, needs a generated replacement |
+| PROP-SHELF | His bookshelf: blocks the memory, absent from the truth | 1–4 | Built — lifted from `env_room_memory.png` |
+| PROP-BOXES | The new family's moving boxes: block the truth, absent from the memory | 1–4 | Built — lifted from `env_room_empty.png` |
+| ENV-FLOOR-HOLE | A hole where the floorboards have been pulled up | 1–4 | Built — drawn in code |
 | SFX-FLIP | World flip (held breath, reversed swell) | 2 | Wired, file pending |
 | SFX-CONTACT | Contact (music-box chime with a paper tear inside) | 4 | Wired, file pending |
 | SFX-FROST | A day tearing off (crystalline crackle) | 4 | Wired, file pending |
@@ -63,9 +64,18 @@
 
 ### Found while building, not predicted
 
-6. **The core verb was unreachable.** The music box sat at the room's vertical centre while the player walks four hundred pixels below it, so a contact could never be made by playing. Found by a probe that walks the player with the real input action; fixed by moving the music box out of reach of the floor entirely, so the only route to it is along the ceiling.
-7. **The collision shape did not match the art.** The capsule was specified as 40 × 80 px before any art existed and covers only the shins of the 320 px sprite that was made. Found while drawing the required collision overlay; corrected to 52 × 250 px.
-8. **The capsule was teleported into the floor on the first flip.** An early version of gravity inversion moved the collision shape from above the node to below it when the world turned over, which dropped it inside the floor collider and squeezed the player out through the bottom of the room. Fixed by centring both the sprite and the capsule on the node, so a flip turns the picture over and moves nothing.
-9. **A blocker was placed on the floor when the route it blocks runs along the ceiling.** The inverted-world blocker was positioned at floor height, so an inverted player walking the ceiling strolled straight past it. Found by a probe that reported the player reaching x=4656 when it should have stopped at 3640; fixed by hanging it from the ceiling, after which the probe stops at 3519 as intended.
-10. **The movement read as teleporting rather than walking.** Two causes, both real: the walk cycle only ran in the normal state, so as the ghost he slid with his legs frozen, and the stride was 62 px per frame, under five frames a second at full speed. The cycle now runs in both worlds and the stride is 30 px, about ten frames a second.
-11. **The level art is not coherent.** The platforms and blockers are drawn in code and read as placeholder shapes against the painted rooms. Open; generated props are specified and not yet made.
+6. **The core verb was unreachable.** The music box sat where the player could never touch it. Moved, and later moved again into the first room so it is visible from the spawn point.
+7. **The collision shape did not match the art**, having been specified before any art existed. Corrected, and the sheet records the correction.
+8. **The capsule was teleported into the floor on the first flip**, squeezing the player out through the bottom of the room. Fixed by centring sprite and capsule on the node so a flip moves nothing.
+9. **A blocker sat on the floor when the route it guards runs along the ceiling.**
+10. **The movement read as teleporting:** the walk cycle only ran in one state and the stride was too long to read as walking.
+11. **Three different ways of measuring the character's size were wrong.** Height fails across poses because a crouching child the same pixel height as a standing one is a larger character; shoulder width fails because raised arms narrow it; head width fails on the rising pose because the topmost pixels there are his raised hands. Body area, which barely changes with pose, is what finally worked.
+12. **The idle textures were never rebuilt** when the frame sets were unified, so the sprite changed size and height the moment he stopped walking.
+13. **He turned pale when he moved.** The walk and jump sheets were graded 30 percent brighter and much cooler than the idle. Colour matched per channel.
+14. **Only one sound could be heard.** The score covered the quieter sounds, and three of the six only fired at a music box the player had little chance of reaching. Levels raised and the music now ducks 9 dB under every sound.
+15. **The player had no idea what to do.** Solved without text: the music box is visible from the spawn point, lit and breathing, and calls every few seconds with its own chime through a positional player that quietens with distance.
+16. **The platforms were decoration.** You could walk the whole level on flat ground, so nothing you did mattered. Replaced with gaps in the floor that must be jumped, and obstacles that exist in only one world.
+17. **Gaps in the ceiling were tried first and abandoned:** under reversed gravity crossing one means jumping downward, which no player will intuit.
+18. **The first gap width was unfair**, leaving a 35 px window to take off in against a jump covering 275 px of ground. At 170 px there is a body length of margin.
+19. **The gaps were invisible,** which made them a trap rather than an obstacle, until a hole was drawn into the carpet at each one.
+20. **Twenty-four orphaned nodes** were left behind when the decorative platforms were deleted, drawing a stray rectangle in the corner of the screen.

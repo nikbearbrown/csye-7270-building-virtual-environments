@@ -80,3 +80,14 @@ All six generated in ElevenLabs Sound Effects on 2026-10-07, prompt influence 70
 **Edits, all by Claude with ffmpeg:** leading silence stripped below −50 dB so each sound fires on the frame of its event rather than slightly late; loudness normalised; a limiter at −0.5 dB. Measured on arrival, `sfx_land` and `sfx_jump` were 30 dB quieter than `sfx_flip` and would have been inaudible, so they were given +18 dB and +8 dB respectively before normalising. All six now peak within 2 dB of each other, and the balance between them is set in the engine instead (`LEVELS` in `audio.gd`): story beats forward, footsteps well back at −15 and −17 dB because they fire constantly.
 
 **Verified** by the automated check, seven assertions, zero failures: one sound per flip, twelve flip calls during one turn still producing one sound, two contact resolves inside the cooldown producing one, one frost sound per day torn, a held jump producing one jump sound and one landing sound, and muting still counting the event because audio only observes state.
+
+## Props and level art
+
+| Asset | Origin | Notes |
+|---|---|---|
+| `prop_shelf.png` | **Derived from a generated asset** — cut out of `env_room_memory.png` (ChatGPT, 2026-10-06) by Claude using luminance and warmth separation, closing and hole-filling to isolate the bookshelf from the lamplit wallpaper behind it | Not a new generation. The obstacle is literally the furniture painted into that room, so it matches the art exactly and needed no new prompt |
+| `prop_boxes.png` | **Derived from a generated asset** — cut out of `env_room_empty.png` the same way | As above |
+| `floor_hole.png` | **Drawn in code** by Claude (Python/Pillow): a torn carpet lip, darkness fading beneath, a joist and two snapped board ends | Satisfies no generative requirement; recorded here so code-drawn art stays distinct from generated art. It exists because the floor gaps were invisible and therefore unfair |
+| `ui_glow.png` | **Drawn in code** by Claude: a soft radial falloff | As above |
+
+The earlier code-drawn `plat_plank_*.png` and `plat_crates.png` were removed along with the decorative platforms they belonged to.

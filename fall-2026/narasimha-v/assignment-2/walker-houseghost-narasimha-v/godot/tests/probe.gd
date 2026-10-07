@@ -3,19 +3,21 @@ func _init():
 	await process_frame
 	var s = load("res://scenes/Bedroom.tscn").instantiate()
 	root.add_child(s)
-	var p = s.get_node("Player"); var m = s.get_node("Meters")
+	var p = s.get_node("Player")
 	await create_timer(0.6).timeout
-	# run at the gap and jump near the edge, the way a player would
-	p.global_position = Vector2(820, 815); await create_timer(0.4).timeout
-	var d0 = m.days_left
-	Input.action_press("move_right")
-	for i in 400:
-		await physics_frame
-		if p.global_position.x > 1120:
-			Input.action_press("jump"); break
-	await create_timer(0.45).timeout
-	Input.action_release("jump")
-	await create_timer(1.4).timeout
-	Input.action_release("move_right")
-	print("jump at the edge -> x=", round(p.global_position.x), " days lost=", d0 - m.days_left, " (0 lost and past 1350 = cleared)")
+	p.global_position = Vector2(1900, 815); await create_timer(0.5).timeout
+	print("A normal, walking at the shelf   -> stopped at x=", await _run(p, 200), " (2125 = blocked by the memory)")
+	s.flip(); await create_timer(1.5).timeout
+	print("B inverted, same place           -> reached x=", await _run(p, 320), " (past 2200 = the memory is gone)")
+	p.global_position = Vector2(3100, 265); await create_timer(0.6).timeout
+	print("C inverted, at the boxes         -> stopped at x=", await _run(p, 200), " (3290 = blocked by the present)")
+	s.flip(); await create_timer(1.5).timeout
+	p.global_position = Vector2(3100, 815); await create_timer(0.5).timeout
+	print("D normal, same place             -> reached x=", await _run(p, 260), " (past 3400 = the boxes are not there)")
 	quit()
+
+func _run(p, frames):
+	Input.action_press("move_right")
+	for i in frames: await physics_frame
+	Input.action_release("move_right"); await create_timer(0.2).timeout
+	return round(p.global_position.x)

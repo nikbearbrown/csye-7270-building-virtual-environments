@@ -9,16 +9,22 @@ You are the ghost of a boy the world believes ran away, haunting the house a new
 
 ## Core loop
 
-**Revision 2026-10-06 — the flip, as built.** The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, and the world changes what it is showing.
+**Revision 2026-10-07 — the loop as built.** The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, and the world changes what it is showing.
 
-- **Normal — the comfortable lie.** He looks like a living boy, and the room is warm, lamplit and lived in. This is how he still sees himself and how he remembers the house.
-- **Inverted — what is actually there.** He becomes the ghost, and the room becomes the stripped, boxed-up bedroom the new family moved into.
+- **Normal — the comfortable lie.** He looks like a living boy, and the room is warm, lamplit and lived in. This is how he still sees himself.
+- **Inverted — what is actually there.** He becomes the ghost, and the room is the stripped, boxed-up bedroom the new family moved into.
 
-**The action:** walk and jump through the house, flipping between the two worlds to get past what blocks you. Furniture the memory has is solid only while normal; clutter the emptied house has is solid only while inverted. A stack you cannot pass on the floor is clear along the ceiling, and a stack hanging from the ceiling sends you back down — so the route alternates between the two truths.
+**What the player does:** walk and jump through the house, flipping between the two worlds to get past what blocks the way, and reach the music box to be noticed.
+
+**What blocks you is different in each world, and that is the whole mechanic:**
+
+- **The memory is cluttered.** His bookshelf, his furniture, everything he still sees is in the way. In the truth it was taken out of the house years ago, so the same spot is empty and you walk straight through. *The past is in your way.*
+- **The real house has the new family's moving boxes.** Those exist nowhere in his memory, so they block the truth and not the lie. *The present is in your way.*
+- **The floor of the real house has been pulled apart.** Gaps in the boards must be jumped. Falling through one costs a day off the calendar — a missed jump is paid for out of the same meter that being seen is paid for.
 
 **The decision each time:** at the music box, a gentle touch or a loud one. Gentle is slow and safe; loud is faster recognition but costs more days and wakes the house.
 
-**The risk:** every contact tears days off the calendar toward the anniversary. The night ends either because the child finally sees you, or because the anniversary arrives first.
+**The risk:** every contact and every fall tears days off the calendar toward the anniversary. The night ends either because the child finally sees you, or because the anniversary arrives first.
 
 ## Design pillars
 

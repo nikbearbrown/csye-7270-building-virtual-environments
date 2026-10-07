@@ -37,13 +37,15 @@ Or open `godot/project.godot` in the Godot editor and press Play.
 - **Normal** — he looks like a living boy, and the bedroom is warm, lamplit and lived in. The comfortable lie.
 - **Inverted** — he becomes the ghost, and the room is the stripped, boxed-up one the new family moved into. What is actually there.
 
-**The level is built around that.** Three room-widths wide with a camera that follows, ten platforms and two blockers grouped by world. Furniture the memory has is solid only while normal; clutter the emptied house has is solid only while inverted. The memory world is blocked at floor level partway along, and the ceiling route is blocked further on, so getting to the far end means turning the world over and back again. What you can stand on depends on which truth you are standing in.
+**What stops you is different in each world, and that is the mechanic.** His bookshelf blocks the memory and is simply absent from the truth, because it was taken out of the house years ago — the past is in your way. The new family's moving boxes block the truth and are absent from the memory, because they were never his — the present is in your way. And the floor of the real house has been pulled apart: three gaps must be jumped, and falling through one costs a day off the calendar. A missed jump is paid for out of the same meter that being seen is paid for.
 
-He walks with a four-frame cycle in both worlds, advancing by ground covered rather than by a clock so his stride always matches his speed. He jumps with coyote time, input buffering and an early-release cut, squashes on landing in proportion to the impact, and leans into a run.
+**Nothing tells the player any of this.** The music box is visible from the spawn point as a light high on the wall, out of reach from the floor; it is lit and breathing, and it calls every few seconds with its own chime, quieter the further away you are. A music box playing by itself is both what a haunting sounds like and all the guidance the slice gives.
 
-At the music box — out of reach from the floor, reachable only by walking the ceiling — a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar; the loud one costs more. The night ends either because the child sees you or because the anniversary arrives first.
+He walks with an eight-frame cycle advancing by ground covered rather than by a clock, so his stride matches his speed; the ghost does not walk but drifts on his own six frames, drawn upside down so his hair and the mist of his legs stream toward the ceiling. He jumps with coyote time, input buffering and an early-release cut, and has four generated poses for crouching, rising, falling and landing.
 
-Each world has its own music and the flip cuts between them. Four sound events are wired to real game events, and music and effects mute independently without changing anything the game does.
+At the music box a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar; the loud one costs more and wakes the house. The night ends either because the child sees you or because the anniversary arrives first.
+
+Each world has its own music and the flip crossfades between them. Six sound events fire from real game events, the music ducks beneath each one, and music and effects mute independently without changing anything the game does.
 
 ## Generated assets in the slice
 
