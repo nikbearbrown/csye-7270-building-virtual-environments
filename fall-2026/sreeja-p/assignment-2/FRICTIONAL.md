@@ -225,6 +225,61 @@
 - **Still unresolved:** the 64 px size is "to confirm" in my next playtest.
 - **Evidence:** CHARACTER-SHEET.md, "Revision 2026-10-07"; `design/character/silhouette.png`, `collision.png`, `palette.png`; `evidence/screens-web/`.
 
+
+### 2026-10-07 — retrospective note: order of the first commits (written by Claude from my account and the git history)
+
+- **What the history shows:** the 2026-10-01 commit (`3a07143`, 16:08) contained only the design docs (CONCEPT, CHARACTER-SHEET, CHANGE-BRIEF, SOURCES) and **no generated images**. The storyboard text was written on 2026-10-01 but committed on 2026-10-02 at 10:22 (`1f2b5c6`). Storyboard panel 1 was generated and saved at 10:20, **two minutes before** that commit. Panels 2–6 and every character image came after it.
+- **Why (my account):** I generated panel 1 while I was checking that I had access to image generation and that it worked, before committing the storyboard text.
+- **What it means for the rubric:** CONCEPT, CHARACTER-SHEET, and CHANGE-BRIEF were committed before any generation; the storyboard text was not, by two minutes. I'm stating it rather than hiding it.
+- **Also recorded today:** ChatGPT Plus is on OpenAI's free student offer (4 months), so no money was paid for generation (SOURCES updated). Gemini was planned but never used.
+
+
+### 2026-10-07 — critical review, the punchline face, and ENV-FIRE
+
+- **What happened:** I asked Claude to be critical and compare everything to the requirements. Biggest gaps: no sound or music in the slice yet; ENV-FIRE promised in our asset list but missing; *Failure is a punchline* weak in play; some asset-log gaps; README and SUBMISSION missing. Claude wrote the review into a working checklist.
+- **Decisions (mine):** don't reuse the crane as a "waiting" pose (it stays on the sheet); **do** make failure funnier by popping up the DEVASTATED portrait I already generated when he burns, instead of a big-head sprite (Claude's recommendation; no new generation needed); make ENV-FIRE now.
+- **ENV-FIRE attempt:** in a new chat I sent Claude's prompts A (single flame) and B (wide cluster) exactly, then edited B with my own words "make the flames taller" (Bb). All three came back on flat green with crisp edges and no glow, as asked. **Not as asked:** the style is comic flames rather than "semi-realistic painted". I accepted all three because a hazard has to read at a glance and comic flames suit the punchline.
+- **What Claude or another person contributed:** Claude wrote the flame prompts, keyed out the green (`tools/make_env.py`), drew the flames over the unchanged hazard rectangles, cropped the portrait, wrote the pop-up, and re-ran the tests (41/41). ChatGPT generated the flames (and earlier the portrait). The decisions above were mine.
+- **Still unresolved:** whether the comic flames clash with the painted character in play; sound and music.
+- **Evidence:** SOURCES rows ENV-FIRE-A, -B, -Bb and "CHAR-EXPR-02 reused"; TEST-REPORT "DEVASTATED pop-up and ENV-FIRE"; CHANGE-BRIEF revision 2026-10-07.
+
+
+### 2026-10-07 — sound effects: generated, chosen, and wired in
+
+- **Date and what I was working on:** the sound effects. Generated in a separate Claude Code session (its note is the source for this entry); the kept files were downloaded on 2026-10-07 between 16:24 and 16:53. **Date note (honest):** I first remembered generating them on 2026-10-05, but the prompts I used were written by Claude on 2026-10-06 and 2026-10-07, so the generation can't be earlier than that; what I started on 2026-10-05 was the Suno music. The exact generation time is in ElevenLabs' History.
+- **I tried / expected:** ElevenLabs Sound Effects (free account), one generation per sound with Claude's prompts, Prompt influence 70%, Prompt enhancement off (so the logged prompt is exactly what the model got), duration set by hand. I expected short, cartoonish sounds that match each pillar.
+- **What happened and what I decided:**
+  - **Jump, hose:** usable on the first try. For the jump I kept the most realistic, not-too-fast version of four; for the hose all four were fine and I kept the one I liked best.
+  - **Rescue:** the bag thump wasn't in every version or always clear; I downloaded two and kept the clearer one (#1 kept as a rejected take).
+  - **Burn:** I compared sizzle-only (A) with sizzle + yelp (B) and kept B for the yelp. My idea was a scream; Claude suggested "yelp" so it stays comic, not scary. I kept 1.0 s although Claude suggested 1.2 s.
+  - **Win:** the gong (try 1) worked as asked, but I rejected it: I wanted the win funny and childish. I asked for "yayyy and claps"; Claude wrote the crowd-cheer prompt and I kept #7. **This pulls against my own pillar** ("he does not cheer"): unresolved; the rescued people cheering while he stays deadpan is how I might reconcile it.
+  - **Siren (my idea, new):** a fire truck arriving, once at session start. Claude advised keeping it out of the music so the loop seam stays clean. Keep or drop after I hear it in the game.
+- **Claude's edits and wiring:** cleaned every kept sound with `tools/make_audio.sh` (no silence at the front was found; tails trimmed; all brought to −14 LUFS with a −1 dBFS limit; OGG), wired each one to the code that already represents its event (after the state change), added N/B mute keys, and wrote `tests/test_audio.gd`. Its mute check first **failed** (1265 vs 1268 ticks); Claude showed the difference also appears with no mute at all (harness timing), made the test step one physics tick at a time, and kept the exact comparison. Now 8/8 pass.
+- **Human / Claude / model:** I chose ElevenLabs, ran every generation, listened, picked each version, named the files, and made the design changes (cheering win, yelp, siren). Claude wrote the prompts and settings advice, fixed two file names, cleaned and wired the sounds, and wrote the test. ElevenLabs generated all the audio.
+- **Still unresolved:** does the rescue thump line up with the toss on screen? Keep the siren? Does the cheering clash with "he does not cheer"? ElevenLabs' free-plan terms and model version to confirm. "Disable sharing" wasn't clicked, so the sounds may be public in ElevenLabs' Explore. **Music loop not made yet.**
+- **Evidence:** SOURCES "Sound effects (ElevenLabs)"; CHANGE-BRIEF revision "sounds wired"; TEST-REPORT "sound effects wired; automated sound check"; `rejected/audio/`.
+
+
+### 2026-10-07 — playtest 3 (with sound): visibility, longer punchline, win close-up, more tests
+
+- **What I saw:** playing with sound for the first time, the firefighter was hard to see against the background; "The fire got you" disappeared too fast; and the win didn't get the same big moment as the fire death.
+- **What I decided:** change the background so he's visible; show the fire death longer; pop up a close-up of the bow on the win, like the DEVASTATED one. And make sure every test the game needs with sound is there.
+- **What Claude did:** darkened and cooled the background in code (the image file is unchanged) and added a thin light outline around the character; set the fire-death hold to 2.0 s with R still retrying at once; cropped the bow close-up from pose 12b; shortened a menu line that ran off its card (Claude spotted it in my screenshot). Tests: 5 new keyboard checks (N/B mute, no sound while paused, R skips the wait) and 4 new sound checks (sound after the state change, siren per session, no burn for falls/timeouts, missing sound files change nothing), plus a music check that reports SKIPPED until the loop exists. Two A1 checks changed with my longer hold, and the change is written down as a design change, not hidden.
+- **Human / Claude / model:** the observations and the three decisions are mine; the code, tests, and crops are Claude's; the close-up images were generated earlier by ChatGPT.
+- **Update, same day (my decision):** I rejected the outline. The character shouldn't be changed to fit the background; the background has to change. Claude removed the outline and wrote a new background prompt (ENV-BG v2).
+- **Still unresolved:** does 2 s feel too long when I die a lot? I still need to judge each sound in play, and muted play. Music loop not made yet.
+- **Evidence:** TEST-REPORT "Playtest 3" and "full automated suite"; SOURCES "Code edits applied to generated art"; `evidence/screens-web/`.
+
+
+### 2026-10-07 — background v2: the background changes, not the character
+
+- **Wanted:** the firefighter visible at a glance in play. I said no to outlining him: the background had to change.
+- **Asked:** ChatGPT (new chat), Claude's "option A" edit prompt, with the old background attached first and my in-game screenshot second (verbatim in SOURCES, row "ENV-BG v2"). Claude also gave a fresh-generation prompt (option B); I tried A because it keeps the look I liked.
+- **Got:** the same skyline and smoke, now cool hazy blue-gray with gray smoke columns and no orange glow, as asked; 1672×941 instead of the 1920×1080 asked (fine after resizing to the game's 1280×720).
+- **Decided:** accepted v2. Claude measured it where he plays: the suit's worst spot went from ΔE 31 to 85, so the red-on-orange problem is gone. v1 is kept as a rejected thumbnail with that reason. What I give up: the sky alone no longer looks like a burning city; the smoke and the game's flames carry it.
+- **Human / Claude / model:** I spotted the problem, refused the outline, chose option A, and accepted v2; Claude wrote both prompts, removed the outline and the code darkening, measured the contrast, and re-ran the tests; ChatGPT generated v2.
+- **Evidence:** SOURCES rows ENV-BG and ENV-BG v2; TEST-REPORT "ENV-BG regenerated (v2)"; `rejected/ENV-BG-v1-orange-glow.png`; `evidence/screens-web/`.
+
 ---
 
 ## GitHub pushes
@@ -237,3 +292,5 @@
 | 2026-10-05 | Add character reference, poses 1-9 and 11, and prompt logs with rejects |
 | 2026-10-06 | Add action poses, slower run, and ENV-BG backdrop; verify 41/41 tests |
 | 2026-10-07 | Add silhouette, collision overlay, and palette from in-game art; finish character sheet |
+| 2026-10-07 | Add generated flames, DEVASTATED pop-up, README and submission drafts; verify 41/41 tests |
+| 2026-10-07 | Add generated sound effects with mute keys and sound tests, regenerate background v2; verify 41+14+12 tests |
