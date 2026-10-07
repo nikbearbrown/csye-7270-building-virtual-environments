@@ -311,3 +311,4 @@
 | 2026-10-07 | Add generated sound effects with mute keys and sound tests, regenerate background v2; verify 41+14+12 tests |
 | 2026-10-07 | Add ElevenLabs music loop with loop and behaviour tests; record model terms and attribution; verify 41+14+14 tests |
 | 2026-10-07 | Add ElevenLabs music loop with loop tests, remove start siren, record model terms; verify 41+14+14 tests |
+| 2026-10-07 | Capture facing-left screenshots for the orientation check; freeze game source for the film |
