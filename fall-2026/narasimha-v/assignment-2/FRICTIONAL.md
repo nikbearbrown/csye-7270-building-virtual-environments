@@ -194,6 +194,26 @@ The entries below are dated and in order, written as the work happened. Nothing 
 - **What I understand now / still do not understand:** An editor holding a scene in memory will happily show you a build that no longer exists, and I lost real time to that twice. I also understand that a line of writing which seems clear to its author is not evidence of anything — two readers found the same sentence confusing and neither of them was wrong. Unresolved: whether the rewritten lines land, which I cannot judge either, for the same reason.
 - **Evidence and next step:** Evidence: the probe output showing the character at 752, 902 and 1052 while I believed he was frozen; the terminal run command now recorded in TEST-REPORT.md section 1; the rewritten lines in CONCEPT.md with the original kept beside them. Next step: play the current build from a terminal, then the storyboard sketches and the film.
 
+### 2026-10-07 — Why would finding his things make her see him?
+
+- **Date and what I was working on:** 2026-10-07 — the thing the game asks you to do, and whether it makes sense.
+- **I tried / expected:** The counter said THINGS OF HIS, FOUND and the goal was to be seen. I asked how one causes the other, because reading it plainly, it does not. Collecting objects does not make a person notice you. I also said the relics looked like placeholder shapes and I wanted real images for them.
+- **What happened:** Claude agreed the chain was missing rather than defending it. The design had a verb and a reward with nothing between them, which is exactly the gap a player falls into: I knew what to press and still could not say why.
+- **What I did:** Refused the hand-wave and asked for the fiction to actually connect, and asked for ideas before generating anything.
+- **What Claude or another person contributed:** Claude gave the relics a reason to exist — they are the only things in the house that still move for him, so touching one makes something move in a room where nothing should, which is what the child can notice. Her posture became the meter: she turns further toward the room with each relic, so being seen is visible rather than numeric. Three lines were placed in the level to carry that, and three more after the first contact, to say the cause out loud in his voice rather than in a tutorial. I generated the relic images and Claude cut them out, matched them to the room's light, and placed them.
+- **What I understand now / still do not understand:** A mechanic can be complete and still be arbitrary. The question "why does this cause that" is worth asking of my own design even when the loop already works, because the loop working is not evidence that it means anything. Still unresolved: whether three relics is the right number for the slice.
+- **Evidence and next step:** Evidence: the placed story lines and the child's turning posture in engine; the relic art in the asset log with its model and prompt. Next step: fixing where the music box sits.
+
+### 2026-10-07 — Stand it on the shelf it belongs on
+
+- **Date and what I was working on:** 2026-10-07 — where the music box is.
+- **I tried / expected:** A music box resting in mid-air, which reads as a game object rather than an object in a room.
+- **What happened:** It had been positioned for reachability, not for the fiction.
+- **What I did:** Said to place it on the bookshelf.
+- **What Claude or another person contributed:** Claude moved it onto the shelf and checked it was still reachable from the inverted ceiling, since the whole point is that it can only be touched from the other side.
+- **What I understand now / still do not understand:** Small placement decisions carry fiction. An object floating where it is convenient tells the player this is a level; the same object on a shelf tells them this is a bedroom.
+- **Evidence and next step:** Evidence: in engine, standing on the inverted ceiling below the shelf, the prompt appears and the contact lands. Next step: the opening text, which I still could not read.
+
 ### 2026-10-07 — Reading at my own speed, and a key that means "I have read this"
 
 - **Date and what I was working on:** 2026-10-07 — the opening text, after finding it unreadable in practice.
