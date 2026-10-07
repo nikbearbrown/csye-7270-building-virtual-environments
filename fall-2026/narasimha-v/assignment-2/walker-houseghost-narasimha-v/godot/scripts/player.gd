@@ -20,8 +20,9 @@ const MAX_FALL := 2000.0
 
 const DRIFT_PIXELS := 6.0
 const DRIFT_SECONDS := 2.2
-const STEP_PIXELS := 4.0
-const STRIDE_PIXELS := 30.0   ## ground covered per walk frame — about ten frames a second at full speed, so the legs read as walking rather than stuttering
+const STEP_PIXELS := 2.0      ## the eight frames already carry the rise and fall, so the code only adds a trace
+const ROLL_RADIANS := 0.022   ## shoulder roll, synced to the same stride phase
+const STRIDE_PIXELS := 28.0   ## ground per frame; eight frames make a ~224 px cycle, about eleven frames a second at full speed
 const LEAN_RADIANS := 0.10
 
 signal landed(fall_speed: float)
@@ -38,6 +39,7 @@ var _was_on_floor := true
 var _step_phase := 0.0
 var _stride_distance := 0.0
 var _walk_frame := 0
+var _body_roll := 0.0
 var _sprite_home_y := 0.0
 var _drift_tween: Tween
 
@@ -49,10 +51,14 @@ var _drift_tween: Tween
 ## The walk cycle belongs to the remembered boy alone. The ghost never walks —
 ## he drifts — which is both the truth of the character and the art we have.
 @onready var _walk_frames: Array[Texture2D] = [
-	preload("res://assets/art/char_walk_1.png"),
-	preload("res://assets/art/char_walk_2.png"),
-	preload("res://assets/art/char_walk_3.png"),
-	preload("res://assets/art/char_walk_4.png"),
+	preload("res://assets/art/char_walk_1.png"),   # contact, right heel down
+	preload("res://assets/art/char_walk_2.png"),   # down, weight on the bent knee
+	preload("res://assets/art/char_walk_3.png"),   # passing, legs together
+	preload("res://assets/art/char_walk_4.png"),   # up, pushing off
+	preload("res://assets/art/char_walk_5.png"),   # contact, left heel down
+	preload("res://assets/art/char_walk_6.png"),
+	preload("res://assets/art/char_walk_7.png"),
+	preload("res://assets/art/char_walk_8.png"),
 ]
 
 
@@ -117,18 +123,28 @@ func _update_body(delta: float, direction: float) -> void:
 	var target_lean := -LEAN_RADIANS * speed_ratio * _facing
 	if not is_on_floor():
 		target_lean = -LEAN_RADIANS * 1.4 * signf(velocity.x) * speed_ratio
-	_sprite.rotation = lerpf(_sprite.rotation, target_lean, 10.0 * delta)
+	_sprite.rotation = lerpf(_sprite.rotation, target_lean + _body_roll, 14.0 * delta)
 
 	var walking := is_on_floor() and absf(direction) > 0.01
+	_update_walk_frame(delta, walking)
+
 	if walking:
 		_stop_drift()
-		_step_phase += delta * 9.0 * speed_ratio
-		_sprite.position.y = _sprite_home_y - absf(sin(_step_phase)) * STEP_PIXELS * _gravity_dir
-	elif is_on_floor() and _drift_tween == null:
-		_step_phase = 0.0
-		_start_drift()
-
-	_update_walk_frame(delta, walking)
+		# Weight. The cycle phase comes from the stride itself, so the body is
+		# lowest on the two contact frames and highest on the two passing
+		# frames — the same beat the legs are drawing — instead of bobbing on
+		# an independent timer that slowly drifts out of step with the feet.
+		var phase := (float(_walk_frame) + _stride_distance / STRIDE_PIXELS) / float(_walk_frames.size())
+		var bob := -absf(sin(phase * TAU)) * STEP_PIXELS * speed_ratio
+		_sprite.position.y = _sprite_home_y + bob * _gravity_dir
+		# A small roll on the same phase, offset a quarter cycle, so the
+		# shoulders lead the hips the way a real gait does.
+		_body_roll = sin(phase * TAU - PI * 0.5) * ROLL_RADIANS * speed_ratio
+	elif is_on_floor():
+		_body_roll = 0.0
+		if _drift_tween == null:
+			_step_phase = 0.0
+			_start_drift()
 
 
 ## Frames advance by ground covered, not by a clock, so the stride always
