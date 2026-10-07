@@ -23,7 +23,7 @@ signal world_flipped(is_inverted: bool)
 ## he thinks when he passes a particular spot in his own house.
 const NOTES := [
 	{ "x":  980, "world": "memory",   "text": "They took my name off the door." },
-	{ "x": 1480, "world": "truth",    "text": "My mother wound this one. It still turns for me." },
+	{ "x": 1548, "world": "truth",    "text": "My mother wound this one. It still turns for me." },
 	{ "x": 2200, "world": "memory",   "text": "None of this is here any more. Only I can still see it." },
 	{ "x": 3150, "world": "truth",    "text": "My shoes. Still by the door. I never put them on." },
 	{ "x": 3400, "world": "truth",    "text": "These are theirs. I cannot move anything of theirs." },
