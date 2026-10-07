@@ -107,8 +107,10 @@ func _init() -> void:
 	var st1: int = audio.counts["step"]
 	Input.action_press("move_right")
 	await _settle(1.2)
-	_expect(audio.counts["step"] == st1, "the ghost produces no footsteps at all",
+	_expect(audio.counts["step"] == st1, "the ghost makes no real footsteps",
 		audio.counts["step"] - st1)
+	_expect(audio.counts["ghoststep"] > 0, "but he keeps a rhythm of his own",
+		audio.counts["ghoststep"])
 	_expect(audio._drift.playing, "the ghost displaces air while he moves", audio._drift.playing)
 	Input.action_release("move_right")
 	await _settle(0.6)

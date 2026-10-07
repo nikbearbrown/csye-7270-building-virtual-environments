@@ -20,6 +20,7 @@ const PATHS := {
 	"jump":    "res://assets/sfx/sfx_jump.wav",
 	"fall":    "res://assets/sfx/sfx_fall.wav",
 	"step":    "res://assets/sfx/sfx_step.wav",
+	"ghoststep": "res://assets/sfx/sfx_ghoststep.wav",
 }
 
 ## The mix. Every file is normalised to the same peak, so these numbers alone
@@ -37,7 +38,7 @@ const LEVELS := {
 ## How far the music steps back while a sound plays, and for how long. Without
 ## this the quieter story sounds sit underneath the score and are never heard.
 const DUCK_DB := -15.0      ## the score steps well back, or short sounds are simply lost under it
-const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "land": 0.25, "jump": 0.25, "fall": 1.6, "step": 0.0}
+const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "land": 0.25, "jump": 0.25, "fall": 1.6, "step": 0.0, "ghoststep": 0.0}
 ## One track per world. They share key and tempo, so the flip can cut straight
 ## from one to the other without a musical lurch: the two worlds sound like one
 ## piece of music turning over.
@@ -47,7 +48,7 @@ const MUSIC_PATHS := {
 	"inverted": "res://assets/music/mus_upright.wav",
 }
 
-var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0, "land": 0, "jump": 0, "fall": 0, "step": 0}
+var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0, "land": 0, "jump": 0, "fall": 0, "step": 0, "ghoststep": 0}
 var music_muted := false
 var sfx_muted := false
 var missing: Array[String] = []

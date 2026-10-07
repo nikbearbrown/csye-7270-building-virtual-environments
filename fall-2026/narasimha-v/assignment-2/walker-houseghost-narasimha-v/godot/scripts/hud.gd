@@ -28,7 +28,7 @@ func set_recognition(recognition: int, needed: int) -> void:
 	var filled := "".rpad(0)
 	for i in needed:
 		filled += "●  " if i < recognition else "○  "
-	_recognition.text = "SEEN   " + filled
+	_recognition.text = "THINGS OF HIS, FOUND   " + filled
 
 
 func set_frost(level: float) -> void:

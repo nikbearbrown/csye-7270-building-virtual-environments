@@ -59,7 +59,10 @@ func _ready() -> void:
 	_player.jumped.connect(func(): _audio.play("jump"))
 	_player.landed.connect(func(_speed): _audio.play("land"))
 	# Footsteps belong to the boy who was alive here. The ghost gets none.
-	_player.stepped.connect(func(): if not is_inverted: _audio.play("step"))
+	# He keeps a rhythm in both worlds, because movement that makes no sound
+	# reads as broken rather than weightless. What changes is what the rhythm
+	# is made of: a foot on carpet, or a breath of displaced air.
+	_player.stepped.connect(func(): _audio.play("ghoststep" if is_inverted else "step"))
 	_meters.day_torn.connect(_on_day_torn)
 	_meters.recognition_changed.connect(_on_recognition_changed)
 	_meters.night_ended.connect(_on_night_ended)

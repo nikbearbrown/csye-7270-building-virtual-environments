@@ -224,6 +224,15 @@ func _update_float(delta: float) -> void:
 	_float_time += delta * FLOAT_FPS
 	var frame := int(_float_time) % _float_frames.size()
 	_sprite.texture = _float_frames[frame]
+	# A drifting body has no heel strikes, so the stride beat is taken from
+	# ground covered instead — the ghost still has a rhythm when he moves.
+	if absf(velocity.x) > 10.0:
+		_stride_distance += absf(velocity.x) * delta
+		while _stride_distance >= STRIDE_PIXELS * 1.6:
+			_stride_distance -= STRIDE_PIXELS * 1.6
+			stepped.emit()
+	else:
+		_stride_distance = 0.0
 
 
 func _land(fall_speed: float) -> void:

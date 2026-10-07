@@ -33,7 +33,7 @@ var _locked_until := 0.0
 ## also the only thing in the slice that tells the player where to go. It calls
 ## every few seconds, quieter the further away you are, and stops once the
 ## player has touched it — by then they know where it is.
-const CALL_EVERY := 5.0
+const CALL_EVERY := 4.0
 var _call_timer := 0.0
 var _ever_touched := false
 
@@ -84,6 +84,12 @@ func _call(delta: float) -> void:
 		_beacon.play()
 
 
+## Once a relic has been answered its light goes out, so the lit ones are
+## always exactly the ones still to find.
+func is_answered() -> bool:
+	return _ever_touched
+
+
 func _available() -> bool:
 	return _player_inside and _world_inverted
 
@@ -112,7 +118,9 @@ func _update_glow() -> void:
 	var ready_now := _available() and _locked_until <= 0.0
 	# Always lit, so it can be seen from across the room and read as the place
 	# to go; brighter and pulsing once it is actually in reach.
-	_glow.visible = true
+	_glow.visible = not _ever_touched
+	if _ever_touched:
+		return
 	if not ready_now:
 		var breathe := 0.22 + 0.10 * sin(Time.get_ticks_msec() / 900.0)
 		_glow.modulate = Color(1.0, 0.93, 0.74, breathe)
