@@ -6,6 +6,43 @@
 
 **Command:** `& 'D:\CSYE 7370\downfall-godot\tests\run_all.ps1' -Visual`. That runs 25 headless suites (now including `test_audio`), plus `test_audio` again with real playback, the windowed UI and input suites and the capture scripts (`--audio-driver Dummy`).
 
+## Result: all automated tests pass
+
+On 2026-10-07, `tests/run_all.ps1 -Visual` was run on the exact file set submitted in `downfall-godot/`, after a fresh `--import`, on Godot 4.7.2 and Windows 11. **Every suite passed, with 0 failures.** The log is `design/evidence/fresh-copy-course-subset.log`.
+
+`run_all.ps1` stops on the first `FAIL` or `SCRIPT ERROR`, and it ran to the end.
+
+| Suite | Result |
+|---|---|
+| test_v1 (core rules, saves) | 73 checks, 0 failures |
+| test_base_state, test_warehouse, test_orders, test_medical, test_progression, test_base_scene | passed (no failure lines) |
+| test_layout (60 seeds) | 10 checks, 0 failures |
+| test_terrain | 21 checks, 0 failures |
+| test_scene_dressing | 15 checks, 0 failures |
+| test_guards | 43 checks, 0 failures |
+| test_movement | 9 checks, 0 failures |
+| test_combat | 14 checks, 0 failures |
+| test_enemy_attacks | 109 checks, 0 failures |
+| test_lappland | 59 checks, 0 failures |
+| test_relics | 12 checks, 0 failures |
+| test_builds | 117 checks, 0 failures |
+| test_inventory | 48 checks, 0 failures |
+| test_loot | 57/57 passed |
+| test_item_icons | 152/152 passed |
+| test_relic_icons | 12/12 passed |
+| test_gear | 41/41 passed |
+| test_ai_driver | 4 checks, 0 failures |
+| test_revisions | 86 checks, 0 failures |
+| **test_audio**, headless (sound-trigger counts, loop points, pause, stings, mute) | 26 checks, 0 failures |
+| **test_audio**, windowed (real playback) | 26 checks, 0 failures |
+| test_ui_v1 (real mouse and key events) | 12 checks, 0 failures |
+| test_lappland_input (real input events) | 7 checks, 0 failures |
+| capture_enemy_attacks, capture_lappland, capture_v1, capture_terrain, capture_guards | 0 failures |
+
+The same ZIP that goes to Canvas was also unpacked into an empty folder. There, `test_v1` (73/73), `test_audio` and `test_relic_icons` (12/12) passed again.
+
+**Not covered by this result:** the human playtest with sound on and muted (see *Human playtest* below).
+
 ## Automated results (latest evidence files, all 2026-10-07 unless noted)
 
 | Suite | Result | File |
