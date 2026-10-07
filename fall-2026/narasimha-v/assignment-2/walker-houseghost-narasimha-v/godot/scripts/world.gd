@@ -67,6 +67,9 @@ func _ready() -> void:
 	_meters.recognition_changed.connect(_on_recognition_changed)
 	_meters.night_ended.connect(_on_night_ended)
 	_audio.counted.connect(func(_e, _n): _hud.set_mutes(_audio.music_muted, _audio.sfx_muted))
+	# the number flinches on every heartbeat, so the sound and the counter are
+	# visibly the same thing
+	_audio.heart_beat.connect(_hud.pulse_days)
 
 	_show_rooms(false)
 	_apply_world_geometry(false)
@@ -89,8 +92,53 @@ func _ready() -> void:
 	if not _audio.missing.is_empty():
 		print("audio files not present yet, slice runs silent: ", _audio.missing)
 
+	_open()
+
+
+## The opening. It explains nothing about how to play; it establishes who the
+## player is, which is the thing the slice was failing to do. The house is shown
+## as it really is first — grey, emptied, with a ghost in it — and only then
+## becomes the warm room he remembers. By the time control is handed over, the
+## player knows the grey is true, the warm is memory, and which one he belongs
+## to.
+func _open() -> void:
+	_player.controllable = false
+	_hud.set_hint("")
+
+	# start in the truth
+	is_inverted = true
+	_show_rooms(true)
+	_apply_world_geometry(true)
+	_player.set_inverted(true)
+	_audio.set_world_inverted(true)
+	_player.global_position = Vector2(620.0, 265.0)
+	await get_tree().create_timer(2.2).timeout
+
+	await _hud.show_opening([
+		"They told everyone I ran away.",
+		"A new family sleeps in my room now.",
+		"I need one of them to see me.",
+	])
+
+	# and then the memory closes over it
+	await get_tree().create_timer(0.5).timeout
+	is_inverted = false
+	_show_rooms(false)
+	_apply_world_geometry(false)
+	_player.set_inverted(false)
+	_audio.set_world_inverted(false)
+	_audio.play("flip")
+	_player.global_position = Vector2(620.0, 815.0)
+	_player.velocity = Vector2.ZERO
+	await get_tree().create_timer(0.8).timeout
+
+	_player.controllable = true
+	_refresh_hint()
+
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not _player.controllable:
+		return
 	if event.is_action_pressed("flip_world"):
 		flip()
 	elif event.is_action_pressed("restart"):

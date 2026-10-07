@@ -37,6 +37,9 @@ var _facing := 1
 ## +1 pulls toward the bottom of the screen, -1 toward the top. Flipping the
 ## world inverts it, so the boy falls upward and lands on what was the ceiling.
 var _gravity_dir := 1.0
+## Held still during the opening, so the first thing the player sees is the
+## house rather than their own input.
+var controllable := true
 var _coyote := 0.0
 var _buffer := 0.0
 var _was_on_floor := true
@@ -103,7 +106,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var direction := Input.get_axis("move_left", "move_right")
+	var direction := Input.get_axis("move_left", "move_right") if controllable else 0.0
 
 	# Horizontal: accelerate toward the target, brake with friction when idle.
 	if absf(direction) > 0.01:
@@ -123,7 +126,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * _gravity_dir * delta
 		velocity.y = clampf(velocity.y, -MAX_FALL, MAX_FALL)
 
-	if Input.is_action_just_pressed("jump"):
+	if controllable and Input.is_action_just_pressed("jump"):
 		_buffer = BUFFER_SECONDS
 	else:
 		_buffer = maxf(0.0, _buffer - delta)

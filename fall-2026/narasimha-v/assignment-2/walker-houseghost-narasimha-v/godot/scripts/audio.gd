@@ -10,6 +10,7 @@ extends Node
 ## assert that, and so a human can read the numbers during a playtest.
 
 signal counted(event: String, total: int)
+signal heart_beat
 
 const PATHS := {
 	"flip":    "res://assets/sfx/sfx_flip.wav",
@@ -158,6 +159,7 @@ func _process(delta: float) -> void:
 	if _heart_timer <= 0.0:
 		_heart_timer = 1.25
 		_heart.play()
+		heart_beat.emit()
 
 
 ## Air moving around something that has no feet. Only ever heard as the ghost.
