@@ -24,13 +24,18 @@ const PATHS := {
 ## decide what sits forward and what sits under. Footsteps are deliberately
 ## quiet: they fire constantly and would exhaust the ear at story-beat level.
 const LEVELS := {
-	"flip":    -5.0,
-	"contact":  -2.0,
-	"frost":    -7.0,
-	"correct":  -3.0,
-	"land":    -15.0,
-	"jump":    -17.0,
+	"flip":     0.0,
+	"contact":  0.0,
+	"frost":   -3.0,
+	"correct":  0.0,
+	"land":    -9.0,
+	"jump":    -11.0,
 }
+
+## How far the music steps back while a sound plays, and for how long. Without
+## this the quieter story sounds sit underneath the score and are never heard.
+const DUCK_DB := -9.0
+const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "land": 0.25, "jump": 0.25}
 ## One track per world. They share key and tempo, so the flip can cut straight
 ## from one to the other without a musical lurch: the two worlds sound like one
 ## piece of music turning over.
@@ -52,6 +57,7 @@ var _players := {}
 var _music := {}                 ## world -> AudioStreamPlayer
 var _current_world := "normal"
 var _music_tweens := {}
+var _duck_tween: Tween
 
 
 func _ready() -> void:
@@ -114,6 +120,7 @@ func play(event: String) -> void:
 	var player: AudioStreamPlayer = _players[event]
 	if player.stream:
 		player.play()
+		_duck(DUCK_HOLD.get(event, 0.5))
 
 
 func start_music() -> void:
@@ -134,6 +141,21 @@ func _play_world_music(world: String) -> void:
 				_fade(player, 0.0)
 		elif player.playing:
 			_fade(player, SILENT_DB, true)
+
+
+## Steps the music down under a sound effect and brings it back. The game is
+## quiet by design, so without ducking the score simply covers the sounds that
+## carry the story.
+func _duck(hold: float) -> void:
+	var player: AudioStreamPlayer = _music.get(_current_world)
+	if player == null or not player.playing or music_muted:
+		return
+	if _duck_tween and is_instance_valid(_duck_tween):
+		_duck_tween.kill()
+	_duck_tween = create_tween()
+	_duck_tween.tween_property(player, "volume_db", DUCK_DB, 0.08)
+	_duck_tween.tween_interval(hold)
+	_duck_tween.tween_property(player, "volume_db", 0.0, 0.5)
 
 
 func _fade(player: AudioStreamPlayer, to_db: float, stop_after: bool = false) -> void:

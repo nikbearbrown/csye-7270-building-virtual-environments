@@ -27,11 +27,25 @@ var _arming := false
 var _locked_until := 0.0
 
 @onready var _glow: Sprite2D = $Glow
+@onready var _beacon: AudioStreamPlayer2D = $Beacon
+
+## A music box that plays by itself is what a haunting sounds like, and it is
+## also the only thing in the slice that tells the player where to go. It calls
+## every few seconds, quieter the further away you are, and stops once the
+## player has touched it — by then they know where it is.
+const CALL_EVERY := 5.0
+var _call_timer := 0.0
+var _ever_touched := false
 
 
 func _ready() -> void:
 	body_entered.connect(func(_b): _player_inside = true)
 	body_exited.connect(func(_b): _player_inside = false)
+	_call_timer = 1.2
+
+
+func set_beacon_stream(stream: AudioStream) -> void:
+	_beacon.stream = stream
 
 
 func set_inverted(is_inverted: bool) -> void:
@@ -44,6 +58,7 @@ func set_inverted(is_inverted: bool) -> void:
 
 func _process(delta: float) -> void:
 	_update_glow()
+	_call(delta)
 	if _locked_until > 0.0:
 		_locked_until = maxf(0.0, _locked_until - delta)
 		return
@@ -57,6 +72,16 @@ func _process(delta: float) -> void:
 		_held_for += delta
 	elif _arming and Input.is_action_just_released("contact"):
 		_resolve(_held_for >= HOLD_FOR_SCARY)
+
+
+## The call. Silent once it has been answered.
+func _call(delta: float) -> void:
+	if _ever_touched or _beacon.stream == null:
+		return
+	_call_timer -= delta
+	if _call_timer <= 0.0:
+		_call_timer = CALL_EVERY
+		_beacon.play()
 
 
 func _available() -> bool:
@@ -76,6 +101,7 @@ func _resolve(scary: bool) -> void:
 	_arming = false
 	_held_for = 0.0
 	_locked_until = COOLDOWN
+	_ever_touched = true
 	if scary:
 		contact_landed.emit("scary", days_cost_scary)
 	else:
@@ -84,8 +110,14 @@ func _resolve(scary: bool) -> void:
 
 func _update_glow() -> void:
 	var ready_now := _available() and _locked_until <= 0.0
-	_glow.visible = ready_now
-	if ready_now:
+	# Always lit, so it can be seen from across the room and read as the place
+	# to go; brighter and pulsing once it is actually in reach.
+	_glow.visible = true
+	if not ready_now:
+		var breathe := 0.22 + 0.10 * sin(Time.get_ticks_msec() / 900.0)
+		_glow.modulate = Color(1.0, 0.93, 0.74, breathe)
+		return
+	if true:
 		var pulse := 0.55 + 0.45 * sin(Time.get_ticks_msec() / 260.0)
 		_glow.modulate.a = pulse
 		if _arming:

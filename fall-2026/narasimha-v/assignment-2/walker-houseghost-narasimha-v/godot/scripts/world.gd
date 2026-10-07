@@ -68,6 +68,11 @@ func _ready() -> void:
 	_hud.set_mutes(false, false)
 	_refresh_hint()
 
+	# The box calls with its own contact sound, so the player hears what the
+	# thing they are walking toward will do when they reach it.
+	if ResourceLoader.exists("res://assets/sfx/sfx_contact.wav"):
+		_contact.set_beacon_stream(load("res://assets/sfx/sfx_contact.wav"))
+
 	if not _audio.missing.is_empty():
 		print("audio files not present yet, slice runs silent: ", _audio.missing)
 

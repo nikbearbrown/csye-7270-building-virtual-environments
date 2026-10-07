@@ -22,7 +22,7 @@ const DRIFT_PIXELS := 6.0
 const DRIFT_SECONDS := 2.2
 const STEP_PIXELS := 2.0      ## the eight frames already carry the rise and fall, so the code only adds a trace
 const ROLL_RADIANS := 0.022   ## shoulder roll, synced to the same stride phase
-const FLOAT_FPS := 7.0        ## the drift cycle runs on a clock, not on distance
+const FLOAT_FPS := 2.2        ## a hanging body drifts slowly; faster reads as flapping
 const STRIDE_PIXELS := 28.0   ## ground per frame; eight frames make a ~224 px cycle, about eleven frames a second at full speed
 const LEAN_RADIANS := 0.10
 
@@ -72,11 +72,13 @@ var _drift_tween: Tween
 ## ceiling. A vertically flipped sprite would have all of that pointing the
 ## wrong way, which is what made the earlier version read as a boy standing on
 ## his head rather than something hanging in the air.
+## Only the frames where his arms stay near his body. Three of the six have the
+## arms flung wide, which upside down reads as hands thrown down rather than a
+## body hanging, so they are left out and the cycle sways between the quiet
+## ones instead.
 @onready var _float_frames: Array[Texture2D] = [
 	preload("res://assets/art/char_ghost_inv_1.png"),
-	preload("res://assets/art/char_ghost_inv_2.png"),
-	preload("res://assets/art/char_ghost_inv_3.png"),
-	preload("res://assets/art/char_ghost_inv_4.png"),
+	preload("res://assets/art/char_ghost_inv_6.png"),
 	preload("res://assets/art/char_ghost_inv_5.png"),
 	preload("res://assets/art/char_ghost_inv_6.png"),
 ]
