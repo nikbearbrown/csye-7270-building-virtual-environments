@@ -12,7 +12,7 @@
 |---|---|---|---|
 | B03 | Build shown is `74c0443`; capture copy `5266946` has identical runtime files | `git diff --name-only 74c0443 5266946` (only `assets/audio/MUSIC-EDIT-LOG.md`) | checked |
 | B05 | 64 px with hat, 1:3.5, 14x44 hit box | `CHARACTER-SHEET.md` | to check against the final excerpt |
-| B06 | CHAR-REF v1, setup message and CHAR-IDLE v1 prompts verbatim | `SOURCES.md` → Image prompts (copied verbatim from `design/IMAGE-PROMPTS-from-chat.md`) | text checked; the author's "sent unchanged" confirmation is still open (file header) |
+| B06 | CHAR-REF v1, setup message and CHAR-IDLE v1 prompts verbatim | `SOURCES.md` → Image prompts (copied verbatim from `design/IMAGE-PROMPTS-from-chat.md`) | checked: text verbatim; the author confirmed all image prompts were sent unchanged (2026-10-07) |
 | B07 | Raw output 1920x2184 on green | `design/character/generated/CHAR-IDLE-v1.jpg` | checked (image header) |
 | B08 | Face height drifted ~20%, width within 1% | `tools/clean_sprites.py` comment; session measurements | to check against the excerpt |
 | B09 | 62x69, 0 off-palette pixels | `assets/sprites/edit-log.json` | to check |

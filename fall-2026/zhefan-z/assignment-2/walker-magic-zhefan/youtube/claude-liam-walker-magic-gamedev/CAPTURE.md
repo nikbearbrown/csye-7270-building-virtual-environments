@@ -1,6 +1,6 @@
 # CAPTURE.md — walker-magic gamedev film
 
-> Status: **probe passed (2026-10-07); full takes not recorded yet.** Updated after every take.
+> Status: **probe passed and takes run-01…run-04 recorded and gated (2026-10-07).** Updated after every take.
 
 Engine: **Godot 4.7.2.stable.official.ed1daf0bf** (win64 console build), Vulkan 1.4.312, Forward+, NVIDIA GeForce RTX 5060 Laptop GPU, Windows 11.
 Capture source: commit **`5266946`** of branch `zhefan-z/assignment-2`. Its runtime files (`game/`, `features/`, `audio/`, `ui/`, `assets/` media, `project.godot`, `default_bus_layout.tres`) are identical to **`74c0443`**, the build that passed the fresh-copy check and playtests 5–6 (only `assets/audio/MUSIC-EDIT-LOG.md`, a text log, differs).
@@ -56,9 +56,34 @@ The skill's compiler strips footage audio (`-an`); ordinary b-roll is silent und
 
 ## Takes (approved plan)
 
-| Take | Shows | Status |
-|---|---|---|
-| run-01 | Run, jump the pit, walk into the wolf's sight, one lunge hit, cast until the wolf is down, reach the exit | not recorded |
-| run-02 | Walk into the pit, fail, music stops, reload, music back from the top | not recorded |
-| run-03 | M (music off), N (effects off, a silent cast), N, a cast, M | not recorded |
-| run-04 | Esc pause and resume | not recorded |
+All four recorded 2026-10-07 in one sequence with the machine untouched (Steam client open, no game). Each: 3840x2160 MJPEG @ 60 fps + PCM 48 kHz stereo (audio length = video length), own assertion passed (exit 0), and **gate PASS** against its headless reference with **0 differing rows, 0 focus losses, 0 re-asserted presses**. The headless references are kept outside the repo in `E:\7270\tools\capture\ref\`; the take input logs are `capture/<take>-inputs.jsonl`. The AVIs are not in Git.
+
+| Take | Shows | Frames / duration | Wall time | Gate | sha256 |
+|---|---|---|---|---|---|
+| run-01 | Run, jump the pit, walk into the wolf's sight, one lunge hit, cast until the wolf is down, reach the exit | 991 / 16.52 s | 83 s | PASS 16/16 | `5c75bc9de992123ddc77ae9dbc1cdc5318d778382749a0de360b705ca9afe9f3` |
+| run-02 | Walk into the pit, fail, music stops, reload, music back from the top | 556 / 9.27 s (attempt 1: 374 ticks, attempt 2: 181) | 50 s | PASS 4/4 | `a02159af48ca56e51160b1b1eb08ed25e562ae8c2329338ae6f935451dcd844f` |
+| run-03 | M (music off), N (effects off, a silent cast), N, a cast, M | 567 / 9.45 s | 51 s | PASS 15/15 | `20807dede84047c36e171725e0ae26930ee8625b6ccc9c57357d172a2d41cc9e` |
+| run-04 | Esc pause and resume | 375 / 6.25 s | 32 s | PASS 7/7 | `328ebd6f9283eb9a5b32b06e48bd37d25228bce5338459bc63b61688e8807e91` |
+
+**Event times (take time, from the input logs).** run-01: run pressed 0.78 s; jump 4.90 s (x 507); hurt 8.37 s; casts 8.82 s and 9.18 s; wolf down 9.32 s; walk on 10.18 s; clear 14.02 s (x 1222). run-02: run pressed 0.53 s; fail "Fell into the dark" 5.03 s (x 551); reload 6.23 s; attempt 2 idle with 5 hearts. run-03: M 0.70 s; N 2.22 s; silent cast 2.92 s; N 3.92 s; cast 4.45 s; M 5.45 s. run-04: run 0.53 s; Esc 1.22 s (x 129, frozen while paused); Esc 3.25 s; moves on to x 241.
+
+**Frames checked** (16 frames across the four takes, a contact sheet kept outside the repo): jump over the pit; wolf approach; the mage blinking after the hit (hearts 4); fireball at the wolf; CLEARED at the exit; "Fell into the dark" at the pit; the reloaded start with 5 hearts; the "music off (M)" and "music off (M)  sfx off (N)" labels; a fireball with both muted; labels gone after both restored; PAUSED overlay; motion after resume.
+
+**Audio checked** (RMS / peak, dBFS):
+
+| Take | Window | RMS | Peak | Reading |
+|---|---|---|---|---|
+| run-01 | music only 3.0–4.5 s | -20.6 | -9.3 | music |
+| run-01 | hurt 8.37–8.62 s | -21.3 | -8.5 | SFX-HURT (0.3 s) under the music |
+| run-01 | cast 8.82–9.10 s | -16.1 | -3.9 | SFX-CAST above the music |
+| run-01 | wolf down 9.32–9.70 s | -14.6 | -0.4 | SFX-WOLF-DOWN; loudest moment, not clipped |
+| run-01 | clear 14.02–14.6 s | -21.5 | -4.8 | SFX-CLEAR; music stopped at the exit |
+| run-01 | after clear 15.6–16.5 s | silent | silent | silence after the clear, as designed |
+| run-02 | fail 5.03–5.5 s | -13.4 | -2.8 | SFX-FAIL |
+| run-02 | 5.0–6.5 s in 0.1 s steps | | | SFX-FAIL (1.0 s) to 6.0 s, silent at 6.1 s (music stopped), music from the top from 6.2 s after the reload |
+| run-03 | music off 1.0–2.1 s | silent | silent | M muted the music bus |
+| run-03 | both off, cast 2.92–3.4 s | silent | silent | the silent cast |
+| run-03 | cast, music still off 4.45–4.9 s | -21.3 | -4.7 | SFX-CAST alone after N |
+| run-03 | both on 6.0–9.4 s | -20.1 | -8.1 | music back after M |
+| run-04 | paused 1.4–3.2 s | silent | silent | music paused |
+| run-04 | resumed 3.5–6.2 s | -20.3 | -8.5 | music resumes |

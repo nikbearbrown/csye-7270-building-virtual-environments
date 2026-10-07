@@ -40,7 +40,7 @@ About two screens of cave: the start, one narrow pit, one wolf, the exit.
 - **Music:** MUS-LOOP repeats without a click; it pauses with Esc and resumes from the same point, stops on a fail (restarts from the top on reload) and stops at the exit.
 - **Readable muted:** hit flash, hurt image, blink and hearts, fail text, Cleared screen.
 
-Generated assets used in the slice: mage poses, wolf, fireball and burst, cave background and ground tiles (Google Gemini app, model shown in the app: Gemini 3.8 Flash); five sound effects (Stable Audio Open 1.0, run locally); the music loop (Google Gemini app, Lyria). Every model, version and license, every edit and rejected output, the music prompt and the image prompts (drafted by Claude, sent by the author in the Gemini app; collected in `design/IMAGE-PROMPTS-from-chat.md`) are in `SOURCES.md`. Three prompt details are still open for the author to confirm; they are listed there.
+Generated assets used in the slice: mage poses, wolf, fireball and burst, cave background and ground tiles (Google Gemini app, model shown in the app: Gemini 3.8 Flash); five sound effects (Stable Audio Open 1.0, run locally); the music loop (Google Gemini app, Lyria). Every model, version and license, every edit and rejected output, the music prompt and the image prompts (drafted by Claude, sent by the author in the Gemini app; collected in `design/IMAGE-PROMPTS-from-chat.md`) are in `SOURCES.md`. All image prompts were sent unchanged; two details the author does not remember (which CHAR-RUN v1 draft was sent, and which chat ENEMY-WOLF-DOWN v3 was sent in) are marked there.
 
 ## Tests
 From this folder, each prints `WALKER TESTS: N checks / 0 failures` and exits 0 on success:

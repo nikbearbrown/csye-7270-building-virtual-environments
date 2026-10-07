@@ -33,7 +33,7 @@ Accepted images stay full size; rejected ones are kept only as 256 px-wide thumb
 | CHAR-RUN-CONTACT attempt 1 | rejected | `rejected/CHAR-RUN-v1-thumb.png` | Two frames side by side, staff cut off, floating foot, ground line. Prompt: see **Image prompts** → CHAR-RUN v1. |
 | CHAR-RUN-CONTACT attempt 2 | rejected | `rejected/CHAR-RUN-v2-thumb.png` | Model edited the reference sheet instead of drawing a new pose. Prompt: see **Image prompts** → CHAR-RUN v2. |
 | CHAR-RUN-CONTACT v3 | **accepted** | `CHAR-RUN-CONTACT-v3.jpg` | Prompt: see **Image prompts** → CHAR-RUN-CONTACT v3. |
-| CHAR-RUN-PASSING v0 | rejected | `rejected/CHAR-RUN-PASSING-v0-thumb.jpg` | See notes. |
+| CHAR-RUN-PASSING v0 | rejected | `rejected/CHAR-RUN-PASSING-v0-thumb.jpg` | See notes. Prompt: an extra version Gemini returned for the **Image prompts** → CHAR-RUN-PASSING v1 prompt. |
 | CHAR-RUN-PASSING v1 | **accepted** | `CHAR-RUN-PASSING-v1.png` | Screenshot; see notes. Prompt: see **Image prompts** → CHAR-RUN-PASSING v1. |
 | CHAR-RISE v1 | **accepted** | `CHAR-RISE-v1.jpg` | Staff not raised as the prompt asked, but consistent with IDLE. Prompt: see **Image prompts** → CHAR-RISE v1. |
 | CHAR-FALL v1 | **accepted** | `CHAR-FALL-v1.jpg` | Prompt: see **Image prompts** → CHAR-FALL v1. |
@@ -51,15 +51,15 @@ Round 1 (chat 1, shared with the mage) was abandoned because the long chat mixed
 
 | Asset | Status | File | Notes |
 |---|---|---|---|
-| Round 1 run v0 | rejected | `rejected/WOLF-R1-RUN-v0-bleed-thumb.png` | The mage's head leaked into the wolf. Prompt: see **Image prompts** → WOLF-R1 run (v0/v1 not separated). |
-| Round 1 run v1 | rejected | `rejected/WOLF-R1-RUN-v1-thumb.png` | Screenshot. Abandoned with round 1. Prompt: see **Image prompts** → WOLF-R1 run (v0/v1 not separated). |
+| Round 1 run v0 | rejected | `rejected/WOLF-R1-RUN-v0-bleed-thumb.png` | The mage's head leaked into the wolf. Prompt: see **Image prompts** → WOLF-R1 run; v0 is the downloaded original from that prompt, which differed from what the chat showed. |
+| Round 1 run v1 | rejected | `rejected/WOLF-R1-RUN-v1-thumb.png` | Screenshot. Abandoned with round 1. Prompt: see **Image prompts** → WOLF-R1 run (the same prompt as v0; v1 is what the chat showed). |
 | Round 1 lunge v1 | rejected | `rejected/WOLF-R1-LUNGE-v1-thumb.png` | Abandoned with round 1. Prompt: see **Image prompts** → WOLF-R1 lunge. |
 | Round 1 down v1 | rejected | `rejected/WOLF-R1-DOWN-v1-thumb.png` | Abandoned with round 1. Prompt: see **Image prompts** → WOLF-R1 down. |
-| Round 1 frame derived from down v1 | rejected | `rejected/WOLF-R1-DERIVED-thumb.png` | Legs still in the running pose. |
+| Round 1 frame derived from down v1 | rejected | `rejected/WOLF-R1-DERIVED-thumb.png` | Legs still in the running pose. Prompt: the text-only **Image prompts** → ENEMY-WOLF-RUN v2 prompt, sent by mistake in the old long chat, so the model edited the previous image. |
 | ENEMY-WOLF-RUN v2 | **accepted** | `ENEMY-WOLF-RUN-v2.jpg` | Chat 2. Prompt: see **Image prompts** → ENEMY-WOLF-RUN v2. |
 | ENEMY-WOLF-LUNGE v2 | **accepted** | `ENEMY-WOLF-LUNGE-v2.jpg` | Chat 2. Prompt: see **Image prompts** → ENEMY-WOLF-LUNGE v2. |
 | ENEMY-WOLF-DOWN v2 | rejected | `rejected/ENEMY-WOLF-DOWN-v2-thumb.png` | Chat 2. Legs still in the running pose. Prompt: see **Image prompts** → ENEMY-WOLF-DOWN v2. |
-| ENEMY-WOLF-DOWN v3 | **accepted** (partially achieved) | `ENEMY-WOLF-DOWN-v3.jpg` | Chat 2. Eyes closed, head and ears down; legs unchanged. The defeat motion is handled in the engine: white flash, tilt, cool blue-gray particles. Prompt: see **Image prompts** → ENEMY-WOLF-DOWN v3. |
+| ENEMY-WOLF-DOWN v3 | **accepted** (partially achieved) | `ENEMY-WOLF-DOWN-v3.jpg` | Listed under Chat 2; the author does not remember which chat it was sent in. Eyes closed, head and ears down; legs unchanged. The defeat motion is handled in the engine: white flash, tilt, cool blue-gray particles. Prompt: see **Image prompts** → ENEMY-WOLF-DOWN v3. |
 
 ### FX — `design/character/generated/`
 
@@ -74,13 +74,21 @@ Round 1 (chat 1, shared with the mage) was abandoned because the long chat mixed
 | ENV-TILES v1 | rejected | `rejected/ENV-TILES-v1-thumb.png` | Visible seams when tiled; cave paintings leaked in from the background chat. Prompt: see **Image prompts** → ENV-TILES v1. |
 | ENV-TILES v2 | **accepted** | `ENV-TILES-v2.jpg` | Only the uniform dark rock is used as the repeating tile, plus the two end pieces; the brighter wall on the left is discarded. Prompt: see **Image prompts** → ENV-TILES v2. |
 | ENV-BG v1 | **accepted** | `ENV-BG-v1.jpg` | Framed composition, fixed to the camera. Prompt: see **Image prompts** → ENV-BG v1. |
-| ENV-BG v2 | rejected | `rejected/ENV-BG-v2-thumb.png` | Cave paintings add warm colors, against pillar 2 ("your fire is the only warmth"). Prompt: see **Image prompts** → ENV-BG v1 (v2 is a variant of that prompt). |
+| ENV-BG v2 | rejected | `rejected/ENV-BG-v2-thumb.png` | Cave paintings add warm colors, against pillar 2 ("your fire is the only warmth"). Prompt: see **Image prompts** → ENV-BG v1; v2 is a second version Gemini returned for that prompt. |
 
 ## Image prompts (Google Gemini app)
 
 Every prompt below is recorded as: **prompt drafted by Claude, sent by me in the Gemini app** (model shown in the app: Gemini 3.8 Flash). Copied verbatim from `design/IMAGE-PROMPTS-from-chat.md` (collected 2026-10-07 from the author's claude.ai chat); headings demoted one level.
 
-**Open author checks, carried over from that file:** (1) its header says each prompt must be confirmed as sent unchanged, with edits or skips marked; none is marked yet. (2) CHAR-RUN v1: which of the two drafts was sent. (3) ENEMY-WOLF-DOWN v3: new chat or the same wolf chat. No prompt is recorded for CHAR-RUN-PASSING v0, for WOLF-R1 run v0 versus v1 separately, for the WOLF-R1 derived frame, or for ENV-BG v2 (the file calls it a variant the app produced from the ENV-BG v1 prompt).
+**Author checks (answered by the author, 2026-10-07).** The checks below were carried over from that file; the parenthetical questions inside the verbatim copy are left as they were collected.
+1. **Sent unchanged:** all image prompts in the file were sent unchanged.
+2. **CHAR-RUN v1:** the author does not remember which of the two drafts was sent; both are kept below.
+3. **ENEMY-WOLF-DOWN v3:** the author does not remember which chat it was sent in (it is listed under Chat 2 because that is where the file places it).
+4. **Images without their own prompt:**
+   - **CHAR-RUN-PASSING v0:** an extra version Gemini returned for the CHAR-RUN-PASSING v1 prompt.
+   - **WOLF-R1 run v0:** the downloaded original from the WOLF-R1 run prompt, which differed from what the chat showed (v1 is the screenshot of what the chat showed).
+   - **WOLF-R1 derived frame:** the text-only ENEMY-WOLF-RUN v2 prompt was sent by mistake in the old long chat, so the model edited the previous image.
+   - **ENV-BG v2:** a second version Gemini returned for the ENV-BG prompt.
 
 ### Chat 1 — character (CHAR-*)
 
