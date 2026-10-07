@@ -74,7 +74,8 @@ func run() -> void:
 			var aim := Vector2(float(p[2]), float(p[3]))
 			player.set_physics_process(true)
 			player.use_scripted = true
-			root.warp_mouse(aim)  # starting view: world x == screen x
+			# The crosshair is drawn in screen pixels: convert the world aim point through the camera.
+			root.warp_mouse(aim - Vector2(main.camera.get_screen_center_position().x - 320.0, 0.0))
 			player.scripted.aim = aim
 			player.scripted.cast_pressed = true
 			for i in int(p[4]):
@@ -82,6 +83,8 @@ func run() -> void:
 			await save(p[0])
 			continue
 		player.capture_pose(Vector2(float(p[1]), float(p[2])), p[3], int(p[4]))
+		for i in 6:   # let areas (pit, exit) see the new position before the frame is saved
+			await physics_frame
 		await frames(3)
 		await save(p[0])
 	quit()
