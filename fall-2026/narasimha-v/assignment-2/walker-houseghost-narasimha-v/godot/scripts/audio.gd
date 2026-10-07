@@ -31,9 +31,13 @@ var music_muted := false
 var sfx_muted := false
 var missing: Array[String] = []
 
+const FADE_SECONDS := 0.45       ## crossfade on the flip
+const SILENT_DB := -40.0
+
 var _players := {}
 var _music := {}                 ## world -> AudioStreamPlayer
 var _current_world := "normal"
+var _music_tweens := {}
 
 
 func _ready() -> void:
@@ -101,14 +105,30 @@ func start_music() -> void:
 	_play_world_music(_current_world)
 
 
+## Crossfades rather than cutting. Each track always starts from its own
+## beginning rather than resuming mid-phrase, because a game that drops you
+## into the middle of a bar sounds broken even when the mix is clean.
 func _play_world_music(world: String) -> void:
 	for w in _music:
 		var player: AudioStreamPlayer = _music[w]
 		if w == world:
-			if player.stream and not music_muted and not player.playing:
-				player.play()
+			if player.stream and not music_muted:
+				if not player.playing:
+					player.volume_db = SILENT_DB
+					player.play(0.0)
+				_fade(player, 0.0)
 		elif player.playing:
-			player.stop()
+			_fade(player, SILENT_DB, true)
+
+
+func _fade(player: AudioStreamPlayer, to_db: float, stop_after: bool = false) -> void:
+	if _music_tweens.has(player) and is_instance_valid(_music_tweens[player]):
+		_music_tweens[player].kill()
+	var tween := create_tween()
+	_music_tweens[player] = tween
+	tween.tween_property(player, "volume_db", to_db, FADE_SECONDS)
+	if stop_after:
+		tween.tween_callback(player.stop)
 
 
 ## Predicted behaviour from CHANGE-BRIEF: the lullaby belongs to the remembered
@@ -123,7 +143,8 @@ func set_music_muted(value: bool) -> void:
 	music_muted = value
 	if music_muted:
 		for w in _music:
-			_music[w].stop()
+			if _music[w].playing:
+				_fade(_music[w], SILENT_DB, true)
 	else:
 		_play_world_music(_current_world)
 
@@ -135,12 +156,14 @@ func set_sfx_muted(value: bool) -> void:
 ## End of the slice: the lullaby is allowed to finish its phrase once and then
 ## stop. It is the only clean musical resolution in the slice, reserved for
 ## endings.
+## End of the slice: a long, clean fade. The only musical resolution in the
+## slice, reserved for endings.
 func finish_music() -> void:
 	for w in _music:
 		var player: AudioStreamPlayer = _music[w]
 		if player.playing:
+			if _music_tweens.has(player) and is_instance_valid(_music_tweens[player]):
+				_music_tweens[player].kill()
 			var tween := create_tween()
-			tween.tween_property(player, "volume_db", -40.0, 2.5)
-			await tween.finished
-			player.stop()
-			player.volume_db = 0.0
+			tween.tween_property(player, "volume_db", SILENT_DB, 2.5)
+			tween.tween_callback(player.stop)
