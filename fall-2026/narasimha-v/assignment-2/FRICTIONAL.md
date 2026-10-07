@@ -1,5 +1,35 @@
 # FRICTIONAL — Assignment 2
 
+## How this log works
+
+I set the working method on the first day and kept to it: **Claude proposes, I attack, and whatever survives is the game.** I asked it explicitly to argue back rather than agree, because an assistant that agrees with everything is worth nothing on a project I have to defend myself. Most of what is good in HOUSEGHOST exists because one of us refused the other's first answer.
+
+The entries below are dated and in order, written as the work happened. Nothing has been rewritten after the fact; where a decision was reversed later, the reversal is its own entry rather than an edit to the original. The table that follows is an index of the decisions that actually changed the game, and who moved whom.
+
+## Decisions, and where each of us overruled the other
+
+| What was on the table | Claude's position | Mine | What happened |
+|---|---|---|---|
+| Which game to build | Extend my Assignment 1 game — lower risk, three days left | Start a new game | **I overruled it.** Assignment 1's value was the inversion verb, not the world around it. HOUSEGHOST inherited the verb and nothing else |
+| The pitch | VELA, a deep-sea game about giving away your light | Rejected | The concept was good and irrelevant. I did not want a new mechanic, I wanted the one I already had |
+| Why the boy died | A storm took him | "It's just a storm, that's boring" | **I overruled it.** Weather is an act of God and makes a sad story, not a frightening one. Horror needs a guilty party, which produced the father |
+| The cover story | Storm, drowning, fire, ice, fever | "He ran away" | **My choice from its list.** Every other option admits a death and lies only about the cause. "Ran away" erases the death itself — no grave, no search, no mourning |
+| How many twists | Pushed back on my ask for "many twists" and proposed one question with five escalating answers | Accepted | **It overruled me, and it was right.** Twist soup makes a player feel tricked; a ladder makes them lean in |
+| The boy's name | Five names, then a sixth option that was not a name at all | The nameless one | The name became a mechanic instead of a label. Erasing him was the crime, so naming him is the win condition |
+| Which world is the ghost | Ghost upright, living boy inverted | The reverse | **I overruled it.** Normal has to be the comfortable lie — the warm room he still sees himself in — and turning it over has to show the truth. Claude had it backwards and the documents carry the dated correction |
+| The flip | A full 180° camera rotation, which it called the signature image | "It looks like a picture being spun" | **I overruled it**, and told it to read my own Assignment 1 instead of guessing. That game never rotates the camera: gravity reverses, the palette swaps, and different geometry becomes real. One read answered three open questions |
+| Animation | Argued against it — the assignment says twice that it earns nothing | Wanted real walking | **Both of us moved.** The character sheet needed ten poses anyway, so the walk frames were required work that also became the animation. Neither of us gave up anything |
+| The eight-frame walk | Two attempts failed on scale | Kept pushing for it | A metadata block fixing layout and figure scale, and separating what may vary from what must stay identical, worked first time. The failure was never the pose description |
+| The ghost's movement | Restricted the walk cycle to the living boy, reasoning that a ghost drifts | "It looks like it's just sliding" | **I overruled it,** then later it turned out both of us were half right: the ghost needed a cycle, but his own one, drawn upside down rather than mirrored |
+| The level | A single room with a flat floor | "It looks like a picture we are adding a character to" | **I overruled it.** Assignment 1's chapter is 4,980 px wide with dozens of platforms. The slice became three rooms with routes that alternate between worlds |
+| The platforms | Floating ledges to jump between | "I don't have to step on them, I can walk normally on the ground — what is the point?" | **I overruled it.** They were decoration. They are gone, and the floor has holes in it that cost a day if you fall through |
+| Telling the player what to do | — | "That doesn't mean you will add text" | **A constraint I set before it could reach for the easy fix.** The answer became a music box that is visible from the spawn point and calls every few seconds with its own chime |
+| Sound effects tool | Advised ElevenLabs over Suno | Asked whether Suno would do | **It overruled me,** citing my instructor's own email and Suno's seven-download lifetime cap. It was right: Suno writes songs, not one-shots |
+| Music tempo | 70 BPM, sparse and patient | "It's too slow" | **I overruled it.** A player is moving through this game; a drone suits a cutscene, not play. 100 BPM with a driving arpeggio |
+| Music genre | Household sounds as percussion | Wanted an afro-techno pulse | **Both of us moved.** It argued a dance genre would collide with a Victorian ghost story and proposed building the rhythm from the house itself. The result splits the difference: organic polyrhythm for the remembered world, house sounds for the dead one |
+| A production reference I named | — | Gave it a living artist's name as a quality target | **It refused to put the name in a prompt,** citing the assignment's rights rule, and translated the qualities into description instead. Correct, and the prompts were better for it |
+| Pushing to GitHub | — | "Never push until I say" | A standing instruction after it treated a vague "alright" as permission. Every push since has been explicitly asked for |
+
 ## Entries
 
 <!-- One entry per work session, newest last. -->
