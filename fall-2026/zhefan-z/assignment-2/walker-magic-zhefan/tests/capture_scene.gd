@@ -7,6 +7,7 @@ extends SceneTree
 ##   name x y state facing(1|-1)            show one state's image at (x, y)
 ##   name fire aim_x aim_y wait_frames      cast at the aim point (mouse moved there), save after n frames
 ##   name wolf x image(run|lunge|down) facing flash(0|1)   pose the wolf (its AI stopped)
+##   name hud hp N | fail Text_with_underscores | paused | cleared | none    set the HUD, then save
 ## Without it, one frame of the starting view is saved as start.png.
 
 var out_dir := ""
@@ -45,6 +46,17 @@ func run() -> void:
 	for line in FileAccess.get_file_as_string(plan).split("\n", false):
 		var p := line.split(" ", false)
 		var player: CharacterBody2D = main.player
+		if p[1] == "hud":
+			var hud: Control = main.hud
+			match p[2]:
+				"hp": hud.set_hp(int(p[3]), 5)
+				"fail": hud.show_fail(p[3].replace("_", " "))
+				"paused": hud.show_paused(true)
+				"cleared": hud.show_cleared()
+				_: hud.hide_message()
+			await frames(3)
+			await save(p[0])
+			continue
 		if p[1] == "wolf":
 			var wolf: Node = main.get_node("Level/Wolf")
 			wolf.set_physics_process(false)

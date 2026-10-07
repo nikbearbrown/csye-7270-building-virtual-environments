@@ -1,17 +1,21 @@
 extends Node2D
-## The asset slice: about two screens of cave with one pit. Owns the camera and the
-## fail -> reload flow; game objects only emit signals.
+## The asset slice: about two screens of cave with one pit, one wolf and the exit. Owns the camera,
+## the HUD wiring and the session flow (fail -> reload, exit -> Cleared, Esc pause, R restart).
+## Game objects only emit signals; nothing here reacts to sound.
 
 const LEVEL_WIDTH := 1280
 const VIEW := Vector2(640, 360)
 const RELOAD_DELAY := 1.2   # longer than SFX-FAIL (trimmed to 1.0 s), CHANGE-BRIEF failure case 6
 
-## Tests set this so a fail does not reload the scene underneath them.
+## Tests set this so a fail or restart does not reload the scene underneath them.
 var test_mode := false
 var failed_reason := ""
+var cleared := false
+var restart_requested := false
 
 @onready var camera: Camera2D = $Camera2D
 @onready var player: CharacterBody2D = get_node_or_null("Player")
+@onready var hud: Control = get_node_or_null("UI/HUD")
 
 
 func _enter_tree() -> void:
@@ -26,8 +30,12 @@ func _ready() -> void:
 	camera.position = VIEW / 2
 	if player:
 		player.failed.connect(_on_player_failed)
+		player.cleared.connect(_on_player_cleared)
+		player.hurt.connect(_on_player_hurt)
 		for wolf in get_tree().get_nodes_in_group("wolves"):
 			wolf.target = player
+		if hud:
+			hud.set_hp(player.hp, Tuning.MAX_HP)
 
 
 func _process(_delta: float) -> void:
@@ -36,9 +44,41 @@ func _process(_delta: float) -> void:
 		camera.position.x = clampf(roundf(player.global_position.x), VIEW.x / 2, LEVEL_WIDTH - VIEW.x / 2)
 
 
+func toggle_pause() -> void:
+	if cleared or not failed_reason.is_empty():
+		return
+	var tree := get_tree()
+	tree.paused = not tree.paused
+	if hud:
+		hud.show_paused(tree.paused)
+
+
+func restart_if_cleared() -> void:
+	if not cleared:
+		return
+	if test_mode:
+		restart_requested = true
+		return
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+
+func _on_player_hurt(hp: int) -> void:
+	if hud:
+		hud.set_hp(hp, Tuning.MAX_HP)
+
+
 func _on_player_failed(reason: String) -> void:
 	failed_reason = reason
+	if hud:
+		hud.show_fail(reason)
 	if test_mode:
 		return
 	await get_tree().create_timer(RELOAD_DELAY).timeout
 	get_tree().reload_current_scene()
+
+
+func _on_player_cleared() -> void:
+	cleared = true
+	if hud:
+		hud.show_cleared()

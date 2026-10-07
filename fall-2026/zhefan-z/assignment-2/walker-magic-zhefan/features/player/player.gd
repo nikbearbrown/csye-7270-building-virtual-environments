@@ -9,6 +9,8 @@ signal failed(reason: String)
 signal cast_fired(origin: Vector2, direction: Vector2)
 ## SFX-HURT listens to this. Emitted only when a hit lands (not while invulnerable).
 signal hurt(hp: int)
+## SFX-CLEAR listens to this. Emitted once, guarded by `cleared`.
+signal cleared
 
 enum State { IDLE, RUN, RISE, FALL, CAST, HURT, FAIL, WIN }
 
@@ -30,6 +32,7 @@ const STAFF_TIP := Vector2(11, -60)
 var state: State = State.IDLE
 var facing := 1                 # 1 = right (as drawn), -1 = left (flip_h)
 var is_failing := false
+var is_cleared := false
 var hp := Tuning.MAX_HP
 var invulnerable := 0.0         # seconds left
 
@@ -130,10 +133,23 @@ func _set_state(next: State) -> void:
 	sprite.flip_h = facing < 0
 
 
-## A wolf lunge. Ignored while invulnerable or failing; the invulnerability starts in the same call
-## (CHANGE-BRIEF guard for SFX-HURT). HP 0 fails with the kneeling image.
+## Reached the exit: win image, input stops. A second call is a no-op.
+func win() -> void:
+	if is_failing or is_cleared:
+		return
+	is_cleared = true
+	velocity = Vector2.ZERO
+	invulnerable = 0.0
+	sprite.visible = true
+	set_physics_process(false)
+	_set_state(State.WIN)
+	cleared.emit()
+
+
+## A wolf lunge. Ignored while invulnerable, failing or cleared; the invulnerability starts in the same
+## call (CHANGE-BRIEF guard for SFX-HURT). HP 0 fails with the kneeling image.
 func take_damage(amount: int, from_x: float) -> void:
-	if is_failing or invulnerable > 0.0:
+	if is_failing or is_cleared or invulnerable > 0.0:
 		return
 	hp = maxi(hp - amount, 0)
 	invulnerable = Tuning.INVULNERABLE_TIME
@@ -152,7 +168,7 @@ func take_damage(amount: int, from_x: float) -> void:
 ## Pit kill zone (by_pit = true, shows the fall image) or HP 0 (kneeling fail image).
 ## The `is_failing` flag makes a second call in the same or a later frame a no-op.
 func fail(reason: String, by_pit := false) -> void:
-	if is_failing:
+	if is_failing or is_cleared:
 		return
 	is_failing = true
 	velocity = Vector2.ZERO

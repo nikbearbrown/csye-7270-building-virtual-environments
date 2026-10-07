@@ -112,7 +112,7 @@ func _enter(next: State) -> void:
 
 
 func _sees_player() -> bool:
-	if target == null or not is_instance_valid(target) or target.get("is_failing"):
+	if target == null or not is_instance_valid(target) or target.get("is_failing") or target.get("is_cleared"):
 		return false
 	var d := target.global_position - global_position
 	return absf(d.x) <= SIGHT_X and absf(d.y) <= SIGHT_Y
