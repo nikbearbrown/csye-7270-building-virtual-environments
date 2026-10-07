@@ -400,7 +400,20 @@ func _show_rooms(is_inverted: bool) -> void:
 		r.modulate.a = 1.0
 
 
+## TEMPORARY. Prints the only four values that can stop the player moving, so a
+## single screenshot settles where the fault actually is. Remove once answered.
+func _debug_line() -> void:
+	var d = _hud.get_node_or_null("Debug")
+	if d == null:
+		return
+	d.text = "controllable=%s  awaiting_key=%s  story_open=%s  axis=%.1f  vel.x=%d  pos=%d" % [
+		_player.controllable, _awaiting_key, _story_open,
+		Input.get_axis("move_left", "move_right"),
+		int(_player.velocity.x), int(_player.global_position.x)]
+
+
 func _process(_delta: float) -> void:
+	_debug_line()
 	_audio.set_drifting(is_inverted and absf(_player.velocity.x) > 10.0)
 	_check_notes()
 	_update_cue()
