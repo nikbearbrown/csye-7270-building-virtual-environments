@@ -41,6 +41,7 @@ var _step_phase := 0.0
 var _stride_distance := 0.0
 var _walk_frame := 0
 var _float_time := 0.0
+var _landing_timer := 0.0
 var _body_roll := 0.0
 var _sprite_home_y := 0.0
 var _drift_tween: Tween
@@ -73,6 +74,15 @@ var _drift_tween: Tween
 	preload("res://assets/art/char_float_5.png"),
 	preload("res://assets/art/char_float_6.png"),
 ]
+
+## Jump poses: crouch, rising, falling, landing. Swapped by what the body is
+## actually doing, not played as a timed animation.
+@onready var _tex_crouch: Texture2D = preload("res://assets/art/char_jump_1.png")
+@onready var _tex_rising: Texture2D = preload("res://assets/art/char_jump_2.png")
+@onready var _tex_falling: Texture2D = preload("res://assets/art/char_jump_3.png")
+@onready var _tex_landing: Texture2D = preload("res://assets/art/char_jump_4.png")
+
+const LANDING_SECONDS := 0.18
 
 
 func _ready() -> void:
@@ -111,6 +121,8 @@ func _physics_process(delta: float) -> void:
 		velocity.y = JUMP_VELOCITY * _gravity_dir
 		_buffer = 0.0
 		_coyote = 0.0
+		if state == State.REMEMBERED:
+			_sprite.texture = _tex_crouch
 		jumped.emit()
 
 	# Releasing the key early cuts the hop short, so height is expressive.
@@ -171,6 +183,16 @@ func _update_walk_frame(delta: float, walking: bool) -> void:
 	if state == State.GHOST:
 		_update_float(delta)
 		return
+
+	# In the air, the body is doing something a walk frame cannot express.
+	if not is_on_floor():
+		_landing_timer = 0.0
+		_sprite.texture = _tex_rising if velocity.y * _gravity_dir < 0.0 else _tex_falling
+		return
+	if _landing_timer > 0.0:
+		_landing_timer = maxf(0.0, _landing_timer - delta)
+		_sprite.texture = _tex_landing
+		return
 	if not walking:
 		_stride_distance = 0.0
 		_walk_frame = 0
@@ -192,6 +214,7 @@ func _update_float(delta: float) -> void:
 
 func _land(fall_speed: float) -> void:
 	landed.emit(fall_speed)
+	_landing_timer = LANDING_SECONDS
 	_stop_drift()
 	var impact := clampf(fall_speed / 900.0, 0.0, 1.0)
 	var squash := Vector2(1.0 + 0.22 * impact, 1.0 - 0.22 * impact)
