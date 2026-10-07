@@ -31,6 +31,7 @@ var _flipping := false
 @onready var _meters: Node = $Meters
 @onready var _audio: Node = $Audio
 @onready var _hud: CanvasLayer = $HUD
+@onready var _lost_above: Area2D = $LostAbove
 
 
 
@@ -50,6 +51,7 @@ func _ready() -> void:
 	world_flipped.connect(_apply_world_geometry)
 	world_flipped.connect(func(_inv): _refresh_hint())
 
+	_lost_above.body_entered.connect(_on_fell_out_of_the_truth)
 	_contact.contact_landed.connect(_on_contact_landed)
 	# Movement has its own voice now. Both fire from signals the player emits
 	# after the physics has already happened, so they report rather than cause.
@@ -118,6 +120,25 @@ func flip() -> void:
 		r.visible = false
 		r.modulate.a = 1.0
 	_flipping = false
+
+
+## The floor of this house has been pulled apart. Falling through it costs a
+## day, which is the only currency the night has — so a missed jump is paid for
+## out of the same meter that being seen is paid for.
+func _on_fell_out_of_the_truth(_body: Node) -> void:
+	if _meters.ended:
+		return
+	_audio.play("correct")
+	_meters.spend(1, 0)
+	# back into the lie, standing where the floor still is
+	if is_inverted:
+		is_inverted = false
+		_show_rooms(false)
+		world_flipped.emit(false)
+	_player.velocity = Vector2.ZERO
+	# set down again on the nearest solid stretch of floor
+	_player.global_position = Vector2(clampf(_player.global_position.x, 120.0, 1100.0), 815.0)
+	_refresh_hint()
 
 
 func _on_contact_landed(kind: String, days_cost: int) -> void:
