@@ -140,6 +140,19 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded.
 - **Evidence and next step:** `narration.py` and `BUILD-LOG.md` in the film folder. Next: I watch the new master.
 
+### 2026-10-06 — Publish the Assignment 3 film to both playlists
+
+- **Date and what I was working on:** 2026-10-06. Publishing the Assignment 3 film.
+- **I tried / expected:** My request, in my words (dictation errors fixed): "Looks great. Publish it to the @NikBearBrown YouTube channel, to both the Walker and the CSYE 7270 playlists. It should be in both. Make sure it's 4K."
+- **What happened:**
+  - Claude Code staged the 4K master in the upload folder, wrote the description by hand (chapters from measured times, the Your Turn prompt, a plain statement that the MCP route has not been run by the course), and uploaded it from there only. It is on Nik Bear Brown as **unlisted**: https://youtu.be/i-2NlEHaGjI. Making it public is a click in YouTube Studio, and I have not done it.
+  - It is at the top of both "CSYE 7270 Virtual Environments and Real-Time 3D" and "Walker (Game AI)", checked by reading both playlists back from YouTube. English captions are attached. The file sent was 3840 by 2160; YouTube takes a few minutes to finish making the 4K version.
+  - The publishing tool takes one playlist and refuses a video that is already uploaded, so the second playlist was added with a direct call to YouTube.
+- **What I did:** Asked for it.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) staged, wrote the description, uploaded and checked.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `youtube/PUBLISH-LOG.md` in the books folder. Next: flip it to public in Studio when I decide, and run the MCP route once.
+
 ---
 
 ## GitHub pushes
@@ -160,3 +173,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-06 | Log my request for a film of Assignment 3 |
 | 2026-10-06 | Update the Assignment 3 film entry: master built, nothing published |
 | 2026-10-06 | Log my feedback: say "3D model" or "AI model", never just "model" |
+| 2026-10-06 | Log my request to publish the Assignment 3 film to both playlists |
