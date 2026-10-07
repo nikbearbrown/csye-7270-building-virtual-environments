@@ -12,7 +12,7 @@
 | Source revision shown in the film | `111bf6e` (local tag `a2-film-source`). GitHub's `100dce3` contains **byte-identical game files**: `git diff --stat a2-film-source 100dce3 -- . ':!*.md' ':!design' ':!youtube' ':!.gitignore'` is empty. It is the same game history rebuilt without the documents, so the hashes differ. |
 | Godot version and OS | Godot 4.7.2.stable.official.ed1daf0bf, GL Compatibility, Windows 11 |
 | Generative models used | See the table below. |
-| Final film URL and filename | **To be added after upload.** Filename: `claude-liam-downfall-gamedev.mp4` (3840×2160, 30 fps, 6:23). It is kept out of GitHub per the course rule. |
+| Final film URL and filename | https://youtu.be/n6yPUyUQEaM (YouTube). Filename: `claude-liam-downfall-gamedev.mp4` (3840×2160, 30 fps, 6:23). It is kept out of GitHub per the course rule. |
 | Final film SHA-256 | `144dbfe4412d5c2ed2e18e42c9d881dc126e31d2b264f101d7d502a1c59cc943` |
 
 ## Generative models used

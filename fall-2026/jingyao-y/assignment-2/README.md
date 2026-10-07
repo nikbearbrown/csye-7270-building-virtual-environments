@@ -4,6 +4,7 @@ Assignment 2 for CSYE 7270, by Jingyao Y, with Claude Code assistance.
 
 | What | Where |
 |---|---|
+| Film | https://youtu.be/n6yPUyUQEaM |
 | The submission form | [downfall-godot/SUBMISSION.md](downfall-godot/SUBMISSION.md) |
 | Design documents | [CONCEPT](downfall-godot/CONCEPT.md) · [STORYBOARD](downfall-godot/STORYBOARD.md) · [CHARACTER-SHEET](downfall-godot/CHARACTER-SHEET.md) · [CHANGE-BRIEF](downfall-godot/CHANGE-BRIEF.md) |
 | Verification | [TEST-REPORT](downfall-godot/TEST-REPORT.md) |

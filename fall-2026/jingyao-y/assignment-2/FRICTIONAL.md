@@ -121,3 +121,4 @@
 |---|---|
 | 2026-10-07 | `coldfish432/GodotGame` `main` → `100dce3`: game code and assets only (game-only rebuild of the history whose film revision is `111bf6e`; game files identical). |
 | 2026-10-07 | This branch (`Jingyao_Y`): assignment documents, design images, generated audio and film sources for Assignment 2. |
+| 2026-10-07 | Added the Godot project (code and used assets) to this branch, then the film link https://youtu.be/n6yPUyUQEaM. |

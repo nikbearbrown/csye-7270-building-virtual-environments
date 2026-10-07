@@ -65,4 +65,4 @@ See [TEST-REPORT.md](TEST-REPORT.md) §Honest limitations.
 
 **Local-only files:** `../evidence/` and `music/` (raw MP3 downloads) live outside this repository; the docs say so where they reference them.
 
-**Final film:** `claude-liam-downfall-gamedev.mp4` (4K, 6:23). The SHA-256 and link are in [SUBMISSION.md](SUBMISSION.md); its sources are in `youtube/claude-liam-downfall-gamedev/`.
+**Final film:** https://youtu.be/n6yPUyUQEaM · `claude-liam-downfall-gamedev.mp4` (4K, 6:23). The SHA-256 is in [SUBMISSION.md](SUBMISSION.md); its sources are in `youtube/claude-liam-downfall-gamedev/`.
