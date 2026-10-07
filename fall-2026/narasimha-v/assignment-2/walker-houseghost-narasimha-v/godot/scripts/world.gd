@@ -58,6 +58,8 @@ func _ready() -> void:
 	# after the physics has already happened, so they report rather than cause.
 	_player.jumped.connect(func(): _audio.play("jump"))
 	_player.landed.connect(func(_speed): _audio.play("land"))
+	# Footsteps belong to the boy who was alive here. The ghost gets none.
+	_player.stepped.connect(func(): if not is_inverted: _audio.play("step"))
 	_meters.day_torn.connect(_on_day_torn)
 	_meters.recognition_changed.connect(_on_recognition_changed)
 	_meters.night_ended.connect(_on_night_ended)
@@ -201,6 +203,10 @@ func _show_rooms(is_inverted: bool) -> void:
 	for r in _rooms_empty:
 		r.visible = is_inverted
 		r.modulate.a = 1.0
+
+
+func _process(_delta: float) -> void:
+	_audio.set_drifting(is_inverted and absf(_player.velocity.x) > 10.0)
 
 
 func _refresh_hint() -> void:

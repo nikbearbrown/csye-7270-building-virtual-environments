@@ -27,6 +27,9 @@ const STRIDE_PIXELS := 28.0   ## ground per frame; eight frames make a ~224 px c
 const LEAN_RADIANS := 0.10
 
 signal landed(fall_speed: float)
+## Fires on the two heel-strike frames of the cycle, so a footstep sounds when
+## a foot actually lands rather than on a timer.
+signal stepped
 signal jumped
 
 var state: State = State.REMEMBERED
@@ -210,6 +213,9 @@ func _update_walk_frame(delta: float, walking: bool) -> void:
 	while _stride_distance >= STRIDE_PIXELS:
 		_stride_distance -= STRIDE_PIXELS
 		_walk_frame = (_walk_frame + 1) % _walk_frames.size()
+		# frames 0 and 4 are the contact poses: a heel meeting the floor
+		if _walk_frame == 0 or _walk_frame == 4:
+			stepped.emit()
 	_sprite.texture = _walk_frames[_walk_frame]
 
 

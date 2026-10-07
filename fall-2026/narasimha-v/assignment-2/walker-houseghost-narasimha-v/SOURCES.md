@@ -91,3 +91,23 @@ All six generated in ElevenLabs Sound Effects on 2026-10-07, prompt influence 70
 | `ui_glow.png` | **Drawn in code** by Claude: a soft radial falloff | As above |
 
 The earlier code-drawn `plat_plank_*.png` and `plat_crates.png` were removed along with the decorative platforms they belonged to.
+
+## The full sound set (nine)
+
+The assignment asks for four events. The slice has nine, because the audio is doing narrative work rather than just confirming input.
+
+| Asset | Fires on | Origin |
+|---|---|---|
+| `sfx_flip.wav` | Turning the world over | ElevenLabs |
+| `sfx_contact.wav` | Touching a relic | ElevenLabs |
+| `sfx_frost.wav` | Each day torn off the calendar | ElevenLabs |
+| `sfx_correct.wav` | The loud way to be seen: the house notices | ElevenLabs |
+| `sfx_land.wav` | Landing from a jump | ElevenLabs |
+| `sfx_jump.wav` | Pushing off the ground | ElevenLabs |
+| `sfx_step.wav` | Each heel strike, **in the memory only** | ElevenLabs — prompt: "A single soft footstep of a child's bare foot on a thin worn carpet over old floorboards: a quiet dull press with a faint creak of the board beneath it. Close, small, light, dry. One step only, not a sequence." Trimmed to its transient at 0.080–0.230 s after measurement showed the energy lived in a 16 ms window, then compressed hard |
+| `sfx_drift.wav` | Continuously while the ghost moves | ElevenLabs — prompt: "A continuous low airy breath moving through a cold empty room, like air displaced by something passing. Soft, hollow, unbroken… Seamless and even throughout so it can loop." Levelled flat rather than compressed, then crossfaded 0.5 s of its own tail over its head to loop |
+| `sfx_heart.wav` | Under everything, faster and louder as the days run out | **Synthesised in code** by Claude — two exponentially decaying sine thuds at falling pitch, 78→46 Hz and 66→40 Hz, 310 ms apart. Not generated: a heartbeat is a shape arithmetic gets exactly right and a generator does not. Satisfies no generative requirement |
+
+**The one that carries the story:** the boy has footsteps and the ghost has none. Walking in the memory produces a heel strike per stride; as the ghost there are no footsteps at all, only displaced air that starts when he moves and stops when he stops. Nothing in the game states that he is weightless — the audio simply stops pretending he is not.
+
+**Why the earlier sounds could not be heard, and what fixed it.** Measured after the first pass, `contact` was audible for 19 percent of its length, `correct` for 15 and `frost` for 29: brief ticks surrounded by silence, which disappears entirely under a score at full level. The automated check had passed throughout, because counting that an event fired proves nothing about whether a person can hear it. All of them were compressed so they are dense rather than spiky — contact now 84 percent, correct 77, flip 96 — and the music steps back 15 dB under each one.

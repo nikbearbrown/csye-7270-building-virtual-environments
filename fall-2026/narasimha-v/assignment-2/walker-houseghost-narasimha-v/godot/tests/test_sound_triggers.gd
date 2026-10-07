@@ -88,6 +88,33 @@ func _init() -> void:
 		"landing from that jump fires one land sound", audio.counts["land"] - l0)
 
 
+	# 8. The boy has footsteps and the ghost has none. This is the clearest
+	#    statement the audio makes about which of the two he currently is.
+	audio.set_sfx_muted(false)
+	if scene.is_inverted:
+		scene.flip()
+		await _settle()
+	var st0: int = audio.counts["step"]
+	Input.action_press("move_right")
+	await _settle(1.5)
+	Input.action_release("move_right")
+	await _settle(0.3)
+	var walked: int = audio.counts["step"] - st0
+	_expect(walked >= 3, "walking in the memory produces footsteps", walked)
+
+	scene.flip()
+	await _settle(1.4)
+	var st1: int = audio.counts["step"]
+	Input.action_press("move_right")
+	await _settle(1.2)
+	_expect(audio.counts["step"] == st1, "the ghost produces no footsteps at all",
+		audio.counts["step"] - st1)
+	_expect(audio._drift.playing, "the ghost displaces air while he moves", audio._drift.playing)
+	Input.action_release("move_right")
+	await _settle(0.6)
+	_expect(not audio._drift.playing, "and the air stops when he stops", audio._drift.playing)
+
+
 	print("--- %d checks, %d failed ---\n" % [_checks, _failures])
 	quit(1 if _failures > 0 else 0)
 

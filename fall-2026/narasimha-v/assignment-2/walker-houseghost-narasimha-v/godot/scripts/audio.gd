@@ -61,6 +61,7 @@ var _current_world := "normal"
 var _music_tweens := {}
 var _duck_tween: Tween
 var _heart: AudioStreamPlayer
+var _drift: AudioStreamPlayer
 var _heart_timer := 0.0
 var _heart_rate := 1.0
 
@@ -96,6 +97,21 @@ func _ready() -> void:
 		add_child(player)
 		_music[world] = player
 
+	# The ghost has no footsteps. He has displaced air, and it runs while he
+	# moves and stops when he stops — the clearest statement in the game that
+	# he is not touching anything.
+	_drift = AudioStreamPlayer.new()
+	_drift.name = "drift"
+	if ResourceLoader.exists("res://assets/sfx/sfx_drift.wav"):
+		var ds = load("res://assets/sfx/sfx_drift.wav")
+		if ds is AudioStreamWAV:
+			ds.loop_begin = 0
+			ds.loop_end = int(ds.get_length() * ds.mix_rate)
+			ds.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		_drift.stream = ds
+	_drift.volume_db = -15.0
+	add_child(_drift)
+
 	_heart = AudioStreamPlayer.new()
 	_heart.name = "heart"
 	if ResourceLoader.exists("res://assets/sfx/sfx_heart.wav"):
@@ -130,6 +146,16 @@ func _process(delta: float) -> void:
 	if _heart_timer <= 0.0:
 		_heart_timer = 1.25
 		_heart.play()
+
+
+## Air moving around something that has no feet. Only ever heard as the ghost.
+func set_drifting(on: bool) -> void:
+	if _drift == null or _drift.stream == null:
+		return
+	if on and not sfx_muted and not _drift.playing:
+		_drift.play()
+	elif (not on or sfx_muted) and _drift.playing:
+		_drift.stop()
 
 
 ## A held breath. Used after a contact lands, because silence says more about
@@ -225,6 +251,8 @@ func set_music_muted(value: bool) -> void:
 
 func set_sfx_muted(value: bool) -> void:
 	sfx_muted = value
+	if sfx_muted and _drift and _drift.playing:
+		_drift.stop()
 
 
 ## End of the slice: the lullaby is allowed to finish its phrase once and then
