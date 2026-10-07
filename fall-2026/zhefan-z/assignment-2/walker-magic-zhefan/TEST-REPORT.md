@@ -79,6 +79,9 @@ In-engine frames: `design/checks/engine/states-vs-sheet.png` (row 1: accepted Ge
 - **Who / how:** the author, with both buses muted (M and N).
 - **Result:** every event still reads without sound (CHANGE-BRIEF failure case 7, assignment check "Muted play").
 
+## Film (in progress)
+The required Brutalist `godot-gamedev` + `walker` film, "Her Fire Is the Only Warmth: Building a Cave Mage Slice", is being built in `youtube/claude-liam-walker-magic-gamedev/`. Its gameplay is **scripted-input** Godot Movie Maker captures at native 3840x2160 from an isolated copy of the tested build, each gated against a headless run of the same inputs (`CAPTURE.md`); they are labelled as scripted in the film and are not playtests. The skill's compiler silences footage audio by default, so the labelled SLICE AUDIO segments use the audio track of the same take, cut to exactly the same interval as its video, with no narration: **verbal approval from the instructor the method is acceptable** (recorded 2026-10-07; `CAPTURE.md`, `FACTCHECK.md`).
+
 ## Known limitations
 - HUD text uses Godot's smooth built-in font, which clashes a little with the pixel art (playtest 4). A pixel font is a later change.
 - The fixed 14x44 collision rectangle covers part of the head in RISE and FAIL (CHARACTER-SHEET Revision 3).
