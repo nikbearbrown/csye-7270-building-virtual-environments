@@ -9,12 +9,11 @@
 [ext_resource type="Script" path="res://scripts/audio.gd" id="7_audio"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="8_hud"]
 [ext_resource type="Texture2D" path="res://assets/art/ui_glow.png" id="9_glow"]
-[ext_resource type="Texture2D" path="res://assets/art/plat_plank_warm.png" id="10_warm"]
-[ext_resource type="Texture2D" path="res://assets/art/plat_plank_cold.png" id="11_cold"]
-[ext_resource type="Texture2D" path="res://assets/art/plat_crates.png" id="12_crates"]
 [ext_resource type="Texture2D" path="res://assets/art/floor_hole.png" id="13_hole"]
 [ext_resource type="Texture2D" path="res://assets/art/prop_shelf.png" id="14_shelf"]
 [ext_resource type="Texture2D" path="res://assets/art/prop_boxes.png" id="15_boxes"]
+[ext_resource type="Texture2D" path="res://assets/art/relic_shoes.png" id="16_shoes"]
+[ext_resource type="Texture2D" path="res://assets/art/relic_board.png" id="17_board"]
 
 [sub_resource type="RectangleShape2D" id="Wall_1"]
 size = Vector2(60, 1400)
@@ -182,7 +181,7 @@ limit_right = 5760
 limit_top = 0
 limit_bottom = 1080
 
-[node name="MusicBox" type="Area2D" parent="."]
+[node name="MusicBox" type="Area2D" parent="." groups=["relic"]]
 position = Vector2(1480, 300)
 monitoring = true
 collision_layer = 0
@@ -201,6 +200,52 @@ attenuation = 1.6
 modulate = Color(1, 0.95, 0.78, 0.7)
 scale = Vector2(1.6, 1.6)
 texture = ExtResource("9_glow")
+
+[node name="Shoes" type="Area2D" parent="." groups=["relic"]]
+position = Vector2(3150, 300)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shoes"]
+shape = SubResource("Contact_1")
+
+[node name="Beacon" type="AudioStreamPlayer2D" parent="Shoes"]
+volume_db = -14.0
+max_distance = 2600.0
+attenuation = 1.6
+
+[node name="Glow" type="Sprite2D" parent="Shoes"]
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("9_glow")
+
+[node name="Art" type="Sprite2D" parent="Shoes"]
+texture = ExtResource("16_shoes")
+
+[node name="Board" type="Area2D" parent="." groups=["relic"]]
+position = Vector2(5120, 300)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Board"]
+shape = SubResource("Contact_1")
+
+[node name="Beacon" type="AudioStreamPlayer2D" parent="Board"]
+volume_db = -14.0
+max_distance = 2600.0
+attenuation = 1.6
+
+[node name="Glow" type="Sprite2D" parent="Board"]
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("9_glow")
+
+[node name="Art" type="Sprite2D" parent="Board"]
+texture = ExtResource("17_board")
 
 [node name="Meters" type="Node" parent="."]
 script = ExtResource("6_meters")

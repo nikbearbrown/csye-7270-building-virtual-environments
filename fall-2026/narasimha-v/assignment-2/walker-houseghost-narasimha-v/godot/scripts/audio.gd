@@ -18,6 +18,8 @@ const PATHS := {
 	"correct": "res://assets/sfx/sfx_correct.wav",
 	"land":    "res://assets/sfx/sfx_land.wav",
 	"jump":    "res://assets/sfx/sfx_jump.wav",
+	"fall":    "res://assets/sfx/sfx_fall.wav",
+	"step":    "res://assets/sfx/sfx_step.wav",
 }
 
 ## The mix. Every file is normalised to the same peak, so these numbers alone
@@ -35,7 +37,7 @@ const LEVELS := {
 ## How far the music steps back while a sound plays, and for how long. Without
 ## this the quieter story sounds sit underneath the score and are never heard.
 const DUCK_DB := -15.0      ## the score steps well back, or short sounds are simply lost under it
-const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "land": 0.25, "jump": 0.25}
+const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "land": 0.25, "jump": 0.25, "fall": 1.6, "step": 0.0}
 ## One track per world. They share key and tempo, so the flip can cut straight
 ## from one to the other without a musical lurch: the two worlds sound like one
 ## piece of music turning over.
@@ -45,7 +47,7 @@ const MUSIC_PATHS := {
 	"inverted": "res://assets/music/mus_upright.wav",
 }
 
-var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0, "land": 0, "jump": 0}
+var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0, "land": 0, "jump": 0, "fall": 0, "step": 0}
 var music_muted := false
 var sfx_muted := false
 var missing: Array[String] = []
@@ -58,6 +60,9 @@ var _music := {}                 ## world -> AudioStreamPlayer
 var _current_world := "normal"
 var _music_tweens := {}
 var _duck_tween: Tween
+var _heart: AudioStreamPlayer
+var _heart_timer := 0.0
+var _heart_rate := 1.0
 
 
 func _ready() -> void:
@@ -91,6 +96,13 @@ func _ready() -> void:
 		add_child(player)
 		_music[world] = player
 
+	_heart = AudioStreamPlayer.new()
+	_heart.name = "heart"
+	if ResourceLoader.exists("res://assets/sfx/sfx_heart.wav"):
+		_heart.stream = load("res://assets/sfx/sfx_heart.wav")
+	_heart.volume_db = -34.0
+	add_child(_heart)
+
 	_play_world_music(_current_world)
 
 
@@ -99,6 +111,31 @@ func _load_or_note(path: String) -> AudioStream:
 		return load(path)
 	missing.append(path)
 	return null
+
+
+## The heart. Inaudible at seven days, impossible to ignore at one: pressure
+## the player feels before they can name it, and no timer on screen.
+func set_days_left(days_left: int, total: int) -> void:
+	var urgency := 1.0 - float(days_left) / float(maxi(1, total))
+	if _heart == null:
+		return
+	_heart.volume_db = lerpf(-34.0, -9.0, urgency)
+	_heart_rate = lerpf(0.95, 2.1, urgency)
+
+
+func _process(delta: float) -> void:
+	if _heart == null or _heart.stream == null or sfx_muted:
+		return
+	_heart_timer -= delta * _heart_rate
+	if _heart_timer <= 0.0:
+		_heart_timer = 1.25
+		_heart.play()
+
+
+## A held breath. Used after a contact lands, because silence says more about
+## being noticed than any sound could.
+func hush(seconds: float) -> void:
+	_duck(seconds)
 
 
 func _unhandled_input(event: InputEvent) -> void:

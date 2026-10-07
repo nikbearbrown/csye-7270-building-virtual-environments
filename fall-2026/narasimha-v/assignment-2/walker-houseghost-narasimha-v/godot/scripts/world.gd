@@ -27,7 +27,7 @@ var _flipping := false
 @onready var _rooms_memory: Array = _tiles("RoomMemory")
 @onready var _rooms_empty: Array = _tiles("RoomEmpty")
 @onready var _player: CharacterBody2D = $Player
-@onready var _contact: Area2D = $MusicBox
+@onready var _relics: Array = get_tree().get_nodes_in_group("relic")
 @onready var _meters: Node = $Meters
 @onready var _audio: Node = $Audio
 @onready var _hud: CanvasLayer = $HUD
@@ -46,13 +46,14 @@ func _tiles(prefix: String) -> Array:
 
 func _ready() -> void:
 	world_flipped.connect(_player.set_inverted)
-	world_flipped.connect(_contact.set_inverted)
+	for relic in _relics:
+		world_flipped.connect(relic.set_inverted)
+		relic.contact_landed.connect(_on_contact_landed)
 	world_flipped.connect(_audio.set_world_inverted)
 	world_flipped.connect(_apply_world_geometry)
 	world_flipped.connect(func(_inv): _refresh_hint())
 
 	_lost_above.body_entered.connect(_on_fell_out_of_the_truth)
-	_contact.contact_landed.connect(_on_contact_landed)
 	# Movement has its own voice now. Both fire from signals the player emits
 	# after the physics has already happened, so they report rather than cause.
 	_player.jumped.connect(func(): _audio.play("jump"))
@@ -68,12 +69,17 @@ func _ready() -> void:
 	_hud.set_recognition(0, _meters.RECOGNITION_TO_WIN)
 	_hud.set_frost(0.0)
 	_hud.set_mutes(false, false)
+	_audio.set_days_left(_meters.days_left, _meters.DAYS_AT_START)
 	_refresh_hint()
 
 	# The box calls with its own contact sound, so the player hears what the
 	# thing they are walking toward will do when they reach it.
+	# Every relic calls with the contact sound, so the player hears where the
+	# next one is without being told.
 	if ResourceLoader.exists("res://assets/sfx/sfx_contact.wav"):
-		_contact.set_beacon_stream(load("res://assets/sfx/sfx_contact.wav"))
+		var chime := load("res://assets/sfx/sfx_contact.wav")
+		for relic in _relics:
+			relic.set_beacon_stream(chime)
 
 	if not _audio.missing.is_empty():
 		print("audio files not present yet, slice runs silent: ", _audio.missing)
@@ -128,7 +134,7 @@ func flip() -> void:
 func _on_fell_out_of_the_truth(_body: Node) -> void:
 	if _meters.ended:
 		return
-	_audio.play("correct")
+	_audio.play("fall")
 	_meters.spend(1, 0)
 	# back into the lie, standing where the floor still is
 	if is_inverted:
@@ -142,9 +148,11 @@ func _on_fell_out_of_the_truth(_body: Node) -> void:
 
 
 func _on_contact_landed(kind: String, days_cost: int) -> void:
-	var gain: int = _contact.recognition_scary if kind == "scary" else _contact.recognition_kind
+	var gain: int = 2 if kind == "scary" else 1
 	_meters.spend(days_cost, gain)
 	_audio.play("contact")
+	# a beat of held silence: the room has noticed, and is listening back
+	_audio.hush(1.8)
 	if kind == "scary":
 		# The loud way to be seen also wakes the house: the room corrects itself.
 		_audio.play("correct")
@@ -152,6 +160,7 @@ func _on_contact_landed(kind: String, days_cost: int) -> void:
 
 func _on_day_torn(days_left: int) -> void:
 	_hud.set_days(days_left, _meters.DAYS_AT_START)
+	_audio.set_days_left(days_left, _meters.DAYS_AT_START)
 	_hud.set_frost(_meters.frost_level())
 	_audio.play("frost")
 

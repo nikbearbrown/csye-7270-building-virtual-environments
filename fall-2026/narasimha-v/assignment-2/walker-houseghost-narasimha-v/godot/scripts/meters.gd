@@ -11,7 +11,7 @@ signal recognition_changed(recognition: int)
 signal night_ended(reason: String)
 
 const DAYS_AT_START := 7
-const RECOGNITION_TO_WIN := 4
+const RECOGNITION_TO_WIN := 3   ## one per relic: the music box, his shoes, the loose board
 
 var days_left := DAYS_AT_START
 var recognition := 0
