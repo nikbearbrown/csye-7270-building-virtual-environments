@@ -34,7 +34,8 @@
 - The fixed 14x44 collision rectangle covers part of the head in RISE and FAIL (CHARACTER-SHEET Revision 3).
 - Code-drawn, not generated: the exit (ENV-EXIT), HP hearts (UI-HEART), crosshair (UI-CROSSHAIR) and the dark fill in the pit.
 - Storyboard P6 (boss) is not covered by the slice (CHANGE-BRIEF Revision 2).
-- Until the final OGGs are exported, every sound and the music loop are code-made PLACEHOLDER tones (`audio/placeholder_tones.gd`), not model output. `AudioDirector` switches to `assets/audio/sfx/SFX-*.ogg` and `assets/audio/music/MUS-LOOP.ogg` automatically when they exist.
+- Final audio is in: the five SFX OGGs (Stable Audio Open) and MUS-LOOP.ogg (Google Gemini, Lyria). The code-made placeholder tones (`audio/placeholder_tones.gd`) remain only as a fallback if an OGG is missing; none is used in the current slice.
+- The Music bus is at -8 dB as a starting mix value (music under the SFX); to be confirmed in the sound-on playtest.
 
 ## Automated checks
 
@@ -45,5 +46,10 @@
 | Wolf: patrol, 0.5 s growl telegraph, lunge, hurt + knockback + blink, HP 0, flash, down image, removal, one defeat for two same-frame fireballs | `Godot_v4.7.2-stable_win64_console.exe --path . --headless -s res://tests/test_wolf.gd` | `WALKER TESTS: 13 checks / 0 failures` | `40595ce` |
 | Flow: HUD hearts, fail texts, exit and Cleared once, input stops after clear, R restart only after clear, Esc pause/resume, no pause after fail or clear | `Godot_v4.7.2-stable_win64_console.exe --path . --headless -s res://tests/test_flow.gd` | `WALKER TESTS: 14 checks / 0 failures` | `61e0189` |
 | Audio: buses and routing, placeholders, each event sound once, music on load / pause / fail / clear, M and N mute, identical game state muted vs unmuted (dummy audio driver: counts play requests, not what is heard) | `Godot_v4.7.2-stable_win64_console.exe --path . --headless -s res://tests/test_audio.gd` | `WALKER TESTS: 13 checks / 0 failures` | `e53a601` |
+| **Sound triggers per event (the slice's required automated check)**: a scripted route through the whole slice with the real wolf AI (run, jump the pit, shoot the wolf until defeated, reach the exit), repeated muted; plus held cast, rapid taps, two fireballs into a 1 HP wolf in one frame, same-frame and invulnerable hits, real lunges for 4 s, pit twice + HP 0 in one frame, exit twice | `Godot_v4.7.2-stable_win64_console.exe --path . --headless -s res://tests/test_sound_triggers.gd` | `WALKER TESTS: 11 checks / 0 failures`. Route: 5 casts → 5 SFX-CAST, 1 SFX-WOLF-DOWN, 0 SFX-HURT, 0 SFX-FAIL, 1 SFX-CLEAR, music started once and stopped at the exit; muted route identical. Held 2 s: 1 cast; tapping 2 s: 6; two same-frame fireballs: 1 wolf-down; 3 landed lunges: 3 hurt; double fail: 1; double exit: 1 | S7 commit |
+
+All suites run with the final SFX OGGs and MUS-LOOP.ogg in place (all 73 checks pass). Headless uses a dummy audio driver, so these checks prove the triggers and the music state, not what a listener hears; that is the sound-on playtest.
+
+Observed, not fixed: when the game window is closed, Godot prints "2 resources still in use at exit" for `MUS-LOOP.ogg`. It appears only at shutdown, does not affect play or the tests, and stopping and releasing the music player on exit did not remove it; root cause not found.
 
 Measured during S5: the code-drawn exit's brightest pixel is L* 89.0, below the hair base (L* 91.7) and highlight (L* 97.3), so the hair stays the brightest shape on screen (pillar 3, CHANGE-BRIEF failure case 3); the margin is small and is a human check in playtest 4.

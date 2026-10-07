@@ -5,7 +5,7 @@
            loop.json. Listen to the two seams before exporting.
     E:/7270/tools/ComfyUI/.venv/Scripts/python.exe tools/make_music_loop.py export
         -> assets/audio/music/MUS-LOOP.ogg (OGG Vorbis q6) and assets/audio/MUSIC-EDIT-LOG.md / music-edit-log.json.
-           Loop on import is set by tools/set_ogg_loop.gd afterwards.
+           Then enable looping on import: `loop=true` in assets/audio/music/MUS-LOOP.ogg.import, and re-import.
 
 Source: E:\\7270\\tools\\music_raw\\Beneath_the_Unlit_Stone.mp3 (Google Gemini, Lyria). Never copied into the repo.
 Needs NumPy, Pillow (ComfyUI venv) and FFmpeg on PATH.
@@ -151,6 +151,13 @@ def export():
         f"| Seam sample jump | {info['seam_sample_jump']} (median step {info['median_sample_step']}, 99th percentile {info['p99_sample_step']}) |",
         f"| Export | OGG Vorbis q{OGG_QUALITY} (FFmpeg libvorbis), `{info['ogg']}`, decodes to {info['ogg_decoded_s']} s, peak {info['peak_dbfs']} dBFS |",
         "| Godot import | loop enabled on import (`MUS-LOOP.ogg.import`: `loop=true`) |",
+        "| Level | no gain applied to the file: the source is mastered to -0.05 dBFS and Vorbis overshoots by a few samples "
+        "(peak above), so the engine's Music bus is set to -8 dB (`default_bus_layout.tres`): it sits the music about 6 dB "
+        "under the SFX's loudest windows (-15.75 dBFS) and keeps the overshoot below full scale. A starting value, tuned by playtest. |",
+        "| Reproducibility | each encode gets a random Ogg stream serial number, so the file hash changes on every export; "
+        "the decoded audio is identical sample for sample (checked by encoding twice). |",
+        "| Listening check | 3x preview (`E:\\7270\\tools\\music_raw\\preview\\MUS-LOOP-preview-3x.wav`): the author heard both seams "
+        "(0:54.6 and 1:49.2) as clean, no click and no rhythmic hiccup (CHANGE-BRIEF failure case 5). |",
     ]) + "\n", encoding="utf-8")
     print(json.dumps(info, indent=2))
 
