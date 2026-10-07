@@ -12,12 +12,16 @@ extends CanvasLayer
 @onready var _opening: Label = $Opening
 @onready var _note: Label = $Note
 var _note_tween: Tween
+var _hint_tween: Tween
+var _cue_tween: Tween
+@onready var _cue: Label = $Cue
 
 
 func _ready() -> void:
 	_banner.visible = false
 	_opening.visible = false
 	_note.visible = false
+	_cue.visible = false
 	_frost.color = Color(0.78, 0.86, 0.92, 0.0)
 
 
@@ -84,6 +88,7 @@ func show_opening(lines: Array, world) -> void:
 func hide_opening() -> void:
 	_opening.visible = false
 	_note.visible = false
+	_cue.visible = false
 
 
 ## A line of his, held for a few seconds and then let go. Deliberately low on
@@ -101,8 +106,44 @@ func show_note(text: String) -> void:
 	_note_tween.tween_callback(func(): _note.visible = false)
 
 
+## A prompt that appears only when it can be acted on, sits next to the thing
+## it refers to, and goes away once the player has used it. A hint line that
+## lists every control at all times is read once and then ignored, which is how
+## a playtester can finish a level without ever learning its central verb.
 func set_hint(text: String) -> void:
+	if _hint.text == text:
+		return
 	_hint.text = text
+	if _hint_tween and is_instance_valid(_hint_tween):
+		_hint_tween.kill()
+	_hint.modulate.a = 0.0
+	_hint_tween = create_tween()
+	_hint_tween.tween_property(_hint, "modulate:a", 1.0 if text != "" else 0.0, 0.4)
+
+
+## The key you need, floating beside the thing that needs it.
+func show_cue(text: String, at: Vector2) -> void:
+	_cue.text = text
+	_cue.position = at - Vector2(_cue.size.x * 0.5, 120.0)
+	if not _cue.visible:
+		_cue.visible = true
+		_cue.modulate.a = 0.0
+		if _cue_tween and is_instance_valid(_cue_tween):
+			_cue_tween.kill()
+		_cue_tween = create_tween()
+		_cue_tween.tween_property(_cue, "modulate:a", 1.0, 0.35)
+	var pulse := 0.78 + 0.22 * sin(Time.get_ticks_msec() / 220.0)
+	_cue.modulate = Color(1.0, 0.93, 0.74, _cue.modulate.a * pulse / maxf(0.01, _cue.modulate.a))
+
+
+func hide_cue() -> void:
+	if not _cue.visible:
+		return
+	if _cue_tween and is_instance_valid(_cue_tween):
+		_cue_tween.kill()
+	_cue_tween = create_tween()
+	_cue_tween.tween_property(_cue, "modulate:a", 0.0, 0.3)
+	_cue_tween.tween_callback(func(): _cue.visible = false)
 
 
 func show_banner(text: String) -> void:

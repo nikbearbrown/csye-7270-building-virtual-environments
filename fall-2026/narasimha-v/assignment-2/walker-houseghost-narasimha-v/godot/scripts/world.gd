@@ -129,6 +129,9 @@ func _ready() -> void:
 ## teaches them the game is broken, which is the opposite of what an opening
 ## is for.
 var _skip_opening := false
+var _has_moved := false
+var _has_flipped := false
+var _has_contacted := false
 
 
 func _hold(seconds: float) -> void:
@@ -210,6 +213,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_skip_opening = true
 		return
 	if event.is_action_pressed("flip_world"):
+		_has_flipped = true
 		flip()
 	elif event.is_action_pressed("restart"):
 		get_tree().reload_current_scene()
@@ -276,6 +280,8 @@ func _on_contact_landed(kind: String, days_cost: int) -> void:
 	_audio.play("contact")
 	# a beat of held silence: the room has noticed, and is listening back
 	_audio.hush(1.8)
+	_has_contacted = true
+	_refresh_hint()
 	if kind == "scary":
 		# The loud way to be seen also wakes the house: the room corrects itself.
 		_audio.play("correct")
@@ -344,10 +350,47 @@ func _show_rooms(is_inverted: bool) -> void:
 func _process(_delta: float) -> void:
 	_audio.set_drifting(is_inverted and absf(_player.velocity.x) > 10.0)
 	_check_notes()
+	_update_cue()
 
 
 ## A note appears when he reaches the spot it belongs to, in the world it
 ## belongs to, and never again.
+## Teaching by obstruction rather than by a list of keys. The cue appears only
+## where it can be acted on: beside the relic you cannot reach, and only once
+## you are standing under it. It stops appearing once you have used it.
+func _update_cue() -> void:
+	if not _player.controllable or _meters.ended:
+		_hud.hide_cue()
+		return
+	if absf(_player.velocity.x) > 10.0:
+		_has_moved = true
+
+	var nearest = null
+	var best := 420.0
+	for relic in _relics:
+		if relic.is_answered():
+			continue
+		var d: float = absf(relic.global_position.x - _player.global_position.x)
+		if d < best:
+			best = d
+			nearest = relic
+
+	if not _has_moved:
+		_hud.show_cue("\u2190  \u2192", _player.get_node("Camera").get_screen_center_position() + Vector2(0, -40))
+		return
+	if nearest == null:
+		_hud.hide_cue()
+		return
+
+	var on_screen := Vector2(960.0 + nearest.global_position.x - _player.get_node("Camera").get_screen_center_position().x, nearest.global_position.y)
+	if nearest._available():
+		_hud.show_cue("E", on_screen)                 # in reach: take it
+	elif not is_inverted:
+		_hud.show_cue("F", on_screen)                 # visible but out of reach: turn the world over
+	else:
+		_hud.hide_cue()
+
+
 func _check_notes() -> void:
 	if not _player.controllable or _meters.ended:
 		return
@@ -367,7 +410,7 @@ func _check_notes() -> void:
 func _refresh_hint() -> void:
 	if _meters.ended:
 		_hud.set_hint("")
-	elif is_inverted:
-		_hud.set_hint("You are falling upward  ·  walk the ceiling to the music box  ·  tap E to touch it gently, hold E to make it loud  ·  F to come back down")
+	elif is_inverted and not _has_contacted:
+		_hud.set_hint("tap E to touch it gently  ·  hold E to make it loud")
 	else:
-		_hud.set_hint("Arrows or A/D to move  ·  SPACE to jump  ·  F to turn the world over")
+		_hud.set_hint("")
