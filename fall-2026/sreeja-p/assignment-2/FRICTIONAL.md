@@ -246,7 +246,7 @@
 
 ### 2026-10-07 — sound effects: generated, chosen, and wired in
 
-- **Date and what I was working on:** the sound effects. Generated in a separate Claude Code session (its note is the source for this entry); the kept files were downloaded on 2026-10-07 between 16:24 and 16:53. **Date note (honest):** I first remembered generating them on 2026-10-05, but the prompts I used were written by Claude on 2026-10-06 and 2026-10-07, so the generation can't be earlier than that; what I started on 2026-10-05 was the Suno music. The exact generation time is in ElevenLabs' History.
+- **Date and what I was working on:** the sound effects. Generated in a separate Claude Code session (its note is the source for this entry); the kept files were downloaded on 2026-10-07 between 16:24 and 16:53. **Date note (honest):** I first remembered generating them on 2026-10-05, but the prompts I used were written by Claude on 2026-10-06 and 2026-10-07, so the generation can't be earlier than that; what I started on 2026-10-05 was the Suno music. The exact generation time is in ElevenLabs' History. **Correction (2026-10-07, later):** I never used Suno: I had mixed up the tool names, and all the music was made in ElevenLabs Music (entry "the music loop").
 - **I tried / expected:** ElevenLabs Sound Effects (free account), one generation per sound with Claude's prompts, Prompt influence 70%, Prompt enhancement off (so the logged prompt is exactly what the model got), duration set by hand. I expected short, cartoonish sounds that match each pillar.
 - **What happened and what I decided:**
   - **Jump, hose:** usable on the first try. For the jump I kept the most realistic, not-too-fast version of four; for the hose all four were fine and I kept the one I liked best.
@@ -280,6 +280,20 @@
 - **Human / Claude / model:** I spotted the problem, refused the outline, chose option A, and accepted v2; Claude wrote both prompts, removed the outline and the code darkening, measured the contrast, and re-ran the tests; ChatGPT generated v2.
 - **Evidence:** SOURCES rows ENV-BG and ENV-BG v2; TEST-REPORT "ENV-BG regenerated (v2)"; `rejected/ENV-BG-v1-orange-glow.png`; `evidence/screens-web/`.
 
+
+### 2026-10-07 — the music loop
+
+- **Wanted:** a fast, drum-led loop that never relaxes (*Race the flames*), looping with no click.
+- **Asked:** ElevenLabs Music ("Music v2"), Claude's prompt (verbatim in SOURCES, "Music"), 40 s. **I kept my second version.** (Earlier notes said Suno for the music: I mixed up the tool names; Suno was never used.)
+- **Got:** what I asked for: instrumental, taiko-driven, measured at 150.0 BPM, steady. Its energy rises a little over the track and it dies away at the end.
+- **Capture:** Eleven Music's free plan doesn't permit downloads (its terms, checked by Claude), so I recorded the playback with Audacity and BlackHole. I checked this with a TA and it was approved for the course. Credit "Created in collaboration with ElevenLabs" is given, as the terms require.
+- **Decided / edited:** I accepted the second version and asked for it quieter than the effects. In the sound session Claude found the best-matching 16 bars (14.10–39.70 s), crossfaded the seam over 10 ms, and set it 6 dB under the effects. Here Claude wired it in with Loop on, and the music tests now pass with the real file.
+- **Human / Claude / model:** I chose the tool and the length, generated, recorded, and set the "quieter" direction; Claude wrote the prompt, guided the recording setup, cut, levelled, encoded, wired, and tested; ElevenLabs generated the music.
+- **Version 1 (rejected):** too generic, without many ninja-sounding elements, and too loud against the sound effects; not what I had in mind. Version 2 had the taiko and plucked strings I wanted.
+- **Dates:** I started generating in ElevenLabs on 2026-10-05 and finalized on 2026-10-07.
+- **Listening in the game:** after listening to the music and the sounds together, they seem fine, so the music stays at 0 dB.
+- **Evidence:** SOURCES "Music (ElevenLabs Music)"; TEST-REPORT "music loop in the slice".
+
 ---
 
 ## GitHub pushes
@@ -294,3 +308,4 @@
 | 2026-10-07 | Add silhouette, collision overlay, and palette from in-game art; finish character sheet |
 | 2026-10-07 | Add generated flames, DEVASTATED pop-up, README and submission drafts; verify 41/41 tests |
 | 2026-10-07 | Add generated sound effects with mute keys and sound tests, regenerate background v2; verify 41+14+12 tests |
+| 2026-10-07 | Add ElevenLabs music loop with loop and behaviour tests; record model terms and attribution; verify 41+14+14 tests |
