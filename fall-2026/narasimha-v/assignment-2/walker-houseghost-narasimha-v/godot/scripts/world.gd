@@ -143,6 +143,12 @@ func _hold(seconds: float) -> void:
 
 func _open() -> void:
 	_player.controllable = false
+	# Nothing in an opening is worth being stuck in. If the sequence stalls for
+	# any reason, control is handed over regardless after ten seconds.
+	get_tree().create_timer(10.0).timeout.connect(func():
+		if not _player.controllable:
+			push_warning("opening overran; handing control to the player")
+			_finish_opening())
 	_hud.set_hint("")
 
 	# start in the truth
@@ -157,8 +163,8 @@ func _open() -> void:
 
 	await _hud.show_opening([
 		"They told everyone I ran away.",
-		"A new family sleeps in my room now.",
-		"I need one of them to see me.",
+		"I never left this house.",
+		"If anyone sees me, they will know that.",
 	], self)
 
 	if _skip_opening:
@@ -199,6 +205,25 @@ func _open() -> void:
 		r.modulate.a = 1.0
 	await fade_in.finished
 
+	_finish_opening()
+
+
+## Everything that must be true once the player has the controls, in one place
+## so the safety net and the normal path cannot drift apart.
+func _finish_opening() -> void:
+	if _player.controllable:
+		return
+	_hud.hide_opening()
+	is_inverted = false
+	_show_rooms(false)
+	_apply_world_geometry(false)
+	_player.set_inverted(false)
+	_audio.set_world_inverted(false)
+	_child.visible = false
+	_player.modulate.a = 1.0
+	if _player.global_position.y < 500.0:
+		_player.global_position = Vector2(620.0, 815.0)
+	_player.velocity = Vector2.ZERO
 	_player.controllable = true
 	for relic in _relics:
 		relic.start_calling()
@@ -375,14 +400,16 @@ func _update_cue() -> void:
 			best = d
 			nearest = relic
 
+	var cam_x: float = _player.get_node("Camera").get_screen_center_position().x
 	if not _has_moved:
-		_hud.show_cue("\u2190  \u2192", _player.get_node("Camera").get_screen_center_position() + Vector2(0, -40))
+		# screen space, not world space: the HUD lives on a CanvasLayer
+		_hud.show_cue("\u2190  \u2192", Vector2(960.0 + _player.global_position.x - cam_x, 560.0))
 		return
 	if nearest == null:
 		_hud.hide_cue()
 		return
 
-	var on_screen := Vector2(960.0 + nearest.global_position.x - _player.get_node("Camera").get_screen_center_position().x, nearest.global_position.y)
+	var on_screen := Vector2(960.0 + nearest.global_position.x - cam_x, nearest.global_position.y)
 	if nearest._available():
 		_hud.show_cue("E", on_screen)                 # in reach: take it
 	elif not is_inverted:
