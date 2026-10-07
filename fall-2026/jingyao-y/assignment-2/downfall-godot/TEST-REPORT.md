@@ -67,6 +67,7 @@ The whole project was cloned into an empty folder with `git clone`. The Godot ex
 | `6014c89` | Crashed in the first suite: `store_string` on a null file. Every suite writes to `res://../evidence`, which a clone does not have. Fixed in `f770e26`: `run_all.ps1` now creates the folder. |
 | `f770e26` | All suites passed up to `test_revisions`. Then `test_audio` stopped with `Invalid access to property or key 'base'`: the music streams were missing. Cause: the `.gitignore` rule `music/` also matched `audio/music/`. Fixed in `111bf6e`. |
 | `111bf6e` | **Every test suite passed**, headless and windowed (`test_audio` 26/26 in both passes, `test_ui_v1` 12/12, `test_lappland_input` 7/7). One screenshot script, `capture_v1`, failed once with `Out of bounds get index '0'` on a random map, then passed on two reruns. `capture_terrain` and `capture_guards` passed. **`capture_v1` is flaky, not fixed.** |
+| Course-repo copy (code plus used assets, 949 files, 2026-10-07) | **Every suite passed**, headless and windowed, including all capture scripts (`design/evidence/fresh-copy-course-subset.log`). The first try failed `test_builds`: that test reads the research table `局内构筑调研_集成战略藏品.md`, which the game-only history did not track. The table is now included. |
 
 ## Film captures as evidence (2026-10-07)
 
