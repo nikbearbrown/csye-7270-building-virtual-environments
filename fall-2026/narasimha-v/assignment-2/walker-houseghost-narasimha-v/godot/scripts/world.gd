@@ -185,9 +185,12 @@ func _on_night_ended(reason: String) -> void:
 ## house has is solid only while inverted. A blocker you cannot pass on one side
 ## is clear on the other, so the route alternates between the two worlds.
 func _apply_world_geometry(is_inverted: bool) -> void:
-	for node in get_tree().get_nodes_in_group("plat_normal"):
+	# Things that exist only in his memory are solid only while the memory is
+	# what the player is standing in; things that belong to the real house are
+	# solid only in the truth.
+	for node in get_tree().get_nodes_in_group("solid_in_memory"):
 		_set_solid(node, not is_inverted)
-	for node in get_tree().get_nodes_in_group("plat_inverted"):
+	for node in get_tree().get_nodes_in_group("solid_in_truth"):
 		_set_solid(node, is_inverted)
 
 
