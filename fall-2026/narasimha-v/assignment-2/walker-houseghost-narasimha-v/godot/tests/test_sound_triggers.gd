@@ -17,12 +17,25 @@ func _init() -> void:
 	root.add_child(scene)
 	for i in 5: await process_frame
 
-	# The slice opens with a non-interactive sequence that establishes who the
-	# player is. Wait for control to be handed over before driving any input,
-	# or every movement assertion measures a player who is deliberately frozen.
+	# The slice opens with four lines the player advances themselves, so the
+	# check has to read them like a player before it can drive anything. Waiting
+	# alone would hang: the opening waits for a key and never times out.
 	var player = scene.get_node("Player")
-	while not player.controllable:
-		await create_timer(0.2).timeout
+	var guard := 0
+	while not player.controllable and guard < 40:
+		guard += 1
+		var down := InputEventKey.new()
+		down.keycode = KEY_SPACE
+		down.physical_keycode = KEY_SPACE
+		down.pressed = true
+		Input.parse_input_event(down)
+		var up := InputEventKey.new()
+		up.keycode = KEY_SPACE
+		up.physical_keycode = KEY_SPACE
+		up.pressed = false
+		Input.parse_input_event(up)
+		await create_timer(0.3).timeout
+	_expect(player.controllable, "the opening hands over control once it is read", player.controllable)
 
 	var audio = scene.get_node("Audio")
 	var meters = scene.get_node("Meters")

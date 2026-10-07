@@ -11,6 +11,7 @@ extends CanvasLayer
 @onready var _hint: Label = $Hint
 @onready var _opening: Label = $Opening
 @onready var _note: Label = $Note
+@onready var _prompt: Label = $Prompt
 var _note_tween: Tween
 var _hint_tween: Tween
 var _cue_tween: Tween
@@ -22,6 +23,7 @@ func _ready() -> void:
 	_opening.visible = false
 	_note.visible = false
 	_cue.visible = false
+	_prompt.visible = false
 	_frost.color = Color(0.78, 0.86, 0.92, 0.0)
 
 
@@ -66,29 +68,50 @@ func pulse_days() -> void:
 
 
 ## The opening: three lines over the house as it really is, shown once.
+## The opening is read at the player's pace, one line at a time, advancing only
+## when they say so. Timing it meant reading against a clock, and making a key
+## skip it was backwards: a key press means "I have read this", not "stop".
 func show_opening(lines: Array, world) -> void:
 	_opening.visible = true
 	_opening.modulate.a = 0.0
 	for i in lines.size():
-		if world._skip_opening:
-			break
 		_opening.text = "\n".join(lines.slice(0, i + 1))
 		var t := create_tween()
-		t.tween_property(_opening, "modulate:a", 1.0, 0.55)
+		t.tween_property(_opening, "modulate:a", 1.0, 0.5)
 		await t.finished
-		await world._hold(0.85)
-	if world._skip_opening:
-		return
+		_prompt.text = "press any key" if i < lines.size() - 1 else "press any key to begin"
+		_prompt.visible = true
+		await world.wait_for_key()
+		_prompt.visible = false
 	var out := create_tween()
-	out.tween_property(_opening, "modulate:a", 0.0, 0.9)
+	out.tween_property(_opening, "modulate:a", 0.0, 0.7)
 	await out.finished
 	_opening.visible = false
+
+
+## The same words, on demand, for a player who wants them again.
+func show_story(lines: Array) -> void:
+	_opening.text = "\n".join(lines)
+	_opening.visible = true
+	_opening.modulate.a = 0.0
+	_prompt.text = "press I to close"
+	_prompt.visible = true
+	var t := create_tween()
+	t.tween_property(_opening, "modulate:a", 1.0, 0.3)
+
+
+func hide_story() -> void:
+	_prompt.visible = false
+	var t := create_tween()
+	t.tween_property(_opening, "modulate:a", 0.0, 0.3)
+	t.tween_callback(func(): _opening.visible = false)
 
 
 func hide_opening() -> void:
 	_opening.visible = false
 	_note.visible = false
 	_cue.visible = false
+	_prompt.visible = false
 
 
 ## A line of his, held for a few seconds and then let go. Deliberately low on

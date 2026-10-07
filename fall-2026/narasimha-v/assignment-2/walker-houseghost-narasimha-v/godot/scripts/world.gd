@@ -133,31 +133,37 @@ func _ready() -> void:
 ## becomes the warm room he remembers. By the time control is handed over, the
 ## player knows the grey is true, the warm is memory, and which one he belongs
 ## to.
-## True as soon as the player presses anything during the opening. Holding
-## someone still for ten seconds while they press keys and nothing happens
-## teaches them the game is broken, which is the opposite of what an opening
-## is for.
+## The words the game opens with, and the same words the player can call back
+## at any time with I. Kept in one place so the two can never say different
+## things.
+const STORY := [
+	"They told everyone I ran away.",
+	"I never left this house.",
+	"I cannot touch her. Only my own things still move for me.",
+	"If she sees them move, she will know I was here.",
+]
+
 var _skip_opening := false
+var _awaiting_key := false
+var _story_open := false
+var _control_before_story := false
 var _has_moved := false
 var _has_flipped := false
 var _has_contacted := false
 
 
-func _hold(seconds: float) -> void:
-	var left := seconds
-	while left > 0.0 and not _skip_opening:
+## Blocks until the player presses something. The opening advances at their
+## reading speed, not at a speed I guessed.
+func wait_for_key() -> void:
+	_awaiting_key = true
+	while _awaiting_key:
 		await get_tree().process_frame
-		left -= get_process_delta_time()
 
 
 func _open() -> void:
 	_player.controllable = false
-	# Nothing in an opening is worth being stuck in. If the sequence stalls for
-	# any reason, control is handed over regardless after ten seconds.
-	get_tree().create_timer(10.0).timeout.connect(func():
-		if not _player.controllable:
-			push_warning("opening overran; handing control to the player")
-			_finish_opening())
+	# The opening waits for the player rather than for a clock, so there is no
+	# timeout here: it cannot overrun, only wait.
 	_hud.set_hint("")
 
 	# start in the truth
@@ -168,23 +174,15 @@ func _open() -> void:
 	_audio.set_world_inverted(true)
 	_child.visible = true
 	_player.global_position = Vector2(620.0, 265.0)
-	await _hold(1.3)
+	await get_tree().create_timer(1.1).timeout
 
-	await _hud.show_opening([
-		"They told everyone I ran away.",
-		"I never left this house.",
-		"I cannot touch her. Only my own things still move for me.",
-		"If she sees them move, she will know I was here.",
-	], self)
-
-	if _skip_opening:
-		_hud.hide_opening()
+	await _hud.show_opening(STORY, self)
 
 	# The memory closes over the truth rather than replacing it. He fades out of
 	# the ceiling as a ghost and fades in on the floor as a boy, with the rooms
 	# dissolving across the same two seconds, so the change reads as one world
 	# becoming another rather than as two pictures being swapped.
-	await _hold(0.35)
+	await get_tree().create_timer(0.35).timeout
 	_audio.play("flip")
 
 	var fade_out := create_tween()
@@ -242,10 +240,27 @@ func _finish_opening() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# I reopens the story at any time, including while it is open.
+	if event.is_action_pressed("story"):
+		if _story_open:
+			_story_open = false
+			_hud.hide_story()
+			_player.controllable = _control_before_story
+		elif _player.controllable:
+			_story_open = true
+			_control_before_story = true
+			_player.controllable = false
+			_hud.show_story(STORY)
+		return
+
+	if _story_open:
+		return
+
 	if not _player.controllable:
-		# Any press cuts the opening short rather than being swallowed.
+		# During the opening a key press means "I have read this line", so it
+		# advances rather than skipping.
 		if event is InputEventKey and event.pressed and not event.echo:
-			_skip_opening = true
+			_awaiting_key = false
 		return
 	if event.is_action_pressed("flip_world"):
 		_has_flipped = true
