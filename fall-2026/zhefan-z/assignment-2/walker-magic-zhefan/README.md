@@ -61,7 +61,17 @@ Also `test_player.gd`, `test_cast.gd`, `test_wolf.gd`, `test_flow.gd`, `test_aud
 Full list: `TEST-REPORT.md` → Known limitations.
 
 ## Film
-Final film: **TODO** (made with Brutalist `godot-gamedev` + `walker`; link, filename and SHA-256 to be added here). Media files (MP3/MP4, anything over 25 MB) are kept out of GitHub, as the course requires.
+**Her Fire Is the Only Warmth: Building a Cave Mage Slice**, made with the course's Brutalist `godot-gamedev` skill and the `walker` modifier.
+
+| | |
+|---|---|
+| Link | https://drive.google.com/file/d/1n5IhEftLCKWkrGQrS5hVRhfr4IQRG8Ut/view?usp=sharing (anyone with the link can view) |
+| File | `claude-liam-walker-magic-gamedev.mp4` |
+| SHA-256 | `aec3d57dba3d057b4fb5f944a37d4d9c34f31e181743fcbf617068e8f9442eff` |
+| Format | 3840x2160, 30 fps, H.264 + AAC 48 kHz stereo; 5 min 44.3 s (344.333 s); 44,430,567 bytes |
+| Game source shown | `74c0443`; gameplay captured from `5266946`, whose runtime files are identical |
+
+Gameplay in the film is scripted-input capture (real input events through Godot Movie Maker, each take checked against a headless run), labelled as such; it is not a playtest. The SLICE AUDIO segments carry the game's own sound from the same take with no narration (verbal approval from the instructor the method is acceptable). Reel records: `youtube/claude-liam-walker-magic-gamedev/` (`SCRIPT.md`, `SHOTLIST.md`, `CAPTURE.md`, `FACTCHECK.md`, `gamedev-evidence.json`). The MP4 and the captures are kept out of GitHub, as the course requires.
 
 ## Documents
 | File | What it is |
@@ -69,6 +79,7 @@ Final film: **TODO** (made with Brutalist `godot-gamedev` + `walker`; link, file
 | `CONCEPT.md`, `STORYBOARD.md`, `CHARACTER-SHEET.md`, `CHANGE-BRIEF.md` | Design, written before generation; later changes appended as dated revisions |
 | `SOURCES.md` | Every tool and model, versions, licenses, prompts, accepted and rejected outputs, the asset log |
 | `TEST-REPORT.md` | Automated checks and human playtests against the assignment's test table |
+| `SUBMISSION.md` | The submission fields: revisions, models, film link and SHA-256, known limitations |
 | `assets/sprites/EDIT-LOG.md`, `assets/audio/EDIT-LOG.md`, `assets/audio/MUSIC-EDIT-LOG.md` | Every edit to the generated art and audio |
 | `../FRICTIONAL.md` | Work log (in the course folder, next to this project) |
 

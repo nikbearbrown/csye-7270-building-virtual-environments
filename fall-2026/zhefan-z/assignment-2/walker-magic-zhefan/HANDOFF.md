@@ -1,5 +1,7 @@
 # HANDOFF — walker-magic (CSYE 7270 Assignment 2)
 
+> **Status 2026-10-07: submitted.** The film is done (README → Film, SUBMISSION.md); the pending list below is kept as the record of how it was finished.
+>
 > Written 2026-10-07 for a fresh Claude Code session. Read this first, then `TEST-REPORT.md`, `SOURCES.md`, `youtube/claude-liam-walker-magic-gamedev/CAPTURE.md` and `SCRIPT.md`.
 
 ## Where things are

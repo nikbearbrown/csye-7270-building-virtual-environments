@@ -206,6 +206,19 @@
 - **What I understand now / still do not understand:** (Claude Code's summary, not my words) the headless checks prove the triggers, not what is heard; the playtests are the only evidence for how it sounds.
 - **Evidence and next step:** `b2fbbff`, `5263e62`; `walker-magic-zhefan/TEST-REPORT.md`. Next: the film (Brutalist `godot-gamedev` + `walker`).
 
+### 2026-10-07 — The film: captures, assembly and submission — Claude Code session notes
+
+- **Date and what I was working on:** the required film with the Brutalist `godot-gamedev` skill and the `walker` modifier, then the final submission.
+- **I tried / expected:** native 4K captures of the real game driven by scripted input, the game's own sound in a labelled stretch with no narration, and no game sound dubbed in afterwards.
+- **What happened:**
+  - The skill's compiler strips the sound from footage, so the no-narration stretch needed an approved method.
+  - The 4K probe failed four ways before it worked: Movie Maker recorded 640x360 (the game's viewport stretch); Windows released the run key when the Godot window lost focus; a memory crash while Slay the Spire 2 was open; and wrong aim, because the window was clamped to the 2560x1600 screen and a windowed Godot reads the real cursor. The ninth probe was valid; all four takes then passed the check against a headless run.
+  - The first final export was refused by the frame check (two cards too empty, a library card's handle 3 px past the safe edge, two code cards too low in contrast); the second passed.
+- **What I did:** asked the instructor about the SLICE AUDIO method and got verbal approval; approved the beat sheet, script, title and the four takes; closed other programs and left the PC alone during the takes; kept run-01 as recorded because it is honest gameplay; watched and listened to the whole master; uploaded it to Google Drive.
+- **What Claude or another person contributed:** Claude Code wrote the capture harness, the input-only driver and the reference check, recorded the probe and the takes, built the beat sheet, cards, frame-exact cuts, evidence ledgers and the master, and fixed the refused cards.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) Movie Maker records what the engine renders, so the engine itself has to render at 4K; a scripted take only counts as evidence when it matches an independent run of the same inputs.
+- **Evidence and next step:** `walker-magic-zhefan/youtube/claude-liam-walker-magic-gamedev/` (`CAPTURE.md`, `SHOTLIST.md`, `FACTCHECK.md`); commits `60c1003`, `37d38f0`, `fc5ad4c`; master `claude-liam-walker-magic-gamedev.mp4`, sha256 `aec3d57dba3d057b4fb5f944a37d4d9c34f31e181743fcbf617068e8f9442eff`. Next: the Canvas submission.
+
 ### Still unresolved (as of this draft) — retrospective, drafted 2026-10-07
 
 - The hurt pose does not lean back; the hit reads mainly through knockback and blink.
@@ -216,7 +229,8 @@
 
 - "2 resources still in use at exit" for `MUS-LOOP.ogg` when the game closes; root cause not found.
 - Why the first project import stalled during S6.
-- The film is not made yet; its link, filename and SHA-256 go into the README.
+- ~~The film is not made yet; its link, filename and SHA-256 go into the README.~~ Done 2026-10-07 (README → Film, SUBMISSION.md).
+- A first import of the film's capture copy with the capture scripts present crashed Godot 4.7.2 at shutdown; worked around with a two-step import.
 
 ---
 
@@ -241,3 +255,7 @@ Pushes of the branch `zhefan-z/assignment-2` to nikbearbrown/csye-7270-building-
 | 2026-10-07 | `b2fbbff` S8 README, TEST-REPORT with in-engine evidence, playtests 5 and 6 |
 | 2026-10-07 | `5263e62` music verdict and CHAR-CAST rejection reasons |
 | 2026-10-07 | This file: FRICTIONAL entries merged (the author's retrospective draft and the Claude Code session notes) |
+| 2026-10-07 | `5266946` FRICTIONAL corrections (Claude Code summary lines marked; the wolf head noticed by the author; thumbnails made by Claude in claude.ai) |
+| 2026-10-07 | `60c1003` film reel scaffolding, valid 4K probe, image prompts in SOURCES, HANDOFF · `196aecc` merge of main |
+| 2026-10-07 | `37d38f0` takes run-01 to run-04 recorded and checked; prompt answers logged |
+| 2026-10-07 | Final submission: `fc5ad4c` film assembly · README Film, SUBMISSION, TODO closed, this entry · merge of main; the final head SHA is in the Canvas note |
