@@ -292,6 +292,7 @@
 - **Version 1 (rejected):** too generic, without many ninja-sounding elements, and too loud against the sound effects; not what I had in mind. Version 2 had the taiko and plucked strings I wanted.
 - **Dates:** I started generating in ElevenLabs on 2026-10-05 and finalized on 2026-10-07.
 - **Listening in the game:** after listening to the music and the sounds together, they seem fine, so the music stays at 0 dB.
+- **Siren removed (my decision):** hearing it in the game, the fire-truck siren at the start was too much, so it's out of the game; the take is kept in `rejected/audio/`. Claude replaced its two tests with checks that starting and retrying are silent.
 - **Evidence:** SOURCES "Music (ElevenLabs Music)"; TEST-REPORT "music loop in the slice".
 
 ---
@@ -309,3 +310,4 @@
 | 2026-10-07 | Add generated flames, DEVASTATED pop-up, README and submission drafts; verify 41/41 tests |
 | 2026-10-07 | Add generated sound effects with mute keys and sound tests, regenerate background v2; verify 41+14+12 tests |
 | 2026-10-07 | Add ElevenLabs music loop with loop and behaviour tests; record model terms and attribution; verify 41+14+14 tests |
+| 2026-10-07 | Add ElevenLabs music loop with loop tests, remove start siren, record model terms; verify 41+14+14 tests |
