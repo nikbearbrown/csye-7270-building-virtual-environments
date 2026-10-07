@@ -15,6 +15,7 @@ var max_hp := 5
 var _message: Label
 var _sub: Label
 var _dim: ColorRect
+var _mutes: Label
 
 
 func _ready() -> void:
@@ -28,7 +29,24 @@ func _ready() -> void:
 	add_child(_dim)
 	_message = _make_label(24, 140)
 	_sub = _make_label(12, 172)
+	_mutes = _make_label(10, 4)
+	_mutes.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_mutes.size.x = 632
 	hide_message()
+
+
+## Small note top-right while a bus is muted (M = music, N = sound effects).
+func set_mutes(music_muted: bool, sfx_muted: bool) -> void:
+	var parts: PackedStringArray = []
+	if music_muted:
+		parts.append("music off (M)")
+	if sfx_muted:
+		parts.append("sfx off (N)")
+	_mutes.text = "  ".join(parts)
+
+
+func mute_text() -> String:
+	return _mutes.text
 
 
 func _make_label(size: int, y: float) -> Label:

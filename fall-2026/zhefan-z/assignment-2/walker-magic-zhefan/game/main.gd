@@ -16,6 +16,7 @@ var restart_requested := false
 @onready var camera: Camera2D = $Camera2D
 @onready var player: CharacterBody2D = get_node_or_null("Player")
 @onready var hud: Control = get_node_or_null("UI/HUD")
+@onready var audio: AudioDirector = get_node_or_null("AudioDirector")
 
 
 func _enter_tree() -> void:
@@ -32,10 +33,15 @@ func _ready() -> void:
 		player.failed.connect(_on_player_failed)
 		player.cleared.connect(_on_player_cleared)
 		player.hurt.connect(_on_player_hurt)
-		for wolf in get_tree().get_nodes_in_group("wolves"):
+		var wolves := get_tree().get_nodes_in_group("wolves")
+		for wolf in wolves:
 			wolf.target = player
 		if hud:
 			hud.set_hp(player.hp, Tuning.MAX_HP)
+		if audio:
+			audio.connect_game(player, wolves)
+	if hud:
+		hud.set_mutes(is_bus_muted("Music"), is_bus_muted("SFX"))
 
 
 func _process(_delta: float) -> void:
@@ -51,6 +57,20 @@ func toggle_pause() -> void:
 	tree.paused = not tree.paused
 	if hud:
 		hud.show_paused(tree.paused)
+	if audio:
+		audio.set_paused(tree.paused)
+
+
+## M / N. Bus mutes are global, so they also hold across a restart.
+func toggle_mute(bus_name: String) -> void:
+	var idx := AudioServer.get_bus_index(bus_name)
+	AudioServer.set_bus_mute(idx, not AudioServer.is_bus_mute(idx))
+	if hud:
+		hud.set_mutes(is_bus_muted("Music"), is_bus_muted("SFX"))
+
+
+func is_bus_muted(bus_name: String) -> bool:
+	return AudioServer.is_bus_mute(AudioServer.get_bus_index(bus_name))
 
 
 func restart_if_cleared() -> void:
