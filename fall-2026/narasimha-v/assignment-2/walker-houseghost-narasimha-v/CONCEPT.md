@@ -7,24 +7,32 @@
 
 You are the ghost of a boy the world believes ran away, haunting the house a new family has just moved into. By flipping between the house as they see it (upright, bare, theirs) and the house as you remember it (upside down, lamplit, yours), you reach across to be seen — but every contact tears a day off the calendar toward the anniversary of the night you "ran," and the only adult who believes in ghosts is the man who made you one.
 
+## The opening
+
+**Added 2026-10-07 after playtesting.** The slice used to begin by dropping the player into a bedroom with a counter and three empty circles, and nothing ever established who they were. Finding things could not mean anything, because nothing said what finding them was for.
+
+It now opens on the house as it really is — grey, emptied, a living child sitting on the floor playing, a ghost hanging from the ceiling above her who she does not look up at. Three lines are laid over that image, one at a time:
+
+> They told everyone I ran away.
+> A new family sleeps in my room now.
+> I need one of them to see me.
+
+Then the memory blooms in over the truth, he fades from ghost to boy, and control is handed across. Twelve seconds. **Not one word of it explains a mechanic** — it establishes a situation, which is a different thing, and it is the only way the player can know what they want.
+
 ## Core loop
 
-**Revision 2026-10-07 — the loop as built.** The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, and the world changes what it is showing.
+The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, and the world changes what it is showing.
 
-- **Normal — the comfortable lie.** He looks like a living boy, and the room is warm, lamplit and lived in. This is how he still sees himself.
-- **Inverted — what is actually there.** He becomes the ghost, and the room is the stripped, boxed-up bedroom the new family moved into.
+- **Normal — the comfortable lie.** He looks like a living boy, the room is warm and lived in, and the house is empty of anyone else. This is how he remembers it.
+- **Inverted — what is actually there.** He is a ghost, the room is stripped and boxed up, and the new family's daughter is sitting on the floor in it.
 
-**What the player does:** walk and jump through the house, flipping between the two worlds to get past what blocks the way, and reach the music box to be noticed.
+**What the player does:** find three things of his that are still in the house, each out of reach from the floor, each calling with the sound of a music box playing by itself. Reaching any of them means turning the world over.
 
-**What blocks you is different in each world, and that is the whole mechanic:**
+**What blocks you is different in each world.** His furniture clutters the memory and was taken out of the real house years ago; the new family's boxes clutter the truth and were never his. The past is in your way in one world, the present in the other.
 
-- **The memory is cluttered.** His bookshelf, his furniture, everything he still sees is in the way. In the truth it was taken out of the house years ago, so the same spot is empty and you walk straight through. *The past is in your way.*
-- **The real house has the new family's moving boxes.** Those exist nowhere in his memory, so they block the truth and not the lie. *The present is in your way.*
-- **The floor of the real house has been pulled apart.** Gaps in the boards must be jumped. Falling through one costs a day off the calendar — a missed jump is paid for out of the same meter that being seen is paid for.
+**What it costs:** the floor of the real house has been pulled apart. Falling through a gap costs a night. So does every contact. The night ends either because she sees you, or because it runs out.
 
-**The decision each time:** at the music box, a gentle touch or a loud one. Gentle is slow and safe; loud is faster recognition but costs more days and wakes the house.
-
-**The risk:** every contact and every fall tears days off the calendar toward the anniversary. The night ends either because the child finally sees you, or because the anniversary arrives first.
+**How the player knows it is working:** her posture. She is absorbed in her rabbit at first; after one relic she looks up and to one side, having heard something; after all three she is facing you with her eyes wide. She is the recognition meter, and she is the only saturated colour in the grey room.
 
 ## Design pillars
 

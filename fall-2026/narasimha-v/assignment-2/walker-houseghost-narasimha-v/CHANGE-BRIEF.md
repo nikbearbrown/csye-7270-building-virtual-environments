@@ -16,6 +16,13 @@
 | PROP-SHELF | His bookshelf: blocks the memory, absent from the truth | 1–4 | Built — lifted from `env_room_memory.png` |
 | PROP-BOXES | The new family's moving boxes: block the truth, absent from the memory | 1–4 | Built — lifted from `env_room_empty.png` |
 | ENV-FLOOR-HOLE | A hole where the floorboards have been pulled up | 1–4 | Built — drawn in code |
+| CHAR-CHILD | The new family's daughter, three poses: playing, hearing, seeing | 1, 4 | Built — `child_1..3.png` |
+| RELIC-SHOES | His shoes, still by the door | 3 | Built — lifted from `env_room_memory.png` |
+| RELIC-BOARD | A floorboard lifted at one end, something pale beneath | 6 | Built — drawn in code |
+| SFX-STEP / SFX-GHOSTSTEP | A footstep in the memory; displaced air as the ghost | all | Built |
+| SFX-DRIFT | The ghost's continuous moving air | all | Built |
+| SFX-FALL | Dropping through the floor | 5 | Built — derived from SFX-CORRECT |
+| SFX-HEART | The night running out, from four nights onward | 6 | Built — synthesised in code |
 | SFX-FLIP | World flip (held breath, reversed swell) | 2 | Wired, file pending |
 | SFX-CONTACT | Contact (music-box chime with a paper tear inside) | 4 | Wired, file pending |
 | SFX-FROST | A day tearing off (crystalline crackle) | 4 | Wired, file pending |
@@ -62,20 +69,27 @@
 4. **A sound fires twice on one event.** Check: an automated script asserts one sound per event under mashing and held input. **Outcome: a real defect was caught.** The contact cooldown guarded only the input path, so the resolve function could still fire twice when called directly; the guard now lives inside the function. The check also caught a flaw in itself — it measured waits in frames, and headless frames are not real time. Five assertions now pass.
 5. **The slice is unreadable muted.** Check: play it with all audio off and confirm the cost is still legible. **Outcome: designed for and visible in the captures, but the human playtest is still outstanding.** The calendar counter jolts when a day is torn, recognition pips fill, and a frost vignette deepens as the anniversary nears — none of which depend on sound. The slice currently runs silent by necessity, which has made this easy to observe but does not substitute for a real playtest with the audio present and then muted.
 
-### Found while building, not predicted
+### Found while building and while playing, not predicted
 
-6. **The core verb was unreachable.** The music box sat where the player could never touch it. Moved, and later moved again into the first room so it is visible from the spawn point.
-7. **The collision shape did not match the art**, having been specified before any art existed. Corrected, and the sheet records the correction.
-8. **The capsule was teleported into the floor on the first flip**, squeezing the player out through the bottom of the room. Fixed by centring sprite and capsule on the node so a flip moves nothing.
+6. **The core verb was unreachable** — the relic sat where the player could never touch it.
+7. **The collision shape did not match the art**, having been specified before any art existed.
+8. **The capsule was teleported into the floor on the first flip**, squeezing the player out through the bottom of the room.
 9. **A blocker sat on the floor when the route it guards runs along the ceiling.**
 10. **The movement read as teleporting:** the walk cycle only ran in one state and the stride was too long to read as walking.
-11. **Three different ways of measuring the character's size were wrong.** Height fails across poses because a crouching child the same pixel height as a standing one is a larger character; shoulder width fails because raised arms narrow it; head width fails on the rising pose because the topmost pixels there are his raised hands. Body area, which barely changes with pose, is what finally worked.
-12. **The idle textures were never rebuilt** when the frame sets were unified, so the sprite changed size and height the moment he stopped walking.
-13. **He turned pale when he moved.** The walk and jump sheets were graded 30 percent brighter and much cooler than the idle. Colour matched per channel.
-14. **Only one sound could be heard.** The score covered the quieter sounds, and three of the six only fired at a music box the player had little chance of reaching. Levels raised and the music now ducks 9 dB under every sound.
-15. **The player had no idea what to do.** Solved without text: the music box is visible from the spawn point, lit and breathing, and calls every few seconds with its own chime through a positional player that quietens with distance.
-16. **The platforms were decoration.** You could walk the whole level on flat ground, so nothing you did mattered. Replaced with gaps in the floor that must be jumped, and obstacles that exist in only one world.
-17. **Gaps in the ceiling were tried first and abandoned:** under reversed gravity crossing one means jumping downward, which no player will intuit.
-18. **The first gap width was unfair**, leaving a 35 px window to take off in against a jump covering 275 px of ground. At 170 px there is a body length of margin.
-19. **The gaps were invisible,** which made them a trap rather than an obstacle, until a hole was drawn into the carpet at each one.
-20. **Twenty-four orphaned nodes** were left behind when the decorative platforms were deleted, drawing a stray rectangle in the corner of the screen.
+11. **Three different ways of measuring the character's size were wrong.** Height fails across poses; shoulder width fails when the arms are raised; head width fails on the rising pose because the topmost pixels there are his raised hands. Body area is what finally worked.
+12. **The idle textures were never rebuilt** when the frame sets were unified, so he changed size and height the moment he stopped walking. Later solved properly by making the idle the walk cycle's own legs-together frame: the standing drawing is 340 px where the walk frames are 303–317, and no amount of scaling reconciles a pose that stands straighter than walking ever does.
+13. **He turned pale when he moved** — the walk and jump sheets were graded 30 percent brighter and cooler than the idle.
+14. **The sounds could not be heard even though they fired.** Measured, `contact` was audible for 19 percent of its length, `correct` 15, `frost` 29: brief ticks surrounded by silence, which vanishes under a score at full level. The automated check had passed throughout, because counting that an event fired proves nothing about whether a person hears it.
+15. **The player had no idea what to do**, solved without instruction by moving a relic into view, lighting it permanently and having it call across the level.
+16. **The platforms were decoration** — the whole level could be walked on flat ground, so nothing the player did mattered.
+17. **Gaps in the ceiling were tried and abandoned:** under reversed gravity crossing one means jumping downward, which no player will intuit.
+18. **The first gap width was unfair,** leaving a 35 px window to take off in against a jump covering 275 px.
+19. **The gaps were invisible,** which made them a trap rather than an obstacle.
+20. **Twenty-four orphaned nodes** were left behind when the decorative platforms were deleted, drawing a stray rectangle on screen.
+21. **The heartbeat was audible from the first second,** which made it wallpaper rather than information. Silent now until four nights remain.
+22. **Taking the ghost's footsteps away entirely read as broken rather than weightless.** He keeps a stride rhythm in both worlds; what changes is what the rhythm is made of.
+23. **Reaching the end and finding nothing there.** One relic in a three-room level meant two thirds of it existed for no reason.
+24. **The slice never said who the player was.** No opening, no context, no reason to want anything. The single largest fault found, and the last one found, because it is invisible to anyone who already knows the story.
+25. **Adding the opening broke five of the twelve automated assertions**, which began driving input while the player is deliberately held still. The checks were wrong, not the game.
+26. **He appeared not to be moving while moving at full speed:** the camera follows him and all three room tiles were identical, so the background repeated exactly.
+27. **The child was absent from the opening,** because her visibility was driven by a signal the opening sets up without emitting — so the image the entire opening exists to deliver was missing from it.

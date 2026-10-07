@@ -32,20 +32,17 @@ Or open `godot/project.godot` in the Godot editor and press Play.
 
 ## What the slice demonstrates
 
-**One house, two truths.** The camera never rotates. Pressing flip reverses gravity: the boy falls upward and stands on the ceiling, while the room cross-dissolves between the two worlds.
+**It opens by saying who you are.** The grey, emptied house; a living child sitting on the floor playing with a one-eared rabbit; a ghost hanging from the ceiling above her that she does not look up at. Three lines over the top — *they told everyone I ran away · a new family sleeps in my room now · I need one of them to see me* — and then the memory blooms in over the truth, he fades from ghost to boy, and you have control. None of it explains a mechanic.
 
-- **Normal** — he looks like a living boy, and the bedroom is warm, lamplit and lived in. The comfortable lie.
-- **Inverted** — he becomes the ghost, and the room is the stripped, boxed-up one the new family moved into. What is actually there.
+**One house, two truths.** The camera never rotates. Flip reverses gravity: he falls upward and stands on the ceiling, and the room cross-dissolves between the warm version he remembers and the stripped one the new family moved into. He walks with an eight-frame cycle in the memory and drifts upside down as a ghost in the truth, hair and mist streaming toward the ceiling.
 
-**What stops you is different in each world, and that is the mechanic.** His bookshelf blocks the memory and is simply absent from the truth, because it was taken out of the house years ago — the past is in your way. The new family's moving boxes block the truth and are absent from the memory, because they were never his — the present is in your way. And the floor of the real house has been pulled apart: three gaps must be jumped, and falling through one costs a day off the calendar. A missed jump is paid for out of the same meter that being seen is paid for.
+**Three things of his are still in the house** — the music box his mother wound, his shoes still by the door, a floorboard with his name under it. Each is out of reach from the floor and each calls across the level with the sound of a music box playing by itself, so finding them needs the flip. A relic's light goes out once it has been answered, so the lit ones are always the ones left.
 
-**Nothing tells the player any of this.** The music box is visible from the spawn point as a light high on the wall, out of reach from the floor; it is lit and breathing, and it calls every few seconds with its own chime, quieter the further away you are. A music box playing by itself is both what a haunting sounds like and all the guidance the slice gives.
+**What blocks you is different in each world.** His bookshelf clutters the memory and was taken out of the real house years ago; the family's moving boxes clutter the truth and were never his. And the floor of the real house has been pulled apart: three gaps must be jumped, and falling through one costs a night, out of the same meter that being seen costs.
 
-He walks with an eight-frame cycle advancing by ground covered rather than by a clock, so his stride matches his speed; the ghost does not walk but drifts on his own six frames, drawn upside down so his hair and the mist of his legs stream toward the ceiling. He jumps with coyote time, input buffering and an early-release cut, and has four generated poses for crouching, rising, falling and landing.
+**She is how you know it is working.** Absorbed in her rabbit at first; looking up and to one side once you have found one thing; facing you with her eyes wide when you have found all three. She is the recognition meter, and the only saturated colour in a grey room.
 
-At the music box a tap is a gentle contact and a hold is a loud one. Both raise recognition and tear days off the calendar; the loud one costs more and wakes the house. The night ends either because the child sees you or because the anniversary arrives first.
-
-Each world has its own music and the flip crossfades between them. Six sound events fire from real game events, the music ducks beneath each one, and music and effects mute independently without changing anything the game does.
+**Nine sounds, and the one that matters most is a difference.** The boy has footsteps on carpet; the ghost has none at all, only displaced air that starts when he moves and stops when he stops. A heart begins beating at four nights left and quickens as they run out, and the counter flinches with it. Music ducks beneath every sound; both mute independently without changing anything the game does.
 
 ## Generated assets in the slice
 
@@ -58,6 +55,11 @@ Each world has its own music and the flip crossfades between them. Six sound eve
 | `godot/assets/art/env_room_memory.png` | The bedroom, remembered (inverted world) |
 | `godot/assets/music/mus_upright.wav` | Music for the upright world — tense, driving, no warmth |
 | `godot/assets/music/mus_memory.wav` | Music for the remembered world — a lullaby over an organic groove |
+| `godot/assets/art/char_walk_1..8.png` | Eight-frame walk cycle |
+| `godot/assets/art/char_jump_1..4.png` | Crouch, rising, falling, landing |
+| `godot/assets/art/char_ghost_inv_1..6.png` | The ghost drifting, drawn upside down |
+| `godot/assets/art/child_1..3.png` | The new family's daughter: playing, hearing, seeing |
+| `godot/assets/sfx/*.wav` | Nine sound events |
 
 Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, date, verdict and any hand edits. Rejected attempts are kept as thumbnails in `design/character/rejects/`.
 
@@ -67,13 +69,12 @@ Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, da
 
 ## Status and known limitations
 
-- **The four sound effects have not been generated yet.** They are wired to fixed filenames and the slice runs without them, printing a notice. This is deliberate: sound must never decide state, and the slice proves it by working when the files are absent. Both music tracks are in and verified.
-- **The music loop has been verified in code but not yet by a human ear.** The engine confirms it wraps from 31.4 s to 0.8 s still playing; whether the seam is inaudible to a listener is still to be checked.
-- **The ghost reads faint against the grey upright room.** This was predicted in CHANGE-BRIEF as a failure case and is visible in `evidence/01-upright-ghost.png`. The planned fix is a rim light on the ghost sprite rather than a change to the room; it has not been done.
-- The slice covers storyboard panels 1 to 4. Panels 5 and 6 — the hallway that corrects itself and the father at the cellar door — are semester work beyond this assignment.
-- Three of the fourteen character-sheet poses (reach, scare, goodbye) are specified but not generated; the slice expresses those states through image swaps and engine motion instead.
-- **The platforms and crate stacks are drawn in code and look like placeholder art** against the painted rooms. Generated props are needed to make the level art coherent; the asset log marks them as code-drawn so they are never mistaken for generated assets.
-- The human playtest with sound on and then muted is still outstanding, and an automated input sequence does not substitute for it.
+- **The three room tiles repeat.** The middle one is mirrored to break the repetition, which puts two doors adjacent at the seam; it reads as a double doorway rather than an error, and is preferable to a background that repeats exactly while the camera follows the player.
+- **The floor gaps exist in both worlds**, although the fiction says only the real house has been pulled apart. Treated as his memory decaying rather than modelled as two separate floors.
+- **Three character-sheet poses (reach, scare, goodbye) are specified but not generated**; the slice expresses those states through image swaps and engine motion.
+- **The floorboard relic and the floor holes are drawn in code**, not generated. The asset log marks them as such so they are never counted as generated assets.
+- **The slice covers storyboard panels 1 to 4.** Panels 5 and 6, the hallway that corrects itself and the father at the cellar door, are semester work.
+- **The automated check cannot hear.** It verifies that each event fires exactly once and that muting changes no state, but every audio fault in this project was found by a human listening, not by the check passing.
 
 ## Credits
 
