@@ -17,16 +17,27 @@ func _init() -> void:
 	root.add_child(scene)
 	for i in 5: await process_frame
 
+	# The slice opens with a non-interactive sequence that establishes who the
+	# player is. Wait for control to be handed over before driving any input,
+	# or every movement assertion measures a player who is deliberately frozen.
+	var player = scene.get_node("Player")
+	while not player.controllable:
+		await create_timer(0.2).timeout
+
 	var audio = scene.get_node("Audio")
 	var meters = scene.get_node("Meters")
 	var contact = scene.get_node("MusicBox")
 
 	print("\n--- HOUSEGHOST sound trigger check ---")
 
-	# 1. One flip, one flip sound.
+	# 1. One flip, one flip sound. Measured as a change rather than an absolute,
+	#    because the opening sequence legitimately plays one of its own when the
+	#    memory closes over the truth.
+	var flips_before: int = audio.counts["flip"]
 	scene.flip()
 	await _settle()
-	_expect(audio.counts["flip"] == 1, "one flip produces exactly one flip sound", audio.counts["flip"])
+	_expect(audio.counts["flip"] == flips_before + 1,
+		"one flip produces exactly one flip sound", audio.counts["flip"] - flips_before)
 
 	# 2. Mashing the flip key during the turn must not stack sounds. The guard
 	#    lives in world.gd (_flipping), so the extra calls are ignored outright.
