@@ -31,7 +31,7 @@
 - **What happened:** `gh` was not installed, so Claude Code could not create the GitHub repository; I created `zhef-z/walker-magic-zhefan` and pushed `main` myself. Claude Code found Godot 4.7.2 installed and used `4.7` in `config/features`.
 - **What I did:** approved the plan, kept `contact-sheet.png` (code-drawn) and the Co-Authored-By trailer, and pushed.
 - **What Claude or another person contributed:** Claude Code ran `git init`, moved the `*_zh.md` notes to `../walker-magic-zh-notes/`, moved the sketches into `design/character/`, wrote `project.godot` and `.gitignore`, checked for audio, images and files over 25 MB, and committed.
-- **What I understand now / still do not understand:** the first commit's timestamp is the evidence that the design came before generation.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) the first commit's timestamp is the evidence that the design came before generation.
 - **Evidence and next step:** `7371b25` (original `6697b80`), 2026-10-01 17:00:58 −04:00. Next: local generation tools.
 
 ### 2026-10-01 — Character reference and the 10 poses (Google Gemini) — retrospective, drafted 2026-10-07
@@ -60,9 +60,9 @@
   - The images arrived as JPG, not PNG, and new files appeared while Claude Code was working; it asked about each one before committing a full-size image.
   - The file first committed as `CHAR-RUN-PASSING-v1.jpg` (`24e8c62`, original `2a90b0b`) was the rejected v0; Claude Code found it by comparing it with my screenshot and fixed it in the next commit, keeping v0 only as a thumbnail.
   - Claude Code's own mistake: an edit dropped a `|` in the SOURCES.md Gemini row, so two table columns ran together; it noticed and fixed it in `a40b534`.
-- **What I did:** accepted or rejected each image, gave the rejection reasons, made most of the rejected thumbnails from screenshots, logged in to Hugging Face, and appended Revision 1 to the character sheet in my words.
-- **What Claude or another person contributed:** Claude Code installed and verified the tools, downloaded the models pinned to exact commits, drafted SOURCES.md, made the thumbnails of CHAR-REF v1, v3 and CHAR-RUN-PASSING v0 from the original downloads, and sent full-size rejects to the Recycle Bin.
-- **What I understand now / still do not understand:** a full-size image cannot be removed from git history once committed, so accept/reject has to come before the commit.
+- **What I did:** accepted or rejected each image, gave the rejection reasons, put the rejected thumbnails made from screenshots into the repo, logged in to Hugging Face, and appended Revision 1 to the character sheet in my words.
+- **What Claude or another person contributed:** Claude in claude.ai made the rejected thumbnails from screenshots I had shared there (the `*-thumb.png` files). Claude Code installed and verified the tools, downloaded the models pinned to exact commits, drafted SOURCES.md, made the thumbnails of CHAR-REF v1, v3 and CHAR-RUN-PASSING v0 from the original downloads, and sent full-size rejects to the Recycle Bin.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) a full-size image cannot be removed from git history once committed, so accept/reject has to come before the commit.
 - **Evidence and next step:** `26668d6`, `24e8c62`, `a40b534` (originals `c4fabaf`, `2a90b0b`, `95b9bb8`); SOURCES.md. Next: clean the sprites for the engine.
 
 ### 2026-10-01/02 — Music: Suno, then Gemini — retrospective, drafted 2026-10-07
@@ -87,7 +87,7 @@
 
 - **What happened:** the first wolf frames came from the long Gemini chat. The downloaded run frame had the mage's fail-pose head mixed into it, and the down frame kept the running legs.
 - **What I did:** restarted the wolf from the first frame in a new, text-only chat. From then on I used a separate chat per asset group. Accepted run v2 and lunge v2; the down frame still kept the lunge legs after three tries, so I stopped and accepted it, leaving the defeat motion to the engine. The fireball and burst worked on the first try (warm colors only, no green).
-- **What Claude or another person contributed:** Claude spotted the leaked head and compared images pixel by pixel when Gemini returned unchanged frames. I decided to restart and to change the workflow.
+- **What Claude or another person contributed:** I noticed the mage's head in the downloaded wolf image and asked why; Claude explained it as context bleed and compared images pixel by pixel when Gemini returned unchanged frames. I decided to restart and to change the workflow.
 - **What I understand now:** a long image chat mixes earlier images into new ones; separating chats was the fix.
 - **Evidence and next step:** ENEMY-WOLF-\* rows, WOLF-R1 thumbnails, FX-FIREBALL-BURST-v1.
 
@@ -103,7 +103,7 @@
   - The first SFX run clipped in 10 of 18 files (0.1–0.8% of samples at full scale).
 - **What I did:** accepted the recommended palette and alignment rules; asked for the clipped run to be regenerated at -6 dB with the same seeds and the first run kept for the record.
 - **What Claude or another person contributed:** Claude Code wrote both scripts, measured and found the clipping, and verified the regenerated files equal the first run at exactly -6.00 dB (correlation 1.000000), so only the level changed.
-- **What I understand now / still do not understand:** clipping cannot be fixed by normalising later; it has to be prevented before the save.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) clipping cannot be fixed by normalising later; it has to be prevented before the save.
 - **Evidence and next step:** `assets/sprites/EDIT-LOG.md`, `design/audio/sfx-gen-log.md`; committed in `7f19558`. Next: mage sprite fixes.
 
 ### 2026-10-03 — Computer shut down mid-task — Claude Code session notes
@@ -113,7 +113,7 @@
 - **What happened:** nothing was lost. The interrupted step had only produced two diagnostic images outside the repo.
 - **What I did:** asked for a full integrity check before any new step, then a WIP checkpoint commit.
 - **What Claude or another person contributed:** Claude Code listed every change since the last commit (and corrected me: the last commit was `95b9bb8`, not `c4fabaf`), compiled both scripts, parsed the JSON, decoded all 57 images, and matched all 18 sprite outputs and all 18 WAVs against the hashes in their logs.
-- **What I understand now / still do not understand:** logs with hashes are what made it possible to prove nothing was lost.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) logs with hashes are what made it possible to prove nothing was lost.
 - **Evidence and next step:** `7f19558` (original `a67239c`). Next: move the project into the course repository.
 
 ### 2026-10-06 — Moving the project into the course repository — Claude Code session notes
@@ -126,7 +126,7 @@
   - Had the author and committer rewritten to `zhefan-z` with my GitHub noreply address, on a temporary copy only, keeping every date; froze `zhef-z/walker-magic-zhefan` at `920d969` as the original record.
   - Decided to work only in the course copy from then on.
 - **What Claude or another person contributed:** Claude Code made the rewrite twice to prove it deterministic (same new HEAD), checked that every file tree and date matched the originals (first commit still 2026-10-01 17:00:58 −04:00), and added the "Original commit SHAs" table. Its own mistakes, fixed before pushing: `git subtree` kept only the last `-m`, so the merge message was just the co-author line; the first fix contained a hand-typed, wrong `git-subtree-mainline` SHA; the second fix read both values from git.
-- **What I understand now / still do not understand:** rewriting an author changes every SHA, so the mapping table is the link to the originals; a rebase would rewrite the imported commits again, so this branch only ever merges.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) rewriting an author changes every SHA, so the mapping table is the link to the originals; a rebase would rewrite the imported commits again, so this branch only ever merges.
 - **Evidence and next step:** `86ac0d7`, `deff9e9`; personal repo `923454a` (freeze note). Next: status check and the mage fixes.
 
 ### 2026-10-06 — Revised assignment and slice scope — retrospective, drafted 2026-10-07
@@ -143,7 +143,7 @@
 - **What happened:** predicted failure 3 was observed: stockings, boots and the hat brim mapped to the outline colour (L\* 7.4), as dark as the cave (L\* 4.7 at the 5th percentile, 8.7 median); skin mapped to gold; the staff head dithered into a checkerboard.
 - **What I did:** specified the fixes (skin ramp, one step lighter darks, solid crystal, 2x2 eyes); before committing, asked for per-frame pixel counts to rule out RISE and CAST tunics turning blue; accepted the RISE/FAIL collision overlap as a known limitation.
 - **What Claude or another person contributed:** Claude Code implemented the fixes with geometry measured on the old palette, so sizes and anchors could not move, and showed that no tunic pixel turned indigo in any frame (its earlier "gray-blue tunic" impression was the capelet). Its mistake: a `grep` with no match ended a `&&` chain, so CHANGE-BRIEF Revision 2 was not appended while the "unchanged" check still passed; it noticed the missing heading and redid the append with a separate check.
-- **What I understand now / still do not understand:** the cave-tone contact-sheet row was what made the problem visible; the mid-gray row hid it.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) the cave-tone contact-sheet row was what made the problem visible; the mid-gray row hid it.
 - **Evidence and next step:** `4a47323`, `ccde060`, `6c22ee4`, `dcb41bf`; `design/checks/mage-palette-revision1-before-after.png`. Next: plan and build the slice.
 
 ### 2026-10-06 — Building the slice: S1–S3, playtests 1 and 2 — Claude Code session notes
@@ -153,7 +153,7 @@
 - **What happened:** all checks passed (`test_player` 11/11, `test_cast` 11/11). The cave background showed through the pit gap, so Claude Code added a code-drawn dark fill. One capture plan cast three times inside the 0.35 s cooldown, so the second cast was correctly blocked; it was the test plan, not the game.
 - **What I did:** playtest 1 (movement, jump, pit, reload, camera) and playtest 2 (aiming in every direction, cooldown, crosshair): no changes needed.
 - **What Claude or another person contributed:** Claude Code wrote the scenes, scripts and headless tests and rendered captures; I approved each step and played it.
-- **What I understand now / still do not understand:** the held and rapid cast checks had to go through Godot's real `Input`, not a scripted shortcut, to test the actual just-pressed guard.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) the held and rapid cast checks had to go through Godot's real `Input`, not a scripted shortcut, to test the actual just-pressed guard.
 - **Evidence and next step:** `de50ce0`, `2667fc9`, `5d28592`, `5156280`; TEST-REPORT playtests 1–2. Next: the wolf.
 
 ### 2026-10-06/07 — Wolf, HUD and exit: S4–S5, playtests 3 and 4 — Claude Code session notes
@@ -167,7 +167,7 @@
   - The exit's brightest pixel measured L\* 89.0, below the hair (L\* 91.7).
 - **What I did:** playtest 3: the growl gives time to react, the lunge is fair, the flash and down image read as defeated; HP 0 felt abrupt without a HP display, which S5 fixed. Playtest 4 (preliminary muted): every event reads without sound; the smooth HUD font clashes a little with the pixel art, logged as a known limitation.
 - **What Claude or another person contributed:** Claude Code wrote the wolf, HUD, exit, pause and their tests (`test_wolf` 13/13, `test_flow` 14/14).
-- **What I understand now / still do not understand:** a failing test can be a wrong assumption about correct behaviour; the cause has to be found before changing the game.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) a failing test can be a wrong assumption about correct behaviour; the cause has to be found before changing the game.
 - **Evidence and next step:** `40595ce`, `61e0189`; TEST-REPORT playtests 3–4. Next: sound.
 
 ### 2026-10-07 — Audio wiring (S6) and the hung import — Claude Code session notes
@@ -203,7 +203,7 @@
 - **What happened:** playtest 5 (sound on): every event made exactly one sound, including fast clicks and holding cast; the music looped with no click; pause, fail and clear behaved as predicted; M and N each muted only their own bus; at -8 dB the music sits well under the effects. Playtest 6 (muted): every event still reads without sound.
 - **What I did:** played both runs, gave the music verdict and the CHAR-CAST rejection reasons.
 - **What Claude or another person contributed:** Claude Code ran a fresh-copy check (`git archive` of `74c0443`: 183 files, no cache, import in 6 s, all 73 checks pass), captured in-engine evidence for every state and storyboard panel, and wrote README.md and the final TEST-REPORT. Two capture-script bugs were found and fixed on the way: the crosshair ignored the camera, and poses were saved before the pit and exit could register her.
-- **What I understand now / still do not understand:** the headless checks prove the triggers, not what is heard; the playtests are the only evidence for how it sounds.
+- **What I understand now / still do not understand:** (Claude Code's summary, not my words) the headless checks prove the triggers, not what is heard; the playtests are the only evidence for how it sounds.
 - **Evidence and next step:** `b2fbbff`, `5263e62`; `walker-magic-zhefan/TEST-REPORT.md`. Next: the film (Brutalist `godot-gamedev` + `walker`).
 
 ### Still unresolved (as of this draft) — retrospective, drafted 2026-10-07

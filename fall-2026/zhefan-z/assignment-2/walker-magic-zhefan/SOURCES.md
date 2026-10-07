@@ -17,7 +17,7 @@
 
 Accepted images stay full size; rejected ones are kept only as 256 px-wide thumbnails in the group's `rejected/` folder.
 
-- **`*-thumb.png`:** thumbnail from a screenshot of the Gemini output; original download not kept. The author made these from screenshots shared in a chat with Claude. This covers all 13 `.png` thumbnails: CHAR-CAST v1, v2, v4 · CHAR-RUN v1, v2 · ENEMY-WOLF-DOWN v2 · WOLF-R1 run v0, run v1, lunge v1, down v1, derived · ENV-TILES v1 · ENV-BG v2.
+- **`*-thumb.png`:** thumbnail from a screenshot of the Gemini output; original download not kept. Claude made these in claude.ai from screenshots the author had shared there; the author put them in the repo. This covers all 13 `.png` thumbnails: CHAR-CAST v1, v2, v4 · CHAR-RUN v1, v2 · ENEMY-WOLF-DOWN v2 · WOLF-R1 run v0, run v1, lunge v1, down v1, derived · ENV-TILES v1 · ENV-BG v2.
 - **`*-thumb.jpg`:** made from the original downloaded file (CHAR-REF v1, v3 · CHAR-RUN-PASSING v0).
 
 **Workflow change:** the mage and the first wolf round shared one long Gemini chat, and earlier images started leaking into new ones (the mage's head in a wolf frame, cave paintings in the tiles). From the wolf onward, each asset group got its own Gemini chat to stop this context bleed.
