@@ -153,6 +153,21 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded.
 - **Evidence and next step:** `youtube/PUBLISH-LOG.md` in the books folder. Next: flip it to public in Studio when I decide, and run the MCP route once.
 
+### 2026-10-06 — Run the Blender MCP for real, build the Claude mascot, and film it
+
+- **Date and what I was working on:** 2026-10-06. After the Assignment 3 film, building the Claude mascot in Blender with Claude Code and the MCP, and filming how.
+- **I tried / expected:** My requests, in my words (dictation errors fixed): "Now let's see if we can use Blender and Claude and the MCP to create the Claude mascot, the one that we have at the end of all my videos ... build it with the next video being intended to then animate it. So build the Claude mascot as a 3D model in Blender, do a lot of pictures of it from different angles ... design it with the intent that it will be animated with the animations that you see there and possibly others." Then: "Make a film very similar to the one you just made on the assignment, walking through how to build the Claude mascot using Claude Code, the MCP and Blender." When Claude Code asked whether to run the MCP route for real (installing uv and the add-on, in a throwaway profile): "Yes, to all your questions. Try all those and just see what they do. This is an honesty report about what it can do and what it can't do. We're not trying to give a fake image of anything."
+- **What happened:**
+  - The MCP route was run for real for the first time. A headless Claude Code session built the mascot in Blender through the MCP: nine parts, nine calls, 104 seconds, and a separate script confirmed every size, place and colour matched the brief. It then rigged it (23 minutes) and exported a glb that Godot imports.
+  - It also got things wrong, and the film says so: the first saved pictures were plain grey, it replaced a correct pixel reading with a wrong one, and its first rigging attempt moved every part 4 cm (it caught that itself).
+  - Setup findings: the add-on's server starts by itself, with no password (a plain script ran code in Blender); disabling the add-on closes it.
+  - **It found a bug in the assignment I wrote.** The `claude mcp add` command had `-e KEY=value` directly before the server name, which fails ("Invalid environment variable format: blender"). The assignment now puts the name first. The published Assignment 3 film still shows the old order in one beat; the chapter 3 text has the same command. Not yet corrected there.
+  - The mascot film is built (8 min 55 s) and passes the machine checks. I have not watched it.
+- **What I did:** Made the requests above and said yes to running everything for real.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) ran the install, the sessions and the checks, and wrote the film; Opus 5.5 sub-agents drew the pictures. The mascot itself was built by a second Claude model (claude-sonnet-4-6) through the MCP.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `claude-mascot-3d/mcp-run/` and the film folder `claude-mascot-3d/youtube/claude-liam-lecture-claude-mascot-blender-mcp/` (books folder). Next: I watch the film; decide how to correct the Assignment 3 film's command; then the mascot gets its 18 animations.
+
 ---
 
 ## GitHub pushes
@@ -174,3 +189,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-06 | Update the Assignment 3 film entry: master built, nothing published |
 | 2026-10-06 | Log my feedback: say "3D model" or "AI model", never just "model" |
 | 2026-10-06 | Log my request to publish the Assignment 3 film to both playlists |
+| 2026-10-06 | Log the real MCP run, the Claude mascot and its film |
