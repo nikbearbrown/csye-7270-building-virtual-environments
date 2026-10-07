@@ -36,12 +36,13 @@ var _locked_until := 0.0
 const CALL_EVERY := 4.0
 var _call_timer := 0.0
 var _ever_touched := false
+var _calling := false
 
 
 func _ready() -> void:
 	body_entered.connect(func(_b): _player_inside = true)
 	body_exited.connect(func(_b): _player_inside = false)
-	_call_timer = 1.2
+	_calling = false
 
 
 func set_beacon_stream(stream: AudioStream) -> void:
@@ -75,8 +76,15 @@ func _process(delta: float) -> void:
 
 
 ## The call. Silent once it has been answered.
+## Nothing calls until the player has the controls. A sound with no action
+## attached to it is just a noise, and the opening is not the time for one.
+func start_calling() -> void:
+	_calling = true
+	_call_timer = 1.0
+
+
 func _call(delta: float) -> void:
-	if _ever_touched or _beacon.stream == null:
+	if not _calling or _ever_touched or _beacon.stream == null:
 		return
 	_call_timer -= delta
 	if _call_timer <= 0.0:

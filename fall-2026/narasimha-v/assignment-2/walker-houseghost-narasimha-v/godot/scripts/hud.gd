@@ -62,18 +62,26 @@ func pulse_days() -> void:
 
 
 ## The opening: three lines over the house as it really is, shown once.
-func show_opening(lines: Array) -> void:
+func show_opening(lines: Array, world) -> void:
 	_opening.visible = true
 	_opening.modulate.a = 0.0
 	for i in lines.size():
+		if world._skip_opening:
+			break
 		_opening.text = "\n".join(lines.slice(0, i + 1))
 		var t := create_tween()
-		t.tween_property(_opening, "modulate:a", 1.0, 0.9)
+		t.tween_property(_opening, "modulate:a", 1.0, 0.55)
 		await t.finished
-		await _opening.get_tree().create_timer(1.1).timeout
+		await world._hold(0.85)
+	if world._skip_opening:
+		return
 	var out := create_tween()
-	out.tween_property(_opening, "modulate:a", 0.0, 1.2)
+	out.tween_property(_opening, "modulate:a", 0.0, 0.9)
 	await out.finished
+	_opening.visible = false
+
+
+func hide_opening() -> void:
 	_opening.visible = false
 	_note.visible = false
 

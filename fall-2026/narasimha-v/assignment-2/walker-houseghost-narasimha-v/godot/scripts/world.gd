@@ -124,6 +124,20 @@ func _ready() -> void:
 ## becomes the warm room he remembers. By the time control is handed over, the
 ## player knows the grey is true, the warm is memory, and which one he belongs
 ## to.
+## True as soon as the player presses anything during the opening. Holding
+## someone still for ten seconds while they press keys and nothing happens
+## teaches them the game is broken, which is the opposite of what an opening
+## is for.
+var _skip_opening := false
+
+
+func _hold(seconds: float) -> void:
+	var left := seconds
+	while left > 0.0 and not _skip_opening:
+		await get_tree().process_frame
+		left -= get_process_delta_time()
+
+
 func _open() -> void:
 	_player.controllable = false
 	_hud.set_hint("")
@@ -136,19 +150,22 @@ func _open() -> void:
 	_audio.set_world_inverted(true)
 	_child.visible = true
 	_player.global_position = Vector2(620.0, 265.0)
-	await get_tree().create_timer(2.2).timeout
+	await _hold(1.3)
 
 	await _hud.show_opening([
 		"They told everyone I ran away.",
 		"A new family sleeps in my room now.",
 		"I need one of them to see me.",
-	])
+	], self)
+
+	if _skip_opening:
+		_hud.hide_opening()
 
 	# The memory closes over the truth rather than replacing it. He fades out of
 	# the ceiling as a ghost and fades in on the floor as a boy, with the rooms
 	# dissolving across the same two seconds, so the change reads as one world
 	# becoming another rather than as two pictures being swapped.
-	await get_tree().create_timer(0.5).timeout
+	await _hold(0.35)
 	_audio.play("flip")
 
 	var fade_out := create_tween()
@@ -180,11 +197,17 @@ func _open() -> void:
 	await fade_in.finished
 
 	_player.controllable = true
+	for relic in _relics:
+		relic.start_calling()
+	_audio.set_days_left(_meters.days_left, _meters.DAYS_AT_START)
 	_refresh_hint()
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _player.controllable:
+		# Any press cuts the opening short rather than being swallowed.
+		if event is InputEventKey and event.pressed and not event.echo:
+			_skip_opening = true
 		return
 	if event.is_action_pressed("flip_world"):
 		flip()
