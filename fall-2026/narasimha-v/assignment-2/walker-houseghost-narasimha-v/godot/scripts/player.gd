@@ -66,13 +66,19 @@ var _drift_tween: Tween
 
 ## The ghost does not walk. He drifts, so his cycle runs on a clock rather than
 ## on ground covered, and it keeps playing when he is standing still.
+##
+## These frames are drawn upside down, not mirrored: under reversed gravity his
+## hair, sweater hem and the mist his legs dissolve into all stream toward the
+## ceiling. A vertically flipped sprite would have all of that pointing the
+## wrong way, which is what made the earlier version read as a boy standing on
+## his head rather than something hanging in the air.
 @onready var _float_frames: Array[Texture2D] = [
-	preload("res://assets/art/char_float_1.png"),
-	preload("res://assets/art/char_float_2.png"),
-	preload("res://assets/art/char_float_3.png"),
-	preload("res://assets/art/char_float_4.png"),
-	preload("res://assets/art/char_float_5.png"),
-	preload("res://assets/art/char_float_6.png"),
+	preload("res://assets/art/char_ghost_inv_1.png"),
+	preload("res://assets/art/char_ghost_inv_2.png"),
+	preload("res://assets/art/char_ghost_inv_3.png"),
+	preload("res://assets/art/char_ghost_inv_4.png"),
+	preload("res://assets/art/char_ghost_inv_5.png"),
+	preload("res://assets/art/char_ghost_inv_6.png"),
 ]
 
 ## Jump poses: crouch, rising, falling, landing. Swapped by what the body is
