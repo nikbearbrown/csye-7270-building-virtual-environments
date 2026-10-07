@@ -22,6 +22,7 @@ const DRIFT_PIXELS := 6.0
 const DRIFT_SECONDS := 2.2
 const STEP_PIXELS := 2.0      ## the eight frames already carry the rise and fall, so the code only adds a trace
 const ROLL_RADIANS := 0.022   ## shoulder roll, synced to the same stride phase
+const FLOAT_FPS := 7.0        ## the drift cycle runs on a clock, not on distance
 const STRIDE_PIXELS := 28.0   ## ground per frame; eight frames make a ~224 px cycle, about eleven frames a second at full speed
 const LEAN_RADIANS := 0.10
 
@@ -39,6 +40,7 @@ var _was_on_floor := true
 var _step_phase := 0.0
 var _stride_distance := 0.0
 var _walk_frame := 0
+var _float_time := 0.0
 var _body_roll := 0.0
 var _sprite_home_y := 0.0
 var _drift_tween: Tween
@@ -59,6 +61,17 @@ var _drift_tween: Tween
 	preload("res://assets/art/char_walk_6.png"),
 	preload("res://assets/art/char_walk_7.png"),
 	preload("res://assets/art/char_walk_8.png"),
+]
+
+## The ghost does not walk. He drifts, so his cycle runs on a clock rather than
+## on ground covered, and it keeps playing when he is standing still.
+@onready var _float_frames: Array[Texture2D] = [
+	preload("res://assets/art/char_float_1.png"),
+	preload("res://assets/art/char_float_2.png"),
+	preload("res://assets/art/char_float_3.png"),
+	preload("res://assets/art/char_float_4.png"),
+	preload("res://assets/art/char_float_5.png"),
+	preload("res://assets/art/char_float_6.png"),
 ]
 
 
@@ -128,7 +141,11 @@ func _update_body(delta: float, direction: float) -> void:
 	var walking := is_on_floor() and absf(direction) > 0.01
 	_update_walk_frame(delta, walking)
 
-	if walking:
+	if state == State.GHOST:
+		_stop_drift()
+		_sprite.position.y = _sprite_home_y
+		_body_roll = 0.0
+	elif walking:
 		_stop_drift()
 		# Weight. The cycle phase comes from the stride itself, so the body is
 		# lowest on the two contact frames and highest on the two passing
@@ -151,6 +168,9 @@ func _update_body(delta: float, direction: float) -> void:
 ## matches the speed and the feet never slide. The cycle is only used in the
 ## remembered state; the ghost keeps his single drifting image.
 func _update_walk_frame(delta: float, walking: bool) -> void:
+	if state == State.GHOST:
+		_update_float(delta)
+		return
 	if not walking:
 		_stride_distance = 0.0
 		_walk_frame = 0
@@ -161,6 +181,13 @@ func _update_walk_frame(delta: float, walking: bool) -> void:
 		_stride_distance -= STRIDE_PIXELS
 		_walk_frame = (_walk_frame + 1) % _walk_frames.size()
 	_sprite.texture = _walk_frames[_walk_frame]
+
+
+## Always drifting, moving or not — a ghost has no still pose.
+func _update_float(delta: float) -> void:
+	_float_time += delta * FLOAT_FPS
+	var frame := int(_float_time) % _float_frames.size()
+	_sprite.texture = _float_frames[frame]
 
 
 func _land(fall_speed: float) -> void:
@@ -188,7 +215,10 @@ func set_inverted(is_inverted: bool) -> void:
 	# turns the picture over; nothing moves. An earlier version shifted the
 	# capsule instead, which dropped it inside the floor collider on the first
 	# flip and squeezed the player out through the bottom of the room.
-	_sprite.flip_v = is_inverted
+	# The ghost is NOT drawn upside down. Turning the sprite over made him read
+	# as a boy standing on his head rather than something floating, so the
+	# picture stays upright in both worlds; only gravity and the art change.
+	_sprite.flip_v = false
 	# Inverted is the truth: he stops looking like a living boy and becomes what
 	# he actually is.
 	state = State.GHOST if is_inverted else State.REMEMBERED
@@ -198,7 +228,8 @@ func set_inverted(is_inverted: bool) -> void:
 func _apply_state() -> void:
 	match state:
 		State.GHOST:
-			_sprite.texture = _tex_ghost
+			_float_time = 0.0
+			_sprite.texture = _float_frames[0]
 			# Drained and see-through: the same boy, rendered as what he is.
 			_sprite.modulate = Color(0.72, 0.80, 0.92, 0.82)
 		State.REMEMBERED:
