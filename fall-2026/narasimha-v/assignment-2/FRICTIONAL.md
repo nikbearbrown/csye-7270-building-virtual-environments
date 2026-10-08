@@ -234,6 +234,16 @@ The entries below are dated and in order, written as the work happened. Nothing 
 - **What I understand now / still do not understand:** **The earlier entry blaming the stale editor was wrong, at least for this report, and is left standing rather than edited because that is what the record is for.** I also understand something sharper now about the automated checks: three of them passed while I could not move, because they drive input directly and never exercise the real frame timing. Passing tests and a person who cannot play are not a contradiction; they are measuring different things.
 - **Evidence and next step:** Evidence: the screenshot reading `controllable=false awaiting_key=false story_open=false axis=1.0 vel.x=0`, which settled in one image what four rounds of reasoning had not; the three verification runs after the fix, each handing over control with the character moving at full speed. Next step: the storyboard images, then the film.
 
+### 2026-10-07 — Six panels, and a rule taken from the game rather than from taste
+
+- **Date and what I was working on:** 2026-10-07 — the storyboard sketches, the last missing piece of the design half.
+- **I tried / expected:** Claude gave me prompts for six panels in graphite. The first generation came back as a finished colour illustration and I said I did not like it.
+- **What happened:** Claude's reading was that the style was the smaller problem. The panel's job is that the boy is the fixed point while the room turns around him, and the generation had centred **the girl** — a character who does not appear until panel 4 — with the two worlds side by side, upright, not rolling. The protagonist was missing from his own signature beat. I had reacted to the look; the content was wrong underneath it.
+- **What I did:** Asked for more directions rather than accepting a fix to the first one.
+- **What Claude or another person contributed:** Claude offered four and recommended greyscale with a single accent colour, on the grounds that the rule should come from the game rather than from a style: **grey is the truth, amber is the memory, yellow is the one living person who can see him.** That turns the colour into an acceptance test — amber in the wrong place is a failed generation, not a preference. I chose it, and it holds across the finished set: panels 1 and 6 carry no colour at all, amber appears only where he reaches into the past and drains where the memory betrays him, and the raincoat is the only yellow in all six frames.
+- **What I understand now / still do not understand:** My instinct for "I do not like this" was pointing at something real but was aimed at the wrong thing. Worth remembering that my first reaction to an image is usually correct that *something* is wrong and usually wrong about *what*. Unresolved: panel 2 still reads closer to a diagonal division than a 180° roll, and I accepted it rather than burning more generations; it is logged as a limitation rather than hidden.
+- **Evidence and next step:** Evidence: the six panels in `design/storyboard/`, three rejected takes as thumbnails, and the asset-log rows that give a reason per rejection. The strongest rejection is SB-04-A, turned down for two things I could only see because earlier panels were already approved — the child not reading as frightened, and the lamp and fixtures drifting from the room established in panels 1 and 3. Next step: SUBMISSION.md and the film.
+
 ---
 
 ## GitHub pushes
@@ -281,3 +291,6 @@ _Pushes happen only on my explicit instruction; commits accumulate locally betwe
 | 2026-10-07 | Stand the music box on the shelf it belongs on |
 | 2026-10-07 | Let the player read the opening at their own speed, and read it again |
 | 2026-10-07 | Fix the opening stranding the player: a race on tween finished signals |
+| 2026-10-07 | Bring the effects down, and put the footsteps in the mix at all |
+| 2026-10-07 | Ship the audio as Ogg Vorbis so the repository is not silent |
+| 2026-10-07 | Six storyboard panels on a colour rule taken from the game |
