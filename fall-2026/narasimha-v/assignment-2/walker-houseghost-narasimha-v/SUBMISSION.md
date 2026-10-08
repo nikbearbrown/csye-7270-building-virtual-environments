@@ -31,7 +31,8 @@ hashes every source file it displays.
 | Google Gemini (image) | gemini.google.com, free tier | Character reference attempts — **all rejected, nothing used** | Google ToS + generative-AI terms |
 | Kokoro-82M (`am_onyx`) | local, offline | Film narration only | Apache 2.0 |
 
-**Final film URL and filename:** _to be filled once uploaded to course media storage_
+**Final film URL:** https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje
+**Final film filename:** `houseghost-the-house-is-a-witness-narasimha-v-4k.mp4`
 **Final film SHA-256:** _to be filled_
 
 ## Summary of my work

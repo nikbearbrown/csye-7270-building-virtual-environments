@@ -76,7 +76,7 @@ game's art, sound and music were designed, generated and wired into Godot.
 | | |
 |---|---|
 | File | `houseghost-the-room-that-lies-narasimha-v-4k.mp4` |
-| Link | _course media storage — added once uploaded_ |
+| Link | [Course media storage (OneDrive)](https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje) |
 | SHA-256 | _added once uploaded_ |
 | Format | 3840×2160, 30 fps, narrated by Liam (Kokoro `am_onyx`, local) |
 | Source revision shown | the commit recorded in `SUBMISSION.md` |
