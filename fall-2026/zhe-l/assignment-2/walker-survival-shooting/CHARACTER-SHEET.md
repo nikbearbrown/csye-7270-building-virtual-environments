@@ -250,3 +250,4 @@ The base character looks complete without armor. Ballistic vests and tactical eq
 ---
 ## Revision history
 <!-- Append here; do not rewrite version 1 above. -->
+- **2026-10-07 — Hair clip and choker:** the X-shaped hair clip stays; it is part of the design ("no random hair ornaments" means no others). The choker is removed: it does not fit the tone of a shooter, it is not there to make her look cute, and it even carries a sexual connotation. The turnaround is not regenerated; the choker is deleted when the 3D model is built.
