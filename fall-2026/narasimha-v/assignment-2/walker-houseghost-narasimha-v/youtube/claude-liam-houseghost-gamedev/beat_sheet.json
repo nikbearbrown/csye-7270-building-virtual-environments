@@ -204,6 +204,56 @@
           "source": "capture/run-01.mp4",
           "in_s": 11.5,
           "out_s": 12.6
+        },
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "One turn, one sound.",
+            "path": "godot/scripts/world.gd:285",
+            "source": "godot/scripts/world.gd lines 285–292 · sha256 9222636f05c3… · verbatim",
+            "code": "func flip() -> void:\n\tif _flipping or _meters.ended:\n\t\treturn\n\t_flipping = true\n\tis_inverted = not is_inverted\n\n\tworld_flipped.emit(is_inverted)\n\t_audio.play(\"flip\")",
+            "startLine": 285,
+            "codeFontSize": 30,
+            "inspectorLabel": "Source notes — not Inspector values",
+            "notes": [
+              {
+                "label": "Order",
+                "value": "state → signal → sound"
+              },
+              {
+                "label": "Guard",
+                "value": "_flipping refuses a second call mid-turn"
+              },
+              {
+                "label": "Checked by",
+                "value": "12 flip calls during one turn → 1 sound"
+              }
+            ],
+            "cues": [
+              {
+                "at": 6.0,
+                "line": 286,
+                "label": "the guard"
+              },
+              {
+                "at": 13.0,
+                "line": 289,
+                "label": "state changes first"
+              },
+              {
+                "at": 24.0,
+                "line": 292,
+                "label": "sound last — a consequence"
+              }
+            ],
+            "project": "HOUSEGHOST — Night 1 slice",
+            "durationSeconds": 29.73
+          },
+          "rendered": {
+            "out": "media/B08.mp4",
+            "at": "2026-10-08T01:39:11.872962+00:00"
+          }
         }
       },
       "estimated_duration_s": 34.0,
@@ -224,6 +274,41 @@
           "source": "capture/run-01.mp4",
           "in_s": 12.0,
           "out_s": 13.4
+        },
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "The inversion is one vector.",
+            "path": "godot/scripts/player.gd:121",
+            "source": "godot/scripts/player.gd line 121 · sha256 009711824ebf… · verbatim",
+            "code": "\tup_direction = Vector2(0, -_gravity_dir)",
+            "startLine": 121,
+            "codeFontSize": 34,
+            "notes": [
+              {
+                "label": "No camera rotation",
+                "value": "the picture never turns over"
+              },
+              {
+                "label": "No second level",
+                "value": "one room, two dressings"
+              }
+            ],
+            "cues": [
+              {
+                "at": 2.0,
+                "line": 121,
+                "label": "up flips"
+              }
+            ],
+            "project": "HOUSEGHOST — Night 1 slice",
+            "durationSeconds": 12.97
+          },
+          "rendered": {
+            "out": "media/B09.mp4",
+            "at": "2026-10-08T01:40:31.550937+00:00"
+          }
         }
       },
       "estimated_duration_s": 14.0,
@@ -309,6 +394,56 @@
           "source": "capture/run-01.mp4",
           "a": "before",
           "b": "after"
+        },
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "The levels that were never set.",
+            "path": "godot/scripts/audio.gd:37",
+            "source": "godot/scripts/audio.gd lines 37–47 · sha256 4e5a24b83cb9… · verbatim",
+            "code": "const LEVELS := {\n\t\"flip\":     -3.0,\n\t\"contact\":  -3.0,\n\t\"frost\":    -3.0,\n\t\"correct\":  -5.0,\n\t\"land\":    -11.0,\n\t\"jump\":    -13.0,\n\t\"fall\":     -9.0,    ## a death: still the loudest thing here, deliberately\n\t\"step\":     -9.0,    ## constant, so it sits well under every story beat\n\t\"ghoststep\": -11.0,  ## quieter again; he is not meant to sound solid\n}",
+            "startLine": 37,
+            "codeFontSize": 27,
+            "inspectorLabel": "Measured, not estimated",
+            "notes": [
+              {
+                "label": "step, before",
+                "value": "absent from the table → 0.0 dB"
+              },
+              {
+                "label": "step vs flip",
+                "value": "+5 dB louder by RMS at matched peaks"
+              },
+              {
+                "label": "step, after",
+                "value": "−9.0 dB, under every story beat"
+              }
+            ],
+            "cues": [
+              {
+                "at": 9.0,
+                "line": 44,
+                "label": "fall — was missing"
+              },
+              {
+                "at": 12.0,
+                "line": 45,
+                "label": "step — was missing"
+              },
+              {
+                "at": 15.0,
+                "line": 46,
+                "label": "ghoststep — was missing"
+              }
+            ],
+            "project": "HOUSEGHOST — Night 1 slice",
+            "durationSeconds": 30.18
+          },
+          "rendered": {
+            "out": "media/B13.mp4",
+            "at": "2026-10-08T01:42:03.294938+00:00"
+          }
         }
       },
       "estimated_duration_s": 36.0,
@@ -399,6 +534,42 @@
         "then": {
           "type": "TERMINAL",
           "source": "probe output: loop(before)=false"
+        },
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "The importer says false.",
+            "path": "godot/scripts/audio.gd:134",
+            "source": "godot/scripts/audio.gd lines 134–144 · sha256 4e5a24b83cb9… · verbatim",
+            "code": "func _make_looping(stream: AudioStream) -> void:\n\tif stream == null:\n\t\treturn\n\tif stream is AudioStreamOggVorbis:\n\t\tstream.loop = true\n\t\tstream.loop_offset = 0.0\n\telif stream is AudioStreamWAV:\n\t\tstream.loop_begin = 0\n\t\tstream.loop_end = int(stream.get_length() * stream.mix_rate)\n\t\tstream.loop_mode = AudioStreamWAV.LOOP_FORWARD",
+            "startLine": 134,
+            "codeFontSize": 28,
+            "inspectorLabel": "Recorded probe output",
+            "output": [
+              "mus_memory.ogg   type=AudioStreamOggVorbis len=59.49s loop(before)=false",
+              "mus_upright.ogg  type=AudioStreamOggVorbis len=61.91s loop(before)=false",
+              "22 MB → 1.2 MB, durations unchanged"
+            ],
+            "cues": [
+              {
+                "at": 7.0,
+                "line": 137,
+                "label": "Ogg: one flag"
+              },
+              {
+                "at": 12.0,
+                "line": 140,
+                "label": "WAV: an explicit end sample"
+              }
+            ],
+            "project": "HOUSEGHOST — Night 1 slice",
+            "durationSeconds": 21.61
+          },
+          "rendered": {
+            "out": "media/B18.mp4",
+            "at": "2026-10-08T01:43:09.894081+00:00"
+          }
         }
       },
       "estimated_duration_s": 26.0,
@@ -416,6 +587,45 @@
         "then": {
           "type": "GRID",
           "source": "three stills of faults that passed"
+        },
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "Thirteen green checks.",
+            "path": "godot/tests/test_sound_triggers.gd",
+            "source": "recorded output — godot --headless --script tests/test_sound_triggers.gd",
+            "code": "",
+            "codeFontSize": 26,
+            "inspectorLabel": "What this cannot do",
+            "output": [
+              "PASS  one flip produces exactly one flip sound",
+              "PASS  12 flip calls during a turn still produce one sound",
+              "PASS  muted SFX still counts the event",
+              "PASS  the ghost makes no real footsteps",
+              "--- 13 checks, 0 failed ---"
+            ],
+            "notes": [
+              {
+                "label": "Green while",
+                "value": "the player could not move at all"
+              },
+              {
+                "label": "Green while",
+                "value": "three sounds were inaudible"
+              },
+              {
+                "label": "Green while",
+                "value": "a clean clone printed load errors"
+              }
+            ],
+            "project": "HOUSEGHOST — Night 1 slice",
+            "durationSeconds": 37.99
+          },
+          "rendered": {
+            "out": "media/B19.mp4",
+            "at": "2026-10-08T01:44:57.324854+00:00"
+          }
         }
       },
       "estimated_duration_s": 42.0,

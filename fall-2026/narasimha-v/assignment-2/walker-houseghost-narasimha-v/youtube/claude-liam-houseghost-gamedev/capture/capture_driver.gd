@@ -10,6 +10,7 @@ extends SceneTree
 ## engine tick and the elapsed seconds the capture was rendered at.
 
 const RELIC_X := 1548.0
+const RELIC2_X := 3150.0   ## his shoes, still by the door
 ## Where the floor stops. Measured from the scene's own collision shapes, not
 ## guessed: segments run -200..1180, 1350..2520, 2690..3860, 4030..5960, so the
 ## three gaps open at these x positions and are 170 px wide.
@@ -28,6 +29,10 @@ var _held := {}
 var _opening_presses := 0
 var _press_cooldown := 0.0
 var _rec_at_contact := -1
+var _days_before_fall := 99
+var _stroll_log := 0.0
+var _last_x := -1.0
+var _stuck_for := 0.0
 var _jump_cooldown := 0.0
 ## The jump is height-modulated: releasing early multiplies the rise by
 ## JUMP_CUT (0.45). A press-and-release in the same frame is therefore the
@@ -201,9 +206,9 @@ func _process(delta: float) -> bool:
 			# player down again short of the same hole, so they walk straight
 			# back into it until the nights run out.
 			for g in GAP_STARTS:
-				if _player.position.x > g - 150.0 and _player.position.x < g - 25.0 and _jump_cooldown <= 0.0:
+				if _player.position.x > g - 110.0 and _player.position.x < g - 30.0 and _jump_cooldown <= 0.0:
 					_jump()
-					_jump_cooldown = 1.2
+					_jump_cooldown = 0.55
 					_note("jump_gap", {"gap_x": g, "x": snappedf(_player.position.x, 1.0)})
 			if _meters.ended:
 				_fail("the night ended before reaching the relic (fell into a gap)")
@@ -275,13 +280,115 @@ func _process(delta: float) -> bool:
 				_fail("world never returned upright")
 
 		"stroll":
-			# A last plain walk so the film has upright movement after the beat.
+			# Upright, in the room he remembers. His own furniture is solid here
+			# and theirs is not, so this walk ends against a shelf that only
+			# exists in the memory. That is the obstacle design working, not a
+			# stuck driver: the way past it is to stop remembering.
 			if not _held.has("move_right"):
 				_press("move_right")
+			for g in GAP_STARTS:
+				if _player.position.x > g - 110.0 and _player.position.x < g - 30.0 and _jump_cooldown <= 0.0:
+					_jump()
+					_jump_cooldown = 0.55
+					_note("jump_gap", {"gap_x": g, "x": snappedf(_player.position.x, 1.0)})
+			if _meters.ended:
+				_fail("the night ended during the walk to the second relic")
+			if absf(_player.position.x - _last_x) < 1.0 and _player.is_on_floor():
+				_stuck_for += delta
+			else:
+				_stuck_for = 0.0
+			_last_x = _player.position.x
+			if _stuck_for > 1.3:
+				_release_all()
+				_note("blocked_in_memory", {"x": snappedf(_player.position.x, 1.0), "obstacle_x": 2200.0})
+				_stuck_for = 0.0
+				_go("flip2")
+			elif _phase_t > 25.0:
+				_fail("never reached his furniture")
+
+		"flip2":
+			if not _scene.is_inverted:
+				if _press_cooldown <= 0.0:
+					_tap("flip_world")
+					_press_cooldown = 1.2
+			else:
+				_note("past_the_shelf", {"x": snappedf(_player.position.x, 1.0)})
+				_go("walk2")
+			if _phase_t > 8.0:
+				_fail("world never inverted at the second relic")
+
+		"walk2":
+			# On the ceiling now, in the room as it really is. The shelf below is
+			# not solid here, so the way is open.
+			if not _held.has("move_right"):
+				_press("move_right")
+			if _player.position.x >= RELIC2_X - 40.0:
+				_release_all()
+				_note("reached_relic2_x", {"x": snappedf(_player.position.x, 1.0)})
+				_go("reach2")
+			elif _phase_t > 25.0:
+				_fail("never crossed to the second relic in the truth")
+
+		"reach2":
+			var dx2: float = RELIC2_X - _player.position.x
+			if absf(dx2) > 30.0:
+				var want2 := "move_right" if dx2 > 0.0 else "move_left"
+				var other2 := "move_left" if dx2 > 0.0 else "move_right"
+				_release(other2)
+				if not _held.has(want2):
+					_press(want2)
+			else:
+				_release("move_left")
+				_release("move_right")
 			if _jump_cooldown <= 0.0:
 				_jump()
-				_jump_cooldown = 1.6
-			if _phase_t > 4.0:
+				_jump_cooldown = 0.9
+			if _press_cooldown <= 0.0:
+				_reach_out()
+				_press_cooldown = 0.22
+			if _meters.recognition >= 2:
+				_release_all()
+				_note("second_contact", {"recognition": _meters.recognition, "days_left": _meters.days_left})
+				_go("watch2")
+			if _phase_t > 25.0:
+				_fail("second contact never landed")
+
+		"watch2":
+			if _phase_t > 3.0:
+				_go("flip_back2")
+
+		"flip_back2":
+			if _scene.is_inverted:
+				if _press_cooldown <= 0.0:
+					_tap("flip_world")
+					_press_cooldown = 1.2
+			else:
+				_days_before_fall = _meters.days_left
+				_go("the_fall")
+			if _phase_t > 8.0:
+				_fail("world never returned upright after the second relic")
+
+		"the_fall":
+			# Walk into the next gap on purpose, without jumping. This is the
+			# only way to show the cost the floor carries: a night is spent and
+			# the fall sound fires. It is a real consequence, not a staged one.
+			if not _held.has("move_right"):
+				_press("move_right")
+			if _meters.days_left < _days_before_fall:
+				_release_all()
+				_note("fell_on_purpose", {"days_left": _meters.days_left, "y": snappedf(_player.position.y, 1.0)})
+				_go("recover")
+			if _phase_t > 20.0:
+				_fail("never reached the gap to fall into")
+
+		"recover":
+			# The catcher sets him down short of the same hole, so walking right
+			# again would simply fall in again. Walk away from it instead: the
+			# point of this beat is that control came back, not that the gap can
+			# be farmed.
+			if not _held.has("move_left"):
+				_press("move_left")
+			if _phase_t > 3.5:
 				_release_all()
 				_go("done")
 

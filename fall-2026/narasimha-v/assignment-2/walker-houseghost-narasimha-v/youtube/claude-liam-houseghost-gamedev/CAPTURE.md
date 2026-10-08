@@ -7,8 +7,8 @@
 | Command | `Godot --path <copy> --script capture_driver.gd --write-movie run-01.avi --fixed-fps 60 --quit-after 2100` |
 | Rendered | 3840×2160, 60 fps, MJPEG + PCM 48 kHz stereo |
 | Delivered | `capture/run-01.mp4` — H.264 CRF 18, AAC 192 kbps |
-| Duration | 19.97 s, 1198 ticks (exactly 60 fps × 19.97 s) |
-| Capture SHA-256 | `ef7840f41a1aecb14063d2b0e384c57a5a945a3551994999e6837323d28b4a85` |
+| Duration | 32.63 s, 1958 ticks (exactly 60 fps × 32.63 s) |
+| Capture SHA-256 | `96fe1625d3de59ca32e821a6e72dfc4e4c81c3b5afa444abb31581a1496c2fdf` |
 | Source snapshot (build_id) | `b7b0e7967fe3ba968ffa2ac864975600ecced69fcdea68c985f67bcbfc6ab49b` |
 | Hash method | SHA-256 over the sorted SHA-256 list of every scene, script, sprite, effect and music file plus `project.godot` |
 
@@ -45,6 +45,18 @@ Captured from the engine, not dubbed. Measured from the delivered file: continuo
 programme between −17 and −23 dBFS, with the music ducking to −23.0 dB at the flip
 (11 s) and the deliberate post-contact hush at 17–19 s. Both music loops and the
 event sounds are present in the mix as the game played them.
+
+## What the run plays
+
+Opening read at 7.33 s · gap jumped at 8.92 s · flip at 11.80 s · the music box
+answers at 13.03 s (recognition 1, calendar 7→5) · upright again at 16.08 s ·
+**stopped at 19.38 s by his own shelf**, which is solid only in the remembered
+room · flips past it along the ceiling · his shoes answer at 23.05 s
+(recognition 2, calendar 4) · walks into a gap on purpose at 29.10 s, spending a
+night to show what the floor costs · set down again, and walks away from it.
+
+Two relics, both worlds, five of the nine sounds, and a real failure. Nothing is
+staged: every outcome is the game's own response to a key.
 
 ## Known honesty note
 
