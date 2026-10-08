@@ -13,15 +13,15 @@ signal counted(event: String, total: int)
 signal heart_beat
 
 const PATHS := {
-	"flip":    "res://assets/sfx/sfx_flip.wav",
-	"contact": "res://assets/sfx/sfx_contact.wav",
-	"frost":   "res://assets/sfx/sfx_frost.wav",
-	"correct": "res://assets/sfx/sfx_correct.wav",
-	"land":    "res://assets/sfx/sfx_land.wav",
-	"jump":    "res://assets/sfx/sfx_jump.wav",
-	"fall":    "res://assets/sfx/sfx_fall.wav",
-	"step":    "res://assets/sfx/sfx_step.wav",
-	"ghoststep": "res://assets/sfx/sfx_ghoststep.wav",
+	"flip":    "res://assets/sfx/sfx_flip.ogg",
+	"contact": "res://assets/sfx/sfx_contact.ogg",
+	"frost":   "res://assets/sfx/sfx_frost.ogg",
+	"correct": "res://assets/sfx/sfx_correct.ogg",
+	"land":    "res://assets/sfx/sfx_land.ogg",
+	"jump":    "res://assets/sfx/sfx_jump.ogg",
+	"fall":    "res://assets/sfx/sfx_fall.ogg",
+	"step":    "res://assets/sfx/sfx_step.ogg",
+	"ghoststep": "res://assets/sfx/sfx_ghoststep.ogg",
 }
 
 ## The mix. Every file is normalised to the same peak, so these numbers alone
@@ -55,8 +55,8 @@ const DUCK_HOLD := {"flip": 1.2, "contact": 1.4, "correct": 2.0, "frost": 0.6, "
 ## piece of music turning over.
 ## The warm track belongs to the lie, the tense one to the truth.
 const MUSIC_PATHS := {
-	"normal":   "res://assets/music/mus_memory.wav",
-	"inverted": "res://assets/music/mus_upright.wav",
+	"normal":   "res://assets/music/mus_memory.ogg",
+	"inverted": "res://assets/music/mus_upright.ogg",
 }
 
 var counts := {"flip": 0, "contact": 0, "frost": 0, "correct": 0, "land": 0, "jump": 0, "fall": 0, "step": 0, "ghoststep": 0}
@@ -95,16 +95,11 @@ func _ready() -> void:
 		player.name = "music_%s" % world
 		var stream := _load_or_note(MUSIC_PATHS[world])
 		if stream:
-			# Loop forward over the whole file. Set here rather than relying on
-			# the import setting, which does not survive a reimport reliably,
-			# and with loop_end given explicitly because it defaults to zero,
-			# which produces a zero-length loop that stops instantly. Each file
-			# was cut with two seconds of its own tail crossfaded back over its
-			# head, so the seam is inaudible wherever the playhead wraps.
-			if stream is AudioStreamWAV:
-				stream.loop_begin = 0
-				stream.loop_end = int(stream.get_length() * stream.mix_rate)
-				stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			# Looped in code rather than through the import setting, which does
+			# not survive a reimport reliably. Each file was cut with two seconds
+			# of its own tail crossfaded equal-power back over its head, so the
+			# seam is inaudible wherever the playhead wraps.
+			_make_looping(stream)
 			player.stream = stream
 		add_child(player)
 		_music[world] = player
@@ -114,24 +109,38 @@ func _ready() -> void:
 	# he is not touching anything.
 	_drift = AudioStreamPlayer.new()
 	_drift.name = "drift"
-	if ResourceLoader.exists("res://assets/sfx/sfx_drift.wav"):
-		var ds = load("res://assets/sfx/sfx_drift.wav")
-		if ds is AudioStreamWAV:
-			ds.loop_begin = 0
-			ds.loop_end = int(ds.get_length() * ds.mix_rate)
-			ds.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	if ResourceLoader.exists("res://assets/sfx/sfx_drift.ogg"):
+		var ds = load("res://assets/sfx/sfx_drift.ogg")
+		_make_looping(ds)
 		_drift.stream = ds
 	_drift.volume_db = -15.0
 	add_child(_drift)
 
 	_heart = AudioStreamPlayer.new()
 	_heart.name = "heart"
-	if ResourceLoader.exists("res://assets/sfx/sfx_heart.wav"):
-		_heart.stream = load("res://assets/sfx/sfx_heart.wav")
+	if ResourceLoader.exists("res://assets/sfx/sfx_heart.ogg"):
+		_heart.stream = load("res://assets/sfx/sfx_heart.ogg")
 	_heart.volume_db = -34.0
 	add_child(_heart)
 
 	_play_world_music(_current_world)
+
+
+## Loop a stream whatever container it arrived in. The audio ships as Ogg
+## Vorbis because the course repository excludes *.wav, and Ogg and WAV spell
+## looping differently: Ogg has a single flag, WAV wants an explicit end sample
+## and silently produces a zero-length loop if it is left at its default. The
+## WAV branch stays so the project still runs against the original masters.
+func _make_looping(stream: AudioStream) -> void:
+	if stream == null:
+		return
+	if stream is AudioStreamOggVorbis:
+		stream.loop = true
+		stream.loop_offset = 0.0
+	elif stream is AudioStreamWAV:
+		stream.loop_begin = 0
+		stream.loop_end = int(stream.get_length() * stream.mix_rate)
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 
 func _load_or_note(path: String) -> AudioStream:

@@ -108,7 +108,7 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 |---|---|
 | Four events minimum, each firing once per occurrence | Pass — nine events, twelve assertions |
 | Rapid repeats and held input do not double-fire | Pass |
-| Music loops without an audible click | Verified in engine: wraps from 31.4 s to 0.8 s still playing. **Human listening confirmation outstanding** |
+| Music loops without an audible click | Verified in engine: both tracks load as `AudioStreamOggVorbis`, 59.5 s and 61.9 s, and loop is set in code because the importer defaults it to false. **Human listening confirmation outstanding**, and now also needs a check that Ogg encoding did not introduce a seam artefact the WAV master did not have |
 | Music behaviour on flip, failure, success and end | Pass — crossfade on the flip, long clean fade on either ending |
 | Mute works for music and effects separately | Pass |
 | Slice readable with all sound muted | Pass by design — nights, relic lights and the child's posture all carry state visually. **Not yet confirmed by a muted human playthrough** |

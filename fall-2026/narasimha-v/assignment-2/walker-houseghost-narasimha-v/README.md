@@ -58,13 +58,13 @@ The opening is read at your own pace: each line waits for a key, and **I** bring
 | `godot/assets/art/char_walk_1..4.png` | Four walk poses, sliced from one generated cycle sheet |
 | `godot/assets/art/env_room_empty.png` | The bedroom, stripped (upright world) |
 | `godot/assets/art/env_room_memory.png` | The bedroom, remembered (inverted world) |
-| `godot/assets/music/mus_upright.wav` | Music for the upright world — tense, driving, no warmth |
-| `godot/assets/music/mus_memory.wav` | Music for the remembered world — a lullaby over an organic groove |
+| `godot/assets/music/mus_upright.ogg` | Music for the upright world — tense, driving, no warmth |
+| `godot/assets/music/mus_memory.ogg` | Music for the remembered world — a lullaby over an organic groove |
 | `godot/assets/art/char_walk_1..8.png` | Eight-frame walk cycle |
 | `godot/assets/art/char_jump_1..4.png` | Crouch, rising, falling, landing |
 | `godot/assets/art/char_ghost_inv_1..6.png` | The ghost drifting, drawn upside down |
 | `godot/assets/art/child_1..3.png` | The new family's daughter: playing, hearing, seeing |
-| `godot/assets/sfx/*.wav` | Nine sound events |
+| `godot/assets/sfx/*.ogg` | Nine sound events |
 
 Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, date, verdict and any hand edits. Rejected attempts are kept as thumbnails in `design/character/rejects/`.
 
