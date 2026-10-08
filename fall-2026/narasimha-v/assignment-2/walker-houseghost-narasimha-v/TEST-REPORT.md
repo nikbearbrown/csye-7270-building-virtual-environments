@@ -59,7 +59,20 @@ PASS  and the air stops when he stops
 
 It also cannot catch a timing race. Three runs of this check passed while a player could not move at all, because it drives input directly and never exercises the real frame timing of the opening sequence. Passing tests and a person who cannot play are not a contradiction; they are measuring different things. That is the single most useful thing this project taught about verification.
 
-## 3. Another person played it
+## 3. My own playtest
+
+Played on 2026-10-07 from a terminal launch, with sound on and then with both music and effects muted.
+
+| Check | Result |
+|---|---|
+| Plays through with sound on | Pass — movement, the flip, all three relics, the day cost, and the ending all behaved as designed |
+| Plays through fully muted (M and N) | **Pass** — everything the slice communicates was still understandable with no audio at all |
+| Music loop seam | **Not checked.** I did not listen specifically for the wrap, and the Ogg conversion postdates this session. Recorded as outstanding rather than passed |
+| Revised effects balance | **Not judged by ear** since the levels changed |
+
+The muted result is the one that matters most here, because readability without sound is a scored criterion and the only honest way to establish it is to take the sound away and still be able to play. Two rows above are deliberately left failing-to-report rather than marked pass; an unlistened check is not a passed one.
+
+## 4. Another person played it
 
 A friend played the build without being told anything about the story or the controls. Her feedback, as reported to me:
 
@@ -81,7 +94,7 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 
 **Not yet retested with her.** The changes above are a response to her session, not a result she has confirmed. A second session with the same player, or a fresh one, is the honest next step and has not happened.
 
-## 4. Character against the sheet
+## 5. Character against the sheet
 
 | Sheet element | In engine |
 |---|---|
@@ -91,7 +104,7 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 | Silhouette reads at on-screen size | Pass — 33 × 96 px, recorded in `design/character/silhouette-test-card.png` |
 | One body size across every pose | Pass after three failed measures; body area is what worked, and the idle is the walk cycle's own legs-together frame so standing and walking cannot disagree |
 
-## 5. Storyboard against the slice
+## 6. Storyboard against the slice
 
 | Panel | In the slice |
 |---|---|
@@ -102,7 +115,7 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 | 5 — the hallway corrects itself | **Not covered.** Out of scope for the slice; semester work |
 | 6 — the father at the cellar door | **Not covered.** Out of scope for the slice; semester work |
 
-## 6. Sound
+## 7. Sound
 
 | Check | Result |
 |---|---|
@@ -111,9 +124,9 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 | Music loops without an audible click | Verified in engine: both tracks load as `AudioStreamOggVorbis`, 59.5 s and 61.9 s, and loop is set in code because the importer defaults it to false. **Human listening confirmation outstanding**, and now also needs a check that Ogg encoding did not introduce a seam artefact the WAV master did not have |
 | Music behaviour on flip, failure, success and end | Pass — crossfade on the flip, long clean fade on either ending |
 | Mute works for music and effects separately | Pass |
-| Slice readable with all sound muted | Pass by design — nights, relic lights and the child's posture all carry state visually. **Not yet confirmed by a muted human playthrough** |
+| Slice readable with all sound muted | **Pass, confirmed by a muted human playthrough** on 2026-10-07: played with both M and N muted, and everything the slice communicates was still legible. The visual carriers are the nights counter, the relic lights going out as each is answered, the contextual key cues, and the child's posture turning further toward the room |
 
-## 7. Revision driven by observation
+## 8. Revision driven by observation
 
 Several, all recorded in FRICTIONAL.md and CHANGE-BRIEF.md. The two most consequential:
 
@@ -121,11 +134,12 @@ Several, all recorded in FRICTIONAL.md and CHANGE-BRIEF.md. The two most consequ
 
 **A level where nothing the player did mattered.** The floating platforms could be ignored entirely by walking on flat ground. They were removed and replaced with gaps in the floor that cost a night to fall through, and with obstacles that exist in only one world.
 
-## 8. Honest limitations
+## 9. Honest limitations
 
 - The three room tiles repeat; the middle one is mirrored to break the repetition, which puts two doors adjacent at the seam.
 - The floor gaps exist in both worlds although the fiction says only the real house has been pulled apart.
 - Three character-sheet poses are specified but not generated.
 - The floorboard relic, the floor holes, the glow and the heartbeat are drawn or synthesised in code and satisfy no generative requirement; the asset log marks each as such.
 - Storyboard panels 5 and 6 are not covered.
-- **My own playtest with sound on and then fully muted is still outstanding**, and an automated input sequence does not substitute for it.
+- The music loop seam has **not** been confirmed by human listening, and the Ogg re-encode happened after the last human session, so nothing yet rules out an artefact the WAV master did not have. The engine check confirms both tracks load and loop; it cannot hear the seam.
+- The revised effects mix (everything 3 dB down, footsteps 9–11 dB down) has **not** been judged by ear since the change.
