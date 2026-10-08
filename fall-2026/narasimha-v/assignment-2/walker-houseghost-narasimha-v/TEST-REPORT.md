@@ -96,28 +96,36 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 
 **Not yet retested with her.** The changes above are a response to her session, not a result she has confirmed. A second session with the same player, or a fresh one, is the honest next step and has not happened.
 
-## 5. Character against the sheet
+## 6. Storyboard against the slice
+
+Each panel the slice covers, beside the same moment captured in engine.
+
+| Storyboard panel | The same moment, in engine | Difference |
+|---|---|---|
+| **1 — Moving day**<br>![](design/storyboard/01-moving-day.png) | ![](evidence/A0-the-truth.png) | The slice opens on the stripped room with the child already present, which the panel does not show. Strengthened deliberately: the first thing the player sees is the room emptied, not a title |
+| **2 — The flip**<br>![](design/storyboard/02-the-flip.png) | ![](evidence/B0-mid-dissolve.png) | The panel draws a 180° roll; the engine dissolves one room into the other while the camera stays level. The dissolve read far better in play and never disorients — recorded as a deliberate departure |
+| **3 — The music box**<br>![](design/storyboard/03-music-box.png) | ![](evidence/D1-the-music-box.png) | Matches. The box sits on the bookshelf and is reachable only from the inverted side |
+| **4 — She looks up**<br>![](design/storyboard/04-she-looks-up.png) | ![](evidence/D2-she-heard-that.png) | Matches in substance: her posture changes toward the room. The panel frames her from a high angle; the game camera stays at eye level, because the slice never moves the camera |
+| **5 — The hallway is wrong**<br>![](design/storyboard/05-hallway-wrong.png) | *not covered* | Out of scope for the slice; semester work |
+| **6 — The cellar door**<br>![](design/storyboard/06-cellar-door.png) | *not covered* | Out of scope for the slice; semester work |
+
+## 7. Character against the sheet
 
 | Sheet element | In engine |
 |---|---|
-| Two states, one static image each | Pass — the boy in the memory, the ghost in the truth |
-| Orientation follows input, left flipped at runtime | Pass |
-| Collision aligns with the art | Pass — capsule 52 × 250 px centred on the body, after a correction recorded in the character sheet |
-| Silhouette reads at on-screen size | Pass — 33 × 96 px, recorded in `design/character/silhouette-test-card.png` |
-| One body size across every pose | Pass after three failed measures; body area is what worked, and the idle is the walk cycle's own legs-together frame so standing and walking cannot disagree |
+| Idle, remembered — solid, grounded | ![](evidence/70-idle.png) |
+| Walk, remembered — the eight-frame cycle | ![](evidence/71-walking.png) |
+| Ghost, inverted — hanging from the ceiling | ![](evidence/22-ghost-on-the-ceiling.png) |
+| Jump poses | ![](evidence/28-jump-poses.png) |
+| One body size across every pose | ![](evidence/29-consistent-size.png) |
+| Orientation follows input, left flipped at runtime | ![](evidence/25-continuous-walk.png) |
+| Collision against the art | ![](design/character/collision.png) |
 
-## 6. Storyboard against the slice
+The size row is the one that took three attempts: height, shoulder width and head
+width all failed across poses, and body area is what finally held. The screenshot
+above is the check that settled it.
 
-| Panel | In the slice |
-|---|---|
-| 1 — first sight of the room | Covered, and strengthened: the slice opens on the *stripped* room with the child and the ghost, before the memory blooms in |
-| 2 — the flip | Covered |
-| 3 — the music box | Covered |
-| 4 — she looks up | Covered, and literal: her posture is the recognition meter |
-| 5 — the hallway corrects itself | **Not covered.** Out of scope for the slice; semester work |
-| 6 — the father at the cellar door | **Not covered.** Out of scope for the slice; semester work |
-
-## 7. Sound
+## 8. Sound
 
 | Check | Result |
 |---|---|
@@ -128,7 +136,7 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 | Mute works for music and effects separately | Pass |
 | Slice readable with all sound muted | **Pass, confirmed by a muted human playthrough** on 2026-10-07: played with both M and N muted, and everything the slice communicates was still legible. The visual carriers are the nights counter, the relic lights going out as each is answered, the contextual key cues, and the child's posture turning further toward the room |
 
-## 8. Revision driven by observation
+## 9. Revision driven by observation
 
 Several, all recorded in FRICTIONAL.md and CHANGE-BRIEF.md. The two most consequential:
 
@@ -136,7 +144,7 @@ Several, all recorded in FRICTIONAL.md and CHANGE-BRIEF.md. The two most consequ
 
 **A level where nothing the player did mattered.** The floating platforms could be ignored entirely by walking on flat ground. They were removed and replaced with gaps in the floor that cost a night to fall through, and with obstacles that exist in only one world.
 
-## 9. Honest limitations
+## 10. Honest limitations
 
 - The three room tiles repeat; the middle one is mirrored to break the repetition, which puts two doors adjacent at the seam.
 - The floor gaps exist in both worlds although the fiction says only the real house has been pulled apart.
