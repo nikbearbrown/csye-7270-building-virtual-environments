@@ -68,6 +68,30 @@ The opening is read at your own pace: each line waits for a key, and **I** bring
 
 Every one is logged in [SOURCES.md](SOURCES.md) with its model, exact prompt, date, verdict and any hand edits. Rejected attempts are kept as thumbnails in `design/character/rejects/`.
 
+## The film
+
+**The House Is a Witness.** — a Brutalist `godot-gamedev` explainer tracing how this
+game's art, sound and music were designed, generated and wired into Godot.
+
+| | |
+|---|---|
+| File | `houseghost-the-room-that-lies-narasimha-v-4k.mp4` |
+| Link | _course media storage — added once uploaded_ |
+| SHA-256 | _added once uploaded_ |
+| Format | 3840×2160, 30 fps, narrated by Liam (Kokoro `am_onyx`, local) |
+| Source revision shown | the commit recorded in `SUBMISSION.md` |
+
+MP4 files and anything over 25 MB stay out of this repository by course rule, so the
+film lives in the course media storage and is identified here by filename and
+checksum.
+
+Everything behind the film is in `youtube/claude-liam-houseghost-gamedev/`: the
+script, the beat sheet with measured narration timings, the shot list, a fact check
+of every number spoken, the capture record with its hashes, and the input log of the
+scripted run it was captured from. The gameplay in the film is a real engine capture
+at native 4K with the game's own audio, labelled on screen as a scripted-input
+capture; it is not a reconstruction.
+
 ## Documents
 
 [CONCEPT.md](CONCEPT.md) · [STORYBOARD.md](STORYBOARD.md) · [CHARACTER-SHEET.md](CHARACTER-SHEET.md) · [CHANGE-BRIEF.md](CHANGE-BRIEF.md) · [SOURCES.md](SOURCES.md) · [FRICTIONAL.md](../FRICTIONAL.md)
