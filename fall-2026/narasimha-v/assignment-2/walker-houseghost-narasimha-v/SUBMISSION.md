@@ -41,7 +41,7 @@ work, and the ZIP submitted to Canvas is built from the tip.
 
 **Final film URL:** https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje
 **Final film filename:** `houseghost-the-house-is-a-witness-narasimha-v-4k.mp4`
-**Final film SHA-256:** _to be filled_
+**Final film SHA-256:** published in `CHECKSUM.txt` beside the film in the media folder linked above.
 
 ## Summary of my work
 

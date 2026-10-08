@@ -264,6 +264,16 @@ The entries below are dated and in order, written as the work happened. Nothing 
 - **What I understand now / still do not understand:** The distinction between *fix it* and *declare it* is the whole of honest QC. Declaring is legitimate when the check is measuring the wrong category and the reason is written down where someone can disagree with it; it is cheating when it is used to make a real defect disappear. I would rather be argued with about the four declarations than have them hidden. Unresolved: the gate's redundancy advisory says four beats recite their card instead of discussing it, and I accepted that rather than re-voicing them.
 - **Evidence and next step:** Evidence: `_qc/REPORT.md`, `TYPECHECK.md`, and the `qc` blocks in `beat_sheet.json`, each with its reason. The finished film, *The House Is a Witness.*, is in the [course media storage](https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje); its filename and SHA-256 are recorded in README.md and SUBMISSION.md. Next step for the game itself: the hallway that corrects itself, which is where the second night begins.
 
+### 2026-10-07 — What a contrast check measures, and what it was actually measuring
+
+- **Date and what I was working on:** 2026-10-07 — the film's final visual gate.
+- **I tried / expected:** I had declared the gameplay beats as full-bleed and the building cards as sparse, each with a written reason, and expected the gate to clear.
+- **What happened:** It did clear structurally — every blocker went. What remained was fourteen findings all saying the same thing: the label burned onto the gameplay clips was unreadable, separation around 0.05 against a floor of 0.3. That reading was wrong, and the reason it was wrong was mine. I had drawn the region I asked the gate to measure by estimating where the label sat, and the box came out wider than the label. So the check was averaging a bright white label together with the dark room beside it and reporting the average.
+- **What I did:** Stopped guessing at the coordinates and measured them.
+- **What Claude or another person contributed:** Claude sampled frames from all seven gameplay beats, found the label plate's true extent in each, and tested candidate boxes against every one. A correctly sized region measures 0.944 separation at its worst — comfortably legible. The declaration now carries that number and says the earlier box was wider than the label, so the correction is visible to anyone reading it rather than buried.
+- **What I understand now / still do not understand:** A measurement is only as good as the region you point it at, and a confident wrong number looks exactly like a confident right one. The gate was not wrong about what it measured; it was measuring what I told it to. Unresolved: the gate's redundancy advisory still notes four beats whose narration recites its card rather than discussing it, and I accepted that rather than re-voicing them.
+- **Evidence and next step:** Evidence: `_qc/REPORT.md` going from fourteen blockers to none, the measured box in the `qc` blocks of `beat_sheet.json`, and the 0.944 figure recorded in the reason beside it.
+
 ---
 
 ## The film
@@ -333,3 +343,4 @@ _Pushes happen only on my explicit instruction; commits accumulate locally betwe
 | 2026-10-07 | Drive the capture with real keys only; let it fail rather than cheat |
 | 2026-10-07 | Fix what is a fault; declare what is a category mismatch, with reasons |
 | 2026-10-07 | Ship the film's evidence: script, beat sheet, shot list, fact check, hashes |
+| 2026-10-07 | Measure the contrast region instead of estimating it |
