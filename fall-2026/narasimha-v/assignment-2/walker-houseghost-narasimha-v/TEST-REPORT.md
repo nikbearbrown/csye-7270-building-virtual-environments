@@ -16,11 +16,13 @@ godot --path godot
 
 **Run it from a terminal rather than from the editor.** Godot keeps an open scene in memory, so an editor left running while the files change will play an older build. A terminal launch is also how a grader will run it.
 
+**The fresh copy is the only honest version of this check.** Running from the working directory proves nothing about what a grader receives, because the working directory holds files the repository excludes. Cloning the pushed branch into a scratch directory and running it there caught a real fault the moment it was first tried: converting the audio to Ogg had left thirteen `.wav.import` stubs tracked in git, describing WAV files the course rule keeps out of the repository. On this machine the masters are still on disk so nothing complained; from a clean clone Godot reported three load failures. The automated suite passed in both cases, because the game reads the Ogg files and the stale records belong to nothing it asks for. Removed in `70974a7`, re-verified from a second clean clone: no errors, 13 checks passing.
+
 **A correction worth recording.** A repeated report of "the character will not move" was twice attributed to that stale editor, and that diagnosis was wrong. The real cause was a race between two tween `finished` signals in the opening sequence: awaiting one that has already fired waits forever, and which of the two fired first depended on frame timing. The same build therefore handed over control on one machine and froze on another. It was found by putting the four relevant values on screen and asking for a single screenshot, after four rounds of reasoning had not found it.
 
 | Check | Result |
 |---|---|
-| Project opens on Godot 4.7.2 with no missing resources | Pass — headless boot reports no errors |
+| Project opens on Godot 4.7.2 with no missing resources | **Pass, verified from a fresh clone** of the pushed branch, not from the working copy: 39 art files, 11 effects, 2 music tracks and 6 storyboard panels all present, import clean, no load errors. This check first ran red — see below |
 | Main scene loads and runs | Pass |
 | Opening sequence plays and hands over control | Pass — each line waits for a key press, so the opening is read at the player's pace and cannot overrun |
 | Read the story again (I) during play | Pass — holds the player still while open, returns control when closed |
