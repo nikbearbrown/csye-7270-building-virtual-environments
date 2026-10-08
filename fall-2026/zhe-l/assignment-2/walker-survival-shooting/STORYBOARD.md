@@ -116,3 +116,10 @@
 
 ---
 ## Revision history
+
+### 2026-10-07 — Sketches for panels 1–5; camera change in panels 4–5
+- **Sketches:** my hand sketches for panels 1–5 are in `design/storyboard/` (`01-title.png`, `02-start.png`, `03-tablet-onehand.png`, `04-tablet-twohand.png`, `05-tablet-fullscreen.png`). They only show the rough idea; the text is what counts.
+- **Panel 1:** the seat changes from "bench" to **to be decided** (a chair, a sofa, or something else). The title is a placeholder; the game has no name yet. The menu is Start / Option / Quit.
+- **Panel 2:** added: there is no scene transition. Only the camera moves, in one continuous shot, into the third-person over-the-shoulder view. A status bar sits at the top left (something like a health bar; what it is exactly is not decided, so it is a placeholder for now).
+- **Panel 4 (changed):** now the **transition animation** from one hand to two hands. The camera moves to focus on the tablet (version 1 said the camera does not deliberately point at the tablet). Shot: medium → push in · over the shoulder · gameplay view (transition).
+- **Panel 5 (changed):** from "a design view of the hands and the tablet" to a **gameplay view**: after the camera pushes in, the tablet fills the whole screen and shows information. Shot: close-up · gameplay view. Assets: PROP-TABLET, UI-TAB-FULL. The old panel 5 (how the hands hold the tablet) is no longer a separate panel.

@@ -155,3 +155,4 @@ In this slice, music plays only on the start menu.
 ---
 ## Revision history
 <!-- Append here; do not rewrite version 1 above. -->
+- **2026-10-07 — Following the storyboard revision:** the seat in ENV-BASE changes from "bench" to to be decided (a chair, a sofa, or something else), and CHAR-SIT becomes "sitting on the seat". UI-TAB-FULL now serves panels 4–5 (panel 5 is now the gameplay view with the tablet filling the screen). Panel 2 shows a status bar at the top left; it is a placeholder for now, and whether it needs a UI asset will be decided later.
