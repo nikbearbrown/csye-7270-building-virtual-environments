@@ -1,0 +1,36 @@
+Do not fix the flash yet. Two reviews of HEAD found:
+(a) the fade counts frames, so its length depends on the frame rate;
+(b) the shader starts from texture(TEXTURE, UV) instead of COLOR, and Clawd
+    is drawn with draw_rect() and has no texture.
+Build the evidence first.
+
+1. godot/tests/verify_flash.gd compares flash_amount with the session's
+   retry countdown. That tests one implementation, not the spec. Add
+   godot/tests/verify_flash_spec.gd that tests CLAUDE.md rule 1 directly:
+   accumulate game time t from each frame's delta since the failure began,
+   and require |flash_amount - (1 - t / 0.55)| to stay within one frame or
+   one physics tick (whichever is longer), divided by 0.55. Also require:
+   first failure frame >= 0.96, last failure frame <= 0.07, and 0.0 on the
+   first frame after the retry. Use a real failure (Clawd moved below
+   level.fall_y) and a sampler node that runs after every other _process in
+   the frame.
+2. godot/tests/flash_model.gd: a CPU model of spec rule 4, not of the
+   current shader. Given a vertex color and flash_amount, return
+   mix(vertex_rgb, flash_color_rgb, amount) with alpha unchanged. Print the
+   predicted colors as hex for Clawd's body (#dd775b) and eyes (#000000) at
+   0.0, 0.5 and 1.0, and assert the spec's endpoints.
+3. godot/tests/flash_bench.tscn with flash_bench.gd: three copies of Clawd's
+   drawing side by side on #f6f3ec, each with its own ShaderMaterial using
+   clawd_flash.gdshader, flash_amount fixed at 0.0, 0.5 and 1.0, a label
+   under each. No gameplay, input or timers. It is for a human to look at
+   in the editor.
+4. godot/tests/test_flash_bench.gd: headless; loads the bench and asserts
+   each copy's flash_amount and that the shader's uniform list is intact.
+5. BENCH.md at the repository root: the human procedure (open the bench,
+   screenshot, sample body and eye pixels, compare with the model's table,
+   what a mismatch means).
+
+Run verify_flash_spec.gd with --headless at --fixed-fps 30, 60 and 144
+against HEAD and report which checks fail. Run flash_model.gd and
+test_flash_bench.gd with --headless --fixed-fps 60. Show the real output.
+Do not edit the shader, player.gd or the existing tests. Do not commit.

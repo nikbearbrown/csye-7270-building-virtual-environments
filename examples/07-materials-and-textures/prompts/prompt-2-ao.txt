@@ -1,0 +1,21 @@
+Read godot/MATERIALS.md and godot/tests/test_materials.gd first.
+
+Change one thing: give the hull ambient occlusion from the red channel of
+its ARM texture, without changing anything else about how the hull looks.
+
+- Create godot/materials/dutch_ship_medium_hull.tres as an ORMMaterial3D
+  using the hull's diff, nor_gl and arm textures.
+- Wire it through the glTF importer's per-material "Use External" setting in
+  godot/polyhaven/dutch_ship_medium_1k.gltf.import, so a reimport keeps it.
+  Do not edit the .gltf file or any texture.
+- Every property the imported hull material had (see MATERIALS.md) must keep
+  its value unless ORM packing requires otherwise; say which ones changed
+  and why.
+- Rigging and sails must stay exactly as they were.
+- Reimport with: godot --headless --path godot --import
+- Update test_materials.gd so it proves the hull now uses the external
+  material with AO from the red channel, that the other hull properties
+  match the audited values, and that rigging and sails are unchanged. Run it
+  and test_settings.gd with --fixed-fps 60 and show the real output.
+- List the human checks needed to judge the AO in the running scene.
+Do not commit.

@@ -1,0 +1,627 @@
+diff --git a/godot/game.tscn b/godot/game.tscn
+index 45a604f..d49fc8d 100644
+--- a/godot/game.tscn
++++ b/godot/game.tscn
+@@ -5,6 +5,7 @@
+ [ext_resource type="PackedScene" uid="uid://4qlk3xltj22q" path="res://enemy/enemy.tscn" id="3_nhwvs"]
+ [ext_resource type="PackedScene" uid="uid://c0q5hsswj8dqf" path="res://player/player.tscn" id="4_ray4s"]
+ [ext_resource type="PackedScene" uid="uid://7bwmwbaeosl3" path="res://touch_screen_ui/touch_screen_ui.tscn" id="5_7jktm"]
++[ext_resource type="PackedScene" uid="uid://2lpjahywwijy" path="res://props/checkpoint_post.glb" id="6_cpost"]
+ 
+ [sub_resource type="PhysicsMaterial" id="1"]
+ friction = 0.0
+@@ -267,3 +268,6 @@ physics_material_override = SubResource("4")
+ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -9.49833, -3.84189, 3.9334)
+ 
+ [node name="TouchScreenUI" parent="." unique_id=1997271132 instance=ExtResource("5_7jktm")]
++
++[node name="CheckpointPost" parent="." unique_id=987654321 instance=ExtResource("6_cpost")]
++transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, -4.0, 3.9334)
+diff --git a/godot/props/checkpoint_post.glb b/godot/props/checkpoint_post.glb
+new file mode 100644
+index 0000000..1c811c9
+Binary files /dev/null and b/godot/props/checkpoint_post.glb differ
+diff --git a/godot/props/checkpoint_post.glb.import b/godot/props/checkpoint_post.glb.import
+new file mode 100644
+index 0000000..f83b088
+--- /dev/null
++++ b/godot/props/checkpoint_post.glb.import
+@@ -0,0 +1,45 @@
++[remap]
++
++importer="scene"
++importer_version=1
++type="PackedScene"
++uid="uid://2lpjahywwijy"
++path="res://.godot/imported/checkpoint_post.glb-52b200e991bc0463116907d1ad2860d2.scn"
++
++[deps]
++
++source_file="res://props/checkpoint_post.glb"
++dest_files=["res://.godot/imported/checkpoint_post.glb-52b200e991bc0463116907d1ad2860d2.scn"]
++
++[params]
++
++nodes/root_type=""
++nodes/root_name=""
++nodes/root_script=null
++mesh_library/use_node_names_as_mesh_names=false
++array_mesh/deduplicate_surfaces=true
++nodes/apply_root_scale=false
++nodes/root_scale=1.0
++nodes/import_as_skeleton_bones=false
++nodes/use_name_suffixes=true
++nodes/use_node_type_suffixes=true
++meshes/ensure_tangents=true
++meshes/generate_lods=true
++meshes/create_shadow_meshes=true
++meshes/light_baking=1
++meshes/lightmap_texel_size=0.2
++meshes/force_disable_compression=false
++skins/use_named_skins=true
++animation/import=true
++animation/fps=30
++animation/trimming=false
++animation/remove_immutable_tracks=true
++animation/import_rest_as_RESET=false
++import_script/path=""
++materials/extract=0
++materials/extract_format=0
++materials/extract_path=""
++_subresources={}
++gltf/naming_version=2
++gltf/embedded_image_handling=1
++gltf/texture_map_mode=0
+diff --git a/godot/tests/test_checkpoint_post.gd b/godot/tests/test_checkpoint_post.gd
+new file mode 100644
+index 0000000..ab25866
+--- /dev/null
++++ b/godot/tests/test_checkpoint_post.gd
+@@ -0,0 +1,291 @@
++## test_checkpoint_post.gd  — headless SceneTree test
++##
++## Run:  godot --headless --path godot --script tests/test_checkpoint_post.gd
++## Exit 0 = all PASS, non-zero = failure count.
++##
++extends SceneTree
++
++# ─── constants ───────────────────────────────────────────────────────────────
++
++const POST_GLB     := "res://props/checkpoint_post.glb"
++const GAME_TSCN    := "res://game.tscn"
++const PLAYER_TSCN  := "res://player/player.tscn"
++
++# Expected dimensions from Blender build script (Blender Z → Godot Y after Y-up export)
++const EXPECT_HEIGHT := 1.80    # Blender Z 0→1.80  = Godot Y extent
++const EXPECT_DEPTH  := 0.60    # Blender Y ±0.30   = Godot Z extent
++const EXPECT_WIDTH  := 0.78    # Blender X −0.30→0.48 (base + pennant)
++const TOL           := 0.01    # 1 cm tolerance
++
++const PENNANT_ROOT_X := 0.08
++const PENNANT_TIP_X  := 0.48
++const PENNANT_MIN_Y  := 1.55
++const FLOOR_TOL      := 0.02
++
++# ─── state ───────────────────────────────────────────────────────────────────
++
++var _fails      := 0
++var _phys_frame := 0
++
++# ─── entry ───────────────────────────────────────────────────────────────────
++
++func _initialize() -> void:
++	# Defer so nodes are fully in-tree before we inspect them.
++	call_deferred("_start")
++
++
++func _start() -> void:
++	_test_prop_scene()
++
++	var game := preload(GAME_TSCN).instantiate()
++	root.add_child(game)
++	physics_frame.connect(_on_physics_frame)
++
++
++func _on_physics_frame() -> void:
++	_phys_frame += 1
++	if _phys_frame < 10:
++		return
++	physics_frame.disconnect(_on_physics_frame)
++	_test_game_scene()
++	quit(_fails)
++
++
++# ─── helpers ─────────────────────────────────────────────────────────────────
++
++func _pass(msg: String) -> void:
++	print("PASS  ", msg)
++
++
++func _fail(msg: String) -> void:
++	print("FAIL  ", msg)
++	_fails += 1
++
++
++func _check(ok: bool, msg: String) -> void:
++	if ok: _pass(msg)
++	else:  _fail(msg)
++
++
++func _approx(a: float, b: float, tol: float) -> bool:
++	return abs(a - b) <= tol
++
++
++# Collect all nodes of a given class under root_node (recursive).
++func _collect(root_node: Node, cls) -> Array:
++	var result := []
++	for child in root_node.get_children():
++		if is_instance_of(child, cls):
++			result.append(child)
++		result.append_array(_collect(child, cls))
++	return result
++
++
++# Return the transform of node relative to ancestor (walk the parent chain).
++func _rel_transform(node: Node3D, ancestor: Node3D) -> Transform3D:
++	var t := Transform3D.IDENTITY
++	var cur: Node = node
++	while cur != ancestor and cur != null:
++		if cur is Node3D:
++			t = (cur as Node3D).transform * t
++		cur = cur.get_parent()
++	return t
++
++
++# Compute the merged AABB (in scene-root local space) of all MeshInstance3D
++# nodes under root_node. Uses local-transform chain to avoid global_transform
++# which requires the node to be inside the tree.
++func _merged_aabb(root_node: Node3D) -> AABB:
++	var meshes: Array = _collect(root_node, MeshInstance3D)
++	var merged := AABB()
++	var first  := true
++	for mi: MeshInstance3D in meshes:
++		if mi.mesh == null:
++			continue
++		var local_aabb: AABB = mi.get_aabb()
++		var t := _rel_transform(mi, root_node)
++		var p := local_aabb.position
++		var s := local_aabb.size
++		var corners := [
++			t * p,
++			t * Vector3(p.x + s.x, p.y,       p.z),
++			t * Vector3(p.x,       p.y + s.y,  p.z),
++			t * Vector3(p.x,       p.y,        p.z + s.z),
++			t * Vector3(p.x + s.x, p.y + s.y,  p.z),
++			t * Vector3(p.x + s.x, p.y,        p.z + s.z),
++			t * Vector3(p.x,       p.y + s.y,  p.z + s.z),
++			t * (p + s),
++		]
++		if first:
++			merged = AABB(corners[0], Vector3.ZERO)
++			first = false
++		for c in corners:
++			merged = merged.expand(c)
++	return merged
++
++
++# ─── part 1: prop scene static tests ─────────────────────────────────────────
++
++func _test_prop_scene() -> void:
++	print("\n--- Part 1: prop scene static tests ---")
++
++	var ps  := preload(POST_GLB)
++	var inst := ps.instantiate()
++	root.add_child(inst)
++
++	# ── Visual AABB ──────────────────────────────────────────────────────────
++	var aabb := _merged_aabb(inst)
++	print("  merged AABB size: ", aabb.size)
++
++	_check(
++		_approx(aabb.size.y, EXPECT_HEIGHT, TOL),
++		"visual height (Godot Y = Blender Z) ≈ %.2f m  [got %.4f]" % [EXPECT_HEIGHT, aabb.size.y]
++	)
++	_check(
++		_approx(aabb.size.z, EXPECT_DEPTH, TOL),
++		"visual depth  (Godot Z = Blender Y) ≈ %.2f m  [got %.4f]" % [EXPECT_DEPTH, aabb.size.z]
++	)
++	_check(
++		_approx(aabb.size.x, EXPECT_WIDTH, TOL),
++		"visual width  (Godot X = Blender X) ≈ %.2f m  [got %.4f]" % [EXPECT_WIDTH, aabb.size.x]
++	)
++
++	# ── Unit scale on every MeshInstance3D ───────────────────────────────────
++	var meshes: Array = _collect(inst, MeshInstance3D)
++	var all_unit := true
++	for mi: MeshInstance3D in meshes:
++		if not (_approx(mi.scale.x, 1.0, 0.001) and
++		        _approx(mi.scale.y, 1.0, 0.001) and
++		        _approx(mi.scale.z, 1.0, 0.001)):
++			all_unit = false
++			print("  non-unit scale on: ", mi.name, " scale=", mi.scale)
++	_check(all_unit, "all MeshInstance3D have unit scale  [%d meshes checked]" % meshes.size())
++
++	# ── Materials: only PostMetal and FlagCloth (skip unnamed) ───────────────
++	var mat_names: Dictionary = {}
++	for mi: MeshInstance3D in meshes:
++		for i in range(mi.mesh.get_surface_count()):
++			var mat := mi.mesh.surface_get_material(i)
++			if mat and mat.resource_name != "":
++				mat_names[mat.resource_name] = true
++	print("  named materials: ", mat_names.keys())
++	_check(mat_names.has("PostMetal"), "PostMetal material present")
++	_check(mat_names.has("FlagCloth"), "FlagCloth material present")
++	var only_expected := true
++	for nm in mat_names:
++		if nm != "PostMetal" and nm != "FlagCloth":
++			only_expected = false
++	_check(only_expected, "no unexpected named materials  %s" % str(mat_names.keys()))
++
++	# ── StaticBody3D with ConvexPolygonShape3D ────────────────────────────────
++	var bodies: Array = _collect(inst, StaticBody3D)
++	_check(bodies.size() >= 1, "at least one StaticBody3D present  [found %d]" % bodies.size())
++
++	var found_convex := false
++	var pts          := PackedVector3Array()
++	for body: StaticBody3D in bodies:
++		for child in body.get_children():
++			if child is CollisionShape3D:
++				var shape := (child as CollisionShape3D).shape
++				if shape is ConvexPolygonShape3D:
++					found_convex = true
++					pts          = (shape as ConvexPolygonShape3D).points
++					break
++		if found_convex:
++			break
++	_check(found_convex, "StaticBody3D has a ConvexPolygonShape3D")
++
++	if found_convex and pts.size() > 0:
++		var cx_min := INF; var cx_max := -INF
++		var cy_min := INF; var cy_max := -INF
++		var cz_min := INF; var cz_max := -INF
++		for pt in pts:
++			cx_min = min(cx_min, pt.x); cx_max = max(cx_max, pt.x)
++			cy_min = min(cy_min, pt.y); cy_max = max(cy_max, pt.y)
++			cz_min = min(cz_min, pt.z); cz_max = max(cz_max, pt.z)
++		print("  convex hull  X[%.3f,%.3f]  Y[%.3f,%.3f]  Z[%.3f,%.3f]"
++			  % [cx_min, cx_max, cy_min, cy_max, cz_min, cz_max])
++
++		# Covers base bottom (Y≈0) and pole top (Y≈1.8)
++		_check(cy_min <= 0.02,  "collision Y_min ≤ 0.02 (covers base floor)")
++		_check(
++			cy_max >= EXPECT_HEIGHT - 0.05,
++			"collision Y_max ≥ %.2f (covers pole top)  [got %.3f]" % [EXPECT_HEIGHT - 0.05, cy_max]
++		)
++		# Collision X should NOT reach the pennant tip (0.48); base is ±0.30
++		var collider_x_at_pennant := -INF
++		for pt in pts:
++			if pt.y >= PENNANT_MIN_Y - TOL:
++				collider_x_at_pennant = max(collider_x_at_pennant, pt.x)
++		var pennant_length_inside := maxf(
++			0.0,
++			minf(PENNANT_TIP_X, collider_x_at_pennant) - PENNANT_ROOT_X
++		)
++		print("  pennant length inside collider: %.4f m" % pennant_length_inside)
++		_check(
++			pennant_length_inside <= TOL,
++			"no pennant length lies inside collider  [overlap %.4f m]" % pennant_length_inside
++		)
++
++	# ── Prop shorter than player capsule ─────────────────────────────────────
++	var player := preload(PLAYER_TSCN).instantiate()
++	var capsule_height := -1.0
++	for collision_shape in _collect(player, CollisionShape3D):
++		var shape := (collision_shape as CollisionShape3D).shape
++		if shape is CapsuleShape3D:
++			capsule_height = (shape as CapsuleShape3D).height
++			break
++	_check(capsule_height > 0.0, "player scene has a capsule collision shape")
++	_check(
++		EXPECT_HEIGHT < capsule_height,
++		"prop height %.2f m < player capsule %.2f m" % [EXPECT_HEIGHT, capsule_height]
++	)
++	player.free()
++
++	inst.queue_free()
++	print()
++
++
++# ─── part 2: game.tscn physics + ray test ────────────────────────────────────
++
++func _test_game_scene() -> void:
++	print("--- Part 2: game.tscn physics + ray test ---")
++
++	var space_state := root.get_world_3d().direct_space_state
++	if space_state == null:
++		_fail("could not get physics space state")
++		return
++
++	var game := root.get_child(root.get_child_count() - 1)
++	var post := game.get_node_or_null("CheckpointPost") as Node3D
++	if post == null:
++		_fail("game scene has a CheckpointPost")
++		return
++	var post_world := post.global_position
++	var exclusions: Array[RID] = []
++	for body in _collect(post, StaticBody3D):
++		exclusions.append((body as StaticBody3D).get_rid())
++
++	# Start just above the base and exclude the post itself, so only the
++	# supporting level geometry can satisfy this check.
++	var from := post_world + Vector3(0.0, 0.5, 0.0)
++	var to   := post_world + Vector3(0.0, -2.0, 0.0)
++	var qry  := PhysicsRayQueryParameters3D.create(from, to)
++	qry.exclude = exclusions
++	var hit  := space_state.intersect_ray(qry)
++
++	print("  ray from=%s  to=%s" % [str(from), str(to)])
++
++	_check(not hit.is_empty(), "downward ray hits supporting floor with post excluded")
++
++	if not hit.is_empty():
++		var hit_y: float = hit.position.y
++		print("  ray hit at y=%.4f  (post base y=%.4f)" % [hit_y, post_world.y])
++		_check(
++			absf(hit_y - post_world.y) <= FLOOR_TOL,
++			"floor is within %.2f m of post base  [distance %.4f m]"
++			% [FLOOR_TOL, absf(hit_y - post_world.y)]
++		)
++
++	print()
++	print("Failures: %d" % _fails)
+diff --git a/godot/tests/test_checkpoint_post.gd.uid b/godot/tests/test_checkpoint_post.gd.uid
+new file mode 100644
+index 0000000..b9cf0b2
+--- /dev/null
++++ b/godot/tests/test_checkpoint_post.gd.uid
+@@ -0,0 +1 @@
++uid://bq4n88e4sghar
+diff --git a/tools/blender/build_checkpoint_post.log b/tools/blender/build_checkpoint_post.log
+new file mode 100644
+index 0000000..c54b9d3
+--- /dev/null
++++ b/tools/blender/build_checkpoint_post.log
+@@ -0,0 +1,27 @@
++<scratch>/walker-3d-platformer-asset/tools/blender/build_checkpoint_post.py:85: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
++  mat.use_nodes = True
++
++=== Checkpoint Post Objects ===
++  Base                            dims=(0.6000, 0.6000, 0.1000)  scale=(1.000, 1.000, 1.000)  materials=['PostMetal']
++  Collision-convcolonly           dims=(0.6000, 0.6000, 1.8000)  scale=(1.000, 1.000, 1.000)  materials=[]
++  Pennant                         dims=(0.4000, 0.0000, 0.2500)  scale=(1.000, 1.000, 1.000)  materials=['FlagCloth']
++  Pole                            dims=(0.1600, 0.1600, 1.7000)  scale=(1.000, 1.000, 1.000)  materials=['PostMetal']
++
++Exporting to: <scratch>/walker-3d-platformer-asset/godot/props/checkpoint_post.glb
++INFO Draco mesh compression is available, use library at /Applications/Blender.app/Contents/Resources/5.1/scripts/addons_core/io_scene_gltf2/libextern_draco.dylib
++15:00:55 | INFO: Starting glTF 2.0 export
++15:00:55 | INFO: Extracting primitive: Base
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Extracting primitive: Pole
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Extracting primitive: Pennant
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Extracting primitive: Collision
++15:00:55 | INFO: Primitives created: 1
++15:00:55 | INFO: Finished glTF 2.0 export in 0.014611959457397461 s
++
++Done.
++
++Blender 5.1.2 (hash ec6e62d40fa9 built 2026-05-19 01:30:33)
++
++Blender quit
+diff --git a/tools/blender/build_checkpoint_post.py b/tools/blender/build_checkpoint_post.py
+new file mode 100644
+index 0000000..5ecc69c
+--- /dev/null
++++ b/tools/blender/build_checkpoint_post.py
+@@ -0,0 +1,210 @@
++"""
++build_checkpoint_post.py  —  run with Blender in background mode:
++
++    Blender -b --factory-startup --python tools/blender/build_checkpoint_post.py
++
++Builds a low-poly checkpoint post and exports godot/props/checkpoint_post.glb.
++
++Coordinate origin: centre of the base's underside  (Blender Z=0)
++Blender +Z up is converted to glTF/Godot +Y up by the exporter.
++
++Geometry (Blender / +Z-up):
++  Base          0.6 x 0.6 x 0.1 m   Z 0.00 → 0.10
++  Pole          8-sided, r=0.08 m    Z 0.10 → 1.80
++  Pennant       flat XZ-plane quad   X 0.08 → 0.48, Z 1.55 → 1.80
++  Collider      convex tapered hull  base ±0.30, pole ±0.08, Z 0.00 → 1.80
++
++Materials: PostMetal (Base + Pole), FlagCloth (Pennant)
++"""
++
++import bpy
++import bmesh
++import math
++import os
++import sys
++
++# ── helpers ──────────────────────────────────────────────────────────────────
++
++def new_obj(name: str, mesh: bpy.types.Mesh) -> bpy.types.Object:
++    obj = bpy.data.objects.new(name, mesh)
++    bpy.context.collection.objects.link(obj)
++    bpy.context.view_layer.objects.active = obj
++    obj.select_set(True)
++    return obj
++
++
++def build_box_mesh(name: str, corners_lo, corners_hi) -> bpy.types.Mesh:
++    """Axis-aligned box from two corner tuples."""
++    x0, y0, z0 = corners_lo
++    x1, y1, z1 = corners_hi
++    mesh = bpy.data.meshes.new(name)
++    bm = bmesh.new()
++    v = [
++        bm.verts.new((x0, y0, z0)), bm.verts.new((x1, y0, z0)),
++        bm.verts.new((x1, y1, z0)), bm.verts.new((x0, y1, z0)),
++        bm.verts.new((x0, y0, z1)), bm.verts.new((x1, y0, z1)),
++        bm.verts.new((x1, y1, z1)), bm.verts.new((x0, y1, z1)),
++    ]
++    bm.verts.ensure_lookup_table()
++    face_idx = [
++        [0, 1, 2, 3],   # -Z  bottom
++        [7, 6, 5, 4],   # +Z  top
++        [0, 4, 5, 1],   # -Y  front
++        [1, 5, 6, 2],   # +X  right
++        [2, 6, 7, 3],   # +Y  back
++        [3, 7, 4, 0],   # -X  left
++    ]
++    for fi in face_idx:
++        bm.faces.new([v[i] for i in fi])
++    bm.to_mesh(mesh)
++    bm.free()
++    mesh.update()
++    return mesh
++
++
++# ── clear factory scene ───────────────────────────────────────────────────────
++
++bpy.ops.object.select_all(action='SELECT')
++bpy.ops.object.delete(use_global=False)
++for m in list(bpy.data.meshes):   bpy.data.meshes.remove(m)
++for m in list(bpy.data.materials): bpy.data.materials.remove(m)
++
++# ── metric units ─────────────────────────────────────────────────────────────
++
++scene = bpy.context.scene
++scene.unit_settings.system       = 'METRIC'
++scene.unit_settings.length_unit  = 'METERS'
++scene.unit_settings.scale_length = 1.0
++
++# ── materials ─────────────────────────────────────────────────────────────────
++
++def make_pbr(name: str, base_color, metallic: float, roughness: float):
++    mat = bpy.data.materials.new(name)
++    # In Blender 5.x, materials use nodes by default; force it on for older builds.
++    try:
++        mat.use_nodes = True
++    except Exception:
++        pass
++    if mat.node_tree and mat.node_tree.nodes.get("Principled BSDF"):
++        bsdf = mat.node_tree.nodes["Principled BSDF"]
++        bsdf.inputs["Base Color"].default_value  = (*base_color, 1.0)
++        bsdf.inputs["Metallic"].default_value    = metallic
++        bsdf.inputs["Roughness"].default_value   = roughness
++    return mat
++
++mat_metal = make_pbr("PostMetal", (0.50, 0.50, 0.55), metallic=0.8, roughness=0.4)
++mat_cloth = make_pbr("FlagCloth", (0.80, 0.10, 0.10), metallic=0.0, roughness=0.9)
++
++# ── Base  (0.6 × 0.6 × 0.1, Z 0 → 0.1) ─────────────────────────────────────
++
++base_mesh = build_box_mesh("Base", (-0.3, -0.3, 0.0), (0.3, 0.3, 0.1))
++base_obj  = new_obj("Base", base_mesh)
++base_mesh.materials.append(mat_metal)
++
++# ── Pole  (8-sided cyl, r=0.08, Z 0.1 → 1.8) ────────────────────────────────
++
++pole_mesh = bpy.data.meshes.new("Pole")
++bm = bmesh.new()
++n, r, z0, z1 = 8, 0.08, 0.1, 1.8
++bot, top = [], []
++for i in range(n):
++    a = 2 * math.pi * i / n
++    x, y = r * math.cos(a), r * math.sin(a)
++    bot.append(bm.verts.new((x, y, z0)))
++    top.append(bm.verts.new((x, y, z1)))
++bm.faces.new(bot[::-1])   # bottom cap (normal −Z)
++bm.faces.new(top)          # top cap    (normal +Z)
++for i in range(n):
++    j = (i + 1) % n
++    bm.faces.new([bot[i], bot[j], top[j], top[i]])
++bm.to_mesh(pole_mesh)
++bm.free()
++pole_mesh.update()
++pole_obj = new_obj("Pole", pole_mesh)
++pole_mesh.materials.append(mat_metal)
++
++# ── Pennant  (flat XZ-plane, X 0.08→0.48, Z 1.55→1.80) ─────────────────────
++
++pennant_mesh = bpy.data.meshes.new("Pennant")
++bm = bmesh.new()
++pv = [
++    bm.verts.new((0.08, 0.0, 1.80)),
++    bm.verts.new((0.48, 0.0, 1.80)),
++    bm.verts.new((0.48, 0.0, 1.55)),
++    bm.verts.new((0.08, 0.0, 1.55)),
++]
++bm.faces.new(pv)           # single face; glTF renders both sides via material
++bm.to_mesh(pennant_mesh)
++bm.free()
++pennant_mesh.update()
++pennant_obj = new_obj("Pennant", pennant_mesh)
++pennant_mesh.materials.append(mat_cloth)
++
++# ── Collision box  (base + pole only, Godot -convcolonly suffix) ──────────────
++# X ±0.3, Y ±0.3, Z 0 → 1.8   (no pennant at X 0.08→0.48)
++
++# Name both the mesh data AND the object with the suffix so Godot's importer
++# detects it regardless of whether it checks the glTF mesh name or node name.
++col_mesh = bpy.data.meshes.new("Collision")
++bm = bmesh.new()
++for x in (-0.3, 0.3):
++    for y in (-0.3, 0.3):
++        for z in (0.0, 0.1):
++            bm.verts.new((x, y, z))
++for x in (-0.08, 0.08):
++    for y in (-0.08, 0.08):
++        for z in (0.1, 1.8):
++            bm.verts.new((x, y, z))
++bmesh.ops.convex_hull(bm, input=list(bm.verts))
++bm.to_mesh(col_mesh)
++bm.free()
++col_mesh.update()
++col_obj  = new_obj("Collision-convcolonly", col_mesh)
++# No visual material — collision-only mesh
++
++# ── Apply rotation + scale on every object ───────────────────────────────────
++# All origins are at world (0,0,0); transforms are already identity after
++# BMesh creation, so this is a no-op but satisfies the spec.
++
++bpy.ops.object.select_all(action='SELECT')
++bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
++
++# ── Print info ───────────────────────────────────────────────────────────────
++
++def obj_mats(obj):
++    return [s.material.name for s in obj.material_slots if s.material]
++
++print("\n=== Checkpoint Post Objects ===")
++for obj in bpy.data.objects:
++    dims = obj.dimensions
++    sc   = obj.scale
++    mats = obj_mats(obj)
++    print(
++        f"  {obj.name:30s}  "
++        f"dims=({dims.x:.4f}, {dims.y:.4f}, {dims.z:.4f})  "
++        f"scale=({sc.x:.3f}, {sc.y:.3f}, {sc.z:.3f})  "
++        f"materials={mats}"
++    )
++print()
++
++# ── Export ───────────────────────────────────────────────────────────────────
++
++script_dir = os.path.dirname(os.path.abspath(__file__))
++repo_root  = os.path.dirname(os.path.dirname(script_dir))   # tools/ → root
++out_path   = os.path.join(repo_root, "godot", "props", "checkpoint_post.glb")
++
++os.makedirs(os.path.dirname(out_path), exist_ok=True)
++print(f"Exporting to: {out_path}")
++
++bpy.ops.export_scene.gltf(
++    filepath=out_path,
++    export_format='GLB',
++    export_yup=True,          # Blender +Z → glTF/Godot +Y
++    export_apply=True,        # apply modifiers
++    use_selection=False,      # export all objects
++    export_materials='EXPORT',
++    export_normals=True,
++    export_texcoords=True,
++)
++
++print("Done.\n")

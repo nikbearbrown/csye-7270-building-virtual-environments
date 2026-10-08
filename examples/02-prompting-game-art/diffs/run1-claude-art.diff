@@ -1,0 +1,494 @@
+diff --git a/godot/art_lab/termite_lab.gd b/godot/art_lab/termite_lab.gd
+new file mode 100644
+index 0000000..23fed74
+--- /dev/null
++++ b/godot/art_lab/termite_lab.gd
+@@ -0,0 +1,19 @@
++extends Node2D
++const Art = preload("res://features/player/clawd_art.gd")
++var seconds: float = 0.0
++
++func _process(delta: float) -> void:
++	seconds += delta
++	queue_redraw()
++
++func _draw() -> void:
++	var font := ThemeDB.fallback_font
++	draw_rect(Rect2(0, 0, 640, 360), Color("faf9f5"))
++	draw_string(font, Vector2(16, 22), "Termite lab — human inspection only; not a playtest", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("3d3929"))
++	draw_string(font, Vector2(16, 40), "Soldiers at cut scale (48 px cell). Clawd at game scale (0.32).", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("888"))
++	draw_line(Vector2(0, 280), Vector2(640, 280), Color("c8c5be"), 1)
++	Art.paint(self, "idle", seconds, Vector2(90, 280))
++	draw_string(font, Vector2(90, 298), "Clawd", HORIZONTAL_ALIGNMENT_CENTER, 80, 11, Color("3d3929"))
++	for i: int in 3:
++		var labels: Array = ["black", "red", "yellow"]
++		draw_string(font, Vector2(280.0 + i * 100, 298), labels[i], HORIZONTAL_ALIGNMENT_CENTER, 80, 11, Color("3d3929"))
+diff --git a/godot/art_lab/termite_lab.gd.uid b/godot/art_lab/termite_lab.gd.uid
+new file mode 100644
+index 0000000..c98223f
+--- /dev/null
++++ b/godot/art_lab/termite_lab.gd.uid
+@@ -0,0 +1 @@
++uid://btermlabgd0001
+diff --git a/godot/art_lab/termite_lab.tscn b/godot/art_lab/termite_lab.tscn
+new file mode 100644
+index 0000000..bc245c4
+--- /dev/null
++++ b/godot/art_lab/termite_lab.tscn
+@@ -0,0 +1,25 @@
++[gd_scene load_steps=3 format=3]
++
++[ext_resource type="Script" path="res://art_lab/termite_lab.gd" id="1_script"]
++[ext_resource type="SpriteFrames" path="res://features/termite/termite_frames.tres" id="2_frames"]
++
++[node name="TermiteLab" type="Node2D"]
++script = ExtResource("1_script")
++
++[node name="BlackSoldier" type="AnimatedSprite2D" parent="."]
++position = Vector2(280, 256)
++texture_filter = 1
++sprite_frames = ExtResource("2_frames")
++animation = &"black"
++
++[node name="RedSoldier" type="AnimatedSprite2D" parent="."]
++position = Vector2(380, 256)
++texture_filter = 1
++sprite_frames = ExtResource("2_frames")
++animation = &"red"
++
++[node name="YellowSoldier" type="AnimatedSprite2D" parent="."]
++position = Vector2(480, 256)
++texture_filter = 1
++sprite_frames = ExtResource("2_frames")
++animation = &"yellow"
+diff --git a/godot/features/termite/termite.tscn b/godot/features/termite/termite.tscn
+new file mode 100644
+index 0000000..c42b7c5
+--- /dev/null
++++ b/godot/features/termite/termite.tscn
+@@ -0,0 +1,18 @@
++[gd_scene load_steps=3 format=3]
++
++[ext_resource type="SpriteFrames" path="res://features/termite/termite_frames.tres" id="1_frames"]
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
++size = Vector2(20, 34)
++
++[node name="Termite" type="Area2D"]
++collision_layer = 8
++collision_mask = 2
++
++[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
++texture_filter = 1
++sprite_frames = ExtResource("1_frames")
++animation = &"black"
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
++shape = SubResource("RectangleShape2D_body")
+diff --git a/godot/features/termite/termite_frames.tres b/godot/features/termite/termite_frames.tres
+new file mode 100644
+index 0000000..c1cde9e
+--- /dev/null
++++ b/godot/features/termite/termite_frames.tres
+@@ -0,0 +1,42 @@
++[gd_resource type="SpriteFrames" load_steps=5 format=3]
++
++[ext_resource type="Texture2D" path="res://features/termite/termite_soldiers.png" id="1_strip"]
++
++[sub_resource type="AtlasTexture" id="AtlasTexture_black"]
++atlas = ExtResource("1_strip")
++region = Rect2(0, 0, 48, 48)
++
++[sub_resource type="AtlasTexture" id="AtlasTexture_red"]
++atlas = ExtResource("1_strip")
++region = Rect2(48, 0, 48, 48)
++
++[sub_resource type="AtlasTexture" id="AtlasTexture_yellow"]
++atlas = ExtResource("1_strip")
++region = Rect2(96, 0, 48, 48)
++
++[resource]
++animations = [{
++"frames": [{
++"duration": 1.0,
++"texture": SubResource("AtlasTexture_black")
++}],
++"loop": true,
++"name": &"black",
++"speed": 5.0
++}, {
++"frames": [{
++"duration": 1.0,
++"texture": SubResource("AtlasTexture_red")
++}],
++"loop": true,
++"name": &"red",
++"speed": 5.0
++}, {
++"frames": [{
++"duration": 1.0,
++"texture": SubResource("AtlasTexture_yellow")
++}],
++"loop": true,
++"name": &"yellow",
++"speed": 5.0
++}]
+diff --git a/godot/features/termite/termite_soldiers.png b/godot/features/termite/termite_soldiers.png
+new file mode 100644
+index 0000000..552a21c
+Binary files /dev/null and b/godot/features/termite/termite_soldiers.png differ
+diff --git a/godot/features/termite/termite_soldiers.png.import b/godot/features/termite/termite_soldiers.png.import
+new file mode 100644
+index 0000000..2b7f9d7
+--- /dev/null
++++ b/godot/features/termite/termite_soldiers.png.import
+@@ -0,0 +1,40 @@
++[remap]
++
++importer="texture"
++type="CompressedTexture2D"
++uid="uid://c5hb4xm3oem60"
++path="res://.godot/imported/termite_soldiers.png-1a14637d38cc6bd1e39588916e0ba9b3.ctex"
++metadata={
++"vram_texture": false
++}
++
++[deps]
++
++source_file="res://features/termite/termite_soldiers.png"
++dest_files=["res://.godot/imported/termite_soldiers.png-1a14637d38cc6bd1e39588916e0ba9b3.ctex"]
++
++[params]
++
++compress/mode=0
++compress/high_quality=false
++compress/lossy_quality=0.7
++compress/uastc_level=0
++compress/rdo_quality_loss=0.0
++compress/hdr_compression=1
++compress/normal_map=0
++compress/channel_pack=0
++mipmaps/generate=false
++mipmaps/limit=-1
++roughness/mode=0
++roughness/src_normal=""
++process/channel_remap/red=0
++process/channel_remap/green=1
++process/channel_remap/blue=2
++process/channel_remap/alpha=3
++process/fix_alpha_border=true
++process/premult_alpha=false
++process/normal_map_invert_y=false
++process/hdr_as_srgb=false
++process/hdr_clamp_exposure=false
++process/size_limit=0
++detect_3d/compress_to=1
+diff --git a/godot/tests/test_clawd.gd.uid b/godot/tests/test_clawd.gd.uid
+new file mode 100644
+index 0000000..a83222c
+--- /dev/null
++++ b/godot/tests/test_clawd.gd.uid
+@@ -0,0 +1 @@
++uid://ci27qal208t75
+diff --git a/godot/tests/test_termite_art.gd b/godot/tests/test_termite_art.gd
+new file mode 100644
+index 0000000..98d8bfc
+--- /dev/null
++++ b/godot/tests/test_termite_art.gd
+@@ -0,0 +1,100 @@
++extends SceneTree
++## Headless checks for the termite soldier art import pipeline.
++## Run: godot --headless --path godot --script res://tests/test_termite_art.gd
++
++const COLLIDER_W: float = 20.0
++const COLLIDER_H: float = 34.0
++
++var checks: int = 0
++var failures: int = 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(passed: bool, label: String) -> void:
++	checks += 1
++	print("%s  %s" % ["PASS" if passed else "FAIL", label])
++	if not passed:
++		failures += 1
++		push_error("FAIL: " + label)
++
++func run() -> void:
++	# --- 1. Import parameters ---
++	var import_text: String = FileAccess.get_file_as_string(
++		"res://features/termite/termite_soldiers.png.import"
++	)
++	check(not import_text.is_empty(), "import file readable")
++	check(import_text.contains("compress/mode=0"), "import: lossless (compress/mode=0)")
++	check(import_text.contains("mipmaps/generate=false"), "import: no mipmaps")
++
++	# --- 2. Texture size ---
++	var tex := load("res://features/termite/termite_soldiers.png") as Texture2D
++	check(tex != null, "strip texture loads as Texture2D")
++	if tex != null:
++		check(tex.get_width() == 144, "strip width == 144")
++		check(tex.get_height() == 48, "strip height == 48")
++
++	# --- 3. SpriteFrames: three animations, one 48×48 frame each ---
++	var frames := load("res://features/termite/termite_frames.tres") as SpriteFrames
++	check(frames != null, "SpriteFrames loads")
++	if frames != null:
++		for anim: String in ["black", "red", "yellow"]:
++			check(frames.has_animation(anim), "animation '%s' exists" % anim)
++			if frames.has_animation(anim):
++				check(frames.get_frame_count(anim) == 1,
++					"animation '%s' has exactly 1 frame" % anim)
++				var frame_tex: Texture2D = frames.get_frame_texture(anim, 0)
++				check(frame_tex is AtlasTexture,
++					"animation '%s' frame is AtlasTexture" % anim)
++				if frame_tex is AtlasTexture:
++					var region: Rect2 = (frame_tex as AtlasTexture).region
++					check(region.size == Vector2(48, 48),
++						"animation '%s' region 48×48 (got %s)" % [anim, region.size])
++
++	# --- 4. Scene structure ---
++	var packed := load("res://features/termite/termite.tscn") as PackedScene
++	check(packed != null, "termite.tscn loads as PackedScene")
++	if packed == null:
++		_finish()
++		return
++
++	var scene: Node = packed.instantiate()
++	check(scene is Area2D, "scene root is Area2D")
++	if not (scene is Area2D):
++		scene.queue_free()
++		_finish()
++		return
++
++	var area := scene as Area2D
++
++	# 5. Sprite: exists and has NEAREST filter
++	var sprite: Node = area.get_node_or_null("AnimatedSprite2D")
++	check(sprite != null and sprite is AnimatedSprite2D,
++		"AnimatedSprite2D child of Area2D exists")
++	if sprite is AnimatedSprite2D:
++		check((sprite as AnimatedSprite2D).texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST,
++			"sprite texture_filter == NEAREST")
++
++	# 6. Collider: exists as sibling (child of Area2D, NOT of sprite), correct shape & size
++	var collider: Node = area.get_node_or_null("CollisionShape2D")
++	check(collider != null and collider is CollisionShape2D,
++		"CollisionShape2D exists in scene")
++	if collider is CollisionShape2D:
++		check(collider.get_parent() == area,
++			"CollisionShape2D parent is Area2D (not sprite)")
++		var shape: Shape2D = (collider as CollisionShape2D).shape
++		check(shape is RectangleShape2D, "collider shape is RectangleShape2D")
++		if shape is RectangleShape2D:
++			var sz: Vector2 = (shape as RectangleShape2D).size
++			check(sz == Vector2(COLLIDER_W, COLLIDER_H),
++				"collider size == Vector2(%s, %s) (got %s)" % [COLLIDER_W, COLLIDER_H, sz])
++
++	# 7. Hazard layer bit (project layer 4 = bit 3 = value 8)
++	check((area.collision_layer & 8) != 0, "Hazard layer bit (layer 4, value 8) is set")
++
++	area.queue_free()
++	_finish()
++
++func _finish() -> void:
++	print("\ntest_termite_art: %d/%d passed" % [checks - failures, checks])
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_termite_art.gd.uid b/godot/tests/test_termite_art.gd.uid
+new file mode 100644
+index 0000000..8937475
+--- /dev/null
++++ b/godot/tests/test_termite_art.gd.uid
+@@ -0,0 +1 @@
++uid://btermrtart001
+diff --git a/tools/cut_termites.py b/tools/cut_termites.py
+new file mode 100644
+index 0000000..d8f7caa
+--- /dev/null
++++ b/tools/cut_termites.py
+@@ -0,0 +1,183 @@
++#!/usr/bin/env python3
++"""Cut three termite soldiers from TERM-REF-02.jpg into a 144×48 horizontal strip.
++
++Usage: python3 tools/cut_termites.py
++Output: godot/features/termite/termite_soldiers.png (144×48, RGBA)
++
++Finds soldiers by non-white pixels; never uses a fixed grid.
++Scales all three by one shared factor so the largest fits 48×48.
++Does not rotate, redraw, or recolour.
++"""
++
++import sys
++import numpy as np
++from PIL import Image
++from pathlib import Path
++
++WHITE_THRESHOLD = 230  # JPEG background: all channels above this = white
++
++
++def make_mask(arr: np.ndarray) -> np.ndarray:
++    rgb = arr[:, :, :3]
++    return ~(
++        (rgb[:, :, 0] > WHITE_THRESHOLD)
++        & (rgb[:, :, 1] > WHITE_THRESHOLD)
++        & (rgb[:, :, 2] > WHITE_THRESHOLD)
++    )
++
++
++def label_largest(mask: np.ndarray, n: int = 3):
++    """DFS connected-component; return bboxes of the n largest components."""
++    rows, cols = mask.shape
++    labeled = np.zeros_like(mask, dtype=np.int32)
++    sizes: dict[int, int] = {}
++    current = 0
++
++    fg_r, fg_c = np.where(mask)
++    fg_pixels = list(zip(fg_r.tolist(), fg_c.tolist()))
++
++    for r0, c0 in fg_pixels:
++        if labeled[r0, c0]:
++            continue
++        current += 1
++        stack = [(r0, c0)]
++        labeled[r0, c0] = current
++        size = 0
++        while stack:
++            r, c = stack.pop()
++            size += 1
++            for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
++                nr, nc = r + dr, c + dc
++                if (
++                    0 <= nr < rows
++                    and 0 <= nc < cols
++                    and mask[nr, nc]
++                    and not labeled[nr, nc]
++                ):
++                    labeled[nr, nc] = current
++                    stack.append((nr, nc))
++        sizes[current] = size
++
++    top_labels = sorted(sizes, key=sizes.__getitem__, reverse=True)[:n]
++    bboxes = []
++    for lbl in top_labels:
++        where = np.where(labeled == lbl)
++        bboxes.append(
++            (int(where[0].min()), int(where[1].min()),
++             int(where[0].max()), int(where[1].max()))
++        )
++    return bboxes
++
++
++def classify_by_position(
++    bb: tuple[int, int, int, int], img_h: int, img_w: int
++) -> str:
++    """Classify soldier by centroid position in TERM-REF-02's triangular layout.
++
++    Bottom-centre → black head.  Top-left → red head.  Top-right → yellow head.
++    This is layout-specific; colour sampling fails for the dark-maroon red head.
++    """
++    r_min, c_min, r_max, c_max = bb
++    centroid_r = (r_min + r_max) / 2
++    centroid_c = (c_min + c_max) / 2
++    if centroid_r > img_h * 0.5:
++        return "black"
++    return "red" if centroid_c < img_w * 0.5 else "yellow"
++
++
++def measure_body(scaled_rgba: np.ndarray, threshold_frac: float = 0.30):
++    """Return (col_lo, col_hi, row_lo, row_hi) of the dense body core.
++
++    Rows/cols where opaque-pixel count exceeds threshold_frac × max_count
++    are 'body'; the rest are thin legs or antennae.
++    """
++    alpha = scaled_rgba[:, :, 3]
++    row_counts = (alpha > 0).sum(axis=1)
++    col_counts = (alpha > 0).sum(axis=0)
++    row_thresh = row_counts.max() * threshold_frac
++    col_thresh = col_counts.max() * threshold_frac
++    body_rows = np.where(row_counts > row_thresh)[0]
++    body_cols = np.where(col_counts > col_thresh)[0]
++    if body_rows.size == 0 or body_cols.size == 0:
++        return 0, int(scaled_rgba.shape[1] - 1), 0, int(scaled_rgba.shape[0] - 1)
++    return int(body_cols[0]), int(body_cols[-1]), int(body_rows[0]), int(body_rows[-1])
++
++
++def main() -> None:
++    repo = Path(__file__).resolve().parent.parent
++    src = repo / "source-art" / "TERM-REF-02.jpg"
++    out_dir = repo / "godot" / "features" / "termite"
++    out_dir.mkdir(parents=True, exist_ok=True)
++    out = out_dir / "termite_soldiers.png"
++
++    img = Image.open(src).convert("RGBA")
++    arr = np.array(img)
++    print(f"Source: {src.name}  {img.width}×{img.height} px")
++
++    mask = make_mask(arr)
++    print(f"Non-white pixels: {mask.sum():,}")
++
++    print("Labelling components (DFS)…", flush=True)
++    bboxes = label_largest(mask, 3)
++
++    labelled = []
++    for bb in bboxes:
++        r_min, c_min, r_max, c_max = bb
++        crop_arr = arr[r_min : r_max + 1, c_min : c_max + 1]
++        name = classify_by_position(bb, img.height, img.width)
++        labelled.append((name, bb, crop_arr))
++
++    order = {"black": 0, "red": 1, "yellow": 2, "unknown": 3}
++    labelled.sort(key=lambda x: order.get(x[0], 3))
++
++    max_dim = max(
++        max(bb[2] - bb[0] + 1, bb[3] - bb[1] + 1) for _, bb, _ in labelled
++    )
++    scale = 48.0 / max_dim
++    print(f"\nScale factor: {scale:.6f}  (largest source dim {max_dim} px → 48 px)")
++
++    strip = Image.new("RGBA", (144, 48), (0, 0, 0, 0))
++
++    for slot, (name, bb, crop_arr) in enumerate(labelled):
++        r_min, c_min, r_max, c_max = bb
++        src_w = c_max - c_min + 1
++        src_h = r_max - r_min + 1
++        dst_w = max(1, round(src_w * scale))
++        dst_h = max(1, round(src_h * scale))
++
++        crop_img = Image.fromarray(crop_arr)
++        scaled_img = crop_img.resize((dst_w, dst_h), Image.NEAREST)
++        scaled_arr = np.array(scaled_img)
++
++        rgb = scaled_arr[:, :, :3]
++        is_white = (
++            (rgb[:, :, 0] > WHITE_THRESHOLD)
++            & (rgb[:, :, 1] > WHITE_THRESHOLD)
++            & (rgb[:, :, 2] > WHITE_THRESHOLD)
++        )
++        scaled_arr[:, :, 3] = np.where(is_white, 0, 255)
++
++        final_img = Image.fromarray(scaled_arr)
++        x_off = (48 - dst_w) // 2
++        y_off = (48 - dst_h) // 2
++        strip.paste(final_img, (slot * 48 + x_off, y_off), final_img)
++
++        print(f"\nSoldier '{name}' (slot {slot}):")
++        print(f"  Source bbox: ({c_min},{r_min})–({c_max},{r_max})  {src_w}×{src_h} px")
++        print(f"  Scaled size: {dst_w}×{dst_h} px  cell offset: ({x_off},{y_off})")
++
++        if name == "black":
++            col_lo, col_hi, row_lo, row_hi = measure_body(scaled_arr)
++            body_w = col_hi - col_lo + 1
++            body_h = row_hi - row_lo + 1
++            print(f"  Body core (≥30% row/col density):")
++            print(f"    crop-relative  cols {col_lo}–{col_hi}, rows {row_lo}–{row_hi}")
++            print(f"    body size in scaled crop: {body_w}×{body_h} px")
++            print(f"  → RectangleShape2D size suggestion: Vector2({body_w}, {body_h})")
++
++    strip.save(str(out), optimize=False)
++    print(f"\nWrote: godot/features/termite/termite_soldiers.png  (144×48 RGBA)")
++
++
++if __name__ == "__main__":
++    main()

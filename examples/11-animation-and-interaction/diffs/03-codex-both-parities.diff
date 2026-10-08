@@ -1,0 +1,38 @@
+diff --git a/godot/tests/test_motion_states.gd b/godot/tests/test_motion_states.gd
+index 513ba64..dce6138 100644
+--- a/godot/tests/test_motion_states.gd
++++ b/godot/tests/test_motion_states.gd
+@@ -23,7 +23,8 @@ func _initialize() -> void:
+ 		quit(1)
+ 		return
+ 	await _check1()
+-	await _reset(); await _check2()
++	await _reset(); await _check2(0)
++	await _reset(); await _check2(1)
+ 	await _reset(); await _check3()
+ 	await _reset(); await _check4()
+ 	await _reset(); await _check5()
+@@ -90,7 +91,8 @@ func _check1() -> void:
+ # Check 2: three consecutive hops; enter jump each hop; no fall while rising;
+ #          no jump/fall on floor beyond cross-fade + 2 frames.
+ # ---------------------------------------------------------------------------
+-func _check2() -> void:
++func _check2(physics_tick_offset: int) -> void:
++	await _step(physics_tick_offset)
+ 	Input.action_press(&"jump")
+ 
+ 	var hops_with_jump := 0
+@@ -131,9 +133,10 @@ func _check2() -> void:
+ 				break
+ 
+ 	Input.action_release(&"jump")
+-	_ok("2a: enters jump on each of 3 hops", hops_with_jump >= 3)
+-	_ok("2b: no fall state while velocity.y > 0", not bad_fall_while_rising)
+-	_ok("2c: no jump/fall on floor past cross-fade", not bad_air_on_floor)
++	var offset_label := " (offset %d)" % physics_tick_offset
++	_ok("2a: enters jump on each of 3 hops%s" % offset_label, hops_with_jump >= 3)
++	_ok("2b: no fall state while velocity.y > 0%s" % offset_label, not bad_fall_while_rising)
++	_ok("2c: no jump/fall on floor past cross-fade%s" % offset_label, not bad_air_on_floor)
+ 
+ 
+ # ---------------------------------------------------------------------------

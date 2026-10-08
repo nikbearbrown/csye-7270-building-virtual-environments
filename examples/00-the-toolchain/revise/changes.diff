@@ -1,0 +1,314 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index 8ca803b..65a9daf 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -10,3 +10,15 @@ godot-gamedev walker, Liam, native 4K, normal stock outro. The development film
+ must show each focused code excerpt then its visible effect in the real game.
+ Never pass a diagnostic fixture off as played gameplay, claim human approval,
+ or publish/push without explicit authorization. No paid generation is authorized.
++
++## Checks (run from the repository root)
++
++Import once after cloning: `godot --headless --path godot --import`
++
++Regression route — the route counts frames but the game moves by seconds, so it
++is only deterministic with `--fixed-fps 60`. Without it the result depends on
++machine speed. Expected: exit 0, "passed": true.
++
++`WALKER_EVIDENCE_DIR="$PWD/evidence-local" godot --headless --path godot --fixed-fps 60 --script "$PWD/tests/input_route.gd"`
++
++Run any new test the same way, with `--fixed-fps 60`.
+diff --git a/FRICTIONAL.md b/FRICTIONAL.md
+index 31f3ac7..901272f 100644
+--- a/FRICTIONAL.md
++++ b/FRICTIONAL.md
+@@ -1,5 +1,16 @@
+ # Frictional — honest work log
+ 
++## September 27, 2026 — bounded score feature
++
++Added one point for the opposing player on each side-wall contact and two visible
++score labels. The existing wall reset callback and all paddle, ball, and bounce
++scripts remain unchanged. Added a separate headless route that creates misses
++through normal paddle input actions and compares each score with independently
++observed wall contacts. At fixed 60 FPS, the new route passed in 651 frames with
++one contact through each wall and scores Left 1, Right 1. The existing 4,800-frame
++input route also passed all ten checks. These are machine results, not human
++playtesting.
++
+ ## September 11, 2026 — initial adaptation
+ 
+ Inspected all four runtime scripts and the saved scene. The source does not
+diff --git a/GAME-BRIEF.md b/GAME-BRIEF.md
+index ac47996..1072df0 100644
+--- a/GAME-BRIEF.md
++++ b/GAME-BRIEF.md
+@@ -7,4 +7,5 @@ documentation, reproducible machine checks, and two evidence-led teaching films.
+ 
+ Success means the existing input, movement, paddle bounds, paddle rebounds,
+ ceiling/floor deflection, acceleration and out-of-bounds reset are demonstrated.
+-The human still judges feel. No invented completed match or score system.
++A miss awards one point to the opposing player and both scores remain visible.
++The human still judges feel; there is no match victory state.
+diff --git a/GDD.md b/GDD.md
+index db264e6..031a881 100644
+--- a/GDD.md
++++ b/GDD.md
+@@ -9,8 +9,9 @@ The first Walker change is identity and a reproducible teaching wrapper.
+ ## Controls and loop
+ 
+ W/S controls Left; Up/Down controls Right. Gamepad mappings are inherited but
+-not certified without actual devices. Play begins immediately. A miss resets
+-the ball and play continues indefinitely. There are no menus or scored rounds.
++not certified without actual devices. Play begins immediately. A miss awards
++the opposing player one point, resets the ball, and play continues indefinitely.
++There are no menus, round limit, or victory state.
+ 
+ ## Mechanisms and acceptance evidence
+ 
+@@ -22,14 +23,15 @@ the ball and play continues indefinitely. There are no menus or scored rounds.
+ | Paddle rebound | Area2D signal sets normalized direction; random vertical component | Real overlap and resulting direction change |
+ | Ceiling/floor | Area2D signal adds upward/downward component and normalizes | Real top and bottom contacts |
+ | Miss/retry | Side-wall signal resets position, speed, leftward direction | Played miss, reset, and subsequent movement |
++| Score | Each side-wall contact increments the opposing player's counter | Input-driven misses through both walls; scores equal observed contacts |
+ | Art | Three small textures with cyan/magenta paddle modulation | Actual engine viewport and source preview |
+ 
+ ## Godot architecture
+ 
+ `pong.tscn` owns Left/Right/Ball Area2D nodes, their sprites/collision shapes,
+-four boundary areas, background, separator, and camera. Four scripts under
+-`logic/` implement ball motion, paddles, side walls, and ceiling/floor behavior.
+-The scene connects each area's signals. This is not rigid-body physics.
++four boundary areas, background, separator, score display, and camera. Scripts
++under `logic/` implement ball motion, paddles, side walls, ceiling/floor behavior,
++and scoring. The scene connects each area's signals. This is not rigid-body physics.
+ 
+ ## Technical and visual constraints
+ 
+@@ -40,7 +42,7 @@ Paddle and ball positions are logical units, not physical pixels in that film.
+ 
+ ## Explicitly outside this slice
+ 
+-Score, match victory, menus, pause/restart controls, computer opponent, online
++Match victory, menus, pause/restart controls, computer opponent, online
+ multiplayer, audio, mobile controls, and new art. Future features need their own
+ bounded change and tests. No external credentials or paid calls are required.
+ 
+diff --git a/README.md b/README.md
+index 3dc6ac1..8f238e9 100644
+--- a/README.md
++++ b/README.md
+@@ -1,16 +1,16 @@
+ # walker-pong
+ 
+ The first Walker adaptation of the official Godot demo collection: two local
+-players, moving paddles, an accelerating ball, collision signals, and automatic
+-reset when the ball leaves either side. The upstream gameplay is preserved.
++players, moving paddles, an accelerating ball, collision signals, automatic
++reset when the ball leaves either side, and a visible score for each player.
+ 
+ Open `godot/project.godot` in regular Godot 4.7 (GDScript; no .NET required),
+ then run the main scene. Left paddle: W/S. Right paddle: Up/Down arrows.
+ The upstream demo also maps two gamepads; hardware testing remains pending.
+ 
+-This is an endless rally demo, not a scored match: no score counter, win state,
+-pause menu, AI opponent, or soundtrack is implemented. Close the game window
+-to exit. Machine checks do not establish whether it is fun or accessible.
++Each miss awards one point to the opposing player; there is no win state,
++pause menu, AI opponent, or soundtrack. Close the game window to exit. Machine
++checks do not establish whether it is fun or accessible.
+ 
+ See `GAME-BRIEF.md`, `GDD.md`, `SOURCES.md`, and `FRICTIONAL.md`.
+ Walkthrough and code→visible-result films belong in `youtube/`; until their
+diff --git a/godot/logic/scoreboard.gd b/godot/logic/scoreboard.gd
+new file mode 100644
+index 0000000..11752e3
+--- /dev/null
++++ b/godot/logic/scoreboard.gd
+@@ -0,0 +1,19 @@
++extends CanvasLayer
++
++var left_score := 0
++var right_score := 0
++
++@onready var _left_label := $LeftScore
++@onready var _right_label := $RightScore
++
++
++func _on_left_wall_area_entered(area: Area2D) -> void:
++	if area.name == "Ball":
++		right_score += 1
++		_right_label.text = str(right_score)
++
++
++func _on_right_wall_area_entered(area: Area2D) -> void:
++	if area.name == "Ball":
++		left_score += 1
++		_left_label.text = str(left_score)
+diff --git a/godot/logic/scoreboard.gd.uid b/godot/logic/scoreboard.gd.uid
+new file mode 100644
+index 0000000..d3a72f8
+--- /dev/null
++++ b/godot/logic/scoreboard.gd.uid
+@@ -0,0 +1 @@
++uid://5vpry5e77jm3
+diff --git a/godot/pong.tscn b/godot/pong.tscn
+index 5f61883..8f1e603 100644
+--- a/godot/pong.tscn
++++ b/godot/pong.tscn
+@@ -7,6 +7,7 @@
+ [ext_resource type="Texture2D" uid="uid://7rr8ipvil66w" path="res://separator.png" id="6"]
+ [ext_resource type="Script" uid="uid://d0ctwatj03r3b" path="res://logic/wall.gd" id="7"]
+ [ext_resource type="Script" uid="uid://dwret7sdyc33d" path="res://logic/ceiling_floor.gd" id="8"]
++[ext_resource type="Script" path="res://logic/scoreboard.gd" id="9"]
+ 
+ [sub_resource type="RectangleShape2D" id="1"]
+ size = Vector2(8, 32)
+@@ -95,9 +96,34 @@ shape = SubResource("4")
+ [node name="Camera2D" type="Camera2D" parent="." unique_id=957432765]
+ offset = Vector2(320, 200)
+ 
++[node name="Scoreboard" type="CanvasLayer" parent="."]
++script = ExtResource("9")
++
++[node name="LeftScore" type="Label" parent="Scoreboard"]
++offset_left = 248.0
++offset_top = 12.0
++offset_right = 288.0
++offset_bottom = 52.0
++theme_override_colors/font_color = Color(0, 1, 1, 1)
++theme_override_font_sizes/font_size = 28
++text = "0"
++horizontal_alignment = 1
++
++[node name="RightScore" type="Label" parent="Scoreboard"]
++offset_left = 352.0
++offset_top = 12.0
++offset_right = 392.0
++offset_bottom = 52.0
++theme_override_colors/font_color = Color(1, 0, 1, 1)
++theme_override_font_sizes/font_size = 28
++text = "0"
++horizontal_alignment = 1
++
+ [connection signal="area_entered" from="Left" to="Left" method="_on_area_entered"]
+ [connection signal="area_entered" from="Right" to="Right" method="_on_area_entered"]
+ [connection signal="area_entered" from="LeftWall" to="LeftWall" method="_on_wall_area_entered"]
++[connection signal="area_entered" from="LeftWall" to="Scoreboard" method="_on_left_wall_area_entered"]
+ [connection signal="area_entered" from="RightWall" to="RightWall" method="_on_wall_area_entered"]
++[connection signal="area_entered" from="RightWall" to="Scoreboard" method="_on_right_wall_area_entered"]
+ [connection signal="area_entered" from="Ceiling" to="Ceiling" method="_on_area_entered"]
+ [connection signal="area_entered" from="Floor" to="Floor" method="_on_area_entered"]
+diff --git a/tests/score_route.gd b/tests/score_route.gd
+new file mode 100644
+index 0000000..ff67269
+--- /dev/null
++++ b/tests/score_route.gd
+@@ -0,0 +1,107 @@
++extends SceneTree
++## Deterministic score route, NOT a human playtest.
++## The driver observes game state and uses only the normal paddle input actions.
++
++const ACTIONS := ["left_move_up", "left_move_down", "right_move_up", "right_move_down"]
++const MAX_FRAMES := 30 * 60
++
++var game: Node
++var frame := 0
++var contacts := {"LeftWall": 0, "RightWall": 0}
++var left_paddle_contacts := 0
++
++
++func _initialize() -> void:
++	seed(7375)
++	root.size = Vector2i(640, 400)
++	root.content_scale_size = Vector2i(640, 400)
++	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
++	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
++	call_deferred("start_game")
++
++
++func start_game() -> void:
++	game = load("res://pong.tscn").instantiate()
++	root.add_child(game)
++	current_scene = game
++	for wall_name in contacts:
++		game.get_node(wall_name).area_entered.connect(func(area: Area2D):
++			if area.name == "Ball":
++				contacts[wall_name] += 1
++		)
++	game.get_node("Left").area_entered.connect(func(area: Area2D):
++		if area.name == "Ball":
++			left_paddle_contacts += 1
++	)
++
++
++func _process(_delta: float) -> bool:
++	if game == null:
++		return false
++	_release_actions()
++	var ball := game.get_node("Ball") as Area2D
++	var left := game.get_node("Left") as Area2D
++	var right := game.get_node("Right") as Area2D
++
++	if contacts.LeftWall == 0:
++		# Move Left away so the opening leftward ball produces a real miss.
++		Input.action_press("left_move_down")
++	elif left_paddle_contacts == 0:
++		_track(left, ball, "left")
++	else:
++		# After Left returns the ball, move Right toward the opposite edge.
++		_evade(right, ball, "right")
++
++	frame += 1
++	if contacts.LeftWall > 0 and contacts.RightWall > 0:
++		finish(false)
++	elif frame >= MAX_FRAMES:
++		finish(true)
++	return false
++
++
++func _track(paddle: Area2D, ball: Area2D, side: String) -> void:
++	var error := ball.position.y - paddle.position.y
++	if absf(error) > 2.0:
++		Input.action_press(side + ("_move_down" if error > 0.0 else "_move_up"))
++
++
++func _evade(paddle: Area2D, ball: Area2D, side: String) -> void:
++	var target_y := 16.0 if ball.position.y > 200.0 else 384.0
++	if absf(target_y - paddle.position.y) > 2.0:
++		Input.action_press(side + ("_move_down" if target_y > paddle.position.y else "_move_up"))
++
++
++func _release_actions() -> void:
++	for action in ACTIONS:
++		Input.action_release(action)
++
++
++func finish(timed_out: bool) -> void:
++	_release_actions()
++	var scoreboard := game.get_node("Scoreboard")
++	var left_score: int = scoreboard.left_score
++	var right_score: int = scoreboard.right_score
++	var checks := {
++		"completed_route": not timed_out,
++		"left_score_matches_right_wall": left_score == contacts.RightWall,
++		"right_score_matches_left_wall": right_score == contacts.LeftWall,
++		"left_label_matches_score": scoreboard.get_node("LeftScore").text == str(left_score),
++		"right_label_matches_score": scoreboard.get_node("RightScore").text == str(right_score),
++	}
++	var passed := true
++	for value in checks.values():
++		passed = passed and value
++	var report := {
++		"engine": Engine.get_version_info().string,
++		"method": "scripted-input; normal input actions only; no score or ball writes",
++		"human_playtest": false,
++		"frames": frame,
++		"wall_contacts": contacts,
++		"scores": {"Left": left_score, "Right": right_score},
++		"labels": {"Left": scoreboard.get_node("LeftScore").text, "Right": scoreboard.get_node("RightScore").text},
++		"checks": checks,
++		"passed": passed,
++	}
++	print(JSON.stringify(report))
++	quit(0 if passed else 1)

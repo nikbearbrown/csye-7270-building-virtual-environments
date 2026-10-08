@@ -105,3 +105,65 @@ The plan above is kept as written; these are the changes since.
 - **Rescue toss goes up (my design change):** instead of a sideways toss over the shoulder, he flings the survivor **straight up, sky-high**, without looking, and they drop into his bag (CHAR-TOSS shows his arm thrown up, mid-yawn).
   - **Optional build step:** the game draws the survivor flying up and falling into the bag. It's a short code-drawn arc after the rescue event. If there isn't time, the survivor appears in the bag immediately, as in A1.
   - It must stay visual only. The rescue counts at the moment of contact, as now, so the arc never changes game state.
+
+## Revision 2026-10-07 — plan vs. what is built
+
+The plans above are kept as written. This records the slice as of 2026-10-07.
+
+### Gameplay is no longer "unchanged"
+
+v1 said gameplay, layout, collision, timer, and tuning stay as A1. That changed for the bigger generated character and after playtest 2 (details: CONCEPT.md "Revision 2026-10-07", TEST-REPORT.md):
+- run speed 160 → 120, jump gravity 960 → 800 (64 px jump), collision box 18×28 → 20×40, fire-death retry 0.55 s → 0.9 s;
+- ledges and in-level text recolored for ENV-BG; the "Rescue complete" card waits 1.25 s so the bow is seen.
+The layout, timer, survivors, and hose rules are unchanged, and the full scripted route still completes (41/41 tests).
+
+### Asset list: status
+
+| ID | Status |
+|---|---|
+| CHAR-REF (turnaround, side profiles) | done |
+| CHAR-IDLE, CHAR-RUN, CHAR-RISE, CHAR-FALL, CHAR-LAND, CHAR-SPRAY, CHAR-RESCUE, CHAR-TOSS, CHAR-BURNED, CHAR-RESPAWN, CHAR-BOW | done, in the slice (one image per state) |
+| CHAR-STANCE (crane) | generated; **sheet only** (dropped from the jump in playtest 1; on 2026-10-07 I decided not to reuse it as a "waiting" pose) |
+| CHAR-WALK-A / -B | replaced by CHAR-RUN (one speed) |
+| ENV-BG | done, in the slice |
+| ENV-FIRE | **done** (2026-10-07): three generated flame images (single, wide, tall) replace the code-drawn flames; visual only, the hazard collision rectangles are unchanged (flame-clearance tests pass) |
+| SFX-JUMP, SFX-HOSE, SFX-RESCUE, SFX-BURN, SFX-WIN | **in progress**: prompt variants drafted by Claude; the prompts actually sent will be logged verbatim in SOURCES.md |
+| MUS-LOOP | **done** (2026-10-07): ElevenLabs Music, recorded via Audacity, 16-bar loop cut at 14.10–39.70 s; in the slice with Loop on |
+
+### Event-to-sound map: one change
+
+SFX-RESCUE fires at the same place as planned (`session.gd`, where `s.rescued = true`), which is also where the grab → toss starts. The toss arc is drawn afterwards and never triggers a second sound.
+
+### Mute keys (planned)
+
+M is taken by "menu", so: **N** toggles music, **B** toggles sound effects (separate, as the assignment prefers). Both only change volume; nothing in the game reads them.
+
+## Revision 2026-10-07 (later) — sounds wired into the slice
+
+The v1 event-to-sound map is implemented as planned, with these changes (code: `godot/game/session.gd`, `godot/features/player/player.gd`):
+
+| Sound | Trigger in code, as built | Double-trigger guard (unchanged from v1) |
+|---|---|---|
+| SFX-JUMP | `player.gd` emits `jumped` right after `jumps += 1`; the session plays the sound | the jump branch runs once per jump |
+| SFX-HOSE | `session.gd`, right after `extinguish_ticks = EXTINGUISH_TICKS` | only when `extinguish_ticks == 0` |
+| SFX-RESCUE | `session.gd`, right after `s.rescued = true` (the toss starts there too) | `not s.rescued` + monitoring off |
+| SFX-BURN | `resolve_contacts`, after the state becomes `DYING`, only for "The fire got you." | the `PLAYING` guard |
+| SFX-WIN | `resolve_contacts`, after the state becomes `COMPLETE` | the `PLAYING` guard |
+| SFX-SIREN (new) | `start_session()` (a new session from the menu or the end card), **not** on retries | `start_session` returns while `PLAYING` |
+
+- **Changed sound (my decision):** SFX-WIN is a cartoon crowd cheering with claps, not the planned gong, because I wanted the win to be funny and childish. Still open: how it fits "he does not cheer" (CONCEPT). One reading: the rescued people cheer while he stays deadpan and bows.
+- **New sound (my idea):** SFX-SIREN, the fire truck arriving, once per session start. Kept out of the music so the loop seam stays clean (Claude's advice). Keep or drop: to decide after playtest 3.
+- **Open decision closed for now:** dying by falling or timeout plays **no** sound (no SFX-FAIL was generated); the on-screen reason ("You fell." / "Out of time!") explains it.
+- **Mute:** N toggles the Music bus, B the SFX bus; the HUD shows "MUSIC OFF" / "SOUND OFF". Nothing in the game reads the buses.
+- **Music behaviour** is implemented (plays while playing, pauses in place, dips 12 dB while DYING and returns on retry without restarting, stops on COMPLETE, off in the menu) but **MUS-LOOP does not exist yet**, so it is untested with real music.
+- **F4 (a sound fires twice) is checked automatically** by `godot/tests/test_audio.gd` (TEST-REPORT).
+
+## Revision 2026-10-07 (playtest 3)
+
+- Fire-death retry hold 0.9 s → **2.0 s** (R skips it). This changes A1's 1 s retry limit; the test now checks the new hold and that R retries at once.
+- ENV-BG drawn darker in code (F2 "character disappears against the background" observed in playtest 3). A light character outline was tried and rejected (my decision); **ENV-BG is being regenerated** so the background itself lets him read.
+- A bow close-up pops up on COMPLETE, like the DEVASTATED close-up on a fire death.
+- New automated checks for sound: order after the state change, siren per session, no burn for falls or timeouts, missing sound files change nothing; music behaviour check ready (skipped until the loop exists).
+- **Update (same day): ENV-BG regenerated (v2)** as an edit of v1 in ChatGPT: cool, hazy blue-gray, gray smoke, no warm glow. The code darkening was removed. F2 (character disappears against the background) is resolved by changing the background, not the character.
+- **Update: MUS-LOOP is in** (ElevenLabs Music, not the planned Suno). The music behaviour above is now tested with the real file (`test_audio.gd` `music-behaviour`, `music-loops`). F5 (click at the seam): measured in the file (crossfaded seam, step 387 vs 736 typical); to confirm by ear over 3 repetitions.
+- **Update: SFX-SIREN removed (my decision, playtest 3):** at the start of the game it was too much. The game starts with only the music; `test_audio.gd` now checks that starting and retrying add no sounds.

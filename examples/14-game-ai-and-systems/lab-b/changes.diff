@@ -1,0 +1,409 @@
+diff --git a/godot/pcg/README.md b/godot/pcg/README.md
+new file mode 100644
+index 0000000..3fe4f33
+--- /dev/null
++++ b/godot/pcg/README.md
+@@ -0,0 +1,58 @@
++# PCG — Procedural Level Generator
++
++## Measured jump envelope
++
++Measured with `tests/test_jump_envelope.gd` running headless at 120 Hz physics
++(Godot 4.7.2, `2d/default_gravity = 500`, `JUMP_SPEED = 200`, `WALK_MAX_SPEED = 200`):
++
++| Quantity | Pixels | Tiles (16 px) |
++|---|---|---|
++| Max vertical rise (still jump) | 39.2 px | 2.45 tiles |
++| Max horizontal range (running jump) | 128.3 px | 8.02 tiles |
++
++"Range" is the center-to-center displacement of the player while airborne,
++measured after ~0.5 s of acceleration (near but not quite at top speed).
++
++Analytical values for reference:
++- Rise = JUMP_SPEED² / (2 × gravity) = 200² / 1000 = 40 px (2.5 tiles)
++- Range at full speed = WALK_MAX_SPEED × (2 × JUMP_SPEED / gravity) = 200 × 0.8 = 160 px (10 tiles)
++
++The measured horizontal range (128 px) is lower than the theoretical maximum
++because the player hasn't fully accelerated to top speed at jump time.
++
++## Safety margin
++
++| Axis | Measured | Margin | Validator limit |
++|---|---|---|---|
++| Height (step-up) | 2.45 tiles | 0.5 tile | **2 tiles** |
++| Horizontal range | 8.02 tiles | 2 tiles | **6 tiles** |
++
++The height margin rounds the measured value down to a whole tile.
++The horizontal margin accounts for takeoff not always being at maximum speed.
++
++## Pass rate (seeds 1–200, width 40)
++
++**21.5 % pass (43 / 200 seeds)**
++
++The generator produces frequent height swings (−3 to +4 tile rows) and gaps
++of 1–6 columns; either a height change of ≥ 3 rows or a gap that forces a
++jump distance of ≥ 7 tiles (including the last solid column) will fail.
++Most 40-column levels contain at least one such event.
++
++## What the validator does not prove
++
++- **Speed at takeoff.** The model assumes the player can always reach near-top
++  speed before a gap. A tight sequence of short gaps could leave the player too
++  slow to clear each one even though each gap individually passes the range
++  check.
++- **Vertical momentum.** The limit is checked as a simple tile count. A jump
++  immediately after landing from a previous jump may start with less than full
++  vertical velocity due to gravity not yet being fully compensated.
++- **Moving or destructible tiles.** The validator only inspects a static
++  `heights` array; any runtime tile changes are invisible to it.
++- **Player width.** The player sprite and collision shape (14 × 14 px) are
++  ignored; the model treats the player as a point. A gap of exactly 6 tiles
++  might be unclimbable if the player's edge overhangs the platform.
++- **Reachability from any start position.** Only a strict left-to-right walk
++  is simulated. A level with a short mandatory back-step would be incorrectly
++  accepted.
+diff --git a/godot/pcg/level_generator.gd b/godot/pcg/level_generator.gd
+new file mode 100644
+index 0000000..e7b8742
+--- /dev/null
++++ b/godot/pcg/level_generator.gd
+@@ -0,0 +1,45 @@
++extends RefCounted
++
++# Procedurally generates a side-scrolling level as an Array[int].
++# Each element is the tile *row* for that column's topmost ground tile (0 = top of screen,
++# larger = lower).  A value of -1 means the column is a gap (void).
++# Same seed always produces the same level.
++
++const BASE_HEIGHT := 5       # default ground row
++const MIN_HEIGHT := 2        # highest reachable row
++const MAX_HEIGHT := 10       # lowest ground row
++
++func generate(seed_val: int, width: int) -> Array:
++	var rng := RandomNumberGenerator.new()
++	rng.seed = seed_val
++
++	var heights: Array = []
++	heights.resize(width)
++
++	var current_height := BASE_HEIGHT
++	var gap_remaining := 0
++
++	for col in width:
++		if gap_remaining > 0:
++			heights[col] = -1
++			gap_remaining -= 1
++			continue
++
++		var r := rng.randf()
++
++		if r < 0.10:
++			# Start a gap of 1–6 columns.
++			var gap_len: int = rng.randi_range(1, 6)
++			heights[col] = -1
++			gap_remaining = gap_len - 1
++
++		elif r < 0.28:
++			# Height change: -3 to +4 rows (positive = lower on screen).
++			var delta: int = rng.randi_range(-3, 4)
++			current_height = clampi(current_height + delta, MIN_HEIGHT, MAX_HEIGHT)
++			heights[col] = current_height
++
++		else:
++			heights[col] = current_height
++
++	return heights
+diff --git a/godot/pcg/level_validator.gd b/godot/pcg/level_validator.gd
+new file mode 100644
+index 0000000..3ee2187
+--- /dev/null
++++ b/godot/pcg/level_validator.gd
+@@ -0,0 +1,91 @@
++extends RefCounted
++
++# Decides whether a level (Array[int] from LevelGenerator.generate) can be
++# crossed from column 0 to the last column using the measured jump envelope
++# minus a stated safety margin.
++#
++# Measured (test_jump_envelope, Godot 4.7.2, 120 Hz physics):
++#   max rise  = 39.2 px = 2.45 tiles  → safety margin 0.5 tile  → limit 2 tiles
++#   max range = 128.3 px = 8.02 tiles → safety margin 2 tiles   → limit 6 tiles
++#
++# "Range" is center-to-center horizontal displacement during flight at near-
++# top running speed.  The 2-tile margin accounts for takeoff not always
++# being at max speed.
++#
++# The validator walks left-to-right, tracking the last solid column it can
++# stand on.  For each gap or step-up it checks whether the jump model covers
++# the move.  Step-downs are always free (no jump needed).
++
++const MAX_JUMP_HEIGHT_TILES := 2   # measured 2.45 – 0.5 margin  (rounded down)
++const MAX_JUMP_RANGE_TILES  := 6   # measured 8.02 – 2   margin
++
++# Returns an empty Dictionary {} when the level is passable.
++# Returns {"col": int, "reason": String} at the first unreachable column.
++func validate(heights: Array) -> Dictionary:
++	var width: int = heights.size()
++	if width == 0:
++		return {}
++
++	# Find the first non-gap column; that is where the player starts.
++	var start: int = -1
++	for col in width:
++		if int(heights[col]) != -1:
++			start = col
++			break
++
++	if start == -1:
++		return {"col": 0, "reason": "entire level is a gap"}
++
++	var last_solid: int = start
++	var last_height: int = int(heights[start])
++
++	var col: int = start + 1
++	while col < width:
++		if int(heights[col]) == -1:
++			# Scan the full gap extent.
++			var gap_start: int = col
++			while col < width and int(heights[col]) == -1:
++				col += 1
++
++			if col >= width:
++				# Gap reaches the end: no landing tile, level is not passable.
++				return {
++					"col": gap_start,
++					"reason": "gap from col %d has no landing tile (runs to end of level)" % gap_start
++				}
++
++			# Horizontal distance: from last_solid to landing column (in tiles).
++			var jump_dist: int = col - last_solid
++			if jump_dist > MAX_JUMP_RANGE_TILES:
++				return {
++					"col": gap_start,
++					"reason": "gap of %d tiles at col %d exceeds max range of %d tiles" % [
++						col - gap_start, gap_start, MAX_JUMP_RANGE_TILES]
++				}
++
++			# Step-up at landing (smaller row number = higher on screen).
++			var step_up: int = last_height - int(heights[col])
++			if step_up > MAX_JUMP_HEIGHT_TILES:
++				return {
++					"col": col,
++					"reason": "landing step-up of %d tiles at col %d exceeds max height of %d tiles" % [
++						step_up, col, MAX_JUMP_HEIGHT_TILES]
++				}
++
++			last_solid = col
++			last_height = int(heights[col])
++			col += 1
++		else:
++			# Adjacent solid columns: step-up requires a jump.
++			var step_up: int = last_height - int(heights[col])
++			if step_up > MAX_JUMP_HEIGHT_TILES:
++				return {
++					"col": col,
++					"reason": "step-up of %d tiles at col %d exceeds max height of %d tiles" % [
++						step_up, col, MAX_JUMP_HEIGHT_TILES]
++				}
++			last_solid = col
++			last_height = int(heights[col])
++			col += 1
++
++	return {}
+diff --git a/godot/tests/test_jump_envelope.gd b/godot/tests/test_jump_envelope.gd
+new file mode 100644
+index 0000000..2d4732b
+--- /dev/null
++++ b/godot/tests/test_jump_envelope.gd
+@@ -0,0 +1,80 @@
++extends SceneTree
++
++# Measures the player's actual jump envelope from a flat Ground-layer floor.
++# Prints JUMP_RISE_PIXELS, JUMP_RISE_TILES, JUMP_HORIZ_PIXELS, JUMP_HORIZ_TILES.
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func key(code: Key, pressed: bool) -> void:
++	var event := InputEventKey.new()
++	event.physical_keycode = code
++	event.pressed = pressed
++	Input.parse_input_event(event)
++
++func run() -> void:
++	var demo: Node = load("res://world.tscn").instantiate()
++	root.add_child(demo)
++	var player: CharacterBody2D = demo.get_node("Player")
++
++	# Let the player settle on the floor.
++	await create_timer(0.3).timeout
++
++	if not player.is_on_floor():
++		print("WARN: player not on floor at start; results may be wrong")
++
++	# --- Vertical rise: still jump ---
++	var floor_y := player.position.y
++
++	key(KEY_W, true)
++	await physics_frame
++	key(KEY_W, false)
++
++	var peak_y := player.position.y
++	for _i in 200:
++		await physics_frame
++		if player.position.y < peak_y:
++			peak_y = player.position.y
++		if player.is_on_floor() and _i > 10:
++			break
++
++	var rise_pixels := floor_y - peak_y
++	var tile_size := 16.0
++	print("JUMP_RISE_PIXELS %.1f" % rise_pixels)
++	print("JUMP_RISE_TILES  %.2f" % (rise_pixels / tile_size))
++
++	# Let the player fully land before the horizontal test.
++	await create_timer(0.5).timeout
++
++	# Reset to a known start position so the acceleration run stays on solid ground.
++	player.position = Vector2(120.0, floor_y)
++	player.velocity = Vector2.ZERO
++	await create_timer(0.2).timeout
++
++	# Accelerate to near top speed.
++	key(KEY_D, true)
++	for _i in 60:
++		await physics_frame
++
++	var takeoff_x := player.position.x
++
++	# Jump while running.
++	key(KEY_W, true)
++	await physics_frame
++	key(KEY_W, false)
++
++	# Measure until landing (or 300 frames).
++	for _i in 300:
++		await physics_frame
++		if player.is_on_floor() and _i > 10:
++			break
++
++	key(KEY_D, false)
++
++	var horiz_pixels := player.position.x - takeoff_x
++	print("JUMP_HORIZ_PIXELS %.1f" % horiz_pixels)
++	print("JUMP_HORIZ_TILES  %.2f" % (horiz_pixels / tile_size))
++
++	demo.queue_free()
++	await process_frame
++	quit(0)
+diff --git a/godot/tests/test_pcg.gd b/godot/tests/test_pcg.gd
+new file mode 100644
+index 0000000..665653a
+--- /dev/null
++++ b/godot/tests/test_pcg.gd
+@@ -0,0 +1,105 @@
++extends SceneTree
++
++var failures := 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(ok: bool, label: String) -> void:
++	print("PASS " if ok else "FAIL ", label)
++	if not ok:
++		failures += 1
++
++func key(code: Key, pressed: bool) -> void:
++	var event := InputEventKey.new()
++	event.physical_keycode = code
++	event.pressed = pressed
++	Input.parse_input_event(event)
++
++func run() -> void:
++	var Gen = load("res://pcg/level_generator.gd")
++	var Val = load("res://pcg/level_validator.gd")
++	var gen = Gen.new()
++	var val = Val.new()
++
++	# --- Determinism: seed 7 twice ---
++	var a: Array = gen.generate(7, 30)
++	var b: Array = gen.generate(7, 30)
++	check(a == b, "seed 7 twice gives identical data")
++
++	# --- Seeds 1..200 ---
++	var passing: int = 0
++	var failing_seeds: Array = []
++	for s in range(1, 201):
++		var level: Array = gen.generate(s, 40)
++		var result: Dictionary = val.validate(level)
++		if result.is_empty():
++			passing += 1
++		else:
++			failing_seeds.append(s)
++
++	var pct := float(passing) / 200.0 * 100.0
++	print("PASS_RATE %.1f%% (%d/200 pass)" % [pct, passing])
++	print("FAILING_SEEDS ", failing_seeds)
++	check(passing > 0 and passing < 200, "mix of passing and failing levels (not trivially all-pass or all-fail)")
++
++	# --- Hand-made: gap wider than MAX_JUMP_RANGE_TILES (8) ---
++	# 3 solid cols + 9-column gap + 3 solid cols → gap_dist = 12 - 2 = 10 > 8
++	var wide_gap: Array = []
++	for _i in 3:
++		wide_gap.append(5)
++	for _i in 9:
++		wide_gap.append(-1)
++	for _i in 3:
++		wide_gap.append(5)
++	var r1: Dictionary = val.validate(wide_gap)
++	check(not r1.is_empty(), "wide-gap level is rejected")
++	if not r1.is_empty():
++		print("  wide-gap: col=%d  reason=%s" % [r1["col"], r1["reason"]])
++
++	# --- Hand-made: step higher than MAX_JUMP_HEIGHT_TILES (2) ---
++	# ground at row 8 then row 1 → step_up = 8 - 1 = 7 > 2
++	var tall_step: Array = []
++	for _i in 5:
++		tall_step.append(8)   # low ground
++	for _i in 5:
++		tall_step.append(1)   # very high ground
++	var r2: Dictionary = val.validate(tall_step)
++	check(not r2.is_empty(), "tall-step level is rejected")
++	if not r2.is_empty():
++		print("  tall-step: col=%d  reason=%s" % [r2["col"], r2["reason"]])
++
++	# --- Runtime TileMapLayer write + player landing ---
++	var demo: Node = load("res://world.tscn").instantiate()
++	root.add_child(demo)
++	var ground: TileMapLayer = demo.get_node("Ground")
++	var player: CharacterBody2D = demo.get_node("Player")
++
++	# Build a flat level of width 20 at tile row 6 and write it to Ground.
++	var ground_row := 6
++	var flat_width := 20
++	var flat_level: Array = []
++	for _i in flat_width:
++		flat_level.append(ground_row)
++
++	ground.clear()
++	for col in flat_level.size():
++		if flat_level[col] != -1:
++			# source_id=0 (the single TileSetAtlasSource), atlas tile (0,0)
++			ground.set_cell(Vector2i(col, flat_level[col]), 0, Vector2i(0, 0))
++
++	# Place player above the first column of the generated floor.
++	# Tile top edge = ground_row * 16.  Player half-height = 7.  Drop from above.
++	var tile_px := 16
++	player.position = Vector2(float(tile_px / 2), float(ground_row * tile_px) - 60.0)
++	player.velocity = Vector2.ZERO
++
++	# Allow physics to settle (floor physics updates on next frame).
++	await create_timer(1.2).timeout
++
++	check(player.is_on_floor(), "player rests on generated Ground tile (is_on_floor)")
++
++	demo.queue_free()
++	await process_frame
++	print("failures=", failures)
++	quit(1 if failures else 0)

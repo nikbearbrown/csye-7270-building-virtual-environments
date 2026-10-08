@@ -35,7 +35,7 @@ func run() -> void:
 	check("launch-grounded", game.player.is_on_floor() and game.state == Game.State.PLAYING, {"position": str(game.player.position), "engine": Engine.get_version_info().string})
 	game.player.test_axis = 1
 	await steps(8)
-	check("speed-cap", is_equal_approx(game.player.velocity.x,160), {"velocity_x": game.player.velocity.x})
+	check("speed-cap", is_equal_approx(game.player.velocity.x,120), {"velocity_x": game.player.velocity.x})
 	game.player.test_axis = 0
 	await steps(5)
 	check("neutral-stop", is_zero_approx(game.player.velocity.x), {"velocity_x": game.player.velocity.x})
@@ -59,7 +59,8 @@ func run() -> void:
 		min_y = minf(min_y, game.player.position.y)
 		if i == 12:
 			game.player.test_jump_pressed = true
-	check("fixed-jump-and-no-double", game.player.jumps == 1 and absf((320-min_y)-53.3333) < 5, {"rise_px":320-min_y, "jumps":game.player.jumps})
+	# Designed rise = jump_velocity^2 / (2 * gravity) = 320^2 / 1600 = 64 px (was 53.3 with gravity 960; changed 2026-10-06, option A).
+	check("fixed-jump-and-no-double", game.player.jumps == 1 and absf((320-min_y)-64.0) < 5, {"rise_px":320-min_y, "jumps":game.player.jumps})
 	await steps(30)
 	check("held-jump-no-bounce", game.player.jumps == 1 and game.player.is_on_floor(), {"jumps":game.player.jumps})
 	# Actual geometry fixtures at a ledge; tick ages exercise inclusive 6 / expired 7.
@@ -105,7 +106,7 @@ func run() -> void:
 	check("actual-spike-collision", game.state == Game.State.DYING and game.deaths == 1, {"state":game.state,"deaths":game.deaths})
 	game.resolve_contacts(true,true)
 	check("duplicate-death-ignored", game.deaths == 1, {"deaths":game.deaths})
-	await steps(38)
+	await steps(125)  # was 38 (A1), 58 (0.9 s hold): a fire death now holds 2.0 s (FIRE_DEATH_HOLD, playtest 3)
 	check("respawn", game.state == Game.State.PLAYING and game.player.position.distance_to(Vector2(64,320)) < 1, {"state":game.state,"position":str(game.player.position)})
 	game.restart_attempt()
 	check("manual-restart-not-death", game.deaths == 1, {"deaths":game.deaths})
@@ -113,11 +114,14 @@ func run() -> void:
 	for i in range(20):
 		game.resolve_contacts(true,false)
 		var waited := 0
-		while game.state == Game.State.DYING and waited < 65:
+		while game.state == Game.State.DYING and waited < 130:
 			await steps(1)
 			waited += 1
 		largest_retry_ticks = maxi(largest_retry_ticks, waited)
-	check("twenty-retries", game.deaths == 21 and largest_retry_ticks <= 60, {"deaths":game.deaths,"max_retry_ticks":largest_retry_ticks})
+	# Design change (playtest 3, my decision): a fire death holds 2.0 s so "The fire got you" and the
+	# DEVASTATED close-up can be read; the A1 limit was 60 ticks (1 s). R still retries at once
+	# (test_keyboard "r-skips-fire-wait"). The limit below is the new designed hold + 5 ticks.
+	check("twenty-retries", game.deaths == 21 and largest_retry_ticks <= 125, {"deaths":game.deaths,"max_retry_ticks":largest_retry_ticks})
 	await fresh()
 	game.resolve_contacts(true,true)
 	check("death-before-finish", game.state == Game.State.DYING, {"state":game.state})

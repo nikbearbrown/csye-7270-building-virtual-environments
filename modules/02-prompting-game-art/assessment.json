@@ -1,0 +1,72 @@
+{
+  "title": "Module 2 practice assessment",
+  "description": "This practice assessment is ungraded. Take it as often as you like, and read the feedback after each question.",
+  "questions": [
+    {
+      "prompt": "You import a pixel-art sprite and it looks soft in the running game. Which setting decides this in Godot 4, and what should its value be?",
+      "choices": [
+        "The sprite node's `texture_filter` property, a `CanvasItem` setting rather than an import setting, set to Nearest",
+        "The `texture_filter` line in the sprite's `.import` file, set to 0 so that the importer skips any smoothing",
+        "The `compress/mode` line in the sprite's `.import` file, set to 0 (Lossless), which keeps every pixel unsmoothed",
+        "The `mipmaps/generate` line in the sprite's `.import` file, switched off so that Godot stops pre-blending the texture"
+      ],
+      "answer": 0,
+      "feedback": "Since Godot 4.0 the texture filter is a `CanvasItem` property in 2D, not an importer setting, and the project default is Linear in 4.7.2 (The ideas, section 3). Lossless compression and no mipmaps are the right import choices for pixel art, but neither one controls filtering."
+    },
+    {
+      "prompt": "The agent's termite test passes a check that the collider size equals `Vector2(20, 34)`. What does that check establish?",
+      "choices": [
+        "That the box covers each soldier's head and body, since the agent measured the soldiers before it chose 20 x 34.",
+        "That flipping or scaling the art cannot move the collider, since the size check also confirms the box is a sibling of the sprite.",
+        "Only that the box is the 20 x 34 the agent chose; it says nothing about how well that box fits any soldier's opaque pixels.",
+        "That the box leaves out the legs, antennae and jaws, as the prompt asked, since 20 x 34 is narrower than the 33 x 48 art."
+      ],
+      "answer": 2,
+      "feedback": "The agent chose 20 x 34 and then asserted that same number, so the check could not see that the box covers 77% of the black soldier's pixels or that 458 of its 680 pixels are empty for the yellow one (What the agents got wrong). Fit has to be measured against each frame's opaque pixels; the sibling-node check was a separate assertion."
+    },
+    {
+      "prompt": "In a fresh clone, `test_audio_cues.gd` fails to parse and `main.tscn` prints a parse error for a missing script, yet `godot` exits 0 and the other checks pass. What is the right conclusion?",
+      "choices": [
+        "The import cache is stale: run `godot --headless --path godot --import` again, and it will regenerate the missing script so that the clone matches the original.",
+        "The clone is not clean: read the errors, because exit code 0 hid a missing script, and trace why Git never stored it, starting with `.gitignore`.",
+        "The 62 passing original checks show the game still loads, so only the new audio test needs repair, and the `main.tscn` parse error can wait until later.",
+        "The error is a timing artifact: rerun with `--fixed-fps 60`, and treat the exit code of 0 as the verdict once the parse errors have disappeared."
+      ],
+      "answer": 1,
+      "feedback": "The `audio/` rule in `.gitignore` kept `godot/audio/` out of the commit, so the clone lacked the script, and Godot still exited 0 (What the agents got wrong; Verify). Re-importing cannot recreate a file Git never stored, and the 62 other checks passed only because no original test loads `main.tscn`."
+    },
+    {
+      "prompt": "You want a generated music track to loop cleanly when imported as Ogg Vorbis in Godot. What should you do?",
+      "choices": [
+        "Set `edit/loop_mode` to Forward and `loop_end` to the last sample in the `.import` file, as you would for a WAV.",
+        "Leave the track as it is and set `loop_offset` in the `.import` file to the sample where the last bar ends, so Godot cuts the loop there.",
+        "Import it as a WAV with `edit/loop_mode` on Detect from WAV, so that Godot finds the loop points from the audio itself.",
+        "Cut the track at a bar boundary before importing it, because an Ogg import gives you only a loop offset, not a loop end."
+      ],
+      "answer": 3,
+      "feedback": "Ogg and MP3 support only a loop begin (an offset where playback restarts), so Godot cannot end the loop early for you (The ideas, section 5). `loop_end` and `edit/loop_mode` belong to the WAV importer, and Detect finds a loop only if the file carries a loop chunk."
+    },
+    {
+      "prompt": "Which of these satisfies Assignment 2's requirement that each category has an asset produced by a generative model?",
+      "choices": [
+        "A 440 Hz sine wave written as a GDScript formula that fills the audio buffer every frame, like `walker-audio-generator`'s tone.",
+        "A character drawn in code by Claude with `_draw()`, every shape set by the script and logged in `SOURCES.md`, like Clawd's 18 animations.",
+        "A short sound effect from a free generative audio model, with its model, version, license and prompt recorded in the asset log.",
+        "SVG art that Claude wrote from your character sheet, then exported as a PNG and checked beside the player at game size in the scene."
+      ],
+      "answer": 2,
+      "feedback": "Assignment 2 asks for output from a generative model in each category. A formula is procedural synthesis, and code-drawn or SVG art written by Claude does not count, however carefully it is checked, though all three are welcome in the game (The ideas, section 6)."
+    },
+    {
+      "prompt": "A starter's `.gitignore` contains `*.wav` and `audio/`. You add `godot/audio/jump.wav` and run `git status`. What do you see, and how do you find out why?",
+      "choices": [
+        "Nothing for that file, because both rules match it and Git ignores it; `git check-ignore -v` prints the rule that matched.",
+        "The file listed as untracked; `git add` then fails with a warning that names the rule, and `-f` is the only way to stage it.",
+        "The WAV listed as untracked, with only its `.import` sidecar ignored, because the `audio/` rule matches folders and `*.wav` matches files.",
+        "Nothing for that file, because Git ignores it; `git status --short --ignored` prints the rule that matched."
+      ],
+      "answer": 0,
+      "feedback": "Both `*.wav` and `audio/` match, so the file is ignored and `git status` shows nothing for it; `git check-ignore -v` is the command that prints the matching rule (Ship It). A grader's fresh clone would be missing the file, and the main scene that loads it would not parse."
+    }
+  ]
+}

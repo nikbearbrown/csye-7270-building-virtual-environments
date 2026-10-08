@@ -85,6 +85,89 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I understand now / still do not understand:** Not yet recorded; waiting on my review. Questions for me are in `STATUS.md`, the biggest being that Assignment 10 is probably too much for its 8 to 10 days.
 - **Evidence and next step:** `STATUS.md` ("Canvas course build — 2026-10-06"), `modules/README.md`, `canvas/README.md`, `canvas/OLD-TO-NEW.md`. Everything is in the course repository but not committed or pushed, except this log. The Canvas package has never been imported into a live Canvas. Next: review it, decide the open questions, and push when ready.
 
+### 2026-10-06 — Pushing the course repository so I can read it
+
+- **Date and what I was working on:** 2026-10-06. Getting the rebuilt course, the chapters and the examples onto GitHub so I can read them there.
+- **I tried / expected:** My request, in my words: "Push the course repo. I'd like to read it on GitHub."
+- **What happened:**
+  - Because the repository is public, Claude Code checked what would go up first. It found local file paths in its own build spec and made them repository-relative. Two recorded sessions matched a key pattern; the matches were pieces of base64 text, not keys. One Codex transcript still shows file paths from Blender's own error output, which is how it was recorded. Nothing was over 5 MB.
+  - It left one thing out: the build files for my 25 September on-model/off-model riff film (`youtube/claude-liam-csye-7270-character-sheet-off-model/`), because I asked for the course and not that film. It stays on my machine until I say otherwise.
+  - The remote had moved while I was away (a student's Assignment 2 pull requests were merged), so my earlier log commit was rebased onto it. Nothing was overwritten.
+  - It pushed three commits: the Canvas course (modules, Assignments 3 to 10, build spec, checker, packager), then the chapters and examples, then this log.
+  - A second session I started to fix the chapter errors was editing the chapters at the same time. The chapters on GitHub are as they were at the push; its fixes will arrive in a later commit.
+- **What I did:** Asked for the push.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) ran the pre-push checks, made the commits and pushed. I have not yet read anything on GitHub.
+- **What I understand now / still do not understand:** Not yet recorded; I have not read it.
+- **Evidence and next step:** The three commits on `main` from today. Next: read the course on GitHub, then decide the open questions in `STATUS.md`.
+
+### 2026-10-06 — A very basic Blender assignment as Assignment 3
+
+- **Date and what I was working on:** 2026-10-06. Changing the next CSYE 7270 assignment (Assignment 3) into a gentle first Blender assignment.
+- **I tried / expected:** My request, in my words (dictation errors fixed): "The next assignment for CSYE 7270 should be a very basic one, using Claude, the Blender MCP and Blender to make a very simple model. The basic idea behind the assignment is just to get familiar with the Blender interface, and how Claude plus the MCP plus Blender can make game assets. The 20% as usual will be awarded for how well it's done, but 80 points for basically building a moderately complex, not too complex, model, because this is their very first time typically using Blender or 3D software. So a 100-point assignment, with the 20-point qualitative score as usual. The basic idea is that they should use Claude, the Blender MCP and Blender to make a game asset or two, let's say three simple 3D assets, and preferably some that they think for their game."
+- **What happened:**
+  - Claude Code had already written an Assignment 3 on a Blender prop. It was much heavier: colliders, physics layers, and tests that had to catch deliberate breakage. It replaced it with your version and saved the old one in `pantry/backups/` so it can be reused later.
+  - The new Assignment 3 is "Your First 3D Game Assets with Claude, the Blender MCP, and Blender": three simple assets for the student's game, built with Claude through the MCP, at least one edit made by hand in Blender's window, six notes on the interface in the student's own words, each asset exported as `.glb` and shown in a small Godot 3D scene. It keeps the 60 / 10 / 10 / 20 split and the required film. Assignment 3 now covers Module 3 only, so Module 4 (collision and physics) has no assignment of its own until Assignment 4.
+  - An independent check found that the MCP project had changed nine days after the chapter was written. Version 2.1.1 became 2.1.9, three tools the chapter names were removed, the add-on now starts its server automatically, and the README now leads with a one-line installer. The assignment and Module 3's lesson were corrected. Nobody on the course has run the MCP route, so the assignment tells students that, and lets them fall back to the script route after about two hours.
+  - Claude Code settled some things without asking: a ceiling of six shapes and 500 triangles per asset so students' work is comparable; the film is kept because the syllabus requires one per assignment; a student whose honest MCP attempt fails can still earn up to 6 of the 8 process points.
+- **What I did:** Made the request above.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) wrote the assignment and updated the lesson, course map and package; an Opus 5.5 sub-agent fact-checked it against the project's live README and the Blender manual and fixed seven errors. Not checked by me.
+- **What I understand now / still do not understand:** Not yet recorded; waiting on my review. I still need someone to run the MCP route once before release.
+- **Evidence and next step:** `assignments/03-first-3d-assets-with-blender-mcp.md` and the "Canvas course build" section of `STATUS.md`. The new files are in the course repository but not committed or pushed. Next: read the assignment, run the MCP route once, and decide whether it is the right length.
+
+### 2026-10-06 — A film of Assignment 3 (lecture skill, Liam persona)
+
+- **Date and what I was working on:** 2026-10-06. Making a film of the new Assignment 3, "Your First 3D Game Assets with Claude, the Blender MCP, and Blender".
+- **I tried / expected:** My request, in my words (dictation errors fixed): "Use the lecture skill, Liam persona, to make a film on this." I pasted the full text of Assignment 3 below it.
+- **What happened:**
+  - Claude Code read the whole assignment and planned one film in seven acts that follows the assignment's own order: three simple assets, learn Blender's window first, write the brief before you build, connect Claude to Blender, build the assets, export / import / check, ship it and how it is graded. Liam narrates in for me. It is 80 beats and 13 minutes 21 seconds, and it is now built as a 4K master that passes every machine check (visual QC, type check, bookend check). I have not watched it.
+  - A sub-agent ran the real tools to get pictures that are not drawings: it built the crate, the lantern and the coin with a Blender script, captured the real Blender window, and ran a headless check in Godot on them. The three assets measure 60, 202 and 180 triangles, under the 500 limit.
+  - That evidence caught four things the assignment and my first narration got wrong. A crate whose origin is in the middle sinks half its height at floor level, and a crate lifted by exactly that amount sits, so the floor-gap check passes it and only an origin check catches it. The installer in the MCP project's README lets you pick which client to set up; it does not set up every client. The next version after 2.1.1 came three days later, not nine; 2.1.9 came nine days later. Blender's factory settings keep one backup, `.blend1`. The narration is corrected; the installer wording in the assignment is corrected too.
+  - The film cannot show the MCP route running, because nobody on the course has run it. Those steps are shown as the typed commands, labelled "documented, not run". The assets in the film come from the script route, and the film says so.
+- **What I did:** Made the request above.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) planned the acts and wrote the narration; Opus 5.5 sub-agents built the pictures, one act each, and fixed the six pictures the type check rejected. Nothing is published, and nothing will be without my word. The film folder is on my machine only; it is not committed or pushed.
+- **What I understand now / still do not understand:** Not yet recorded; I have not watched it. I still need someone to run the MCP route once before release.
+- **Evidence and next step:** `youtube/claude-liam-lecture-first-3d-assets-blender-mcp/` (narration, `ACTS.md`, `EVIDENCE-INDEX.md`). Next: I watch the master, someone runs the MCP route once so the "documented, not run" steps can become real, and only then does anything get posted. `BUILD-LOG.md` in the film folder lists the open items.
+
+### 2026-10-06 — Say "3D model" or "AI model", never just "model"
+
+- **Date and what I was working on:** 2026-10-06. Watching the first cut of the Assignment 3 film.
+- **I tried / expected:** My feedback, in my words (dictation errors fixed): "The video in general looks great. But because you're talking about two models: when you talk about an AI model specifically, say AI model; when you talk about a 3D model specifically, say 3D model. In this particular video, when you refer to an AI model, have Liam say AI model, and when you're referring to a 3D model, have Liam say 3D model."
+- **What happened:**
+  - Claude Code went through every sentence of the narration. Every spoken "model" meant a 3D model, so each now says "three-D model" (the film's own spelling for Liam). Nothing in the film refers to an AI model except the protocol's name, "Model Context Protocol", which is a proper name and stays. The on-screen words match: "3D models" in the opening line, the key-terms card and the service labels.
+  - Eight beats were re-voiced, and the pictures for those beats were retimed to the new audio, because the extra word shifts every cue after it.
+- **What I did:** Gave the feedback above.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) edited the narration and re-voiced it; the act builders retimed their pictures.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `narration.py` and `BUILD-LOG.md` in the film folder. Next: I watch the new master.
+
+### 2026-10-06 — Publish the Assignment 3 film to both playlists
+
+- **Date and what I was working on:** 2026-10-06. Publishing the Assignment 3 film.
+- **I tried / expected:** My request, in my words (dictation errors fixed): "Looks great. Publish it to the @NikBearBrown YouTube channel, to both the Walker and the CSYE 7270 playlists. It should be in both. Make sure it's 4K."
+- **What happened:**
+  - Claude Code staged the 4K master in the upload folder, wrote the description by hand (chapters from measured times, the Your Turn prompt, a plain statement that the MCP route has not been run by the course), and uploaded it from there only. It is on Nik Bear Brown as **unlisted**: https://youtu.be/i-2NlEHaGjI. Making it public is a click in YouTube Studio, and I have not done it.
+  - It is at the top of both "CSYE 7270 Virtual Environments and Real-Time 3D" and "Walker (Game AI)", checked by reading both playlists back from YouTube. English captions are attached. The file sent was 3840 by 2160; YouTube takes a few minutes to finish making the 4K version.
+  - The publishing tool takes one playlist and refuses a video that is already uploaded, so the second playlist was added with a direct call to YouTube.
+- **What I did:** Asked for it.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) staged, wrote the description, uploaded and checked.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `youtube/PUBLISH-LOG.md` in the books folder. Next: flip it to public in Studio when I decide, and run the MCP route once.
+
+### 2026-10-06 — Run the Blender MCP for real, build the Claude mascot, and film it
+
+- **Date and what I was working on:** 2026-10-06. After the Assignment 3 film, building the Claude mascot in Blender with Claude Code and the MCP, and filming how.
+- **I tried / expected:** My requests, in my words (dictation errors fixed): "Now let's see if we can use Blender and Claude and the MCP to create the Claude mascot, the one that we have at the end of all my videos ... build it with the next video being intended to then animate it. So build the Claude mascot as a 3D model in Blender, do a lot of pictures of it from different angles ... design it with the intent that it will be animated with the animations that you see there and possibly others." Then: "Make a film very similar to the one you just made on the assignment, walking through how to build the Claude mascot using Claude Code, the MCP and Blender." When Claude Code asked whether to run the MCP route for real (installing uv and the add-on, in a throwaway profile): "Yes, to all your questions. Try all those and just see what they do. This is an honesty report about what it can do and what it can't do. We're not trying to give a fake image of anything."
+- **What happened:**
+  - The MCP route was run for real for the first time. A headless Claude Code session built the mascot in Blender through the MCP: nine parts, nine calls, 104 seconds, and a separate script confirmed every size, place and colour matched the brief. It then rigged it (23 minutes) and exported a glb that Godot imports.
+  - It also got things wrong, and the film says so: the first saved pictures were plain grey, it replaced a correct pixel reading with a wrong one, and its first rigging attempt moved every part 4 cm (it caught that itself).
+  - Setup findings: the add-on's server starts by itself, with no password (a plain script ran code in Blender); disabling the add-on closes it.
+  - **It found a bug in the assignment I wrote.** The `claude mcp add` command had `-e KEY=value` directly before the server name, which fails ("Invalid environment variable format: blender"). The assignment now puts the name first. The published Assignment 3 film still shows the old order in one beat; the chapter 3 text has the same command. Not yet corrected there.
+  - The mascot film is built (8 min 55 s) and passes the machine checks. I have not watched it.
+- **What I did:** Made the requests above and said yes to running everything for real.
+- **What Claude or another person contributed:** Claude Code (Sonnet 5.5) ran the install, the sessions and the checks, and wrote the film; Opus 5.5 sub-agents drew the pictures. The mascot itself was built by a second Claude model (claude-sonnet-4-6) through the MCP.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `claude-mascot-3d/mcp-run/` and the film folder `claude-mascot-3d/youtube/claude-liam-lecture-claude-mascot-blender-mcp/` (books folder). Next: I watch the film; decide how to correct the Assignment 3 film's command; then the mascot gets its 18 animations.
+
 ---
 
 ## GitHub pushes
@@ -100,3 +183,10 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-09-25 | Log my request for the riff film's YouTube text |
 | 2026-09-27 | Log my request to adapt the course chapters to Godot |
 | 2026-10-06 | Log my request to rebuild the course modules into a full Godot, Walker and Claude Code course |
+| 2026-10-06 | Log my request to push the course repo to GitHub |
+| 2026-10-06 | Log my request for a very basic Blender assignment as Assignment 3 |
+| 2026-10-06 | Log my request for a film of Assignment 3 |
+| 2026-10-06 | Update the Assignment 3 film entry: master built, nothing published |
+| 2026-10-06 | Log my feedback: say "3D model" or "AI model", never just "model" |
+| 2026-10-06 | Log my request to publish the Assignment 3 film to both playlists |
+| 2026-10-06 | Log the real MCP run, the Claude mascot and its film |

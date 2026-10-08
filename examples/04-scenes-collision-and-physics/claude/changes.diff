@@ -1,0 +1,324 @@
+diff --git a/godot/main.gd b/godot/main.gd
+index bd74c2e..b97016e 100644
+--- a/godot/main.gd
++++ b/godot/main.gd
+@@ -2,10 +2,16 @@ extends Node
+ 
+ @export var mob_scene: PackedScene
+ var score
++var pickup_scene: PackedScene
++
++func _ready() -> void:
++	pickup_scene = load("res://pickup.tscn")
++
+ 
+ func game_over():
+ 	$ScoreTimer.stop()
+ 	$MobTimer.stop()
++	$PickupTimer.stop()
+ 	$HUD.show_game_over()
+ 	$Music.stop()
+ 	$DeathSound.play()
+@@ -13,6 +19,7 @@ func game_over():
+ 
+ func new_game():
+ 	get_tree().call_group(&"mobs", &"queue_free")
++	get_tree().call_group(&"pickups", &"queue_free")
+ 	score = 0
+ 	$Player.start($StartPosition.position)
+ 	$StartTimer.start()
+@@ -55,3 +62,10 @@ func _on_ScoreTimer_timeout():
+ func _on_StartTimer_timeout():
+ 	$MobTimer.start()
+ 	$ScoreTimer.start()
++	$PickupTimer.start()
++
++
++func _on_PickupTimer_timeout():
++	var pickup = pickup_scene.instantiate()
++	pickup.position = Vector2(randf_range(40.0, 440.0), randf_range(40.0, 680.0))
++	add_child(pickup)
+diff --git a/godot/main.tscn b/godot/main.tscn
+index c84519c..bdc0169 100644
+--- a/godot/main.tscn
++++ b/godot/main.tscn
+@@ -36,6 +36,9 @@ wait_time = 0.5
+ wait_time = 2.0
+ one_shot = true
+ 
++[node name="PickupTimer" type="Timer" parent="." unique_id=123456789]
++wait_time = 5.0
++
+ [node name="StartPosition" type="Marker2D" parent="." unique_id=568887530]
+ position = Vector2(240, 450)
+ 
+@@ -56,4 +59,5 @@ stream = ExtResource("6_hp1r0")
+ [connection signal="timeout" from="MobTimer" to="." method="_on_MobTimer_timeout"]
+ [connection signal="timeout" from="ScoreTimer" to="." method="_on_ScoreTimer_timeout"]
+ [connection signal="timeout" from="StartTimer" to="." method="_on_StartTimer_timeout"]
++[connection signal="timeout" from="PickupTimer" to="." method="_on_PickupTimer_timeout"]
+ [connection signal="start_game" from="HUD" to="." method="new_game"]
+diff --git a/godot/pickup.gd b/godot/pickup.gd
+new file mode 100644
+index 0000000..df10fff
+--- /dev/null
++++ b/godot/pickup.gd
+@@ -0,0 +1,8 @@
++extends Area2D
++
++func _ready() -> void:
++	queue_redraw()
++
++func _draw() -> void:
++	draw_circle(Vector2.ZERO, 14.0, Color(0.2, 0.9, 1.0, 0.85))
++	draw_arc(Vector2.ZERO, 17.0, 0.0, TAU, 32, Color(1.0, 1.0, 1.0, 0.9), 2.5)
+diff --git a/godot/pickup.gd.uid b/godot/pickup.gd.uid
+new file mode 100644
+index 0000000..bf6c7b5
+--- /dev/null
++++ b/godot/pickup.gd.uid
+@@ -0,0 +1 @@
++uid://dp4q7rk9m8xv1
+\ No newline at end of file
+diff --git a/godot/pickup.tscn b/godot/pickup.tscn
+new file mode 100644
+index 0000000..6e00e52
+--- /dev/null
++++ b/godot/pickup.tscn
+@@ -0,0 +1,14 @@
++[gd_scene format=3 uid="uid://bn8r3k5p7qmlt"]
++
++[ext_resource type="Script" path="res://pickup.gd" id="1_pickup"]
++
++[sub_resource type="CircleShape2D" id="1"]
++radius = 16.0
++
++[node name="Pickup" type="Area2D" groups=["pickups"]]
++collision_layer = 4
++collision_mask = 0
++script = ExtResource("1_pickup")
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
++shape = SubResource("1")
+diff --git a/godot/player.gd b/godot/player.gd
+index 43c366a..ba5596e 100644
+--- a/godot/player.gd
++++ b/godot/player.gd
+@@ -4,10 +4,14 @@ signal hit
+ 
+ @export var speed = 400 # How fast the player will move (pixels/sec).
+ var screen_size # Size of the game window.
++var shielded := false
++var shield_timer := 0.0
++const SHIELD_DURATION := 3.0
+ 
+ func _ready():
+ 	screen_size = get_viewport_rect().size
+ 	hide()
++	area_entered.connect(_on_area_entered)
+ 
+ 
+ func _process(delta):
+@@ -41,14 +45,47 @@ func _process(delta):
+ 		rotation = PI if velocity.y > 0 else 0
+ 
+ 
++func _physics_process(delta):
++	if shielded:
++		shield_timer -= delta
++		if shield_timer <= 0.0:
++			shielded = false
++			modulate = Color.WHITE
++			# If a mob body is already overlapping, hit now.
++			for body in get_overlapping_bodies():
++				_on_body_entered(body)
++				return
++
++
+ func start(pos):
+ 	position = pos
+ 	rotation = 0
+ 	show()
+ 	$CollisionShape2D.disabled = false
++	clear_shield()
++
++
++func activate_shield() -> void:
++	shielded = true
++	shield_timer = SHIELD_DURATION
++	modulate = Color(0.4, 0.8, 1.0)
++
++
++func clear_shield() -> void:
++	shielded = false
++	shield_timer = 0.0
++	modulate = Color.WHITE
++
++
++func _on_area_entered(area: Area2D) -> void:
++	if area.is_in_group("pickups"):
++		activate_shield()
++		area.queue_free()
+ 
+ 
+ func _on_body_entered(_body):
++	if shielded:
++		return
+ 	hide() # Player disappears after being hit.
+ 	hit.emit()
+ 	# Must be deferred as we can't change physics properties on a physics callback.
+diff --git a/godot/player.tscn b/godot/player.tscn
+index 4b15070..53fbbab 100644
+--- a/godot/player.tscn
++++ b/godot/player.tscn
+@@ -54,6 +54,7 @@ scale_curve = SubResource("6")
+ color_ramp = SubResource("4")
+ 
+ [node name="Player" type="Area2D" unique_id=2141725708]
++collision_mask = 5
+ z_index = 10
+ script = ExtResource("1")
+ 
+diff --git a/godot/project.godot b/godot/project.godot
+index aad6bda..0e6fe25 100644
+--- a/godot/project.godot
++++ b/godot/project.godot
+@@ -71,6 +71,10 @@ start_game={
+ ]
+ }
+ 
++[layer_names]
++
++2d_physics/layer_3="Pickups"
++
+ [rendering]
+ 
+ renderer/rendering_method="gl_compatibility"
+diff --git a/godot/test_input.gd.uid b/godot/test_input.gd.uid
+new file mode 100644
+index 0000000..1859cf7
+--- /dev/null
++++ b/godot/test_input.gd.uid
+@@ -0,0 +1 @@
++uid://6uas4g18n0j2
+diff --git a/godot/tests/test_shield.gd b/godot/tests/test_shield.gd
+new file mode 100644
+index 0000000..e85cb43
+--- /dev/null
++++ b/godot/tests/test_shield.gd
+@@ -0,0 +1,107 @@
++extends SceneTree
++
++var failures := 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(ok: bool, label: String) -> void:
++	if not ok:
++		failures += 1
++	print("PASS " if ok else "FAIL ", label)
++
++func key(code: Key, down: bool) -> void:
++	var event := InputEventKey.new()
++	event.physical_keycode = code
++	event.pressed = down
++	Input.parse_input_event(event)
++	await process_frame
++
++func click(button: Button) -> void:
++	for down in [true, false]:
++		var event := InputEventMouseButton.new()
++		event.position = button.get_global_rect().get_center()
++		event.global_position = event.position
++		event.button_index = MOUSE_BUTTON_LEFT
++		event.pressed = down
++		root.push_input(event, true)
++		await process_frame
++
++func run() -> void:
++	seed(789)
++	root.size = Vector2i(480, 720)
++	var game: Node = load("res://main.tscn").instantiate()
++	root.add_child(game)
++	await process_frame
++	await process_frame
++
++	# Start the game via the HUD Start button.
++	await click(game.get_node("HUD/StartButton"))
++	# Wait for StartTimer (2 s) to expire so MobTimer and ScoreTimer are running.
++	await create_timer(2.2).timeout
++
++	var player: Area2D = game.get_node("Player")
++
++	# Place one pickup 100 px to the player's right.
++	var pickup_scene: PackedScene = load("res://pickup.tscn")
++	var pickup = pickup_scene.instantiate()
++	pickup.position = player.position + Vector2(100.0, 0.0)
++	game.add_child(pickup)
++	await process_frame
++
++	# Collect the pickup with real D-key input (player moves ~120 px in 0.3 s at 400 px/s).
++	await key(KEY_D, true)
++	await create_timer(0.35).timeout
++	await key(KEY_D, false)
++	# Allow area_entered to propagate through the physics pipeline.
++	await process_frame
++	await process_frame
++
++	check(player.shielded, "pickup collected: player shielded")
++
++	# Place a frozen mob fixture at the player's current position.
++	var mob: RigidBody2D = load("res://mob.tscn").instantiate()
++	mob.position = player.position
++	mob.freeze = true
++	game.add_child(mob)
++	# Wait long enough for the physics overlap to register.
++	await create_timer(0.15).timeout
++
++	# Shielded contact: player must remain visible and timers must keep running.
++	check(player.visible, "shielded contact does not hide player")
++	check(
++		not game.get_node("MobTimer").is_stopped() and not game.get_node("ScoreTimer").is_stopped(),
++		"shielded contact does not stop gameplay timers"
++	)
++
++	# Wait for the 3-second shield to expire (with a margin).
++	await create_timer(3.2).timeout
++
++	# The hit must fire within 10 physics frames of shield expiry while mob still overlaps.
++	var hit_within_frames := false
++	for _i in range(10):
++		await physics_frame
++		if not player.visible:
++			hit_within_frames = true
++			break
++
++	check(hit_within_frames, "hit fires within 10 physics frames after shield expires with mob overlapping")
++	check(
++		game.get_node("MobTimer").is_stopped(),
++		"game over: MobTimer stopped after post-shield hit"
++	)
++
++	# Wait for the game-over message sequence and the Start button to appear.
++	await create_timer(2.5).timeout
++	await click(game.get_node("HUD/StartButton"))
++	await process_frame
++	await process_frame
++
++	check(player.visible and not player.shielded, "restart clears shield and shows player")
++	check(get_nodes_in_group("pickups").is_empty(), "restart clears all pickups")
++
++	game.get_node("Music").stop()
++	game.get_node("DeathSound").stop()
++	await create_timer(0.25).timeout
++	print("RESULT failures=", failures, "; headless state and collision fixture, not footage")
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_shield.gd.uid b/godot/tests/test_shield.gd.uid
+new file mode 100644
+index 0000000..844f8fd
+--- /dev/null
++++ b/godot/tests/test_shield.gd.uid
+@@ -0,0 +1 @@
++uid://c6x9f2t4m7nsp
+\ No newline at end of file

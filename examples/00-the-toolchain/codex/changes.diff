@@ -1,0 +1,293 @@
+diff --git a/FRICTIONAL.md b/FRICTIONAL.md
+index 31f3ac7..168bcef 100644
+--- a/FRICTIONAL.md
++++ b/FRICTIONAL.md
+@@ -156,3 +156,21 @@ Generalized the existing media/audio/framing helpers to accept the selected reel
+ name so gamedev assets remain separate. Reused-capture disclosure is explicit.
+ Audio and clip preparation write different artifacts; no duplicate sheet renderer
+ was launched. The gamedev final and full evidence ledger remain outstanding.
++
++## September 27, 2026 — bounded score feature
++
++Added one point for the opposing player on each side-wall exit and two readable
++top-of-screen counters. The wall still calls the ball's existing reset unchanged;
++scoring is an additional signal handled by a separate score node. No movement,
++speed, rebound or reset values changed. License and source attribution remain.
++
++The new headless score route used only the four normal paddle input actions and
++did not write the ball or either score. On Godot 4.7.2 it produced one real contact
++at each wall, a 1–1 score, matching labels, and passed all five checks.
++
++The existing 60 FPS input route was also run unmodified. Nine checks passed, but
++the route recorded no ceiling contact and exited 1; it did record both walls,
++both paddles, the floor, acceleration, and all four paddle bounds. A separate
++supported 30 FPS run also failed (including its bounds) and was not substituted
++for a passing result. These machine failures are reported, not waived, and do
++not claim a human playtest.
+diff --git a/GAME-BRIEF.md b/GAME-BRIEF.md
+index ac47996..cb2a707 100644
+--- a/GAME-BRIEF.md
++++ b/GAME-BRIEF.md
+@@ -7,4 +7,5 @@ documentation, reproducible machine checks, and two evidence-led teaching films.
+ 
+ Success means the existing input, movement, paddle bounds, paddle rebounds,
+ ceiling/floor deflection, acceleration and out-of-bounds reset are demonstrated.
+-The human still judges feel. No invented completed match or score system.
++The human still judges feel. A visible counter awards the opposing player one
++point when the ball exits either side; there is no match victory state.
+diff --git a/GDD.md b/GDD.md
+index db264e6..1d393d5 100644
+--- a/GDD.md
++++ b/GDD.md
+@@ -10,7 +10,8 @@ The first Walker change is identity and a reproducible teaching wrapper.
+ 
+ W/S controls Left; Up/Down controls Right. Gamepad mappings are inherited but
+ not certified without actual devices. Play begins immediately. A miss resets
+-the ball and play continues indefinitely. There are no menus or scored rounds.
++the ball, awards the opposing player one point, and play continues indefinitely.
++There are no menus or winning score.
+ 
+ ## Mechanisms and acceptance evidence
+ 
+@@ -22,6 +23,7 @@ the ball and play continues indefinitely. There are no menus or scored rounds.
+ | Paddle rebound | Area2D signal sets normalized direction; random vertical component | Real overlap and resulting direction change |
+ | Ceiling/floor | Area2D signal adds upward/downward component and normalizes | Real top and bottom contacts |
+ | Miss/retry | Side-wall signal resets position, speed, leftward direction | Played miss, reset, and subsequent movement |
++| Score | Each side exit awards one point to the opposing player | Both displayed scores equal matching wall contacts |
+ | Art | Three small textures with cyan/magenta paddle modulation | Actual engine viewport and source preview |
+ 
+ ## Godot architecture
+@@ -40,7 +42,7 @@ Paddle and ball positions are logical units, not physical pixels in that film.
+ 
+ ## Explicitly outside this slice
+ 
+-Score, match victory, menus, pause/restart controls, computer opponent, online
++Match victory, menus, pause/restart controls, computer opponent, online
+ multiplayer, audio, mobile controls, and new art. Future features need their own
+ bounded change and tests. No external credentials or paid calls are required.
+ 
+diff --git a/README.md b/README.md
+index 3dc6ac1..052ffaa 100644
+--- a/README.md
++++ b/README.md
+@@ -2,14 +2,15 @@
+ 
+ The first Walker adaptation of the official Godot demo collection: two local
+ players, moving paddles, an accelerating ball, collision signals, and automatic
+-reset when the ball leaves either side. The upstream gameplay is preserved.
++reset when the ball leaves either side. This adaptation adds a visible score:
++the opposing player earns one point on each side exit.
+ 
+ Open `godot/project.godot` in regular Godot 4.7 (GDScript; no .NET required),
+ then run the main scene. Left paddle: W/S. Right paddle: Up/Down arrows.
+ The upstream demo also maps two gamepads; hardware testing remains pending.
+ 
+-This is an endless rally demo, not a scored match: no score counter, win state,
+-pause menu, AI opponent, or soundtrack is implemented. Close the game window
++This is an endless scored rally, not a match with a win state. No pause menu,
++AI opponent, or soundtrack is implemented. Close the game window
+ to exit. Machine checks do not establish whether it is fun or accessible.
+ 
+ See `GAME-BRIEF.md`, `GDD.md`, `SOURCES.md`, and `FRICTIONAL.md`.
+diff --git a/godot/logic/score.gd b/godot/logic/score.gd
+new file mode 100644
+index 0000000..3c94026
+--- /dev/null
++++ b/godot/logic/score.gd
+@@ -0,0 +1,26 @@
++extends Node2D
++
++var left_score := 0
++var right_score := 0
++
++@onready var _left_label: Label = $LeftScore
++@onready var _right_label: Label = $RightScore
++
++
++func _ready() -> void:
++	_update_labels()
++
++
++func _on_left_wall_ball_exited() -> void:
++	right_score += 1
++	_update_labels()
++
++
++func _on_right_wall_ball_exited() -> void:
++	left_score += 1
++	_update_labels()
++
++
++func _update_labels() -> void:
++	_left_label.text = str(left_score)
++	_right_label.text = str(right_score)
+diff --git a/godot/logic/score.gd.uid b/godot/logic/score.gd.uid
+new file mode 100644
+index 0000000..9107fdc
+--- /dev/null
++++ b/godot/logic/score.gd.uid
+@@ -0,0 +1 @@
++uid://cvv28o16su2np
+diff --git a/godot/logic/wall.gd b/godot/logic/wall.gd
+index bc4d1bf..88958af 100644
+--- a/godot/logic/wall.gd
++++ b/godot/logic/wall.gd
+@@ -1,6 +1,9 @@
+ extends Area2D
+ 
++signal ball_exited
++
+ func _on_wall_area_entered(area: Area2D) -> void:
+ 	if area.name == "Ball":
++		ball_exited.emit()
+ 		# Ball went out of bounds, reset.
+ 		area.reset()
+diff --git a/godot/pong.tscn b/godot/pong.tscn
+index 5f61883..906f0ea 100644
+--- a/godot/pong.tscn
++++ b/godot/pong.tscn
+@@ -7,6 +7,7 @@
+ [ext_resource type="Texture2D" uid="uid://7rr8ipvil66w" path="res://separator.png" id="6"]
+ [ext_resource type="Script" uid="uid://d0ctwatj03r3b" path="res://logic/wall.gd" id="7"]
+ [ext_resource type="Script" uid="uid://dwret7sdyc33d" path="res://logic/ceiling_floor.gd" id="8"]
++[ext_resource type="Script" uid="uid://cvv28o16su2np" path="res://logic/score.gd" id="9"]
+ 
+ [sub_resource type="RectangleShape2D" id="1"]
+ size = Vector2(8, 32)
+@@ -63,6 +64,33 @@ shape = SubResource("2")
+ position = Vector2(320, 200)
+ texture = ExtResource("6")
+ 
++[node name="Score" type="Node2D" parent="."]
++script = ExtResource("9")
++
++[node name="LeftScore" type="Label" parent="Score"]
++offset_left = 246.0
++offset_top = 10.0
++offset_right = 294.0
++offset_bottom = 58.0
++theme_override_colors/font_color = Color(0, 1, 1, 1)
++theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
++theme_override_constants/outline_size = 4
++theme_override_font_sizes/font_size = 32
++text = "0"
++horizontal_alignment = 1
++
++[node name="RightScore" type="Label" parent="Score"]
++offset_left = 346.0
++offset_top = 10.0
++offset_right = 394.0
++offset_bottom = 58.0
++theme_override_colors/font_color = Color(1, 0, 1, 1)
++theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
++theme_override_constants/outline_size = 4
++theme_override_font_sizes/font_size = 32
++text = "0"
++horizontal_alignment = 1
++
+ [node name="LeftWall" type="Area2D" parent="." unique_id=2003719181]
+ position = Vector2(-10, 200)
+ script = ExtResource("7")
+@@ -98,6 +126,8 @@ offset = Vector2(320, 200)
+ [connection signal="area_entered" from="Left" to="Left" method="_on_area_entered"]
+ [connection signal="area_entered" from="Right" to="Right" method="_on_area_entered"]
+ [connection signal="area_entered" from="LeftWall" to="LeftWall" method="_on_wall_area_entered"]
++[connection signal="ball_exited" from="LeftWall" to="Score" method="_on_left_wall_ball_exited"]
+ [connection signal="area_entered" from="RightWall" to="RightWall" method="_on_wall_area_entered"]
++[connection signal="ball_exited" from="RightWall" to="Score" method="_on_right_wall_ball_exited"]
+ [connection signal="area_entered" from="Ceiling" to="Ceiling" method="_on_area_entered"]
+ [connection signal="area_entered" from="Floor" to="Floor" method="_on_area_entered"]
+diff --git a/tests/score_route.gd b/tests/score_route.gd
+new file mode 100644
+index 0000000..4555f48
+--- /dev/null
++++ b/tests/score_route.gd
+@@ -0,0 +1,88 @@
++extends SceneTree
++## Headless score route using normal input actions only.
++## It observes contacts and scores; it never writes the ball or either score.
++
++const ACTIONS := ["left_move_up", "left_move_down", "right_move_up", "right_move_down"]
++const MAX_FRAMES := 60 * 45
++
++var game: Node
++var frame := 0
++var phase := 0
++var wall_contacts := {"LeftWall": 0, "RightWall": 0}
++
++
++func _initialize() -> void:
++	seed(7375)
++	root.size = Vector2i(640, 400)
++	root.content_scale_size = Vector2i(640, 400)
++	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
++	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
++	call_deferred("_start_game")
++
++
++func _start_game() -> void:
++	game = load("res://pong.tscn").instantiate()
++	root.add_child(game)
++	current_scene = game
++	for wall_name in wall_contacts:
++		game.get_node(wall_name).area_entered.connect(func(area: Area2D) -> void:
++			if area.name == "Ball":
++				wall_contacts[wall_name] += 1
++		)
++
++
++func _process(_delta: float) -> bool:
++	if game == null:
++		return false
++	for action in ACTIONS:
++		Input.action_release(action)
++
++	var ball := game.get_node("Ball") as Area2D
++	var left := game.get_node("Left") as Area2D
++	var right := game.get_node("Right") as Area2D
++	if phase == 0:
++		# Move Left away so the initial left-moving ball exits through LeftWall.
++		Input.action_press("left_move_up")
++		if wall_contacts.LeftWall > 0:
++			phase = 1
++	else:
++		# Track with Left to return the reset ball; move Right away so it exits there.
++		_press_toward("left", ball.position.y, left.position.y)
++		Input.action_press("right_move_up" if ball.position.y > 200.0 else "right_move_down")
++
++	frame += 1
++	if wall_contacts.RightWall > 0 or frame >= MAX_FRAMES:
++		_finish()
++	return false
++
++
++func _press_toward(player: String, target_y: float, paddle_y: float) -> void:
++	if absf(target_y - paddle_y) > 2.0:
++		Input.action_press(player + ("_move_down" if target_y > paddle_y else "_move_up"))
++
++
++func _finish() -> void:
++	for action in ACTIONS:
++		Input.action_release(action)
++	var score := game.get_node("Score")
++	var checks := {
++		"left_score_matches_right_wall": score.left_score == wall_contacts.RightWall,
++		"right_score_matches_left_wall": score.right_score == wall_contacts.LeftWall,
++		"left_score_visible": score.get_node("LeftScore").text == str(score.left_score),
++		"right_score_visible": score.get_node("RightScore").text == str(score.right_score),
++		"both_sides_scored": score.left_score > 0 and score.right_score > 0,
++	}
++	var passed := true
++	for result in checks.values():
++		passed = passed and result
++	var report := {
++		"engine": Engine.get_version_info().string,
++		"method": "scripted normal input actions; no score or ball writes",
++		"frames": frame,
++		"wall_contacts": wall_contacts,
++		"scores": {"left": score.left_score, "right": score.right_score},
++		"checks": checks,
++		"passed": passed,
++	}
++	print(JSON.stringify(report))
++	quit(0 if passed else 1)

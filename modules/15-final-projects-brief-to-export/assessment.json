@@ -1,0 +1,72 @@
+{
+  "title": "Module 15 practice assessment",
+  "description": "This quiz is ungraded. Take it as often as you like, and read the feedback after each question, because the wrong answers are mistakes an agent or a student really made.",
+  "questions": [
+    {
+      "prompt": "In a clean clone of Chapter 4's project, a test run before `--import` printed seven `PASS` lines, exited 0, and logged 55 `ERROR` lines. The same step in a clean clone of `walker-jumpman-clawd` needed no import. What explains the difference?",
+      "choices": [
+        "`walker-jumpman-clawd` commits its `godot/.godot/` folder, so every clone already carries the converted assets and the import cache.",
+        "Godot skips the import when every script has a `.uid` file beside it, and `walker-jumpman-clawd` commits one for each script while Chapter 4's project did not.",
+        "`walker-jumpman-clawd` is source-ready and Chapter 4's project is not, because a source-ready clone is one that needs no import step before its checks run.",
+        "`walker-jumpman-clawd` draws everything in code and has nothing to import, while Chapter 4's project loads textures and sounds that need the import cache."
+      ],
+      "answer": 3,
+      "feedback": "A project that draws everything in code has nothing for `--import` to convert, so knowing which kind of project you have is part of reproducing it; Chapter 4's project loads textures and sounds, which is why its pre-import run exited 0 while logging 55 `ERROR` lines (\"The question\", item 1). A clean clone never carries `godot/.godot/`, and `.uid` files are identifiers that an import generates, not a cache that lets Godot skip it."
+    },
+    {
+      "prompt": "After the agent's first pass, all four test scripts passed, and its summary said no test touched the player's real save. Which evidence showed that claim was false?",
+      "choices": [
+        "A clean clone's `git status --short` listed an untracked `best_time.json`, which showed the tests had written the save inside the project folder.",
+        "With `HOME` pointed at a scratch folder, the unchanged `test_game.gd` and `test_keyboard.gd` each wrote `best_time.json` into `user://`.",
+        "One of the agent's four `godot` runs exited with a non-zero code, and its summary reported all four suites as passing anyway.",
+        "`git diff` showed edits to `test_game.gd` and `test_keyboard.gd`, which the prompt had forbidden, so the old tests were saving to a changed path."
+      ],
+      "answer": 1,
+      "feedback": "The leak showed up only when the instructor ran the old suites with `HOME` redirected and looked in the scratch `user://` folder, which lives outside the project, so `git status` cannot see it. The old tests were not edited and all four suites passed: the gap was that they never set the new save path (\"What the agents got wrong\", first item)."
+    },
+    {
+      "prompt": "A save file with `\"version\": 2` and a renamed `\"level\"` was overwritten by the first-pass code on the next completion. What in the game's code caused this overwrite?",
+      "choices": [
+        "`_load_best()` checked `format` and `level` before `version`, returned on the wrong level, and so never set the newer-build flag that blocks saving over the file.",
+        "`DirAccess.rename()` overwrites an existing destination, so the temporary-file write replaced the version-2 file whatever the game had decided about it.",
+        "`_load_best()` set the newer-build flag correctly, but `_save_best()` did not consult it and wrote the temporary file on every completion that beat the best.",
+        "The agent's own version-2 test case changed only the version number, so the combined case that renamed `level` was never exercised and the overwrite went unnoticed."
+      ],
+      "answer": 0,
+      "feedback": "The rule is to read `version` first and never overwrite a newer file, whatever else in it changed; the first-pass code checked `format` and `level` first, so the file looked merely invalid and was replaced. `rename()` does overwrite, but the game decides whether to save at all, and the agent's own version-2 case explains why its test passed, not why the code failed (\"The ideas\", section 4, rules 1 and 2)."
+    },
+    {
+      "prompt": "With no Godot 4.7.2 export templates installed, `--export-release \"Web\"` exits 1 while `--export-pack \"Web\"` exits 0 and writes a ZIP. What does the pack establish?",
+      "choices": [
+        "That the Web preset is export-ready, because a package was written, `tests/*` stayed out of it and the command exited 0.",
+        "That the Godot 4.7.2 export templates are installed, because building a pack uses the same templates as a release export and would otherwise fail.",
+        "That it lists the files the preset would ship, as data only; the ZIP is an inspection listing, not something a player can launch as a game.",
+        "That nothing unintended would ship, because the ZIP's 20 entries included no file from `tests/` and the level JSON was packed."
+      ],
+      "answer": 2,
+      "feedback": "On 4.7.2 `--export-pack` needs no templates, so it can only list what would ship, as data. The instructor's ZIP held 20 entries, with nothing from `tests/` but the diagnostic gallery scene included, so a clean-looking listing is still not 'nothing unintended'. The failing `--export-release` is the real evidence that the project is not export-ready here (\"The ideas\", section 3)."
+    },
+    {
+      "prompt": "`node scripts/clawd-build.cjs` prints `Error: Invariant changed: godot/ui/hud.gd` after FEAT-10 adds a best-time line to the HUD. What is the right response?",
+      "choices": [
+        "Remove `godot/ui/hud.gd` from the script's list of preserved files so the invariant check passes again and the build can continue.",
+        "Treat it as a design decision with an owner: decide whether the invariant should change, and record the reason in `CHANGE-BRIEF.md`.",
+        "Ignore the error, because all five Godot test scripts pass and a clean clone of the published commit already reproduced the committed `build_id`.",
+        "Revert the HUD change without comment and drop the best-time line, because the first iteration promised `godot/ui/hud.gd` stays byte-identical."
+      ],
+      "answer": 1,
+      "feedback": "The first Clawd iteration promised `hud.gd` would not change, and FEAT-10 changes it, so the script's complaint is accurate. Whether to update that promise is a decision for the project's owner, and it belongs in the written record; deleting the complaining line, ignoring it because the Godot tests pass, or reverting without comment all hide the decision (\"Ship It\")."
+    },
+    {
+      "prompt": "Which sentence about the FEAT-10 work is most defensible in a final film or submission note?",
+      "choices": [
+        "In the cases tested, the save rules hold for missing, corrupt, newer-version and unwritable files, so a player's best time survives a crash between the write and the rename.",
+        "The Web preset is committed, `--export-pack` wrote a 20-entry ZIP and Godot found the preset valid enough to look for templates, so on this Mac the Web build is export-ready.",
+        "A clean clone of a named commit imports on Godot 4.7.2 and passes all five test scripts, so it is source-ready there; no export was built or played, and no screen reader was tested.",
+        "On the instructor's Mac the corrected suite passes 38 of 38 checks and the reviewer's check 13 of 13, so the complete panel's best-time line is verified as readable at 640 × 360."
+      ],
+      "answer": 2,
+      "feedback": "A claim is only as strong as its evidence. The clean-clone run supports 'source-ready', and the last clause names what it does not cover (\"Verify\" and the Walker example). A crash between write and rename was never tested, a pack listing plus a failed `--export-release` does not make a package export-ready, and no check looks at whether the best-time line fits the screen."
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "title": "Module 14 practice assessment",
+  "description": "Ungraded practice for Module 14: the guard hands-on and the three labs. Take it as often as you like, and read the feedback for every question, including the ones you get right.",
+  "questions": [
+    {
+      "prompt": "An agent's first navigation test passes its check that the guard reaches the far-side target. The agent had set `target_desired_distance` to 48 and the check's threshold to 64 pixels, and the guard actually stopped 47.7 pixels from the target. What does the passing check establish?",
+      "choices": [
+        "That the guard stood on the target point, because `is_target_reached()` is true when the agent has moved onto the target position itself rather than near it",
+        "That the guard ended within the agent's own tolerance, so 'reached' meant within 48 to 64 px of the target, not on it, and the check is weaker than its name",
+        "That the guard reaches reachable targets throughout this arena, since it found and followed a path around the obstacle in the middle on this trip",
+        "That the guard's first path was ready on the next physics tick, since a guard that reaches the far side within the time limit must have started moving at once"
+      ],
+      "answer": 1,
+      "feedback": "'Reached' was defined by the agent's own numbers, a `target_desired_distance` of 48 and a test threshold of 64, and the guard finished 47.7 px short (lesson, 'The question'). `is_target_reached()` is true once the agent is within that distance, not on the point, and one passing trip says nothing about other targets or about the first path's frame, which ranged from the 2nd to the 9th physics frame."
+    },
+    {
+      "prompt": "A hysteresis test puts the player 240 px from a chasing guard, between `sight_radius` and `lose_radius`, and waits 1.5 s without a mode change. Why is that weaker evidence than it looks?",
+      "choices": [
+        "The test teleports the player by setting its position, so the guard never faced a real player and the band was never exercised",
+        "The test reads only `guard.mode` and positions, but a flicker would show in the machine's internal state first, so it should read the FSM itself",
+        "Since `lose_radius` exceeds `sight_radius`, a chasing guard cannot leave Chase inside the band, so the 'no mode change' result was guaranteed and could not fail",
+        "The chasing guard walks toward the player, so the distance soon falls below `sight_radius` and the band between the two radii is never really held"
+      ],
+      "answer": 3,
+      "feedback": "The guard closes on the player at 150 px/s, so the test soon left the band; the instructor's audit held the player at exactly 260 px on every physics frame for 120 frames and saw 0 mode changes (lesson, 'What the agents got wrong'). Placing the player is allowed as a labelled fixture and reading only `mode` and positions is the intended test contract, so neither is the flaw."
+    },
+    {
+      "prompt": "A shared behavioral test for the FSM and BT guards prints `RESULT 12 checks; 0 failures`, and the process exits with code 0. What must you still read before calling the run clean?",
+      "choices": [
+        "The whole log, searching for `SCRIPT ERROR` and `ERROR:` lines, because a Godot script error neither stops the process nor changes its exit code",
+        "The `HANDOFF.md` the agent wrote, because it lists each test's real result and would have recorded any error that the run printed",
+        "The time step, because under `--fixed-fps 60` a script error fails the run with a nonzero exit code, while a real-time run lets it pass",
+        "The `invalid UID … using text path instead` warnings, because each one means a script failed to load and its checks never ran, whatever the `RESULT` line says"
+      ],
+      "answer": 0,
+      "feedback": "In the instructor's rerun of the first Codex pass, all 12 checks passed with exit code 0 over 626 lines of `SCRIPT ERROR`, so only the log shows it; the correction prompt defines a clean run as exit 0 and no `SCRIPT ERROR` or `ERROR:` lines (lesson, 'Build It' and 'What the agents got wrong'). The agent's handoff is a claim to check, `--fixed-fps` pins the time step but does not turn errors into failures, and the UID warnings are what one `--import` pass removes."
+    },
+    {
+      "prompt": "In Lab A with seed 42, the training success rate never held 100% for 25 episodes, yet the greedy policy was optimal from episode 101 on. Which statement is right?",
+      "choices": [
+        "The greedy policy was probably wrong in some cells, since 88% training success on seed 42 means about one episode in eight still ended in a pit or the step cap",
+        "Seed 42 simply needed more than 500 episodes, and the greedy result from episode 101 shows the training success rate would reach 100% given more training",
+        "Training success is measured with exploration on, and epsilon ends at 0.05, so it understates the greedy policy that the separate probe evaluated",
+        "Constant `alpha` breaks the convergence theorem's conditions, so the table is unreliable and the greedy result from episode 101 should not be reported as learned"
+      ],
+      "answer": 2,
+      "feedback": "Exploration never stops, so some training episodes always take a random action: the 88% final-window success measures the epsilon-greedy agent, while the instructor's probe evaluated the greedy path with no exploration after every episode and found it optimal from episode 101 on (labs, 'Lab A'). The theorem's conditions do not strictly hold for a constant `alpha`, which is why the measured run, not the theorem, is the evidence."
+    },
+    {
+      "prompt": "In Lab B the agent's jump test reported a horizontal range of 128.3 px, but on a flat floor the same full-speed run-and-jump covered 163.3 px. What went wrong with the agent's measurement?",
+      "choices": [
+        "It did not give the player enough run-up, so the player had not reached full speed at takeoff, which is why the range came out at 128.3 px instead of about 160",
+        "It measured on the original level, where the player struck a ceiling at x = 240.8, so the number described that level and not the jump",
+        "Applying gravity once per physics tick shortens a measured jump against the formula (39.2 px rise against 40), and the same effect accounts for the 128.3 px range",
+        "It took a single jump, so 128.3 px was one noisy sample, and the flat-floor 163.3 px is another sample from the same spread"
+      ],
+      "answer": 1,
+      "feedback": "The prompt asked for a flat floor, but the test used the original level, and the player took off at the full 200 px/s and struck a ceiling at x = 240.8; on a flat floor the same run-and-jump covered 163.3 px, close to the 160 px that speed times airtime predicts (labs, 'Lab B'). The agent's number reproduces and its 'not fully accelerated' explanation was a guess; per-tick gravity explains a 2% gap in height (39.2 against 40), not a 20% gap in range."
+    },
+    {
+      "prompt": "In the Pong lab, a client's call to `set_pos_and_motion.rpc()` on the host's Player1 was rejected, yet a client calling `update_score.rpc(false)` three times raised the host's score by 3. What explains the difference?",
+      "choices": [
+        "`set_pos_and_motion` is `unreliable`, and the engine checks the sender only on unreliable calls, while reliable calls such as `update_score` are delivered without that check",
+        "`update_score` is declared `call_local`, which tells the host to accept it from any peer, while `set_pos_and_motion` defaults to `call_remote` and so needs the authority",
+        "`set_pos_and_motion` keeps the default `authority` mode, so only the node's authority may call it, while `update_score` is `any_peer`, so any peer may",
+        "The host validates each call's arguments: the absurd position failed a range check, while `update_score.rpc(false)` carries a legal value that passed"
+      ],
+      "answer": 2,
+      "feedback": "The engine printed that `set_pos_and_motion` is not allowed because its mode is 'authority' and the authority is peer 1, while `update_score` is `@rpc(\"any_peer\", \"call_local\")` and trusts whoever calls it (labs, 'Lab C'). Reliability and `call_local` do not decide who may call, and the passing authority test says nothing about the `any_peer` RPCs and holds only on loopback."
+    }
+  ]
+}

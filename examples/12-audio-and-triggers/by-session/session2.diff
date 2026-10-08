@@ -1,0 +1,212 @@
+diff --git a/godot/tests/test_hit_audio.gd b/godot/tests/test_hit_audio.gd
+index 85e27fa..e957f60 100644
+--- a/godot/tests/test_hit_audio.gd
++++ b/godot/tests/test_hit_audio.gd
+@@ -14,6 +14,26 @@ func _check(name: String, result: bool) -> void:
+ 		quit(1)
+ 
+ 
++# Drain every available frame from an AudioEffectCapture and return the peak
++# amplitude in dBFS. Returns -200.0 if no frames were captured.
++func _peak_db(cap: AudioEffectCapture) -> float:
++	var n := cap.get_frames_available()
++	if n == 0:
++		return -200.0
++	var buf := cap.get_buffer(n)   # PackedVector2Array; removes frames from ring
++	var peak := 0.0
++	for v in buf:
++		var ax := absf(v.x)
++		var ay := absf(v.y)
++		if ax > peak:
++			peak = ax
++		if ay > peak:
++			peak = ay
++	if peak <= 0.0:
++		return -200.0
++	return 20.0 * log(peak) / log(10.0)
++
++
+ func _initialize() -> void:
+ 	_run.call_deferred()
+ 
+@@ -81,32 +101,83 @@ func _run() -> void:
+ 	await process_frame
+ 	_check("hitsound_silent_on_miss_late", not hit_sound.playing)
+ 
+-	# ── 4. SFX bus peak ──────────────────────────────────────────────────────
+-	# Headless uses the Dummy audio driver. The mixing graph is still evaluated
+-	# and HitSound.playing tracks correctly, but AudioServer.get_bus_peak_*
+-	# peak meters are NOT driven by real sample output in the Dummy backend —
+-	# they return the floor (-200 dB) regardless of playback state. We skip
+-	# these two checks under the Dummy driver and explain the limitation below.
+-	var is_headless := DisplayServer.get_name() == "headless"
+-	if is_headless:
+-		print("PASS peak_sfx_rises_after_perfect",
+-				" (SKIP: Dummy driver — bus peak meters return floor; see headless note)")
+-		print("PASS peak_sfx_stays_floor_muted",
+-				" (SKIP: Dummy driver — mute/peak interaction not verifiable; see headless note)")
+-	else:
+-		notes.note_hit.emit(0.0, Enums.HitType.PERFECT, 0.0)
+-		await create_timer(0.1).timeout
+-		var peak_db := AudioServer.get_bus_peak_volume_left_db(sfx_idx, 0)
+-		_check("peak_sfx_rises_after_perfect", peak_db > -40.0)
+-
+-		AudioServer.set_bus_mute(sfx_idx, true)
+-		hit_sound.stop()
+-		notes.note_hit.emit(0.0, Enums.HitType.PERFECT, 0.0)
+-		await create_timer(0.1).timeout
+-		var peak_muted := AudioServer.get_bus_peak_volume_left_db(sfx_idx, 0)
+-		AudioServer.set_bus_mute(sfx_idx, false)
+-		_check("peak_sfx_stays_floor_muted", peak_muted <= -40.0)
+-		hit_sound.stop()
++	# ── 4. AudioEffectCapture peak checks ────────────────────────────────────
++	# The Dummy driver mixes audio in real time on a background thread; the
++	# bus peak meter (get_bus_peak_volume_left_db) exposes only the most-recent
++	# ~11.6 ms mix block and consistently misses a 60 ms clip unless you poll
++	# at the exact right moment. AudioEffectCapture accumulates samples into a
++	# ring buffer across every mix block, so it reliably records short clips.
++	#
++	# A capture effect on a bus reads audio BEFORE that bus's mute/volume fader.
++	# A capture on Master reads what each child bus actually sends through.
++	#
++	# Setup (in test only — not written to default_bus_layout.tres):
++	#   • AudioEffectCapture on SFX   → sees HitSound before SFX mute/volume
++	#   • AudioEffectCapture on Master → sees what SFX bus sends after its mute
++	#   • Music bus is muted so Master carries only SFX during measurement.
++	#   • Metronome is disabled so SFX carries only HitSound.
++
++	hit_sound.stop()
++	await process_frame
++
++	var sfx_cap    := AudioEffectCapture.new()
++	var master_cap := AudioEffectCapture.new()
++	sfx_cap.buffer_length    = 0.5   # 500 ms ring — plenty for a 60 ms clip
++	master_cap.buffer_length = 0.5
++
++	AudioServer.add_bus_effect(sfx_idx,    sfx_cap)
++	var sfx_eff_idx    := AudioServer.get_bus_effect_count(sfx_idx)    - 1
++	AudioServer.add_bus_effect(master_idx, master_cap)
++	var master_eff_idx := AudioServer.get_bus_effect_count(master_idx) - 1
++
++	AudioServer.set_bus_mute(music_idx, true)
++	# GlobalSettings is an autoload — access via path to avoid compile-time
++	# identifier failure when the script runs in --script mode.
++	var _gs = root.get_node("GlobalSettings")
++	var _orig_metronome: bool = _gs.enable_metronome
++	_gs.enable_metronome = false
++
++	# ── 4a. SFX unmuted: both captures should peak above -12 dBFS ───────────
++	sfx_cap.clear_buffer()
++	master_cap.clear_buffer()
++	notes.note_hit.emit(0.0, Enums.HitType.PERFECT, 0.0)
++	# Wait ≥ 200 ms wall time; Dummy mixes 512-sample blocks at 44100 Hz
++	# (~11.6 ms/block) so a 60 ms clip needs ~6 blocks, well within 200 ms.
++	var t0 := Time.get_ticks_msec()
++	while Time.get_ticks_msec() - t0 < 200:
++		await process_frame
++	hit_sound.stop()
++
++	var sfx_db_hi    := _peak_db(sfx_cap)
++	var master_db_hi := _peak_db(master_cap)
++	_check("peak_sfx_capture_after_perfect",    sfx_db_hi    > -12.0)
++	_check("peak_master_capture_after_perfect", master_db_hi > -12.0)
++
++	# ── 4b. SFX muted: SFX capture still hears; Master goes silent ───────────
++	# SFX capture is before the SFX mute fader → still sees the clip.
++	# Master capture is after the SFX bus output → SFX is silent, so Master
++	# carries only Music (also muted) → stays below -60 dBFS.
++	sfx_cap.clear_buffer()
++	master_cap.clear_buffer()
++	AudioServer.set_bus_mute(sfx_idx, true)
++	notes.note_hit.emit(0.0, Enums.HitType.PERFECT, 0.0)
++	t0 = Time.get_ticks_msec()
++	while Time.get_ticks_msec() - t0 < 200:
++		await process_frame
++	hit_sound.stop()
++
++	var sfx_db_muted    := _peak_db(sfx_cap)
++	var master_db_muted := _peak_db(master_cap)
++	_check("peak_sfx_capture_still_hears_when_bus_muted", sfx_db_muted    > -12.0)
++	_check("peak_master_capture_silent_when_bus_muted",   master_db_muted < -60.0)
++
++	# Restore bus state, metronome setting, and remove capture effects.
++	AudioServer.set_bus_mute(sfx_idx,   false)
++	AudioServer.set_bus_mute(music_idx, false)
++	_gs.enable_metronome = _orig_metronome
++	# Remove in reverse-add order so indices stay stable.
++	AudioServer.remove_bus_effect(master_idx, master_eff_idx)
++	AudioServer.remove_bus_effect(sfx_idx,    sfx_eff_idx)
+ 
+ 	# ── 5. Real Space key → Perfect hit → HitSound starts ───────────────────
+ 	# Mirror test_live_restart.gd: wait TWO frames after key press before
+@@ -175,16 +246,16 @@ func _run() -> void:
+ 	ev_p.pressed = false
+ 	Input.parse_input_event(ev_p)
+ 
+-	# SceneTree.paused is the property on self (we extend SceneTree)
++	# SceneTree.paused is the property on self (we extend SceneTree).
+ 	_check("pause_tree_paused", self.paused)
+ 	var pos_after := hit_sound.get_playback_position()
+ 	# AudioStreamPlayer receives NOTIFICATION_PAUSED and calls
+-	# set_stream_paused(true), freezing get_playback_position(). The threshold
+-	# is 20 ms; with the Dummy driver the position typically stays at 0.0
+-	# since the audio thread has barely advanced within two frames.
++	# set_stream_paused(true), freezing get_playback_position(). Threshold
++	# 20 ms: with Dummy driver the position is typically 0.0 throughout since
++	# the audio thread advances positions slowly relative to frame rate.
+ 	_check("hitsound_frozen_while_paused", pos_after - pos_before < 0.02)
+ 
+-	# Unpause before teardown
++	# Unpause before teardown.
+ 	var ev_p2 := InputEventKey.new()
+ 	ev_p2.physical_keycode = KEY_P
+ 	ev_p2.pressed = true
+@@ -209,27 +280,31 @@ func _run() -> void:
+ 	quit(0 if _all_passed else 1)
+ 
+ # ── Headless / Dummy driver note ──────────────────────────────────────────────
+-# Godot --headless selects the Dummy audio driver. This means:
++# Godot --headless selects the Dummy audio driver. The Dummy driver DOES mix
++# audio in real time on a background thread at the full sample rate (44100 Hz,
++# 512-sample blocks ≈ 86 mixes/second). This means:
+ #
+-#   CAN establish:
+-#     • Bus topology (AudioServer.get_bus_index, get_bus_send) — structural,
+-#       not driven by hardware.
++#   CAN establish (verified headlessly in this test):
++#     • Bus topology (AudioServer.get_bus_index, get_bus_send) — structural.
+ #     • Node bus assignments (AudioStreamPlayer.bus property).
+-#     • AudioStreamPlayer.playing state — tracks playback lifecycle correctly
+-#       even with Dummy driver; 60 ms clips remain playing for hundreds of
+-#       frames at headless frame rates.
++#     • AudioStreamPlayer.playing state — the engine's active flag is set by
++#       play() independently of hardware; 60 ms clips remain playing for
++#       hundreds of frames at headless frame rates.
++#     • Actual audio content via AudioEffectCapture: the Dummy driver runs the
++#       full mixing pipeline, and AudioEffectCapture accumulates samples across
++#       every mix block. A 60 ms clip reliably appears in the ring buffer within
++#       200 ms of wall time. This confirms the click is mixed at the right
++#       amplitude on the SFX bus and that muting SFX silences Master.
+ #     • Score and UI state from real key-event input (same as test_live_restart).
+ #     • Scene-reload and pause-tree behaviour.
+-#     • AudioStreamPlayer pause-freeze: the engine sends NOTIFICATION_PAUSED
+-#       and calls set_stream_paused, so get_playback_position() is frozen.
++#     • AudioStreamPlayer pause-freeze: set_stream_paused freezes
++#       get_playback_position().
+ #
+ #   CANNOT establish:
+-#     • That the click is actually audible on a real audio output device.
+-#     • Bus peak meter values (AudioServer.get_bus_peak_volume_left_db) —
+-#       the Dummy backend does not write samples to the peak ring-buffer, so
+-#       the meter stays at the floor even during playback.
+-#     • Loudness, distortion, or perceived sync with the music track.
++#     • That the click is audible on a real audio output device.
++#     • AudioServer.get_bus_peak_volume_left_db headlessly: the meter exposes
++#       only the most-recent mix block (~11.6 ms window). A 60 ms clip is
++#       fully mixed before the next frame poll and the meter reads -200 dB.
++#       The capture-based checks in section 4 replace this meter.
++#     • Loudness or distortion as perceived by a listener.
+ #     • Correct behaviour across real audio drivers (CoreAudio, ALSA, WASAPI).
+-#
+-# Checks 4a/4b (peak_sfx_rises_after_perfect, peak_sfx_stays_floor_muted) are
+-# marked SKIP when headless and must be verified manually with a real driver.

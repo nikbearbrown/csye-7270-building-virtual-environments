@@ -1,0 +1,72 @@
+{
+  "title": "Module 13 practice assessment",
+  "description": "Ungraded practice for Module 13. Take it as often as you like, and read the feedback for every question, including the ones you get right.",
+  "questions": [
+    {
+      "prompt": "A benchmark under `--fixed-fps 60` prints `Performance.TIME_PROCESS` once, at the end of a 600-frame run that took half a second of wall time. What does Godot 4.7.2 most likely report, and why?",
+      "choices": [
+        "The length of the last frame, because the documented description of the monitor is the time it took to complete one frame",
+        "The worst single frame of the run, because 600 frames at 60 per second is ten simulated seconds, so the once-a-second publish has happened many times over",
+        "Zero, because the engine publishes its one-second maximum only after a second of real time, and this run finished in half a second",
+        "The mean frame time over the 600 frames, because the monitor averages the frames it has seen since the previous read"
+      ],
+      "answer": 2,
+      "feedback": "In the 4.7.2 source the main loop keeps a running maximum of frame time and publishes it only once a second has passed, so the monitor is zero before then and the worst frame of about the last second afterwards (lesson, 'The Performance singleton'). The fixed time step does not change that, because 600 frames under `--fixed-fps` still took half a second of real time; the agent's `bench.gd` fell for the 'last frame' reading that the one-line documentation invites."
+    },
+    {
+      "prompt": "A headless benchmark run without `--fixed-fps` reports about 6.9 ms per frame for every test case, including an empty scene. What is the best explanation?",
+      "choices": [
+        "When the display cannot draw, the engine sleeps toward a 6,900 microsecond frame period after each frame, so any smaller per-frame cost vanishes into the sleep",
+        "Headless Godot still runs the renderer on the CPU through a dummy driver, and 6.9 ms is the measured cost of that dummy draw even for an empty scene",
+        "The dummy audio driver holds each frame until the audio thread has mixed one buffer, about 6.9 ms, so no frame can finish sooner even for an empty scene",
+        "The GPU's fixed per-frame submission cost is about 6.9 ms even for an empty scene, and `--headless` hides only the window, not the GPU work"
+      ],
+      "answer": 0,
+      "feedback": "The engine's low-processor sleep, `application/run/low_processor_mode_sleep_usec`, defaults to 6,900 microseconds and applies when the display cannot draw; `--fixed-fps 60` skips it, so wall time per frame becomes CPU work per simulated frame (lesson, 'Headless timing'). A headless run has no GPU or draw work to time at all, since the render monitors read zero, so neither a GPU cost nor a dummy-draw cost can be the 6.9 ms."
+    },
+    {
+      "prompt": "Ten fresh-process runs under `--fixed-fps 60` gave these median CPU costs per simulated frame. At 500 bullets: nodes 0.331 ms, servers 0.167 ms. At 5,000 bullets: nodes 9.854 ms, servers 2.314 ms. Which conclusion do the numbers best support?",
+      "choices": [
+        "Servers are justified at both counts, since they cost about half as much at 500 bullets (0.167 against 0.331 ms) and about a quarter as much at 5,000",
+        "Servers are not justified at either count, since the node version's 9.9 ms at 5,000 bullets still fits inside a 16.7 ms frame budget",
+        "No decision about servers is safe from these numbers, since headless timing leaves out draw cost and the GPU, so even the 0.16 ms CPU saving at 500 bullets is unsupported",
+        "Servers are not justified at the shipped 500 bullets (saving about 0.16 ms of a 16.7 ms budget) but are justified at thousands, on CPU evidence alone"
+      ],
+      "answer": 3,
+      "feedback": "A 2x ratio at 500 bullets looks large, but the node version costs about 0.33 ms there, 2% of a 60 Hz budget, so the saving is tiny and the node version is easier to see and debug; at 5,000 it costs 9.9 ms, 59% of the budget before any drawing, so fitting inside the frame is not the test (lesson, 'Verify'). The numbers still say nothing about draw cost, the GPU or a phone, so they settle the CPU question only."
+    },
+    {
+      "prompt": "The parity test passes for the node baseline at 500 and at 5,000 bullets. What may you conclude before timing the two versions?",
+      "choices": [
+        "That, in the cases tested, the two versions will also cost the same on the GPU, because the node baseline reuses the server version's bullet image, collision radius and speeds",
+        "That, for the cases tested, both versions share the same count, motion and collision behavior, so their CPU timings compare fairly; draw cost and pacing stay unknown",
+        "That the timing ratio you measure at 500 bullets will roughly carry over to 5,000, because matching behavior at both counts implies a matching cost ratio",
+        "That the node version no longer needs a human check on screen, because passing count, motion and collision checks cover what a player will see and feel in these two cases"
+      ],
+      "answer": 1,
+      "feedback": "Parity makes the comparison fair: without it a speedup could be a behavior difference, and the original server version had shipped with bodies that fell 16 pixels below their sprites. It establishes nothing about draw or GPU cost, how the cost ratio changes with the count (about 2x at 500 bullets, about 4x at 2,000 and 5,000), or what a player sees and feels, which stays a human check (lesson, 'Verify' and 'Use It')."
+    },
+    {
+      "prompt": "Two runs of identical node-version code at 5,000 bullets gave a mean of 8.5 ms and 39.0 ms per simulated frame. The second run overlapped a load spike on a shared machine. What should you do?",
+      "choices": [
+        "Report the 8.5 ms run, since the 39.0 ms run overlapped a load spike that tells you little about the code and the quiet run shows its true cost",
+        "Average the two runs and report 23.8 ms, noting that one of them overlapped a load spike on a shared machine and that the spread between them was large",
+        "Run each mode ten times in one long-lived process, all node runs first and then all server runs, and report the median",
+        "Repeat in fresh processes, alternating the two modes, and report the median and the range of the run means along with the machine's load"
+      ],
+      "answer": 3,
+      "feedback": "The variance came from the machine, not the code, so one run, or two, is an anecdote. Ten fresh-process runs per setting with the modes alternating let whatever else the machine does affect both versions, and a median with its range is a number you can defend (lesson, 'Verify'). Reporting the best run hides the noise you are trying to measure, and a single long-lived process with the modes in blocks lets a load spike land on only one of them."
+    },
+    {
+      "prompt": "Your game targets a standalone headset at 90 Hz. The desktop benchmark shows servers costing about 4 times less CPU time than nodes at 5,000 objects (2.3 ms against 9.9 ms per simulated frame). What does that measurement let you claim?",
+      "choices": [
+        "That the ratio may carry over, as a hypothesis to test on the headset; it gives no milliseconds for the device and says nothing about its GPU",
+        "That servers will cost about a quarter as much CPU on the headset, enough to choose them now and to use the device only to check the GPU and battery",
+        "That servers will fit the headset's 11.1 ms budget, because their 2.3 ms on the desktop leaves most of it free for the rest of the frame",
+        "That the headset will probably be CPU-bound rather than GPU-bound, because a 4-times CPU saving shows where the frame's time goes"
+      ],
+      "answer": 0,
+      "feedback": "A desktop CPU measurement can offer a mobile decision only a ratio between two implementations of the same work, which is a hypothesis for the device rather than a prediction of its milliseconds (lesson, 'Mobile and XR'). The headset's 90 Hz budget is 11.1 ms for two eye views, and CPU time, fill rate, battery and the renderer all need measuring there; a CPU ratio cannot say which of CPU and GPU limits the frame."
+    }
+  ]
+}

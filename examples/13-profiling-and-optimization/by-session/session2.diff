@@ -1,0 +1,113 @@
+diff --git a/FRICTIONAL.md b/FRICTIONAL.md
+index e4d997f..b1e7693 100644
+--- a/FRICTIONAL.md
++++ b/FRICTIONAL.md
+@@ -73,3 +73,85 @@ a bounded headless assertion, not a performance benchmark or visual review.
+ It separates observable results from source-only architecture claims, requires
+ visible normal-input collision and genuine wrap footage, and records the
+ unresolved window blocker. No new recording or film is claimed.
++
++2026-09-27 benchmark session: Added godot/bench/ with four new files.
++
++bullets.gd change: const BULLET_COUNT replaced with var bullet_count: int = 500.
++Default is unchanged; a benchmark or test script may set it before the node
++enters the tree. The three existing tests still pass with 500 bullets:
++  MOUSE_FOLLOWS true BULLET_COUNT_500 true ACTUAL_POSITION (240.0, 164.0)
++  COLLISION_SAD true RECOVERY_HAPPY true
++  MOTION_OK true BODY_SYNC true ALIGNED_BODIES 500/500
++
++New files:
++  bench/bullets_nodes.gd  — node-based baseline: one Area2D + CollisionShape2D
++    + Sprite2D per bullet managed by a single _physics_process loop. Radius 8,
++    same SPEED_MIN/MAX, same spawn/wrap rules, collision_layer=1 mask=0.
++  bench/shower_nodes.tscn — same player script; area_shape_entered and
++    area_shape_exited connect to _on_body_shape_entered/_on_body_shape_exited
++    (Area2D is a Node2D subtype so the signatures are compatible).
++  bench/test_nodes_parity.gd — three checks against the node baseline:
++    bullet count equals requested count; one bullet moves left by speed x
++    elapsed physics time within 0.05 px over 60 frames; player.touching rises
++    when the mouse overlaps a bullet and returns to 0 when moved away.
++  bench/bench.gd — extends SceneTree; accepts --mode=servers|nodes --count=N
++    --frames=N; skips 120 warm-up frames; times each measured frame with
++    Time.get_ticks_usec(); prints one CSV header + data line plus two
++    Performance monitor lines.
++
++Parity test results (exit 0 on all runs):
++
++  count=500:
++    PASS: BULLET_COUNT=500
++    PASS: MOTION distance=64.058 expected=64.057 y_delta=0.000000
++    PASS: COLLISION touching=2
++    PASS: RECOVERY touching=0
++
++  count=5000:
++    PASS: BULLET_COUNT=5000
++    PASS: MOTION distance=33.604 expected=33.603 y_delta=0.000000
++    PASS: COLLISION touching=17
++    PASS: RECOVERY touching=0
++
++Benchmark results (godot --headless --fixed-fps 60 --path godot
++                    --script res://bench/bench.gd -- --mode=X --count=N
++                    --frames=600):
++
++  mode,count,frames,mean_ms,p95_ms,max_ms,object_count,node_count,static_memory_mb
++  servers,500,600,0.163,0.200,0.279,2000,6,25.00
++  servers,5000,600,2.671,6.454,37.737,6500,6,34.52
++  nodes,500,600,0.308,0.397,2.918,3501,1506,29.23
++  nodes,5000,600,12.579,20.864,87.578,21501,15006,78.30
++
++  Performance monitor on last measured frame (last frame only, not mean):
++    servers 500:  TIME_PROCESS=0.000 ms  TIME_PHYSICS_PROCESS=0.000 ms
++    servers 5000: TIME_PROCESS=9.953 ms  TIME_PHYSICS_PROCESS=33.452 ms
++    nodes   500:  TIME_PROCESS=0.000 ms  TIME_PHYSICS_PROCESS=0.000 ms
++    nodes   5000: TIME_PROCESS=0.015 ms  TIME_PHYSICS_PROCESS=55.449 ms
++
++What this measurement covers and excludes:
++  Covers: _physics_process (position updates, PhysicsServer2D body transforms
++  for servers; Area2D.position writes for nodes), broad-phase and narrow-phase
++  collision detection, signal dispatch overhead. The wall-clock sample around
++  each await physics_frame includes all engine work between physics ticks.
++  With --fixed-fps 60 headless the engine does not sleep between frames, so
++  the wall clock reflects actual CPU time.
++  Excludes: GPU work of any kind. bullets.gd draws all bullets with a single
++  _draw() / draw_texture loop; the node baseline draws via per-node Sprite2D.
++  Both _draw() paths are not executed in headless mode (dummy renderer).
++  Excludes: main-thread rendering, vsync, audio, OS windowing.
++  Summary: this is a physics-and-logic CPU benchmark only. The relative
++  rendering cost of one draw_texture loop vs N Sprite2D nodes is not captured
++  here and would require a non-headless profiling session to measure.
++
++Observations:
++  At 500 bullets the servers path is ~1.9x faster mean (0.163 vs 0.308 ms);
++  both fit in 16.67 ms with headroom. At 5000 bullets the gap widens to ~4.7x
++  (2.671 vs 12.579 ms mean); nodes exceeds the frame budget at p95 (20.864 ms)
++  and max (87.578 ms), while servers remains within budget at p95 (6.454 ms).
++  The node_count difference (6 vs 15006 at 5000 bullets) and memory difference
++  (34.52 MB vs 78.30 MB) show the structural overhead of the node approach.
++  TIME_PHYSICS_PROCESS on the last frame can exceed the mean due to scheduler
++  jitter; use mean_ms and p95_ms from the ticks sample for stable comparisons.
++  The claim that the servers approach is "a lot more efficient" is supported by
++  the 5000-bullet headless physics-CPU data. Rendering cost is unmeasured.
+diff --git a/godot/bench/test_nodes_parity.gd b/godot/bench/test_nodes_parity.gd
+index 37f2c8d..1ab72e0 100644
+--- a/godot/bench/test_nodes_parity.gd
++++ b/godot/bench/test_nodes_parity.gd
+@@ -42,7 +42,7 @@ func run_probe() -> void:
+ 		all_ok = false
+ 
+ 	# --- Test 2: one bullet moves left by speed * elapsed physics time ---
+-	var bullet := bullets[0]
++	var bullet = bullets[0]
+ 	var before: Vector2 = bullet.position
+ 	var speed: float = bullet.speed
+ 
+diff --git a/godot/test_motion.gd b/godot/test_motion.gd
+index 80e016d..db7b64f 100644
+--- a/godot/test_motion.gd
++++ b/godot/test_motion.gd
+@@ -35,4 +35,4 @@ func run_probe() -> void:
+ 	scene.queue_free()
+ 	await process_frame
+ 	await process_frame
+-	quit(0 if motion_ok and body_ok and aligned_count == manager.bullets.size() else 1)
++	quit(0 if motion_ok and body_ok and aligned_count == 500 else 1)

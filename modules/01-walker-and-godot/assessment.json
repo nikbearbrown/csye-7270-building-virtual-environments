@@ -1,0 +1,72 @@
+{
+  "title": "Module 1 practice assessment",
+  "description": "This practice quiz is ungraded: take it as often as you like and read the feedback on every question, right or wrong. It tests how you read the evidence in walker-jumpman, not whether you can recite commands.",
+  "questions": [
+    {
+      "prompt": "In walker-jumpman you change the run speed in `tuning.gd` from 160.0 to 192.0 and run `test_game.gd`. Two checks fail: `speed-cap` and `neutral-stop`. Why does `neutral-stop`, a check about coming to rest, fail when only top speed changed?",
+      "choices": [
+        "`speed-cap` leaves the player at exactly 192 px/s, and five 32 px/s braking steps can only remove 160, so `neutral-stop` ends with 32 px/s left over.",
+        "It runs right after `speed-cap` in the same game, so it starts at the 170.67 px/s that check leaves, and its five 32 px/s braking steps assumed 160.",
+        "It also asserts the maximum speed, so it fails for the same reason as `speed-cap`: the player no longer tops out at exactly 160 px/s.",
+        "It replays the scripted route over the level, whose five jump marks were tuned at 160, so at 192 the route no longer reaches the flag and the check fails."
+      ],
+      "answer": 1,
+      "feedback": "`neutral-stop` runs right after `speed-cap` in the same game, so it inherits that state: eight ticks of acceleration leave the player at about 170.67 px/s, and five braking steps of 32 px/s leave about 10.67 instead of zero. The route is not the cause, because it still passed. See the chapter's \"What we actually ran\"."
+    },
+    {
+      "prompt": "After the change to 192, the scripted route in `test_game.gd` still reaches the flag with zero deaths, 45 ticks sooner, although the agent had predicted it would fail. What does that passing route support?",
+      "choices": [
+        "That the tuning constants and the level design are still consistent with each other, so the faster speed needs no human playtest first.",
+        "That the faster speed is safe for the real level, so the two failing checks are only out of date and can be set aside until the route itself fails.",
+        "That 192 is an acceptable design change, so `speed-cap` and `neutral-stop` should be updated first and the GDD revised afterwards.",
+        "Only that this one scripted route, with its five jump marks, still reaches the flag at 192; it does not show a person can play it."
+      ],
+      "answer": 3,
+      "feedback": "A route that passes shows one scripted route reaching the flag. The claim of internal consistency was one of the agent's unsupported statements, the two failures are the tests doing their job, and whether to change the design, then the GDD, then the tests, or to revert, is a human decision. See \"What the agents got wrong\" and Verify."
+    },
+    {
+      "prompt": "Claude Code's trace said the jump rises \"exactly ~53.3 px over 13 ticks\", and Codex's trace repeated the 53.3 figure. Which evidence settles whether the claim is right?",
+      "choices": [
+        "The rise the test measured, 56.07 px, which is what the game produced, not the 53.33 px target the check aims at.",
+        "The agreement of the two traces: Claude Code and Codex reached the same 53.3 figure, which makes a shared error unlikely.",
+        "The check's tolerance: it accepts any rise within 5 px of 53.33, and 53.3 sits inside it, so the claim is confirmed.",
+        "The 13 ticks: the test presses jump a second time at tick 13, so 13 ticks is the measured rise time and the claim holds."
+      ],
+      "answer": 0,
+      "feedback": "The check is the source, not a second agent. The test only asserts a rise within 5 px of 53.33, so passing it does not confirm \"exactly 53.3\"; the measured rise was 56.07 px, and 13 is the tick at which the test presses jump a second time, not the rise time."
+    },
+    {
+      "prompt": "You open walker-jumpman in the editor and the Scene dock shows a single `Node2D` with a script attached. What should you conclude?",
+      "choices": [
+        "The clone is incomplete: `main.tscn` should hold the level, player and camera, so delete the folder and clone the repository again.",
+        "The tree looks small only because the project is not imported yet; running `godot --headless --path godot --import` rebuilds the missing nodes from the cache.",
+        "The world is built by code at run time, mostly in `session.gd`, so compare the saved scene with the running tree and with the source.",
+        "The level, player and camera sit in separate scenes that `main.tscn` instances at edit time, so open those scenes to find the nodes."
+      ],
+      "answer": 2,
+      "feedback": "`main.tscn` is six lines; `session.gd` creates the solids, hazards, goal, player, camera and HUD when the game starts, so a small saved scene is not evidence of an empty project. Importing rebuilds the cache, not nodes, and the editor's Remote tab shows the running tree."
+    },
+    {
+      "prompt": "In walker-jumpman-clawd, Clawd's wide artwork overhangs the unchanged 18 x 28 collider, so an arm can appear to touch a spike without any contact, and every automated check passes. How does the chapter treat this?",
+      "choices": [
+        "As a defect to fix now by widening the 18 x 28 collider to match the art, since the drawing defines what the player believes is solid.",
+        "As an open question for a human playtest, because no number from the automated checks settles how the wide art reads to a player.",
+        "As settled by the 1,950 animation checks, since `test_clawd.gd` compares 162 samples against a TypeScript reference and finds zero failures.",
+        "As a reason to scale the art down until it fits inside the 18 x 28 collider, since the other checks assume the starter's collision shape."
+      ],
+      "answer": 1,
+      "feedback": "The collision shape is separate from the drawing, and changing one does not change the other. The chapter records the overhang as an open question for a human playtest, not something to fix silently by resizing either one or to declare settled by 1,950 passing animation checks."
+    },
+    {
+      "prompt": "A classmate says: \"Run `walker build` and Walker will generate the game for you.\" Based on the lesson and the chapter, what is the best response?",
+      "choices": [
+        "There is such a command, but it only scaffolds the project folder; Claude Code still writes the game, so check the result yourself afterwards.",
+        "There is no `walker` command: the build step belongs to Godot, so run `godot --headless --path godot --import` and the engine generates the game from your files.",
+        "There is such a command, but its result depends on your brief; Claude Code runs it for you, so a clear brief is the only check the game needs.",
+        "There is no `walker` command: Walker is a method plus instruction files, so ask Claude Code to follow its loop, then check the result yourself."
+      ],
+      "answer": 3,
+      "feedback": "Walker is a method and a set of files: the Game brief, Build, Playtest, Inspect, Revise, Export loop, which Claude Code follows from the project's instructions. There is no `walker` shell command, `publish.sh` only writes instruction files and skills into a game folder, and a generated game is not a played one."
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "title": "Module 5 practice assessment",
+  "description": "Ungraded practice for Module 5. Take it as often as you like, and read the feedback after each question; it points back to the lesson section that explains the answer.",
+  "questions": [
+    {
+      "prompt": "A recovered GDD says the player shoots with F9 and tags the claim `[OBSERVED]`. `project.godot` stores the binding as the integer 4194326. What is the right way to settle whether the tag is correct?",
+      "choices": [
+        "Open the cited line in `project.godot` and check that the line number points at the shoot binding; once the line is confirmed, the tag's key name needs no further check.",
+        "Ask Godot what the stored integer means, for example with a one-line `SceneTree` script that prints `OS.get_keycode_string(4194326)`, and compare the printed name with F9.",
+        "Re-run the reverse pass with Zelda's questions and gates switched on, and keep F9 if the second pass, run on the same source files, reproduces the same claim and tag.",
+        "Check that `IMPLEMENTATION-MAP.md` and the GDD's input section both give F9; two documents from one recovered design agreeing is enough to keep the tag."
+      ],
+      "answer": 1,
+      "feedback": "A tag is a claim about evidence, not evidence, and `project.godot` stores keys as integers, so only asking Godot decodes 4194326: it prints `Ctrl`, while `KEY_F9` is 4194340. A correct line number, a second pass and a second document from the same run all repeat the agent's claim without checking it. See \"Provenance tags\" and the audit list in Build It."
+    },
+    {
+      "prompt": "Public Walker `main` does not contain the `gdd/` folder. What does the public repository offer for the GDD step, and what are its limits?",
+      "choices": [
+        "`prompts/zelda-gdd.md`, which becomes a working `/gdd` command with `draft` and `status` once it is copied into `.claude/skills`, though `reverse` is still missing.",
+        "The public `publish.sh`, which installs the `gdd` skill when run with `--engine godot --agent claude`, after which `render_dir.py` fills in the skill's tokens and a `CLAUDE.md` is written for the project.",
+        "Nothing for the GDD step itself: public `main` only installs `asset-gen`, so without the instructor's local copy the audit cannot be practised on any GDD.",
+        "`prompts/zelda-gdd.md`, which can be handed to an agent as plain instructions but installs no `/gdd` command and has no `reverse` spec, so the audit uses an existing GDD."
+      ],
+      "answer": 3,
+      "feedback": "The public repository carries the reusable prompt `prompts/zelda-gdd.md` but not the skill, so there is no `/gdd` command and no `reverse` spec; its `publish.sh` installs only `asset-gen`. The audit can still be practised on a GDD that already exists. See \"Do you have /gdd?\" in the Walker example and Route 2 in Build It."
+    },
+    {
+      "prompt": "Which version of this checkpoint criterion could a stranger turn into a test without asking you anything, including where the respawn point is?",
+      "choices": [
+        "After activation, holding `reset_position` for 5 frames at `--fixed-fps 60` leaves the player within 0.2 m of a `Marker3D` child of the pad that sits no more than 0.2 m above the pad's top surface.",
+        "After activation, holding `reset_position` for 5 frames at `--fixed-fps 60` leaves the player within 0.2 m of the pad's respawn point, taken from the value the pad's script computes when the player enters.",
+        "After activation, the player is within 0.2 m of a `Marker3D` child of the pad, which sits no more than 0.2 m above the pad's top surface, 0.1 s of real time after `reset_position` is pressed, on whatever machine runs the test.",
+        "After activation, holding `reset_position` for 5 frames at `--fixed-fps 60` puts the player at a `Marker3D` child of the pad that sits no more than 0.2 m above the pad's top surface."
+      ],
+      "answer": 0,
+      "feedback": "A stranger can test a criterion only if it names the quantity and unit, a tolerance, a time box in the engine's clock, how the state is reached, and what the distance is measured against. Each wrong choice drops one of those; measuring against a respawn point the pad computes for itself is the gap in the example's criterion 4, and naming a `Marker3D` child closes it. See \"Acceptance criteria a machine can check\" and the third item under \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "Criterion 5 of the checkpoint pad sets the player's position below y = -12 directly and checks that the player returns to the respawn point. What does a pass establish?",
+      "choices": [
+        "That a player who walks off an edge during normal play is returned to the pad, because the test reproduces the same fall a player would make.",
+        "That the respawn point is a sensible place, just above the pad's surface, because the player has to land within 0.2 m of it for the check to pass.",
+        "That the fall branch of the reset code sends the player to the respawn point in headless play, though not that a player can actually reach that state.",
+        "That a player who has just respawned can see the pad and tell why they reappeared there, since the check ends with the player standing at the respawn point."
+      ],
+      "answer": 2,
+      "feedback": "A constructed fixture and an input-driven check prove different things, and both are legitimate when the criterion says which is which. Criterion 5 tests the fall branch of the code, not a fall a player makes, and it measures against a respawn point the pad computes for itself, so it says nothing about where that point sits or whether anyone can see the pad. See \"Acceptance criteria a machine can check\", Predict question 3 and the third item under \"What the agents got wrong\"."
+    },
+    {
+      "prompt": "Which sentence is an honest scoping line for the OpenXR build (`walker-xr-openxr-character-centric-movement`) in a GDD's technical section?",
+      "choices": [
+        "It was verified only by import; OpenXR initialization fails without a headset, so everything that needs a headset is unverified, and nothing beyond a clean import is claimed.",
+        "It is verified in simulation: arrow keys move the origin and the native mobile XR interface initializes, so only stereo pixels and head tracking remain unverified.",
+        "It is supported, because the project imports cleanly and the headless run exited with code 0 without errors; only how good it looks in a headset is left unverified.",
+        "It is expected to work on standalone headsets, because the project imports cleanly and Godot recommends the Mobile renderer for them; only desktop VR is left unverified."
+      ],
+      "answer": 0,
+      "feedback": "An honest scoping sentence is a requirement, a verified fact or a named unverified item. This build's record is import only: OpenXR initialization fails when no headset is detected. Arrow-key movement belongs to the mobile VR build, and a clean import, exit code 0 or a renderer recommendation is not hardware evidence. See \"Scoping mobile, networked, and XR worlds\"."
+    },
+    {
+      "prompt": "Codex finished the checkpoint pad and said the partial test's criterion-1 check \"was raycasting against the pad itself.\" What did the audit show?",
+      "choices": [
+        "Codex was right: the ray hit the pad's `Area3D` itself, so the old check was a false positive, which Codex removed by rewriting criterion 1 around the pad's bottom face.",
+        "Codex was half right: a ray hits areas by default, and the old check reached the pad only because `collide_with_areas` had been left on, which Codex's rewrite switched off.",
+        "The ray started inside the player body and hit it rather than the pad or the floor, which is why the old check passed when it should have failed.",
+        "By default a ray ignores areas: it hit the GridMap floor at y = -6.0 and hit the pad only with `collide_with_areas = true`, so the old check was weak for another reason."
+      ],
+      "answer": 3,
+      "feedback": "The second agent improved the test but misdescribed the bug: a ray ignores areas unless `collide_with_areas` is true, so it was never hitting the pad's `Area3D`, and the old check was weak for a different reason. That is why you check an agent's explanation as well as its result; the example record keeps the audit script and its log. See \"What the agents got wrong\"."
+    }
+  ]
+}

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>walker-3d-platformer — Design Deck</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0F172A;color:#F1F5F9;font-family:'Courier New',monospace;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+  #nav{display:flex;align-items:center;justify-content:space-between;padding:8px 20px;background:#0B1120;border-bottom:1px solid #1E293B;font-size:12px;color:#64748B;flex-shrink:0}
+  #nav button{background:#1E293B;border:1px solid #334155;color:#94A3B8;padding:4px 14px;cursor:pointer;font-family:monospace;font-size:12px;border-radius:3px}
+  #nav button:hover{background:#334155;color:#F1F5F9}
+  #counter{min-width:70px;text-align:center}
+  #stage{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden}
+  .slide{display:none;width:100%;max-width:940px;animation:fadein 0.15s ease}
+  .slide.active{display:flex;flex-direction:column;gap:12px}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SLIDE ELEMENTS */
+  h1{font-size:28px;font-weight:bold;letter-spacing:-0.5px;line-height:1.2}
+  h2{font-size:18px;font-weight:bold;color:#94A3B8;margin-bottom:4px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:bold;letter-spacing:0.5px;margin-right:4px}
+  .tag-obs{background:#1E3A5F;color:#93C5FD;border:1px solid #3B82F6}
+  .tag-inf{background:#14532D;color:#86EFAC;border:1px solid #22C55E;border-style:dashed}
+  .tag-mis{background:#450A0A;color:#FCA5A5;border:1px solid #EF4444;border-style:dashed}
+  .tag-core{background:#1E3A5F;color:#93C5FD}
+  .tag-imp{background:#1C1917;color:#D6D3D1}
+  .tag-nth{background:#1C1917;color:#78716C}
+  .card{background:#1E293B;border:1px solid #334155;border-radius:6px;padding:12px 16px}
+  .card-blue{border-color:#3B82F6}
+  .card-green{border-color:#22C55E}
+  .card-orange{border-color:#F97316}
+  .card-purple{border-color:#8B5CF6}
+  .card-red{border-color:#EF4444;background:#200A0A}
+  .card-yellow{border-color:#EAB308}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .row{display:flex;gap:10px;align-items:flex-start}
+  .kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;font-size:13px}
+  .kv .k{color:#64748B}
+  .kv .v{color:#F1F5F9}
+  .mono{font-family:'Courier New',monospace;font-size:12px;color:#86EFAC;background:#0B1120;padding:2px 6px;border-radius:3px}
+  .muted{color:#64748B;font-size:11px}
+  .warn{color:#FCA5A5;font-size:12px}
+  .note{color:#94A3B8;font-size:12px;font-style:italic;border-left:3px solid #334155;padding-left:10px}
+  ul{padding-left:18px;font-size:13px;line-height:1.8}
+  li{color:#CBD5E1}
+  li span.b{color:#F1F5F9;font-weight:bold}
+  li span.m{color:#FCA5A5}
+  .stat{font-size:32px;font-weight:bold;color:#3B82F6}
+  .stat-label{font-size:11px;color:#64748B}
+  .cover-sub{color:#64748B;font-size:13px;margin-top:6px}
+  .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:bold;margin-right:6px}
+  table{border-collapse:collapse;font-size:12px;width:100%}
+  th{background:#1E293B;color:#94A3B8;padding:6px 10px;text-align:left;border-bottom:1px solid #334155}
+  td{padding:5px 10px;border-bottom:1px solid #1E293B;color:#CBD5E1;vertical-align:top}
+  tr:hover td{background:#1A2332}
+  .img-box{background:#0B1120;border:1px solid #334155;border-radius:6px;padding:8px;text-align:center}
+  .img-box img{max-width:100%;max-height:200px;border-radius:4px}
+  .img-box .caption{font-size:10px;color:#475569;margin-top:4px}
+  .pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;margin-right:3px}
+  .pill-blue{background:#1E3A5F;color:#93C5FD}
+  .pill-green{background:#14532D;color:#86EFAC}
+  .pill-red{background:#450A0A;color:#FCA5A5}
+  .pill-orange{background:#431407;color:#FED7AA}
+</style>
+</head>
+<body>
+
+<div id="nav">
+  <span>walker-3d-platformer · Design Deck · Recovered 2026-09-27</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button onclick="prev()">← prev</button>
+    <span id="counter">1 / 16</span>
+    <button onclick="next()">next →</button>
+  </div>
+  <span>← → Space to navigate</span>
+</div>
+
+<div id="stage">
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 01 ══ -->
+<div class="slide active" id="s1">
+  <div style="text-align:center;padding:20px 0">
+    <div style="font-size:11px;color:#475569;letter-spacing:2px;margin-bottom:12px">GAME DESIGN DOCUMENT — RECOVERED</div>
+    <h1 style="font-size:36px;color:#F1F5F9">walker-3d-platformer</h1>
+    <div class="cover-sub" style="margin-top:10px">Godot 4.7 · Jolt Physics · CharacterBody3D showcase</div>
+    <div class="cover-sub">Adapted from Godot official 3D Platformer demo · Walker edition</div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center">
+      <span class="tag tag-obs">OBSERVED</span>
+      <span class="tag tag-inf">INFERRED</span>
+      <span class="tag tag-mis">MISSING</span>
+    </div>
+    <div style="margin-top:20px" class="note">Gate — unsigned at time of writing (silent flag). All claims carry evidence tags.<br>
+    This document describes what exists; it is not an approval of any design claim.</div>
+  </div>
+  <div class="grid-3" style="margin-top:10px">
+    <div class="card"><div class="stat">8</div><div class="stat-label">GDScript files</div></div>
+    <div class="card"><div class="stat">73</div><div class="stat-label">coins in level</div></div>
+    <div class="card"><div class="stat">4</div><div class="stat-label">enemies placed</div></div>
+  </div>
+  <div class="muted" style="text-align:center;margin-top:8px">Next: /gdd v1 · design/GDD.md · design/diagrams/ · design/DECK.html</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 02 ══ -->
+<div class="slide" id="s2">
+  <h2>02 — Vision</h2>
+  <div class="card card-blue">
+    <div style="font-size:13px;color:#93C5FD;margin-bottom:8px"><span class="tag tag-obs">OBSERVED GAME-BRIEF.md</span></div>
+    <div style="font-size:15px;line-height:1.6;color:#F1F5F9">A blue robot moves through a textured 3D platform environment, jumps between surfaces, collects coins, and shoots projectiles at patrolling enemies. A camera follows the character and responds to obstructing geometry.</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div style="color:#22C55E;font-size:11px;font-weight:bold;margin-bottom:6px">WALKER CONTEXT <span class="tag tag-obs">OBSERVED</span></div>
+      <ul>
+        <li>Adaptation of Godot official 3D Platformer demo</li>
+        <li>Initial change: project name only</li>
+        <li>Controls, art, sound preserved from upstream</li>
+        <li>Teaching loop: Brief → Build → Playtest → Inspect → Revise</li>
+      </ul>
+    </div>
+    <div class="card card-red">
+      <div style="color:#EF4444;font-size:11px;font-weight:bold;margin-bottom:6px">CRITICAL GAPS <span class="tag tag-mis">MISSING</span></div>
+      <ul>
+        <li><span class="m">Logline — none documented</span></li>
+        <li><span class="m">Target player — not defined</span></li>
+        <li><span class="m">Win state — no session goal</span></li>
+        <li><span class="m">Design pillars — not written</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="tag tag-inf">INFERRED</span> Teaching intent: demonstrates CharacterBody3D movement, camera following, collectibles, enemy patrol — inspectable by Godot students.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 03 ══ -->
+<div class="slide" id="s3">
+  <h2>03 — Design Pillars <span class="tag tag-inf">INFERRED — requires human confirmation</span></h2>
+  <div class="grid-3">
+    <div class="card card-blue">
+      <div style="color:#93C5FD;font-weight:bold;margin-bottom:6px">A — Grounded Physical Movement</div>
+      <div class="muted" style="margin-bottom:6px">What it protects: character must feel mass and momentum cost</div>
+      <ul style="font-size:12px">
+        <li>Jolt Physics 120 Hz</li>
+        <li>Gravity = 22.0 m/s² (2.24× Earth)</li>
+        <li>AIR_IDLE_DEACCEL = false</li>
+        <li>Air accel factor = 0.5</li>
+        <li>Sharp turn >140° breaks momentum</li>
+      </ul>
+    </div>
+    <div class="card card-green">
+      <div style="color:#86EFAC;font-weight:bold;margin-bottom:6px">B — Readable Camera</div>
+      <div class="muted" style="margin-bottom:6px">What it protects: player sees action without fighting camera</div>
+      <ul style="font-size:12px">
+        <li>Three-ray autoturn ±25°</li>
+        <li>Obstruction pull to collision point</li>
+        <li>Top-level detach (no parent artifact)</li>
+        <li>Height clamped [0, 2]</li>
+        <li>Autoturn speed: 50°/s</li>
+      </ul>
+    </div>
+    <div class="card card-purple">
+      <div style="color:#C4B5FD;font-weight:bold;margin-bottom:6px">C — Inspectability</div>
+      <div class="muted" style="margin-bottom:6px">What it protects: every mechanism readable from source</div>
+      <ul style="font-size:12px">
+        <li>8 scripts, no AutoLoads</li>
+        <li>No cross-scene coupling</li>
+        <li>Feature logic in owning scene</li>
+        <li>Walker brief: inspect &amp; verify</li>
+        <li>No singleton state managers</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">All three pillars inferred from code structure and GAME-BRIEF.md. Run /gdd v2 to define them explicitly with human input.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 04 ══ -->
+<div class="slide" id="s4">
+  <h2>04 — Core Loop</h2>
+  <div class="img-box">
+    <img src="diagrams/core-loop.svg" alt="Core loop diagram"/>
+    <div class="caption">[OBSERVED] Micro/macro loops from mechanics · [MISSING] session end state · design/diagrams/core-loop.svg</div>
+  </div>
+  <div class="grid-3">
+    <div class="card card-blue"><div style="color:#93C5FD;font-size:11px;font-weight:bold">MICRO  5–15 s</div><div class="muted">Move → Jump/Shoot → Collect/Elim → Reposition</div></div>
+    <div class="card card-green"><div style="color:#86EFAC;font-size:11px;font-weight:bold">MACRO  30–120 s</div><div class="muted">Navigate area → Collect coins → Eliminate enemy → Next area</div></div>
+    <div class="card card-red"><div style="color:#FCA5A5;font-size:11px;font-weight:bold">SESSION — [MISSING]</div><div class="muted">Spawn → Explore → [fall: auto-reset] → NO DESIGNED END</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 05 ══ -->
+<div class="slide" id="s5">
+  <h2>05 — Player Experience Goals <span class="tag tag-inf">INFERRED — requires confirmation</span></h2>
+  <table>
+    <tr><th>ID</th><th>Goal</th><th>Evidence</th></tr>
+    <tr><td>PX-01</td><td>Feel the weight of a grounded character</td><td class="mono">ACCEL=14, gravity=22, sharp-turn stop, air factor=0.5</td></tr>
+    <tr><td>PX-02</td><td>Read 3D space through a camera that works for you</td><td class="mono">3-ray autoturn, obstruction pull, height clamp</td></tr>
+    <tr><td>PX-03</td><td>Control jump height deliberately</td><td class="mono">JUMP_VEL=12.5; cut×0.7; 1.53m/3.60m measured</td></tr>
+    <tr><td>PX-04</td><td>Follow coin clusters as breadcrumbs through space</td><td class="mono">73 coins in 6-8 clusters  [OBSERVED game.tscn]</td></tr>
+    <tr><td>PX-05</td><td>Eliminate a patrol enemy with one well-timed shot</td><td class="mono">One-hit kill via bullet.enabled contact  [OBSERVED]</td></tr>
+  </table>
+  <div class="note">No PX Goals are documented in any source file. These are inferred from the mechanics as built. They require human confirmation before design decisions reference them.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 06 ══ -->
+<div class="slide" id="s6">
+  <h2>06 — Player Mechanics</h2>
+  <div class="img-box" style="margin-bottom:8px">
+    <img src="diagrams/player-state-machine.svg" alt="Player state machine"/>
+    <div class="caption">[OBSERVED player.gd] design/diagrams/player-state-machine.svg</div>
+  </div>
+  <div class="grid-2">
+    <div class="card card-blue">
+      <div style="color:#93C5FD;font-weight:bold;margin-bottom:6px">M-01 Ground Movement <span class="tag tag-obs">OBSERVED player.gd:63-115</span></div>
+      <div class="kv">
+        <span class="k">MAX_SPEED</span><span class="v">6.0 m/s</span>
+        <span class="k">ACCEL/DEACCEL</span><span class="v">14.0 m/s²</span>
+        <span class="k">TURN_SPEED</span><span class="v">40 (rate / speed)</span>
+        <span class="k">Sharp turn</span><span class="v">&gt;140° → stop accel</span>
+        <span class="k">Input</span><span class="v">camera-relative WASD/stick</span>
+      </div>
+    </div>
+    <div class="card card-blue">
+      <div style="color:#93C5FD;font-weight:bold;margin-bottom:6px">M-02/03 Air + Jump <span class="tag tag-obs">OBSERVED player.gd</span></div>
+      <div class="kv">
+        <span class="k">Air ACCEL</span><span class="v">7.0 m/s² (0.5×)</span>
+        <span class="k">Air decel</span><span class="v">NONE (AIR_IDLE_DEACCEL=false)</span>
+        <span class="k">JUMP_VEL</span><span class="v">12.5 m/s</span>
+        <span class="k">Early cut</span><span class="v">vel.y × 0.7</span>
+        <span class="k">Measured</span><span class="v">1.53 m (6t) / 3.60 m (60t)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 07 ══ -->
+<div class="slide" id="s7">
+  <h2>07 — Shoot, Collect, Reset</h2>
+  <div class="grid-3">
+    <div class="card card-orange">
+      <div style="color:#FED7AA;font-weight:bold;margin-bottom:6px">M-06 Shooting <span class="tag tag-obs">OBSERVED</span></div>
+      <ul style="font-size:12px">
+        <li>Press-edge only (not held)</li>
+        <li>Bullet spawned as scene sibling</li>
+        <li>BULLET_SPEED = 20.0 m/s</li>
+        <li><span class="mono">bullet.enabled</span> → false on hit</li>
+        <li>Prevents multi-hit while fading</li>
+        <li>SHOOT_TIME = 1.5 (anim blend)</li>
+      </ul>
+    </div>
+    <div class="card card-yellow">
+      <div style="color:#FDE047;font-weight:bold;margin-bottom:6px">M-07 Coin Collection <span class="tag tag-obs">OBSERVED</span></div>
+      <ul style="font-size:12px">
+        <li>Area3D body_entered</li>
+        <li>One-time: <span class="mono">taken = true</span></li>
+        <li>Increments <span class="mono">Player.coins</span></li>
+        <li>73 instances in level</li>
+        <li>Label3D + 4 parallax copies</li>
+        <li>Session-only — no persistence</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div style="color:#FED7AA;font-weight:bold;margin-bottom:6px">M-05 Fall Recovery <span class="tag tag-obs">OBSERVED</span></div>
+      <ul style="font-size:12px">
+        <li>Trigger 1: y &lt; -12</li>
+        <li>Trigger 2: <span class="mono">reset_position</span> (R)</li>
+        <li>→ initial_position (from _ready)</li>
+        <li>→ velocity = ZERO</li>
+        <li>→ reset_physics_interpolation()</li>
+        <li>Tests verified both triggers</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><span class="tag tag-mis">MISSING</span> No coin total display ("X / 73"). No completion event. Player cannot know if all coins are collected. See OQ-05.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 08 ══ -->
+<div class="slide" id="s8">
+  <h2>08 — Enemy Mechanics</h2>
+  <div class="row">
+    <div style="flex:1">
+      <div class="img-box">
+        <img src="diagrams/enemy-patrol.svg" alt="Enemy patrol state machine"/>
+        <div class="caption">[OBSERVED enemy.gd] design/diagrams/enemy-patrol.svg</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+      <div class="card card-orange">
+        <div style="color:#FED7AA;font-weight:bold;margin-bottom:6px">M-08 Patrol <span class="tag tag-obs">OBSERVED enemy.gd:49-73</span></div>
+        <div class="kv">
+          <span class="k">ACCEL</span><span class="v">5.0 m/s²</span>
+          <span class="k">MAX_SPEED</span><span class="v">2.0 m/s</span>
+          <span class="k">ROT_SPEED</span><span class="v">1.0 rad/s</span>
+          <span class="k">rot_dir</span><span class="v">4.0 init → 1.0 on turn</span>
+          <span class="k">Floor ray</span><span class="v">advance when colliding</span>
+          <span class="k">Wall ray</span><span class="v">turn when colliding</span>
+        </div>
+      </div>
+      <div class="card card-red">
+        <div style="color:#FCA5A5;font-weight:bold;margin-bottom:6px">M-09 Death <span class="tag tag-obs">OBSERVED enemy.gd:34-47</span></div>
+        <ul style="font-size:12px">
+          <li>Contact with <span class="mono">bullet.enabled=true</span></li>
+          <li>collision_layer = 0 (removes from physics)</li>
+          <li>All rotation axes unlocked</li>
+          <li>Angular spin: contact_normal × 33</li>
+          <li>Anim: impact → extra/explode</li>
+          <li>_die() → queue_free()</li>
+        </ul>
+      </div>
+      <div class="card card-red" style="border-color:#EF4444">
+        <div style="color:#FCA5A5;font-size:11px;font-weight:bold"><span class="tag tag-mis">MISSING</span> Enemy poses NO threat to player</div>
+        <div class="muted">No contact damage. No player health. Shooting enemies is optional.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 09 ══ -->
+<div class="slide" id="s9">
+  <h2>09 — Camera System (S-04)</h2>
+  <div class="row">
+    <div style="flex:1.2">
+      <div class="card card-purple">
+        <div style="color:#C4B5FD;font-weight:bold;margin-bottom:8px">M-10 Follow Camera <span class="tag tag-obs">OBSERVED follow_camera.gd</span></div>
+        <div class="grid-2" style="gap:8px">
+          <div>
+            <div class="muted" style="margin-bottom:4px">Distance / Height</div>
+            <div class="kv">
+              <span class="k">min_dist</span><span class="v">0.5</span>
+              <span class="k">max_dist</span><span class="v">3.5</span>
+              <span class="k">MIN_HEIGHT</span><span class="v">0.0</span>
+              <span class="k">MAX_HEIGHT</span><span class="v">2.0</span>
+            </div>
+          </div>
+          <div>
+            <div class="muted" style="margin-bottom:4px">Autoturn / Obstruction</div>
+            <div class="kv">
+              <span class="k">aperture</span><span class="v">±25°</span>
+              <span class="k">speed</span><span class="v">50°/s</span>
+              <span class="k">center hit</span><span class="v">pull to hit point</span>
+              <span class="k">one side</span><span class="v">turn away</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:0.8;display:flex;flex-direction:column;gap:8px">
+      <div class="card">
+        <div style="color:#94A3B8;font-weight:bold;margin-bottom:4px">Three-ray logic</div>
+        <ul style="font-size:12px">
+          <li>Center blocked → worst case: pull in</li>
+          <li>Left only → rotate camera right</li>
+          <li>Right only → rotate camera left</li>
+          <li>Both + center clear → no autoturn</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="muted">Top-level detach: <span class="mono">set_as_top_level(true)</span></div>
+        <div class="muted" style="margin-top:4px">Excludes player+enemies from rays via RID collision exception</div>
+      </div>
+      <div class="card card-red">
+        <div class="warn">Camera obstruction visible in real captures. Real limitation — do not repair footage.</div>
+        <div class="muted">[OBSERVED CAPTURE.md, FRICTIONAL.md]</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 10 ══ -->
+<div class="slide" id="s10">
+  <h2>10 — World &amp; Level Layout</h2>
+  <div class="grid-2">
+    <div class="card card-green">
+      <div style="color:#86EFAC;font-weight:bold;margin-bottom:6px">Terrain <span class="tag tag-obs">OBSERVED stage.tscn</span></div>
+      <div class="kv">
+        <span class="k">Type</span><span class="v">GridMap, 2-unit cells</span>
+        <span class="k">Cell range</span><span class="v">(-3,-1,-8) to (40,8,19)</span>
+        <span class="k">Offset</span><span class="v">(-16,-6,-12)</span>
+        <span class="k">World X</span><span class="v">≈ -22 to 64</span>
+        <span class="k">World Y</span><span class="v">≈ -18 to 10</span>
+        <span class="k">World Z</span><span class="v">≈ -28 to 26</span>
+        <span class="k">Player spawn</span><span class="v">(-9.5, -3.8, 3.9)</span>
+        <span class="k">Fall threshold</span><span class="v">y &lt; -12</span>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:8px">
+        <div style="color:#EAB308;font-weight:bold;margin-bottom:4px">Coins — 73 instances <span class="tag tag-obs">OBSERVED game.tscn</span></div>
+        <div class="muted">6–8 spatial clusters of 2×2 to 3×3 coins across level. Clusters suggest intended traversal routes. No total displayed. No completion event.</div>
+      </div>
+      <div class="card card-orange">
+        <div style="color:#FED7AA;font-weight:bold;margin-bottom:4px">Enemies — 4 fixed positions <span class="tag tag-obs">OBSERVED</span></div>
+        <table style="font-size:11px">
+          <tr><th>ID</th><th>World position (approx)</th></tr>
+          <tr><td>Enemy1</td><td>(2.3, -0.6, -6.0) near start</td></tr>
+          <tr><td>Enemy2</td><td>(48.1, -0.6, 5.1) mid-level</td></tr>
+          <tr><td>Enemy3</td><td>(48.0, 0.7, 17.8) far cluster</td></tr>
+          <tr><td>Enemy4</td><td>(36.7, -0.6, 15.7) return path</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="card card-purple">
+    <div style="color:#C4B5FD;font-size:11px;font-weight:bold">Secret area <span class="tag tag-obs">OBSERVED FRICTIONAL.md</span></div>
+    <div class="muted">Label3D at ≈(17.2, 6, -2.0) · "You have found a secret area!" · Reachable by normal movement/jump inputs via lower route · Not a win state</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 11 ══ -->
+<div class="slide" id="s11">
+  <h2>11 — Narrative, Characters, UI</h2>
+  <div class="grid-3">
+    <div class="card card-red">
+      <div style="color:#EF4444;font-weight:bold;margin-bottom:6px">Narrative <span class="tag tag-mis">MISSING</span></div>
+      <ul style="font-size:12px">
+        <li><span class="m">No story or dialogue</span></li>
+        <li><span class="m">No character names</span></li>
+        <li><span class="m">No cutscenes</span></li>
+        <li>Only world text: "You have found a secret area!"</li>
+        <li><span class="m">Film has nothing to frame</span></li>
+      </ul>
+    </div>
+    <div class="card card-blue">
+      <div style="color:#93C5FD;font-weight:bold;margin-bottom:6px">Player Character <span class="tag tag-obs">OBSERVED</span></div>
+      <ul style="font-size:12px">
+        <li>Blue robot (player.glb)</li>
+        <li>Materials: glow + gray</li>
+        <li>Scale: 0.3 (CHAR_SCALE)</li>
+        <li>CapsuleShape3D (arms exceed bounds)</li>
+        <li>AnimationTree: floor/air/run/gun/air_dir</li>
+        <li><span class="m">Name: MISSING</span></li>
+      </ul>
+    </div>
+    <div class="card card-orange">
+      <div style="color:#FED7AA;font-weight:bold;margin-bottom:6px">Enemy <span class="tag tag-obs">OBSERVED</span></div>
+      <ul style="font-size:12px">
+        <li>Patrol bot (enemy.glb)</li>
+        <li>Anims: walk, impact, explode</li>
+        <li>4 fixed instances</li>
+        <li>Floor/wall patrol only</li>
+        <li><span class="m">No threat to player</span></li>
+        <li><span class="m">Name: MISSING</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:0">
+    <div class="card">
+      <div style="color:#86EFAC;font-weight:bold;margin-bottom:4px">UI — Diegetic (3D world)</div>
+      <ul style="font-size:12px">
+        <li>Label3D CoinCount + 4 parallax copies</li>
+        <li>Session-only; no total display</li>
+        <li>Secret area Label3D (discovery only)</li>
+      </ul>
+    </div>
+    <div class="card card-red">
+      <div style="color:#FCA5A5;font-weight:bold;margin-bottom:4px">UI — [MISSING] screens</div>
+      <div class="muted">No pause, no main menu, no game-over, no level-complete, no coin total, no health HUD, no minimap.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 12 ══ -->
+<div class="slide" id="s12">
+  <h2>12 — Feature List</h2>
+  <div class="row" style="margin-bottom:8px">
+    <span><span class="pill pill-blue">CORE</span> 11 features observed and tested</span>
+    <span><span class="pill pill-green">IMPORTANT</span> 3 features</span>
+    <span><span class="pill pill-orange">NICE-TO-HAVE</span> 2 features</span>
+  </div>
+  <div class="img-box" style="margin-bottom:8px">
+    <img src="diagrams/feature-deps.svg" alt="Feature dependency map"/>
+    <div class="caption">Feature dependency map · design/diagrams/feature-deps.svg</div>
+  </div>
+  <table style="font-size:11px">
+    <tr><th>ID</th><th>Feature</th><th>Priority</th><th>Status</th></tr>
+    <tr><td>F-01</td><td>Camera-relative ground movement</td><td><span class="pill pill-blue">CORE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+    <tr><td>F-03</td><td>Variable-height jump</td><td><span class="pill pill-blue">CORE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+    <tr><td>F-05</td><td>Press-edge shooting (bullet)</td><td><span class="pill pill-blue">CORE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+    <tr><td>F-06</td><td>Coin collection (Area3D)</td><td><span class="pill pill-blue">CORE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+    <tr><td>F-07/08</td><td>Enemy patrol + death</td><td><span class="pill pill-blue">CORE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+    <tr><td>F-09/10</td><td>Follow camera + obstruction</td><td><span class="pill pill-blue">CORE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+    <tr><td>F-12</td><td>Touch controls (virtual joystick)</td><td><span class="pill pill-green">IMPORTANT</span></td><td>OBSERVED (hw unverified)</td></tr>
+    <tr><td>F-16</td><td>Secret area (Label3D)</td><td><span class="pill pill-orange">NICE-TO-HAVE</span></td><td class="tag tag-obs">OBSERVED</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 13 ══ -->
+<div class="slide" id="s13">
+  <h2>13 — Technical Stack</h2>
+  <div class="grid-2">
+    <div class="card card-blue">
+      <div style="color:#93C5FD;font-weight:bold;margin-bottom:6px">Engine <span class="tag tag-obs">OBSERVED project.godot</span></div>
+      <div class="kv">
+        <span class="k">Engine</span><span class="v">Godot 4.7</span>
+        <span class="k">Physics</span><span class="v">Jolt Physics 3D</span>
+        <span class="k">Physics Hz</span><span class="v">120</span>
+        <span class="k">Interpolation</span><span class="v">true</span>
+        <span class="k">Gravity</span><span class="v">22.0 m/s² (2.24× Earth)</span>
+        <span class="k">Renderer</span><span class="v">Forward+ / gl_compat</span>
+        <span class="k">Shadow</span><span class="v">8192px dir; PCF5/PCF13</span>
+        <span class="k">MSAA 3D</span><span class="v">2×</span>
+        <span class="k">Anisotropic</span><span class="v">4×</span>
+        <span class="k">Scripts</span><span class="v">8 GDScript (typed)</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="card">
+        <div style="color:#94A3B8;font-weight:bold;margin-bottom:4px">Input actions</div>
+        <div class="muted">move_forward · move_back · move_left · move_right · jump · shoot · reset_position</div>
+        <div class="muted" style="margin-top:4px">Keyboard + Gamepad + Touch (hardware unverified)</div>
+      </div>
+      <div class="card">
+        <div style="color:#94A3B8;font-weight:bold;margin-bottom:4px">Assets</div>
+        <div class="muted">2 GLB models · GridMap tiles.tres · 5 materials · 4 WAV SFX · particle_material.tres</div>
+      </div>
+      <div class="card card-red">
+        <div style="color:#FCA5A5;font-weight:bold;margin-bottom:4px">Known issues</div>
+        <ul style="font-size:12px">
+          <li>7 Texture RID shutdown leaks (every run)</li>
+          <li>PCM audio true peak +0.5 dBFS (gain candidate: -2.5 dB)</li>
+          <li>Touch hardware unverified (synthetic tests only)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 14 ══ -->
+<div class="slide" id="s14">
+  <h2>14 — Top Risks</h2>
+  <table>
+    <tr><th>ID</th><th>Risk</th><th>Category</th><th>Status</th><th>Mitigation</th></tr>
+    <tr>
+      <td>R-01</td>
+      <td><strong>No win state</strong> — player has no session goal</td>
+      <td>Design</td>
+      <td class="warn">Certain / absent</td>
+      <td>Define + implement before film narration — OQ-01</td>
+    </tr>
+    <tr>
+      <td>R-02</td>
+      <td>73 coins, no total display or completion event</td>
+      <td>Design</td>
+      <td class="warn">Certain / absent</td>
+      <td>Add "X/73" UI or document as cosmetic — OQ-05</td>
+    </tr>
+    <tr>
+      <td>R-03</td>
+      <td>Enemies pose <strong>no threat</strong> to player</td>
+      <td>Design</td>
+      <td class="warn">Certain / absent</td>
+      <td>Add contact damage or reframe as obstacles — OQ-04</td>
+    </tr>
+    <tr>
+      <td>R-04</td>
+      <td>Touch hardware unverified</td>
+      <td>Technical</td>
+      <td style="color:#FDE047">Unknown</td>
+      <td>Verify on device or label synthetic-test-only — OQ-10</td>
+    </tr>
+    <tr>
+      <td>R-05</td>
+      <td>7 Texture RID shutdown leaks</td>
+      <td>Technical</td>
+      <td style="color:#FDE047">Known / persistent</td>
+      <td>Investigate root cause before production</td>
+    </tr>
+    <tr>
+      <td>R-06</td>
+      <td>PCM audio peaks at 0 dBFS</td>
+      <td>Technical</td>
+      <td style="color:#FDE047">Known / measured</td>
+      <td>Apply -2.5 dB gain candidate; listen and confirm</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 15 ══ -->
+<div class="slide" id="s15">
+  <h2>15 — Open Questions <span class="tag tag-mis">MISSING → decisions.md</span></h2>
+  <table>
+    <tr><th>#</th><th>Question</th><th>Stakes</th></tr>
+    <tr>
+      <td>OQ-01</td>
+      <td><strong>What is the session goal?</strong> No win state, no level-complete, no score goal.</td>
+      <td class="warn">Film cannot describe what success looks like</td>
+    </tr>
+    <tr>
+      <td>OQ-02</td>
+      <td>Who is the target player? Student, game-jam player, or film viewer?</td>
+      <td>Determines scope, polish, and narration frame</td>
+    </tr>
+    <tr>
+      <td>OQ-03</td>
+      <td>What are the design pillars? Nothing in source declares them.</td>
+      <td class="warn">No rejection criterion for future design changes</td>
+    </tr>
+    <tr>
+      <td>OQ-04</td>
+      <td>Can the player be harmed by enemies? Currently no.</td>
+      <td>Removes all tension from the combat mechanic</td>
+    </tr>
+    <tr>
+      <td>OQ-05</td>
+      <td>Is 73-coin collection completable? No total shown; no trigger fires.</td>
+      <td>Completion is invisible to the player</td>
+    </tr>
+    <tr>
+      <td>OQ-06</td>
+      <td>Is there a narrative? Only world text: "You have found a secret area!"</td>
+      <td>Film has nothing to frame beyond mechanic demonstration</td>
+    </tr>
+  </table>
+  <div class="note">Full question log in design/decisions.md · OQ-01 to OQ-10</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ SLIDE 16 ══ -->
+<div class="slide" id="s16">
+  <h2>16 — Next Steps</h2>
+  <div class="grid-2">
+    <div>
+      <div class="card card-blue" style="margin-bottom:8px">
+        <div style="color:#93C5FD;font-weight:bold;margin-bottom:6px">Option A — Fill the intent first</div>
+        <div class="mono" style="margin-bottom:6px">/gdd v1</div>
+        <div class="muted">Nine intake questions: target player, player fantasy, design pillars, win state. Fills what the code cannot answer. Required before design decisions have a rejection criterion.</div>
+      </div>
+      <div class="card card-green">
+        <div style="color:#86EFAC;font-weight:bold;margin-bottom:6px">Option B — Rough whole document</div>
+        <div class="mono" style="margin-bottom:6px">/gdd draft</div>
+        <div class="muted">Generates all 16 sections silently with assumptions flagged. Good if you think in whole documents and want something to iterate from rather than building section by section.</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:8px">
+        <div style="color:#94A3B8;font-weight:bold;margin-bottom:6px">Files written this pass</div>
+        <ul style="font-size:12px">
+          <li><span class="mono">design/GDD.md</span> — 16-section recovered GDD</li>
+          <li><span class="mono">design/IMPLEMENTATION-MAP.md</span></li>
+          <li><span class="mono">design/decisions.md</span> — 10 open questions</li>
+          <li><span class="mono">design/DESIGN-STATUS.json</span></li>
+          <li><span class="mono">design/diagrams/core-loop.svg</span></li>
+          <li><span class="mono">design/diagrams/player-state-machine.svg</span></li>
+          <li><span class="mono">design/diagrams/enemy-patrol.svg</span></li>
+          <li><span class="mono">design/diagrams/feature-deps.svg</span></li>
+          <li><span class="mono">design/DECK.html</span> — this file</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div style="color:#94A3B8;font-weight:bold;margin-bottom:4px">Zelda's read</div>
+        <div class="muted" style="font-size:12px">This is a proof of mechanics, not a shipped game. The movement system is the work; the session structure is not. Ghost Center and Mechanic Mirage are expected for a recovered demo. Answer OQ-01 before anything else.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #stage -->
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let cur = 0;
+function show(n){
+  slides[cur].classList.remove('active');
+  cur = (n + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  document.getElementById('counter').textContent = (cur+1)+' / '+slides.length;
+}
+function next(){show(cur+1)}
+function prev(){show(cur-1)}
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+</script>
+</body>
+</html>

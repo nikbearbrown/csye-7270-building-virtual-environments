@@ -1,0 +1,679 @@
+diff --git a/HANDOFF.md b/HANDOFF.md
+index 3466f1e..1dfc2f5 100644
+--- a/HANDOFF.md
++++ b/HANDOFF.md
+@@ -1,45 +1,129 @@
+-# Handoff — Task 1 of 3: guard navigation
++# Handoff — Task 2 of 3: guard FSM (Patrol / Chase / Search)
+ 
+-## Files changed (all new, nothing modified)
++## Files changed (all new, except guard.gd and guard_arena.tscn which were modified)
+ 
+ | File | Role |
+ |------|------|
+-| `godot/npc/guard.gd` | Guard CharacterBody2D script: `set_target(pos)` + physics-frame NavAgent follow |
+-| `godot/npc/guard.gd.uid` | UID stub (Godot falls back to path; see note below) |
+-| `godot/npc/guard_arena.gd` | Root Node2D script: builds NavigationPolygon procedurally in `_ready()` |
+-| `godot/npc/guard_arena.gd.uid` | UID stub |
+-| `godot/npc/guard_arena.tscn` | 1280×720 arena scene (walls, obstacle, nav region, Player instance, Guard) |
+-| `godot/tests/test_guard_nav.gd` | Headless SceneTree test: 4 checks + 1 observation |
+-| `godot/tests/test_guard_nav.gd.uid` | UID stub |
++| `godot/npc/guard.gd` | **Updated** — adds `sight_radius`, `lose_radius`, `last_known_player_pos`, read-only `mode` property, `has_line_of_sight()`, `_ready()` that connects FSM signal to ModeLabel |
++| `godot/npc/guard_state.gd` | Base state for all guard FSM states; declares `guard` and `player` vars (injected by GuardFSM) |
++| `godot/npc/guard_state.gd.uid` | UID stub |
++| `godot/npc/guard_fsm.gd` | Extends `state_machine.gd`; injects `guard`/`player` refs into children in `_enter_tree()`, sets `states_map` in `_ready()` |
++| `godot/npc/guard_fsm.gd.uid` | UID stub |
++| `godot/npc/states/patrol.gd` | Patrol state: 4-waypoint loop, transitions to Chase when player within `sight_radius` with clear LOS |
++| `godot/npc/states/patrol.gd.uid` | UID stub |
++| `godot/npc/states/chase.gd` | Chase state: retargets player every 0.2 s; transitions to Search when `dist > lose_radius` OR no LOS |
++| `godot/npc/states/chase.gd.uid` | UID stub |
++| `godot/npc/states/search.gd` | Search state: navigates to `last_known_player_pos`, waits 1.0 s, transitions to Patrol |
++| `godot/npc/states/search.gd.uid` | UID stub |
++| `godot/npc/guard_arena.tscn` | **Updated** — adds GuardFSM (with Patrol/Chase/Search children) and ModeLabel under Guard |
++| `godot/tests/test_guard_fsm.gd` | Headless test: 6 checks — initial Patrol, full sequence, hidden-player, hysteresis |
++| `godot/tests/test_guard_fsm.gd.uid` | UID stub |
++
++No existing files outside `godot/npc/guard.gd` and `godot/npc/guard_arena.tscn` were touched.
+ 
+-No existing files were touched.
++---
++
++## Transition table
++
++| From    | To     | Condition |
++|---------|--------|-----------|
++| Patrol  | Chase  | `dist(guard, player) ≤ sight_radius` **AND** `has_line_of_sight(player)` |
++| Chase   | Search | `dist(guard, player) > lose_radius` **OR** `NOT has_line_of_sight(player)` |
++| Search  | Patrol | guard reaches `last_known_player_pos` (within 64 px) **AND** waited ≥ 1.0 s |
++
++Hysteresis: `lose_radius (350) > sight_radius (200)`. A player in the zone `(sight_radius, lose_radius]`
++with clear LOS holds the current state — Guard will not enter Chase from Patrol (too far) and
++will not leave Chase to Search (not far enough, has LOS).
++
++---
++
++## Guard parameters
++
++| Property | Default | Role |
++|----------|---------|------|
++| `sight_radius` | 200 px | Patrol→Chase threshold |
++| `lose_radius`  | 350 px | Chase→Search threshold (must be > sight_radius) |
++
++Both are `@export` on `guard.gd` so they can be tuned from the editor or by a test.
++
++---
++
++## `mode` property
++
++`guard.mode` (String, read-only) derives from `$GuardFSM.current_state.name`, returning
++`"Patrol"`, `"Chase"`, or `"Search"`. It never needs to be set directly.
++The same value is mirrored on the `ModeLabel` child of Guard via `state_changed` signal.
++
++---
++
++## `has_line_of_sight` implementation
++
++```
++PhysicsRayQueryParameters2D.create(guard.global_position, player.global_position)
++exclude = [guard]          # self-exclusion
++→ result.is_empty()        → true  (nothing in the way)
++→ result.collider == player → true  (ray's first hit IS the player)
++→ otherwise                → false (obstacle or wall is between guard and player)
++```
++
++Works headless because physics simulation runs in headless mode.
++
++---
++
++## Patrol waypoints (4 points, loop)
++
++```
++WP0 (160, 160)  top-left
++WP1 (1100, 160) top-right
++WP2 (1100, 560) bottom-right
++WP3 (160, 560)  bottom-left
++```
++
++All waypoints are inside the walkable nav region and avoid the obstacle hole (x 500–780, y 240–480).
++The guard navigates between them using the Task 1 `NavigationAgent2D` / nav polygon.
+ 
+ ---
+ 
+ ## Exact test commands and their real output
+ 
+-All three commands were run from the repo root (`godot/` is the Godot project directory):
++All four commands are run from the repo root (`godot/` is the Godot project directory):
+ 
+-### New test — guard navigation
++### New test — guard FSM
++```
++godot --headless --path godot --script res://tests/test_guard_fsm.gd
++```
++```
++--- Test 1: Patrol -> Chase -> Search -> Patrol ---
++[UID warnings omitted — expected, same reason as Task 1]
++PASS initial mode is Patrol
++FIXTURE: player → (280, 360)  dist=120 < sight_radius=200, LOS clear
++PASS mode -> Chase when player in sight (0.1 s)
++FIXTURE: player → (800, 560)  dist >> lose_radius=350
++PASS mode -> Search when player beyond lose_radius (0.1 s)
++PASS mode -> Patrol after Search completes (1.2 s)
++--- Test 2: player hidden behind obstacle stays in Patrol ---
++[UID warnings omitted]
++FIXTURE: player → (900, 360)  behind obstacle, LOS blocked
++PASS player hidden behind obstacle does not trigger Chase
++--- Test 3: player between sight_radius and lose_radius stays Chase >=1s ---
++[UID warnings omitted]
++FIXTURE: player → (280, 360)  trigger Chase
++FIXTURE: player → (400, 360)  dist≈240, sight_radius<dist<lose_radius, LOS clear
++PASS player between sight_radius and lose_radius: mode stays Chase for >=1 s
++RESULT 6 checks; 0 failures
++```
++Exit code **0**.
++
++### Existing test — guard navigation (Task 1)
+ ```
+ godot --headless --path godot --script res://tests/test_guard_nav.gd
+ ```
+ ```
+---- Check 3: same-frame set_target before nav-map sync ---
+-WARNING: res://npc/guard_arena.tscn:3 - ext_resource, invalid UID: uid://b9n3kx5p1yhmw
+-         - using text path instead: res://npc/guard_arena.gd
+-WARNING: res://npc/guard_arena.tscn:4 - ext_resource, invalid UID: uid://cgr1a0dv3npfd
+-         - using text path instead: res://npc/guard.gd
+-OBSERVE same-frame: nav_finished_before_tick=false reachable_before_tick=false
+-                    moved_after_0.3s=true guard.position=(194.1835, 347.9354)
+---- Check 1: guard navigates around obstacle ---
+-[same UID warnings omitted for brevity]
++OBSERVE same-frame: nav_finished_before_tick=false reachable_before_tick=false moved_after_0.3s=true guard.position=(160.0, 323.75)
+ PASS guard reaches far-side target within 20.0s
+ PASS guard never enters obstacle collision bounds
+---- Check 2: unreachable target inside obstacle ---
+-[same UID warnings omitted]
+ PASS target inside obstacle: is_target_reachable() == false
+-PASS guard rests outside obstacle bounds for unreachable target (pos=(632.3198, 240.1188))
++PASS guard rests outside obstacle bounds for unreachable target (pos=(632.7645, 240.1238))
+ RESULT 4 checks; 0 failures
+ ```
+ Exit code **0**.
+@@ -58,22 +142,7 @@ godot --headless --path godot --script res://test_combo.gd
+ 
+ ---
+ 
+-## Check 3 — actual same-frame behaviour (observation only)
+-
+-When `set_target()` is called in the same call frame as `root.add_child(arena)`, before a
+-single physics tick has executed:
+-
+-* `NavigationAgent2D.is_navigation_finished()` → **false**
+-* `NavigationAgent2D.is_target_reachable()` → **false** (map not yet synced)
+-* After 0.3 s: guard **has moved** to ~(194, 348); Godot deferred the path request and
+-  computed it on the first physics frame. The guard was not stuck at its origin.
+-
+-Conclusion: Godot 4.7 silently defers the first path query when the nav map has not yet
+-synced. There is no error; movement begins on the next physics tick.
+-
+----
+-
+-## Arena layout (for Tasks 2 and 3)
++## Arena layout (unchanged from Task 1)
+ 
+ ```
+ (0,0)─────────────────────────────(1280,0)
+@@ -95,64 +164,60 @@ synced. There is no error; movement begins on the next physics tick.
+ * Obstacle collision bounds: x 520–760, y 260–460
+ * Navigation hole (obstacle + 20 px margin): x 500–780, y 240–480
+ * Walkable nav region: (20,20)–(1260,700) minus the hole
+-* Guard: `CharacterBody2D`, `CircleShape2D` radius 16, speed 150 px/s,
+-  `target_desired_distance = 48`, `path_desired_distance = 8`
+ 
+ ---
+ 
+-## Navigation polygon implementation detail
+-
+-`guard_arena.gd._build_nav_polygon()` sets `NavigationPolygon.vertices` directly and
+-calls `add_polygon()` 12 times (CCW triangles). The triangulation decomposes the arena
+-into four rectangular strips (top, left, right, bottom) using a fan from v0 and v10
+-respectively. Every pair of adjacent strips shares a full edge (same two vertex indices,
+-reversed), which is required for Godot's navigation graph to connect them:
++## Node tree under Guard (after Task 2)
+ 
+ ```
+-Top strip fan from v0:  T1(0,1,5)  T2(0,5,4)  T3(0,4,3)  T4(0,3,2)
+-Left strip:             T5(2,3,7)  T6(2,7,6)
+-Right strip:            T7(4,5,9)  T8(4,9,8)
+-Bottom strip fan v10:   T9(10,6,7) T10(10,7,8) T11(10,8,9) T12(10,9,11)
++Guard (CharacterBody2D) — guard.gd
++├── CollisionShape2D
++├── NavigationAgent2D    target_desired_distance=48, path_desired_distance=8
++├── GuardFSM (Node)      — guard_fsm.gd (extends state_machine.gd)
++│   ├── Patrol (Node)    — states/patrol.gd (extends guard_state.gd)
++│   ├── Chase  (Node)    — states/chase.gd  (extends guard_state.gd)
++│   └── Search (Node)    — states/search.gd (extends guard_state.gd)
++└── ModeLabel (Label)    shows guard.mode above the sprite
+ ```
+ 
+-Key shared edges: T4↔T5 via (3,2)/(2,3); T2↔T7 via (5,4)/(4,5);
+-T6↔T9 via (7,6)/(6,7); T8↔T11 via (9,8)/(8,9).
++---
+ 
+-`make_polygons_from_outlines()` is **not** used (deprecated in Godot 4.2).
++## Implementation notes
+ 
+----
++### `_enter_tree` injection pattern
++`state_machine.gd._enter_tree()` calls `initialize()` → first state's `enter()` before
++`_ready()` has run. Guard states need `guard` and `player` references in `enter()`.
++`guard_fsm.gd` solves this by setting those properties on all child nodes **before** calling
++`super._enter_tree()`. The nav agent is NOT yet `@onready`-set at that point, so
++`patrol.gd` defers its first `set_target()` to the first `update()` call instead of `enter()`.
+ 
+-## UID warnings
++### `states_map` timing
++`states_map` is populated in `guard_fsm._ready()`, which always runs before the first
++`_physics_process` tick. No state emits `finished` from `enter()`, so no transition is
++attempted during `_enter_tree`. By the time any transition can fire, `states_map` is ready.
+ 
+-The three new `.uid` stub files contain hand-crafted UIDs that are not registered in
+-`.godot/uid_cache.bin`. Godot 4 emits `invalid UID — using text path instead` warnings
+-but loads the resources correctly by path. This does not affect test results. A full
+-editor import would register the UIDs and silence the warnings.
++### UID warnings
++New `.uid` stub files contain hand-crafted UIDs not registered in `.godot/uid_cache.bin`.
++Godot falls back to text path and prints warnings; all resources load correctly.
+ 
+ ---
+ 
+ ## What the next task may rely on
+ 
+-* `res://npc/guard_arena.tscn` — loads successfully headless; contains a working
+-  Guard node at path `Guard` with `set_target(Vector2)` and a child
+-  `NavigationAgent2D`.
+-* Guard navigates around the centre obstacle without penetrating it.
+-* `NavigationAgent2D.is_target_reachable()` correctly returns `false` for any point
+-  inside the nav hole (x 500–780, y 240–480).
+-* The Player instance is present but stationary (no input given in the test).
+-* Navigation map synchronises after the first physics frame; same-frame `set_target()`
+-  works but produces `is_target_reachable() == false` until the first tick completes.
++* `res://npc/guard_arena.tscn` — loads headless; Guard has a working FSM.
++* `guard.mode` — read-only String property; always `"Patrol"`, `"Chase"`, or `"Search"`.
++* `guard.sight_radius` (200) and `guard.lose_radius` (350) are `@export` and can be overridden.
++* `guard.last_known_player_pos` — updated every Chase frame tick while player is visible.
++* `Guard/ModeLabel` — Label child with text matching `guard.mode`.
++* Guard navigates using the Task 1 nav polygon; `set_target(pos)` still works.
++* The Player node is a sibling of Guard in GuardArena (`get_node("Player")`).
+ 
+ ---
+ 
+ ## What is still unverified
+ 
+-* Visual rendering, sprite, or colour appearance of the guard or obstacle (headless only).
+-* Dynamic retargeting: what happens if `set_target()` is called repeatedly while the
+-  guard is already navigating.
+-* Physics interaction between Guard and Player (both are CharacterBody2D; no avoidance
+-  is configured on the NavigationAgent2D).
+-* Navigation correctness when the guard's start position is very close to the nav-hole
+-  boundary.
+-* Performance with multiple simultaneous guards.
++* Visual appearance (headless only).
++* Behaviour when multiple guards share the same arena.
++* Edge case: player teleported inside the obstacle while Guard is in Chase.
++* Performance of `intersect_ray` at high guard counts.
+ * Whether UID warnings disappear after a full editor import pass.
+diff --git a/godot/npc/guard.gd b/godot/npc/guard.gd
+index 0717221..62a4a9a 100644
+--- a/godot/npc/guard.gd
++++ b/godot/npc/guard.gd
+@@ -2,11 +2,37 @@ extends CharacterBody2D
+ 
+ const SPEED := 150.0
+ 
++@export var sight_radius: float = 200.0
++@export var lose_radius:  float = 350.0
++
++var last_known_player_pos: Vector2 = Vector2.ZERO
++
+ @onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
+ 
++var mode: String:
++	get:
++		var fsm := get_node_or_null("GuardFSM")
++		if fsm and fsm.current_state:
++			return fsm.current_state.name
++		return "Patrol"
++
++func _ready() -> void:
++	var label: Label = $ModeLabel
++	label.text = mode
++	$GuardFSM.state_changed.connect(func(_s: Node) -> void:
++		label.text = mode
++	)
++
+ func set_target(pos: Vector2) -> void:
+ 	nav_agent.target_position = pos
+ 
++func has_line_of_sight(target: Node2D) -> bool:
++	var space_state := get_world_2d().direct_space_state
++	var query := PhysicsRayQueryParameters2D.create(global_position, target.global_position)
++	query.exclude = [self]
++	var result := space_state.intersect_ray(query)
++	return result.is_empty() or result.get("collider") == target
++
+ func _physics_process(_delta: float) -> void:
+ 	if nav_agent.is_navigation_finished():
+ 		return
+diff --git a/godot/npc/guard_arena.tscn b/godot/npc/guard_arena.tscn
+index 2a4908c..da53619 100644
+--- a/godot/npc/guard_arena.tscn
++++ b/godot/npc/guard_arena.tscn
+@@ -3,6 +3,10 @@
+ [ext_resource type="Script" uid="uid://b9n3kx5p1yhmw" path="res://npc/guard_arena.gd" id="1_arena"]
+ [ext_resource type="Script" uid="uid://cgr1a0dv3npfd" path="res://npc/guard.gd" id="2_guard"]
+ [ext_resource type="PackedScene" uid="uid://dsqn0vre7npvu" path="res://player/Player.tscn" id="3_player"]
++[ext_resource type="Script" uid="uid://dguardfsm00001" path="res://npc/guard_fsm.gd" id="4_guardfsm"]
++[ext_resource type="Script" uid="uid://dpatrol0000001" path="res://npc/states/patrol.gd" id="5_patrol"]
++[ext_resource type="Script" uid="uid://dchase00000001" path="res://npc/states/chase.gd" id="6_chase"]
++[ext_resource type="Script" uid="uid://dsearch0000001" path="res://npc/states/search.gd" id="7_search"]
+ 
+ [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_top"]
+ size = Vector2(1280, 20)
+@@ -70,3 +74,19 @@ shape = SubResource("CircleShape2D_guard")
+ [node name="NavigationAgent2D" type="NavigationAgent2D" parent="Guard"]
+ target_desired_distance = 48.0
+ path_desired_distance = 8.0
++
++[node name="GuardFSM" type="Node" parent="Guard"]
++script = ExtResource("4_guardfsm")
++
++[node name="Patrol" type="Node" parent="Guard/GuardFSM"]
++script = ExtResource("5_patrol")
++
++[node name="Chase" type="Node" parent="Guard/GuardFSM"]
++script = ExtResource("6_chase")
++
++[node name="Search" type="Node" parent="Guard/GuardFSM"]
++script = ExtResource("7_search")
++
++[node name="ModeLabel" type="Label" parent="Guard"]
++position = Vector2(-30, -40)
++text = "Patrol"
+diff --git a/godot/npc/guard_fsm.gd b/godot/npc/guard_fsm.gd
+new file mode 100644
+index 0000000..4f07ddf
+--- /dev/null
++++ b/godot/npc/guard_fsm.gd
+@@ -0,0 +1,16 @@
++extends "res://state_machine/state_machine.gd"
++
++func _enter_tree() -> void:
++	var guard_node := get_parent()
++	var player_node := guard_node.get_parent().get_node("Player")
++	for child in get_children():
++		child.guard = guard_node
++		child.player = player_node
++	super._enter_tree()
++
++func _ready() -> void:
++	states_map = {
++		"Patrol": $Patrol,
++		"Chase":  $Chase,
++		"Search": $Search,
++	}
+diff --git a/godot/npc/guard_fsm.gd.uid b/godot/npc/guard_fsm.gd.uid
+new file mode 100644
+index 0000000..bbbdbc5
+--- /dev/null
++++ b/godot/npc/guard_fsm.gd.uid
+@@ -0,0 +1 @@
++uid://dguardfsm00001
+diff --git a/godot/npc/guard_state.gd b/godot/npc/guard_state.gd
+new file mode 100644
+index 0000000..6919f17
+--- /dev/null
++++ b/godot/npc/guard_state.gd
+@@ -0,0 +1,6 @@
++extends "res://state_machine/state.gd"
++
++# Base state for all Guard FSM states.
++# guard and player are injected by GuardFSM._enter_tree() before enter() is called.
++var guard  # CharacterBody2D (Guard node)
++var player # CharacterBody2D (Player node)
+diff --git a/godot/npc/guard_state.gd.uid b/godot/npc/guard_state.gd.uid
+new file mode 100644
+index 0000000..9aba4f2
+--- /dev/null
++++ b/godot/npc/guard_state.gd.uid
+@@ -0,0 +1 @@
++uid://dguardstate001
+diff --git a/godot/npc/states/chase.gd b/godot/npc/states/chase.gd
+new file mode 100644
+index 0000000..2a41b42
+--- /dev/null
++++ b/godot/npc/states/chase.gd
+@@ -0,0 +1,25 @@
++extends "res://npc/guard_state.gd"
++
++const RETARGET_INTERVAL := 0.2
++
++var _retarget_timer: float = 0.0
++
++func enter() -> void:
++	guard.last_known_player_pos = player.global_position
++	guard.set_target(player.global_position)
++	_retarget_timer = RETARGET_INTERVAL
++
++func update(delta: float) -> void:
++	var dist: float = guard.global_position.distance_to(player.global_position)
++	var has_los: bool = guard.has_line_of_sight(player)
++
++	if dist > guard.lose_radius or not has_los:
++		finished.emit("Search")
++		return
++
++	# Still chasing: track last known position and retarget at most every 0.2 s.
++	guard.last_known_player_pos = player.global_position
++	_retarget_timer -= delta
++	if _retarget_timer <= 0.0:
++		guard.set_target(player.global_position)
++		_retarget_timer = RETARGET_INTERVAL
+diff --git a/godot/npc/states/chase.gd.uid b/godot/npc/states/chase.gd.uid
+new file mode 100644
+index 0000000..7409647
+--- /dev/null
++++ b/godot/npc/states/chase.gd.uid
+@@ -0,0 +1 @@
++uid://dchase00000001
+diff --git a/godot/npc/states/patrol.gd b/godot/npc/states/patrol.gd
+new file mode 100644
+index 0000000..cb740de
+--- /dev/null
++++ b/godot/npc/states/patrol.gd
+@@ -0,0 +1,29 @@
++extends "res://npc/guard_state.gd"
++
++# Four waypoints that form a loop around the obstacle.
++const WAYPOINTS := [
++	Vector2(160, 160),   # top-left
++	Vector2(1100, 160),  # top-right
++	Vector2(1100, 560),  # bottom-right
++	Vector2(160, 560),   # bottom-left
++]
++const ARRIVAL_DIST := 64.0
++
++var _wp_idx: int = 0
++var _target_set: bool = false
++
++func enter() -> void:
++	_target_set = false
++
++func update(_delta: float) -> void:
++	if not _target_set:
++		_target_set = true
++		guard.set_target(WAYPOINTS[_wp_idx])
++	if guard.global_position.distance_to(WAYPOINTS[_wp_idx]) < ARRIVAL_DIST:
++		_wp_idx = (_wp_idx + 1) % WAYPOINTS.size()
++		guard.set_target(WAYPOINTS[_wp_idx])
++
++	var dist: float = guard.global_position.distance_to(player.global_position)
++	if dist <= guard.sight_radius and guard.has_line_of_sight(player):
++		guard.last_known_player_pos = player.global_position
++		finished.emit("Chase")
+diff --git a/godot/npc/states/patrol.gd.uid b/godot/npc/states/patrol.gd.uid
+new file mode 100644
+index 0000000..5471ce7
+--- /dev/null
++++ b/godot/npc/states/patrol.gd.uid
+@@ -0,0 +1 @@
++uid://dpatrol0000001
+diff --git a/godot/npc/states/search.gd b/godot/npc/states/search.gd
+new file mode 100644
+index 0000000..2a7a049
+--- /dev/null
++++ b/godot/npc/states/search.gd
+@@ -0,0 +1,23 @@
++extends "res://npc/guard_state.gd"
++
++const ARRIVAL_DIST  := 64.0
++const WAIT_DURATION := 1.0
++
++var _waiting: bool = false
++var _wait_timer: float = 0.0
++
++func enter() -> void:
++	_waiting = false
++	_wait_timer = 0.0
++	guard.set_target(guard.last_known_player_pos)
++
++func update(delta: float) -> void:
++	if _waiting:
++		_wait_timer -= delta
++		if _wait_timer <= 0.0:
++			finished.emit("Patrol")
++		return
++
++	if guard.global_position.distance_to(guard.last_known_player_pos) < ARRIVAL_DIST:
++		_waiting = true
++		_wait_timer = WAIT_DURATION
+diff --git a/godot/npc/states/search.gd.uid b/godot/npc/states/search.gd.uid
+new file mode 100644
+index 0000000..727052b
+--- /dev/null
++++ b/godot/npc/states/search.gd.uid
+@@ -0,0 +1 @@
++uid://dsearch0000001
+diff --git a/godot/tests/test_guard_fsm.gd b/godot/tests/test_guard_fsm.gd
+new file mode 100644
+index 0000000..e66c437
+--- /dev/null
++++ b/godot/tests/test_guard_fsm.gd
+@@ -0,0 +1,143 @@
++extends SceneTree
++
++# Guard FSM tests.
++# Fixtures: player position is set via player.position (printed as FIXTURE).
++# Invariant: guard.mode and guard.position are read-only; guard state is never set directly.
++
++var failures := 0
++var checks   := 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(ok: bool, label: String) -> void:
++	checks += 1
++	if not ok:
++		failures += 1
++	print("PASS " if ok else "FAIL ", label)
++
++# ---------------------------------------------------------------------------
++# Helpers
++# ---------------------------------------------------------------------------
++
++func _load_arena() -> Node:
++	var arena: Node = load("res://npc/guard_arena.tscn").instantiate()
++	root.add_child(arena)
++	return arena
++
++func _wait_for_mode(guard: Node, target_mode: String, timeout: float) -> float:
++	var elapsed := 0.0
++	while guard.mode != target_mode and elapsed < timeout:
++		await create_timer(0.1).timeout
++		elapsed += 0.1
++	return elapsed
++
++# ---------------------------------------------------------------------------
++# Test 1 — full sequence: Patrol → Chase → Search → Patrol
++# ---------------------------------------------------------------------------
++
++func test_full_sequence() -> void:
++	print("--- Test 1: Patrol -> Chase -> Search -> Patrol ---")
++	var arena := _load_arena()
++	var guard = arena.get_node("Guard")
++	var player = arena.get_node("Player")
++
++	await process_frame
++	await process_frame
++
++	check(guard.mode == "Patrol", "initial mode is Patrol")
++
++	# Fixture: place player inside sight_radius with clear LOS.
++	# Guard starts at (160,360); player at (280,360) is 120 px away, no obstacle between.
++	print("FIXTURE: player → (280, 360)  dist=120 < sight_radius=200, LOS clear")
++	player.position = Vector2(280, 360)
++
++	var t := await _wait_for_mode(guard, "Chase", 3.0)
++	check(guard.mode == "Chase",
++		"mode -> Chase when player in sight (%.1f s)" % t)
++
++	# Fixture: move player far beyond lose_radius so guard loses sight.
++	print("FIXTURE: player → (800, 560)  dist >> lose_radius=350")
++	player.position = Vector2(800, 560)
++
++	t = await _wait_for_mode(guard, "Search", 3.0)
++	check(guard.mode == "Search",
++		"mode -> Search when player beyond lose_radius (%.1f s)" % t)
++
++	# Search navigates to last_known_pos (~280,360), waits 1 s, then Patrol.
++	t = await _wait_for_mode(guard, "Patrol", 20.0)
++	check(guard.mode == "Patrol",
++		"mode -> Patrol after Search completes (%.1f s)" % t)
++
++	arena.queue_free()
++	await process_frame
++
++# ---------------------------------------------------------------------------
++# Test 2 — player hidden behind obstacle does not trigger Chase
++# ---------------------------------------------------------------------------
++
++func test_hidden_player() -> void:
++	print("--- Test 2: player hidden behind obstacle stays in Patrol ---")
++	var arena := _load_arena()
++	var guard = arena.get_node("Guard")
++	var player = arena.get_node("Player")
++
++	await process_frame
++	await process_frame
++
++	# Fixture: guard at (160,360); obstacle spans x=520-760 y=260-460.
++	# A ray from (160,360) to (900,360) passes through the obstacle → LOS blocked.
++	print("FIXTURE: player → (900, 360)  behind obstacle, LOS blocked")
++	player.position = Vector2(900, 360)
++
++	await create_timer(2.0).timeout
++	check(guard.mode == "Patrol",
++		"player hidden behind obstacle does not trigger Chase")
++
++	arena.queue_free()
++	await process_frame
++
++# ---------------------------------------------------------------------------
++# Test 3 — player between sight_radius and lose_radius during Chase → no change ≥1 s
++# ---------------------------------------------------------------------------
++
++func test_hysteresis_zone() -> void:
++	print("--- Test 3: player between sight_radius and lose_radius stays Chase >=1s ---")
++	var arena := _load_arena()
++	var guard = arena.get_node("Guard")
++	var player = arena.get_node("Player")
++
++	await process_frame
++	await process_frame
++
++	# Fixture: bring guard into Chase.
++	print("FIXTURE: player → (280, 360)  trigger Chase")
++	player.position = Vector2(280, 360)
++	await _wait_for_mode(guard, "Chase", 3.0)
++
++	# Fixture: move player into hysteresis zone.
++	# Guard is near (160,360); player at (400,360) is ~240 px away.
++	# sight_radius=200 < 240 < lose_radius=350, LOS clear (left of obstacle x=520).
++	print("FIXTURE: player → (400, 360)  dist≈240, sight_radius<dist<lose_radius, LOS clear")
++	player.position = Vector2(400, 360)
++
++	await create_timer(1.5).timeout
++	check(guard.mode == "Chase",
++		"player between sight_radius and lose_radius: mode stays Chase for >=1 s")
++
++	arena.queue_free()
++	await process_frame
++
++# ---------------------------------------------------------------------------
++# Entry point
++# ---------------------------------------------------------------------------
++
++func run() -> void:
++	root.size = Vector2i(1280, 720)
++
++	await test_full_sequence()
++	await test_hidden_player()
++	await test_hysteresis_zone()
++
++	print("RESULT ", checks, " checks; ", failures, " failures")
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_guard_fsm.gd.uid b/godot/tests/test_guard_fsm.gd.uid
+new file mode 100644
+index 0000000..3767a97
+--- /dev/null
++++ b/godot/tests/test_guard_fsm.gd.uid
+@@ -0,0 +1 @@
++uid://dtestguardfsm1

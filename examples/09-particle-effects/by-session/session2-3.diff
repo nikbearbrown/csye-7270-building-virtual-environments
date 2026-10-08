@@ -1,0 +1,65 @@
+diff --git a/godot/main.tscn b/godot/main.tscn
+index 9741137..1c28d5a 100644
+--- a/godot/main.tscn
++++ b/godot/main.tscn
+@@ -26,7 +26,18 @@ point_count = 2
+ [sub_resource type="CurveTexture" id="5"]
+ curve = SubResource("4")
+ 
++[sub_resource type="Gradient" id="7"]
++colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
++
++[sub_resource type="GradientTexture2D" id="8"]
++gradient = SubResource("7")
++width = 16
++height = 16
++fill = 1
++fill_from = Vector2(0.5, 0.5)
++
+ [sub_resource type="ParticleProcessMaterial" id="6"]
++particle_flag_disable_z = true
+ spread = 180.0
+ initial_velocity_min = 150.0
+ initial_velocity_max = 300.0
+@@ -79,6 +90,7 @@ one_shot = true
+ explosiveness = 1.0
+ amount = 32
+ lifetime = 0.6
++texture = SubResource("8")
+ process_material = SubResource("6")
+ 
+ [connection signal="hit" from="Player" to="." method="game_over"]
+diff --git a/godot/tests/test_particles.gd b/godot/tests/test_particles.gd
+index 3497766..947ccd4 100644
+--- a/godot/tests/test_particles.gd
++++ b/godot/tests/test_particles.gd
+@@ -31,6 +31,11 @@ func run() -> void:
+ 	var player: Area2D = game.get_node("Player")
+ 	var burst: GPUParticles2D = game.get_node("DeathBurst")
+ 
++	# Static property checks — independent of rendering or gameplay state.
++	check(burst.texture is GradientTexture2D, "texture is GradientTexture2D (soft round dot)")
++	var mat := burst.process_material as ParticleProcessMaterial
++	check(mat != null and mat.particle_flag_disable_z, "particle_flag_disable_z enabled for 2D")
++
+ 	# Before any game starts the burst must be silent.
+ 	check(not burst.emitting, "not emitting at load, before Start")
+ 
+@@ -56,12 +61,12 @@ func run() -> void:
+ 	check(burst.global_position.is_equal_approx(hit_pos), "burst global_position equals player hit position")
+ 
+ 	# Wait up to lifetime + 0.5 s for the one-shot finished signal.
+-	var finished_received := false
+-	burst.finished.connect(func(): finished_received = true, CONNECT_ONE_SHOT)
++	# Use a Dictionary so the lambda captures a reference, not a value copy —
++	# GDScript lambdas cannot reassign an outer local variable.
++	var sig := {"done": false}
++	burst.finished.connect(func(): sig.done = true, CONNECT_ONE_SHOT)
+ 	await create_timer(burst.lifetime + 0.5).timeout
+-	# Headless note: the dummy renderer never advances particle timers, so
+-	# the finished signal will not fire in --headless mode.
+-	check(finished_received, "finished signal arrives within lifetime + 0.5 s")
++	check(sig.done, "finished signal arrives within lifetime + 0.5 s")
+ 
+ 	# Wait out the rest of the HUD game-over flow before the restart button appears.
+ 	# From mob addition: 0.15 + 1.1 + 1.1 = 2.35 s total, matching test_input.gd.

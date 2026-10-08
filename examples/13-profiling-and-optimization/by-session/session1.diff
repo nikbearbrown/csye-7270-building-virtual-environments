@@ -1,0 +1,380 @@
+diff --git a/godot/bench/bench.gd b/godot/bench/bench.gd
+new file mode 100644
+index 0000000..d0f7b40
+--- /dev/null
++++ b/godot/bench/bench.gd
+@@ -0,0 +1,77 @@
++extends SceneTree
++# Headless benchmark. Run as:
++#   godot --headless --fixed-fps 60 --path godot \
++#         --script res://bench/bench.gd -- \
++#         --mode=servers --count=500 --frames=600
++#
++# --mode   : "servers" (PhysicsServer2D path) or "nodes" (Area2D node path)
++# --count  : bullet count
++# --frames : measured frames after the warm-up window
++
++
++func _initialize() -> void:
++	run_benchmark.call_deferred()
++
++
++func run_benchmark() -> void:
++	var user_args := OS.get_cmdline_user_args()
++	var mode := "servers"
++	var count := 500
++	var frames := 600
++	var warmup := 120
++	for arg in user_args:
++		if arg.begins_with("--mode="):
++			mode = arg.substr(7)
++		elif arg.begins_with("--count="):
++			count = int(arg.substr(8))
++		elif arg.begins_with("--frames="):
++			frames = int(arg.substr(9))
++
++	var scene_path := "res://shower.tscn" if mode == "servers" else "res://bench/shower_nodes.tscn"
++	var scene := (load(scene_path) as PackedScene).instantiate()
++	(scene.get_node("Bullets") as Node).set("bullet_count", count)
++	root.add_child(scene)
++	current_scene = scene
++
++	for _i in warmup:
++		await physics_frame
++
++	var frame_times: Array[float] = []
++	frame_times.resize(frames)
++	for i in frames:
++		var t0 := Time.get_ticks_usec()
++		await physics_frame
++		frame_times[i] = (Time.get_ticks_usec() - t0) / 1000.0  # ms
++
++	var sorted := frame_times.duplicate()
++	sorted.sort()
++	var total := 0.0
++	for t in sorted:
++		total += t
++	var mean_ms: float = total / sorted.size()
++	var p95_ms: float = sorted[int(sorted.size() * 0.95)]
++	var max_ms: float = sorted[-1]
++
++	var object_count := int(Performance.get_monitor(Performance.OBJECT_COUNT))
++	var node_count := int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
++	var static_memory_mb: float = Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0
++
++	# TIME_PHYSICS_PROCESS: cumulative seconds spent in _physics_process callbacks
++	# across all nodes for the most-recently completed physics tick.
++	# TIME_PROCESS: same but for _process callbacks.
++	var time_physics_ms: float = Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0
++	var time_process_ms: float = Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0
++
++	print("mode,count,frames,mean_ms,p95_ms,max_ms,object_count,node_count,static_memory_mb")
++	print("%s,%d,%d,%.3f,%.3f,%.3f,%d,%d,%.2f" % [
++		mode, count, frames,
++		mean_ms, p95_ms, max_ms,
++		object_count, node_count, static_memory_mb
++	])
++	print("# TIME_PROCESS=%.3f ms — seconds all nodes spent in _process last frame" % time_process_ms)
++	print("# TIME_PHYSICS_PROCESS=%.3f ms — seconds all nodes spent in _physics_process last physics tick" % time_physics_ms)
++
++	scene.queue_free()
++	await process_frame
++	await process_frame
++	quit(0)
+diff --git a/godot/bench/bullets_nodes.gd b/godot/bench/bullets_nodes.gd
+new file mode 100644
+index 0000000..edef276
+--- /dev/null
++++ b/godot/bench/bullets_nodes.gd
+@@ -0,0 +1,67 @@
++extends Node2D
++# Node-based baseline for benchmarking against bullets.gd.
++# One Area2D + CollisionShape2D + Sprite2D per bullet; one manager script moves them.
++# Matches bullets.gd: radius 8, same speed range, same spawn/wrap rules,
++# collision_layer=1 / collision_mask=0.
++
++const SPEED_MIN := 20
++const SPEED_MAX := 80
++
++const bullet_image := preload("res://bullet.png")
++
++## Set before the node enters the tree to override the default count.
++var bullet_count: int = 500
++
++var bullets: Array = []
++
++
++class BulletData:
++	var node: Area2D
++	var speed: float
++	var position: Vector2:
++		get:
++			return node.position
++		set(v):
++			node.position = v
++
++
++func _ready() -> void:
++	var circle := CircleShape2D.new()
++	circle.radius = 8.0
++	var vp := get_viewport_rect()
++
++	for _i in bullet_count:
++		var data := BulletData.new()
++		data.speed = randf_range(SPEED_MIN, SPEED_MAX)
++
++		var area := Area2D.new()
++		area.monitoring = false
++		area.monitorable = true
++		area.collision_layer = 1
++		area.collision_mask = 0
++
++		var col := CollisionShape2D.new()
++		col.shape = circle
++		area.add_child(col)
++
++		var spr := Sprite2D.new()
++		spr.texture = bullet_image
++		area.add_child(spr)
++
++		area.position = Vector2(
++			randf_range(0, vp.size.x) + vp.size.x,
++			randf_range(0, vp.size.y)
++		)
++		data.node = area
++		add_child(area)
++		bullets.push_back(data)
++
++
++func _physics_process(delta: float) -> void:
++	var offset := get_viewport_rect().size.x + 16.0
++	for data: BulletData in bullets:
++		var pos := data.node.position
++		pos.x -= data.speed * delta
++		if pos.x < -16.0:
++			pos.x = offset
++		data.node.position = pos
+diff --git a/godot/bench/shower_nodes.tscn b/godot/bench/shower_nodes.tscn
+new file mode 100644
+index 0000000..49d7763
+--- /dev/null
++++ b/godot/bench/shower_nodes.tscn
+@@ -0,0 +1,40 @@
++[gd_scene format=3 uid="uid://benchshwrnds1"]
++
++[ext_resource type="Script" path="res://bench/bullets_nodes.gd" id="1_bltnd"]
++[ext_resource type="Texture2D" uid="uid://c33jd3nwdqtb4" path="res://face_happy.png" id="2_fhapp"]
++[ext_resource type="Texture2D" uid="uid://b63ok8dbyysfs" path="res://face_sad.png" id="3_fsad"]
++[ext_resource type="Script" uid="uid://eu1k1ulu68o2" path="res://player.gd" id="4_plyr"]
++
++[sub_resource type="SpriteFrames" id="SpriteFrames_1"]
++animations = [{
++"frames": [{
++"duration": 1.0,
++"texture": ExtResource("2_fhapp")
++}, {
++"duration": 1.0,
++"texture": ExtResource("3_fsad")
++}],
++"loop": 1,
++"name": &"default",
++"speed": 5.0
++}]
++
++[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
++radius = 27.0
++
++[node name="Shower" type="Node2D"]
++
++[node name="Bullets" type="Node2D" parent="."]
++script = ExtResource("1_bltnd")
++
++[node name="Player" type="Area2D" parent="."]
++script = ExtResource("4_plyr")
++
++[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
++sprite_frames = SubResource("SpriteFrames_1")
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
++shape = SubResource("CircleShape2D_1")
++
++[connection signal="area_shape_entered" from="Player" to="Player" method="_on_body_shape_entered"]
++[connection signal="area_shape_exited" from="Player" to="Player" method="_on_body_shape_exited"]
+diff --git a/godot/bench/test_nodes_parity.gd b/godot/bench/test_nodes_parity.gd
+new file mode 100644
+index 0000000..37f2c8d
+--- /dev/null
++++ b/godot/bench/test_nodes_parity.gd
+@@ -0,0 +1,90 @@
++extends SceneTree
++# Parity tests for the node-based bullet manager (bench/bullets_nodes.gd).
++# Checks: correct count, correct horizontal motion, player collision on overlap.
++# Prints PASS/FAIL lines; exits 1 on any failure.
++
++
++func _initialize() -> void:
++	run_probe.call_deferred()
++
++
++func move_mouse(point: Vector2) -> void:
++	var event := InputEventMouseMotion.new()
++	event.position = point
++	root.push_input(event, true)
++
++
++func run_probe() -> void:
++	var count := 500
++	for arg in OS.get_cmdline_user_args():
++		if arg.begins_with("--count="):
++			count = int(arg.substr(8))
++
++	var scene := (load("res://bench/shower_nodes.tscn") as PackedScene).instantiate()
++	(scene.get_node("Bullets") as Node).set("bullet_count", count)
++	root.add_child(scene)
++	current_scene = scene
++
++	await physics_frame
++
++	var manager: Node = scene.get_node("Bullets")
++	var player: Node = scene.get_node("Player")
++	var bullets: Array = manager.get("bullets")
++
++	var all_ok := true
++
++	# --- Test 1: bullet count ---
++	var count_ok: bool = bullets.size() == count
++	if count_ok:
++		print("PASS: BULLET_COUNT=%d" % bullets.size())
++	else:
++		print("FAIL: BULLET_COUNT=%d expected=%d" % [bullets.size(), count])
++		all_ok = false
++
++	# --- Test 2: one bullet moves left by speed * elapsed physics time ---
++	var bullet := bullets[0]
++	var before: Vector2 = bullet.position
++	var speed: float = bullet.speed
++
++	for _i in 60:
++		await physics_frame
++
++	var distance: float = before.x - bullet.position.x
++	var expected: float = speed * 60.0 / Engine.physics_ticks_per_second
++	var motion_ok: bool = absf(distance - expected) < 0.05 and absf(bullet.position.y - before.y) < 0.001
++	if motion_ok:
++		print("PASS: MOTION distance=%.3f expected=%.3f y_delta=%.6f" % [
++			distance, expected, absf(bullet.position.y - before.y)
++		])
++	else:
++		print("FAIL: MOTION distance=%.3f expected=%.3f y_delta=%.6f" % [
++			distance, expected, absf(bullet.position.y - before.y)
++		])
++		all_ok = false
++
++	# --- Test 3: player.touching rises when mouse overlaps a bullet ---
++	var bullet_pos: Vector2 = bullets[0].position
++	for _i in 10:
++		move_mouse(bullet_pos + Vector2(0, 16))
++		await physics_frame
++	var touched: bool = player.get("touching") > 0
++	if touched:
++		print("PASS: COLLISION touching=%d" % player.get("touching"))
++	else:
++		print("FAIL: COLLISION touching=%d (player not detecting bullet)" % player.get("touching"))
++		all_ok = false
++
++	move_mouse(Vector2(-2000, -2000))
++	for _i in 10:
++		await physics_frame
++	var recovered: bool = player.get("touching") == 0
++	if recovered:
++		print("PASS: RECOVERY touching=%d" % player.get("touching"))
++	else:
++		print("FAIL: RECOVERY touching=%d" % player.get("touching"))
++		all_ok = false
++
++	scene.queue_free()
++	await process_frame
++	await process_frame
++	quit(0 if all_ok else 1)
+diff --git a/godot/bullets.gd b/godot/bullets.gd
+index 8798f52..c5cff00 100644
+--- a/godot/bullets.gd
++++ b/godot/bullets.gd
+@@ -4,7 +4,8 @@ extends Node2D
+ # efficient than using instancing and nodes, but requires more programming and
+ # is less visual. Bullets are managed together in the `bullets.gd` script.
+ 
+-const BULLET_COUNT = 500
++## Settable before the node enters the tree; benchmark overrides this.
++var bullet_count: int = 500
+ const SPEED_MIN = 20
+ const SPEED_MAX = 80
+ 
+@@ -28,7 +29,7 @@ func _ready() -> void:
+ 	# Set the collision shape's radius for each bullet in pixels.
+ 	PhysicsServer2D.shape_set_data(shape, 8)
+ 
+-	for _i in BULLET_COUNT:
++	for _i in bullet_count:
+ 		var bullet := Bullet.new()
+ 		# Give each bullet its own random speed.
+ 		bullet.speed = randf_range(SPEED_MIN, SPEED_MAX)
+diff --git a/godot/test_motion.gd b/godot/test_motion.gd
+index db7b64f..80e016d 100644
+--- a/godot/test_motion.gd
++++ b/godot/test_motion.gd
+@@ -35,4 +35,4 @@ func run_probe() -> void:
+ 	scene.queue_free()
+ 	await process_frame
+ 	await process_frame
+-	quit(0 if motion_ok and body_ok and aligned_count == 500 else 1)
++	quit(0 if motion_ok and body_ok and aligned_count == manager.bullets.size() else 1)
+diff --git a/run_bench.sh b/run_bench.sh
+new file mode 100644
+index 0000000..30dadb3
+--- /dev/null
++++ b/run_bench.sh
+@@ -0,0 +1,43 @@
++#!/usr/bin/env bash
++# Runs every test and benchmark in the correct order.
++# Usage:  bash run_bench.sh [path-to-godot-binary]
++# Default binary: /Applications/Godot.app/Contents/MacOS/Godot
++
++set -euo pipefail
++
++GODOT="${1:-/Applications/Godot.app/Contents/MacOS/Godot}"
++PROJ="$(cd "$(dirname "$0")/godot" && pwd)"
++
++run() {
++    local label="$1"; shift
++    echo ""
++    echo "=== $label ==="
++    "$GODOT" --headless "$@" --path "$PROJ" 2>&1
++    echo "(exit $?)"
++}
++
++echo "Godot: $GODOT"
++echo "Project: $PROJ"
++
++# Import so the new bench/ scripts appear in the UID cache.
++echo ""
++echo "=== IMPORT ==="
++"$GODOT" --headless --import --path "$PROJ" 2>&1
++
++# ---- Three existing tests (servers / original scene) ----
++run "test_mouse_input"    --script res://test_mouse_input.gd
++run "test_collision_input" --script res://test_collision_input.gd
++run "test_motion"          --script res://test_motion.gd
++
++# ---- Parity test: node-based baseline must behave like the original ----
++run "test_nodes_parity count=500"  --script res://bench/test_nodes_parity.gd -- --count=500
++run "test_nodes_parity count=5000" --script res://bench/test_nodes_parity.gd -- --count=5000
++
++# ---- Benchmark ----
++run "bench servers count=500"  --fixed-fps 60 --script res://bench/bench.gd -- --mode=servers --count=500  --frames=600
++run "bench servers count=5000" --fixed-fps 60 --script res://bench/bench.gd -- --mode=servers --count=5000 --frames=600
++run "bench nodes count=500"    --fixed-fps 60 --script res://bench/bench.gd -- --mode=nodes   --count=500  --frames=600
++run "bench nodes count=5000"   --fixed-fps 60 --script res://bench/bench.gd -- --mode=nodes   --count=5000 --frames=600
++
++echo ""
++echo "All done."

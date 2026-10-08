@@ -1,0 +1,1035 @@
+diff --git a/.gitignore b/.gitignore
+index e54b66d..50540a3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -22,6 +22,8 @@ _publish/
+ clips/
+ audio/
+ mp3/
++!godot/audio/
++!godot/audio/**
+ youtube/**/media/
+ youtube/**/remotion/public/*.ttf
+ 
+diff --git a/godot/art_lab/termite_lab.gd b/godot/art_lab/termite_lab.gd
+new file mode 100644
+index 0000000..23fed74
+--- /dev/null
++++ b/godot/art_lab/termite_lab.gd
+@@ -0,0 +1,19 @@
++extends Node2D
++const Art = preload("res://features/player/clawd_art.gd")
++var seconds: float = 0.0
++
++func _process(delta: float) -> void:
++	seconds += delta
++	queue_redraw()
++
++func _draw() -> void:
++	var font := ThemeDB.fallback_font
++	draw_rect(Rect2(0, 0, 640, 360), Color("faf9f5"))
++	draw_string(font, Vector2(16, 22), "Termite lab — human inspection only; not a playtest", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("3d3929"))
++	draw_string(font, Vector2(16, 40), "Soldiers at cut scale (48 px cell). Clawd at game scale (0.32).", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("888"))
++	draw_line(Vector2(0, 280), Vector2(640, 280), Color("c8c5be"), 1)
++	Art.paint(self, "idle", seconds, Vector2(90, 280))
++	draw_string(font, Vector2(90, 298), "Clawd", HORIZONTAL_ALIGNMENT_CENTER, 80, 11, Color("3d3929"))
++	for i: int in 3:
++		var labels: Array = ["black", "red", "yellow"]
++		draw_string(font, Vector2(280.0 + i * 100, 298), labels[i], HORIZONTAL_ALIGNMENT_CENTER, 80, 11, Color("3d3929"))
+diff --git a/godot/art_lab/termite_lab.gd.uid b/godot/art_lab/termite_lab.gd.uid
+new file mode 100644
+index 0000000..c98223f
+--- /dev/null
++++ b/godot/art_lab/termite_lab.gd.uid
+@@ -0,0 +1 @@
++uid://btermlabgd0001
+diff --git a/godot/art_lab/termite_lab.tscn b/godot/art_lab/termite_lab.tscn
+new file mode 100644
+index 0000000..bc245c4
+--- /dev/null
++++ b/godot/art_lab/termite_lab.tscn
+@@ -0,0 +1,25 @@
++[gd_scene load_steps=3 format=3]
++
++[ext_resource type="Script" path="res://art_lab/termite_lab.gd" id="1_script"]
++[ext_resource type="SpriteFrames" path="res://features/termite/termite_frames.tres" id="2_frames"]
++
++[node name="TermiteLab" type="Node2D"]
++script = ExtResource("1_script")
++
++[node name="BlackSoldier" type="AnimatedSprite2D" parent="."]
++position = Vector2(280, 256)
++texture_filter = 1
++sprite_frames = ExtResource("2_frames")
++animation = &"black"
++
++[node name="RedSoldier" type="AnimatedSprite2D" parent="."]
++position = Vector2(380, 256)
++texture_filter = 1
++sprite_frames = ExtResource("2_frames")
++animation = &"red"
++
++[node name="YellowSoldier" type="AnimatedSprite2D" parent="."]
++position = Vector2(480, 256)
++texture_filter = 1
++sprite_frames = ExtResource("2_frames")
++animation = &"yellow"
+diff --git a/godot/audio/audio_cues.gd b/godot/audio/audio_cues.gd
+new file mode 100644
+index 0000000..33d93c0
+--- /dev/null
++++ b/godot/audio/audio_cues.gd
+@@ -0,0 +1,73 @@
++extends Node
++## Observer-only audio manager.  Reads session state and player.jumps; never
++## writes game state.  Add as a child of the WalkerJumpman session node.
++
++const _Session = preload("res://game/session.gd")
++
++# Play-call counters — readable by tests.
++var jump_plays: int = 0
++var fail_plays: int = 0
++var music_plays: int = 0
++
++var _session
++var _player
++var _prev_jumps: int = 0
++var _prev_state: int = -1
++
++var _jump_stream: AudioStreamPlayer
++var _fail_stream: AudioStreamPlayer
++var _music_stream: AudioStreamPlayer
++
++func _ready() -> void:
++	_session = get_parent()
++
++	_jump_stream = AudioStreamPlayer.new()
++	_jump_stream.stream = load("res://audio/placeholder/jump.wav")
++	add_child(_jump_stream)
++
++	_fail_stream = AudioStreamPlayer.new()
++	_fail_stream.stream = load("res://audio/placeholder/fail.wav")
++	add_child(_fail_stream)
++
++	_music_stream = AudioStreamPlayer.new()
++	_music_stream.stream = load("res://audio/placeholder/music_loop.wav")
++	add_child(_music_stream)
++
++func _physics_process(_delta: float) -> void:
++	# Lazy-bind player: session creates it in its own _ready(), which runs
++	# after this node's _ready() when added as a scene child.
++	if _player == null:
++		_player = _session.get("player")
++		if _player == null:
++			return
++
++	# One jump cue per increment of player.jumps.
++	var cur_jumps: int = _player.jumps
++	var delta_j: int = cur_jumps - _prev_jumps
++	if delta_j > 0:
++		for _i in range(delta_j):
++			_jump_stream.play()
++			jump_plays += 1
++	_prev_jumps = cur_jumps
++
++	# State-change cues.
++	var cur_state: int = _session.state
++	if cur_state == _prev_state:
++		return
++
++	match cur_state:
++		_Session.State.PLAYING:
++			if _music_stream.stream_paused:
++				_music_stream.stream_paused = false
++			elif not _music_stream.playing:
++				_music_stream.play()
++				music_plays += 1
++		_Session.State.PAUSED:
++			_music_stream.stream_paused = true
++		_Session.State.DYING:
++			_fail_stream.play()
++			fail_plays += 1
++		_Session.State.COMPLETE:
++			_music_stream.stop()
++
++	_prev_state = cur_state
+diff --git a/godot/audio/audio_cues.gd.uid b/godot/audio/audio_cues.gd.uid
+new file mode 100644
+index 0000000..496ffb9
+--- /dev/null
++++ b/godot/audio/audio_cues.gd.uid
+@@ -0,0 +1 @@
++uid://bqx4r7n2mtvhw
+diff --git a/godot/audio/placeholder/README.md b/godot/audio/placeholder/README.md
+new file mode 100644
+index 0000000..172a8a2
+--- /dev/null
++++ b/godot/audio/placeholder/README.md
+@@ -0,0 +1,20 @@
++# Audio placeholder test tones
++
++These are synthesized test tones generated by `tools/make_test_tones.py`.
++They are **not** generated assets, composed music, or final production audio.
++
++| File | Duration | Frequency | Purpose |
++|------|----------|-----------|---------|
++| `jump.wav` | 80 ms | 900 Hz sine | Jump sound effect (looping disabled) |
++| `fail.wav` | 250 ms | 300 Hz sine | Death/fail sound effect (looping disabled) |
++| `music_loop.wav` | 4.000 s | 100 Hz sine | Background music stub (Forward loop) |
++
++All files: 44 100 Hz sample rate, 16-bit signed PCM, mono.
++
++`music_loop.wav` is sized to exactly two bars at 120 BPM (4.000 s).  The
++frequency (100 Hz, period = 441 samples) was chosen so that 400 complete
++cycles fit in the 176 400-sample file.  The mathematical waveform reaches a
++zero crossing at t = 0 and again at t = 4.000 s, giving a near-seamless
++Forward loop.  Actual audibility of the loop seam is a human check.
++
++Replace these files with real audio before shipping.
+diff --git a/godot/audio/placeholder/fail.wav b/godot/audio/placeholder/fail.wav
+new file mode 100644
+index 0000000..e1d6c02
+Binary files /dev/null and b/godot/audio/placeholder/fail.wav differ
+diff --git a/godot/audio/placeholder/fail.wav.import b/godot/audio/placeholder/fail.wav.import
+new file mode 100644
+index 0000000..c2261cf
+--- /dev/null
++++ b/godot/audio/placeholder/fail.wav.import
+@@ -0,0 +1,24 @@
++[remap]
++
++importer="wav"
++type="AudioStreamWAV"
++uid="uid://c2fnyvgb2gox"
++path="res://.godot/imported/fail.wav-ebd99067c3f4ccb3855c6303561f5591.sample"
++
++[deps]
++
++source_file="res://audio/placeholder/fail.wav"
++dest_files=["res://.godot/imported/fail.wav-ebd99067c3f4ccb3855c6303561f5591.sample"]
++
++[params]
++
++force/8_bit=false
++force/mono=false
++force/max_rate=false
++force/max_rate_hz=44100
++edit/trim=false
++edit/normalize=false
++edit/loop_mode=1
++edit/loop_begin=0
++edit/loop_end=-1
++compress/mode=0
+diff --git a/godot/audio/placeholder/jump.wav b/godot/audio/placeholder/jump.wav
+new file mode 100644
+index 0000000..95fb887
+Binary files /dev/null and b/godot/audio/placeholder/jump.wav differ
+diff --git a/godot/audio/placeholder/jump.wav.import b/godot/audio/placeholder/jump.wav.import
+new file mode 100644
+index 0000000..e2fc591
+--- /dev/null
++++ b/godot/audio/placeholder/jump.wav.import
+@@ -0,0 +1,24 @@
++[remap]
++
++importer="wav"
++type="AudioStreamWAV"
++uid="uid://b0obw0pv2bi4h"
++path="res://.godot/imported/jump.wav-34909bdc2c8cced8fd5a3c888a065adc.sample"
++
++[deps]
++
++source_file="res://audio/placeholder/jump.wav"
++dest_files=["res://.godot/imported/jump.wav-34909bdc2c8cced8fd5a3c888a065adc.sample"]
++
++[params]
++
++force/8_bit=false
++force/mono=false
++force/max_rate=false
++force/max_rate_hz=44100
++edit/trim=false
++edit/normalize=false
++edit/loop_mode=1
++edit/loop_begin=0
++edit/loop_end=-1
++compress/mode=0
+diff --git a/godot/audio/placeholder/music_loop.wav b/godot/audio/placeholder/music_loop.wav
+new file mode 100644
+index 0000000..b30e0a2
+Binary files /dev/null and b/godot/audio/placeholder/music_loop.wav differ
+diff --git a/godot/audio/placeholder/music_loop.wav.import b/godot/audio/placeholder/music_loop.wav.import
+new file mode 100644
+index 0000000..974e416
+--- /dev/null
++++ b/godot/audio/placeholder/music_loop.wav.import
+@@ -0,0 +1,24 @@
++[remap]
++
++importer="wav"
++type="AudioStreamWAV"
++uid="uid://ww2v6fvdbjg5"
++path="res://.godot/imported/music_loop.wav-0aa09f256e90a4ea9fb0df2f2a17fa94.sample"
++
++[deps]
++
++source_file="res://audio/placeholder/music_loop.wav"
++dest_files=["res://.godot/imported/music_loop.wav-0aa09f256e90a4ea9fb0df2f2a17fa94.sample"]
++
++[params]
++
++force/8_bit=false
++force/mono=false
++force/max_rate=false
++force/max_rate_hz=44100
++edit/trim=false
++edit/normalize=false
++edit/loop_mode=2
++edit/loop_begin=0
++edit/loop_end=176399
++compress/mode=0
+diff --git a/godot/features/termite/termite.tscn b/godot/features/termite/termite.tscn
+new file mode 100644
+index 0000000..c42b7c5
+--- /dev/null
++++ b/godot/features/termite/termite.tscn
+@@ -0,0 +1,18 @@
++[gd_scene load_steps=3 format=3]
++
++[ext_resource type="SpriteFrames" path="res://features/termite/termite_frames.tres" id="1_frames"]
++
++[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
++size = Vector2(20, 34)
++
++[node name="Termite" type="Area2D"]
++collision_layer = 8
++collision_mask = 2
++
++[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
++texture_filter = 1
++sprite_frames = ExtResource("1_frames")
++animation = &"black"
++
++[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
++shape = SubResource("RectangleShape2D_body")
+diff --git a/godot/features/termite/termite_frames.tres b/godot/features/termite/termite_frames.tres
+new file mode 100644
+index 0000000..c1cde9e
+--- /dev/null
++++ b/godot/features/termite/termite_frames.tres
+@@ -0,0 +1,42 @@
++[gd_resource type="SpriteFrames" load_steps=5 format=3]
++
++[ext_resource type="Texture2D" path="res://features/termite/termite_soldiers.png" id="1_strip"]
++
++[sub_resource type="AtlasTexture" id="AtlasTexture_black"]
++atlas = ExtResource("1_strip")
++region = Rect2(0, 0, 48, 48)
++
++[sub_resource type="AtlasTexture" id="AtlasTexture_red"]
++atlas = ExtResource("1_strip")
++region = Rect2(48, 0, 48, 48)
++
++[sub_resource type="AtlasTexture" id="AtlasTexture_yellow"]
++atlas = ExtResource("1_strip")
++region = Rect2(96, 0, 48, 48)
++
++[resource]
++animations = [{
++"frames": [{
++"duration": 1.0,
++"texture": SubResource("AtlasTexture_black")
++}],
++"loop": true,
++"name": &"black",
++"speed": 5.0
++}, {
++"frames": [{
++"duration": 1.0,
++"texture": SubResource("AtlasTexture_red")
++}],
++"loop": true,
++"name": &"red",
++"speed": 5.0
++}, {
++"frames": [{
++"duration": 1.0,
++"texture": SubResource("AtlasTexture_yellow")
++}],
++"loop": true,
++"name": &"yellow",
++"speed": 5.0
++}]
+diff --git a/godot/features/termite/termite_soldiers.png b/godot/features/termite/termite_soldiers.png
+new file mode 100644
+index 0000000..552a21c
+Binary files /dev/null and b/godot/features/termite/termite_soldiers.png differ
+diff --git a/godot/features/termite/termite_soldiers.png.import b/godot/features/termite/termite_soldiers.png.import
+new file mode 100644
+index 0000000..2b7f9d7
+--- /dev/null
++++ b/godot/features/termite/termite_soldiers.png.import
+@@ -0,0 +1,40 @@
++[remap]
++
++importer="texture"
++type="CompressedTexture2D"
++uid="uid://c5hb4xm3oem60"
++path="res://.godot/imported/termite_soldiers.png-1a14637d38cc6bd1e39588916e0ba9b3.ctex"
++metadata={
++"vram_texture": false
++}
++
++[deps]
++
++source_file="res://features/termite/termite_soldiers.png"
++dest_files=["res://.godot/imported/termite_soldiers.png-1a14637d38cc6bd1e39588916e0ba9b3.ctex"]
++
++[params]
++
++compress/mode=0
++compress/high_quality=false
++compress/lossy_quality=0.7
++compress/uastc_level=0
++compress/rdo_quality_loss=0.0
++compress/hdr_compression=1
++compress/normal_map=0
++compress/channel_pack=0
++mipmaps/generate=false
++mipmaps/limit=-1
++roughness/mode=0
++roughness/src_normal=""
++process/channel_remap/red=0
++process/channel_remap/green=1
++process/channel_remap/blue=2
++process/channel_remap/alpha=3
++process/fix_alpha_border=true
++process/premult_alpha=false
++process/normal_map_invert_y=false
++process/hdr_as_srgb=false
++process/hdr_clamp_exposure=false
++process/size_limit=0
++detect_3d/compress_to=1
+diff --git a/godot/game/main.tscn b/godot/game/main.tscn
+index 980d7a5..a36e97f 100644
+--- a/godot/game/main.tscn
++++ b/godot/game/main.tscn
+@@ -1,6 +1,10 @@
+-[gd_scene load_steps=2 format=3]
++[gd_scene load_steps=3 format=3]
+ 
+ [ext_resource type="Script" path="res://game/session.gd" id="1"]
++[ext_resource type="Script" path="res://audio/audio_cues.gd" id="2"]
+ 
+ [node name="WalkerJumpman" type="Node2D"]
+ script = ExtResource("1")
++
++[node name="AudioCues" type="Node" parent="."]
++script = ExtResource("2")
+diff --git a/godot/tests/test_audio_cues.gd b/godot/tests/test_audio_cues.gd
+new file mode 100644
+index 0000000..9b5b687
+--- /dev/null
++++ b/godot/tests/test_audio_cues.gd
+@@ -0,0 +1,205 @@
++extends SceneTree
++## Audio-cue headless test.
++## Run: godot --headless --path godot --script res://tests/test_audio_cues.gd --fixed-fps 60
++
++const GameScene = preload("res://game/main.tscn")
++const Game = preload("res://game/session.gd")
++
++var game: Node2D
++var cues: Node
++var checks: int = 0
++var failures: int = 0
++var observed_jumps: int = 0
++var observed_deaths: int = 0
++var observed_jump_cues: int = 0
++var observed_fail_cues: int = 0
++var jump_frames: Array[int] = []
++var death_frames: Array[int] = []
++var jump_cue_frames: Array[int] = []
++var fail_cue_frames: Array[int] = []
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func steps(n: int) -> void:
++	for _i in range(n):
++		await physics_frame
++		_record_event_frames()
++		await process_frame
++
++func _record_event_frames() -> void:
++	var frame := Engine.get_physics_frames()
++	while game.player.jumps > observed_jumps:
++		observed_jumps += 1
++		jump_frames.append(frame)
++		print("FRAME jump %d: physics=%d" % [observed_jumps, frame])
++	while game.deaths > observed_deaths:
++		observed_deaths += 1
++		death_frames.append(frame)
++		print("FRAME death %d: physics=%d" % [observed_deaths, frame])
++	if is_instance_valid(cues):
++		while cues.jump_plays > observed_jump_cues:
++			observed_jump_cues += 1
++			jump_cue_frames.append(frame)
++			print("FRAME jump cue %d: physics=%d" % [observed_jump_cues, frame])
++		while cues.fail_plays > observed_fail_cues:
++			observed_fail_cues += 1
++			fail_cue_frames.append(frame)
++			print("FRAME death cue %d: physics=%d" % [observed_fail_cues, frame])
++
++func check(label: String, passed: bool) -> void:
++	checks += 1
++	print("%s  %s" % ["PASS" if passed else "FAIL", label])
++	if not passed:
++		failures += 1
++
++func wait_for_floor(max_steps: int = 90) -> void:
++	var waited := 0
++	while not game.player.is_on_floor() and waited < max_steps:
++		await steps(1)
++		waited += 1
++
++func reset_observations() -> void:
++	observed_jumps = 0
++	observed_deaths = 0
++	observed_jump_cues = 0
++	observed_fail_cues = 0
++	jump_frames.clear()
++	death_frames.clear()
++	jump_cue_frames.clear()
++	fail_cue_frames.clear()
++
++func fresh(with_cues: bool) -> void:
++	if is_instance_valid(game):
++		game.queue_free()
++		await process_frame
++	game = GameScene.instantiate()
++	game.test_mode = true
++	root.add_child(game)
++	cues = game.get_node("AudioCues")
++	if not with_cues:
++		game.remove_child(cues)
++		cues.queue_free()
++		cues = null
++	game.start_session()
++	game.player.test_control = true
++	reset_observations()
++	await steps(3)
++
++func do_three_jumps() -> void:
++	for jump_index in range(3):
++		if jump_index == 2:
++			game.player.test_axis = 1.0
++		game.player.test_jump_pressed = true
++		game.player.test_jump_held = true
++		await steps(1)
++		game.player.test_jump_held = false
++		await wait_for_floor(90)
++		game.player.test_axis = 0.0
++		await steps(4)
++
++func do_spike_death() -> void:
++	game.player.test_axis = 1.0
++	var waited := 0
++	while game.state == Game.State.PLAYING and waited < 400:
++		if game.player.position.x >= 290.0:
++			game.player.test_axis = 0.1
++		await steps(1)
++		waited += 1
++	game.player.test_axis = 0.0
++	await steps(2)
++	print("ROUTE spike attempt: state=%d position=%s ticks=%d" % [game.state, game.player.position, waited])
++
++func do_retry_wait() -> void:
++	await steps(40)
++
++func press_pause_action() -> void:
++	Input.action_press("pause")
++	var event := InputEventAction.new()
++	event.action = "pause"
++	event.pressed = true
++	Input.parse_input_event(event)
++	await steps(1)
++	Input.action_release("pause")
++	event = InputEventAction.new()
++	event.action = "pause"
++	event.pressed = false
++	Input.parse_input_event(event)
++	await steps(2)
++
++func do_pause_resume() -> void:
++	await press_pause_action()
++	await press_pause_action()
++
++func import_loop_mode(path: String) -> Variant:
++	var config := ConfigFile.new()
++	if config.load(path) != OK:
++		return null
++	return config.get_value("params", "edit/loop_mode", null)
++
++func run() -> void:
++	await fresh(true)
++
++	await do_three_jumps()
++	check("jump-cues: 3 jumps → exactly 3 play() calls", cues.jump_plays == 3)
++
++	await do_spike_death()
++	check("fail-cue: spike death → exactly 1 play() call", cues.fail_plays == 1)
++	check("fail-cue: game is DYING after spike", game.state == Game.State.DYING)
++	check("event/cue physics frames are printed and paired",
++		jump_frames.size() == 3 and jump_cue_frames.size() == 3
++		and death_frames.size() == 1 and fail_cue_frames.size() == 1
++		and jump_cue_frames[0] == jump_frames[0] + 1
++		and jump_cue_frames[1] == jump_frames[1] + 1
++		and jump_cue_frames[2] == jump_frames[2] + 1
++		and fail_cue_frames[0] == death_frames[0] + 1)
++
++	await do_retry_wait()
++
++	var wav := load("res://audio/placeholder/music_loop.wav") as AudioStreamWAV
++	check("music-loop: resource loads as AudioStreamWAV", wav != null)
++	if wav != null:
++		check("music-loop: loop_mode == LOOP_FORWARD",
++			wav.loop_mode == AudioStreamWAV.LOOP_FORWARD)
++		check("music-loop: loop_begin == 0", wav.loop_begin == 0)
++		check("music-loop: loop_end == 176399 (last sample of 4 s @ 44100)",
++			wav.loop_end == 176399)
++
++	var j_wav := load("res://audio/placeholder/jump.wav") as AudioStreamWAV
++	check("jump.wav: loop_mode == LOOP_DISABLED",
++		j_wav != null and j_wav.loop_mode == AudioStreamWAV.LOOP_DISABLED)
++	var f_wav := load("res://audio/placeholder/fail.wav") as AudioStreamWAV
++	check("fail.wav: loop_mode == LOOP_DISABLED",
++		f_wav != null and f_wav.loop_mode == AudioStreamWAV.LOOP_DISABLED)
++	check("music_loop.wav.import: edit/loop_mode == LOOP_FORWARD",
++		import_loop_mode("res://audio/placeholder/music_loop.wav.import") == 2)
++	check("jump.wav.import: edit/loop_mode == LOOP_DISABLED",
++		import_loop_mode("res://audio/placeholder/jump.wav.import") == 1)
++	check("fail.wav.import: edit/loop_mode == LOOP_DISABLED",
++		import_loop_mode("res://audio/placeholder/fail.wav.import") == 1)
++
++	await press_pause_action()
++	var paused_flag: bool = cues._music_stream.stream_paused
++	await press_pause_action()
++	var resumed_flag: bool = not cues._music_stream.stream_paused
++	check("music pauses while PAUSED", paused_flag)
++	check("music resumes when PLAYING resumes", resumed_flag)
++
++	var with_state: int = game.state
++	var with_deaths: int = game.deaths
++	game.queue_free()
++	await process_frame
++
++	await fresh(false)
++	await do_three_jumps()
++	await do_spike_death()
++	await do_retry_wait()
++	await do_pause_resume()
++
++	check("no-cues: game.state matches with-cues run", game.state == with_state)
++	check("no-cues: game.deaths matches with-cues run", game.deaths == with_deaths)
++
++	game.queue_free()
++	await process_frame
++	print("\ntest_audio_cues: %d/%d passed" % [checks - failures, checks])
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_audio_cues.gd.uid b/godot/tests/test_audio_cues.gd.uid
+new file mode 100644
+index 0000000..677c8e4
+--- /dev/null
++++ b/godot/tests/test_audio_cues.gd.uid
+@@ -0,0 +1 @@
++uid://dp5hn8cjwvtqx
+diff --git a/godot/tests/test_clawd.gd.uid b/godot/tests/test_clawd.gd.uid
+new file mode 100644
+index 0000000..a83222c
+--- /dev/null
++++ b/godot/tests/test_clawd.gd.uid
+@@ -0,0 +1 @@
++uid://ci27qal208t75
+diff --git a/godot/tests/test_termite_art.gd b/godot/tests/test_termite_art.gd
+new file mode 100644
+index 0000000..98d8bfc
+--- /dev/null
++++ b/godot/tests/test_termite_art.gd
+@@ -0,0 +1,100 @@
++extends SceneTree
++## Headless checks for the termite soldier art import pipeline.
++## Run: godot --headless --path godot --script res://tests/test_termite_art.gd
++
++const COLLIDER_W: float = 20.0
++const COLLIDER_H: float = 34.0
++
++var checks: int = 0
++var failures: int = 0
++
++func _initialize() -> void:
++	call_deferred("run")
++
++func check(passed: bool, label: String) -> void:
++	checks += 1
++	print("%s  %s" % ["PASS" if passed else "FAIL", label])
++	if not passed:
++		failures += 1
++		push_error("FAIL: " + label)
++
++func run() -> void:
++	# --- 1. Import parameters ---
++	var import_text: String = FileAccess.get_file_as_string(
++		"res://features/termite/termite_soldiers.png.import"
++	)
++	check(not import_text.is_empty(), "import file readable")
++	check(import_text.contains("compress/mode=0"), "import: lossless (compress/mode=0)")
++	check(import_text.contains("mipmaps/generate=false"), "import: no mipmaps")
++
++	# --- 2. Texture size ---
++	var tex := load("res://features/termite/termite_soldiers.png") as Texture2D
++	check(tex != null, "strip texture loads as Texture2D")
++	if tex != null:
++		check(tex.get_width() == 144, "strip width == 144")
++		check(tex.get_height() == 48, "strip height == 48")
++
++	# --- 3. SpriteFrames: three animations, one 48×48 frame each ---
++	var frames := load("res://features/termite/termite_frames.tres") as SpriteFrames
++	check(frames != null, "SpriteFrames loads")
++	if frames != null:
++		for anim: String in ["black", "red", "yellow"]:
++			check(frames.has_animation(anim), "animation '%s' exists" % anim)
++			if frames.has_animation(anim):
++				check(frames.get_frame_count(anim) == 1,
++					"animation '%s' has exactly 1 frame" % anim)
++				var frame_tex: Texture2D = frames.get_frame_texture(anim, 0)
++				check(frame_tex is AtlasTexture,
++					"animation '%s' frame is AtlasTexture" % anim)
++				if frame_tex is AtlasTexture:
++					var region: Rect2 = (frame_tex as AtlasTexture).region
++					check(region.size == Vector2(48, 48),
++						"animation '%s' region 48×48 (got %s)" % [anim, region.size])
++
++	# --- 4. Scene structure ---
++	var packed := load("res://features/termite/termite.tscn") as PackedScene
++	check(packed != null, "termite.tscn loads as PackedScene")
++	if packed == null:
++		_finish()
++		return
++
++	var scene: Node = packed.instantiate()
++	check(scene is Area2D, "scene root is Area2D")
++	if not (scene is Area2D):
++		scene.queue_free()
++		_finish()
++		return
++
++	var area := scene as Area2D
++
++	# 5. Sprite: exists and has NEAREST filter
++	var sprite: Node = area.get_node_or_null("AnimatedSprite2D")
++	check(sprite != null and sprite is AnimatedSprite2D,
++		"AnimatedSprite2D child of Area2D exists")
++	if sprite is AnimatedSprite2D:
++		check((sprite as AnimatedSprite2D).texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST,
++			"sprite texture_filter == NEAREST")
++
++	# 6. Collider: exists as sibling (child of Area2D, NOT of sprite), correct shape & size
++	var collider: Node = area.get_node_or_null("CollisionShape2D")
++	check(collider != null and collider is CollisionShape2D,
++		"CollisionShape2D exists in scene")
++	if collider is CollisionShape2D:
++		check(collider.get_parent() == area,
++			"CollisionShape2D parent is Area2D (not sprite)")
++		var shape: Shape2D = (collider as CollisionShape2D).shape
++		check(shape is RectangleShape2D, "collider shape is RectangleShape2D")
++		if shape is RectangleShape2D:
++			var sz: Vector2 = (shape as RectangleShape2D).size
++			check(sz == Vector2(COLLIDER_W, COLLIDER_H),
++				"collider size == Vector2(%s, %s) (got %s)" % [COLLIDER_W, COLLIDER_H, sz])
++
++	# 7. Hazard layer bit (project layer 4 = bit 3 = value 8)
++	check((area.collision_layer & 8) != 0, "Hazard layer bit (layer 4, value 8) is set")
++
++	area.queue_free()
++	_finish()
++
++func _finish() -> void:
++	print("\ntest_termite_art: %d/%d passed" % [checks - failures, checks])
++	quit(1 if failures else 0)
+diff --git a/godot/tests/test_termite_art.gd.uid b/godot/tests/test_termite_art.gd.uid
+new file mode 100644
+index 0000000..8937475
+--- /dev/null
++++ b/godot/tests/test_termite_art.gd.uid
+@@ -0,0 +1 @@
++uid://btermrtart001
+diff --git a/tools/cut_termites.py b/tools/cut_termites.py
+new file mode 100644
+index 0000000..d8f7caa
+--- /dev/null
++++ b/tools/cut_termites.py
+@@ -0,0 +1,183 @@
++#!/usr/bin/env python3
++"""Cut three termite soldiers from TERM-REF-02.jpg into a 144×48 horizontal strip.
++
++Usage: python3 tools/cut_termites.py
++Output: godot/features/termite/termite_soldiers.png (144×48, RGBA)
++
++Finds soldiers by non-white pixels; never uses a fixed grid.
++Scales all three by one shared factor so the largest fits 48×48.
++Does not rotate, redraw, or recolour.
++"""
++
++import sys
++import numpy as np
++from PIL import Image
++from pathlib import Path
++
++WHITE_THRESHOLD = 230  # JPEG background: all channels above this = white
++
++
++def make_mask(arr: np.ndarray) -> np.ndarray:
++    rgb = arr[:, :, :3]
++    return ~(
++        (rgb[:, :, 0] > WHITE_THRESHOLD)
++        & (rgb[:, :, 1] > WHITE_THRESHOLD)
++        & (rgb[:, :, 2] > WHITE_THRESHOLD)
++    )
++
++
++def label_largest(mask: np.ndarray, n: int = 3):
++    """DFS connected-component; return bboxes of the n largest components."""
++    rows, cols = mask.shape
++    labeled = np.zeros_like(mask, dtype=np.int32)
++    sizes: dict[int, int] = {}
++    current = 0
++
++    fg_r, fg_c = np.where(mask)
++    fg_pixels = list(zip(fg_r.tolist(), fg_c.tolist()))
++
++    for r0, c0 in fg_pixels:
++        if labeled[r0, c0]:
++            continue
++        current += 1
++        stack = [(r0, c0)]
++        labeled[r0, c0] = current
++        size = 0
++        while stack:
++            r, c = stack.pop()
++            size += 1
++            for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
++                nr, nc = r + dr, c + dc
++                if (
++                    0 <= nr < rows
++                    and 0 <= nc < cols
++                    and mask[nr, nc]
++                    and not labeled[nr, nc]
++                ):
++                    labeled[nr, nc] = current
++                    stack.append((nr, nc))
++        sizes[current] = size
++
++    top_labels = sorted(sizes, key=sizes.__getitem__, reverse=True)[:n]
++    bboxes = []
++    for lbl in top_labels:
++        where = np.where(labeled == lbl)
++        bboxes.append(
++            (int(where[0].min()), int(where[1].min()),
++             int(where[0].max()), int(where[1].max()))
++        )
++    return bboxes
++
++
++def classify_by_position(
++    bb: tuple[int, int, int, int], img_h: int, img_w: int
++) -> str:
++    """Classify soldier by centroid position in TERM-REF-02's triangular layout.
++
++    Bottom-centre → black head.  Top-left → red head.  Top-right → yellow head.
++    This is layout-specific; colour sampling fails for the dark-maroon red head.
++    """
++    r_min, c_min, r_max, c_max = bb
++    centroid_r = (r_min + r_max) / 2
++    centroid_c = (c_min + c_max) / 2
++    if centroid_r > img_h * 0.5:
++        return "black"
++    return "red" if centroid_c < img_w * 0.5 else "yellow"
++
++
++def measure_body(scaled_rgba: np.ndarray, threshold_frac: float = 0.30):
++    """Return (col_lo, col_hi, row_lo, row_hi) of the dense body core.
++
++    Rows/cols where opaque-pixel count exceeds threshold_frac × max_count
++    are 'body'; the rest are thin legs or antennae.
++    """
++    alpha = scaled_rgba[:, :, 3]
++    row_counts = (alpha > 0).sum(axis=1)
++    col_counts = (alpha > 0).sum(axis=0)
++    row_thresh = row_counts.max() * threshold_frac
++    col_thresh = col_counts.max() * threshold_frac
++    body_rows = np.where(row_counts > row_thresh)[0]
++    body_cols = np.where(col_counts > col_thresh)[0]
++    if body_rows.size == 0 or body_cols.size == 0:
++        return 0, int(scaled_rgba.shape[1] - 1), 0, int(scaled_rgba.shape[0] - 1)
++    return int(body_cols[0]), int(body_cols[-1]), int(body_rows[0]), int(body_rows[-1])
++
++
++def main() -> None:
++    repo = Path(__file__).resolve().parent.parent
++    src = repo / "source-art" / "TERM-REF-02.jpg"
++    out_dir = repo / "godot" / "features" / "termite"
++    out_dir.mkdir(parents=True, exist_ok=True)
++    out = out_dir / "termite_soldiers.png"
++
++    img = Image.open(src).convert("RGBA")
++    arr = np.array(img)
++    print(f"Source: {src.name}  {img.width}×{img.height} px")
++
++    mask = make_mask(arr)
++    print(f"Non-white pixels: {mask.sum():,}")
++
++    print("Labelling components (DFS)…", flush=True)
++    bboxes = label_largest(mask, 3)
++
++    labelled = []
++    for bb in bboxes:
++        r_min, c_min, r_max, c_max = bb
++        crop_arr = arr[r_min : r_max + 1, c_min : c_max + 1]
++        name = classify_by_position(bb, img.height, img.width)
++        labelled.append((name, bb, crop_arr))
++
++    order = {"black": 0, "red": 1, "yellow": 2, "unknown": 3}
++    labelled.sort(key=lambda x: order.get(x[0], 3))
++
++    max_dim = max(
++        max(bb[2] - bb[0] + 1, bb[3] - bb[1] + 1) for _, bb, _ in labelled
++    )
++    scale = 48.0 / max_dim
++    print(f"\nScale factor: {scale:.6f}  (largest source dim {max_dim} px → 48 px)")
++
++    strip = Image.new("RGBA", (144, 48), (0, 0, 0, 0))
++
++    for slot, (name, bb, crop_arr) in enumerate(labelled):
++        r_min, c_min, r_max, c_max = bb
++        src_w = c_max - c_min + 1
++        src_h = r_max - r_min + 1
++        dst_w = max(1, round(src_w * scale))
++        dst_h = max(1, round(src_h * scale))
++
++        crop_img = Image.fromarray(crop_arr)
++        scaled_img = crop_img.resize((dst_w, dst_h), Image.NEAREST)
++        scaled_arr = np.array(scaled_img)
++
++        rgb = scaled_arr[:, :, :3]
++        is_white = (
++            (rgb[:, :, 0] > WHITE_THRESHOLD)
++            & (rgb[:, :, 1] > WHITE_THRESHOLD)
++            & (rgb[:, :, 2] > WHITE_THRESHOLD)
++        )
++        scaled_arr[:, :, 3] = np.where(is_white, 0, 255)
++
++        final_img = Image.fromarray(scaled_arr)
++        x_off = (48 - dst_w) // 2
++        y_off = (48 - dst_h) // 2
++        strip.paste(final_img, (slot * 48 + x_off, y_off), final_img)
++
++        print(f"\nSoldier '{name}' (slot {slot}):")
++        print(f"  Source bbox: ({c_min},{r_min})–({c_max},{r_max})  {src_w}×{src_h} px")
++        print(f"  Scaled size: {dst_w}×{dst_h} px  cell offset: ({x_off},{y_off})")
++
++        if name == "black":
++            col_lo, col_hi, row_lo, row_hi = measure_body(scaled_arr)
++            body_w = col_hi - col_lo + 1
++            body_h = row_hi - row_lo + 1
++            print(f"  Body core (≥30% row/col density):")
++            print(f"    crop-relative  cols {col_lo}–{col_hi}, rows {row_lo}–{row_hi}")
++            print(f"    body size in scaled crop: {body_w}×{body_h} px")
++            print(f"  → RectangleShape2D size suggestion: Vector2({body_w}, {body_h})")
++
++    strip.save(str(out), optimize=False)
++    print(f"\nWrote: godot/features/termite/termite_soldiers.png  (144×48 RGBA)")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tools/make_test_tones.py b/tools/make_test_tones.py
+new file mode 100644
+index 0000000..4cc610c
+--- /dev/null
++++ b/tools/make_test_tones.py
+@@ -0,0 +1,74 @@
++#!/usr/bin/env python3
++"""
++Write 16-bit mono 44.1 kHz WAV test tones to godot/audio/placeholder/.
++
++  jump.wav         80 ms   900 Hz sine,  72 complete cycles
++                   Period = 49 samples (44100/900 = 49, exact integer)
++                   3528 samples / 49 = 72 cycles
++
++  fail.wav        250 ms   300 Hz sine,  75 complete cycles
++                   Period = 147 samples (44100/300 = 147, exact integer)
++                   11025 samples / 147 = 75 cycles
++
++  music_loop.wav    4.0 s  100 Hz sine, 400 complete cycles
++                   Period = 441 samples (44100/100 = 441, exact integer)
++                   176400 samples / 441 = 400 cycles exactly
++                   Zero crossing at sample 0 (sin(0) = 0); the mathematical
++                   function returns to phase 0 at t = 4.000 s (100 * 4 = 400
++                   integer), giving a seamless Forward loop from first to last
++                   sample.  The loop seam audibility is a human check.
++
++All output uses Python standard-library modules only (math, os, struct, wave).
++
++Godot 4 WAV importer edit/loop_mode values (different from AudioStreamWAV.LoopMode):
++  0 = Detect from file (reads SMPL chunk)  1 = Disabled  2 = Forward
++  3 = Ping-pong  4 = Backward
++music_loop.wav.import uses edit/loop_mode=2 (Forward).
++"""
++
++import math
++import os
++import struct
++import wave
++
++SR = 44_100           # sample rate (Hz)
++AMPLITUDE = 0.5       # half scale; well below clip
++
++_HERE = os.path.dirname(os.path.abspath(__file__))
++OUT_DIR = os.path.join(_HERE, "..", "godot", "audio", "placeholder")
++
++
++def _sine_bytes(freq_hz: float, n_samples: int) -> bytes:
++    """Return little-endian 16-bit PCM bytes for one channel of a sine wave."""
++    two_pi_f = 2.0 * math.pi * freq_hz / SR
++    raw = [round(AMPLITUDE * 32767.0 * math.sin(two_pi_f * k))
++           for k in range(n_samples)]
++    return struct.pack(f"<{n_samples}h", *raw)
++
++
++def write_tone(name: str, freq_hz: float, n_samples: int) -> None:
++    os.makedirs(OUT_DIR, exist_ok=True)
++    path = os.path.join(OUT_DIR, name)
++    data = _sine_bytes(freq_hz, n_samples)
++    with wave.open(path, "wb") as w:
++        w.setnchannels(1)     # mono
++        w.setsampwidth(2)     # 16-bit
++        w.setframerate(SR)
++        w.writeframes(data)
++    duration_ms = n_samples * 1000 / SR
++    cycles = n_samples / (SR / freq_hz)
++    first = data[0:2]
++    last  = data[-2:]
++    s0 = struct.unpack("<h", first)[0]
++    sN = struct.unpack("<h", last)[0]
++    print(f"  {name}: {n_samples} samples  {duration_ms:.1f} ms  "
++          f"{freq_hz:.0f} Hz  {cycles:.0f} cycles  "
++          f"sample[0]={s0}  sample[N-1]={sN}")
++
++
++if __name__ == "__main__":
++    print(f"Output: {os.path.abspath(OUT_DIR)}")
++    write_tone("jump.wav",        900.0,    3_528)   #  80 ms, period=49
++    write_tone("fail.wav",        300.0,   11_025)   # 250 ms, period=147
++    write_tone("music_loop.wav",  100.0,  176_400)   #   4 s,  period=441
++    print("Done.")

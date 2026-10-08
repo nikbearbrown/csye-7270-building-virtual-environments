@@ -318,3 +318,22 @@ Panel 6. Medium shot, low angle. The ninja firefighter leaping off a burning roo
 
 - **The sketch** `design/storyboard/03b-throw.png` still shows the old sideways toss. I'm keeping it as it is, as the record of the earlier design, rather than regenerating it.
 - **In the game:** his pose is CHAR-TOSS (arm thrown straight up). The survivor's flight is drawn by the game (CHANGE-BRIEF, "Revision 2026-10-05"), and it's optional if time runs short.
+
+## Revision 2026-10-07 — what the panels now hear
+
+The panels above are kept as planned. Differences in the built slice (sounds in SOURCES.md):
+- **Panel 1:** a fire-truck siren (SFX-SIREN, new) plays once when a session starts.
+- **Panel 3 (rescue):** SFX-RESCUE is a slide whistle up and a bag thump (matching the upward toss), not a bright sting.
+- **Panel 6 (end):** SFX-WIN is a cartoon crowd cheering with claps, not the gong; the music stops under it as planned.
+- **All panels:** MUS-LOOP is not in the slice yet.
+- **Update:** MUS-LOOP is now in the slice (panels 1–5); it stops at the win (panel 6), as planned.
+- **Update:** the panel 1 siren was removed after playtest 3 (too much at the start); panel 1 now hears only the music.
+
+## Asset IDs: plan → built (2026-10-07)
+
+The panels keep their original asset IDs. In the asset log (SOURCES.md) they map to:
+- CHAR-IDLE → `side-profile-game.png` (CHAR-REF-03); CHAR-WALK-A / CHAR-WALK-B → **CHAR-RUN** (one speed); CHAR-STANCE → crane pose, sheet only; CHAR-RESCUE → grab, plus **CHAR-TOSS**; CHAR-BOW → pose 12b; CHAR-RESPAWN added for panel 5.
+- ENV-BG → **ENV-BG v2** (v1 rejected); ENV-FIRE → ENV-FIRE-A, -B, -Bb.
+- SFX-WIN → crowd cheer (try 2); SFX-SIREN → generated, **rejected**; MUS-LOOP → ElevenLabs Music, version 2.
+- In-engine comparison of every panel: TEST-REPORT.md, "Storyboard against the slice".
+

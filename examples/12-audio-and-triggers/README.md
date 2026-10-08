@@ -1,0 +1,45 @@
+# Worked example — Chapter 12: a generated hit click and a Music/SFX mix in walker-audio-rhythm-game
+
+## Executive summary
+
+**What this is.** The complete record behind Chapter 12's worked example, made on 27 September 2026. Claude Code added a script-generated click on every Perfect or Good hit in a scratch copy of `walker-audio-rhythm-game`, split the mix into Music and SFX buses, and wrote a headless test. When Claude Code's usage limit ended the second session, Codex finished the test.
+
+**Why look at it.** It shows how a false belief about the test environment becomes a false pass. The first session wrote two checks that printed `PASS … (SKIP: Dummy driver — bus peak meters return floor)` before the test had ever run. Probing showed the truth is more specific: the headless Dummy driver mixes 4,096 frames at a time every ~93 ms, so the bus meter (which shows only the last 512-frame step) misses a 60 ms click, while an `AudioEffectCapture` records it. The same burst timing made one trigger check fail one run in ten. The record also shows an invented UID and a hand-written `.import` file, and two hung Godot processes from tests that errored before `quit()`.
+
+**What it found.** The final test passes 25 of 25 checks in ten of ten real-time runs. An independent probe measured the click at −6.12 dBFS on both the SFX bus and Master (matching the WAV file's own peak), silence on Master with SFX muted, silence for both Miss types — and −200 dB on the SFX meter throughout.
+
+**What it does not show.** Whether anyone can hear the click, whether it sounds good or balanced, whether it lands on the beat as heard, or any real device's latency. No audio was played through a speaker.
+
+---
+
+## Contents
+
+| Path | What it is |
+|---|---|
+| `PROMPTS.md` | The three prompts, exactly as given, and every command line |
+| `changes.diff` | Full change from the scratch baseline (`e1e99db`) to the final commit (`3b8a855`), excluding `.uid` files and the binary WAV |
+| `by-session/session1.diff`, `session2.diff`, `codex.diff` | What each session changed |
+| `tools/make_click.py` | The agent's click generator (Python standard library only). It also writes the `.import` file, with an invented UID |
+| `tools/hit_click.wav.sha256` | SHA-256 of the generated WAV (the WAV itself is not included: it is reproducible from the script, 5,336 bytes) |
+| `tools/hit_click.wav.import`, `tools/default_bus_layout.tres` | The import settings and bus layout as they ended up in the project |
+| `tests/test_hit_audio.gd` | The final 25-check test |
+| `tests/test_live_restart.gd` | The Walker build's existing live-input test (needed for the baseline) |
+| `walker-adaptation.diff` | The Walker build's changes against the upstream demo (title, empty-list guard); the Walker test files are listed there as additions |
+| `verification/verify_levels.gd` | The instructor's independent level probe (capture-based) |
+| `sessions/claude-session{1,2}.md`, `codex-session1.md` | Readable transcripts (tool results trimmed, paths shortened) |
+| `sessions/*.jsonl` | Raw transcripts; the Claude Code `init` event reduced to model, working directory and permission mode; scratch paths shortened |
+| `logs/verify1-*` | Instructor's runs after session 1: the agent's test (21 PASS lines, two fake) and the first, meter-based level probe (SFX meter −200 dB) |
+| `logs/verify2-*` | Ten runs after session 2: nine pass 23/23, run 9 fails `hitsound_plays_on_perfect` |
+| `logs/verify3-*` | Ten runs of the final test (25/25 each), the live-restart test, and the capture-based level probe |
+| `probes/` | The instructor's probes of headless audio: what the Dummy driver reports for players, 2D/3D attenuation, polyphony and pause (`probe.gd`, `probe_pos.gd`); meter vs capture for short and long sounds (`probe_short.gd`, `probe_capture.gd`); capture before vs after a bus fader (`probe_mute.gd`); the compressor's side-chain property (`fx.gd`) |
+
+## How to reproduce
+
+1. Clone `https://github.com/godotengine/godot-demo-projects`, check out `a3b5c113112f77291d5f3d1360f33a882fdc52f7`, copy `audio/rhythm_game` to a new folder as `godot/`.
+2. Apply `walker-adaptation.diff` for the source changes, and copy `tests/test_live_restart.gd` to `godot/`. Commit.
+3. `godot --headless --path godot --import`, then `timeout 120 godot --headless --path godot --script res://test_live_restart.gd` — expect both lines `true`.
+4. Apply `changes.diff`, run `python3 tools/make_click.py` (it writes the WAV and its `.import`), import again, and run the verification commands in `PROMPTS.md`. Run every audio test in real time (no `--fixed-fps`) and with `timeout`.
+
+## Licences and sources
+
+Demo code: MIT (Godot Engine contributors). Song: "The Second Comeback", Juan Linietsky (2019), per its Vorbis tags; no separate licence grant was found, so do not publish films using it until that is resolved. Metronome sample: Ludwig Peter Müller, CC0 (upstream README). No audio files are included in this folder. The click is generated by `tools/make_click.py` and contains no third-party material. The test and generator were written by Claude Code and Codex, as marked in the transcripts; the probes and `verify_levels.gd` by the instructor.

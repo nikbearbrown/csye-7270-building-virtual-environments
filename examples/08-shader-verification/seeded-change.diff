@@ -1,0 +1,57 @@
+commit 2473fd8512dc4ba665b5c13b2e214538f5341fe3
+Author: Seeded change (instructor) <seeded@example.invalid>
+Date:   Sun Sep 27 14:37:35 2026 -0400
+
+    Flash: player owns its fade timer; sample the sprite texture explicitly
+    
+    Presentation should not reach into session internals (retry_remaining).
+    The player now counts its own fade, and the shader reads TEXTURE directly
+    instead of relying on the incoming COLOR.
+
+diff --git a/godot/features/player/clawd_flash.gdshader b/godot/features/player/clawd_flash.gdshader
+index dd32ba4..3b41512 100644
+--- a/godot/features/player/clawd_flash.gdshader
++++ b/godot/features/player/clawd_flash.gdshader
+@@ -4,7 +4,7 @@ uniform float flash_amount : hint_range(0.0, 1.0) = 0.0;
+ uniform vec4 flash_color : source_color = vec4(0.14510, 0.20784, 0.29020, 1.0);
+ 
+ void fragment() {
+-	vec4 col = COLOR;
++	vec4 col = texture(TEXTURE, UV); // sample the sprite texture explicitly
+ 	col.rgb = mix(col.rgb, flash_color.rgb, flash_amount);
+ 	COLOR = col;
+ }
+diff --git a/godot/features/player/player.gd b/godot/features/player/player.gd
+index 5711d6d..8e4ceef 100644
+--- a/godot/features/player/player.gd
++++ b/godot/features/player/player.gd
+@@ -3,6 +3,9 @@ extends CharacterBody2D
+ const Tuning = preload("res://features/player/tuning.gd")
+ const ClawdArt = preload("res://features/player/clawd_art.gd")
+ const FlashShader = preload("res://features/player/clawd_flash.gdshader")
++const FLASH_FRAMES := 33 # 0.55 s at 60 fps
++var flash_frames_left: int = 0
++var flash_was_failed: bool = false
+ var animation_seconds: float = 0.0
+ var animation_name: String = "idle"
+ var tuning = Tuning.new()
+@@ -88,10 +91,15 @@ func _update_flash() -> void:
+ 	if not material is ShaderMaterial:
+ 		return
+ 	var mat := material as ShaderMaterial
+-	var amount := 0.0
+-	if get_parent().player_animation_context() == "failed":
+-		amount = clampf(get_parent().retry_remaining / 0.55, 0.0, 1.0)
+-	mat.set_shader_parameter("flash_amount", amount)
++	# The player owns its fade; presentation no longer reads session internals.
++	var failed: bool = get_parent().player_animation_context() == "failed"
++	if failed and not flash_was_failed:
++		flash_frames_left = FLASH_FRAMES
++	elif not failed:
++		flash_frames_left = 0
++	flash_was_failed = failed
++	mat.set_shader_parameter("flash_amount", float(flash_frames_left) / FLASH_FRAMES)
++	flash_frames_left = maxi(flash_frames_left - 1, 0)
+ 
+ func _process(delta: float) -> void:
+ 	_update_flash()

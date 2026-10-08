@@ -1,0 +1,54 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+modes_spatial MODE=0 UNIFORMS=["albedo_tex:type24:hint17", "normal_tex:type24:hint17"]
+modes_particles MODE=2 UNIFORMS=[]
+modes_sky MODE=3 UNIFORMS=[]
+modes_fog MODE=4 UNIFORMS=["density:type3:hint1"]
+screen_tex MODE=1 UNIFORMS=[]
+--Main Shader--
+    1 | shader_type canvas_item;
+E   2-> void fragment() { COLOR = texture(SCREEN_TEXTURE, SCREEN_UV); }
+    3 | 
+SHADER ERROR: SCREEN_TEXTURE has been removed in favor of using hint_screen_texture with a uniform.
+To continue with minimal code changes add 'uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;' near the top of your shader.
+          at: (null) (:2)
+          GDScript backtrace (most recent call first):
+              [0] _initialize (res://tests/probe_modes.gd:5)
+ERROR: Shader compilation failed.
+   at: shader_set_code (servers/rendering/dummy/storage/material_storage.cpp:192)
+   GDScript backtrace (most recent call first):
+       [0] _initialize (res://tests/probe_modes.gd:5)
+screen_tex_old MODE=1 UNIFORMS=[]
+connect c->mix.b err=0
+connect p->mix.weight err=0
+connect mix->output.color err=0
+VISUAL_SHADER_CODE_BEGIN
+shader_type canvas_item;
+render_mode blend_mix;
+
+uniform float flash_amount;
+
+
+
+void fragment() {
+// ColorConstant:3
+	vec4 n_out3p0 = vec4(1.000000, 0.000000, 0.000000, 1.000000);
+
+
+// FloatParameter:2
+	float n_out2p0 = flash_amount;
+
+
+// Mix:4
+	vec3 n_in4p0 = vec3(0.00000, 0.00000, 0.00000);
+	vec3 n_out4p0 = mix(n_in4p0, vec3(n_out3p0.xyz), n_out2p0);
+
+
+// Output:0
+	COLOR.rgb = n_out4p0;
+
+
+}
+
+VISUAL_SHADER_CODE_END
+VS UNIFORMS=[{ "name": "flash_amount", "class_name": &"", "type": 3, "hint": 0, "hint_string": "", "usage": 6 }]
