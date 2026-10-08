@@ -101,3 +101,21 @@
 33. **The opening text could not be read.** Lines advanced on a timer set by someone who already knew the words, and a key press was wired to skip rather than to advance. Each line now waits for a key and says so, and I reopens the story at any point.
 34. **The opening stranded the player, and it was a race rather than a stale editor.** The sequence awaited several tweens in turn; the player's fade-in was created before the room dissolve was awaited and both last about nine tenths of a second. Whichever finished first depended on frame timing, and awaiting a `finished` signal that has already fired waits forever. The identical build therefore worked on one machine and froze on another, and three automated runs passed while a person could not move — the checks drive input directly and never exercise the real timing path. The dissolve now runs from one clock on plain timers. **This had twice been attributed to a stale editor, which was wrong.**
 35. **The loudest sound in the game was the one nobody chose.** The effects were asked to come down a little. Measuring them first showed why they felt hot: `step`, `ghoststep` and `fall` were absent from the mix table, so they played at full level while the comment above it claimed footsteps were deliberately quiet. Normalising every file to the same *peak* is not the same as to the same loudness, and the dense footstep sample measured 5 dB above the flip by RMS — on the sound that fires most often in the game. All levels came down 3 dB and the three missing entries were given real ones.
+
+## Music behaviour, stated for all four cases
+
+The brief asks for pause, failure, success and the end of the slice. All four are
+answered here, including the one that turned out to be a design decision rather than
+a behaviour.
+
+| Case | Behaviour | Why |
+|---|---|---|
+| **Pause** | **The slice has no pause state.** Nothing in Night 1 stops the clock: the calendar moves only when the player spends a night, so there is nothing to suspend. This is recorded rather than left blank, because the absence is a choice. The nearest equivalent is the story overlay on **I**, which holds the player still and leaves the music playing at level — the words are his, and the room has not changed |
+| **Failure** | Falling through a gap spends a night. `sfx_fall` fires and the score ducks 15 dB beneath it, then returns. The music does not stop: the night is still running, which is the point |
+| **Success** | A contact ducks the score 15 dB, then holds a deliberate 1.8 s hush (`_audio.hush`). It is the only moment in the slice where the game goes quiet on purpose — being noticed should not sound like a reward |
+| **End of the slice** | A single clean 2.5 s fade to silence on either ending, *seen* or *anniversary* (`finish_music`). It is the only full musical resolution in the slice, reserved for endings |
+
+Verified in engine: the duck is `DUCK_DB = -15.0` in `scripts/audio.gd`, the hush is
+called from `_on_contact_landed` in `scripts/world.gd`, and the ending fade is
+`finish_music()`. The captured run shows the duck at the flip (−23.0 dBFS) and the
+post-contact hush holding at −23 dBFS while the rest of the run sits near −17.
