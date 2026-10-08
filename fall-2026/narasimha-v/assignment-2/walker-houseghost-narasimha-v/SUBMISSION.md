@@ -15,9 +15,17 @@ https://github.com/nikbearbrown/csye-7270-building-virtual-environments/tree/nar
 forward as an idea from my Assignment 1 game, walker-jumpman-narasimha-v; no code,
 scenes or assets are reused.
 
-**Submitted commit SHA:** `9791576ed28115f266f0115b8183afcd9a2a23d2`
-**Source revision shown in the film:** same commit — the film's evidence ledger
-hashes every source file it displays.
+**Source revision (the slice, and what the film demonstrates):** `268b44166f5a32e81da44dc7c8faab69b781ae43`
+This commit contains the complete Godot project, every generated asset, and all
+design and verification documents. The film's evidence ledger
+(`youtube/claude-liam-houseghost-gamedev/gamedev-evidence.json`) hashes each source
+file it displays against this revision.
+
+**Submitted commit SHA:** the branch tip on `narasimhaReddyValam`, which is the
+commit that adds this line and the film's checksum. Per the brief, that final commit
+is documentation only — it touches `SUBMISSION.md` and `README.md` and changes no
+source, asset, scene or script. The two revisions therefore demonstrate identical
+work, and the ZIP submitted to Canvas is built from the tip.
 
 **Godot version and operating system:** Godot 4.7.2.stable.official.ed1daf0bf · macOS 26.x, Apple Silicon
 
