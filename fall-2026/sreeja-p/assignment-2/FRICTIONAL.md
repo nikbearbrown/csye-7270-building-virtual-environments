@@ -295,6 +295,16 @@
 - **Siren removed (my decision):** hearing it in the game, the fire-truck siren at the start was too much, so it's out of the game; the take is kept in `rejected/audio/`. Claude replaced its two tests with checks that starting and retrying are silent.
 - **Evidence:** SOURCES "Music (ElevenLabs Music)"; TEST-REPORT "music loop in the slice".
 
+
+### 2026-10-07 — evidence pass: screenshots, comparisons, predictions, fresh copy
+
+- **What I asked for:** screenshots of the whole game, not only the first frame of each pose: the rescue a few seconds later, missing a jump and falling, and the final state at the exit ("it's fine if we submit a lot but we don't want to submit less").
+- **What Claude did:** extended the screenshot script to 39 moments (input only, except the pause/mute fixtures), and from them built `evidence/compare/character-vs-sheet.jpg` (sheet pose beside the in-engine crop, collision box drawn) and `storyboard-vs-slice.jpg`; wrote the predictions-vs-results table for F1–F8; ran a fresh copy of the commit's files (41/14/14 pass).
+- **What the screenshots caught:** a real bug (the mute indicator was drawn over "FIRST ALARM"), fixed in `hud.gd`; and three mistakes in the screenshot script itself (wrong timeout timing, a "missed jump" that burned first, a stale retry count), each fixed and logged.
+- **Human / Claude:** the request and the coverage I wanted are mine; the script, images, tables, and the HUD fix are Claude's.
+- **Still pending from me:** a muted playtest; the CHAR-EXPLORE-01 prompt, the pose 11b image, and pose 12 try 1's prompt (or "not recoverable").
+- **Evidence:** TEST-REPORT "full-session screenshots", "character against the sheet", "storyboard against the slice", "predictions vs results", "fresh-copy run".
+
 ---
 
 ## GitHub pushes
@@ -312,3 +322,4 @@
 | 2026-10-07 | Add ElevenLabs music loop with loop and behaviour tests; record model terms and attribution; verify 41+14+14 tests |
 | 2026-10-07 | Add ElevenLabs music loop with loop tests, remove start siren, record model terms; verify 41+14+14 tests |
 | 2026-10-07 | Capture facing-left screenshots for the orientation check; freeze game source for the film |
+| 2026-10-07 | Add full-session screenshots, character/storyboard comparisons, predictions vs results, fresh-copy run; fix mute HUD overlap |
