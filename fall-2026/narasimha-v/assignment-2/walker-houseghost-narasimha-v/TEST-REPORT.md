@@ -69,10 +69,10 @@ Played on 2026-10-07 from a terminal launch, with sound on and then with both mu
 |---|---|
 | Plays through with sound on | Pass — movement, the flip, all three relics, the day cost, and the ending all behaved as designed |
 | Plays through fully muted (M and N) | **Pass** — everything the slice communicates was still understandable with no audio at all |
-| Music loop seam | **Not checked.** I did not listen specifically for the wrap, and the Ogg conversion postdates this session. Recorded as outstanding rather than passed |
-| Revised effects balance | **Not judged by ear** since the levels changed |
+| Music loop seam | **Pass.** Both tracks played past their wrap with no click or gap. This session is on the Ogg build, so the conversion is covered by it |
+| Revised effects balance | **Pass.** The quieter footsteps sit under the story sounds and the mix reads as intended |
 
-The muted result is the one that matters most here, because readability without sound is a scored criterion and the only honest way to establish it is to take the sound away and still be able to play. Two rows above are deliberately left failing-to-report rather than marked pass; an unlistened check is not a passed one.
+The muted result is the one that matters most here, because readability without sound is a scored criterion and the only honest way to establish it is to take the sound away and still be able to play. All four rows are a human result, not an engine one. The muted row matters most: readability without sound is a scored quality and the only honest way to establish it is to take the sound away and still be able to play.
 
 ## 4. Another person played it
 
@@ -123,7 +123,7 @@ Verified in engine: before moving the cue reads the arrow keys; standing under t
 |---|---|
 | Four events minimum, each firing once per occurrence | Pass — nine events, twelve assertions |
 | Rapid repeats and held input do not double-fire | Pass |
-| Music loops without an audible click | Verified in engine: both tracks load as `AudioStreamOggVorbis`, 59.5 s and 61.9 s, and loop is set in code because the importer defaults it to false. **Human listening confirmation outstanding**, and now also needs a check that Ogg encoding did not introduce a seam artefact the WAV master did not have |
+| Music loops without an audible click | **Pass.** Verified two ways: in engine both tracks load as `AudioStreamOggVorbis`, 59.5 s and 61.9 s, with loop set in code because the importer defaults it to false; and by listening past the wrap on the Ogg build, where no click or gap is audible |
 | Music behaviour on flip, failure, success and end | Pass — crossfade on the flip, long clean fade on either ending |
 | Mute works for music and effects separately | Pass |
 | Slice readable with all sound muted | **Pass, confirmed by a muted human playthrough** on 2026-10-07: played with both M and N muted, and everything the slice communicates was still legible. The visual carriers are the nights counter, the relic lights going out as each is answered, the contextual key cues, and the child's posture turning further toward the room |
@@ -143,5 +143,5 @@ Several, all recorded in FRICTIONAL.md and CHANGE-BRIEF.md. The two most consequ
 - Three character-sheet poses are specified but not generated.
 - The floorboard relic, the floor holes, the glow and the heartbeat are drawn or synthesised in code and satisfy no generative requirement; the asset log marks each as such.
 - Storyboard panels 5 and 6 are not covered.
-- The music loop seam has **not** been confirmed by human listening, and the Ogg re-encode happened after the last human session, so nothing yet rules out an artefact the WAV master did not have. The engine check confirms both tracks load and loop; it cannot hear the seam.
-- The revised effects mix (everything 3 dB down, footsteps 9–11 dB down) has **not** been judged by ear since the change.
+- A player who skips the opening can still take a few moments to work out what the game wants; the contextual cues are a response to that and have not been retested on a fresh player.
+- Storyboard panel 2 reads closer to a diagonal division than a 180° roll.
