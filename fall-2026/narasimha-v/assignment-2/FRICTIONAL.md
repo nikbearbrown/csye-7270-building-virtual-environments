@@ -262,7 +262,23 @@ The entries below are dated and in order, written as the work happened. Nothing 
 - **What I did:** Insisted nothing be bypassed. A film that failed the required workflow's own checks would be worth less than no film.
 - **What Claude or another person contributed:** Claude separated the findings into two kinds, which is the part worth keeping. **Real faults, fixed:** the on-screen labels were semi-transparent white on a half-opacity plate, measuring 4.0:1 against a 4.5:1 accessibility floor, with type below the minimum size — they are now opaque plate, pure white, 58 px. Two cards carried too much prose. Two composer cards were missing a required greeting. A figure used an accent colour that fails on cream. **Category mismatches, declared:** full-bleed gameplay was flagged for crossing the title-safe edge, which is what footage does; the game's dark interior was flagged for low contrast; cards that build line by line were flagged as underfilled when sampled mid-build. Each of those is declared per beat in the beat sheet with a written reason a reviewer reads in the diff. Claude deliberately did not use the `source_report` route, which would have suppressed more checks at once — the capture contract forbids labelling gameplay that way to get past a gate. For the gameplay beats it declared a contrast region over the burned-in label instead, so the gate still measures the legibility of the only typography the film adds rather than measuring the game's lighting.
 - **What I understand now / still do not understand:** The distinction between *fix it* and *declare it* is the whole of honest QC. Declaring is legitimate when the check is measuring the wrong category and the reason is written down where someone can disagree with it; it is cheating when it is used to make a real defect disappear. I would rather be argued with about the four declarations than have them hidden. Unresolved: the gate's redundancy advisory says four beats recite their card instead of discussing it, and I accepted that rather than re-voicing them.
-- **Evidence and next step:** Evidence: `_qc/REPORT.md`, `TYPECHECK.md`, and the `qc` blocks in `beat_sheet.json`, each with its reason. Next step: the master, and its checksum.
+- **Evidence and next step:** Evidence: `_qc/REPORT.md`, `TYPECHECK.md`, and the `qc` blocks in `beat_sheet.json`, each with its reason. The finished film, *The House Is a Witness.*, is in the [course media storage](https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje); its filename and SHA-256 are recorded in README.md and SUBMISSION.md. Next step for the game itself: the hallway that corrects itself, which is where the second night begins.
+
+---
+
+## The film
+
+**The House Is a Witness.** — the Brutalist `godot-gamedev` explainer, 3840x2160,
+narrated by Liam through a local Kokoro voice. It traces the walk cycle from the
+character sheet through the verbatim prompt, the raw magenta output and the chroma
+key to the frames running in engine, shows the four spine sounds firing in real
+play, and carries a labelled segment of the slice's own audio with no narration
+over it.
+
+Hosted in the [course media storage](https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje), identified by filename and SHA-256 in
+README.md and SUBMISSION.md. Everything behind it — script, beat sheet with measured
+narration timings, shot list, fact check of every number spoken, capture record and
+hashes — is in `walker-houseghost-narasimha-v/youtube/claude-liam-houseghost-gamedev/`.
 
 ---
 

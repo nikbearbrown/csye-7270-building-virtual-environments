@@ -153,3 +153,15 @@ Several, all recorded in FRICTIONAL.md and CHANGE-BRIEF.md. The two most consequ
 - Storyboard panels 5 and 6 are not covered.
 - A player who skips the opening can still take a few moments to work out what the game wants; the contextual cues are a response to that and have not been retested on a fresh player.
 - Storyboard panel 2 reads closer to a diagonal division than a 180° roll.
+
+## 11. The film
+
+**The House Is a Witness.** — 3840x2160, in the [course media storage](https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje),
+identified by filename and SHA-256 in README.md and SUBMISSION.md.
+
+The gameplay in it is a real engine capture, not a reconstruction: 32.63 s at native
+4K, 1958 ticks at exactly 60 fps, driven by real key events against an isolated copy
+with no teleporting and no seeded state, carrying the game's own audio. Every clip is
+labelled on screen as a scripted-input capture, and the stretches that hold a final
+frame say so. The capture's SHA-256 and the hash of every source file it displays are
+in `youtube/claude-liam-houseghost-gamedev/`.

@@ -160,3 +160,19 @@ Kept as 640 px thumbnails in `design/storyboard/rejects/`.
 | SB-03-A | The boy carries far less detail than the character sheet specifies; judged against CHARACTER-SHEET consistency rules rather than on taste | `design/storyboard/rejects/03-music-box-rejected.png` |
 | SB-04-A | Two reasons, both judged against work already approved. The child did not read as frightened enough — panel 4 is the game's first success and first cost in the same two seconds, and her face is the only thing carrying either. And set dressing drifted from the approved panels: the lamp and other fixtures did not match the room established in panels 1 and 3, which breaks the claim that all six panels show one house | `design/storyboard/rejects/04-she-looks-up-rejected.png` |
 | SB-05-A | Insufficient detail | `design/storyboard/rejects/05-hallway-wrong-rejected.png` |
+
+## The film
+
+**The House Is a Witness.** — [course media storage](https://northeastern-my.sharepoint.com/:f:/r/personal/valam_n_northeastern_edu/Documents/The%20House%20Is%20a%20Witness%20(Art%20%26%20Sound)?d=w4cd7a183ebfb445282e99594585c140b&csf=1&web=1&e=F2oHje), filename and SHA-256 in
+README.md and SUBMISSION.md.
+
+| Element | Source | Terms |
+|---|---|---|
+| Narration voice | Kokoro-82M `am_onyx`, run locally, offline | Apache 2.0 |
+| Narration words | Written by hand in `beat_sheet.json`. No text model wrote the script | — |
+| Gameplay footage | Godot 4.7.2 Movie Maker, native 3840x2160, the game's own audio | own work |
+| Scene composition | Brutalist `godot-gamedev` workflow, course-provided | course-provided |
+| Figures | Composed with Pillow from the project's own files | own work |
+
+No generated imagery appears in the film that is not already an asset of the game or
+a rejected take of one.
