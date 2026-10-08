@@ -1,0 +1,160 @@
+extends SceneTree
+## Automated check: one sound per event, including rapid repeats and held input.
+##
+## Run from the godot/ folder:
+##   godot --headless --path . --script tests/test_sound_triggers.gd
+##
+## Exits 0 if every assertion passes, 1 otherwise. Asserts are never weakened
+## to obtain a green result; a failure here is a real failure.
+
+var _failures := 0
+var _checks := 0
+
+
+func _init() -> void:
+	await process_frame
+	var scene = load("res://scenes/Bedroom.tscn").instantiate()
+	root.add_child(scene)
+	for i in 5: await process_frame
+
+	# The slice opens with four lines the player advances themselves, so the
+	# check has to read them like a player before it can drive anything. Waiting
+	# alone would hang: the opening waits for a key and never times out.
+	var player = scene.get_node("Player")
+	var guard := 0
+	while not player.controllable and guard < 40:
+		guard += 1
+		var down := InputEventKey.new()
+		down.keycode = KEY_SPACE
+		down.physical_keycode = KEY_SPACE
+		down.pressed = true
+		Input.parse_input_event(down)
+		var up := InputEventKey.new()
+		up.keycode = KEY_SPACE
+		up.physical_keycode = KEY_SPACE
+		up.pressed = false
+		Input.parse_input_event(up)
+		await create_timer(0.3).timeout
+	_expect(player.controllable, "the opening hands over control once it is read", player.controllable)
+
+	var audio = scene.get_node("Audio")
+	var meters = scene.get_node("Meters")
+	var contact = scene.get_node("MusicBox")
+
+	print("\n--- HOUSEGHOST sound trigger check ---")
+
+	# 1. One flip, one flip sound. Measured as a change rather than an absolute,
+	#    because the opening sequence legitimately plays one of its own when the
+	#    memory closes over the truth.
+	var flips_before: int = audio.counts["flip"]
+	scene.flip()
+	await _settle()
+	_expect(audio.counts["flip"] == flips_before + 1,
+		"one flip produces exactly one flip sound", audio.counts["flip"] - flips_before)
+
+	# 2. Mashing the flip key during the turn must not stack sounds. The guard
+	#    lives in world.gd (_flipping), so the extra calls are ignored outright.
+	var before: int = audio.counts["flip"]
+	for i in 12:
+		scene.flip()
+	await _settle()
+	_expect(audio.counts["flip"] == before + 1,
+		"12 flip calls during a turn still produce one sound", audio.counts["flip"] - before)
+
+	# 3. A resolved contact fires exactly one contact sound, and the cooldown
+	#    stops a second resolve landing immediately after.
+	if not scene.is_inverted:
+		scene.flip()
+		await _settle()
+	var contacts_before: int = audio.counts["contact"]
+	contact._player_inside = true
+	contact._resolve(false)
+	contact._resolve(false)          # blocked: cooldown is running
+	await _settle(0.1)
+	_expect(audio.counts["contact"] == contacts_before + 1,
+		"two resolves inside the cooldown produce one contact sound",
+		audio.counts["contact"] - contacts_before)
+
+	# 4. Each torn day fires exactly one frost sound.
+	var frost_before: int = audio.counts["frost"]
+	var days_before: int = meters.days_left
+	meters.spend(2, 0)
+	await _settle(0.1)
+	var days_lost: int = days_before - meters.days_left
+	_expect(audio.counts["frost"] - frost_before == days_lost,
+		"one frost sound per day torn", "%d sounds for %d days" % [audio.counts["frost"] - frost_before, days_lost])
+
+	# 5. Muting must not change the counts: the game still did the thing, it is
+	#    only inaudible. This is the "sound never decides state" rule.
+	audio.set_sfx_muted(true)
+	var muted_before: int = audio.counts["flip"]
+	scene.flip()
+	await _settle()
+	_expect(audio.counts["flip"] == muted_before + 1,
+		"muted SFX still counts the event (state is unchanged by audio)",
+		audio.counts["flip"] - muted_before)
+
+	# 6. One jump press, one jump sound and one landing sound. The key is held
+	#    for the whole arc, so a retrigger mid-air would show up here.
+	audio.set_sfx_muted(false)
+	if scene.is_inverted:
+		scene.flip()
+		await _settle()
+	var j0: int = audio.counts["jump"]
+	var l0: int = audio.counts["land"]
+	Input.action_press("jump")
+	await _settle(1.4)
+	Input.action_release("jump")
+	await _settle(0.4)
+	_expect(audio.counts["jump"] == j0 + 1,
+		"a held jump fires one jump sound", audio.counts["jump"] - j0)
+	_expect(audio.counts["land"] == l0 + 1,
+		"landing from that jump fires one land sound", audio.counts["land"] - l0)
+
+
+	# 8. The boy has footsteps and the ghost has none. This is the clearest
+	#    statement the audio makes about which of the two he currently is.
+	audio.set_sfx_muted(false)
+	if scene.is_inverted:
+		scene.flip()
+		await _settle()
+	var st0: int = audio.counts["step"]
+	Input.action_press("move_right")
+	await _settle(1.5)
+	Input.action_release("move_right")
+	await _settle(0.3)
+	var walked: int = audio.counts["step"] - st0
+	_expect(walked >= 3, "walking in the memory produces footsteps", walked)
+
+	scene.flip()
+	await _settle(1.4)
+	var st1: int = audio.counts["step"]
+	Input.action_press("move_right")
+	await _settle(1.2)
+	_expect(audio.counts["step"] == st1, "the ghost makes no real footsteps",
+		audio.counts["step"] - st1)
+	_expect(audio.counts["ghoststep"] > 0, "but he keeps a rhythm of his own",
+		audio.counts["ghoststep"])
+	_expect(audio._drift.playing, "the ghost displaces air while he moves", audio._drift.playing)
+	Input.action_release("move_right")
+	await _settle(0.6)
+	_expect(not audio._drift.playing, "and the air stops when he stops", audio._drift.playing)
+
+
+	print("--- %d checks, %d failed ---\n" % [_checks, _failures])
+	quit(1 if _failures > 0 else 0)
+
+
+## Headless frames are not real time, so waits must be wall-clock: a flip tween
+## lasts 0.6 s regardless of how fast the frames tick.
+func _settle(seconds: float = 0.9) -> void:
+	await create_timer(seconds).timeout
+
+
+func _expect(condition: bool, what: String, got = null) -> void:
+	_checks += 1
+	if condition:
+		print("  PASS  ", what)
+	else:
+		_failures += 1
+		printerr("  FAIL  %s (got: %s)" % [what, str(got)])

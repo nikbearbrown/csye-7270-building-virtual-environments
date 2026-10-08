@@ -1,0 +1,420 @@
+[gd_scene load_steps=18 format=3 uid="uid://bhghost0slice"]
+
+[ext_resource type="Script" path="res://scripts/world.gd" id="1_world"]
+[ext_resource type="Texture2D" path="res://assets/art/env_room_empty.png" id="2_empty"]
+[ext_resource type="Texture2D" path="res://assets/art/env_room_memory.png" id="3_memory"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="4_player"]
+[ext_resource type="Script" path="res://scripts/contact_point.gd" id="5_contact"]
+[ext_resource type="Script" path="res://scripts/meters.gd" id="6_meters"]
+[ext_resource type="Script" path="res://scripts/audio.gd" id="7_audio"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="8_hud"]
+[ext_resource type="Texture2D" path="res://assets/art/ui_glow.png" id="9_glow"]
+[ext_resource type="Texture2D" path="res://assets/art/floor_hole.png" id="13_hole"]
+[ext_resource type="Texture2D" path="res://assets/art/prop_shelf.png" id="14_shelf"]
+[ext_resource type="Texture2D" path="res://assets/art/prop_boxes.png" id="15_boxes"]
+[ext_resource type="Texture2D" path="res://assets/art/relic_shoes.png" id="16_shoes"]
+[ext_resource type="Texture2D" path="res://assets/art/relic_musicbox.png" id="19_box"]
+[ext_resource type="Texture2D" path="res://assets/art/relic_board.png" id="17_board"]
+[ext_resource type="Texture2D" path="res://assets/art/child_1.png" id="18_child1"]
+[ext_resource type="Texture2D" path="res://assets/art/child_2.png" id="18_child2"]
+[ext_resource type="Texture2D" path="res://assets/art/child_3.png" id="18_child3"]
+
+[sub_resource type="RectangleShape2D" id="Wall_1"]
+size = Vector2(60, 1400)
+
+[sub_resource type="RectangleShape2D" id="FloorSeg0_s"]
+size = Vector2(1380, 200)
+
+[sub_resource type="RectangleShape2D" id="FloorSeg1_s"]
+size = Vector2(1170, 200)
+
+[sub_resource type="RectangleShape2D" id="FloorSeg2_s"]
+size = Vector2(1170, 200)
+
+[sub_resource type="RectangleShape2D" id="FloorSeg3_s"]
+size = Vector2(1930, 200)
+
+[sub_resource type="RectangleShape2D" id="Ceiling_1"]
+size = Vector2(6160, 200)
+
+[sub_resource type="RectangleShape2D" id="Shelf_s"]
+size = Vector2(150, 250)
+
+[sub_resource type="RectangleShape2D" id="Boxes_s"]
+size = Vector2(220, 235)
+
+[sub_resource type="RectangleShape2D" id="Lost_s"]
+size = Vector2(6400, 200)
+
+[sub_resource type="CircleShape2D" id="Contact_1"]
+radius = 150.0
+
+[node name="Bedroom" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="WorldRoot" type="Node2D" parent="."]
+
+[node name="RoomMemory0" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(960, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="RoomMemory1" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(2880, 540)
+scale = Vector2(-1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="RoomMemory2" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(4800, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("3_memory")
+
+[node name="RoomEmpty0" type="Sprite2D" parent="WorldRoot"]
+visible = false
+position = Vector2(960, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("2_empty")
+
+[node name="RoomEmpty1" type="Sprite2D" parent="WorldRoot"]
+visible = false
+position = Vector2(2880, 540)
+scale = Vector2(-1.14833, 1.14833)
+texture = ExtResource("2_empty")
+
+[node name="RoomEmpty2" type="Sprite2D" parent="WorldRoot"]
+visible = false
+position = Vector2(4800, 540)
+scale = Vector2(1.14833, 1.14833)
+texture = ExtResource("2_empty")
+
+[node name="Hole0" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(1265, 1005)
+texture = ExtResource("13_hole")
+
+[node name="Hole1" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(2605, 1005)
+texture = ExtResource("13_hole")
+
+[node name="Hole2" type="Sprite2D" parent="WorldRoot"]
+position = Vector2(3945, 1005)
+texture = ExtResource("13_hole")
+
+[node name="Child" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(860, 740)
+texture = ExtResource("18_child1")
+
+[node name="Solids" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="FloorSeg0" type="CollisionShape2D" parent="Solids"]
+position = Vector2(490, 1040)
+shape = SubResource("FloorSeg0_s")
+
+[node name="FloorSeg1" type="CollisionShape2D" parent="Solids"]
+position = Vector2(1935, 1040)
+shape = SubResource("FloorSeg1_s")
+
+[node name="FloorSeg2" type="CollisionShape2D" parent="Solids"]
+position = Vector2(3275, 1040)
+shape = SubResource("FloorSeg2_s")
+
+[node name="FloorSeg3" type="CollisionShape2D" parent="Solids"]
+position = Vector2(4995, 1040)
+shape = SubResource("FloorSeg3_s")
+
+
+[node name="Ceiling" type="CollisionShape2D" parent="Solids"]
+position = Vector2(2880, 40)
+shape = SubResource("Ceiling_1")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Solids"]
+position = Vector2(-20, 540)
+shape = SubResource("Wall_1")
+
+[node name="WallRight" type="CollisionShape2D" parent="Solids"]
+position = Vector2(5780, 540)
+shape = SubResource("Wall_1")
+
+[node name="Memory0" type="StaticBody2D" parent="." groups=["solid_in_memory"]]
+position = Vector2(2200, 815)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Memory0"]
+shape = SubResource("Shelf_s")
+
+[node name="Art" type="Sprite2D" parent="Memory0"]
+texture = ExtResource("14_shelf")
+
+[node name="Memory1" type="StaticBody2D" parent="." groups=["solid_in_memory"]]
+position = Vector2(4600, 815)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Memory1"]
+shape = SubResource("Shelf_s")
+
+[node name="Art" type="Sprite2D" parent="Memory1"]
+texture = ExtResource("14_shelf")
+
+[node name="Present0" type="StaticBody2D" parent="." groups=["solid_in_truth"]]
+position = Vector2(3400, 257)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape2D" parent="Present0"]
+shape = SubResource("Boxes_s")
+
+[node name="Art" type="Sprite2D" parent="Present0"]
+flip_v = true
+texture = ExtResource("15_boxes")
+
+[node name="LostAbove" type="Area2D" parent="."]
+position = Vector2(2880, 1260)
+collision_layer = 0
+collision_mask = 2
+
+[node name="Shape" type="CollisionShape2D" parent="LostAbove"]
+shape = SubResource("Lost_s")
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+position = Vector2(220, 815)
+
+[node name="Camera" type="Camera2D" parent="Player"]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+limit_left = 0
+limit_right = 5760
+limit_top = 0
+limit_bottom = 1080
+
+[node name="MusicBox" type="Area2D" parent="." groups=["relic"]]
+position = Vector2(1548, 470)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MusicBox"]
+shape = SubResource("Contact_1")
+
+[node name="Beacon" type="AudioStreamPlayer2D" parent="MusicBox"]
+volume_db = -11.0
+max_distance = 6200.0
+attenuation = 1.6
+
+[node name="Art" type="Sprite2D" parent="MusicBox"]
+texture = ExtResource("19_box")
+
+[node name="Glow" type="Sprite2D" parent="MusicBox"]
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("9_glow")
+
+[node name="Shoes" type="Area2D" parent="." groups=["relic"]]
+position = Vector2(3150, 300)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Shoes"]
+shape = SubResource("Contact_1")
+
+[node name="Beacon" type="AudioStreamPlayer2D" parent="Shoes"]
+volume_db = -11.0
+max_distance = 6200.0
+attenuation = 1.6
+
+[node name="Glow" type="Sprite2D" parent="Shoes"]
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("9_glow")
+
+[node name="Art" type="Sprite2D" parent="Shoes"]
+texture = ExtResource("16_shoes")
+
+[node name="Board" type="Area2D" parent="." groups=["relic"]]
+position = Vector2(5120, 300)
+monitoring = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_contact")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Board"]
+shape = SubResource("Contact_1")
+
+[node name="Beacon" type="AudioStreamPlayer2D" parent="Board"]
+volume_db = -11.0
+max_distance = 6200.0
+attenuation = 1.6
+
+[node name="Glow" type="Sprite2D" parent="Board"]
+modulate = Color(1, 0.95, 0.78, 0.7)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("9_glow")
+
+[node name="Art" type="Sprite2D" parent="Board"]
+texture = ExtResource("17_board")
+
+[node name="Meters" type="Node" parent="."]
+script = ExtResource("6_meters")
+
+[node name="Audio" type="Node" parent="."]
+script = ExtResource("7_audio")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("8_hud")
+
+[node name="Frost" type="ColorRect" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.78, 0.86, 0.92, 0)
+mouse_filter = 2
+
+[node name="Days" type="Label" parent="HUD"]
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 900.0
+offset_bottom = 70.0
+pivot_offset = Vector2(0, 17)
+theme_override_colors/font_color = Color(0.86, 0.88, 0.9, 0.92)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "7 NIGHTS LEFT"
+
+[node name="Recognition" type="Label" parent="HUD"]
+offset_left = 48.0
+offset_top = 76.0
+offset_right = 900.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(0.86, 0.88, 0.9, 0.92)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "SEEN   ○  ○  ○  ○  "
+
+[node name="Mutes" type="Label" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -560.0
+offset_top = 36.0
+offset_right = -48.0
+offset_bottom = 70.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.76, 0.4, 0.95)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 2
+
+[node name="Hint" type="Label" parent="HUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -78.0
+offset_right = -48.0
+offset_bottom = -40.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 0.7)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="Opening" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -620.0
+offset_top = -140.0
+offset_right = 620.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.9, 0.89, 0.86, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_y = 3
+theme_override_constants/line_spacing = 16
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Note" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 120.0
+offset_top = -210.0
+offset_right = -120.0
+offset_bottom = -140.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.88, 0.86, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Prompt" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = 180.0
+offset_right = 300.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.78, 0.76, 0.72, 0.75)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Cue" type="Label" parent="HUD"]
+visible = false
+offset_right = 260.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(1, 0.93, 0.74, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.95)
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Banner" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -90.0
+offset_right = 500.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+vertical_alignment = 1
