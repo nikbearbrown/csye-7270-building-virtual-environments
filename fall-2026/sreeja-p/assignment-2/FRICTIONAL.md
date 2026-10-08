@@ -341,3 +341,4 @@
 | 2026-10-07 | Capture facing-left screenshots for the orientation check; freeze game source for the film |
 | 2026-10-07 | Add full-session screenshots, character/storyboard comparisons, predictions vs results, fresh-copy run; fix mute HUD overlap |
 | 2026-10-07 | Add Brutalist explainer film source and evidence, muted playtest, final README and SUBMISSION |
+| 2026-10-07 | Remove a local machine path from the film compile log |
