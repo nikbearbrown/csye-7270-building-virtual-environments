@@ -305,6 +305,23 @@
 - **Still pending from me:** a muted playtest; the CHAR-EXPLORE-01 prompt, the pose 11b image, and pose 12 try 1's prompt (or "not recoverable").
 - **Evidence:** TEST-REPORT "full-session screenshots", "character against the sheet", "storyboard against the slice", "predictions vs results", "fresh-copy run".
 
+
+### 2026-10-07 — the explainer film (Brutalist godot-gamedev, walker mode)
+
+- **What I wanted:** a film that explains my game's art and audio from design to engine, shows every state and the sounds in real play, and is clear that the game, the ideas, and the decisions are mine while the tools (and Liam's voice) assisted. Professor Bear didn't work on this project, so Liam introduces himself only as Brutalist's narrator.
+- **What I decided:** I asked for more technical depth, every pose shown in play, the requirements in priority order, and my role said subtly about three times. I read and edited the script (v1 → v2); with the deadline close I chose about six minutes over nine.
+- **What Claude did:** read the skill and its audio policy (gameplay is muted under narration by default; the required no-narration segment uses the `preserve` beat setting, disclosed in the film's SOURCES), verified on my Mac that Movie Maker records the game's own audio and native 4K, recorded four scripted-input takes from the frozen source `241c3f2`, wrote the beat sheet, stills, evidence ledger (the skill's checker passes: 61 files, 5 exact excerpts, 5 code→result pairs), generated Liam's narration locally, and rendered. The first serial render was too slow for the deadline, so the scenes were rendered in four parallel workers through the same toolkit wrapper.
+- **Human / Claude / model:** the content choices and script edits are mine; the build, evidence, and narration text drafts are Claude's; the voice is Kokoro (local).
+- **Still unresolved:** whether 6 minutes is enough depth; my final watch-and-listen check of the export.
+- **Evidence:** `youtube/claude-liam-walker-ninja-firefighter-joe-gamedev/` (SCRIPT-DRAFT.md, SCRIPT.md, beat_sheet.json, gamedev-evidence.json, FACTCHECK.md, SOURCES.md, CAPTURE.md).
+
+
+### 2026-10-07 — muted playtest, the film watched, submission
+
+- **Muted:** rescuing the victims was understandable; the fire death was understandable only because of the text "The fire got you." **Sound on:** the music added urgency, and the hose, burn, and claps sounds made those moments clearer. I played many times during development; three playtests are written up in TEST-REPORT.
+- **Film:** I watched the final export and approved it. **Summary:** Claude drafted it from my logs; I corrected the playtest count and approved it.
+- **Still unresolved:** a clearer visual for the burn itself, so muted players don't depend on the text.
+
 ---
 
 ## GitHub pushes
@@ -323,3 +340,5 @@
 | 2026-10-07 | Add ElevenLabs music loop with loop tests, remove start siren, record model terms; verify 41+14+14 tests |
 | 2026-10-07 | Capture facing-left screenshots for the orientation check; freeze game source for the film |
 | 2026-10-07 | Add full-session screenshots, character/storyboard comparisons, predictions vs results, fresh-copy run; fix mute HUD overlap |
+| 2026-10-07 | Add Brutalist explainer film source and evidence, muted playtest, final README and SUBMISSION |
+| 2026-10-07 | Remove a local machine path from the film compile log |
