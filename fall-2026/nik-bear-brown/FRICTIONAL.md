@@ -162,11 +162,27 @@ Everything I say in a session is recorded here or in the matching assignment's l
   - It also got things wrong, and the film says so: the first saved pictures were plain grey, it replaced a correct pixel reading with a wrong one, and its first rigging attempt moved every part 4 cm (it caught that itself).
   - Setup findings: the add-on's server starts by itself, with no password (a plain script ran code in Blender); disabling the add-on closes it.
   - **It found a bug in the assignment I wrote.** The `claude mcp add` command had `-e KEY=value` directly before the server name, which fails ("Invalid environment variable format: blender"). The assignment now puts the name first. The published Assignment 3 film still shows the old order in one beat; the chapter 3 text has the same command. Not yet corrected there.
-  - The mascot film is built (8 min 55 s) and passes the machine checks. I have not watched it.
+  - The mascot film is built (8 min 56 s) and passes the machine checks. I have not watched it.
 - **What I did:** Made the requests above and said yes to running everything for real.
 - **What Claude or another person contributed:** Claude Code (Sonnet 5.5) ran the install, the sessions and the checks, and wrote the film; Opus 5.5 sub-agents drew the pictures. The mascot itself was built by a second Claude model (claude-sonnet-4-6) through the MCP.
 - **What I understand now / still do not understand:** Not yet recorded.
 - **Evidence and next step:** `claude-mascot-3d/mcp-run/` and the film folder `claude-mascot-3d/youtube/claude-liam-lecture-claude-mascot-blender-mcp/` (books folder). Next: I watch the film; decide how to correct the Assignment 3 film's command; then the mascot gets its 18 animations.
+
+### 2026-10-09 — Module one: why Godot, why Walker, conducting AI; three "Start Here" films
+
+- **Date and what I was working on:** 2026-10-09. Deciding what the first module of the course must say, and asking for three films to open the course.
+- **I tried / expected:** My requests, in my words (dictation errors fixed; some in substance, because they were relayed through a session summary): module one has to establish why Godot, why Walker, what Godot is, what Walker is, and that the course is done by conducting AI: Claude or Codex writes the code and the humans judge. "The first one is CSYE seven two seven zero. Conducting AI for games. The second is why Godot. The third is what is Walker and why. So we need those three films made. Using the lecture skill." I said Godot is probably the most natural fit for conducting AI now, that Unity and Unreal are building MCP connections that are still raw, and that they are catching up. Then: use the actual projects the students are going to build ("The Walker Jumpman has now become Claude Walker") as the real footage throughout the first three films. Earlier the same day I clarified that the folders in Walker are Godot's own MIT demo projects, including the rhythm game, which must be adapted into lessons for the Walker tutorial.
+- **What happened:**
+  - Before the films, real evidence was gathered on this Mac: a real run of Walker's publisher, the real conducting records of the Jumpman and Clawd projects, a real "no bridge" Godot demo (an agent adding a Label to Walker Pong by editing its text file), and real Godot captures of the projects.
+  - **My premise was only partly supported.** Godot has no official MCP server. Unity (open beta since 2026) and Unreal 5.8 (Experimental) both have official ones. Unity scenes are text too. Godot's real advantages are its text scenes, complete command line, MIT licence and no account. The "Why Godot" film says this.
+  - Walker turned out to be written rules and a habit, not software that enforces them. The installed Godot guide assumes C# while the example games use GDScript. The committed public version installs 11 files; the larger 54-file kit is only in the working tree. The "What is Walker" film says this.
+  - The records of the Clawd project contain no human finding: the play-test is still pending, the design gates are unsigned.
+  - `claude -p` could not log in on this Mac (OAuth expired), so the Godot demo ran as a fresh Claude Code subagent with its limits stated in the prompt, not enforced. I need to run `/login` in a terminal for any further headless runs.
+  - The three films were built to a 4K master. Nothing is published.
+- **What I did:** Made the requests above.
+- **What Claude or another person contributed:** Claude Code wrote the narration, ran the evidence, and built the films with Opus 5.5 sub-agents.
+- **What I understand now / still do not understand:** Not yet recorded.
+- **Evidence and next step:** `youtube/_conducting-series-evidence/` and the three film folders `youtube/claude-liam-lecture-csye-7270-*` (books folder). Next: I watch the films; decide on publishing; adapt the Godot demo projects into Walker lessons (Pong first).
 
 ---
 
@@ -190,3 +206,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-06 | Log my feedback: say "3D model" or "AI model", never just "model" |
 | 2026-10-06 | Log my request to publish the Assignment 3 film to both playlists |
 | 2026-10-06 | Log the real MCP run, the Claude mascot and its film |
+| 2026-10-09 | Log my request for the three Start Here films and what they found |
