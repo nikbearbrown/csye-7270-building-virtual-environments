@@ -54,6 +54,36 @@
 - **What I understand now / still do not understand:**
 - **Evidence and next step:** `design/storyboard/01-title.png` to `05-tablet-fullscreen.png`; revision history in `STORYBOARD.md` and `CHANGE-BRIEF.md`. Next: sound effects with AI, and completing storyboard panels 8–10.
 
+### 2026-10-08 — Greyboxing the subway base
+
+- **Date and what I was working on:** 2026-10-08. Built the greybox for the subway base in Godot (`walker-survival-shooting/godot/base.tscn`).
+- **I tried / expected:** I built the floor and the left and right walls myself with CSG, then asked Claude to finish the rest.
+- **What happened:** Claude kept my three nodes and added the front and back walls, the ceiling, a 6-step staircase leading to a 1.2 m platform, two cool-colored ceiling lights, a dark ambient environment, a preview camera, and placed the test chair against the back wall. Each stair step is a CSG box, plus an invisible sloped collision box over the steps so that a character can walk up later (Godot characters can't step up stairs by default). A headless raycast check confirmed the ramp height matches the step edges, and a rendered screenshot confirmed the camera view.
+- **What I did:**
+- **What Claude or another person contributed:** Claude wrote the CSG nodes, lights, and camera in `base.tscn`, ran the raycast check and the screenshot. Claude first told me this greybox and the test chair (both built by code from basic shapes) do not count as generated assets. I corrected it: I had already asked the professor, and assets Claude builds this way do count. Both are now in the asset log.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `walker-survival-shooting/godot/base.tscn`. Room 16 × 10 m, interior height 3 m. Next: decide the final seat for the start menu.
+
+### 2026-10-08 to 2026-10-09 — Tablet reference images and extra character views
+
+- **Date and what I was working on:** 2026-10-08 to 2026-10-09. Reference images for the rugged military tablet (PROP-TABLET) and extra full-body views of the main character, including A-pose versions.
+- **I tried / expected:**
+- **What happened:**
+- **What I did:** Made the images in ChatGPT image generation and kept four tablet images and nine character views as references.
+- **What Claude or another person contributed:** ChatGPT generated the images. Claude renamed the tablet images for the repository and wrote the asset log rows (TABLET-REF-01 to 04, CHAR-VIEW-01, CHAR-VIEW-APOSE-01).
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `design/pad/tablet-ref-01.png` to `tablet-ref-04.png`; `design/character/character-*.png`; `SOURCES.md` asset log.
+
+### 2026-10-09 — Designing the terminal UI sound effects
+
+- **Date and what I was working on:** 2026-10-09. Four UI sound effects for the handheld terminal: power on, power off, cursor navigation, and error feedback.
+- **I tried / expected:** I set up and ran a local Stable Audio 3 Small SFX workflow in ComfyUI. I wanted the sounds to feel like rugged military communications electronics rather than clean modern smartphone UI sounds, and I especially wanted short radio-static or squelch texture around the electronic tones.
+- **What happened:** The first power-on attempts (SFX-TERMINAL-POWER-ON-V01) were too sharp and sounded like an explosive electronic transient. After I changed the design to one clear single beep layered with short radio static (V03), I got a direction I liked. The first cursor sound (a beep around 1 kHz) was also too sharp, so I moved it toward a lower, rounder "doo" and lowered the target frequency step by step until the 100–200 Hz version. The error sound needed many revisions: the first version produced repeated or tremolo-like tones, the next still had modulation and was too low-pitched, and later I tried higher "di" beeps, removed the radio texture, cut the prompt down to a few words, and even tried a negative prompt in Chinese. These later rounds were rerolls; none of them gave a result I was satisfied with. In total I made 161 outputs (31 different prompt versions). Many of them are rerolls of the same prompt with a different seed or a slightly different length setting; the prompt fixes the sound's duration, so the extra length is only silence.
+- **What I did:** I listened to each result and decided which characteristics worked or failed. I accepted the power-on direction after it had a clearly audible single beep and radio-like noise, and kept the power-off sound in the same sound family. I made the cursor a lower tone, but decided that the error sound should instead be a short, higher-pitched single beep that attracts attention. I rejected the error versions that repeated, trembled, or sounded too deep. When I heard a result I was satisfied with, I ran the same prompt and seed again to check that the model gives the same output, and it did. Accepted so far: power on (`00042`), power off (`00044`), cursor (`00070`), used unedited. The error sound is not final yet.
+- **What Claude or another person contributed:** I wrote the prompts; ChatGPT converted my wording into phrasing the local model understands more easily, and I used it to learn about sound-design styles and terms such as radio squelch, filtered radio static, and RF interference. Stable Audio generated all the audio from the prompts I ran locally. Claude Code read the exact prompts, seeds, and settings from the metadata of all 161 outputs, matched the accepted files to their original outputs by checksum, confirmed that my same-seed re-runs produced identical audio, and wrote the asset log rows. Claude also noticed that outputs differing only in the negative prompt were identical: every run used CFG 1.0, and at CFG 1.0 ComfyUI does not use the negative prompt, so my negative prompts had no effect on these sounds.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `SOURCES.md` asset log rows SFX-TERMINAL-POWER-ON-V01 to SFX-TERMINAL-ERROR-V07 and the audio prompt appendix; `design/sfx_sound/`. Next: finalize the error sound, export the accepted sounds as OGG, connect each one to its gameplay event, and test that each event plays exactly once.
+
 ---
 
 ## GitHub pushes
@@ -63,3 +93,4 @@
 | 2026-10-06 | Add concept, storyboard text, and design log for Assignment 2 |
 | 2026-10-07 | Add character sheet, change brief, and asset log with rejected character drafts |
 | 2026-10-07 | Add storyboard sketches for panels 1–5 and record the panel 4–5 camera change |
+| 2026-10-09 | Add terminal sound effects, tablet and character reference images, and the Godot greybox project |

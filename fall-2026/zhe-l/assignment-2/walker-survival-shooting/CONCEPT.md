@@ -45,3 +45,4 @@ Session loop outside a single run: prepare at the base → deploy → explore, f
 
 ---
 ## Revision history
+- **2026-10-09 — Audio direction, addition (tablet terminal UI sounds):** the tablet terminal's interface sounds are short, dry electronic tones layered with light radio static, squelch, and communications-equipment noise. Navigation feedback is restrained and low-pitched overall; error feedback uses a shorter, brighter single "di" beep to get attention. The interface should sound like rugged field electronics, not a clean consumer device.

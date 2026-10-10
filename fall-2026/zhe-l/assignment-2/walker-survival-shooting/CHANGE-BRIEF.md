@@ -156,3 +156,23 @@ In this slice, music plays only on the start menu.
 ## Revision history
 <!-- Append here; do not rewrite version 1 above. -->
 - **2026-10-07 — Following the storyboard revision:** the seat in ENV-BASE changes from "bench" to to be decided (a chair, a sofa, or something else), and CHAR-SIT becomes "sitting on the seat". UI-TAB-FULL now serves panels 4–5 (panel 5 is now the gameplay view with the tablet filling the screen). Panel 2 shows a status bar at the top left; it is a placeholder for now, and whether it needs a UI asset will be decided later.
+- **2026-10-08 — Base greybox:** the `ENV-BASE` greybox is in `godot/base.tscn`: a 16 × 10 m room with a 3 m interior height, a floor, four walls, and a ceiling; a 6-step staircase leads to a 1.2 m platform (an invisible sloped collision box sits over the steps); two cool-colored ceiling lights; the test chair stands against the back wall. Claude built the greybox from CSG basic shapes. As the professor confirmed, assets Claude builds in code also count as generated assets, so it is in the `SOURCES.md` asset log (ENV-BASE-01).
+- **2026-10-09 — Terminal sound effects:** the slice's four sound events are now the tablet terminal's four UI sounds. `SFX-TAB-BOOT` is replaced by `SFX-TERMINAL-POWER-ON`; `SFX-STEP` and `SFX-TAB-OUT` move to "planned for later". The generation process (including the rejected versions) is recorded in the `SOURCES.md` asset log and in `FRICTIONAL.md`; this entry records only the final use.
+
+  | Asset ID | Category | Asset | Storyboard panel | Planned path | Status |
+  |---|---|---|---|---|---|
+  | SFX-TERMINAL-POWER-ON | Sound | Terminal power on: one clear "di" beep with short radio static / squelch texture | 3 | `assets/sfx/….ogg` | Accepted (`design/sfx_sound/sfx_power_on.flac`, not yet converted to OGG) |
+  | SFX-TERMINAL-POWER-OFF | Sound | Terminal power off: the same sound family as power on, with a falling pitch | [to be confirmed] | `assets/sfx/….ogg` | Accepted (`design/sfx_sound/sfx_power_off.flac`, not yet converted to OGG) |
+  | SFX-TERMINAL-CURSOR | Sound | Button press (`sfx_botton_press`): one low, short, rounded "doo" | [to be confirmed: 4–5] | `assets/sfx/….ogg` | Accepted (`design/sfx_sound/sfx_botton_press.flac`, not yet converted to OGG) |
+  | SFX-TERMINAL-ERROR | Sound | Error: one short, higher-pitched, attention-getting "di" | [to be confirmed: 4–5] | `assets/sfx/….ogg` | Still being generated, not final |
+
+  Event-to-sound map (replaces the SFX-STEP / SFX-TAB-OUT / SFX-TAB-BOOT rows of version 1):
+
+  | Asset ID | Gameplay event that triggers it | What it sounds like | How double-triggering is prevented |
+  |---|---|---|---|
+  | SFX-TERMINAL-POWER-ON | Picking up the tablet at any time (from "not looking" to one-handed or two-handed) | One power-on sound | A new sound effect cuts off (interrupts) the previous one instead of playing on top of it. How one input plays exactly one sound will be filled in once the logic is written [to be confirmed] |
+  | SFX-TERMINAL-POWER-OFF | Putting the tablet away at any time (back to "not looking") | One power-off sound | A new sound effect cuts off (interrupts) the previous one instead of playing on top of it. How one input plays exactly one sound will be filled in once the logic is written [to be confirmed] |
+  | SFX-TERMINAL-CURSOR | Left mouse button on the tablet | One low, short button sound | A new sound effect cuts off (interrupts) the previous one instead of playing on top of it. How one input plays exactly one sound will be filled in once the logic is written [to be confirmed] |
+  | SFX-TERMINAL-ERROR | Right mouse button on the tablet | One short, high warning "di" | A new sound effect cuts off (interrupts) the previous one instead of playing on top of it. How one input plays exactly one sound will be filled in once the logic is written [to be confirmed] |
+
+  Version 1's predicted failure case 3 ("Tablet sounds fire twice") still applies: what it tests is whether the game code fires more than once for one input, which is a different thing from the multiple pulses / tremolo inside the Error audio during generation. All four sounds belong to the tablet; none of them is connected to the game yet.
