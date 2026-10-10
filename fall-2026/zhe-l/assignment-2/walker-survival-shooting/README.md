@@ -52,7 +52,7 @@ None yet. There is no player character, so there are no movement controls and no
 - **Title:** Walker Survival Shooting, Before the Slice (Brutalist `godot-gamedev`, walker mode; narrated by Liam, local Kokoro `am_onyx`)
 - **File:** `claude-liam-walker-survival-shooting-gamedev.mp4` · 3840 × 2160 · 30 fps · 6:53
 - **SHA-256:** `2cde5517c1f96affd17101d9ba1718bc7b689fcc60cdaa16cec5b9c991123e0a`
-- **Media link:** to be added after upload to the course media storage (the MP4 is not in GitHub)
+- **Media link:** https://youtu.be/1SyQ5M8uf3c (the MP4 itself is not in GitHub)
 - **Source revision shown in the film:** `f848d84`
 - **Film source and evidence:** `youtube/claude-liam-walker-survival-shooting-gamedev/` (beat sheet, script and prompts, component/evidence ledger, fact check, capture method, checks)
 - **What the film can and cannot show:** there is no playable slice, so the film shows the design documents, the asset log, native 4K Godot renders of the greybox, and the accepted sound files played back and labeled "not in-engine". It does not show the character in two states or the four sound events in real play, because they do not exist yet.
