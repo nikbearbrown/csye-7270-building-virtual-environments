@@ -84,6 +84,16 @@
 - **What I understand now / still do not understand:** The same prompt and the same seed give the same sound. The sound itself is as long as the prompt asks for (if I ask for 0.1 seconds, the rest of the file is silence), but changing the length setting still gives a different variation: a 1-second output and a 2-second output are not the same sound. An onomatopoeia ("di", "doo") mainly sets the timbre, and I wrote other prompt lines to reinforce that timbre; the frequency sets how high the sound is. A button sound must not be too high, because the player hears it many times, while an error sound needs a high pitch to warn the player. I still do not understand how to get rid of the tremolo and the multiple tones in the error sound; much of what I learned earlier did not work when I made the error sound.
 - **Evidence and next step:** `SOURCES.md` asset log rows SFX-TERMINAL-POWER-ON-V01 to SFX-TERMINAL-ERROR-V07 and the audio prompt appendix; `design/sfx_sound/`. Next: finalize the error sound, export the accepted sounds as OGG, connect each one to its gameplay event, and test that each event plays exactly once.
 
+### 2026-10-09 — The required Brutalist explainer film
+
+- **Date and what I was working on:** 2026-10-09. The required Brutalist `godot-gamedev` explainer film (walker mode) for the project as it is now, rendered from source revision `f848d84`.
+- **I tried / expected:** I asked Claude Code to follow the course skill strictly and to show only what really exists. Because there is no playable slice yet, I wanted the film to say plainly what it cannot show (the character in two states, the four sound events in real play, music, mute) instead of faking it, and to trace one asset, the terminal power-on sound, from design to where it stands now.
+- **What happened:** Claude exported `f848d84` into an isolated copy, re-ran the fresh-copy check (exit 0, no errors), wrote a new raycast check for the stair ramp (PASS), and captured native 4K renders of the unmodified `base.tscn` through a capture script that only adds a film camera. The toolkit's own quality gates refused the first exports (text too small, text outside the title-safe area); Claude fixed the layouts and a two-line offset in two toolkit components. The film has a labeled, unnarrated segment that plays the three accepted sound files and says they are not in the engine.
+- **What I did:** I set the scope and the honesty rules for the film (what to show, what to leave out, how to label reconstructions and sounds that are not in the engine), chose the asset to trace, kept my 10-09 3D side experiments out of the film, watched the final film, and approved it for upload. I also corrected where film work has to be stored on my computer.
+- **What Claude or another person contributed:** Claude Code (Claude Opus 5.5) wrote the capture and check scripts, the beat sheet, the narration script, and the film records, and ran the Brutalist pipeline. The narration voice is Kokoro `am_onyx` (local); the engine footage is Godot's own render. No game file was changed for the film.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `walker-survival-shooting/youtube/claude-liam-walker-survival-shooting-gamedev/` (beat sheet, evidence ledger, fact check, capture method, check logs). Film file `claude-liam-walker-survival-shooting-gamedev.mp4`, SHA-256 `2cde5517c1f96affd17101d9ba1718bc7b689fcc60cdaa16cec5b9c991123e0a`. Next: build the playable slice so the next film can show real play.
+
 ---
 
 ## GitHub pushes
@@ -94,3 +104,4 @@
 | 2026-10-07 | Add character sheet, change brief, and asset log with rejected character drafts |
 | 2026-10-07 | Add storyboard sketches for panels 1–5 and record the panel 4–5 camera change |
 | 2026-10-09 | Add terminal sound effects, tablet and character reference images, and the Godot greybox project |
+| 2026-10-09 | Add the explainer film's source, script, and evidence; add README and test report |
