@@ -23,9 +23,16 @@ Only things that actually happened are listed, with who found them. Nothing here
 14. **The exporter made every material double-sided,** so Godot disabled back-face culling. This was not predicted. It means a flipped face would not have disappeared in Godot.
 15. **The course repository had no `assignment-3` folder** for this student. Claude created `fall-2026/jingyao-y/assignment-3/walker-downfall/`; the `walker-` prefix was the author's choice.
 16. **The HUMAN CHECK report was a single line,** "都是对的" ("everything is correct"). It is recorded as given, without detail.
+17. **Film: Movie Maker stills came out at 2564×1442.** The window is capped at the screen size, so `get_image()` stills were not 4K, while the movie file was. Claude took the 4K frames from the movie by frame number instead.
+18. **Film: the original wrong-light render had been overwritten** during the work. The before/after shown in the film is a re-render with the first basis set at runtime, and it is labelled as a re-render.
+19. **Film: Claude's first narration overstated four things.** It said the author "selected each kerb in Edit Mode" and "orbited the assets", though the author reported only "全部完成" and "都是对的". It said "two seconds … then one orbit", which the 18 s clip could not hold without retiming. It said a cliff was beside the ramp in a frame that did not clearly show one. All four were corrected before the final render; see the film's FACTCHECK.md.
+20. **Film: the first final render was refused by Gate V** with 4 BLOCKER and 4 MAJOR: labels outside title-safe, and B16 underfill and contrast. The labels were moved, B16 was re-laid side by side, and the second render was clean.
+21. **Film: `./art godot-gamedev --check` crashed with a `gbk` decode error** on this Windows machine. It passed when run with `PYTHONUTF8=1`.
 
 ## GitHub pushes
 
 | Date | Repository / branch | Commit | What | Pushed? |
 |---|---|---|---|---|
 | 2026-10-12 | `nikbearbrown/csye-7270-building-virtual-environments` / `Jingyao_Y` | `ff43a88` | CHANGE-BRIEF.md (as approved) | Not yet; waiting for the author |
+| 2026-10-12 | `coldfish432/GodotGame` / `main` | `ceada15` | Assets, build scripts, glb, preview scene, checks | Not yet; waiting for the author |
+| 2026-10-12 | `nikbearbrown/csye-7270-building-virtual-environments` / `Jingyao_Y` | `f64af9d` | The full A3 folder | Not yet; waiting for the author |

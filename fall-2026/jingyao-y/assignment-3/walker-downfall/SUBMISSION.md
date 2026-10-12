@@ -14,7 +14,7 @@
 | Automated check | `tests/test_a3_assets.gd`: 25 checks, PASS |
 | HUMAN CHECK | Done by the author: "都是对的" (see TEST-REPORT) |
 | Author's manual Blender edit | Both ramp kerbs moved 0.1 m outward (width 6.8 → 7.0), verified by Claude with `get_scene_info` |
-| Film | *Not yet made.* |
+| Film | `claude-liam-downfall-a3-blender-gamedev.mp4`, 3840×2160, 30 fps, 5:39. SHA-256 `2cd689587a743e521aca43da80f267ab33e64a21a096e5acd682ca08fb403e85`. Kept out of GitHub per the course rule. *YouTube URL: to fill in after the author uploads.* Every frame is labelled as the author's screenshot, Claude's capture or render, or a reconstruction. |
 
 ## Documents
 
