@@ -96,4 +96,13 @@ The ramp height profile is a linear `lerpf` between the two tiers (`_link_height
 
 ## Revisions
 
-(none yet)
+**R1 — 2026-10-12, after building (Claude).** The sizes as built differ slightly from the predictions:
+- **cliff_wall_segment:** 2.94 × 1.20 × 2.40, not 3.0 wide. The strata are 2.94, 2.75 and 2.90 boxes; turned −3° and +2°, they span x ±1.47. This keeps inside the 3.0 limit.
+- **cliff_rubble_pile:** 1.47 × 1.25 × 0.85, not about 1.5 × 1.5 × 0.9. The stones were sized by eye and then pinned to the ground; height stays under the 0.9 `CLIFF_STEP`.
+- **Triangles as built:** 116 / 68 / 180, all within the 300 / 200 / 250 budgets.
+
+**R2 — 2026-10-12 (Claude).** The cliff's lip boulder is 0.8 × 0.6 × **0.5** (predicted 0.35). It sits on the front lip at y −0.30 … 0.30, z 1.90 … 2.40. At 0.35 tall and centred on the top stratum it was buried and read as a disc (TEST-REPORT, loop 1).
+
+**R3 — 2026-10-12 (the author's manual edit).** The author moved each kerb **0.1 m outward** by hand in Blender. Each kerb now spans x ±3.20 … ±3.50, and the ramp's overall width is **7.0** (predicted 6.8); the road body is unchanged at 6.8. Reason: bury the kerb's outer edge 0.1 into the corridor's rock bank at half-width 3.4, so the seam between them is covered, by the same logic as the cliff's ±0.1.
+
+**R4 — 2026-10-12 (Claude).** F5 happened (TEST-REPORT, loop 2). `art/blender/.gdignore` and `a3/.gdignore` were added, so Godot imports neither the `.blend` files nor the write-up's screenshots.
