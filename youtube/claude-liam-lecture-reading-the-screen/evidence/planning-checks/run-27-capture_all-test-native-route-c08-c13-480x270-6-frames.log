@@ -1,0 +1,15 @@
+# 2026-10-13 15:30:38 python3 capture_all.py --only C13 C08 --size 480x270 --frames 6 --public-dir <scratch>   (a tiny test of the per-capture routes: C08 through the SubViewport over 1280 x 720, C13 native)
+2 captures, 480 x 270, into /private/tmp/claude-501/godot-shaders-reading-the-screen/captest
+  C08 scene_c08_spot_game          beats B20       12.6 s  480 x 270 over 1280 x 720  ->  spot-game.mp4
+  C13 scene_c13_blur               beats B25       11.6 s  native 1920 x 1080         ->  blur.mp4
+free disk: 107 GB
+$ /Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-reading-the-screen/evidence/planning-checks/run-checks.sh capture scene_c08_spot_game 12.600 forward_plus --width 480 --height 270 --frames 6
+$ ffmpeg -y -loglevel error -framerate 30 -i /private/tmp/claude-501/rts-checks/capture/scene_c08_spot_game/f%05d.png -c:v libx264 -pix_fmt yuv420p -crf 12 /private/tmp/claude-501/godot-shaders-reading-the-screen/captest/spot-game.mp4
+  C08: 6 frames -> /private/tmp/claude-501/godot-shaders-reading-the-screen/captest/spot-game.mp4 (0.0 MB)
+$ /Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-reading-the-screen/evidence/planning-checks/run-checks.sh capture scene_c13_blur 11.600 forward_plus --native --width 480 --height 270 --frames 6
+$ ffmpeg -y -loglevel error -framerate 30 -i /private/tmp/claude-501/rts-checks/capture/scene_c13_blur/f%05d.png -c:v libx264 -pix_fmt yuv420p -crf 12 /private/tmp/claude-501/godot-shaders-reading-the-screen/captest/blur.mp4
+  C13: 6 frames -> /private/tmp/claude-501/godot-shaders-reading-the-screen/captest/blur.mp4 (0.0 MB)
+done. LOOK at the 50 % and 85 % frame of each video against evidence/planning-checks/frames/ before the 4K render.
+ffprobe blur.mp4: 480,270,30/1,6
+ffprobe spot-game.mp4: 480,270,30/1,6
+# exit 0

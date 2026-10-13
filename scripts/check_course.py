@@ -23,9 +23,12 @@ LESSON_H2 = [
     "The Walker example",          # prefix match
     "Predict → Build It → Use It → Ship It → Verify",
     "What the agents got wrong",
-    "If you know Unity or Unreal",
     "Practice assessment (ungraded)",
+    "Conducting AI in this module",
     "The next step",
+    "If you know Unity or Unreal",
+    "Doing the same thing in Unity",
+    "Doing the same thing in Unreal Engine",
 ]
 STEP_H3 = ["1. Predict", "2. Build It", "3. Use It", "4. Ship It", "5. Verify"]
 LINKS_H2 = ["Executive summary", "Read first", "Godot documentation", "Walker projects", "Tools", "Going deeper"]
@@ -150,10 +153,14 @@ def check_lesson(path, full=True):
     text = open(path, encoding="utf-8").read()
     prose = common_checks(path, text)
     h1 = headings(text, 1)
-    if h1 and not re.match(r"Module \d+ — ", h1[0]):
+    if h1 and not re.match(r"(?:Module \d+|Preface) — ", h1[0]):
         fail(path, f"H1 should start 'Module N — ', got: {h1[0]}")
     check_exec_summary_first(path, text)
     n = words(prose)
+    if os.path.basename(path) == "lesson.md":
+        closing = ["Doing the same thing in Unity", "Doing the same thing in Unreal Engine"]
+        if headings(text, 2)[-2:] != closing:
+            fail(path, "lesson must end with the Unity and Unreal comparison sections")
     if full:
         h2 = headings(text, 2)
         # required headings must appear, in order
@@ -188,7 +195,7 @@ def check_links(path):
     text = open(path, encoding="utf-8").read()
     common_checks(path, text)
     h1 = headings(text, 1)
-    if h1 and not re.match(r"Module \d+ — Helpful links", h1[0]):
+    if h1 and not re.match(r"(?:Module \d+|Preface) — Helpful links", h1[0]):
         fail(path, f"H1 should be 'Module N — Helpful links', got: {h1[0]}")
     check_exec_summary_first(path, text)
     h2 = headings(text, 2)
@@ -349,12 +356,18 @@ def main():
     for t in targets(args):
         if os.path.isdir(t):
             name = os.path.basename(t)
-            if not re.match(r"\d\d-", name):
+            if not re.match(r"\d\d-", name) and name != "preface-conducting-ai":
                 continue
             for f in sorted(glob.glob(os.path.join(t, "*"))):
                 b = os.path.basename(f)
                 if b == "lesson.md":
-                    n = check_lesson(f)
+                    n = check_lesson(f, full=(name != "preface-conducting-ai"))
+                    if name == "preface-conducting-ai":
+                        text = open(f, encoding="utf-8").read()
+                        hs = headings(text, 2)
+                        for required in ("The question", "The ideas", "Why Godot", "Predict → Build It → Use It → Ship It → Verify", "Practice assessment (ungraded)", "The next step", "Doing the same thing in Unity", "Doing the same thing in Unreal Engine"):
+                            if required not in hs:
+                                fail(f, "missing preface H2: " + required)
                     print(f"{os.path.relpath(f, ROOT)}: {n} words")
                 elif re.match(r"(lesson-\d+|labs)\.md$", b):
                     n = check_lesson(f, full=False)

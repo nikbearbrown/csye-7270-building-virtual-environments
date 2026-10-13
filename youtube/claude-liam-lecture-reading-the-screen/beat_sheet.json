@@ -1,0 +1,2772 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-reading-the-screen",
+    "title": "Reading the Screen",
+    "topic": "GODOT SHADERS · READING THE SCREEN",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "engine": "kokoro",
+    "clock": "narration",
+    "palette": "claude",
+    "register": "Teardown",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "caption_policy": "sidecar",
+    "greeting_language": "Hallo",
+    "audience": "people making games in Godot, and anyone directing an AI that writes shaders for them",
+    "godot_version": "4.7.2",
+    "lecture_opening_description": "How a shader reads what is already drawn",
+    "lecture_opening_template": "lecture-title-slide-16x9",
+    "lecture_opening_title_lines": [
+      "Reading the Screen"
+    ],
+    "bookend_exempt": [
+      "cold-open",
+      "bvdt"
+    ],
+    "bookend_exempt_reason": "lecture skill: opens on the narrated identity card then the hesitant writer; no composer cold open.",
+    "source_doc": "Godot 4.7 documentation (Screen-reading shaders, CanvasItem shaders, CanvasLayer, BackBufferCopy, Control); Godot 4.7.2 on Apple M4 Pro (evidence/planning-checks); see SOURCES.md",
+    "tags": [
+      "Godot",
+      "Shaders",
+      "Screen texture",
+      "hint_screen_texture",
+      "SCREEN_UV",
+      "Post-processing",
+      "CanvasLayer",
+      "BackBufferCopy",
+      "Game development",
+      "Nik Bear Brown"
+    ]
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Reading the Screen. Learn how a shader can read what the game has already drawn, so you can filter the whole screen, bend the picture, and build water you can see through.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "routing": {
+        "about": "Film identity and payoff",
+        "runner_up": "Minimal title card",
+        "reason": "The lecture skill's approved first beat: portrait, title, narrated summary."
+      },
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, exact film title and short payoff visible immediately.",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete populated lecture opener visible for the whole narration"
+          }
+        ]
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Identity card: portrait and title; teaching motion resumes in BIDEA."
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "the question",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. Most people think a shader only knows its own sprite. One line of code breaks that rule. A shader can read what is already on screen, and build on it.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "types the newcomer's assumption"
+          },
+          {
+            "at": 0.62,
+            "event": "backspaces 'its own sprite' and types 'what is already on screen'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A shader only knows\nits own sprite.",
+            "triggerWords": "its own sprite",
+            "replacementWords": "what is already on screen",
+            "fontSize": 66,
+            "charMs": 24,
+            "hesitateBetween": 6,
+            "hesitateWithin": 1,
+            "mistakeRate": 4,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-reading-the-screen",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "motion_claim": "The writer types the assumption a newcomer arrives with and corrects it into the film's real subject.",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Hesitant-writer bookend: the correction is the motion."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "terms",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Six terms. A texture is an image a shader can read. U V is a point's address on a shape: zero to one across, zero to one down. A uniform is a value your game sets from outside. Fragment is the function that runs once for each pixel and sets its color. Draw order is what gets drawn first; later things cover earlier ones. And post-processing is changing the picture after it is drawn.",
+      "estimated_duration_s": 25.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "'Texture' lands"
+          },
+          {
+            "at": 0.28,
+            "event": "'UV' lands"
+          },
+          {
+            "at": 0.45999999999999996,
+            "event": "'Uniform' lands"
+          },
+          {
+            "at": 0.64,
+            "event": "'fragment()' lands"
+          },
+          {
+            "at": 0.82,
+            "event": "'Draw order' lands"
+          },
+          {
+            "at": 0.9999999999999999,
+            "event": "'Post-processing' lands"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Texture",
+                "meaning": "an image a shader can read by address"
+              },
+              {
+                "term": "UV",
+                "meaning": "a point's address on the shape: 0 to 1 across, 0 to 1 down"
+              },
+              {
+                "term": "Uniform",
+                "meaning": "a value your game sets from outside; every pixel sees the same one"
+              },
+              {
+                "term": "fragment()",
+                "meaning": "runs once for each pixel the shape covers; sets its color"
+              },
+              {
+                "term": "Draw order",
+                "meaning": "what is drawn first; later things cover earlier ones"
+              },
+              {
+                "term": "Post-processing",
+                "meaning": "changing the picture after it is drawn"
+              }
+            ],
+            "durationSeconds": "__AUDIO__",
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "TERMS card: prerequisites, one plain line each."
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "I · A Copy of the Screen",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Give a sprite a shader, and it can color that sprite. But glass, heat haze and water do something different. They change what is behind them. For that, a shader has to read the picture the game has already drawn.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'A Copy of the Screen' (serif 40) top-left. A real Godot render in a framed window on the cream stage: a meadow of green checker tiles, a sand path, flowers, and in the lower left a pool whose wavy top edge ripples and whose water bends the checker lines and the path behind it. The teal player stands to the right. A terracotta ring settles on the pool.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "meadow with the live pool; act title top-left"
+          },
+          {
+            "at": 0.44,
+            "event": "terracotta ring settles on the pool"
+          },
+          {
+            "at": 0.66,
+            "event": "label 'reads the screen'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec3 water : source_color = vec3(0.2, 0.5, 0.8);\n\nvoid fragment() {\n\tif (UV.y < 0.1 + 0.03 * sin(UV.x * 30.0 + TIME * 2.0)) {\n\t\tdiscard;\n\t}\n\tfloat wave = sin(UV.y * 25.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * 0.01, 0.0);\n\tvec3 behind = texture(screen_texture, spot).rgb;\n\tCOLOR.rgb = mix(behind, water, 0.5);\n}",
+            "codeFile": "lab-shaders/12-pool.gdshader",
+            "cues": [],
+            "video": "reading-the-screen/pool.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · live",
+            "readouts": [
+              {
+                "at": 0.66,
+                "text": "reads the screen",
+                "x": 0.26,
+                "y": 0.47
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.44,
+                "box": [
+                  0.05,
+                  0.52,
+                  0.47,
+                  0.93
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "A Copy of the Screen"
+          }
+        },
+        "motion_claim": "The water ripples and the checker lines behind it wobble, live; the ring marks where the picture behind is being read."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of a glass pane over a scene",
+        "why": "The finished effect running is the question the film answers; a drawing would only claim it.",
+        "capture_spec": "C01: scene_c01_pool.gd (evidence/planning-checks), canvas 1280 x 720 through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Nothing moves but the water (TIME). Same capture serves B28.",
+        "act_title_on_screen": "A Copy of the Screen"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "I · A Copy of the Screen",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "There is a catch. Graphics hardware cannot properly read a picture while it is drawing into it. So Godot copies the picture drawn so far, and your shader reads the copy. That copy is the screen texture.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "On the cream stage a 16:9 screen frame, left, fills in the order the game draws it: the green checker ground, a tree, a flower, then a small rectangle labelled 'shader'. Just before that rectangle is drawn, a camera-flash snapshot copies the whole frame into a second frame on the right, labelled 'screen texture: a copy of everything drawn so far'. A drawn arrow runs from the shader rectangle to the copy.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "screen frame; ground, tree, flower drawn in order"
+          },
+          {
+            "at": 0.34,
+            "event": "flash: the frame is copied to the right"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: two frames, label 'screen texture'"
+          },
+          {
+            "at": 0.66,
+            "event": "arrow from the shader rectangle to the copy"
+          }
+        ],
+        "manim": {
+          "class": "B02_TheCopy"
+        },
+        "motion_claim": "The frame is copied in one flash and the shader's arrow reads from the copy, not from the live frame."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "A snapshot being taken is a motion, and the arrow into the copy is the claim; an isometric flow would show boxes, not a copy of a picture."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "I · A Copy of the Screen",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is the smallest use. In the fragment function, each pixel's color becomes whatever the screen holds at that pixel's spot. Switch it on, and the rectangle vanishes. It is still there. It only shows what is behind it.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the 7-line shader; at right a real Godot window on the meadow: a plain teal rectangle in a cream frame. At 58 percent the shader switches on and the teal fill vanishes, leaving the cream frame around meadow. Label: 'still there'.",
+        "show": [
+          {
+            "at": 0.14,
+            "event": "COLOR line highlighted"
+          },
+          {
+            "at": 0.58,
+            "event": "the shader switches on; the teal fill vanishes"
+          },
+          {
+            "at": 0.72,
+            "event": "label 'still there'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tCOLOR.rgb = texture(screen_texture, SCREEN_UV).rgb;\n}",
+            "codeFile": "lab-shaders/01-window.gdshader",
+            "cues": [
+              {
+                "at": 0.13,
+                "lines": [
+                  5
+                ],
+                "label": "fragment(): runs once for each pixel"
+              },
+              {
+                "at": 0.23,
+                "lines": [
+                  6
+                ]
+              }
+            ],
+            "video": "reading-the-screen/window.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on mid-clip (58 percent)",
+            "readouts": [
+              {
+                "at": 0.72,
+                "text": "still there",
+                "x": 0.53,
+                "y": 0.15
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The teal rectangle vanishes at the cue; the cream frame stays, empty, showing the meadow."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Code and its result side by side, with the vanishing as the proof; code alone cannot show that the rectangle is still there.",
+        "capture_spec": "C02: scene_c02_window.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. A teal rectangle (0.38, 0.22, 0.30 x 0.30 of the canvas) in a cream frame; 01-window is assigned at u = 0.58. Verified: the rectangle's interior equals the meadow exactly (8,820 samples, worst channel difference 0)."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "I · A Copy of the Screen",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Now take the uniform line apart. A uniform is a value that comes from outside. Sampler two D is the type of a texture a shader can read. And the name is yours to choose.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The line `uniform sampler2D screen_texture : hint_screen_texture;` set in monospace on the cream stage, each token its own object at explicit coordinates. A bracket is drawn under `uniform` with the label 'from outside'; one under `sampler2D` with 'sampler2D: the type of a texture a shader reads'; one under `screen_texture` with 'your name'. The `hint_screen_texture` token stays grey until the next beat.",
+        "show": [
+          {
+            "at": 0.14,
+            "event": "line typed; bracket under uniform"
+          },
+          {
+            "at": 0.4,
+            "event": "bracket under sampler2D"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: two brackets and labels"
+          },
+          {
+            "at": 0.78,
+            "event": "bracket under the name"
+          }
+        ],
+        "manim": {
+          "class": "B04_ThePieces"
+        },
+        "motion_claim": "Each bracket is drawn under its token on the word that names it, so the line is read left to right."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "The pieces of one line need brackets under tokens; ShaderLab highlights whole lines only."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "I · A Copy of the Screen",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Then the hint, after the colon. A hint is a word that tells Godot how to treat a uniform. This one says: fill it with the screen. Godot refreshes it every frame, so you never set it yourself.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The same line again with the `hint_screen_texture` token ringed (terracotta ring, grey backing) and the labels 'hint: the word after a colon that tells Godot how to treat a uniform' and 'this one: fill it with the screen'. Below, a slot labelled `screen_texture`. On three frame ticks (a small counter 1, 2, 3) a fresh miniature of the meadow drops into the slot, replacing the last one; in each the flower has moved a little. A small cursor arrow outside the slot is crossed out: 'you never set it'.",
+        "show": [
+          {
+            "at": 0.14,
+            "event": "hint token ringed; label"
+          },
+          {
+            "at": 0.4,
+            "event": "first copy drops into the slot"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: copy in the slot"
+          },
+          {
+            "at": 0.66,
+            "event": "second copy replaces it"
+          },
+          {
+            "at": 0.82,
+            "event": "third copy; crossed-out cursor"
+          }
+        ],
+        "manim": {
+          "class": "B05_FilledEveryFrame"
+        },
+        "motion_claim": "A new copy drops into the slot on every tick, replacing the old one, with nobody placing it."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "Replacement on every tick is the claim 'Godot refreshes it every frame'; a static diagram could not show that the copy changes."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "I · A Copy of the Screen",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Now read it. The function texture takes a texture and an address, and returns the color stored there. Four numbers come back: red, green, blue, and alpha, which is how visible it is.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The screen texture drawn as a 12 by 7 grid of outline cells in the meadow colours (cells are never filled behind text). A terracotta probe ring sits on one cell with a live label 'address (0.62, 0.40)'; a drawn arrow runs to a swatch showing that cell's colour. The probe hops to two more cells and the swatch follows. After the third hop the swatch splits into four chips R, G, B, A; the A chip carries 'alpha: how visible a pixel is (0 invisible, 1 solid)'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "grid of the copy"
+          },
+          {
+            "at": 0.3,
+            "event": "probe and swatch; first address"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: probe, label, swatch"
+          },
+          {
+            "at": 0.62,
+            "event": "swatch splits into R, G, B, A"
+          }
+        ],
+        "manim": {
+          "class": "B06_AddressToColor"
+        },
+        "motion_claim": "The probe hops from cell to cell and the swatch changes colour to match; then the swatch splits into four numbers."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "An address going in and a color coming out is a lookup, and a lookup is a probe on a grid; code would only name it."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "I · A Copy of the Screen",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A pixel has two addresses. U V is its place on its own shape. Screen U V is its place on the whole screen. Slide the shape, and U V stays the same, while screen U V changes.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A 16:9 screen outline with a smaller 4:3 shape inside it and one pixel dot on the shape. Two live labels follow the dot: 'UV (0.5, 0.5)', measured on the shape ('UV: a point's address on the shape'), and 'screen UV (0.31, 0.62)', measured on the screen ('SCREEN_UV: a pixel's address on the whole screen, not on its own shape'). The shape then slides right: the first label stays (0.5, 0.5) while the second counts up to (0.62, 0.62).",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "screen outline, shape, pixel dot"
+          },
+          {
+            "at": 0.2,
+            "event": "label 'UV' on the shape"
+          },
+          {
+            "at": 0.4,
+            "event": "label 'screen UV' on the screen"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: both labels"
+          },
+          {
+            "at": 0.68,
+            "event": "the shape slides; screen UV counts up"
+          }
+        ],
+        "manim": {
+          "class": "B07_TwoAddresses"
+        },
+        "motion_claim": "The shape slides and one label never changes while the other counts up."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the two colour pictures",
+        "why": "Two numbers changing at different rates is exactly a pair of live labels; the real render comes in the next beat."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "I · A Copy of the Screen",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Read the screen with U V, and the rectangle fills with a tiny copy of the whole screen. Read it with screen U V, and the rectangle becomes a window onto what is behind it, wherever it slides.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two 16:9 rectangles in cream frames, one above the other, slide right together over the meadow. The top one (UV) holds a tiny copy of the whole screen that does not move with the picture; the bottom one (screen UV) is a window onto the meadow. Right-margin labels 'UV' and 'screen UV'.",
+        "show": [
+          {
+            "at": 0.08,
+            "event": "label 'UV' by the top rectangle"
+          },
+          {
+            "at": 0.43,
+            "event": "label 'screen UV' by the bottom rectangle"
+          },
+          {
+            "at": 0.8,
+            "event": "both rectangles near the right"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reading-the-screen/addresses.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+            "readouts": [
+              {
+                "at": 0.08,
+                "text": "UV",
+                "x": 0.94,
+                "y": 0.21
+              },
+              {
+                "at": 0.43,
+                "text": "screen UV",
+                "x": 0.93,
+                "y": 0.74
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Both rectangles slide; the top one keeps showing the same tiny copy, the bottom one shows different parts of the meadow."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of the two cases",
+        "why": "The consequence of the wrong address is a tiny copy of the screen inside a rectangle, and that is only convincing as a real render.",
+        "capture_spec": "C03: scene_c03_addresses.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Top rectangle 02-miniature, bottom 01-window, both 0.28 x 0.28, sliding from x = 0.04 to 0.56 between u = 0.15 and 0.90. Verified: inside the miniature the colour at a fraction of the rectangle equals the screen at the same fraction (4 of 4 points); inside the window it equals the screen at the same place."
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "I · A Copy of the Screen",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now change the color. Adding r g b after it keeps red, green and blue. One minus each of them flips every color. Slide the window, and the flipped picture stays pinned to the screen. Only the opening moves.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 8-line invert shader); at right a real Godot window: one 16:9 window in a cream frame holds the meadow with every colour flipped (greens turn purple, the sand path turns navy). It sits still, then slides diagonally across the meadow; the flipped picture inside stays pinned to the screen while the opening moves. Label 'pinned to screen'.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "behind line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "1.0 - behind highlighted"
+          },
+          {
+            "at": 0.56,
+            "event": "window starts to slide"
+          },
+          {
+            "at": 0.78,
+            "event": "label 'pinned to screen'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 behind = texture(screen_texture, SCREEN_UV).rgb;\n\tCOLOR.rgb = 1.0 - behind;\n}",
+            "codeFile": "lab-shaders/03-invert.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  6
+                ],
+                "label": ".rgb: picks red, green and blue (a swizzle)"
+              },
+              {
+                "at": 0.38,
+                "lines": [
+                  7
+                ]
+              }
+            ],
+            "video": "reading-the-screen/invert.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+            "readouts": [
+              {
+                "at": 0.78,
+                "text": "pinned to screen",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The window slides and the flipped picture inside does not slide with it; only the opening moves."
+      },
+      "lecture": {
+        "runner_up": "manim sliding frame over a picture",
+        "why": "The sliding window over a fixed picture is the claim, shown on the real result next to the one line that flips it.",
+        "capture_spec": "C04: scene_c04_invert.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. 03-invert in a 0.28 x 0.28 window that is still until u = 0.56, then slides from (0.08, 0.10) to (0.62, 0.58) by u = 0.96. Verified: every sampled pixel equals 1 minus the meadow (worst channel difference 0)."
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "I · A Copy of the Screen",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Older tutorials use a shortcut called screen texture, in capital letters. Godot four removed it. The compiler says so, and points you to the hint instead. If an old line fails, this is why.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A cream code card with the five-line shader that uses the capital-letters shortcut; focus lands on the line that uses it. Under the card the engine's own message, verbatim from a real run, is the note.",
+        "show": [
+          {
+            "at": 0.04,
+            "event": "focus on the shader's first lines"
+          },
+          {
+            "at": 0.1,
+            "event": "focus on the old line"
+          },
+          {
+            "at": 0.5,
+            "event": "settled: old line and the compiler's message"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureCodeTrace",
+          "props": {
+            "title": "A line from older tutorials",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR.rgb = texture(SCREEN_TEXTURE, SCREEN_UV).rgb;\n}",
+            "note": "Godot 4.7.2 compiler: SCREEN_TEXTURE has been removed in favor of using hint_screen_texture with a uniform.",
+            "cues": [
+              0.02,
+              0.02,
+              0.04,
+              0.1,
+              0.1
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Focus steps down to the old line and stays on it while the compiler's message is read."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the docs row 'SCREEN_TEXTURE: Removed in Godot 4'",
+        "why": "The real message from a real run is the thing a viewer will actually see; the docs row says the same but is not what appears when it fails."
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "II · Full-Screen Effects",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A full-screen effect, or post-processing, needs a node covering every pixel. A color rect with your shader on it can do that: set its layout to Full Rect. Its edges follow the screen's corners, even when the game is resized.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Full-Screen Effects' (serif 40) top-left. A screen outline (the game screen) with a small teal rectangle labelled 'ColorRect' inside it. Four terracotta anchor dots on the rectangle's corners fly out to the screen's four corners and the rectangle stretches to fill it; the label 'Layout > Anchors Preset: Full Rect' (the editor's own words) appears. The screen outline then grows wider and narrower in turn and the rectangle follows.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "screen outline, small rectangle; act title"
+          },
+          {
+            "at": 0.34,
+            "event": "corner dots fly out; rectangle fills the screen"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: filled screen, label 'Full Rect'"
+          },
+          {
+            "at": 0.72,
+            "event": "screen resizes; rectangle follows"
+          }
+        ],
+        "manim": {
+          "class": "B11_FullRect"
+        },
+        "motion_claim": "Four dots fly to the four corners, the rectangle fills the screen, and it keeps filling it when the screen is resized."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "an editor capture of the Layout menu (E1, optional)",
+        "why": "Corners snapping to corners is a motion, and the follow-on resize is the point of anchors; the editor frame is an optional upgrade, recorded in CAPTURE-PLAN.",
+        "act_title_on_screen": "Full-Screen Effects"
+      }
+    },
+    {
+      "beat_id": "B12",
+      "act": "II · Full-Screen Effects",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Put that color rect in a canvas layer. A canvas layer is a group drawn together, with a number. The game is at zero. A layer numbered one is drawn after it, so it can read everything the game drew.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two panes in an exploded side view: the lower pane 'game · 0' with a tiny meadow and player; the upper pane 'canvas layer 1' holding the full-rect colour rect, tinted pale grey, with the definition 'canvas layer: a group drawn together, with a number; higher is drawn later'. The lower pane slides in first, then the upper one is drawn on top of it with its number. A drawn arrow runs from the upper pane down through the lower: 'reads everything below'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "color rect inside a layer pane"
+          },
+          {
+            "at": 0.34,
+            "event": "layer pane with its number"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: layer 1 pane"
+          },
+          {
+            "at": 0.58,
+            "event": "game pane below it, number 0"
+          },
+          {
+            "at": 0.76,
+            "event": "arrow: reads everything below"
+          }
+        ],
+        "manim": {
+          "class": "B12_LayerStack"
+        },
+        "motion_claim": "The panes arrive in order, zero then one, and the arrow shows the upper layer reading everything beneath it."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LibraryIconRow of layer icons",
+        "why": "Layers are a stack, and a stack with a drawing order is clearest as panes sliding into place."
+      }
+    },
+    {
+      "beat_id": "B13",
+      "act": "II · Full-Screen Effects",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "One catch: a color rect catches mouse clicks, so your game never hears them. Set its mouse filter to Ignore, and the clicks pass through to the game.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The two panes again, side view: the game pane below, the full-rect colour rect pane above, labelled 'Mouse > Filter: Stop' (the editor's own words). A click (a drawn arrow tip with an expanding ring) comes down from above and stops at the colour rect, which flashes. The label changes to 'Mouse > Filter: Ignore' and the next click passes through the colour rect to the game pane, which flashes.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "two panes, label Stop"
+          },
+          {
+            "at": 0.3,
+            "event": "click 1 stops at the rect"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: click stopped"
+          },
+          {
+            "at": 0.7,
+            "event": "label Ignore; click 2 reaches the game"
+          }
+        ],
+        "manim": {
+          "class": "B13_ClicksStop"
+        },
+        "motion_claim": "The first click stops at the rect; after the label changes the second click passes straight through."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a scripted click",
+        "why": "A click that stops or passes is a path, and a path is a drawn arrow; a Godot capture would need an input log nobody can see."
+      }
+    },
+    {
+      "beat_id": "B14",
+      "act": "II · Full-Screen Effects",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Start with gray. A gray pixel has equal red, green and blue. The function dot multiplies each by a weight and adds them up. Green weighs most and blue least, because that is how bright each color looks to us.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "One meadow pixel as a green swatch. Three horizontal bars show its red, green and blue values. Each bar is multiplied by a weight chip (0.299, 0.587, 0.114) and shrinks to a partial bar; the three partial bars then slide together end to end into one gray bar and a gray swatch appears beside the green one. The 0.587 chip is ringed last. Caption 'dot(a, b): multiply the matching parts and add them' (the GLOSSARY's wording).",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "pixel swatch; three channel bars"
+          },
+          {
+            "at": 0.3,
+            "event": "weight chips; bars shrink"
+          },
+          {
+            "at": 0.42,
+            "event": "bars join into one gray bar"
+          },
+          {
+            "at": 0.5,
+            "event": "settled: gray bar and swatch"
+          },
+          {
+            "at": 0.74,
+            "event": "the 0.587 chip ringed"
+          }
+        ],
+        "manim": {
+          "class": "B14_WeightedSum"
+        },
+        "motion_claim": "Three bars shrink by their weights and join end to end into one gray bar, and the gray swatch appears."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "plot of luma against green",
+        "why": "A sum is three pieces becoming one, and that is a shape change, which Manim transforms rather than cuts."
+      }
+    },
+    {
+      "beat_id": "B15",
+      "act": "II · Full-Screen Effects",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Then mix. Mix blends two values by an amount: zero gives the first, one gives the second. Make the amount a uniform with a range hint, and your game can drain the color from the whole picture with one dial.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 10-line gray shader); at right a real Godot window: the meadow and the teal player under a full-screen filter. The amount uniform sweeps from 0 to 1 and the colour drains out of the whole picture, grass, path, flowers and player together.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "mix line highlighted"
+          },
+          {
+            "at": 0.43,
+            "event": "amount line highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "colour starts to drain"
+          },
+          {
+            "at": 0.95,
+            "event": "fully gray"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat gray = dot(c, vec3(0.299, 0.587, 0.114));\n\tCOLOR.rgb = mix(c, vec3(gray), amount);\n}",
+            "codeFile": "lab-shaders/05-gray.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  9
+                ],
+                "label": "mix(a, b, t): blends from a to b: t of 0 gives a, 1 gives b"
+              },
+              {
+                "at": 0.42,
+                "lines": [
+                  4
+                ],
+                "label": "hint_range: a slider from 0 to 1"
+              },
+              {
+                "at": 0.75,
+                "lines": [
+                  9
+                ]
+              }
+            ],
+            "video": "reading-the-screen/gray.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "amount 0",
+                "x": 0.5,
+                "y": 0.94
+              },
+              {
+                "at": 0.92,
+                "text": "amount 1",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The colour drains from everything at once as the dial turns."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills of amount 0 and 1",
+        "why": "A dial turning is a continuous change and the whole picture draining is the claim; two stills would lose the dial.",
+        "capture_spec": "C05: scene_c05_gray.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Meadow + player, 05-gray on a full-screen ColorRect in a CanvasLayer (layer 1); amount 0 until u = 0.62, then 1 by u = 0.95. Verified: amount 0, 0.5, 1 match the weights and mix exactly (within 1/255, 9 of 9)."
+      }
+    },
+    {
+      "beat_id": "B16",
+      "act": "II · Full-Screen Effects",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now a spotlight: color near the player, gray everywhere else. The shader needs two numbers from your game: where the player is, and how big the circle is. Both are uniforms.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 12-line spotlight shader with the plain distance test); at right a real Godot window: the meadow in gray with a coloured area around the teal player, who walks one lap of a flat ellipse. The uniform lines light up as the voice names them.",
+        "show": [
+          {
+            "at": 0.4,
+            "event": "player uniform line highlighted"
+          },
+          {
+            "at": 0.7,
+            "event": "radius uniform line highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec2 player = vec2(0.5);\nuniform float radius = 0.25;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tif (distance(SCREEN_UV, player) > radius) {\n\t\tc = vec3(dot(c, vec3(0.299, 0.587, 0.114)));\n\t}\n\tCOLOR.rgb = c;\n}",
+            "codeFile": "lab-shaders/06-spotlight-oval.gdshader",
+            "cues": [
+              {
+                "at": 0.58,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.74,
+                "lines": [
+                  4
+                ]
+              }
+            ],
+            "video": "reading-the-screen/spot-oval.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The coloured area follows the walking player."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "The effect following the player is the picture the next four beats take apart; a still would hide that it follows.",
+        "capture_spec": "C06: scene_c06_spot_oval.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. The player walks one lap of an ellipse (0.20 x 0.12 of the canvas) round the middle; every frame the scene's _process sends player position / canvas size to the filter; radius 0.25. The same capture serves B17. Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel)."
+      }
+    },
+    {
+      "beat_id": "B17",
+      "act": "II · Full-Screen Effects",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Measure each pixel's distance from the player. The function distance gives the gap between two addresses. If it is more than the radius, make the pixel gray. Otherwise, leave it alone.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same capture as the previous beat with different lines lit: the distance test, the gray line, the final colour line.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "distance test highlighted"
+          },
+          {
+            "at": 0.58,
+            "event": "gray line highlighted"
+          },
+          {
+            "at": 0.82,
+            "event": "colour line highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec2 player = vec2(0.5);\nuniform float radius = 0.25;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tif (distance(SCREEN_UV, player) > radius) {\n\t\tc = vec3(dot(c, vec3(0.299, 0.587, 0.114)));\n\t}\n\tCOLOR.rgb = c;\n}",
+            "codeFile": "lab-shaders/06-spotlight-oval.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  8
+                ],
+                "label": "distance: the gap between two addresses"
+              },
+              {
+                "at": 0.57,
+                "lines": [
+                  9
+                ]
+              },
+              {
+                "at": 0.87,
+                "lines": [
+                  11
+                ]
+              }
+            ],
+            "video": "reading-the-screen/spot-oval.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The coloured area keeps following the player while the lines of the test light up in order."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Code with its running result beats code alone: the viewer sees which pixels each line decides.",
+        "capture_spec": "C06 again (see B16): reuse the same video file."
+      }
+    },
+    {
+      "beat_id": "B18",
+      "act": "II · Full-Screen Effects",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Look closely: it is an oval. Addresses run zero to one across and zero to one down, but the screen is wider than tall. So a step across is longer than a step down, and the circle stretches.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A unit square labelled 'addresses: 0 to 1 across, 0 to 1 down' with a circle of radius 0.25 drawn inside it. The square stretches sideways into a 16:9 screen rectangle and the circle becomes an ellipse. Two measurements appear along the ellipse: sideways '0.25 × 1280 = 320 px', up and down '0.25 × 720 = 180 px'. Caption 'oval'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "unit square with a circle"
+          },
+          {
+            "at": 0.34,
+            "event": "the square stretches into the 16:9 screen"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: ellipse"
+          },
+          {
+            "at": 0.64,
+            "event": "the two measurements"
+          }
+        ],
+        "manim": {
+          "class": "B18_StretchedAddresses"
+        },
+        "motion_claim": "The square stretches into the wide screen and the circle stretches with it into an oval."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with readouts on the oval capture",
+        "why": "The cause is the stretch from a square of addresses to a wide screen, which is a transformation; the numbers then name it."
+      }
+    },
+    {
+      "beat_id": "B19",
+      "act": "II · Full-Screen Effects",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Screen pixel size is the size of one pixel, as a fraction of the screen. Its y divided by its x is the aspect ratio: width divided by height. Stretch both addresses across by that, and distances come out equal.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 14-line fixed spotlight); at right the same walk: the coloured area is an oval until 72 percent of the beat, when the shader is swapped and it becomes a circle.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "the pixel size and aspect lines highlighted"
+          },
+          {
+            "at": 0.38,
+            "event": "label defines 'aspect ratio'"
+          },
+          {
+            "at": 0.72,
+            "event": "the multiply lines highlighted"
+          },
+          {
+            "at": 0.72,
+            "event": "the oval becomes a circle"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec2 player = vec2(0.5);\nuniform float radius = 0.25;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tvec2 px = SCREEN_PIXEL_SIZE;\n\tvec2 aspect = vec2(px.y / px.x, 1.0);\n\tif (distance(SCREEN_UV * aspect, player * aspect) > radius) {\n\t\tc = vec3(dot(c, vec3(0.299, 0.587, 0.114)));\n\t}\n\tCOLOR.rgb = c;\n}",
+            "codeFile": "lab-shaders/07-spotlight.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  8,
+                  9
+                ],
+                "label": "SCREEN_PIXEL_SIZE: one pixel, as a fraction of the screen"
+              },
+              {
+                "at": 0.38,
+                "lines": [
+                  9
+                ],
+                "label": "aspect ratio: width divided by height"
+              },
+              {
+                "at": 0.72,
+                "lines": [
+                  9,
+                  10
+                ]
+              }
+            ],
+            "video": "reading-the-screen/spot-swap.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader swapped at 72 percent",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The oval snaps to a circle at the cue."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a split view of both shaders",
+        "why": "A before and after on the same walk is the proof; the swap makes the cause (the extra two lines) and the effect (round) one event.",
+        "capture_spec": "C07: scene_c07_spot_swap.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. As C06; at u = 0.72 the material is swapped from 06-spotlight-oval to 07-spotlight (radius 0.25 carried over). Verified: 07 reaches 180 px both ways. Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel)."
+      }
+    },
+    {
+      "beat_id": "B20",
+      "act": "II · Full-Screen Effects",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The shader cannot see your player. So every frame, your game takes the player's position on screen, divides it by the screen size, and sends it with set shader parameter. Move the player, and the circle follows.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the four-line GDScript _process; at right the finished circular spotlight following the walking player.",
+        "show": [
+          {
+            "at": 0.18,
+            "event": "func line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "the on-screen position line highlighted"
+          },
+          {
+            "at": 0.5,
+            "event": "the division lines highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "the call highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "func _process(_delta):\n\tvar size := get_viewport_rect().size\n\tvar on_screen: Vector2 = $Player.get_global_transform_with_canvas().origin\n\t$Layer/Filter.material.set_shader_parameter(\"player\", on_screen / size)",
+            "codeFile": "scene script (GDScript)",
+            "cues": [
+              {
+                "at": 0.16,
+                "lines": [
+                  1
+                ]
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.43,
+                "lines": [
+                  2,
+                  4
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4
+                ],
+                "label": "set_shader_parameter: sends a value to a uniform"
+              }
+            ],
+            "video": "reading-the-screen/spot-game.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The lines light up as the voice names them while the circle follows the player."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace on the GDScript",
+        "why": "The cause (four lines) and the effect (the circle following) together.",
+        "capture_spec": "C08: scene_c08_spot_game.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. The scene's own _process is exactly the four lines shown. Verified: the centroid of the lit area sits on the player within 1 px (verify7 C08); with a moved Camera2D the canvas-transform version lands on the player while plain position / size does not (verify8). Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel)."
+      }
+    },
+    {
+      "beat_id": "B21",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "So far, each pixel read the screen exactly where it sits. Read somewhere else, and the picture bends. Add a small number to the address, and every pixel shows what lies a little further right.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Bend What Is Behind' (serif 40) top-left. Code card at left (the 9-line shift shader); at right a real Godot window: one large window in a cream frame over the meadow. The shift uniform sweeps from 0 to 0.1 and the picture inside the frame slides sideways against the picture outside; the sand path breaks at the frame's edges. Label 'shift 0.1'.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "spot line highlighted"
+          },
+          {
+            "at": 0.57,
+            "event": "shift uniform highlighted; the sweep begins"
+          },
+          {
+            "at": 0.9,
+            "event": "label 'shift 0.1'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float shift : hint_range(-0.2, 0.2) = 0.0;\n\nvoid fragment() {\n\tvec2 spot = SCREEN_UV + vec2(shift, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+            "codeFile": "lab-shaders/08-shift.gdshader",
+            "cues": [
+              {
+                "at": 0.31,
+                "lines": [
+                  7
+                ]
+              },
+              {
+                "at": 0.57,
+                "lines": [
+                  4
+                ]
+              }
+            ],
+            "video": "reading-the-screen/shift.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shift swept by script",
+            "readouts": [
+              {
+                "at": 0.9,
+                "text": "shift 0.1",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "Bend What Is Behind"
+          }
+        },
+        "motion_claim": "The picture inside the frame slides to the left while the picture outside stays put."
+      },
+      "lecture": {
+        "runner_up": "manim arrow on a picture",
+        "why": "A real window sliding against its surroundings shows the break at the frame's edge, which an arrow only implies.",
+        "capture_spec": "C09: scene_c09_shift.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Window 0.52 x 0.42 at (0.20, 0.12); shift 0 until u = 0.56, then 0.10 by u = 0.90. Verified: 3,640 of 3,640 sampled pixels show the meadow at x + shift (for 0.1 and for -0.05).",
+        "act_title_on_screen": "Bend What Is Behind"
+      }
+    },
+    {
+      "beat_id": "B22",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Make the number depend on the row. Sine is a smooth wave between minus one and one. Feed it the vertical address, and each row gets a different push, left, then right. Straight lines now ripple.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 10-line ripple shader without time); at right a real Godot window: a large window in a cream frame; as the amount grows the straight tile edges inside become a chevron of ripples and the flowers stretch sideways.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "sine line highlighted"
+          },
+          {
+            "at": 0.64,
+            "event": "the push line highlighted"
+          },
+          {
+            "at": 0.92,
+            "event": "ripples at full amount"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(SCREEN_UV.y * 60.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+            "codeFile": "lab-shaders/09-ripple-still.gdshader",
+            "cues": [
+              {
+                "at": 0.19,
+                "lines": [
+                  7
+                ],
+                "label": "sin: a smooth wave between -1 and 1"
+              },
+              {
+                "at": 0.64,
+                "lines": [
+                  8
+                ]
+              }
+            ],
+            "video": "reading-the-screen/ripple-still.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · amount grown by script",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Straight lines inside the frame start to ripple as the amount grows."
+      },
+      "lecture": {
+        "runner_up": "manim plot of sin(y) with rows shifted",
+        "why": "The real ripple is the claim; the plot would explain the function but not what a viewer will see in a game.",
+        "capture_spec": "C10: scene_c10_ripple_still.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Window 0.56 x 0.52 at (0.20, 0.08); amount 0 until u = 0.44, then 0.012 by u = 0.92. Verified: the tile edge in ten rows sits at 560 minus 0.01 sin(60 y) times 1280, within 0.5 px (0.6 in Compatibility; the edge is found to a whole pixel)."
+      }
+    },
+    {
+      "beat_id": "B23",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Add time inside the sine, and the ripples travel. Time is seconds on one clock shared by the whole game, so every pixel ripples in step.",
+      "estimated_duration_s": 8.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 10-line ripple shader with TIME); at right the same large window with the ripples now travelling, live. Label 'time: one clock'.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "the sine line with TIME highlighted"
+          },
+          {
+            "at": 0.6,
+            "event": "label 'time: one clock'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(SCREEN_UV.y * 60.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+            "codeFile": "lab-shaders/10-ripple.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  7
+                ],
+                "label": "TIME: seconds on one clock shared by the whole game"
+              }
+            ],
+            "video": "reading-the-screen/ripple-time.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+            "readouts": [
+              {
+                "at": 0.6,
+                "text": "time: one clock",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ripples travel through the window, in step across it."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "Travel is motion; stills cannot show it.",
+        "capture_spec": "C11: scene_c11_ripple_time.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick, so TIME is repeatable), Forward+, length = the beat's audio. Same window as C10, amount 0.01."
+      }
+    },
+    {
+      "beat_id": "B24",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Keep the push small. It is a fraction of the screen's width. About one hundredth looks like water. Much more, and the picture stops rippling and starts to tear.",
+      "estimated_duration_s": 9.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the amount line lit; at right the travelling-ripple window while amount sweeps: calm ripples at 0.01, then the picture shears into streaks at 0.06. Readouts '0.01' then '0.06'.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "amount line highlighted"
+          },
+          {
+            "at": 0.4,
+            "event": "readout 0.01: ripples read as water"
+          },
+          {
+            "at": 0.9,
+            "event": "readout 0.06: the picture tears"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(SCREEN_UV.y * 60.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+            "codeFile": "lab-shaders/10-ripple.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  4
+                ]
+              }
+            ],
+            "video": "reading-the-screen/amount.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+            "readouts": [
+              {
+                "at": 0.4,
+                "text": "0.01",
+                "x": 0.5,
+                "y": 0.94
+              },
+              {
+                "at": 0.9,
+                "text": "0.06",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ripples grow from calm to torn as the number grows."
+      },
+      "lecture": {
+        "runner_up": "manim plot of amplitude",
+        "why": "Seeing the picture tear is the lesson; a number alone does not say how much is too much.",
+        "capture_spec": "C12: scene_c12_amount.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. As C11; amount 0.002 rising to 0.01 by u = 0.30, held to u = 0.60, then to 0.06 by u = 0.95."
+      }
+    },
+    {
+      "beat_id": "B25",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "You can also read a blurred copy. Add the hint filter linear mipmap, and Godot builds smaller, blurrier copies of the screen. Read a higher level with texture lod, and you get frosted glass.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 9-line blur shader; the declaration runs over two lines); at right a real Godot window: a large window in a cream frame; as the blur level rises from 0 to 4 the meadow inside turns to frosted glass while the picture outside stays sharp. Label 'level 4' once the level has reached it.",
+        "show": [
+          {
+            "at": 0.22,
+            "event": "filter_linear_mipmap highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "textureLod line highlighted; the sweep begins"
+          },
+          {
+            "at": 0.88,
+            "event": "label 'level 4'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture,\n\t\tfilter_linear_mipmap;\nuniform float blur : hint_range(0.0, 5.0) = 0.0;\n\nvoid fragment() {\n\tCOLOR.rgb = textureLod(screen_texture, SCREEN_UV, blur).rgb;\n}",
+            "codeFile": "lab-shaders/14-blur.gdshader",
+            "cues": [
+              {
+                "at": 0.21,
+                "lines": [
+                  4
+                ],
+                "label": "mipmap: smaller, blurrier copies of a texture"
+              },
+              {
+                "at": 0.65,
+                "lines": [
+                  8
+                ],
+                "label": "textureLod: reads one chosen level"
+              }
+            ],
+            "video": "reading-the-screen/blur.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · blur level swept by script",
+            "readouts": [
+              {
+                "at": 0.88,
+                "text": "level 4",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The picture inside the frame blurs progressively as the level rises."
+      },
+      "lecture": {
+        "runner_up": "manim stack of shrinking images",
+        "why": "Frosted glass appearing is the whole claim; the stack of smaller copies is explained by the narration.",
+        "capture_spec": "C13: scene_c13_blur.gd, NATIVE route: a 1920 x 1080 SubViewport at scale 1, the scene built for a 1920 x 1080 canvas (--native; NOT the 4K route, see CAPTURE-PLAN.md 'Routes'), 30 fps, Forward+, length = the beat's audio. Window 0.56 x 0.56 at (0.20, 0.14); blur 0 until u = 0.58, then exactly 4.0 by u = 0.84, held. Verified: largest step between neighbouring pixels 0.377 at level 0, 0.012 at level 2, 0.008 at level 4 (1280 x 720 window, verify4 L8a); mean difference between the level-4 picture and the sharp one inside the window 0.028 on this route, 0.017 on the 4K route, 0.037 in a plain 1280 x 720 window (verify10 A)."
+      }
+    },
+    {
+      "beat_id": "B26",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Which address drives the waves matters. Use the window's own U V, and the ripples ride along when it moves. Use screen U V, and they stay put on the screen while the window slides over them.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two windows in cream frames over a meadow that scrolls down and back. Left: ripples from the window's own address (UV.y); right: ripples from the screen address (SCREEN_UV.y). Both ripple fields are frozen. Labels 'UV: rides along' and 'screen UV: stays'; small labels 'UV.y' and 'SCREEN_UV.y' under the windows.",
+        "show": [
+          {
+            "at": 0.18,
+            "event": "label 'UV: rides along' on the left window"
+          },
+          {
+            "at": 0.6,
+            "event": "label 'screen UV: stays' on the right window"
+          },
+          {
+            "at": 0.88,
+            "event": "the scroll returns"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reading-the-screen/ride-glued.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the world scrolls (scripted)",
+            "readouts": [
+              {
+                "at": 0.18,
+                "text": "UV: rides along",
+                "x": 0.23,
+                "y": 0.08
+              },
+              {
+                "at": 0.6,
+                "text": "screen UV: stays",
+                "x": 0.73,
+                "y": 0.08
+              },
+              {
+                "at": 0.18,
+                "text": "UV.y",
+                "x": 0.23,
+                "y": 0.92
+              },
+              {
+                "at": 0.6,
+                "text": "SCREEN_UV.y",
+                "x": 0.73,
+                "y": 0.92
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "On the left the ripples move down with the window; on the right they stay at the same screen rows while the window slides over them."
+      },
+      "lecture": {
+        "runner_up": "manim two sine plots",
+        "why": "Relative motion between a window and its ripples is the claim and needs the real thing moving; plots would not show it.",
+        "capture_spec": "C14: scene_c14_ride_glued.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. WorldRoot (meadow with a 2-cell bleed + both windows) moves down 140 px between u = 0.12 and 0.52 and back by u = 0.96. Windows 0.30 x 0.46 at (0.08, 0.14) with 13-ripple-ride and at (0.58, 0.14) with 09-ripple-still; no TIME. Verified: after a 100 px move the glued window's edge offsets are unchanged in 6 of 6 rows; the ride window's changed in 6 of 6."
+      }
+    },
+    {
+      "beat_id": "B27",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A pool is the same trick with a water color. Mix the bent picture halfway toward blue. The source color hint gives you a color picker in the Inspector, so an artist can change it.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 12-line water shader); at right a real Godot window: the pool, a plain rectangle in the lower left, tinted blue over the bent meadow, rippling live. Near the end the water colour changes blue to violet, as an artist would with the colour picker.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "wave and spot lines highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "mix line highlighted"
+          },
+          {
+            "at": 0.58,
+            "event": "water uniform highlighted"
+          },
+          {
+            "at": 0.84,
+            "event": "water colour changes"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec3 water : source_color = vec3(0.2, 0.5, 0.8);\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(UV.y * 25.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tvec3 behind = texture(screen_texture, spot).rgb;\n\tCOLOR.rgb = mix(behind, water, 0.5);\n}",
+            "codeFile": "lab-shaders/11-water.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  8,
+                  9
+                ]
+              },
+              {
+                "at": 0.29,
+                "lines": [
+                  11
+                ]
+              },
+              {
+                "at": 0.43,
+                "lines": [
+                  4
+                ],
+                "label": "source_color: shows a color picker"
+              }
+            ],
+            "video": "reading-the-screen/pool-tint.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · live; colour changed by script at the end",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The pool ripples and, at the end, its colour changes from blue to violet."
+      },
+      "lecture": {
+        "runner_up": "manim blend diagram",
+        "why": "The tinted, rippling pool is the result and the colour change is the reason for the hint; both are only real in a render.",
+        "capture_spec": "C15: scene_c15_pool_tint.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. Pool 0.40 x 0.40 at (0.06, 0.52) with 11-water; water = (0.2, 0.5, 0.8) until u = 0.78, then to (0.6, 0.3, 0.8) by u = 0.94. Verified: pool pixel = 0.5 x meadow + 0.5 x water (both renderers); the shader reports a colour hint (no alpha) for water."
+      }
+    },
+    {
+      "beat_id": "B28",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A pool needs a top edge. Compare the pool's own vertical address with a sine of its horizontal address. Above that wavy line, discard the pixel. Discard throws a pixel away, so the grass shows through.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 14-line pool shader); at right the same pool capture as the opening: the wavy top edge ripples, and above it the grass shows through.",
+        "show": [
+          {
+            "at": 0.16,
+            "event": "the edge test highlighted"
+          },
+          {
+            "at": 0.58,
+            "event": "the whole discard block highlighted"
+          },
+          {
+            "at": 0.76,
+            "event": "the discard line highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec3 water : source_color = vec3(0.2, 0.5, 0.8);\n\nvoid fragment() {\n\tif (UV.y < 0.1 + 0.03 * sin(UV.x * 30.0 + TIME * 2.0)) {\n\t\tdiscard;\n\t}\n\tfloat wave = sin(UV.y * 25.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * 0.01, 0.0);\n\tvec3 behind = texture(screen_texture, spot).rgb;\n\tCOLOR.rgb = mix(behind, water, 0.5);\n}",
+            "codeFile": "lab-shaders/12-pool.gdshader",
+            "cues": [
+              {
+                "at": 0.17,
+                "lines": [
+                  7
+                ]
+              },
+              {
+                "at": 0.57,
+                "lines": [
+                  7,
+                  8,
+                  9
+                ]
+              },
+              {
+                "at": 0.72,
+                "lines": [
+                  8
+                ],
+                "label": "discard: throws the pixel away"
+              }
+            ],
+            "video": "reading-the-screen/pool.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · live",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The top edge of the pool undulates while the grass above it stays untouched."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "A wavy edge is only an edge when it moves.",
+        "capture_spec": "C01 again (see B01): reuse the same video file. Verified: the first changed row down the pool is a different UV.y at five columns (0.080 to 0.115 in Forward+) and the meadow above it is untouched."
+      }
+    },
+    {
+      "beat_id": "B29",
+      "act": "III · Bend What Is Behind",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Put it together. The pool bends the grass behind it, tints it, and ripples along its own edge. Scroll the world, and the pool scrolls with it, because its waves belong to the pool.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window: the meadow, the finished pool and the player all scroll down together and back. The pool's ripples travel with the pool. Label 'pool scrolls too'.",
+        "show": [
+          {
+            "at": 0.54,
+            "event": "the pan starts"
+          },
+          {
+            "at": 0.62,
+            "event": "label 'pool scrolls too'"
+          },
+          {
+            "at": 0.9,
+            "event": "the pan returns"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reading-the-screen/pan.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the world scrolls (scripted)",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "pool scrolls too",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The whole scene pans and the pool stays glued to the ground, rippling."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "A pan is motion and the pool riding the ground is the claim.",
+        "capture_spec": "C16: scene_c16_pan.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. WorldRoot (meadow with a 2-cell bleed, the 12-pool pool, the player) moves down 110 px between u = 0.54 and 0.74 and back between u = 0.80 and 0.98."
+      }
+    },
+    {
+      "beat_id": "B30",
+      "act": "IV · What It Can See",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A shader can only read what exists when the copy is taken. Godot takes it once, right before the first reading node on a layer is drawn. Everything drawn earlier is in it. Everything drawn later is not.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'What It Can See' (serif 40) top-left. A row of draw-step tiles inside a bracket 'layer 0': ground, tree, reader 1 (a window), player, reader 2 (a second window); 'reader: a node whose shader reads the screen texture'. A camera flash fires just before 'reader 1' and a copy tile drops below the row, labelled 'the copy'. Tiles before the flash get a check mark; the tiles after it do not. An arrow from reader 2 points at the same copy tile, not a new one.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "tiles in a layer bracket; act title"
+          },
+          {
+            "at": 0.36,
+            "event": "flash before reader 1; the copy tile drops"
+          },
+          {
+            "at": 0.46,
+            "event": "settled: row and the copy tile"
+          },
+          {
+            "at": 0.6,
+            "event": "arrow from reader 2 to the same copy"
+          },
+          {
+            "at": 0.78,
+            "event": "checks on the earlier tiles"
+          },
+          {
+            "at": 0.9,
+            "event": "later tiles stay unchecked"
+          }
+        ],
+        "manim": {
+          "class": "B30_OnceBeforeTheFirstReader"
+        },
+        "motion_claim": "The flash fires once, before the first reader; checks land on the earlier tiles only; the second reader's arrow points at the same copy."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the docs 'Behind the scenes' paragraph",
+        "why": "The rule is an order of events, which a timeline shows as motion; the docs paragraph is quoted in FACTCHECK.",
+        "act_title_on_screen": "What It Can See"
+      }
+    },
+    {
+      "beat_id": "B31",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "To see what is in the copy, put a tiny copy on screen. It shows the mustard block, drawn before it, and not the violet one, drawn after. Move the lens later, and the violet block appears too.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window: the meadow with a big mustard block at lower left (drawn before the lens) and a violet block at lower centre (drawn after it); top right, a lens in a cream frame shows a tiny copy of the screen, with the mustard block in it and no violet block. Labels 'drawn before' and 'drawn after'. At 76 percent the lens moves later in the tree and the violet block appears inside it.",
+        "show": [
+          {
+            "at": 0.42,
+            "event": "label 'drawn before'"
+          },
+          {
+            "at": 0.62,
+            "event": "label 'drawn after'"
+          },
+          {
+            "at": 0.76,
+            "event": "the lens moves later; the violet block appears in it"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tCOLOR.rgb = texture(screen_texture, UV).rgb;\n}",
+            "codeFile": "lab-shaders/02-miniature.gdshader",
+            "cues": [],
+            "video": "reading-the-screen/xray.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the lens is moved later in the tree at 76 percent",
+            "readouts": [
+              {
+                "at": 0.42,
+                "text": "drawn before",
+                "x": 0.16,
+                "y": 0.55
+              },
+              {
+                "at": 0.62,
+                "text": "drawn after",
+                "x": 0.6,
+                "y": 0.53
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The violet block appears inside the lens when the lens moves later in the draw order."
+      },
+      "lecture": {
+        "runner_up": "manim two copies side by side",
+        "why": "The lens is the film's one instrument for looking inside the copy, and the change at 76 percent is the proof that draw order decides.",
+        "capture_spec": "C17: scene_c17_xray.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Tree order World, X (mustard block, 0.16 x 0.26 at (0.08, 0.60)), Lens (02-miniature, 0.30 x 0.30 at (0.60, 0.06)), Y (violet block at (0.52, 0.58)); at u = 0.76 the lens is moved to the end of the tree. Verified: before the move the lens shows X and not Y (red and blue test blocks in verify2 M1 give the same result)."
+      }
+    },
+    {
+      "beat_id": "B32",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A second reading node on the same layer reuses that copy. Overlap two windows that each flip the colors. Flipping twice should restore the original. Instead the overlap stays flipped, because the second window never saw the first.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window: window A (cream frame) flips the colours over the meadow. At 30 percent window B (cream frame) appears, overlapping A's lower right. The overlap looks exactly like the rest of A and B, flipped once. A terracotta ring settles on the overlap; labels 'expected: original' and 'got: flipped'.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "window B appears over A"
+          },
+          {
+            "at": 0.43,
+            "event": "label 'expected: original'"
+          },
+          {
+            "at": 0.6,
+            "event": "ring on the overlap"
+          },
+          {
+            "at": 0.64,
+            "event": "label 'got: flipped'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 behind = texture(screen_texture, SCREEN_UV).rgb;\n\tCOLOR.rgb = 1.0 - behind;\n}",
+            "codeFile": "lab-shaders/03-invert.gdshader",
+            "cues": [],
+            "video": "reading-the-screen/overlap.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the second window appears at 30 percent",
+            "readouts": [
+              {
+                "at": 0.43,
+                "text": "expected: original",
+                "x": 0.84,
+                "y": 0.5
+              },
+              {
+                "at": 0.64,
+                "text": "got: flipped",
+                "x": 0.84,
+                "y": 0.58
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.6,
+                "box": [
+                  0.37,
+                  0.29,
+                  0.51,
+                  0.59
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "B appears over A and the overlap is flipped once, not twice."
+      },
+      "lecture": {
+        "runner_up": "manim two layered panes",
+        "why": "The unexpected result is the lesson, and a real overlap that does not flip back is more convincing than a diagram that says it.",
+        "capture_spec": "C18: scene_c18_overlap.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. A = 03-invert at (0.16, 0.12), B = 03-invert at (0.38, 0.30), both 0.34 x 0.46, same canvas; B hidden until u = 0.30. Overlap region (0.38, 0.30) to (0.50, 0.58). Verified: the overlap reads inverted once (1 minus meadow), in both renderers."
+      }
+    },
+    {
+      "beat_id": "B33",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The fix is a node called Back Buffer Copy, placed between them, with its copy mode set to Viewport. It takes a fresh copy of the whole screen right there. Now the overlap flips back to the original colors.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same two windows from the start; a BackBufferCopy node sits between them in the tree and is switched on at 76 percent. Before it, the overlap is flipped once; after it, the overlap shows the original meadow colours. Label 'Back Buffer Copy · Viewport' appears early; a ring settles on the overlap at the end.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "label 'Back Buffer Copy · Viewport'"
+          },
+          {
+            "at": 0.76,
+            "event": "the node switches on; the overlap restores"
+          },
+          {
+            "at": 0.84,
+            "event": "ring on the overlap"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 behind = texture(screen_texture, SCREEN_UV).rgb;\n\tCOLOR.rgb = 1.0 - behind;\n}",
+            "codeFile": "lab-shaders/03-invert.gdshader",
+            "cues": [],
+            "video": "reading-the-screen/overlap-fix.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the node is switched on at 76 percent",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "Back Buffer Copy",
+                "x": 0.5,
+                "y": 0.06
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.84,
+                "box": [
+                  0.37,
+                  0.29,
+                  0.51,
+                  0.59
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The overlap snaps back to the original colours at the cue."
+      },
+      "lecture": {
+        "runner_up": "manim node between two panes",
+        "why": "The restoring overlap is the proof of the fix, in the very frame where the bug was shown.",
+        "capture_spec": "C19: scene_c19_overlap_fix.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. As C18 with both windows visible from the start and a BackBufferCopy (copy_mode Viewport) between A and B, visible (switched on) from u = 0.76. Verified: with it the overlap reads as the original meadow; with a default BackBufferCopy (Rect mode) it does not."
+      }
+    },
+    {
+      "beat_id": "B34",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A canvas layer takes its own copy. So the gray filter on its own layer sees everything below it, even the pool, with no Back Buffer Copy. Pool, player and grass all turn gray together.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window: the meadow, the live pool and the player on the game layer; a gray filter on its own layer starts at amount 0. At 72 to 90 percent the amount rises and the whole picture, pool and player included, turns gray together. Label 'own layer'; a ring on the pool.",
+        "show": [
+          {
+            "at": 0.26,
+            "event": "label 'own layer'"
+          },
+          {
+            "at": 0.57,
+            "event": "ring on the pool"
+          },
+          {
+            "at": 0.72,
+            "event": "the filter amount rises"
+          },
+          {
+            "at": 0.9,
+            "event": "everything gray"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat gray = dot(c, vec3(0.299, 0.587, 0.114));\n\tCOLOR.rgb = mix(c, vec3(gray), amount);\n}",
+            "codeFile": "lab-shaders/05-gray.gdshader",
+            "cues": [],
+            "video": "reading-the-screen/fresh-layer.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+            "readouts": [
+              {
+                "at": 0.26,
+                "text": "own layer",
+                "x": 0.5,
+                "y": 0.94
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.57,
+                "box": [
+                  0.05,
+                  0.5,
+                  0.47,
+                  0.93
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Pool, player and grass all go gray together."
+      },
+      "lecture": {
+        "runner_up": "manim layered panes",
+        "why": "The pool turning gray with the grass is the proof that the filter saw it, and nothing but the render shows that.",
+        "capture_spec": "C20: scene_c20_fresh_layer.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. Meadow, 12-pool, player on layer 0; 05-gray on a full-screen ColorRect in a CanvasLayer (layer 1), amount 0 until u = 0.72, then 1 by u = 0.90. No BackBufferCopy. Verified: the player's pixel and the pool's pixel equal their luma grays (player 0.5529 against 0.5514; pool 0.5804 against 0.5795)."
+      }
+    },
+    {
+      "beat_id": "B35",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Anything on a higher layer is untouched. Put the health bar on layer two, above the filter, and it keeps its color while the game turns gray.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window: the game is already gray. The health bar, top left, starts on layer 0 and is gray with it; at 58 percent its layer index is set to 2 and it turns mustard while the game stays gray. Labels 'layer 0: gray' and 'layer 2: color'.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "label 'layer 0: gray' on the bar"
+          },
+          {
+            "at": 0.58,
+            "event": "the bar's layer is set to 2; it turns mustard"
+          },
+          {
+            "at": 0.74,
+            "event": "label 'layer 2: color'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat gray = dot(c, vec3(0.299, 0.587, 0.114));\n\tCOLOR.rgb = mix(c, vec3(gray), amount);\n}",
+            "codeFile": "lab-shaders/05-gray.gdshader",
+            "cues": [],
+            "video": "reading-the-screen/hud.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the health bar's layer is set to two at 58 percent",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "layer 0: gray",
+                "x": 0.14,
+                "y": 0.16
+              },
+              {
+                "at": 0.74,
+                "text": "layer 2: color",
+                "x": 0.14,
+                "y": 0.16
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The health bar regains its colour at the cue while the game stays gray."
+      },
+      "lecture": {
+        "runner_up": "manim stacked panes",
+        "why": "The bar regaining its colour in the same frame is the proof; a pane diagram would only say it.",
+        "capture_spec": "C21: scene_c21_hud.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Meadow + player; 05-gray on layer 1 at amount 1 from the first frame; the health bar in its own CanvasLayer, index 0 until u = 0.58, then 2. Verified: a bar on layer 2 keeps its colour (0.902, 0.722, 0.251), a bar below the filter is flipped or grayed."
+      }
+    },
+    {
+      "beat_id": "B36",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The docs' examples add two more hints. Repeat disable means reading past the screen's edge gives the edge pixel, not the far side. Filter nearest asks for the exact pixel, no blending. The Forward Plus renderer obeys; Compatibility blends anyway.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 10-line shader with the full declaration over two lines); at right a real Godot window: a window flush with the right edge of the screen; as the shift grows its right part reads past the edge and fills with horizontal streaks, the edge pixels repeated. The third label defines 'renderer' where the narration first says it; the capture is Forward+ (the video label says so), so the Compatibility half of the sentence is carried by the narration alone.",
+        "show": [
+          {
+            "at": 0.02,
+            "event": "the declaration highlighted"
+          },
+          {
+            "at": 0.17,
+            "event": "repeat_disable highlighted"
+          },
+          {
+            "at": 0.28,
+            "event": "the smear begins"
+          },
+          {
+            "at": 0.57,
+            "event": "filter_nearest highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "full smear"
+          },
+          {
+            "at": 0.8,
+            "event": "label defines 'renderer'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture,\n\t\trepeat_disable, filter_nearest;\nuniform float shift : hint_range(-0.5, 0.5) = 0.0;\n\nvoid fragment() {\n\tvec2 spot = SCREEN_UV + vec2(shift, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+            "codeFile": "lab-shaders/15-edge-clamp.gdshader",
+            "cues": [
+              {
+                "at": 0.02,
+                "lines": [
+                  3,
+                  4
+                ]
+              },
+              {
+                "at": 0.17,
+                "lines": [
+                  4
+                ],
+                "label": "repeat_disable: past the edge, the edge pixel"
+              },
+              {
+                "at": 0.57,
+                "lines": [
+                  4
+                ],
+                "label": "filter_nearest: the exact pixel, no blending"
+              },
+              {
+                "at": 0.8,
+                "lines": [
+                  4
+                ],
+                "label": "renderer: how Godot draws; your project picks one of three"
+              }
+            ],
+            "video": "reading-the-screen/edge.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shift swept by script",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The window's right part smears into streaks as it reads past the edge of the screen."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the docs declaration",
+        "why": "The smear is what repeat_disable does, in the one place it shows; filter_nearest changes nothing visible at this size, so it gets a label and a sentence, not a picture.",
+        "capture_spec": "C22: scene_c22_edge.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Window 0.40 x 0.44 at (0.60, 0.20) flush with the right edge, 15-edge-clamp; shift 0 until u = 0.28, then 0.30 by u = 0.62. Verified: with repeat_disable (and with no repeat hint) a read past the edge returns the edge pixel in both renderers. filter_nearest is a Forward+ result only: magnified 50 times, Forward+ gives a hard step where filter_linear gives 35 distinct colours; Compatibility reads all three alike (34), so the narration names the renderer (verify4 L7b, verify9). This capture does not show that difference."
+      }
+    },
+    {
+      "beat_id": "B37",
+      "act": "IV · What It Can See",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Put them together. Water that bends the grass. A spotlight that follows the player. A health bar the filter never touches. Two shaders, each reading a copy of what was already drawn.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window: the pool, the player walking a wide flat ellipse, the spotlight following him (gray outside, colour inside), the health bar above everything in colour. Where the player passes the pool, the pool turns to colour as the light arrives and the water keeps rippling.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the player near the pool; the pool in colour"
+          },
+          {
+            "at": 0.45,
+            "event": "the player far right; the pool gray"
+          },
+          {
+            "at": 0.9,
+            "event": "the player returns to the pool"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reading-the-screen/finale.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The light follows the player across the pool, which turns to colour and ripples under it, while the health bar never changes."
+      },
+      "lecture": {
+        "runner_up": "manim three icons",
+        "why": "The three effects living together, with the order rules holding, is the closing proof.",
+        "capture_spec": "C23: scene_c23_finale.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. Layer 0: meadow, 12-pool, the player on a wide ellipse (0.34 x 0.10 of the canvas around (0.50, 0.62)); layer 1: 07-spotlight (radius 0.25) fed by the scene's _process; layer 2: the health bar. Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel)."
+      }
+    },
+    {
+      "beat_id": "B38",
+      "act": "IV · What It Can See",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "When a screen shader misbehaves, check four things. The old name. The draw order. The copy for each layer. And which layer your health bar sits on.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A four-row table, one row ringed as the voice names each cause.",
+        "show": [
+          {
+            "at": 0.28,
+            "event": "the old name row"
+          },
+          {
+            "at": 0.43,
+            "event": "the draw order row"
+          },
+          {
+            "at": 0.62,
+            "event": "the copy for each layer row"
+          },
+          {
+            "at": 0.8,
+            "event": "the health bar row"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "When a screen shader misbehaves",
+            "headers": [
+              "What you see",
+              "Why",
+              "Fix"
+            ],
+            "rows": [
+              [
+                "Error naming SCREEN_TEXTURE",
+                "a Godot 3 shortcut",
+                "hint_screen_texture"
+              ],
+              [
+                "A sprite missing from the copy",
+                "drawn after the reader",
+                "draw it earlier"
+              ],
+              [
+                "A second effect ignores the first",
+                "one copy per layer",
+                "Back Buffer Copy"
+              ],
+              [
+                "Health bar turns gray",
+                "below the filter",
+                "a higher layer"
+              ]
+            ],
+            "note": "Godot 4.7 docs and runs on Godot 4.7.2",
+            "cues": [
+              0.3,
+              0.41,
+              0.57,
+              0.7
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring steps down the rows with the voice."
+      },
+      "lecture": {
+        "runner_up": "manim checklist",
+        "why": "Four parallel facts, each a symptom and a cause, are exactly what the table component is for."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "verdict",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let's recap with Claude. The screen texture is a copy of what was drawn so far, read with screen U V. A color rect on a canvas layer covers every pixel, so one shader can filter the whole game. Read the screen at a shifted address, and the picture behind it bends. One copy is made for each layer, so draw order and layers decide what a shader can see.",
+      "estimated_duration_s": 23.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "artifact page opens"
+          },
+          {
+            "at": 0.2,
+            "event": "recap lines land in narration order"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Recap",
+            "artifactHeading": "Reading the Screen",
+            "artifactLines": [
+              "The screen texture is a copy of what was drawn so far, read with screen UV.",
+              "A color rect on a canvas layer covers every pixel, so one shader can filter the whole game.",
+              "Read the screen at a shifted address, and the picture behind it bends.",
+              "One copy is made for each layer, so draw order and layers decide what a shader can see."
+            ]
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Mandated ClaudeVerdictArtifact bookend."
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "your turn",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Your turn. Paste this into Claude: Write a Godot four canvas item shader for a full-screen color rect that turns everything behind it gray. One float uniform called amount, from zero to one: at zero nothing changes, at one it is fully gray. Read the screen with a screen texture hint, never the old built-in. Then point to the line that reads the screen. Now check two things yourself. Does the line that reads the screen use a screen texture hint, and not the old name? And at zero is the game untouched, and at one is everything gray, the player too?",
+      "estimated_duration_s": 34.7,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Composer opens: 'Your turn.'"
+          },
+          {
+            "at": 0.12,
+            "event": "the prompt types in full"
+          },
+          {
+            "at": 0.85,
+            "event": "two check lines land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "CLAUDE · YOUR TURN",
+            "segment": "Gray Out the Screen",
+            "command": "Write a Godot four canvas item shader for a full-screen color rect that turns everything behind it gray. One float uniform called amount, from zero to one: at zero nothing changes, at one it is fully gray. Read the screen with a screen texture hint, never the old built-in. Then point to the line that reads the screen.",
+            "runningText": "paste this into Claude…",
+            "output": [
+              "Check: the line that reads the screen uses a hint screen texture uniform, not SCREEN_TEXTURE.",
+              "Check: at amount zero the game is untouched; at one everything, the player too, is gray."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Opus 5.5",
+            "effortLabel": "High"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "outro",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Reading the Screen. At Nik Bear Brown.",
+      "estimated_duration_s": 4.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "title restates; handle; mascot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Reading the Screen",
+            "slug": "claude-liam-lecture-reading-the-screen",
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

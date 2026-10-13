@@ -1,0 +1,429 @@
+{
+ "B21": {
+  "lane": "manim",
+  "class": "B21_Diagonal",
+  "visual_intent": "Act title 'Stripes and Hue' (serif 40) top-left. A square picture (the kit's UV square: 0 to 1 axes, y pointing down) with thin grey isolines along its diagonals at u + v = 0.5, 1 and 1.5. A ramp strip along the diagonal reads 0 to 2 with end labels '0' and '2'. A terracotta dot travels from the top-left corner to the bottom-right corner with a live label 'u + v'.",
+  "motion_claim": "The dot moves along the diagonal while its sum climbs from 0 to 2, lighting each isoline as it crosses.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "square, axes and isolines"
+   },
+   {
+    "at": 0.4,
+    "event": "dot leaves the top-left corner, sum climbing"
+   },
+   {
+    "at": 0.75,
+    "event": "dot at the bottom right, sum 2"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "A coordinate system and a quantity that climbs along it is exactly what the kit's UV square is for.",
+  "sparse": true
+ },
+ "B22": {
+  "lane": "manim",
+  "class": "B22_Saw",
+  "visual_intent": "The series' signature object: a ramp strip (0 to 1) at the top; below it a plot of fract(x * 6) as a six-tooth saw wave on grey axes; a terracotta dot rides the ramp and its twin rides the plot. Label 'fract(x × 6)' and a one-line definition 'the part after the point: x minus floor(x)'.",
+  "motion_claim": "The dot climbs the ramp while its twin climbs a tooth, drops, climbs again, six times.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "ramp strip and empty plot"
+   },
+   {
+    "at": 0.3,
+    "event": "dot traces both; the saw draws"
+   },
+   {
+    "at": 0.7,
+    "event": "six teeth counted"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "A ramp going in and a function reshaping it into a saw is the claim as motion.",
+  "sparse": true
+ },
+ "B23": {
+  "lane": "manim",
+  "class": "B23_StepStripe",
+  "visual_intent": "One saw tooth drawn large; a horizontal threshold line labelled 'width' at 0.5 with a handle; below it the step result as a square wave (0 then 1) with the definition '0 below the edge, 1 from the edge up'; below that '1 - step' as a bar of alternating on and off segments. The threshold handle slides from 0.25 up to 0.75 and the on segments thicken.",
+  "motion_claim": "The width line slides up and every stripe on the bar thickens in step.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "tooth and threshold line"
+   },
+   {
+    "at": 0.35,
+    "event": "step square wave"
+   },
+   {
+    "at": 0.6,
+    "event": "stripe bar"
+   },
+   {
+    "at": 0.82,
+    "event": "width slides 0.25 to 0.75; stripes thicken"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "A threshold sliding across a saw while the stripes thicken is the relation as motion.",
+  "sparse": true
+ },
+ "B24": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nuniform float count = 6.0;\nuniform float width = 0.5;\n\nvoid fragment() {\n\tfloat diagonal = UV.x + UV.y;\n\tfloat saw = fract(diagonal * count);\n\tfloat stripe = 1.0 - step(width, saw);\n\tCOLOR = texture(TEXTURE, UV) * stripe;\n}",
+   "codeFile": "lab-shaders/04-stripes.gdshader",
+   "cues": [
+    {
+     "at": 0.06,
+     "lines": [
+      8,
+      9,
+      10
+     ]
+    },
+    {
+     "at": 0.2,
+     "lines": [
+      11
+     ],
+     "label": "0 below the edge, 1 from the edge up"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4,
+      5
+     ],
+     "label": "uniform: a value your game sets from outside"
+    }
+   ],
+   "video": "subviewports/c13-stripes-dials.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted: width and count are swept",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13 (scene c13): picture 512 transparent, gradient blob, display uses 04-stripes; width sweeps 0.08 to 0.5 (0.5 s to 4.5 s), count 6 to 12 (8 s to 12 s); 16 s, Forward+. Verified (run-7b) at 2 / 6 / 10 s: width 0.213 / 0.5 / 0.5, count 6 / 6 / 9, 0 stripe mismatches over about 2,900 pixels each; on a plain rectangle the on-fraction equals width (0.500, 0.247, 0.800) and `count` complete stripes fit across.",
+  "visual_intent": "Code card with the twelve-line stripe shader at left; at right the display: diagonal stripes cut the gradient blob so it shows only inside them; the stripes thicken (width 0.08 up to 0.5), hold, then get finer (count 6 up to 12).",
+  "motion_claim": "The stripes thicken, then multiply, as the dials move; the empty parts stay empty.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "the diagonal, the saw and the stripe lines"
+   },
+   {
+    "at": 0.2,
+    "event": "COLOR line: the mask"
+   },
+   {
+    "at": 0.6,
+    "event": "uniform lines: count and width"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "A mask whose dials move is the claim; code beside the live stripes shows which line does what.",
+  "sparse": false
+ },
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nuniform float count = 6.0;\nuniform float width = 0.5;\nuniform float speed = 0.12;\n\nvoid fragment() {\n\tfloat diagonal = UV.x + UV.y - TIME * speed;\n\tfloat stripe = 1.0 - step(width, fract(diagonal * count));\n\tCOLOR = texture(TEXTURE, UV) * stripe;\n}",
+   "codeFile": "lab-shaders/05-stripes-moving.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.34,
+     "lines": [
+      9
+     ],
+     "label": "TIME: seconds on one clock shared by the whole game"
+    }
+   ],
+   "video": "subviewports/c14-moving-stripes.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the sprite's turn is scripted",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C14 (scene c14): as C13 with 05-stripes-moving (count 6, width 0.5, speed 0.12), the blob turning at 0.8 rad/s by script; 15 s, Forward+. Verified (run-7b): the stripe formula with the TIME read in the same draw predicts every probe (0 mismatches over about 2,900 pixels).",
+  "visual_intent": "Code card with the twelve-line moving-stripes shader at left; at right the display: diagonal stripes slide down and right across the blob while the blob turns slowly underneath and the stripes keep their direction.",
+  "motion_claim": "The stripes slide steadily; the sprite turns and the stripes do not.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "the diagonal line with TIME"
+   },
+   {
+    "at": 0.34,
+    "event": "TIME defined on the line"
+   }
+  ],
+  "runner_up": "manim sine plot",
+  "why": "A live sliding is the claim; the code line beside it is what makes it slide.",
+  "sparse": false
+ },
+ "B26": {
+  "lane": "manim",
+  "class": "B26_ColorWheel",
+  "visual_intent": "A colour wheel of 72 coloured wedges (full saturation and value) at the left. A marker arrow rotates around it, labelled 'hue: which color'; a radial bar from the centre to the rim, labelled 'saturation: how far from grey' (white at the centre, vivid at the rim); and a short vertical swatch ramp at the right, labelled 'value: how bright'. Three small terracotta dots mark the three controls.",
+  "motion_claim": "An arrow sweeps round the wheel, a marker slides from centre to rim, a swatch brightens.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the wheel"
+   },
+   {
+    "at": 0.3,
+    "event": "hue arrow sweeps round"
+   },
+   {
+    "at": 0.58,
+    "event": "saturation marker slides centre to rim"
+   },
+   {
+    "at": 0.8,
+    "event": "value ramp brightens"
+   }
+  ],
+  "runner_up": "LibraryIconRow",
+  "why": "Three controls on one colour need a wheel, a radius and a ramp; only drawing them shows what each changes.",
+  "sparse": true
+ },
+ "B27": {
+  "lane": "manim",
+  "class": "B27_HueRamp",
+  "visual_intent": "A ramp strip filled with the hue spectrum from 0 to 1 with seven ticks labelled 0, 1/6, 1/3, 1/2, 2/3, 5/6, 1 and a terracotta marker riding along. Under the marker a swatch shows its colour and a small triple of numbers updates: (1, 0, 0), (1, 1, 0), (0, 1, 0), (0, 1, 1), (0, 0, 1), (1, 0, 1), (1, 0, 0). A small wheel beside the strip turns its arrow with the marker. Credit: 'Godot 4.7.2 · same in Forward+ and Compatibility'.",
+  "motion_claim": "The marker rides the strip and stops at each sixth while the swatch and its numbers change.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "strip, ticks and wheel"
+   },
+   {
+    "at": 0.3,
+    "event": "stops at 0 (red) and 1/6 (yellow)"
+   },
+   {
+    "at": 0.62,
+    "event": "1/3 (green) and 1/2 (cyan)"
+   },
+   {
+    "at": 0.86,
+    "event": "2/3 (blue), 5/6 (magenta), back to red"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "A marker riding a strip that changes colour is the ramp-in, colour-out idea as motion.",
+  "sparse": true
+ },
+ "B28": {
+  "lane": "manim",
+  "class": "B28_Plateaus",
+  "visual_intent": "A plot with hue 0 to 1 on x and 0 to 1 on y. One red plateau curve (full for a third, zero for a third, ramps between, wrapping round at the edges) draws first; a ghost copy slides a third to the right and becomes the green curve; another slides two thirds and becomes the blue curve. A vertical marker moves along the hue axis and reads three values off the curves into a swatch.",
+  "motion_claim": "The red plateau slides along to become green, then blue; a marker reads the three curves.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "red plateau"
+   },
+   {
+    "at": 0.36,
+    "event": "slides a third: green"
+   },
+   {
+    "at": 0.62,
+    "event": "slides two thirds: blue"
+   },
+   {
+    "at": 0.84,
+    "event": "marker reads three values into a swatch"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "A curve sliding along to become the next is the claim; the plot is the picture of it.",
+  "sparse": true
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "float plateau(float x) {\n\treturn clamp(abs(fract(x) * 6.0 - 3.0) - 1.0, 0.0, 1.0);\n}\n\nvec3 hsv_to_rgb(float h, float s, float v) {\n\tfloat r = plateau(h);\n\tfloat g = plateau(h + 2.0 / 3.0);\n\tfloat b = plateau(h + 1.0 / 3.0);\n\treturn v * mix(vec3(1.0), vec3(r, g, b), s);\n}",
+   "codeFile": "lab-shaders/06-hsv-strip.gdshader · lines 3–12",
+   "cues": [
+    {
+     "at": 0.06,
+     "lines": [
+      2
+     ],
+     "label": "abs drops the minus sign: -0.3 becomes 0.3"
+    },
+    {
+     "at": 0.17,
+     "lines": [
+      2
+     ],
+     "label": "clamp holds a value between 0 and 1"
+    },
+    {
+     "at": 0.27,
+     "lines": [
+      2
+     ],
+     "label": "the part after the point: x minus floor(x)"
+    },
+    {
+     "at": 0.38,
+     "lines": [
+      9
+     ],
+     "label": "blends from a to b: t of 0 gives a, 1 gives b"
+    }
+   ],
+   "video": "subviewports/c15-hue-strip-and-swatches.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · six exact hues (hue uniform set) · same in Compatibility",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "1 0 0",
+     "x": 0.172,
+     "y": 0.74
+    },
+    {
+     "at": 0.68,
+     "text": "1 1 0",
+     "x": 0.305,
+     "y": 0.74
+    },
+    {
+     "at": 0.74,
+     "text": "0 1 0",
+     "x": 0.438,
+     "y": 0.74
+    },
+    {
+     "at": 0.8,
+     "text": "0 1 1",
+     "x": 0.57,
+     "y": 0.74
+    },
+    {
+     "at": 0.86,
+     "text": "0 0 1",
+     "x": 0.703,
+     "y": 0.74
+    },
+    {
+     "at": 0.92,
+     "text": "1 0 1",
+     "x": 0.836,
+     "y": 0.74
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C15 (scene c15): the hue strip (06-hsv-strip) on a 1000 x 130 rectangle above six 160 px swatches, each a rectangle with 06b-hsv-probe and `hue` = 0, 1/6, 2/6, 3/6, 4/6, 5/6; one PNG frame (scene time 3 s; the scene is 8 s long), Forward+. Verified (run-3 H1, H1b, run-7c): the six swatches read (1,0,0) (1,1,0) (0,1,0) (0,1,1) (0,0,1) (1,0,1) exactly in both renderers; over 65,536 + 65,536 pixels the function agrees with the engine's Color.from_hsv within 0.002, and over 640 columns with Python's colorsys within 0.0019.",
+  "visual_intent": "Code card with the ten real lines (plateau and hsv_to_rgb) at left; at right a still of the hue strip above six flat swatches. As the voice names each pure colour its swatch gets its RGB triple: 1 0 0, 1 1 0, 0 1 0, 0 1 1, 0 0 1, 1 0 1.",
+  "motion_claim": "The six swatches take their exact numbers one by one.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "abs defined on the plateau line"
+   },
+   {
+    "at": 0.17,
+    "event": "clamp defined"
+   },
+   {
+    "at": 0.27,
+    "event": "fract defined"
+   },
+   {
+    "at": 0.38,
+    "event": "the mix line"
+   },
+   {
+    "at": 0.62,
+    "event": "the six triples land"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Code beside the six exact colours is the test the viewer can see; a still is enough because each number lands on its word.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "void fragment() {\n\tvec4 picture = texture(TEXTURE, UV);\n\tfloat diagonal = UV.x + UV.y - TIME * speed;\n\tfloat stripe = 1.0 - step(width, fract(diagonal * count));\n\tvec4 band = vec4(hsv_to_rgb(diagonal, 1.0, 1.0), 1.0) * picture.a;\n\tCOLOR = mix(picture, band, stripe);\n}",
+   "codeFile": "lab-shaders/07-rainbow-stripes.gdshader · lines 19–25",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.24,
+     "lines": [
+      5
+     ],
+     "label": "the diagonal itself is the hue"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      6
+     ],
+     "label": "blends from a to b: t of 0 gives a, 1 gives b"
+    }
+   ],
+   "video": "subviewports/c16-rainbow-stripes.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the sprite's turn is scripted",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C16 (scene c16): as C14 with 07-rainbow-stripes (count 6, width 0.5, speed 0.12); 15 s, Forward+. Verified (run-3 H4, run-7c): stripe pixels equal Color.from_hsv(fract(diagonal)) within 0.002 over about 2,400 pixels; every gap pixel equals the picture (2,496 of 2,496 in run-3 H4).",
+  "visual_intent": "Code card with the seven-line fragment function at left; at right the display: rainbow stripes slide across the turning gradient blob, the gaps between them showing the gradient, the colours travelling with the stripes.",
+  "motion_claim": "The rainbow slides with the stripes while the gradient shows through the gaps.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the diagonal line"
+   },
+   {
+    "at": 0.24,
+    "event": "the band line: hue from the diagonal"
+   },
+   {
+    "at": 0.6,
+    "event": "the mix line"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The finished look beside its seven lines is the payoff of the act; only a live render shows the colours travelling.",
+  "sparse": false
+ }
+}

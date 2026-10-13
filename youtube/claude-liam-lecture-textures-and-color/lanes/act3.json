@@ -1,0 +1,636 @@
+{
+ "B17": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\n\nvoid fragment() {\n\tCOLOR.a = texture(noise_tex, UV).r;\n}",
+   "codeFile": "lab-shaders/15-noise-mask.gdshader",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      6
+     ],
+     "label": "mask: a number from 0 to 1 per pixel, how much to show"
+    }
+   ],
+   "video": "godot-textures-and-color/noise-mask.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a teal Color Rect, alpha = noise",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "0.08",
+     "x": 0.363,
+     "y": 0.454
+    },
+    {
+     "at": 0.4,
+     "text": "0.50",
+     "x": 0.181,
+     "y": 0.606
+    },
+    {
+     "at": 0.65,
+     "text": "0.91",
+     "x": 0.637,
+     "y": 0.698
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C15: Lab rect 360x360 logical with the node color #5FA391 (a ColorRect color, not a shader literal), lab-shaders/15-noise-mask.gdshader, noise_tex = NoiseTexture2D (FastNoiseLite seed 7, frequency 0.02, 256 x 256), still PNG at 4K. Verified noise values at (0.363, 0.454) = 0.082, (0.181, 0.606) = 0.502, (0.637, 0.698) = 0.906; the picture is a normalized noise: min 0.0, max 1.0.",
+  "visual_intent": "Act title 'Noise as a Mask' (serif 40) top-left. Code card at left (COLOR.a = the noise value). At right a real Godot window: a teal Color Rect whose opacity follows the noise, so soft teal clouds fade into the stage. Three readouts on three spots: 0.08 (nearly nothing), 0.50, 0.91 (nearly solid teal).",
+  "motion_claim": "Readouts land on three spots of the clouds, low, middle and high.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "alpha line: mask, how much to show"
+   },
+   {
+    "at": 0.3,
+    "event": "readout 0.08 on a pale spot"
+   },
+   {
+    "at": 0.4,
+    "event": "readout 0.50"
+   },
+   {
+    "at": 0.65,
+    "event": "readout 0.91 on a solid spot"
+   }
+  ],
+  "runner_up": "manim: a grey picture turning into numbers",
+  "why": "Real clouds with real numbers at three pixels show that a texture can be a map of amounts; teal-on-stage has no near-black pixels.",
+  "sparse": false
+ },
+ "B18": {
+  "lane": "editor",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-textures-and-color/editor-noise.mp4",
+   "videoLabel": "Godot 4.7.2 editor · scripted editor session",
+   "readouts": [],
+   "rings": [
+    {
+     "at": 0.06,
+     "box": [
+      0.784,
+      0.389,
+      0.996,
+      0.414
+     ]
+    },
+    {
+     "at": 0.33,
+     "box": [
+      0.836,
+      0.91,
+      0.988,
+      0.934
+     ]
+    },
+    {
+     "at": 0.66,
+     "box": [
+      0.908,
+      0.382,
+      0.989,
+      0.406
+     ]
+    },
+    {
+     "at": 0.86,
+     "box": [
+      0.783,
+      0.226,
+      0.996,
+      0.283
+     ]
+    },
+    {
+     "at": 0.94,
+     "box": [
+      0.783,
+      0.416,
+      0.996,
+      0.442
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "E1 (DONE by script, 2026-10-13, editor driver; README 2.7): five full frames from `_godot-shaders-series/editor-capture/png/1920x1080/textures-and-color/` (native 3456x1944 twins beside them in png/3456x1944/): textures-and-color_E1-1a_noise_tex-slot-empty, E1-1b_noise_tex-dropdown-open, E1-2c_noise-dropdown-open, E1-3a_NoiseTexture2D-width-height-noise-FastNoiseLite, E1-3b_inside-FastNoiseLite-preview-clouds. Join them with ffmpeg cross-dissolves at 0.2, 0.58, 0.74 and 0.9 of the beat (the voice's 'Click it' falls inside 45 to 55 %, so the click state E1-2b, the NoiseTexture2D with its Noise empty, is a spare and is not shown); ring boxes are fractions of the whole 1920x1080 frame (no crop). Real labels: the slot's menu has a Search box, a heading New, 19 bare class names (NoiseTexture2D last), then Quick Load... and Load...; inside the NoiseTexture2D the Noise slot's menu is the heading New, FastNoiseLite, Quick Load..., Load...; the NoiseTexture2D view lists Width, Height, Generate Mipmaps, Noise, Color Ramp, Seamless, Invert, In 3D Space, As Normal Map, Normalize and has NO preview; the grey clouds are in the FastNoiseLite view (preview with a 3D button, Noise Type, Seed, Frequency, Offset). No pointer is visible (Movie Maker records the window only): the clicks are the driver's, so the label says scripted editor session.",
+  "visual_intent": "Five real frames of the Godot editor's Inspector (a scripted editor session) for a Sprite2D whose shader has a Noise Tex slot, joined by slow cross-dissolves: the slot empty; the slot's menu open, a heading New above bare class names, NoiseTexture2D ringed; inside the NoiseTexture2D, its Noise slot's menu open (heading New, FastNoiseLite) with FastNoiseLite ringed; the NoiseTexture2D view with FastNoiseLite in its Noise slot and Width and Height ringed (this view has no preview); then the FastNoiseLite itself, where the grey clouds preview appears, with Seed ringed. One terracotta ring on the row or entry being named.",
+  "motion_claim": "The ring moves entry to entry as the voice names each step: the slot, NoiseTexture2D, FastNoiseLite, the size, the seed and the clouds.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "E1-1a: the Noise Tex slot ringed (empty)"
+   },
+   {
+    "at": 0.2,
+    "event": "dissolve to E1-1b: the slot's menu open, heading New"
+   },
+   {
+    "at": 0.33,
+    "event": "NoiseTexture2D ringed in the list"
+   },
+   {
+    "at": 0.58,
+    "event": "dissolve to E1-2c: the Noise slot's menu open"
+   },
+   {
+    "at": 0.66,
+    "event": "FastNoiseLite ringed under New"
+   },
+   {
+    "at": 0.74,
+    "event": "dissolve to E1-3a: the NoiseTexture2D with FastNoiseLite in its Noise slot"
+   },
+   {
+    "at": 0.86,
+    "event": "Width and Height ringed"
+   },
+   {
+    "at": 0.9,
+    "event": "dissolve to E1-3b: the FastNoiseLite, clouds preview"
+   },
+   {
+    "at": 0.94,
+    "event": "Seed ringed"
+   }
+  ],
+  "runner_up": "GodotDevWorkbench (labelled reconstruction)",
+  "why": "Real editor frames, recorded by script, are the rung-1 SHOW-THE-THING answer; a reconstruction would only claim the labels.",
+  "sparse": false
+ },
+ "B19": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform float threshold : hint_range(0.0, 1.0) = 0.5;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tCOLOR.a = step(threshold, n);\n}",
+   "codeFile": "lab-shaders/16-step-cut.gdshader",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      8
+     ],
+     "label": "step: 0 below the edge, 1 from the edge up"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ],
+     "label": "threshold: slide it up"
+    }
+   ],
+   "video": "godot-textures-and-color/step.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · threshold swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "threshold",
+     "x": 0.5,
+     "y": 0.97
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.1,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C16: Lab rect 360x360 logical with node color #5FA391, lab-shaders/16-step-cut.gdshader, noise_tex = the same NoiseTexture2D, `--animate threshold:0.1:0,0.97:1`, 30 fps, Forward+, 'scripted'. Verified teal share of the frame: threshold 0.25 = 92.2 %, 0.5 = 51.6 %, 0.75 = 8.4 % (plus-analysis.txt).",
+  "visual_intent": "Code card at left (COLOR.a = step(threshold, n)). At right the teal Color Rect: at threshold 0 solid teal, then as the threshold sweeps up the cloud edges turn hard and the teal shrinks into blobs and disappears. A thin 0 to 1 strip under the window with a marker riding the threshold.",
+  "motion_claim": "The teal shrinks into hard-edged blobs and vanishes as the threshold marker rides from 0 to 1.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "step line highlighted: 0 below, 1 at or above"
+   },
+   {
+    "at": 0.35,
+    "event": "the sweep starts: hard edges"
+   },
+   {
+    "at": 0.62,
+    "event": "threshold line highlighted; blobs shrinking"
+   },
+   {
+    "at": 0.9,
+    "event": "almost nothing left"
+   }
+  ],
+  "runner_up": "manim: a number line with a threshold",
+  "why": "A threshold sweeping through real clouds is what 'cut' means; a number line would not show the blobs.",
+  "sparse": false
+ },
+ "B20": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tif (n < progress) {\n\t\tdiscard;\n\t}\n}",
+   "codeFile": "lab-shaders/17-dissolve-cut.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      8,
+      9
+     ],
+     "label": "discard: draw nothing here"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ],
+     "label": "progress: a uniform your game sets, a dial"
+    }
+   ],
+   "video": "godot-textures-and-color/dissolve-cut.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "progress",
+     "x": 0.5,
+     "y": 0.97
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.1,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C17: Lab sprite (teal test sprite, fit scale), lab-shaders/17-dissolve-cut.gdshader, noise_tex = the same NoiseTexture2D, `--animate progress:0.1:0,0.97:1`, 30 fps, Forward+, 'scripted'. Verified sprite pixels left (of 23,512): progress 0.25 = 90.0 %, 0.5 = 46.0 %, 0.75 = 8.7 %, 1.0 = 0 (plus-analysis.txt).",
+  "visual_intent": "Code card at left (if the noise is below progress, discard). At right the real teal test sprite on the stage: ragged holes open in the shape of the clouds and grow until the sprite is gone, with the stage showing through every hole. A 0 to 1 strip under the window with a marker riding progress.",
+  "motion_claim": "Holes open and grow in the shape of the clouds as the progress marker rides from 0 to 1.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "if and discard lines highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "the first holes open"
+   },
+   {
+    "at": 0.62,
+    "event": "progress line highlighted; about half the sprite gone"
+   },
+   {
+    "at": 0.88,
+    "event": "almost gone"
+   }
+  ],
+  "runner_up": "manim: a sprite with holes appearing",
+  "why": "The stage showing through real holes is what discard does; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B21": {
+  "lane": "manim",
+  "class": "B21_Band",
+  "visual_intent": "A horizontal strip of noise values from 0 to 1 drawn in light-to-mid grays with end labels '0' and '1'. A terracotta marker 'threshold' sits on the strip with a bracket just to its right marking a band one tenth wide, labelled 'band: a strip of noise values, a tenth wide'. Below the strip a row of twelve pixel cells, each holding a noise value: cells whose value is below the marker are drawn as empty outlines, cells inside the band glow yellow-orange-red, cells beyond stay teal. The marker slides right; the band moves with it and cells burn, then vanish, in order.",
+  "motion_claim": "The marker slides right and the band right behind it lights up the pixels that are next to go.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "strip, marker, bracket, the row of cells"
+   },
+   {
+    "at": 0.25,
+    "event": "marker slides from 0.2 to 0.45; cells under the band glow"
+   },
+   {
+    "at": 0.42,
+    "event": "marker settles at 0.45: band and glowing cells shown; held through 60 %"
+   },
+   {
+    "at": 0.65,
+    "event": "marker slides on to 0.7: glowing cells vanish behind it"
+   },
+   {
+    "at": 0.88,
+    "event": "hold"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "A moving marker with a band behind it is a quantity moving along a number line, which is Manim's job; the Lab render shows the effect, not why those pixels.",
+  "sparse": true
+ },
+ "B22": {
+  "lane": "manim",
+  "class": "B22_RampLookup",
+  "visual_intent": "Left, a real Lab crop of the burning edge (a zoomed still of the dissolve at progress 0.5 with a thick yellow-to-dark-red rim); at the bottom the real burn ramp as a horizontal strip labelled 'ramp: a smooth run of colors', end labels '0' and '1' (dark red at 0, yellow at 1). Three sample pixels on the edge crop are boxed in terracotta; from each a thin line runs down to an address on the strip: the pixel nearest the hole to 1.0 (yellow), a middle one to 0.5 (orange), the outermost to 0.0 (dark red), each with a readout 'heat 1.0 / 0.5 / 0.0'.",
+  "motion_claim": "Lines run from three pixels on the edge to three addresses on the ramp, the nearest pixel to the hottest end.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "edge crop and ramp strip"
+   },
+   {
+    "at": 0.3,
+    "event": "first boxed pixel (nearest the hole) and its line to 1.0"
+   },
+   {
+    "at": 0.42,
+    "event": "second pixel to 0.5; settles through 60 %"
+   },
+   {
+    "at": 0.66,
+    "event": "third pixel to 0.0"
+   },
+   {
+    "at": 0.85,
+    "event": "all three lines held"
+   }
+  ],
+  "runner_up": "ShaderLab with the ramp strip",
+  "why": "Real pixels connected to real addresses on a real ramp is the lookup-by-number idea, drawn; the capture alone cannot show the connection.",
+  "sparse": true
+ },
+ "B23": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+   "codeFile": "lab-shaders/18-dissolve.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      8
+     ]
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      5,
+      9,
+      10
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4,
+      11,
+      12,
+      13
+     ]
+    },
+    {
+     "at": 0.85,
+     "lines": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+     ]
+    }
+   ],
+   "video": "godot-textures-and-color/dissolve.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "progress",
+     "x": 0.5,
+     "y": 0.97
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.1,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C18: Lab sprite (teal test sprite, fit scale), lab-shaders/18-dissolve.gdshader, noise_tex = NoiseTexture2D (seed 7, frequency 0.02, 256), ramp_tex = GradientTexture1D (#8A2A12, #F08A2C, #F7D46B), `--animate progress:0.1:0,0.97:1`, 30 fps, Forward+, 'scripted'. Verified (sprite 23,512 px): progress 0 whole, 0.25 = 20,391 sprite px + 2,371 burning, 0.5 = 8,815 + 4,132, 0.75 = 921 + 1,655, 1.0 = none.",
+  "visual_intent": "The full dissolve shader at left (twelve lines of code); at right the real sprite burning away with its yellow-to-red rim as progress sweeps from 0 to 1, a 0 to 1 strip under the window carrying a marker. The highlight walks through the code as the voice names noise, progress and the ramp.",
+  "motion_claim": "The highlight walks the code while the sprite burns away.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "the noise lookup"
+   },
+   {
+    "at": 0.3,
+    "event": "progress, cut and discard"
+   },
+   {
+    "at": 0.62,
+    "event": "heat, the ramp lookup and the color"
+   },
+   {
+    "at": 0.85,
+    "event": "the whole function"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The payoff needs code and its running result together; the ramp-strip marker shows the dial.",
+  "sparse": false
+ },
+ "B24": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+   "codeFile": "lab-shaders/18-dissolve.gdshader",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      3
+     ],
+     "label": "the table you swap"
+    }
+   ],
+   "video": "godot-textures-and-color/wipe.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · gradient where the noise was · progress swept by script",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "gradient, not noise",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: Lab sprite (teal test sprite, fit scale), lab-shaders/18-dissolve.gdshader, noise_tex = the Lab's 'gradient' kind (its red channel runs 0 -> 1 left to right), ramp_tex as C18, `--animate progress:0.1:0.15,0.97:0.85`, 30 fps, Forward+, 'scripted'. Verified left edge of what is left at progress 0.35 / 0.5 / 0.65 = x 258 / 306 / 353 of 640.",
+  "visual_intent": "The same dissolve shader at left with the noise slot highlighted. At right the real sprite: a straight burning edge sweeps across it from left to right, leaving the right part intact until it arrives. A caption 'gradient, not noise'.",
+  "motion_claim": "A straight burning edge travels left to right across the sprite.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "noise_tex line highlighted: the table you swap"
+   },
+   {
+    "at": 0.3,
+    "event": "the straight edge starts to travel"
+   },
+   {
+    "at": 0.85,
+    "event": "edge near the right side of the sprite"
+   }
+  ],
+  "runner_up": "ShaderLab with the noise sweep next to it",
+  "why": "The same code with a different table and a different effect is the whole idea; a still frame would hide the travel.",
+  "sparse": false
+ },
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+   "codeFile": "lab-shaders/18-dissolve.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      9
+     ],
+     "label": "starts a band below zero"
+    }
+   ],
+   "video": "godot-textures-and-color/ends-check.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · progress 0, two shaders",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "first version",
+     "x": 0.25,
+     "y": 0.95
+    },
+    {
+     "at": 0.3,
+     "text": "160 pixels burning",
+     "x": 0.25,
+     "y": 0.12
+    },
+    {
+     "at": 0.64,
+     "text": "fixed",
+     "x": 0.75,
+     "y": 0.95
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.3,
+     "box": [
+      0.2,
+      0.34,
+      0.285,
+      0.6
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C20: two Lab renders of the sprite at progress 0, hstack: left lab-shaders/19-dissolve-first-try.gdshader, right lab-shaders/18-dissolve.gdshader (same noise and ramp as C18); right revealed at 60 %. Verified: first version 160 burning pixels in three specks (boxes in the 640x360 frame: (341,129)-(348,137), (271,160)-(291,175), (287,185)-(308,205)); fixed version 0. At progress 1 both are empty.",
+  "visual_intent": "The fixed shader at left with the cut line highlighted. At right two real panels of the sprite at progress 0: on the left the first version, with a few specks of burning already on it, ringed in terracotta with a readout '160 pixels burning'; on the right the fixed version, perfectly clean. Labels 'first version' and 'fixed'.",
+  "motion_claim": "The ring lands on the specks in the left panel while the right panel stays clean.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "cut line highlighted"
+   },
+   {
+    "at": 0.2,
+    "event": "left panel labelled first version"
+   },
+   {
+    "at": 0.3,
+    "event": "ring on the specks; 160 pixels burning"
+   },
+   {
+    "at": 0.62,
+    "event": "right panel appears, clean, labelled fixed"
+   }
+  ],
+  "runner_up": "manim: a band hanging off the noise range",
+  "why": "Real specks on a sprite that should be untouched are the bug in evidence; the number line explains why but does not show it.",
+  "sparse": false
+ },
+ "B26": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "$Sprite.material.set_shader_parameter(\"progress\", 0.0)\nvar tween := create_tween()\ntween.tween_property($Sprite.material, \"shader_parameter/progress\", 1.0, 2.0)",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      1
+     ],
+     "label": "a start value first"
+    },
+    {
+     "at": 0.6,
+     "lines": [
+      2,
+      3
+     ],
+     "label": "tween: Godot changes a value smoothly over time"
+    }
+   ],
+   "video": "godot-textures-and-color/tween.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted run: the tween starts at 1 s",
+   "readouts": [],
+   "rings": [],
+   "caption": "without line 1: \"The tweened property … does not exist\"",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21: scene with a Sprite2D 'Sprite' using lab-shaders/18-dissolve.gdshader (noise and ramp as C18); the scene script runs `start_tween` through `--call-at` at 25 % of the beat: set_shader_parameter(\"progress\", 0.0) then a Tween to 1.0 over 2.0 s; 30 fps, Forward+. Verified in run-10 (verify-tween-progress.gd): with the first line progress 0.4998 at 0.5 s, sprite gone by 1.2 s; without it the console prints 'The tweened property \"shader_parameter/progress\" does not exist' and nothing moves.",
+  "visual_intent": "A three-line GDScript card at left (set progress to 0.0; create a tween; tween the shader parameter progress to 1.0 over two seconds). At right the real sprite burning away over two seconds. A caption under the window quotes the real error that line one prevents.",
+  "motion_claim": "The sprite burns away over two seconds once the tween lines run.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "the set line highlighted: a start value first"
+   },
+   {
+    "at": 0.6,
+    "event": "the tween lines highlighted; the burn starts"
+   }
+  ],
+  "runner_up": "ShaderLab with only the error text",
+  "why": "Cause (three lines) and effect (the burn) together, with the verbatim error as the price of skipping line one.",
+  "sparse": false
+ }
+}

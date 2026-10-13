@@ -2,11 +2,11 @@
 
 ## Executive summary
 
-**What this is.** How the rebuilt CSYE 7270 course gets into Canvas. One command turns the course's Markdown and JSON sources into an importable Canvas package (16 modules, 38 pages, 10 assignments, 16 ungraded practice quizzes, the syllabus, and a 10%-per-day late policy), and into one HTML fragment per page for pasting by hand.
+**What this is.** How the rebuilt CSYE 7270 course gets into Canvas. One command turns the course's Markdown and JSON sources into an importable Canvas package (17 modules, 40 pages, 10 assignments, 17 ungraded practice quizzes, the syllabus, and a 10%-per-day late policy), and into one HTML fragment per page for pasting by hand.
 
 **Why read it.** It tells you how to build the package, how to import it into a Canvas course, what to check afterwards, and, most important, what has **not** been verified: the package has never been imported into a live Canvas, because nothing here has access to one.
 
-**What it decided.** Everything imports **unpublished**, so nothing reaches students until you publish it. No due dates are set; the assignments say "Day 10, 20, … 100" and Canvas dates are yours to set. An assignment that covers two modules is listed in both. The old Spring 2026 export is not imported: no media, no Unity or Unreal items, no old quizzes, no student data. [`OLD-TO-NEW.md`](OLD-TO-NEW.md) says where every old item went.
+**What it decided.** Everything imports **unpublished**, so nothing reaches students until you publish it. The package’s due-date fields remain blank. Assignment descriptions 4–10 now include the proposed dates from the [Fall 2026 schedule](../assignments/fall-2026-assignment-schedule.md); those dates have not been posted to live Canvas. An assignment that covers two modules is listed in both. The old Spring 2026 export is not imported: no media, no Unity or Unreal items, no old quizzes, no student data. [`OLD-TO-NEW.md`](OLD-TO-NEW.md) says where every old item went.
 
 **What it did not do.** It did not touch Canvas, and it did not push anything to GitHub. Chapter and example links in the pages point at the course repository on GitHub and return 404 until `chapters/` and `examples/` are pushed.
 
@@ -39,17 +39,17 @@ Try a sandbox course first. In the destination course, follow Canvas's [import g
 
 | Part | Count | Notes |
 |---|---|---|
-| Modules | 16 | Module 0 (Start Here) plus Modules 1–15, in order. Each has Lecture, Practice, Assignment (where one applies) and Links headers, the layout of the old course. |
-| Pages | 38 | One lecture page per module (two for Module 14), a Helpful-links page per module, and Module 0's course map, AI policy, grading, framework and explainer pages. |
+| Modules | 17 | Conducting AI preface, then Module 0 (Start Here) plus Modules 1–15, in order. Each has Lecture, Practice, Assignment (where one applies) and Links headers, the layout of the old course. |
+| Pages | 40 | One lecture page per module, including the preface (two for Module 14), a Helpful-links page per module, and Module 0's course map, AI policy, grading, framework and explainer pages. |
 | Assignments | 10 | 100 points each, file upload plus text entry, in one "Assignments" group. No due dates. |
-| Practice quizzes | 16 | Six multiple-choice questions each, unlimited attempts, correct answers and feedback shown. Ungraded. Answer order shuffles. |
-| Syllabus | 1 | Converted from the revised Fall 2026 Word syllabus (images dropped). |
+| Practice quizzes | 17 | Six multiple-choice questions each, unlimited attempts, correct answers and feedback shown. Ungraded. Answer order shuffles. |
+| Syllabus | 1 | Converted from the revised Fall 2026 Word syllabus (images dropped), with the October 12 Conducting AI preface note added by the builder. The Word file itself predates that addition. |
 | Late policy | 1 | 10% per day, as in the syllabus. |
 
 ## Check after importing
 
-1. **Modules:** 16 modules, in order, each item in the right header. Quizzes should be inside their modules (see the first limit below).
-2. **Assignments:** 10 assignments of 100 points. Set the due dates (Day 10, 20, … 100 from the first class day), then confirm the submission types suit you.
+1. **Modules:** 17 modules, in order, each item in the right header. Quizzes should be inside their modules (see the first limit below).
+2. **Assignments:** 10 assignments of 100 points. Use the [Fall 2026 schedule](../assignments/fall-2026-assignment-schedule.md) for targeted remaining deadlines. Preserve the live first three assignments and the separate October 19 five-point GDD. Reconcile the live 250-point final with the 100-point local draft before replacing it, then confirm submission types.
 3. **Syllabus tab:** it reads correctly and the schedule table survived the conversion.
 4. **Late policy:** Grades → Settings shows 10% per day.
 5. **A page from each module,** on a phone-width window: tables and code blocks should scroll or wrap rather than run off the screen.
@@ -60,7 +60,7 @@ Try a sandbox course first. In the destination course, follow Canvas's [import g
 - **Never imported into a live Canvas.** The XML follows the dialect of the old Canvas export, but only a real import shows what Canvas accepts or silently drops.
 - **Quizzes in modules is the least certain part.** Their module items use the content type `Quizzes::Quiz`, written from knowledge of Canvas's exporter, not from the old export, which had no quizzes inside modules. If a quiz does not land in its module, add it by hand; the quiz itself is imported either way.
 - **Chapter and example links 404 until the course repository is pushed.** The list of every link rewritten to the repository is in `canvas/package/repo-links.txt` after a build.
-- **No dates anywhere.** That is deliberate; Canvas dates are the instructor's.
+- **No Canvas due-date metadata.** Proposed dates appear in assignment descriptions 4–10; the import still leaves actual due-date fields blank. The package also omits the existing separate five-point GDD record and does not mirror the live gradebook.
 
 ## Manual paste, if you prefer
 

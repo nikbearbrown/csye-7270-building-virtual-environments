@@ -1,0 +1,435 @@
+{
+ "B18": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform vec4 line_color : source_color = vec4(0.25, 0.25, 0.75, 1.0);\nuniform float thickness : hint_range(0.0, 8.0) = 1.0;\n\nvoid fragment() {\n\tvec2 dx = vec2(TEXTURE_PIXEL_SIZE.x * thickness, 0.0);\n\tvec2 dy = vec2(0.0, TEXTURE_PIXEL_SIZE.y * thickness);\n\tvec4 color = texture(TEXTURE, UV);\n\tfloat around = texture(TEXTURE, UV + dx).a + texture(TEXTURE, UV - dx).a\n\t\t+ texture(TEXTURE, UV + dy).a + texture(TEXTURE, UV - dy).a\n\t\t+ texture(TEXTURE, UV + dx + dy).a + texture(TEXTURE, UV + dx - dy).a\n\t\t+ texture(TEXTURE, UV - dx + dy).a + texture(TEXTURE, UV - dx - dy).a;\n\tCOLOR = mix(color, line_color, min(around, 1.0) * (1.0 - color.a));\n}",
+   "codeFile": "lab-shaders/07-eight-reads.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      9,
+      10
+     ]
+    },
+    {
+     "at": 0.31,
+     "lines": [
+      11,
+      12
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      9,
+      12
+     ]
+    }
+   ],
+   "video": "godot-outlines/C18-eight-reads.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Say It with a Loop"
+  },
+  "capture_spec": "C18-eight-reads: scene spec evidence/planning-checks/scenes/C18-eight-reads.json, 8.8 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The square sprite at thickness 3: with the four sides only, the corners of the line stay empty; as the voice says 'the four corners' the eight reads (07-eight-reads) switch on and the corners fill in. Verified: on the square sprite at thickness 3 the eight reads add exactly 576 canvas px (4 x 3 x 3 x 16) to the four-read line, the corner holes (analyze_scenes C18); same picture as the loop (analyze_lab A6: 0 pixels differ at thickness 1, 2, 3, 4, 8)",
+  "visual_intent": "Act title 'Say It with a Loop' (serif 40) top-left. Code card at left: the eight-read shader (14 lines); the first two lines of reads are marked, then the two lines of corner reads, then all four read lines together. At right a real Godot window with the square sprite: with the four sides only, the corners of its line stay empty; as the voice says 'the four corners' they fill in and the frame is complete.",
+  "motion_claim": "Focus lands on the side reads, then the corner reads, and the empty corners of the line fill in; then all eight reads at once.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "side reads"
+   },
+   {
+    "at": 0.31,
+    "event": "corner reads; the empty corners fill in"
+   },
+   {
+    "at": 0.62,
+    "event": "all eight reads"
+   }
+  ],
+  "runner_up": "manim: eight arrows around a cell",
+  "why": "The corners filling in as the corner reads are named: the code's effect on the real picture, and the thing the next beat replaces.",
+  "sparse": false
+ },
+ "B19": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform vec4 line_color : source_color = vec4(0.25, 0.25, 0.75, 1.0);\nuniform float thickness : hint_range(0.0, 8.0) = 1.0;\nvoid fragment() {\n\tvec2 px = TEXTURE_PIXEL_SIZE * thickness;\n\tfloat around = 0.0;\n\tfor (int y = -1; y <= 1; y++) {\n\t\tfor (int x = -1; x <= 1; x++) {\n\t\t\taround += texture(TEXTURE, UV + vec2(float(x), float(y)) * px).a;\n\t\t}\n\t}\n\tvec4 color = texture(TEXTURE, UV);\n\tCOLOR = mix(color, line_color, min(around, 1.0) * (1.0 - color.a));\n}",
+   "codeFile": "lab-shaders/08-loop.gdshader",
+   "cues": [
+    {
+     "at": 0.13,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.34,
+     "lines": [
+      8
+     ]
+    },
+    {
+     "at": 0.55,
+     "lines": [
+      9
+     ],
+     "label": "offset: an amount added to slide something"
+    },
+    {
+     "at": 0.82,
+     "lines": [
+      7,
+      9
+     ]
+    }
+   ],
+   "video": "godot-outlines/C19-loop.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [],
+   "caption": "for: repeat a block once for each value in a range",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19-loop: scene spec evidence/planning-checks/scenes/C19-loop.json, still PNG, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. 08-loop at thickness 3 on the square sprite: the same complete frame the eight written-out reads drew. Verified: draws the same picture as the eight written-out reads: 0 pixels differ from the last frame of the previous capture (analyze_scenes C19; analyze_lab A6)",
+  "visual_intent": "Code card at left: the loop shader (14 lines); focus lands on the outer for, the inner for, the line that reads and adds, then the loop as a whole. At right the same complete frame on the square sprite, unchanged by rewriting the reads as a loop. A caption carries one plain line for 'for'.",
+  "motion_claim": "Focus steps into the loop: outer for, inner for, the read.",
+  "show": [
+   {
+    "at": 0.13,
+    "event": "outer for"
+   },
+   {
+    "at": 0.34,
+    "event": "inner for"
+   },
+   {
+    "at": 0.55,
+    "event": "the read"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Paced line focus on the real code with its real result beside it.",
+  "sparse": false
+ },
+ "B20": {
+  "lane": "manim",
+  "class": "B20_ThreeByThree",
+  "visual_intent": "A 3 by 3 block of outline cells with offsets (-1,-1) to (1,1) written small in each cell and a terracotta center cell labelled 'me'. The nine cells light in loop order, row by row, and a '9 offsets' count ticks up. Beside it the one-line code 'vec2(float(x), float(y))' with the labels 'float: a decimal number' and 'vec2: a bundle of two numbers' on it, and under it a plain-shell box with the message the Shader Lab printed ('SHADER ERROR:' is the Lab's own prefix, the rest is the engine's text): SHADER ERROR: Invalid arguments for the built-in function: \"vec2(int,int)\".",
+  "motion_claim": "The nine cells light one after another in loop order and the middle one is marked as the pixel itself.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "block, nine cells light, middle marked"
+   },
+   {
+    "at": 0.45,
+    "event": "code line appears"
+   },
+   {
+    "at": 0.89,
+    "event": "the real compiler message"
+   }
+  ],
+  "runner_up": "CCPlainShell for the message",
+  "why": "A grid lighting in loop order is the loop; the real compiler text is shown as a boxed artifact inside it.",
+  "sparse": true
+ },
+ "B21": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C21-same-picture.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · eight written-out reads (left), the loop (right)",
+   "readouts": [
+    {
+     "at": 0.06,
+     "text": "eight reads",
+     "x": 0.27,
+     "y": 0.93
+    },
+    {
+     "at": 0.06,
+     "text": "loop",
+     "x": 0.73,
+     "y": 0.93
+    },
+    {
+     "at": 0.56,
+     "text": "0 pixels differ",
+     "x": 0.5,
+     "y": 0.08
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21-same-picture: scene spec evidence/planning-checks/scenes/C21-same-picture.json, 11.2 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. Left eight written-out reads, right the loop; thickness 1, 2, 3, 4, 8 as the voice counts; zero pixels differ at every step. Verified: 0 pixels differ at thickness 1, 2, 3, 4 and 8, hard-edged sprite (analyze_lab A6; scene C21 frames)",
+  "visual_intent": "Two real sprites side by side, the eight-read shader on the left and the loop on the right, their lines growing together through thickness one, two, three, four and eight; the two pictures stay identical at every step. Labels under each; at the end the readout '0 pixels differ'.",
+  "motion_claim": "Both rings grow in lockstep and stay identical.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "labels, both rings"
+   },
+   {
+    "at": 0.56,
+    "event": "readout '0 pixels differ'"
+   }
+  ],
+  "runner_up": "manim table of five zeros",
+  "why": "Watching two real pictures stay identical through the sweep is the evidence; a table of zeros is only the summary.",
+  "sparse": false
+ },
+ "B22": {
+  "lane": "manim",
+  "class": "B22_CostBars",
+  "visual_intent": "A horizontal bar chart on the cream stage: four bars grow left to right for a 3 by 3, 5 by 5, 7 by 7 and 9 by 9 block (10, 26, 50 and 82 reads per pixel), labelled with the measured milliseconds per frame (10, 24, 44 and 71, the whole-millisecond medians of the valid runs); a thin dashed floor line at 7.5 ms is labelled 'no shader'. A small grey credit: 'stress test: 403 million pixels a frame · Apple M4 Pro · Godot 4.7.2 · Forward+ · wall-clock, vsync off, median of runs · the card's own timer unreadable'. A last small caption: 'a 300 x 300 sprite: 90,000 pixels'.",
+  "motion_claim": "The bars grow in turn, each longer than the last, as the read count goes up.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "10-read bar grows (nine plus one)"
+   },
+   {
+    "at": 0.62,
+    "event": "bar labels, floor line"
+   },
+   {
+    "at": 0.75,
+    "event": "the 9 by 9 bar (82 reads), the longest; credit line"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "Bars growing with the read count show 'time follows reads'; a table would only list the numbers.",
+  "sparse": true
+ },
+ "B23": {
+  "lane": "manim",
+  "class": "B23_Guard",
+  "visual_intent": "A code card (monospace, 17 lines) of the guard shader with the line 'if (thickness > 0.0) {' and its closing brace highlighted. Beside it a small pixel grid where every cell follows the same arrow: with thickness 0 all cells go to 'skip: one read'; a switch flips to thickness 2 and all cells go to 'read ten'. Under the card a plain-shell box with the message the Shader Lab printed ('SHADER ERROR:' is the Lab's own prefix, the rest is the engine's text): SHADER ERROR: Using 'return' in the 'fragment' processor function is incorrect.",
+  "motion_claim": "One switch flips and every cell changes its arrow together; the loop lines dim when the guard is false.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "code card, the if highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "all cells to 'skip'; loop lines dim"
+   },
+   {
+    "at": 0.8,
+    "event": "the compiler message"
+   }
+  ],
+  "runner_up": "ShaderLab with 09-guard code",
+  "why": "The idea is one switch everyone obeys; a grid of cells taking the same arrow shows it where a render cannot.",
+  "sparse": true
+ },
+ "B24": {
+  "lane": "manim",
+  "class": "B24_Agree",
+  "visual_intent": "Two pixel grids side by side. Left, titled 'per-pixel test': cells are split in two colors along the sprite's edge and the boundary cells hold different arrows (they disagree) and are ringed in terracotta. Right, titled 'thickness > 0.0': every cell holds the same arrow (they agree). Grey attribution under the left grid: 'GPU Gems 2, chapter 34, 2005'. Grey line under the right: 'shading language docs: no warning for if'.",
+  "motion_claim": "Arrows appear in each cell; on the left the edge cells point two ways, on the right every arrow is the same.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "two grids"
+   },
+   {
+    "at": 0.39,
+    "event": "left grid: edge cells disagree"
+   },
+   {
+    "at": 0.91,
+    "event": "right grid: all arrows the same"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of the two quotes",
+  "why": "Disagreeing neighbors against agreeing ones is a picture of the idea; the quotes are the captions.",
+  "sparse": true
+ },
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C25-zero-means-zero.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · soft-edged sprites, thickness 2 then 0",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "no guard",
+     "x": 0.26,
+     "y": 0.93
+    },
+    {
+     "at": 0.2,
+     "text": "guard",
+     "x": 0.74,
+     "y": 0.93
+    },
+    {
+     "at": 0.66,
+     "text": "224 pixels",
+     "x": 0.26,
+     "y": 0.1
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.44,
+     "box": [
+      0.129,
+      0.271,
+      0.387,
+      0.729
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C25-zero-means-zero: scene spec evidence/planning-checks/scenes/C25-zero-means-zero.json, 11.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. Soft-edged sprites; thickness 2 (both ringed) then 0: the unguarded one keeps a tinted rim, the guarded one is clean. Verified: no guard: 224 rim pixels change colour (216 change alpha); guard: 0; hard-edged sprite: 0 either way (planning check B2)",
+  "visual_intent": "Two real soft-edged sprites side by side, both ringed at thickness two; then thickness drops to zero: the right one (guard) returns to its plain look, the left one (no guard) keeps a thin tinted rim. Labels 'no guard' and 'guard', one ring round the left sprite's rim, readout '224 pixels'.",
+  "motion_claim": "Both rings switch off; one sprite is clean, the other still has a tinted rim.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "labels; both rings go to zero"
+   },
+   {
+    "at": 0.44,
+    "event": "ring on the left rim"
+   }
+  ],
+  "runner_up": "manim: pixel row of the rim with alpha values",
+  "why": "Two real sprites at thickness zero, one clean and one tinted, is the evidence; the count is the readout.",
+  "sparse": false
+ },
+ "B26": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "extends Node\n\nvar selected := false\n\nfunc _ready():\n\t$Sprite.material.set_shader_parameter(\"thickness\", 0.0)\n\nfunc _unhandled_key_input(event):\n\tif event.pressed:\n\t\tselected = not selected\n\t\t$Sprite.material.set_shader_parameter(\"thickness\", 2.0 if selected else 0.0)",
+   "codeFile": "scene script (GDScript) · evidence/planning-checks/select_snippet.gd",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      8
+     ]
+    },
+    {
+     "at": 0.26,
+     "lines": [
+      11
+     ]
+    },
+    {
+     "at": 0.59,
+     "lines": [
+      11
+     ]
+    }
+   ],
+   "video": "godot-outlines/C26-select.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted input",
+   "readouts": [
+    {
+     "at": 0.04,
+     "text": "scripted input",
+     "x": 0.5,
+     "y": 0.06
+    }
+   ],
+   "rings": [],
+   "caption": "material: tells Godot how to draw a surface; it holds the shader",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C26-select: scene spec evidence/planning-checks/scenes/C26-select.json, 13.3 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The script on screen sets thickness 0 in _ready; a scripted key press selects (thickness 2) as the voice says 'selected', another deselects on 'not'. Verified: 0 outline px before, 632 after the first key, 0 after the second; thickness reads back 0.0 (verify_j J1)",
+  "visual_intent": "Code card at left: the 11-line GDScript (a selected flag, _ready setting thickness 0, a key handler that sets 2 or 0); at right the real Godot window running it: no line, then a scripted key press at the word 'selected' draws the outline, a second press removes it. A label 'scripted input' stays on screen.",
+  "motion_claim": "The key handler lights up and the line around the sprite appears and disappears with each press.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "the handler"
+   },
+   {
+    "at": 0.23,
+    "event": "first scripted press: line on"
+   },
+   {
+    "at": 0.44,
+    "event": "second scripted press: line off"
+   }
+  ],
+  "runner_up": "LectureCodeTrace with the script alone",
+  "why": "Cause (one call) and effect (the line) together; the script is the exact text that was run.",
+  "sparse": false
+ },
+ "B27": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C27-shared-material.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two units, one material",
+   "readouts": [
+    {
+     "at": 0.38,
+     "text": "both lit",
+     "x": 0.5,
+     "y": 0.93
+    },
+    {
+     "at": 0.69,
+     "text": "one lit",
+     "x": 0.5,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "instance uniform: its own value on each node that shares the material",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C27-shared-material: scene spec evidence/planning-checks/scenes/C27-shared-material.json, 14.3 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. Two units share one material. Until the voice says 'instance' the dial is an ordinary uniform: setting thickness 2 on the left outlines both. After it, an instance uniform: left 2, right 0, one material, one ring. Verified: shared material: setting 3 on one unit draws 960 px on it and 960 px on the other; instance uniform on a shared material: 960 px on one, the other keeps its own value (verify_j J2, J3)",
+  "visual_intent": "Two real units side by side that share one material. The dial is set on the left unit and BOTH light up (readout 'both lit'); then the shader declares the uniform as instance, each node gets its own value, and only the left unit stays lit (readout 'one lit'). A caption gives the film's definition of an instance uniform (the series' wording).",
+  "motion_claim": "One unit is selected and both light up; after the fix, one unit is selected and only it lights up.",
+  "show": [
+   {
+    "at": 0.38,
+    "event": "both units ringed"
+   },
+   {
+    "at": 0.64,
+    "event": "the shader switches to the instance uniform; only the left ring stays"
+   }
+  ],
+  "runner_up": "manim: two boxes pointing at one material",
+  "why": "The real surprise (two nodes, one dial) and its real cure, in one clip.",
+  "sparse": false
+ }
+}

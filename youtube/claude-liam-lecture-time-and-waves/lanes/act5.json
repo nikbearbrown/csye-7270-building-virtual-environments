@@ -1,0 +1,257 @@
+{
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-shaders/time-and-waves/together.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · wind 1 · scripted",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "logo",
+     "x": 0.3,
+     "y": 0.3
+    },
+    {
+     "at": 0.1,
+     "text": "banner",
+     "x": 0.18,
+     "y": 0.72
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "One Clock, Two Effects"
+  },
+  "visual_intent": "Act title 'One Clock, Two Effects' (serif 40) top-left. A real render: the teal test sprite (a blob with two cream eyes) swelling and settling above a striped banner whose wave travels, pinned at the left. Labels 'logo' and 'banner'.",
+  "motion_claim": "The logo swells and settles while the banner's wave travels: two effects running together.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "logo breathing, banner waving"
+   },
+   {
+    "at": 0.43,
+    "event": "labels: both read the same clock"
+   }
+  ],
+  "runner_up": "manim: a drawing of the two effects",
+  "why": "The payoff has to be seen working, so the real two-effect scene opens the act.",
+  "sparse": false,
+  "capture_spec": "C35: evidence/planning-checks/scene-project/scenes/scene_c35_together.gd (--part together). Logo (12-breath, the breath CurveTexture) centred (0.50, 0.30) at 0.5 of the height; banner (13-banner, wind 1.0) centred (0.50, 0.72) at 0.55 of the width. 12 s, 30 fps, Forward+, no input."
+ },
+ "B36": {
+  "lane": "manim",
+  "class": "B36_BreathCurve",
+  "visual_intent": "The breath curve (a slow rise, a short hold, a long fall) drawn on axes, with the restarting ramp as a strip above it feeding a dot that rides the curve. Beside the plot, the teal logo blob whose size follows 1 + 0.25 × curve: it swells as the dot rises, holds, and settles as the dot falls. Caption: 'size = 1 + 0.25 × curve'.",
+  "motion_claim": "The dot rides the curve as the ramp restarts, and the logo swells and settles in step with it.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the curve, the ramp strip and the logo"
+   },
+   {
+    "at": 0.42,
+    "event": "the dot rides the curve once per ramp cycle"
+   },
+   {
+    "at": 0.67,
+    "event": "caption: size = 1 + 0.25 × curve"
+   }
+  ],
+  "runner_up": "ShaderLab capture of the logo alone",
+  "why": "The relation between a curve and a size is clearest with both drawn side by side and moving together.",
+  "sparse": true
+ },
+ "B37": {
+  "lane": "manim",
+  "class": "B37_LookCloser",
+  "visual_intent": "A picture (the blob with eyes) in a square frame with a five-by-five grid of small dots on it showing where the shader looks up the picture. The dots pull in toward the middle (the address measured from the middle, divided by the scale 1.25) and the part of the picture they read now fills the frame, so the picture appears a quarter bigger. Caption: 'bigger picture = look up closer in'. Readout: 'scale 1.25'.",
+  "motion_claim": "The lookup dots draw in toward the middle and the picture seen through them grows.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the picture and the lookup dots at scale 1"
+   },
+   {
+    "at": 0.29,
+    "event": "the dots pull toward the middle: divide by the scale"
+   },
+   {
+    "at": 0.66,
+    "event": "readout scale 1.25; the picture is a quarter bigger"
+   }
+  ],
+  "runner_up": "ShaderLab capture with code",
+  "why": "Scaling by changing where you look is counter-intuitive; moving the lookup points makes the inversion visible.",
+  "sparse": true
+ },
+ "B38": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D curve;\n\nvoid fragment() {\n\tfloat k = texture(curve, vec2(fract(TIME * 0.4), 0.0)).r;\n\tfloat scale = 1.0 + 0.25 * k;\n\tvec2 uv = (UV - 0.5) / scale + 0.5;\n\tCOLOR = texture(TEXTURE, uv);\n}",
+   "codeFile": "lab-shaders/12-breath.gdshader",
+   "cues": [
+    {
+     "at": 0.16,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.43,
+     "lines": [
+      7,
+      8
+     ]
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/breath.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a CurveTexture made in a script",
+   "readouts": [],
+   "rings": [
+    {
+     "at": 0.74,
+     "box": [
+      0.359,
+      0.25,
+      0.641,
+      0.75
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code card at left (12-breath.gdshader); at right a real render of the teal blob swelling and settling about its middle on the stage, with a ring around its rectangle showing the margin around the art.",
+  "motion_claim": "The logo swells and settles about its middle and never touches the edge of its rectangle.",
+  "show": [
+   {
+    "at": 0.16,
+    "event": "the curve lookup line highlighted"
+   },
+   {
+    "at": 0.43,
+    "event": "the scale lines highlighted"
+   },
+   {
+    "at": 0.74,
+    "event": "ring around the rectangle: empty margin, nothing smears"
+   }
+  ],
+  "runner_up": "manim: the logo and a plot",
+  "why": "The finished shader in action: code and result together are the payoff of Acts II and III.",
+  "sparse": false,
+  "capture_spec": "C38: evidence/planning-checks/scene-project/scenes/scene_c35_together.gd (--part logo). Logo centred (0.50, 0.50) at 0.5 of the height, lab-shaders/12-breath.gdshader with the breath CurveTexture. 10 s, 30 fps, Forward+, no input."
+ },
+ "B39": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float wind : hint_range(0.0, 1.0) = 0.0;\nuniform float amplitude = 0.06;\nuniform float frequency = 3.0;\nuniform float speed = 0.5;\n\nvoid fragment() {\n\tfloat cycles = (UV.x - TIME * speed) * frequency;\n\tfloat wave = amplitude * wind * sin(TAU * cycles) * UV.x;\n\tCOLOR = texture(TEXTURE, vec2(UV.x, UV.y + wave));\n}",
+   "codeFile": "lab-shaders/13-banner.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      10
+     ]
+    },
+    {
+     "at": 0.65,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/banner.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · wind 1",
+   "readouts": [
+    {
+     "at": 0.65,
+     "text": "wind 1",
+     "x": 0.5,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code card at left (13-banner.gdshader); at right a real render of the striped banner with a wave that travels along it, the left end still. The pinned line is highlighted, then the wind uniform; a readout 'wind 1'.",
+  "motion_claim": "The wave travels along the banner from the pinned end while the voice describes it.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "the wave line highlighted (the pinned travelling wave)"
+   },
+   {
+    "at": 0.65,
+    "event": "the wind uniform highlighted; readout wind 1"
+   }
+  ],
+  "runner_up": "manim: the banner drawn flat then waved",
+  "why": "A banner is its motion, so the real render carries it; the code shows where wind multiplies in.",
+  "sparse": false,
+  "capture_spec": "C39: evidence/planning-checks/scene-project/scenes/scene_c35_together.gd (--part banner). Banner centred (0.50, 0.50) at 0.55 of the width, lab-shaders/13-banner.gdshader, wind 1.0, amplitude 0.06, frequency 3, speed 0.5. 10 s, 30 fps, Forward+, no input."
+ },
+ "B40": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "func _unhandled_input(event):\n\tif event is InputEventMouseButton and event.pressed:\n\t\tvar m = banner.material\n\t\tm.set_shader_parameter(\"wind\", 1.0)\n\t\tcreate_tween().tween_property(m, \"shader_parameter/wind\", 0.0, 4.0)",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      4,
+      5
+     ]
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/wind-click.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted input: one click at 4.5 s",
+   "readouts": [
+    {
+     "at": 0.02,
+     "text": "scripted input",
+     "x": 0.5,
+     "y": 0.06
+    }
+   ],
+   "rings": [],
+   "caption": "tween: Godot's way to change a value smoothly over time from GDScript",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "GDScript card at left (the click handler, five lines, word for word the handler in scene_c40_wind_click.gd); at right a real render: the striped banner hangs still, a scripted click lands, the banner snaps into motion and settles over four seconds. A label 'scripted input' stays on screen. Caption: 'tween: Godot's way to change a value smoothly over time from GDScript'.",
+  "motion_claim": "The banner is still until the click, then waves and settles back to still.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "the banner hangs still; label scripted input"
+   },
+   {
+    "at": 0.02,
+    "event": "the handler lines highlighted"
+   },
+   {
+    "at": 0.39,
+    "event": "the click lands; the banner waves, then settles"
+   }
+  ],
+  "runner_up": "manim: a timeline with an event marker",
+  "why": "Cause (the click) and effect (the wave that dies down) together, with the scripted input labelled, are the whole point of a uniform you drive.",
+  "sparse": false,
+  "capture_spec": "C40: evidence/planning-checks/scene-project/scenes/scene_c40_wind_click.gd. Banner (13-banner, wind 0.0) centred (0.50, 0.50) at 0.55 of the width; one scripted left click pushed at frame 135 (4.5 s) sets wind to 1.0 and tweens it to 0.0 over 4.0 s. 14 s, 30 fps, Forward+. The label 'scripted input' is an overlay."
+ }
+}

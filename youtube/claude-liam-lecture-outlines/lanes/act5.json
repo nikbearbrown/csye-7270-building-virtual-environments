@@ -1,0 +1,468 @@
+{
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C34-brushes.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · four reads, eight reads, a ring of sixteen; thickness 1 to 8",
+   "readouts": [
+    {
+     "at": 0.21,
+     "text": "four reads",
+     "x": 0.17,
+     "y": 0.93
+    },
+    {
+     "at": 0.44,
+     "text": "eight reads",
+     "x": 0.5,
+     "y": 0.93
+    },
+    {
+     "at": 0.76,
+     "text": "sixteen reads",
+     "x": 0.83,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Where It Breaks"
+  },
+  "capture_spec": "C34-brushes: scene spec evidence/planning-checks/scenes/C34-brushes.json, 9.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. Four reads, eight reads, a ring of sixteen; thickness 1 to 8 as the voice says 'push the thickness ... at eight'. Verified: at thickness 8 the line is 8 px on the axes and about 5.1, 11.4 and 8.1 px on the diagonal for four, eight and sixteen reads, measured on the capture's own frames at x3 (analyze_scenes C34; the 1:1 Lab renders read 5.1, 11.4 and 8.5, analyze_lab A5)",
+  "visual_intent": "Act title 'Where It Breaks' (serif 40) top-left. Three real sprites in a row, each with a different outline shader, the thickness growing together from one to eight: the left (four reads) pinches in at the diagonals, the middle (eight reads) bulges into a rounded square, the right (sixteen reads) stays round. Labels under each.",
+  "motion_claim": "Three lines grow together and take three different shapes.",
+  "show": [
+   {
+    "at": 0.21,
+    "event": "left pinches"
+   },
+   {
+    "at": 0.44,
+    "event": "middle becomes a rounded square"
+   },
+   {
+    "at": 0.76,
+    "event": "right stays round"
+   }
+  ],
+  "runner_up": "manim: three outlines drawn from the formula",
+  "why": "The real shapes, from the real shaders, growing side by side.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "manim",
+  "class": "B35_BrushShapes",
+  "visual_intent": "Three dot patterns around a center pixel: four terracotta dots in a diamond, eight in a square, sixteen on a circle, each with a faint grey ghost footprint behind it. Under each pattern a small disc outline with two tags, one on the axis and one at 45 degrees, carries the measured numbers: 'axis 8' on all three and 'diagonal 5.1' (four), 'diagonal 11.4' (eight), 'diagonal 8.1' (sixteen). Caption 'thickness 8 · measured on this render'.",
+  "motion_claim": "The dots appear in a diamond, a square and a circle, and the measured numbers land under them.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "three dot patterns"
+   },
+   {
+    "at": 0.15,
+    "event": "diamond, square, circle named in turn"
+   },
+   {
+    "at": 0.44,
+    "event": "'axis 8' under each pattern"
+   },
+   {
+    "at": 0.79,
+    "event": "the diagonal numbers"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of the numbers",
+  "why": "The shape of the brush is the pattern of the reads; drawing the patterns shows why the numbers are what they are.",
+  "sparse": true
+ },
+ "B36": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform vec4 line_color : source_color = vec4(0.25, 0.25, 0.75, 1.0);\nuniform float thickness : hint_range(0.0, 8.0) = 1.0;\n\nvoid fragment() {\n\tfloat around = 0.0;\n\tfor (int i = 0; i < 16; i++) {\n\t\tfloat angle = TAU * float(i) / 16.0;\n\t\tvec2 dir = vec2(cos(angle), sin(angle));\n\t\taround += texture(TEXTURE, UV + dir * TEXTURE_PIXEL_SIZE * thickness).a;\n\t}\n\tvec4 color = texture(TEXTURE, UV);\n\tCOLOR = mix(color, line_color, min(around, 1.0) * (1.0 - color.a));\n}",
+   "codeFile": "lab-shaders/10-ring.gdshader",
+   "cues": [
+    {
+     "at": 0.22,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.37,
+     "lines": [
+      8,
+      9
+     ]
+    },
+    {
+     "at": 0.41,
+     "lines": [
+      10
+     ]
+    }
+   ],
+   "video": "godot-outlines/C36-ring.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.68,
+     "text": "sin/cos: 37 ms",
+     "x": 0.3,
+     "y": 0.93
+    },
+    {
+     "at": 0.83,
+     "text": "constants: 16 ms",
+     "x": 0.7,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "stress test: 403 million pixels a frame · Apple M4 Pro · wall-clock",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C36-ring: scene spec evidence/planning-checks/scenes/C36-ring.json, 13.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The ring of sixteen reads, thickness 1 to 8. Verified: the ring and the constant-directions ring draw identical pictures (0 pixels differ); stress test about 37 ms against about 16 ms per frame (cost-summary.txt)",
+  "visual_intent": "Code card at left: the 14-line ring shader; focus lands on the for, then the angle and direction lines, then the read. At right the ring on the sprite growing to thickness eight. Two readouts under it, 'sin/cos: 37 ms' and 'constants: 16 ms', with the stress-test credit as caption.",
+  "motion_claim": "Focus lands on the loop, the angle and the read; the line grows round.",
+  "show": [
+   {
+    "at": 0.22,
+    "event": "the for line"
+   },
+   {
+    "at": 0.37,
+    "event": "angle and direction lines"
+   },
+   {
+    "at": 0.68,
+    "event": "readouts"
+   }
+  ],
+  "runner_up": "manim code card",
+  "why": "The real code with the real round result; the two timings are labelled with the test that made them.",
+  "sparse": false
+ },
+ "B37": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C37-stem.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a three-pixel stem: eight reads (left), ring of sixteen (right), thickness 1 to 8",
+   "readouts": [
+    {
+     "at": 0.14,
+     "text": "eight reads",
+     "x": 0.26,
+     "y": 0.93
+    },
+    {
+     "at": 0.14,
+     "text": "ring of sixteen",
+     "x": 0.74,
+     "y": 0.93
+    },
+    {
+     "at": 0.74,
+     "text": "floating copies",
+     "x": 0.26,
+     "y": 0.06
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.74,
+     "box": [
+      0.199,
+      0.133,
+      0.316,
+      0.3
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C37-stem: scene spec evidence/planning-checks/scenes/C37-stem.json, 11.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. A sprite with a 3-pixel stem: eight reads come apart into floating copies at thickness 6 to 8, the ring of sixteen holds. Verified: at thickness 8, on image row 17 (the stem just under the ball) eight reads leave five empty pixels each side of the stem and the line floats as copies, the ring of sixteen leaves none (analyze_scenes C37); over the whole sprite eight reads draw 96.0 percent of the true outline and sixteen 100.0 percent (analyze_mascot D1); on row 21 the diagonal reads reach the ball and the disc and fill the gap (D2)",
+  "visual_intent": "Two real sprites, each a disc with a three-pixel-wide stem ending in a small ball, the outline growing from one to eight. On the left (eight reads) the line around the stem comes apart into floating copies of the ball and detached stripes; on the right (ring of sixteen) the line wraps the stem as one piece. Labels under each, a ring on the floating copies.",
+  "motion_claim": "The line grows; on the left it breaks into floating copies around the stem, on the right it holds together.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "labels"
+   },
+   {
+    "at": 0.74,
+    "event": "ring on the floating copies"
+   },
+   {
+    "at": 0.8,
+    "event": "right side whole"
+   }
+  ],
+  "runner_up": "manim: ghost copies of a thin shape",
+  "why": "The real shapes, from the real shaders, coming apart: this is the ghost-copy model from earlier made visible.",
+  "sparse": false
+ },
+ "B38": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform vec4 line_color : source_color = vec4(0.25, 0.25, 0.75, 1.0);\nuniform float thickness : hint_range(0.0, 8.0) = 1.0;\n\nvoid fragment() {\n\tvec2 dx = vec2(TEXTURE_PIXEL_SIZE.x * thickness, 0.0);\n\tvec2 dy = vec2(0.0, TEXTURE_PIXEL_SIZE.y * thickness);\n\tvec4 color = texture(TEXTURE, UV);\n\tfloat around = texture(TEXTURE, UV + dx).a + texture(TEXTURE, UV - dx).a\n\t\t+ texture(TEXTURE, UV + dy).a + texture(TEXTURE, UV - dy).a;\n\tfloat edge = min(around, 1.0) * (1.0 - color.a);\n\tfloat alpha = color.a + edge;\n\tCOLOR = vec4((color.rgb * color.a + line_color.rgb * edge) / max(alpha, 0.001), alpha);\n}",
+   "codeFile": "lab-shaders/11-soft-edges.gdshader",
+   "cues": [
+    {
+     "at": 0.36,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.79,
+     "lines": [
+      11,
+      12,
+      13
+     ]
+    }
+   ],
+   "video": "godot-outlines/C38-soft-edges.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a 12x look at the rim of a soft-edged sprite: plain mix (left), composite (right)",
+   "readouts": [
+    {
+     "at": 0.59,
+     "text": "alpha 0.75",
+     "x": 0.26,
+     "y": 0.85
+    },
+    {
+     "at": 0.92,
+     "text": "alpha 1.0",
+     "x": 0.74,
+     "y": 0.85
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C38-soft-edges: scene spec evidence/planning-checks/scenes/C38-soft-edges.json, 13.3 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. A 12x look at the rim of the soft-edged sprite: plain mix leaves pale, see-through rim pixels (alpha 0.75 at worst) on both sides; as the voice says 'compute the alpha yourself' the right side switches to the composite, which makes them opaque. Verified: 224 rim pixels all see-through with plain mix (output alpha 0.75 to 0.95, mean 0.82), 0 with the composite (alpha 1.00); on hard-edged art the two give the same picture (analyze_soft B1; analyze_lab A13); in the capture 7,056 canvas px of the right panel change at the switch and none of the left (analyze_scenes C38)",
+  "visual_intent": "Code card at left: the 14-line composite shader (edge, alpha and the vec4 line marked). At right two real 12x close-ups of the rim of a soft-edged sprite, both on the plain mix: pale, see-through pixels sit between the teal and the line. As the voice says 'compute the alpha yourself' the right one switches to the composite and its rim pixels turn solid; the left stays pale. Readouts 'alpha 0.75' and 'alpha 1.0'.",
+  "motion_claim": "Focus lands on the three composite lines and the pale rim on the right turns solid while the left stays pale.",
+  "show": [
+   {
+    "at": 0.36,
+    "event": "readout 'alpha 0.75' on the left"
+   },
+   {
+    "at": 0.79,
+    "event": "the composite lines"
+   },
+   {
+    "at": 0.92,
+    "event": "readout 'alpha 1.0' on the right"
+   }
+  ],
+  "runner_up": "manim: a row of rim cells with alpha values",
+  "why": "The same rim before and after the one change, with the untouched twin beside it: the cure acting on the real pixels.",
+  "sparse": false
+ },
+ "B39": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C39-filter.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a 12x look at the rim: nearest (left), linear (right) · counts: whole sprite at 2x",
+   "readouts": [
+    {
+     "at": 0.71,
+     "text": "nearest",
+     "x": 0.26,
+     "y": 0.92
+    },
+    {
+     "at": 0.1,
+     "text": "linear",
+     "x": 0.74,
+     "y": 0.92
+    },
+    {
+     "at": 0.56,
+     "text": "2,008 half-transparent",
+     "x": 0.74,
+     "y": 0.86
+    },
+    {
+     "at": 0.71,
+     "text": "0 half-transparent",
+     "x": 0.26,
+     "y": 0.86
+    }
+   ],
+   "rings": [],
+   "caption": "docs: nearest takes the one closest pixel; linear mixes the four closest",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C39-filter: scene spec evidence/planning-checks/scenes/C39-filter.json, 13.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, texture filter as the note says. A 12x look at the rim, both sides on the default linear filter and blurred; as the voice says 'nearest made none' the left side switches to nearest: crisp one-pixel steps, while the right stays a blurred line. Verified: half-transparent pixels 0 with nearest, 2,008 with linear (86 distinct alpha values at 2.25x); a node with no filter set behaves exactly like linear (analyze_filter E1); in the capture the left panel's blurred pixels go from 10,342 to 0 at the switch, the right stays at 10,342 (analyze_scenes C39)",
+  "visual_intent": "Two real 12x close-ups of the same outlined rim, both on the default linear filter and blurred. As the voice says 'nearest made none' the left one switches to the nearest filter: crisp one-pixel steps in one flat blue; the right one stays a blurred, soft-edged line of many shades. Labels 'nearest' and 'linear', the counts '0 half-transparent' and '2,008 half-transparent' (counted over the whole sprite at 2x, as the frame label says), a caption crediting the docs.",
+  "motion_claim": "Both close-ups start blurred; the left one switches to nearest and turns crisp while the right one stays blurred.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "both blurred; label 'linear' on the right"
+   },
+   {
+    "at": 0.56,
+    "event": "'2,008 half-transparent' on the linear side"
+   },
+   {
+    "at": 0.71,
+    "event": "the left side switches to nearest and turns crisp; label 'nearest', '0 half-transparent'"
+   }
+  ],
+  "runner_up": "manim: four texels blended into one read",
+  "why": "The same rim before and after one setting, with the untouched twin beside it: the blur is visibly the filter's doing.",
+  "sparse": false
+ },
+ "B40": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform vec4 line_color : source_color = vec4(0.25, 0.25, 0.75, 1.0);\nuniform float thickness : hint_range(0.0, 8.0) = 1.0;\nvarying vec4 tint;\nvoid vertex() { tint = COLOR; }\nvoid fragment() {\n\tvec2 dx = vec2(TEXTURE_PIXEL_SIZE.x * thickness, 0.0);\n\tvec2 dy = vec2(0.0, TEXTURE_PIXEL_SIZE.y * thickness);\n\tvec4 color = texture(TEXTURE, UV);\n\tfloat around = texture(TEXTURE, UV + dx).a + texture(TEXTURE, UV - dx).a\n\t\t+ texture(TEXTURE, UV + dy).a + texture(TEXTURE, UV - dy).a;\n\tCOLOR = mix(color, line_color, min(around, 1.0) * (1.0 - color.a)) * tint;\n}",
+   "codeFile": "lab-shaders/14-modulate.gdshader",
+   "cues": [
+    {
+     "at": 0.69,
+     "lines": [
+      4,
+      5
+     ],
+     "label": "varying: a value set at each corner, blended across a shape"
+    },
+    {
+     "at": 0.92,
+     "lines": [
+      12
+     ]
+    }
+   ],
+   "video": "godot-outlines/C40-modulate.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · modulate faded to alpha 0.5: color from the texture (left), vertex color kept (right)",
+   "readouts": [
+    {
+     "at": 0.64,
+     "text": "fade ignored",
+     "x": 0.27,
+     "y": 0.93
+    },
+    {
+     "at": 0.92,
+     "text": "fade works",
+     "x": 0.73,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "modulate: the node's own tint and fade; it reaches the shader as vertex COLOR",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C40-modulate: scene spec evidence/planning-checks/scenes/C40-modulate.json, 13.3 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. Two sprites with the node's modulate faded to alpha 0.5: the left shader assigns COLOR from the texture and ignores the fade, the right passes the vertex COLOR on as a varying and fades with its line. Verified: with modulate alpha 0.5: no shader draws alpha 0.50; a shader assigning COLOR from the texture draws 1.00 (sprite) and 1.00 (line); the varying version draws 0.50 and 0.50 (verify_m M1)",
+  "visual_intent": "Code card at left: the 13-line modulate-safe shader (the varying tint, the one-line vertex function, and the final multiply by tint marked). At right two real sprites whose node modulate fades to half: the left one (its shader assigns color from the texture) stays fully solid with its line, the right one (vertex color kept) fades, line included. Readouts 'fade ignored' and 'fade works'.",
+  "motion_claim": "Both sprites are asked to fade; the left one does not, the right one does.",
+  "show": [
+   {
+    "at": 0.36,
+    "event": "the fade starts on both"
+   },
+   {
+    "at": 0.64,
+    "event": "left stays solid; readout 'fade ignored'"
+   },
+   {
+    "at": 0.92,
+    "event": "varying and multiply lines; right fades; readout 'fade works'"
+   }
+  ],
+  "runner_up": "manim: a tint arrow skipping the shader",
+  "why": "Two real sprites given the same fade, one ignoring it, with the three lines that make the difference.",
+  "sparse": false
+ },
+ "B41": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "Four checks",
+   "headers": [
+    "Check",
+    "Why"
+   ],
+   "rows": [
+    [
+     "Padding at least the thickness",
+     "the line needs pixels to live on"
+    ],
+    [
+     "Step in image pixels",
+     "texture pixel size times thickness"
+    ],
+    [
+     "Reads per pixel",
+     "the cost follows the reads"
+    ],
+    [
+     "Filter and modulate",
+     "linear blurs alpha; texture-only COLOR drops modulate"
+    ]
+   ],
+   "note": "measured in Godot 4.7.2 · Forward+ · Apple M4 Pro",
+   "cues": [
+    0.26,
+    0.56,
+    0.64,
+    0.76
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A four-row table, one row ringed as each check is asked.",
+  "motion_claim": "The ring moves down the rows with the voice.",
+  "show": [
+   {
+    "at": 0.26,
+    "event": "padding row"
+   },
+   {
+    "at": 0.56,
+    "event": "step row"
+   },
+   {
+    "at": 0.64,
+    "event": "reads row"
+   },
+   {
+    "at": 0.76,
+    "event": "filter and modulate row"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A summary of four parallel checks is exactly what the table component is for.",
+  "sparse": false
+ }
+}

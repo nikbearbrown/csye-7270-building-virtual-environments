@@ -1,0 +1,126 @@
+# walker-claude/godot: file inventory and excerpts (2026-10-09)
+# project: /Users/bear/Documents/CoWork/bear-textbooks/books/walker-claude/godot
+
+## Every file (bytes path)
+      8 ./.gitignore
+   3938 ./features/player/clawd_art.gd
+     20 ./features/player/clawd_art.gd.uid
+   3106 ./features/player/player.gd
+     20 ./features/player/player.gd.uid
+    393 ./features/player/tuning.gd
+     19 ./features/player/tuning.gd.uid
+   1993 ./gallery/clawd_gallery.gd
+     20 ./gallery/clawd_gallery.gd.uid
+    176 ./gallery/clawd_gallery.tscn
+    168 ./game/main.tscn
+   7731 ./game/session.gd
+     20 ./game/session.gd.uid
+    364 ./levels/first_steps.json
+    787 ./project.godot
+   1686 ./tests/capture_game.gd
+     20 ./tests/capture_game.gd.uid
+  58311 ./tests/clawd-reference.json
+    468 ./tests/route_driver.gd
+     20 ./tests/route_driver.gd.uid
+   2285 ./tests/test_clawd.gd
+   6463 ./tests/test_game.gd
+     20 ./tests/test_game.gd.uid
+   2606 ./tests/test_keyboard.gd
+     20 ./tests/test_keyboard.gd.uid
+   2403 ./ui/hud.gd
+     20 ./ui/hud.gd.uid
+
+## .tscn/.tres/.gd/project.godot: 14 files, 34203 bytes (no .tres files exist)
+## all files: 27, 93085 bytes
+## du -sh: 172K
+
+## $ file game/main.tscn gallery/clawd_gallery.tscn features/player/player.gd project.godot features/player/player.gd.uid
+game/main.tscn:                ASCII text
+gallery/clawd_gallery.tscn:    ASCII text
+features/player/player.gd:     ASCII text
+project.godot:                 ASCII text
+features/player/player.gd.uid: ASCII text
+
+## /Users/bear/Documents/CoWork/bear-textbooks/books/walker-claude/godot/game/main.tscn (whole file; it has 6 lines)
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/session.gd" id="1"]
+
+[node name="WalkerJumpman" type="Node2D"]
+script = ExtResource("1")
+
+## /Users/bear/Documents/CoWork/bear-textbooks/books/walker-claude/godot/features/player/player.gd (first 40 lines of 93)
+extends CharacterBody2D
+
+const Tuning = preload("res://features/player/tuning.gd")
+const ClawdArt = preload("res://features/player/clawd_art.gd")
+var animation_seconds: float = 0.0
+var animation_name: String = "idle"
+var tuning = Tuning.new()
+var enabled: bool = false
+var tick: int = 0
+var last_floor_tick: int = -1000
+var jump_request_tick: int = -1000
+var opportunity_consumed: bool = false
+var require_jump_release: bool = true
+var facing: float = 1.0
+var jumps: int = 0
+var test_control: bool = false
+var test_axis: float = 0.0
+var test_jump_pressed: bool = false
+var test_jump_held: bool = false
+
+func _ready() -> void:
+	name = "Player"
+	collision_layer = 2
+	collision_mask = 1
+	floor_snap_length = 1.0
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(18, 28)
+	var collider := CollisionShape2D.new()
+	collider.shape = shape
+	collider.position = Vector2(0, -14)
+	add_child(collider)
+
+func reset_at(spawn: Vector2) -> void:
+	position = spawn
+	velocity = Vector2.ZERO
+	last_floor_tick = -1000
+	jump_request_tick = -1000
+	opportunity_consumed = false
+	require_jump_release = true
+	test_jump_pressed = false
+
+## /Users/bear/Documents/CoWork/bear-textbooks/books/walker-claude/godot/project.godot (first 40 lines)
+; Walker Jumpman: first playable control/retry slice.
+config_version=5
+
+[application]
+config/name="walker-jumpman-clawd"
+run/main_scene="res://game/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[display]
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[physics]
+common/physics_ticks_per_second=60
+
+[layer_names]
+2d_physics/layer_1="World"
+2d_physics/layer_2="Player"
+2d_physics/layer_4="Hazard"
+2d_physics/layer_5="Goal"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.965, 0.953, 0.925, 1)
+
+## /Users/bear/Documents/CoWork/bear-textbooks/books/walker-claude/godot/features/player/player.gd.uid
+uid://ctlvx6ghbupgu

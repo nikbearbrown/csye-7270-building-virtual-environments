@@ -299,6 +299,24 @@ This record is from 27 September 2026, run with Claude Code 2.1.150 (default mod
 
 **The shader tests could not see a broken shader.** With the semicolon removed, the agent's test still reported 11 passing checks. Its uniform "type" checks were set-then-get round trips, and a `ShaderMaterial` round-trips a parameter whether or not the shader parsed. A mutation (break it on purpose, rerun) caught this, and so did the uniform-list check in `verify_flash.gd`, which exited 1 with three failures.
 
+## Practice assessment (ungraded)
+
+Answer these in your own words, then take the Canvas practice quiz for this module. Do not paste Claude's explanation as proof of your understanding.
+
+1. Use the semicolon experiment to explain why exit code 0 and a passing test do not show that a shader compiled. Name two signals that do.
+2. Clawd is drawn with `draw_rect()`. Which built-in carries his colour, what would `texture(TEXTURE, UV)` give instead, and why could no headless check tell you?
+3. Sort the spec's eight rules into "a headless test can prove this" and "only a person can check this", and defend one rule that could go either way.
+4. A call to `set_shader_parameter()` misspells the uniform name. What does Godot report, and what would a test assert to catch it?
+5. Write the spec rule that stops the next agent satisfying rule 8 by calling `_update_flash()` directly.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to implement and check the specified shader behavior; inspect the effect and decide whether it communicates clearly. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module feeds Assignment 5, "A Shader and a Material That Say Something About Your Game". It covers Modules 6 and 7, opens in Module 6 and is due about Day 50, and nothing in this lesson is graded by itself. Module 7 moves from a 2D shader you write to the textures and materials a 3D model arrives with. Read the companion chapter, [Chapter 6 — Shader Foundations](../../chapters/06-shader-foundations.md), for the full run, the agent's transcripts and the Unity and Unreal comparison in detail.
+
 ## If you know Unity or Unreal
 
 *Unity and Unreal were not run for this module; this comparison comes from their official documentation, checked on 27 September 2026.*
@@ -314,16 +332,10 @@ This record is from 27 September 2026, run with Claude Code 2.1.150 (default mod
 
 The biggest difference for an agent workflow is what it can read. An agent can diff a `.gdshader` and Unity's default text-serialized assets, but not an Unreal `.uasset` material graph, which needs the editor's Python API or C++. All three share the headless boundary: no-GPU runs check logic, not pixels. The [chapter](../../chapters/06-shader-foundations.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in your own words, then take the Canvas practice quiz for this module. Do not paste Claude's explanation as proof of your understanding.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/06-shader-foundations.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/shader-shaderlab-code-blocks.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Use the semicolon experiment to explain why exit code 0 and a passing test do not show that a shader compiled. Name two signals that do.
-2. Clawd is drawn with `draw_rect()`. Which built-in carries his colour, what would `texture(TEXTURE, UV)` give instead, and why could no headless check tell you?
-3. Sort the spec's eight rules into "a headless test can prove this" and "only a person can check this", and defend one rule that could go either way.
-4. A call to `set_shader_parameter()` misspells the uniform name. What does Godot report, and what would a test assert to catch it?
-5. Write the spec rule that stops the next agent satisfying rule 8 by calling `_update_flash()` directly.
+## Doing the same thing in Unreal Engine
 
-## The next step
-
-This module feeds Assignment 5, "A Shader and a Material That Say Something About Your Game". It covers Modules 6 and 7, opens in Module 6 and is due about Day 50, and nothing in this lesson is graded by itself. Module 7 moves from a 2D shader you write to the textures and materials a 3D model arrives with. Read the companion chapter, [Chapter 6 — Shader Foundations](../../chapters/06-shader-foundations.md), for the full run, the agent's transcripts and the Unity and Unreal comparison in detail.
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/06-shader-foundations.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/custom-material-expressions-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

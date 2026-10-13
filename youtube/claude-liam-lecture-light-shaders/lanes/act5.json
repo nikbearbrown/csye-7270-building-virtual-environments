@@ -1,0 +1,480 @@
+{
+ "B31": {
+  "lane": "manim",
+  "class": "B31_ScreenSpace",
+  "visual_intent": "Act title 'Where Is the Light?' (serif 40) top-left. A 16:9 rectangle (the window) with an origin dot at its top-left labelled (0, 0); an x arrow along the top pointing right and a y arrow down the left side pointing DOWN. A lamp dot at (960, 540) labelled LIGHT_POSITION and a pixel dot at (1130, 640) labelled LIGHT_VERTEX, each with its coordinates. Caption: 'screen space: pixels of the window, from the top left'. Small grey: 'window 1920 x 1080'.",
+  "motion_claim": "The two dots appear one after the other and their coordinates count up from the corner.",
+  "show": [
+   {
+    "at": 0.033,
+    "event": "window, origin, axes"
+   },
+   {
+    "at": 0.083,
+    "event": "lamp dot: LIGHT_POSITION"
+   },
+   {
+    "at": 0.333,
+    "event": "pixel dot: LIGHT_VERTEX"
+   },
+   {
+    "at": 0.57,
+    "event": "caption: screen space"
+   }
+  ],
+  "runner_up": "ShaderLab readouts over a capture",
+  "why": "Coordinates measured from a corner need the corner and the axes drawn; a capture would hide them.",
+  "sparse": true
+ },
+ "B32": {
+  "lane": "manim",
+  "class": "B32_Subtract",
+  "visual_intent": "The same window frame. A lamp dot at (960, 540) and a pixel dot at (1130, 640). An arrow grows from the lamp dot to the pixel dot (terracotta dot at its tip), labelled 'pixel - lamp'; a brace along it counts up to 'length 197 px'. Under it in grey: '(170, 100)'. Caption: 'length(v): the length of a vector; of an offset, the distance'.",
+  "motion_claim": "The arrow grows from the lamp to the pixel while the brace counts the distance up to 197.",
+  "show": [
+   {
+    "at": 0.035,
+    "event": "lamp and pixel dots"
+   },
+   {
+    "at": 0.052,
+    "event": "arrow grows: pixel - lamp"
+   },
+   {
+    "at": 0.57,
+    "event": "brace: length 197 px"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "Subtracting two positions is an arrow, and the arrow's length is a distance; the drawing shows both.",
+  "sparse": true
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tfloat d = length(LIGHT_VERTEX.xy - LIGHT_POSITION.xy);\n\tLIGHT = vec4(vec3(d / 1000.0), 1.0);\n}",
+   "codeFile": "lab-shaders/14-distance-map.gdshader",
+   "cues": [
+    {
+     "at": 0.032,
+     "lines": [
+      5
+     ]
+    },
+    {
+     "at": 0.179,
+     "lines": [
+      4
+     ],
+     "label": "length: the length of a vector; of an offset, the distance"
+    }
+   ],
+   "video": "godot-shaders/ls-c20-distance.mp4",
+   "videoLabel": "Godot 4.7.2 · distance painted as brightness",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.179,
+    "from": 0.0,
+    "to": 0.5
+   }
+  },
+  "capture_spec": "C20: Dusk tiled floor, one warm lamp (scale 4: a 1024 px square texture). 14-distance-map on the floor from the start. Scene = evidence/planning-checks/light_scene.gd with captures.json id C20; 1920 x 1080 window at scale 1, 30 fps, 11 s, Forward+. Expected: added red at 250 px = 0.247 and at 500 px = 0.498 (d / 1000); at the lamp 0 (verify8 C20).",
+  "visual_intent": "Code card at left (d = length(LIGHT_VERTEX.xy - LIGHT_POSITION.xy), then LIGHT = vec4(vec3(d / 1000.0), 1.0)); at right a real Godot window: nothing added at the lamp and more and more brightness with every step away, filling the lamp's square. A thin ramp under the window with a marker travelling from 0 to 0.5.",
+  "motion_claim": "The brightness grows outward from the lamp; the marker travels along the ramp.",
+  "show": [
+   {
+    "at": 0.032,
+    "event": "LIGHT line highlighted"
+   },
+   {
+    "at": 0.179,
+    "event": "distance line highlighted; the marker moves"
+   },
+   {
+    "at": 0.571,
+    "event": "every pixel knows its distance"
+   }
+  ],
+  "runner_up": "manim: a distance ruler",
+  "why": "A real gradient centred on the lamp shows the distance map; the ramp under it ties the brightness to the number.",
+  "sparse": false
+ },
+ "B34": {
+  "lane": "manim",
+  "class": "B34_RingFromSteps",
+  "visual_intent": "A lamp dot at the centre. Two outlined circles centred on it, radius 390 and radius 450, with chips 'step(390, d)' and 'step(450, d)'. The ground outside the small circle fills pale grey ('inside / outside'), then the ground outside the large circle is subtracted from it, and the band between the two circles is left: a ring. Labels 'radius 390', 'radius 450', 'a ring'. Caption: 'step(edge, x): 0 below the edge, 1 from the edge up'.",
+  "motion_claim": "The outside of the big circle is subtracted from the outside of the small one and a ring remains.",
+  "show": [
+   {
+    "at": 0.033,
+    "event": "lamp and the two circles"
+   },
+   {
+    "at": 0.278,
+    "event": "ground splits in two: inside and outside"
+   },
+   {
+    "at": 0.43,
+    "event": "the second fill is subtracted"
+   },
+   {
+    "at": 0.792,
+    "event": "the band between: a ring"
+   }
+  ],
+  "runner_up": "ShaderLab ring capture",
+  "why": "Subtracting one outside from another leaves the band between; seeing the band appear is the idea.",
+  "sparse": true
+ },
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float radius = 450.0;\nuniform float thickness = 60.0;\n\nvoid light() {\n\tfloat d = length(LIGHT_VERTEX.xy - LIGHT_POSITION.xy);\n\tfloat ring = step(radius - thickness, d) - step(radius, d);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * ring;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/15-ring-light.gdshader",
+   "cues": [
+    {
+     "at": 0.025,
+     "lines": [
+      7,
+      8
+     ]
+    },
+    {
+     "at": 0.294,
+     "lines": [
+      9,
+      10
+     ]
+    },
+    {
+     "at": 0.629,
+     "lines": [
+      3,
+      4
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c21-ring.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · 1920 × 1080",
+   "readouts": [
+    {
+     "at": 0.294,
+     "text": "radius 450",
+     "x": 0.8,
+     "y": 0.5
+    },
+    {
+     "at": 0.629,
+     "text": "thickness 60",
+     "x": 0.5,
+     "y": 0.035
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21: Still frame: dusk tiled floor, one warm lamp (scale 7), blob; 15-ring-light at its defaults (radius 450, thickness 60). One PNG at t = 0.5 s. Scene = evidence/planning-checks/light_scene.gd with captures.json id C21; 1920 x 1080 window at scale 1, 30 fps, 1 s, Forward+. Expected: lit at 395, 440, 445 px from the lamp; unlit at 370, 380, 455, 470 px (verify8 C21).",
+  "visual_intent": "Code card at left (two uniforms, the distance, the two steps, the rgb line); at right a real Godot window (a still): a ring of light round the lamp on the dusk floor. Labels 'radius 450' and 'thickness 60'.",
+  "motion_claim": "Highlight steps from the distance and steps to the two uniform lines while the ring stays still.",
+  "show": [
+   {
+    "at": 0.025,
+    "event": "distance and ring lines highlighted"
+   },
+   {
+    "at": 0.629,
+    "event": "uniform lines highlighted"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The whole shader fits on screen with its result; a still is enough because the next beat animates it.",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "$Floor.material.set_shader_parameter(\"radius\", 0.0)\nvar tween := create_tween()\ntween.tween_property($Floor.material, \"shader_parameter/radius\", 880.0, 3.0)",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.295,
+     "lines": [
+      1
+     ]
+    },
+    {
+     "at": 0.43,
+     "lines": [
+      2,
+      3
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c22-ring-expands.mp4",
+   "videoLabel": "Godot 4.7.2 · scripted run (a tween, not player input)",
+   "readouts": [
+    {
+     "at": 0.02,
+     "text": "scripted run",
+     "x": 0.5,
+     "y": 0.05
+    }
+   ],
+   "rings": [],
+   "caption": "tween: Godot's way to change a value smoothly over time from GDScript",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C22: Dusk tiled floor, one warm lamp (scale 7: reach 896 px), blob. 15-ring-light with radius set to 0; the radius ramps 0 to 880 over 3 s (a linear tween) at 'then tween it out', and once more over 3 s as the last sentence begins. Scene = evidence/planning-checks/light_scene.gd with captures.json id C22; 1920 x 1080 window at scale 1, 30 fps, 16 s, Forward+. Expected: at 1, 2 and 3 s of a real tween the radius reads 298, 594, 880 and the ring's outer edge follows it (verify9 C); a tween on a uniform never set from code fails (verify9 C2).",
+  "visual_intent": "A three-line GDScript card at left (set the radius to zero, create a tween, tween the property to 880 over 3 seconds); at right a real Godot window: nothing at first, then a ring spreads from the lamp, thinning as it nears the lamp's edge, then does it again. A label 'scripted run' is always on screen. Caption: 'tween: Godot's way to change a value smoothly over time from GDScript'.",
+  "motion_claim": "The ring spreads out from the lamp as the tween runs.",
+  "show": [
+   {
+    "at": 0.295,
+    "event": "first code line: the radius set to zero"
+   },
+   {
+    "at": 0.43,
+    "event": "tween lines: the ring spreads"
+   },
+   {
+    "at": 0.774,
+    "event": "the ring spreads again: scripted run"
+   }
+  ],
+  "runner_up": "ShaderLab with the earlier still",
+  "why": "Cause (the tween lines) and effect (the spreading ring) together; the label keeps the input honest.",
+  "sparse": false
+ },
+ "B37": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float radius = 450.0;\nuniform float thickness = 60.0;\n\nvoid light() {\n\tfloat d = length(LIGHT_VERTEX.xy - LIGHT_POSITION.xy);\n\tfloat ring = step(radius - thickness, d) - step(radius, d);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * ring;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/15-ring-light.gdshader",
+   "cues": [
+    {
+     "at": 0.024,
+     "lines": [
+      7,
+      8
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c23-zoom.mp4",
+   "videoLabel": "Godot 4.7.2 · camera zoom 1 to 2 · scripted",
+   "readouts": [
+    {
+     "at": 0.02,
+     "text": "ring 450 px",
+     "x": 0.8,
+     "y": 0.5
+    },
+    {
+     "at": 0.02,
+     "text": "zoom 1",
+     "x": 0.17,
+     "y": 0.07
+    },
+    {
+     "at": 0.712,
+     "text": "zoom 2",
+     "x": 0.17,
+     "y": 0.14
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C23: Dusk tiled floor, one warm lamp (scale 7), blob; 15-ring-light at its defaults. At 'Zoom the camera in' a Camera2D zooms from 1 to 2 (smooth) over three seconds and stays at 2. Scene = evidence/planning-checks/light_scene.gd with captures.json id C23; 1920 x 1080 window at scale 1, 30 fps, 14 s, Forward+. Expected: the ring is lit at the same screen pixels (395 and 440 px lit; 380 and 455 unlit) at zoom 1 and at zoom 2 (verify6 Z, verify8 C23); the floor tiles, bulb and blob double in size.",
+  "visual_intent": "Code card at left (the ring shader, unchanged); at right a real Godot window: the ring of 450 px round the lamp; the camera zooms in, the tiles, bulb and blob double in size, but the ring does not change size. Readouts 'ring 450 px', 'zoom 1', then 'zoom 2'.",
+  "motion_claim": "The world doubles around a ring that stays exactly the same size.",
+  "show": [
+   {
+    "at": 0.024,
+    "event": "ring and code"
+   },
+   {
+    "at": 0.43,
+    "event": "zoom in: the ground doubles"
+   },
+   {
+    "at": 0.855,
+    "event": "the ring is still 450 px"
+   }
+  ],
+  "runner_up": "manim: a ruler against a zooming grid",
+  "why": "A real zoom with a ring that does not follow it is the warning, in one picture.",
+  "sparse": false
+ },
+ "B38": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tfloat stripe = step(mod(LIGHT_VERTEX.x, 128.0), 16.0);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * stripe;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/16-stripes-light.gdshader",
+   "cues": [
+    {
+     "at": 0.295,
+     "lines": [
+      4
+     ],
+     "label": "mod(x, y): the remainder after dividing x by y"
+    },
+    {
+     "at": 0.659,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c24-stripes.mp4",
+   "videoLabel": "Godot 4.7.2 · floor slid by script · scripted",
+   "readouts": [
+    {
+     "at": 0.726,
+     "text": "stripes stay",
+     "x": 0.83,
+     "y": 0.07
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C24: Dusk tiled floor (2,520 px wide so it can slide), one warm lamp (scale 5). Default glow first; at 'you get stripes' the floor switches to 16-stripes-light; during the last sentence the floor slides 250 px right, then 500 px left. Scene = evidence/planning-checks/light_scene.gd with captures.json id C24; 1920 x 1080 window at scale 1, 30 fps, 16 s, Forward+. Expected: 160 lit columns (ten stripes of 16 px, 384 to 399, 512 to 527 ...) at t = 0.5 s and at t = 6 s with the floor moved: identical (verify8 C24).",
+  "visual_intent": "Code card at left (the stripe line with mod and step, the rgb line, LIGHT); at right a real Godot window: vertical stripes of light inside the lamp's reach; the tiled floor slides left and right underneath while the stripes stay exactly where they are. The stripe line carries the tag 'mod(x, y): the remainder after dividing x by y'. Label 'stripes stay'.",
+  "motion_claim": "The tiles slide under stripes that do not move.",
+  "show": [
+   {
+    "at": 0.295,
+    "event": "stripe line highlighted"
+   },
+   {
+    "at": 0.568,
+    "event": "stripes appear"
+   },
+   {
+    "at": 0.706,
+    "event": "the floor slides; the stripes stay"
+   }
+  ],
+  "runner_up": "manim: a number line wrapping round",
+  "why": "A real floor sliding under fixed stripes proves they belong to the screen.",
+  "sparse": false
+ },
+ "B39": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tvec2 cell = mod(LIGHT_VERTEX.xy, 128.0);\n\tfloat lines = max(step(cell.x, 16.0), step(cell.y, 16.0));\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * lines;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/17-grid-light.gdshader",
+   "cues": [
+    {
+     "at": 0.028,
+     "lines": [
+      4,
+      5
+     ]
+    },
+    {
+     "at": 0.344,
+     "lines": [
+      5
+     ],
+     "label": "max(a, b): the larger of the two"
+    }
+   ],
+   "video": "godot-shaders/ls-c25-grid.mp4",
+   "videoLabel": "Godot 4.7.2 · stripes, then a grid · scripted",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C25: Dusk tiled floor, one warm lamp (scale 5). Starts on 16-stripes-light; at 'Do the same for y' the floor switches to 17-grid-light. Scene = evidence/planning-checks/light_scene.gd with captures.json id C25; 1920 x 1080 window at scale 1, 30 fps, 12 s, Forward+. Expected: horizontal line runs at x = 1000: y 384 to 399, 512 to 527, 640 to 655, 768 to 783; lines 16 px wide every 128 px, anchored to the screen (verify8 C25).",
+  "visual_intent": "Code card at left (cell = mod(LIGHT_VERTEX.xy, 128.0), lines = max of two steps, the rgb line, LIGHT); at right a real Godot window: the vertical stripes gain horizontal lines and become a grid of light inside the lamp's reach.",
+  "motion_claim": "Horizontal lines join the stripes and make a grid.",
+  "show": [
+   {
+    "at": 0.028,
+    "event": "cell and lines highlighted"
+   },
+   {
+    "at": 0.125,
+    "event": "horizontal lines appear"
+   },
+   {
+    "at": 0.344,
+    "event": "a grid, only where the lamp reaches"
+   }
+  ],
+  "runner_up": "manim: two number lines crossing",
+  "why": "Lines appearing across the stripes show exactly what max adds.",
+  "sparse": false
+ },
+ "B40": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "Where each job belongs",
+   "headers": [
+    "The effect depends on",
+    "Write it in"
+   ],
+   "rows": [
+    [
+     "a lamp: its direction, distance or color",
+     "light()"
+    ],
+    [
+     "the surface alone: a pattern, a gradient",
+     "fragment()"
+    ],
+    [
+     "the shape's corners: a lean, a wobble",
+     "vertex()"
+    ]
+   ],
+   "note": "A rule of thumb from this film's runs · Godot 4.7 shader reference",
+   "cues": [
+    0.186,
+    0.43,
+    0.674
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A three-row table, one row ringed as each kind of effect is named.",
+  "motion_claim": "The ring steps down the rows with the voice.",
+  "show": [
+   {
+    "at": 0.186,
+    "event": "a lamp: light()"
+   },
+   {
+    "at": 0.43,
+    "event": "the surface alone: fragment()"
+   },
+   {
+    "at": 0.674,
+    "event": "the corners: vertex()"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A short decision aid is the right shape for a table, and the film has just shown each case.",
+  "sparse": false
+ }
+}

@@ -1,0 +1,402 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec3 water : source_color = vec3(0.2, 0.5, 0.8);\n\nvoid fragment() {\n\tif (UV.y < 0.1 + 0.03 * sin(UV.x * 30.0 + TIME * 2.0)) {\n\t\tdiscard;\n\t}\n\tfloat wave = sin(UV.y * 25.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * 0.01, 0.0);\n\tvec3 behind = texture(screen_texture, spot).rgb;\n\tCOLOR.rgb = mix(behind, water, 0.5);\n}",
+   "codeFile": "lab-shaders/12-pool.gdshader",
+   "cues": [],
+   "video": "reading-the-screen/pool.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live",
+   "readouts": [
+    {
+     "at": 0.66,
+     "text": "reads the screen",
+     "x": 0.26,
+     "y": 0.47
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.44,
+     "box": [
+      0.05,
+      0.52,
+      0.47,
+      0.93
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "A Copy of the Screen"
+  },
+  "capture_spec": "C01: scene_c01_pool.gd (evidence/planning-checks), canvas 1280 x 720 through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Nothing moves but the water (TIME). Same capture serves B28.",
+  "visual_intent": "Act title 'A Copy of the Screen' (serif 40) top-left. A real Godot render in a framed window on the cream stage: a meadow of green checker tiles, a sand path, flowers, and in the lower left a pool whose wavy top edge ripples and whose water bends the checker lines and the path behind it. The teal player stands to the right. A terracotta ring settles on the pool.",
+  "motion_claim": "The water ripples and the checker lines behind it wobble, live; the ring marks where the picture behind is being read.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "meadow with the live pool; act title top-left"
+   },
+   {
+    "at": 0.44,
+    "event": "terracotta ring settles on the pool"
+   },
+   {
+    "at": 0.66,
+    "event": "label 'reads the screen'"
+   }
+  ],
+  "runner_up": "manim drawing of a glass pane over a scene",
+  "why": "The finished effect running is the question the film answers; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_TheCopy",
+  "visual_intent": "On the cream stage a 16:9 screen frame, left, fills in the order the game draws it: the green checker ground, a tree, a flower, then a small rectangle labelled 'shader'. Just before that rectangle is drawn, a camera-flash snapshot copies the whole frame into a second frame on the right, labelled 'screen texture: a copy of everything drawn so far'. A drawn arrow runs from the shader rectangle to the copy.",
+  "motion_claim": "The frame is copied in one flash and the shader's arrow reads from the copy, not from the live frame.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "screen frame; ground, tree, flower drawn in order"
+   },
+   {
+    "at": 0.34,
+    "event": "flash: the frame is copied to the right"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: two frames, label 'screen texture'"
+   },
+   {
+    "at": 0.66,
+    "event": "arrow from the shader rectangle to the copy"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A snapshot being taken is a motion, and the arrow into the copy is the claim; an isometric flow would show boxes, not a copy of a picture.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tCOLOR.rgb = texture(screen_texture, SCREEN_UV).rgb;\n}",
+   "codeFile": "lab-shaders/01-window.gdshader",
+   "cues": [
+    {
+     "at": 0.13,
+     "lines": [
+      5
+     ],
+     "label": "fragment(): runs once for each pixel"
+    },
+    {
+     "at": 0.23,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "reading-the-screen/window.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on mid-clip (58 percent)",
+   "readouts": [
+    {
+     "at": 0.72,
+     "text": "still there",
+     "x": 0.53,
+     "y": 0.15
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: scene_c02_window.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. A teal rectangle (0.38, 0.22, 0.30 x 0.30 of the canvas) in a cream frame; 01-window is assigned at u = 0.58. Verified: the rectangle's interior equals the meadow exactly (8,820 samples, worst channel difference 0).",
+  "visual_intent": "Code card at left with the 7-line shader; at right a real Godot window on the meadow: a plain teal rectangle in a cream frame. At 58 percent the shader switches on and the teal fill vanishes, leaving the cream frame around meadow. Label: 'still there'.",
+  "motion_claim": "The teal rectangle vanishes at the cue; the cream frame stays, empty, showing the meadow.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "COLOR line highlighted"
+   },
+   {
+    "at": 0.58,
+    "event": "the shader switches on; the teal fill vanishes"
+   },
+   {
+    "at": 0.72,
+    "event": "label 'still there'"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Code and its result side by side, with the vanishing as the proof; code alone cannot show that the rectangle is still there.",
+  "sparse": false
+ },
+ "B04": {
+  "lane": "manim",
+  "class": "B04_ThePieces",
+  "visual_intent": "The line `uniform sampler2D screen_texture : hint_screen_texture;` set in monospace on the cream stage, each token its own object at explicit coordinates. A bracket is drawn under `uniform` with the label 'from outside'; one under `sampler2D` with 'sampler2D: the type of a texture a shader reads'; one under `screen_texture` with 'your name'. The `hint_screen_texture` token stays grey until the next beat.",
+  "motion_claim": "Each bracket is drawn under its token on the word that names it, so the line is read left to right.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "line typed; bracket under uniform"
+   },
+   {
+    "at": 0.4,
+    "event": "bracket under sampler2D"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: two brackets and labels"
+   },
+   {
+    "at": 0.78,
+    "event": "bracket under the name"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "The pieces of one line need brackets under tokens; ShaderLab highlights whole lines only.",
+  "sparse": true
+ },
+ "B05": {
+  "lane": "manim",
+  "class": "B05_FilledEveryFrame",
+  "visual_intent": "The same line again with the `hint_screen_texture` token ringed (terracotta ring, grey backing) and the labels 'hint: the word after a colon that tells Godot how to treat a uniform' and 'this one: fill it with the screen'. Below, a slot labelled `screen_texture`. On three frame ticks (a small counter 1, 2, 3) a fresh miniature of the meadow drops into the slot, replacing the last one; in each the flower has moved a little. A small cursor arrow outside the slot is crossed out: 'you never set it'.",
+  "motion_claim": "A new copy drops into the slot on every tick, replacing the old one, with nobody placing it.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "hint token ringed; label"
+   },
+   {
+    "at": 0.4,
+    "event": "first copy drops into the slot"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: copy in the slot"
+   },
+   {
+    "at": 0.66,
+    "event": "second copy replaces it"
+   },
+   {
+    "at": 0.82,
+    "event": "third copy; crossed-out cursor"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "Replacement on every tick is the claim 'Godot refreshes it every frame'; a static diagram could not show that the copy changes.",
+  "sparse": true
+ },
+ "B06": {
+  "lane": "manim",
+  "class": "B06_AddressToColor",
+  "visual_intent": "The screen texture drawn as a 12 by 7 grid of outline cells in the meadow colours (cells are never filled behind text). A terracotta probe ring sits on one cell with a live label 'address (0.62, 0.40)'; a drawn arrow runs to a swatch showing that cell's colour. The probe hops to two more cells and the swatch follows. After the third hop the swatch splits into four chips R, G, B, A; the A chip carries 'alpha: how visible a pixel is (0 invisible, 1 solid)'.",
+  "motion_claim": "The probe hops from cell to cell and the swatch changes colour to match; then the swatch splits into four numbers.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "grid of the copy"
+   },
+   {
+    "at": 0.3,
+    "event": "probe and swatch; first address"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: probe, label, swatch"
+   },
+   {
+    "at": 0.62,
+    "event": "swatch splits into R, G, B, A"
+   }
+  ],
+  "runner_up": "LectureCodeTrace",
+  "why": "An address going in and a color coming out is a lookup, and a lookup is a probe on a grid; code would only name it.",
+  "sparse": true
+ },
+ "B07": {
+  "lane": "manim",
+  "class": "B07_TwoAddresses",
+  "visual_intent": "A 16:9 screen outline with a smaller 4:3 shape inside it and one pixel dot on the shape. Two live labels follow the dot: 'UV (0.5, 0.5)', measured on the shape ('UV: a point's address on the shape'), and 'screen UV (0.31, 0.62)', measured on the screen ('SCREEN_UV: a pixel's address on the whole screen, not on its own shape'). The shape then slides right: the first label stays (0.5, 0.5) while the second counts up to (0.62, 0.62).",
+  "motion_claim": "The shape slides and one label never changes while the other counts up.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "screen outline, shape, pixel dot"
+   },
+   {
+    "at": 0.2,
+    "event": "label 'UV' on the shape"
+   },
+   {
+    "at": 0.4,
+    "event": "label 'screen UV' on the screen"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: both labels"
+   },
+   {
+    "at": 0.68,
+    "event": "the shape slides; screen UV counts up"
+   }
+  ],
+  "runner_up": "ShaderLab with the two colour pictures",
+  "why": "Two numbers changing at different rates is exactly a pair of live labels; the real render comes in the next beat.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reading-the-screen/addresses.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+   "readouts": [
+    {
+     "at": 0.08,
+     "text": "UV",
+     "x": 0.94,
+     "y": 0.21
+    },
+    {
+     "at": 0.43,
+     "text": "screen UV",
+     "x": 0.93,
+     "y": 0.74
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: scene_c03_addresses.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Top rectangle 02-miniature, bottom 01-window, both 0.28 x 0.28, sliding from x = 0.04 to 0.56 between u = 0.15 and 0.90. Verified: inside the miniature the colour at a fraction of the rectangle equals the screen at the same fraction (4 of 4 points); inside the window it equals the screen at the same place.",
+  "visual_intent": "Two 16:9 rectangles in cream frames, one above the other, slide right together over the meadow. The top one (UV) holds a tiny copy of the whole screen that does not move with the picture; the bottom one (screen UV) is a window onto the meadow. Right-margin labels 'UV' and 'screen UV'.",
+  "motion_claim": "Both rectangles slide; the top one keeps showing the same tiny copy, the bottom one shows different parts of the meadow.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "label 'UV' by the top rectangle"
+   },
+   {
+    "at": 0.43,
+    "event": "label 'screen UV' by the bottom rectangle"
+   },
+   {
+    "at": 0.8,
+    "event": "both rectangles near the right"
+   }
+  ],
+  "runner_up": "manim drawing of the two cases",
+  "why": "The consequence of the wrong address is a tiny copy of the screen inside a rectangle, and that is only convincing as a real render.",
+  "sparse": false
+ },
+ "B09": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 behind = texture(screen_texture, SCREEN_UV).rgb;\n\tCOLOR.rgb = 1.0 - behind;\n}",
+   "codeFile": "lab-shaders/03-invert.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      6
+     ],
+     "label": ".rgb: picks red, green and blue (a swizzle)"
+    },
+    {
+     "at": 0.38,
+     "lines": [
+      7
+     ]
+    }
+   ],
+   "video": "reading-the-screen/invert.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+   "readouts": [
+    {
+     "at": 0.78,
+     "text": "pinned to screen",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: scene_c04_invert.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. 03-invert in a 0.28 x 0.28 window that is still until u = 0.56, then slides from (0.08, 0.10) to (0.62, 0.58) by u = 0.96. Verified: every sampled pixel equals 1 minus the meadow (worst channel difference 0).",
+  "visual_intent": "Code card at left (the 8-line invert shader); at right a real Godot window: one 16:9 window in a cream frame holds the meadow with every colour flipped (greens turn purple, the sand path turns navy). It sits still, then slides diagonally across the meadow; the flipped picture inside stays pinned to the screen while the opening moves. Label 'pinned to screen'.",
+  "motion_claim": "The window slides and the flipped picture inside does not slide with it; only the opening moves.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "behind line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "1.0 - behind highlighted"
+   },
+   {
+    "at": 0.56,
+    "event": "window starts to slide"
+   },
+   {
+    "at": 0.78,
+    "event": "label 'pinned to screen'"
+   }
+  ],
+  "runner_up": "manim sliding frame over a picture",
+  "why": "The sliding window over a fixed picture is the claim, shown on the real result next to the one line that flips it.",
+  "sparse": false
+ },
+ "B10": {
+  "lane": "remotion",
+  "pattern": "LectureCodeTrace",
+  "props": {
+   "title": "A line from older tutorials",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR.rgb = texture(SCREEN_TEXTURE, SCREEN_UV).rgb;\n}",
+   "note": "Godot 4.7.2 compiler: SCREEN_TEXTURE has been removed in favor of using hint_screen_texture with a uniform.",
+   "cues": [
+    0.02,
+    0.02,
+    0.04,
+    0.1,
+    0.1
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A cream code card with the five-line shader that uses the capital-letters shortcut; focus lands on the line that uses it. Under the card the engine's own message, verbatim from a real run, is the note.",
+  "motion_claim": "Focus steps down to the old line and stays on it while the compiler's message is read.",
+  "show": [
+   {
+    "at": 0.04,
+    "event": "focus on the shader's first lines"
+   },
+   {
+    "at": 0.1,
+    "event": "focus on the old line"
+   },
+   {
+    "at": 0.5,
+    "event": "settled: old line and the compiler's message"
+   }
+  ],
+  "runner_up": "BrowserCapture of the docs row 'SCREEN_TEXTURE: Removed in Godot 4'",
+  "why": "The real message from a real run is the thing a viewer will actually see; the docs row says the same but is not what appears when it fails.",
+  "sparse": false
+ }
+}

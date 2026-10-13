@@ -1,0 +1,3433 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-textures-and-color",
+    "title": "Textures and Color",
+    "topic": "GODOT SHADERS · TEXTURES AND COLOR",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "engine": "kokoro",
+    "clock": "narration",
+    "palette": "claude",
+    "register": "Teardown",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "caption_policy": "sidecar",
+    "greeting_language": "Hallo",
+    "audience": "people making games in Godot, and anyone directing an AI that writes shaders for them",
+    "godot_version": "4.7.2",
+    "lecture_opening_description": "How a shader reads images, and why colors shift",
+    "lecture_opening_template": "lecture-title-slide-16x9",
+    "lecture_opening_title_lines": [
+      "Textures and Color"
+    ],
+    "bookend_exempt": [
+      "cold-open",
+      "bvdt"
+    ],
+    "bookend_exempt_reason": "lecture skill: opens on the narrated identity card then the hesitant writer; no composer cold open.",
+    "source_doc": "Godot 4.7 documentation; Godot 4.7.2 runs on Apple M4 Pro (evidence/planning-checks); see SOURCES.md",
+    "tags": [
+      "Godot",
+      "Shaders",
+      "Textures",
+      "Color space",
+      "sRGB",
+      "Linear color",
+      "Noise",
+      "Dissolve effect",
+      "GDScript",
+      "Game development",
+      "Nik Bear Brown"
+    ]
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Textures and Color. Learn how a shader reads a texture, how to do math on color, and why the color you type is not always the color you see.",
+      "estimated_duration_s": 9.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "routing": {
+        "about": "Film identity and payoff",
+        "runner_up": "Minimal title card",
+        "reason": "The lecture skill's approved first beat: portrait, title, narrated summary."
+      },
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, exact film title and short payoff visible immediately.",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete populated lecture opener visible for the whole narration"
+          }
+        ]
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Identity card: portrait and title; teaching motion resumes in BIDEA."
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "the question",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. Most people picture a texture as a picture pasted onto a shape. A shader never pastes anything. For every pixel, it looks a color up in a table, by address.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "types the newcomer's assumption"
+          },
+          {
+            "at": 0.62,
+            "event": "backspaces 'pasted onto a shape' and types 'looked up by address'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A texture is a picture\npasted onto a shape.",
+            "triggerWords": "pasted onto a shape",
+            "replacementWords": "looked up by address",
+            "fontSize": 66,
+            "charMs": 24,
+            "hesitateBetween": 6,
+            "hesitateWithin": 1,
+            "mistakeRate": 4,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-textures-and-color",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "motion_claim": "The writer types the assumption a newcomer arrives with and corrects it into the film's real subject.",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Hesitant-writer bookend: the correction is the motion."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "terms",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Six terms. A shader is a small program the graphics card runs to decide how something is drawn. U V is a point's address on a shape, from zero to one across and down. A texture is an image a shader can read by address. A channel is one of red, green, blue or alpha. Alpha is how visible a pixel is: zero invisible, one solid. And the renderer is the part of Godot that draws.",
+      "estimated_duration_s": 25.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "'Shader' lands"
+          },
+          {
+            "at": 0.28,
+            "event": "'UV' lands"
+          },
+          {
+            "at": 0.45999999999999996,
+            "event": "'Texture' lands"
+          },
+          {
+            "at": 0.64,
+            "event": "'Channel' lands"
+          },
+          {
+            "at": 0.82,
+            "event": "'Alpha' lands"
+          },
+          {
+            "at": 0.9999999999999999,
+            "event": "'Renderer' lands"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Shader",
+                "meaning": "a small program the graphics card runs to decide how something is drawn"
+              },
+              {
+                "term": "UV",
+                "meaning": "a point's address on the shape: 0 to 1 across, 0 to 1 down"
+              },
+              {
+                "term": "Texture",
+                "meaning": "an image a shader can read by address"
+              },
+              {
+                "term": "Channel",
+                "meaning": "one of red, green, blue or alpha"
+              },
+              {
+                "term": "Alpha",
+                "meaning": "how visible a pixel is: 0 invisible, 1 solid"
+              },
+              {
+                "term": "Renderer",
+                "meaning": "the part of Godot that draws"
+              }
+            ],
+            "durationSeconds": "__AUDIO__",
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "TERMS card: prerequisites, one plain line each."
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "I · Reading a Texture",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch this sprite burn away. One number drives it, and a picture of soft clouds decides where it burns first. By the end of this film you will build that effect, and know why the colors you pick can look different in another renderer.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Reading a Texture' (serif 40) top-left. A real Godot render in a framed window on the cream stage: the teal test sprite sits whole, then burns away from the edges in, a yellow-orange-red rim around every hole, while a thin 0 to 1 strip under the window carries a marker labelled 'progress' that rides from 0 to 1 with the burn.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "sprite whole, marker at 0"
+          },
+          {
+            "at": 0.25,
+            "event": "the first holes open at the darkest clouds"
+          },
+          {
+            "at": 0.6,
+            "event": "most of the sprite gone"
+          },
+          {
+            "at": 0.88,
+            "event": "gone, marker at 1"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+            "codeFile": "lab-shaders/18-dissolve.gdshader",
+            "cues": [],
+            "video": "godot-textures-and-color/dissolve-preview.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "progress",
+                "x": 0.5,
+                "y": 0.97
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "Reading a Texture",
+            "ramp": {
+              "at": 0.1,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "The sprite burns away as the progress marker rides from 0 to 1."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of a sprite dissolving",
+        "why": "A real render of the finished effect is the honest promise for the next ten minutes; a drawing would only claim it.",
+        "capture_spec": "C01: Lab sprite (teal test sprite, scale to fit 640x360), lab-shaders/18-dissolve.gdshader; noise_tex = NoiseTexture2D (FastNoiseLite seed 7, frequency 0.02, 256 x 256: the Lab's 'noise' kind); ramp_tex = GradientTexture1D (#8A2A12, #F08A2C, #F7D46B, 256 wide); `--animate progress:0.05:0,0.97:1` (fractions of the beat), 30 fps, Forward+, scripted sweep (label it). Verified frames: evidence/planning-checks/png/plus-a3-18-dissolve-*.png (sprite 23,512 px whole at 0; 0 px at 1).",
+        "act_title_on_screen": "Reading a Texture"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "I · Reading a Texture",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "First, the table. A texture is a grid of colors, and every entry has an address: U V, zero to one across, zero to one down. Hand the table an address, and it hands back the color stored there.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A 6-by-6 grid of cells: the cream letter F on teal (the film's tiny table), with a one-cell teal margin. Beside it a swatch box with four numbers under it, and under the grid an address readout '(u, v)'. A terracotta dot (the address) starts at the top-left cell, a thin line runs from the dot to the swatch, the swatch takes that cell's color and the four numbers fill in (0.98, 0.98, 0.96, 1.0). Labels: 'texture', 'address', 'color'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "the grid and its labels"
+          },
+          {
+            "at": 0.25,
+            "event": "dot on a cream cell: swatch cream, four numbers"
+          },
+          {
+            "at": 0.38,
+            "event": "dot on a teal cell: swatch teal (0.37, 0.64, 0.57, 1.0); settles through 60 %"
+          },
+          {
+            "at": 0.64,
+            "event": "dot on the next cream cell"
+          },
+          {
+            "at": 0.84,
+            "event": "numbers pulse once"
+          }
+        ],
+        "manim": {
+          "class": "B02_LookupTable"
+        },
+        "motion_claim": "The address dot hops from cell to cell and, each time, the swatch changes to that entry's color."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a Lab render",
+        "why": "A grid with a moving address and a swatch that answers is the whole idea of a lookup, as motion; a render would show the result but not the asking."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "I · Reading a Texture",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "In code, the lookup is one function: texture, then the table's name, then the address. It returns a color. Fragment runs once for each pixel, so every pixel asks with its own address, and the shape fills in.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the four-line lookup shader); at right a real Godot window: a plain Color Rect that now shows the 8-by-8 teal and cream checker picture. A terracotta ring moves to one cream cell and then one teal cell, each with its address as a readout.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "fragment line highlighted with its meaning"
+          },
+          {
+            "at": 0.32,
+            "event": "COLOR defined on the lookup line"
+          },
+          {
+            "at": 0.42,
+            "event": "ring on a cream cell, address (0.06, 0.06)"
+          },
+          {
+            "at": 0.62,
+            "event": "texture(table, address) label"
+          },
+          {
+            "at": 0.7,
+            "event": "ring on a teal cell, address (0.19, 0.06)"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D tex;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV);\n}",
+            "codeFile": "lab-shaders/01-lookup.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  5
+                ],
+                "label": "fragment(): runs once for each pixel the shape covers"
+              },
+              {
+                "at": 0.32,
+                "lines": [
+                  6
+                ],
+                "label": "COLOR: the color of the pixel being drawn"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  6
+                ],
+                "label": "texture(table, address): returns a color"
+              }
+            ],
+            "video": "godot-textures-and-color/lookup-checker.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · a ColorRect with no image of its own",
+            "readouts": [
+              {
+                "at": 0.42,
+                "text": "0.06, 0.06",
+                "x": 0.2,
+                "y": 0.2
+              },
+              {
+                "at": 0.7,
+                "text": "0.19, 0.06",
+                "x": 0.33,
+                "y": 0.2
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.42,
+                "box": [
+                  0.0,
+                  0.0,
+                  0.125,
+                  0.125
+                ]
+              },
+              {
+                "at": 0.7,
+                "box": [
+                  0.125,
+                  0.0,
+                  0.25,
+                  0.125
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring hops to a cell, and its address and color are read out."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Code and its result side by side is the claim: one line fills the whole shape from a table the shape never owned.",
+        "capture_spec": "C02: Lab rect 360x360 logical, lab-shaders/01-lookup.gdshader, --tex tex=checker, still PNG at 4K. Verified probes: (0.06, 0.06) = (0.980, 0.977, 0.961) cream; (0.19, 0.06) = (0.372, 0.639, 0.569) teal."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "I · Reading a Texture",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Where does the table come from? A uniform of type sampler two D is a slot you fill from outside. Any texture fits: a small picture, a gradient, noise. It stretches across the shape, because the address always runs from zero to one.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the uniform line highlighted. At right the same real Godot window shows three tables in turn with no change to the code: the small cream F on teal (smeared, because it is tiny), the red-green gradient, the grey noise. A caption under the window says 'same code'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "uniform line: set from outside"
+          },
+          {
+            "at": 0.3,
+            "event": "sampler2D: a texture slot"
+          },
+          {
+            "at": 0.35,
+            "event": "gradient replaces the F"
+          },
+          {
+            "at": 0.68,
+            "event": "noise replaces the gradient"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D tex;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV);\n}",
+            "codeFile": "lab-shaders/01-lookup.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ],
+                "label": "uniform: a value your game sets from outside"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  3
+                ],
+                "label": "sampler2D: the type of a texture a shader reads"
+              }
+            ],
+            "video": "godot-textures-and-color/swap-tables.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · same shader, three tables, switched by script",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "same code",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The window's picture changes from table to table while the code stays put."
+      },
+      "lecture": {
+        "runner_up": "manim: a slot with three tables plugging in",
+        "why": "Three real renders of one unchanged shader are the proof that the table is the variable; the drawing would only say so.",
+        "capture_spec": "C03: three Lab stills of lab-shaders/01-lookup.gdshader on a 360x360 rect, joined with ffmpeg, one third of the clip each: tex = tiny_f (the 6x6 F, default filter: smeared), gradient, noise (Lab kinds). Verified: F centre probes (0.25, 0.25) cream, (0.0833, 0.0833) teal; the F at (0.15, 0.25) blends to (0.608, 0.769, 0.722)."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "I · Reading a Texture",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "That small picture came out smeared. An address can land between two entries, and by default the graphics card blends the four nearest. Add filter nearest, and it takes the closest entry only: crisp blocks, which is what pixel art wants.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the hint highlighted. At right two real panels of the small F table side by side: on the left the smeared default, on the right the crisp blocks after the hint. Panel labels 'default' and 'filter_nearest'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "hint highlighted"
+          },
+          {
+            "at": 0.2,
+            "event": "left panel labelled default (smeared)"
+          },
+          {
+            "at": 0.4,
+            "event": "right panel appears: crisp blocks, labelled filter_nearest"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D tex : filter_nearest;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV);\n}",
+            "codeFile": "lab-shaders/02-nearest.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  3
+                ],
+                "label": "filter_nearest: a hint; reads the closest entry only"
+              }
+            ],
+            "video": "godot-textures-and-color/filter-compare.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · two renders of the same table",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "default",
+                "x": 0.25,
+                "y": 0.95
+              },
+              {
+                "at": 0.4,
+                "text": "filter_nearest",
+                "x": 0.75,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The right panel snaps from smeared to crisp blocks next to the unchanged left one."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with one panel and a toggle",
+        "why": "A smeared F beside a crisp F is the whole difference; the voice points at the left, then the right.",
+        "capture_spec": "C04: two Lab renders of the 6x6 F table on 360x360 rects, side by side (ffmpeg hstack): left lab-shaders/01-lookup.gdshader, right lab-shaders/02-nearest.gdshader; right panel revealed at 40 % of the beat. Verified at (0.15, 0.25): linear (0.608, 0.769, 0.722) blend, nearest (0.372, 0.639, 0.569) the closest entry."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "I · Reading a Texture",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Because it is a lookup, you can ask for any address you like. Ask for one minus the horizontal address, and the picture flips. The table never changed. Only where you looked.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the address line highlighted. At right two real panels: the F table as it is, then, beside it, the same table flipped left to right (the F's stem moves from left to right). Labels 'same table' and 'new address'.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "address line highlighted"
+          },
+          {
+            "at": 0.2,
+            "event": "left panel labelled same table"
+          },
+          {
+            "at": 0.4,
+            "event": "right panel appears: the F flipped, labelled new address"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D tex : filter_nearest;\n\nvoid fragment() {\n\tvec2 address = vec2(1.0 - UV.x, UV.y);\n\tCOLOR = texture(tex, address);\n}",
+            "codeFile": "lab-shaders/03-flip.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  6
+                ],
+                "label": "one minus u: flips it"
+              },
+              {
+                "at": 0.35,
+                "lines": [
+                  7
+                ]
+              }
+            ],
+            "video": "godot-textures-and-color/flip-compare.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · same table, new address",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "same table",
+                "x": 0.25,
+                "y": 0.95
+              },
+              {
+                "at": 0.42,
+                "text": "new address",
+                "x": 0.75,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The F's stem jumps from the left side to the right side as the new address is applied."
+      },
+      "lecture": {
+        "runner_up": "manim: a flipped grid",
+        "why": "A real flipped F next to the original is the evidence that the lookup, not the table, changed.",
+        "capture_spec": "C05: two Lab renders of the F table (filter_nearest) on 360x360 rects, hstack: left lab-shaders/02-nearest.gdshader, right lab-shaders/03-flip.gdshader; right panel revealed at 40 %. Verified: stem texel (0.25, 0.4167) cream in the original and teal when flipped; (0.75, 0.4167) teal in the original and cream when flipped."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "I · Reading a Texture",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Ask for twice the address, and half the lookups fall off the end of the table. With repeat disable, the edge entries stretch outward. With repeat enable, the table starts over, and tiles.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (repeat enable). At right two real panels of the F table asked for twice the address: on the left with repeat disabled a half-size F in the top-left corner with the edge entries smeared out to the right and downward; on the right with repeat enabled a two-by-two tiling of F. Labels 'repeat_disable' and 'repeat_enable'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "UV * 2 line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "left panel appears, labelled repeat_disable: edges stretched"
+          },
+          {
+            "at": 0.7,
+            "event": "right panel appears, labelled repeat_enable: four tiles"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D tex : filter_nearest, repeat_enable;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV * 2.0);\n}",
+            "codeFile": "lab-shaders/05-repeat-on.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  6
+                ],
+                "label": "UV * 2: past the end"
+              },
+              {
+                "at": 0.4,
+                "lines": [
+                  3
+                ],
+                "label": "repeat_enable: a hint; the table starts over"
+              }
+            ],
+            "video": "godot-textures-and-color/repeat-compare.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · two renders, UV times two",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "repeat_disable",
+                "x": 0.25,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "repeat_enable",
+                "x": 0.75,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The left panel streaks outward; the right panel tiles."
+      },
+      "lecture": {
+        "runner_up": "manim: a table with an arrow running off its edge",
+        "why": "Streaks beside tiles show both settings at once; a diagram would need to explain what the render simply shows.",
+        "capture_spec": "C06: two Lab renders of the F table on 360x360 rects, hstack: left lab-shaders/04-repeat-off.gdshader (revealed at 25 %), right lab-shaders/05-repeat-on.gdshader (revealed at 65 %). Verified probes (0.625, 0.2083) and (0.125, 0.625): repeat off = teal, teal; repeat on = cream, cream."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "II · Color Is Math",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "What comes back from a lookup is a vec four: four numbers, each from zero to one. Red, green, blue, and alpha. Orange is one, one half, zero, one. A color is only numbers, so you can do arithmetic on it.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Color Is Math' (serif 40) top-left. A large orange swatch (1.0, 0.5, 0.0, 1.0) with four labelled bars beside it, R G B A, each an outline track with a terracotta dot at its value. A label 'vec4: a bundle of four numbers'. The G bar slides up to 0.9 and the swatch turns yellow-orange; the B bar slides to 0.4 and it pales.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "swatch, four bars, vec4 label"
+          },
+          {
+            "at": 0.3,
+            "event": "orange: 1, 0.5, 0, 1"
+          },
+          {
+            "at": 0.38,
+            "event": "G bar slides to 0.9: swatch yellow-orange; settles through 60 %"
+          },
+          {
+            "at": 0.64,
+            "event": "B bar slides to 0.4: swatch pales"
+          },
+          {
+            "at": 0.85,
+            "event": "hold"
+          }
+        ],
+        "manim": {
+          "class": "B08_FourNumbers"
+        },
+        "motion_claim": "Sliding one bar changes the swatch: the color is nothing but the four numbers."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "Only a picture of numbers moving a swatch shows that the swatch IS the numbers; a render has no numbers to point at.",
+        "act_title_on_screen": "Color Is Math"
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A sprite brings a table of its own, named texture, in capitals. Before your code runs, color already holds that lookup, multiplied by the node's modulate. Overwrite color with a plain lookup, and the modulate is thrown away.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (COLOR = texture(TEXTURE, UV)). At right two real panels of the four-patch picture on a sprite whose modulate is 50 % gray: on the left an empty fragment (the picture is darker), on the right the plain lookup (the picture is full bright). Labels 'empty: keeps modulate' and 'plain lookup: drops it'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "TEXTURE line highlighted"
+          },
+          {
+            "at": 0.25,
+            "event": "left panel: dark (picture times modulate)"
+          },
+          {
+            "at": 0.62,
+            "event": "right panel appears: full bright"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV);\n}",
+            "codeFile": "lab-shaders/07-own-texture.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  4
+                ],
+                "label": "TEXTURE: the node's own picture"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4
+                ],
+                "label": "a plain lookup: the modulate is gone"
+              }
+            ],
+            "video": "godot-textures-and-color/modulate-compare.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · node modulate 50 % gray · two renders",
+            "readouts": [
+              {
+                "at": 0.25,
+                "text": "keeps modulate",
+                "x": 0.25,
+                "y": 0.95
+              },
+              {
+                "at": 0.64,
+                "text": "drops it",
+                "x": 0.75,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "COLOR starts as the picture times modulate, the node's tint color",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The right panel jumps to full brightness as the plain lookup throws the modulate away."
+      },
+      "lecture": {
+        "runner_up": "manim: COLOR box with two inputs multiplied",
+        "why": "Two real panels with different brightness make the gotcha visible; the diagram of 'times modulate' cannot show the surprise.",
+        "capture_spec": "C07: two Lab renders of the swatch picture on a Sprite2D at fit scale with modulate #808080, hstack: left lab-shaders/06-empty.gdshader (revealed at 20 %), right lab-shaders/07-own-texture.gdshader (revealed at 62 %); label 'scripted'. Verified (rose patch): left (0.451, 0.176, 0.275), right (0.902, 0.349, 0.549) (the picture untouched is the same as the right)."
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Multiply the color by a tint. A channel times one stays, times a half it halves. This tint keeps all the red, most of the green, and half the blue, so the picture turns warm.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (a tint color multiplied into COLOR.rgb). At right the real four-patch picture, untouched, then the shader is switched on and every patch warms: the rose deepens, the sky patch turns slate. A readout '1.0, 0.7, 0.5' (the tint) appears.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "COLOR.rgb line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "shader switches on; readout 1.0, 0.7, 0.5"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec3 tint : source_color = vec3(1.0, 0.7, 0.5);\n\nvoid fragment() {\n\tCOLOR.rgb *= tint;\n}",
+            "codeFile": "lab-shaders/08-tint.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  6
+                ],
+                "label": ".rgb: picks red, green and blue; alpha stays"
+              }
+            ],
+            "video": "godot-textures-and-color/tint.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "1.0, 0.7, 0.5",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The picture turns warm the moment the tint is switched on."
+      },
+      "lecture": {
+        "runner_up": "manim: a bar of each channel shrinking",
+        "why": "The warm shift on the real patches is what a tint is; bars could only show the arithmetic.",
+        "capture_spec": "C08: Lab sprite (swatches kind: rose, leaf, sky, sand), shader lab-shaders/08-tint.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, label 'scripted'. Verified patch centres: rose (0.902, 0.349, 0.549) -> (0.902, 0.243, 0.275); leaf (0.400, 0.651, 0.349) -> (0.400, 0.455, 0.176); sky (0.400, 0.502, 0.851) -> (0.400, 0.353, 0.427); sand (0.878, 0.690, 0.290) -> (0.878, 0.482, 0.145)."
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "One minus the color flips it. Zero becomes one, one becomes zero, and a half stays put. Do it to red, green and blue, and every patch turns into its opposite.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (COLOR.rgb = 1.0 - COLOR.rgb). At right the real four-patch picture, untouched, then switched: rose becomes green, leaf becomes purple, sky becomes brown, sand becomes blue. A readout '0.90 → 0.10' on the rose patch.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "shader switches on; every patch flips"
+          },
+          {
+            "at": 0.4,
+            "event": "readout 0.90 -> 0.10 on the rose patch"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR.rgb = 1.0 - COLOR.rgb;\n}",
+            "codeFile": "lab-shaders/09-invert.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  4
+                ],
+                "label": "one minus"
+              }
+            ],
+            "video": "godot-textures-and-color/invert.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+            "readouts": [
+              {
+                "at": 0.4,
+                "text": "0.90 → 0.10",
+                "x": 0.38,
+                "y": 0.3
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Every patch flips to its opposite the moment the shader switches on."
+      },
+      "lecture": {
+        "runner_up": "manim: a channel bar flipping",
+        "why": "The opposite colors on the real patches are the claim; the arithmetic is one line.",
+        "capture_spec": "C09: Lab sprite (swatches), lab-shaders/09-invert.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified: rose (0.902, 0.349, 0.549) -> (0.098, 0.651, 0.451); leaf -> (0.600, 0.349, 0.651); sky -> (0.600, 0.498, 0.149); sand -> (0.122, 0.310, 0.710)."
+      }
+    },
+    {
+      "beat_id": "B12",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Careful with the fourth number. Flip alpha too, and the sprite turns see-through, while the empty space around it becomes a solid white card. Alpha is a channel like the others: only a number.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (COLOR = vec4(1.0) - COLOR). At right the real teal test sprite on the stage, then switched: the sprite becomes a see-through hole and the empty square around it becomes a solid white card. Readouts 'alpha 1→0' on the sprite and 'alpha 0→1' on the card.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "shader switches on: white card with a hole"
+          },
+          {
+            "at": 0.55,
+            "event": "readouts on the hole and on the card"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = vec4(1.0) - COLOR;\n}",
+            "codeFile": "lab-shaders/10-invert-all.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  4
+                ],
+                "label": "all four, alpha too"
+              }
+            ],
+            "video": "godot-textures-and-color/invert-all.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+            "readouts": [
+              {
+                "at": 0.58,
+                "text": "alpha 1→0",
+                "x": 0.5,
+                "y": 0.5
+              },
+              {
+                "at": 0.7,
+                "text": "alpha 0→1",
+                "x": 0.3,
+                "y": 0.2
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The sprite punches out as a hole in a white card the moment the shader switches on."
+      },
+      "lecture": {
+        "runner_up": "manim: alpha bar flipping",
+        "why": "The hole in a white card is a surprise that the numbers alone would not make you believe.",
+        "capture_spec": "C10: Lab sprite (the teal test sprite with eyes), lab-shaders/10-invert-all.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified: centre of the sprite = the stage color (0.851, 0.835, 0.792) (alpha 0); a transparent corner = (1.0, 1.0, 1.0) (alpha 1). GATE V note: pale card on a pale stage."
+      }
+    },
+    {
+      "beat_id": "B13",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Add instead of multiply, and the picture brightens. Add a ramp that grows to one, and every patch ends in flat white. Ordinary two-D drawing cuts every number off at one, so the extra is lost.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (COLOR.rgb += UV.x). At right the real four-patch picture, untouched, then switched: the left edge is only a little brighter and the right edge is flat white, every patch ending in the same white. A ring on the flat white area and a readout 'cut at 1'.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "shader switches on: brighter, ending in flat white on the right"
+          },
+          {
+            "at": 0.7,
+            "event": "ring on the white area; readout cut at 1"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR.rgb += UV.x;\n}",
+            "codeFile": "lab-shaders/11-brighten.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  4
+                ],
+                "label": "ramp: a smooth run of values from 0 up to 1"
+              }
+            ],
+            "video": "godot-textures-and-color/brighten.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+            "readouts": [
+              {
+                "at": 0.7,
+                "text": "cut at 1",
+                "x": 0.62,
+                "y": 0.5
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.7,
+                "box": [
+                  0.5,
+                  0.1,
+                  0.74,
+                  0.9
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The picture washes out toward flat white from left to right when the shader switches on."
+      },
+      "lecture": {
+        "runner_up": "manim: a bar growing past 1 and stopping",
+        "why": "The blown-out real picture shows the consequence of the cut-off, which a bar would only illustrate.",
+        "capture_spec": "C11: Lab sprite (swatches), lab-shaders/11-brighten.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified: rose patch (UV.x about 0.25) (1.0, 0.596, 0.796); leaf patch (UV.x about 0.75) (1.0, 1.0, 1.0). A separate script check (verify-clamp.gd): a shader writing 1.5, 1.2, 0.5 reads back 1.0, 1.0, 0.502 with HDR 2D off and 1.5, 1.2, 0.5 with it on."
+      }
+    },
+    {
+      "beat_id": "B14",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "To make gray, give red, green and blue the same number. The crude way copies one channel. Copy red, and the rose turns bright, while the leaf and the sky turn dark.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (gray = COLOR.r, then vec3(gray)). At right the real four-patch picture, untouched, then switched to gray: rose and sand turn light gray, leaf and sky turn a much darker gray. Readouts on three patches: 0.90, 0.40, 0.40.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "gray line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "vec3 line highlighted; shader switches on"
+          },
+          {
+            "at": 0.62,
+            "event": "readouts 0.90, 0.40, 0.40 land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat gray = COLOR.r;\n\tCOLOR.rgb = vec3(gray);\n}",
+            "codeFile": "lab-shaders/12-gray-red.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  4
+                ],
+                "label": "gray = the red channel"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  5
+                ],
+                "label": "vec3(gray): the same number three times"
+              }
+            ],
+            "video": "godot-textures-and-color/gray-red.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "0.90",
+                "x": 0.39,
+                "y": 0.3
+              },
+              {
+                "at": 0.7,
+                "text": "0.40",
+                "x": 0.61,
+                "y": 0.3
+              },
+              {
+                "at": 0.78,
+                "text": "0.40",
+                "x": 0.39,
+                "y": 0.7
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Three of the patches jump to very different grays the moment the shader switches on."
+      },
+      "lecture": {
+        "runner_up": "manim: three bars and their grays",
+        "why": "A bright rose beside dark leaf and sky, from colors of similar brightness, is the flaw on show.",
+        "capture_spec": "C12: Lab sprite (swatches), lab-shaders/12-gray-red.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified gray values: rose 0.902, leaf 0.400, sky 0.400, sand 0.878."
+      }
+    },
+    {
+      "beat_id": "B15",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Better: weigh the channels by how bright each looks to the eye. About twenty-one percent red, seventy-two percent green, seven percent blue. Dot multiplies and adds them up. Now the rose, the leaf and the sky land on close grays.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (gray = dot(COLOR.rgb, vec3(0.2126, 0.7152, 0.0722))). At right two real panels of the four-patch picture in gray: on the left the crude red-channel version, on the right the weighted one where the rose, the leaf and the sky land on close grays and sand stays lightest. Readouts 0.48, 0.58, 0.51 on the weighted panel.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "weights line highlighted"
+          },
+          {
+            "at": 0.25,
+            "event": "left panel: crude copy of red"
+          },
+          {
+            "at": 0.6,
+            "event": "right panel appears: close grays; readouts 0.48, 0.58, 0.51"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat gray = dot(COLOR.rgb, vec3(0.2126, 0.7152, 0.0722));\n\tCOLOR.rgb = vec3(gray);\n}",
+            "codeFile": "lab-shaders/13-gray-weighted.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  4
+                ],
+                "label": "dot: multiply the matching parts, then add them"
+              }
+            ],
+            "video": "godot-textures-and-color/gray-compare.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · two renders, both switched on by script",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "0.48",
+                "x": 0.69,
+                "y": 0.3
+              },
+              {
+                "at": 0.7,
+                "text": "0.58",
+                "x": 0.86,
+                "y": 0.3
+              },
+              {
+                "at": 0.78,
+                "text": "0.51",
+                "x": 0.69,
+                "y": 0.7
+              }
+            ],
+            "rings": [],
+            "caption": "weights for the Rec. 709 primaries, the ones sRGB uses",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The right panel's three patches settle at nearly the same gray while the left panel's do not."
+      },
+      "lecture": {
+        "runner_up": "manim: a bar of weights",
+        "why": "Two grays of the same picture side by side is the comparison the sentence makes; the weights are in the code.",
+        "capture_spec": "C13: two Lab renders of the swatch picture, hstack: left lab-shaders/12-gray-red.gdshader, right lab-shaders/13-gray-weighted.gdshader, both switched on with `--material-at` at 12 %; right panel revealed at 40 %. Verified weighted grays: rose 0.482, leaf 0.577, sky 0.506, sand 0.702. The weights follow Rec. 709: derived from the primaries in evidence/planning-checks/derive-bt709-weights.py; Godot's Color.get_luminance() returns the same three weights."
+      }
+    },
+    {
+      "beat_id": "B16",
+      "act": "II · Color Is Math",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Mix blends two colors by an amount from zero to one. Here it blends the picture with its own gray: zero is all color, one is all gray. The amount can be one number for everything, or a different number at every pixel.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (an amount uniform; mix of the color and its gray). At right the real four-patch picture draining of its color as the amount sweeps from 0 to 1, a thin 0 to 1 strip under the window with a marker riding the amount.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "amount line highlighted"
+          },
+          {
+            "at": 0.32,
+            "event": "mix line highlighted; the sweep starts"
+          },
+          {
+            "at": 0.85,
+            "event": "all gray, marker at 1"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform float amount : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat gray = dot(COLOR.rgb, vec3(0.2126, 0.7152, 0.0722));\n\tCOLOR.rgb = mix(COLOR.rgb, vec3(gray), amount);\n}",
+            "codeFile": "lab-shaders/14-mix.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  3
+                ],
+                "label": "amount: 0 to 1"
+              },
+              {
+                "at": 0.32,
+                "lines": [
+                  7
+                ],
+                "label": "mix: blends from a to b: t of 0 gives a, 1 gives b"
+              }
+            ],
+            "video": "godot-textures-and-color/mix.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "amount",
+                "x": 0.5,
+                "y": 0.97
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "ramp": {
+              "at": 0.1,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "The picture drains from full color to gray while the amount marker rides from 0 to 1."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills at three amounts",
+        "why": "A sweep with its marker is what 'an amount from zero to one' means; stills would lose the continuity.",
+        "capture_spec": "C14: Lab sprite (swatches), lab-shaders/14-mix.gdshader, `--animate amount:0.1:0,0.85:1`, 30 fps, Forward+, 'scripted'. Verified patch centres: amount 0.0 the picture untouched; amount 0.5 rose (0.690, 0.416, 0.514), leaf (0.486, 0.612, 0.463), sky (0.451, 0.502, 0.678), sand (0.788, 0.694, 0.494); amount 1.0 the weighted grays (0.482, 0.577, 0.506, 0.702)."
+      }
+    },
+    {
+      "beat_id": "B17",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Not every texture is a picture. This one is noise: soft clouds made of numbers, one from zero to one at every pixel. Read each number as an amount of teal, and you have a mask: how much of something to show.",
+      "estimated_duration_s": 14.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Noise as a Mask' (serif 40) top-left. Code card at left (COLOR.a = the noise value). At right a real Godot window: a teal Color Rect whose opacity follows the noise, so soft teal clouds fade into the stage. Three readouts on three spots: 0.08 (nearly nothing), 0.50, 0.91 (nearly solid teal).",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "alpha line: mask, how much to show"
+          },
+          {
+            "at": 0.3,
+            "event": "readout 0.08 on a pale spot"
+          },
+          {
+            "at": 0.4,
+            "event": "readout 0.50"
+          },
+          {
+            "at": 0.65,
+            "event": "readout 0.91 on a solid spot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\n\nvoid fragment() {\n\tCOLOR.a = texture(noise_tex, UV).r;\n}",
+            "codeFile": "lab-shaders/15-noise-mask.gdshader",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  6
+                ],
+                "label": "mask: a number from 0 to 1 per pixel, how much to show"
+              }
+            ],
+            "video": "godot-textures-and-color/noise-mask.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · a teal Color Rect, alpha = noise",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "0.08",
+                "x": 0.363,
+                "y": 0.454
+              },
+              {
+                "at": 0.4,
+                "text": "0.50",
+                "x": 0.181,
+                "y": 0.606
+              },
+              {
+                "at": 0.65,
+                "text": "0.91",
+                "x": 0.637,
+                "y": 0.698
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Readouts land on three spots of the clouds, low, middle and high."
+      },
+      "lecture": {
+        "runner_up": "manim: a grey picture turning into numbers",
+        "why": "Real clouds with real numbers at three pixels show that a texture can be a map of amounts; teal-on-stage has no near-black pixels.",
+        "capture_spec": "C15: Lab rect 360x360 logical with the node color #5FA391 (a ColorRect color, not a shader literal), lab-shaders/15-noise-mask.gdshader, noise_tex = NoiseTexture2D (FastNoiseLite seed 7, frequency 0.02, 256 x 256), still PNG at 4K. Verified noise values at (0.363, 0.454) = 0.082, (0.181, 0.606) = 0.502, (0.637, 0.698) = 0.906; the picture is a normalized noise: min 0.0, max 1.0.",
+        "act_title_on_screen": "Noise as a Mask"
+      }
+    },
+    {
+      "beat_id": "B18",
+      "act": "III · Noise as a Mask",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "You do not draw it. In the Inspector, open the slot's menu and choose Noise Texture two D under New. Click it, then open its Noise slot the same way, and choose Fast Noise Lite. Godot generates the clouds, at the size and seed you choose.",
+      "estimated_duration_s": 15.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Five real frames of the Godot editor's Inspector (a scripted editor session) for a Sprite2D whose shader has a Noise Tex slot, joined by slow cross-dissolves: the slot empty; the slot's menu open, a heading New above bare class names, NoiseTexture2D ringed; inside the NoiseTexture2D, its Noise slot's menu open (heading New, FastNoiseLite) with FastNoiseLite ringed; the NoiseTexture2D view with FastNoiseLite in its Noise slot and Width and Height ringed (this view has no preview); then the FastNoiseLite itself, where the grey clouds preview appears, with Seed ringed. One terracotta ring on the row or entry being named.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "E1-1a: the Noise Tex slot ringed (empty)"
+          },
+          {
+            "at": 0.2,
+            "event": "dissolve to E1-1b: the slot's menu open, heading New"
+          },
+          {
+            "at": 0.33,
+            "event": "NoiseTexture2D ringed in the list"
+          },
+          {
+            "at": 0.58,
+            "event": "dissolve to E1-2c: the Noise slot's menu open"
+          },
+          {
+            "at": 0.66,
+            "event": "FastNoiseLite ringed under New"
+          },
+          {
+            "at": 0.74,
+            "event": "dissolve to E1-3a: the NoiseTexture2D with FastNoiseLite in its Noise slot"
+          },
+          {
+            "at": 0.86,
+            "event": "Width and Height ringed"
+          },
+          {
+            "at": 0.9,
+            "event": "dissolve to E1-3b: the FastNoiseLite, clouds preview"
+          },
+          {
+            "at": 0.94,
+            "event": "Seed ringed"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "godot-textures-and-color/editor-noise.mp4",
+            "videoLabel": "Godot 4.7.2 editor · scripted editor session",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.06,
+                "box": [
+                  0.784,
+                  0.389,
+                  0.996,
+                  0.414
+                ]
+              },
+              {
+                "at": 0.33,
+                "box": [
+                  0.836,
+                  0.91,
+                  0.988,
+                  0.934
+                ]
+              },
+              {
+                "at": 0.66,
+                "box": [
+                  0.908,
+                  0.382,
+                  0.989,
+                  0.406
+                ]
+              },
+              {
+                "at": 0.86,
+                "box": [
+                  0.783,
+                  0.226,
+                  0.996,
+                  0.283
+                ]
+              },
+              {
+                "at": 0.94,
+                "box": [
+                  0.783,
+                  0.416,
+                  0.996,
+                  0.442
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves entry to entry as the voice names each step: the slot, NoiseTexture2D, FastNoiseLite, the size, the seed and the clouds."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench (labelled reconstruction)",
+        "why": "Real editor frames, recorded by script, are the rung-1 SHOW-THE-THING answer; a reconstruction would only claim the labels.",
+        "capture_spec": "E1 (DONE by script, 2026-10-13, editor driver; README 2.7): five full frames from `_godot-shaders-series/editor-capture/png/1920x1080/textures-and-color/` (native 3456x1944 twins beside them in png/3456x1944/): textures-and-color_E1-1a_noise_tex-slot-empty, E1-1b_noise_tex-dropdown-open, E1-2c_noise-dropdown-open, E1-3a_NoiseTexture2D-width-height-noise-FastNoiseLite, E1-3b_inside-FastNoiseLite-preview-clouds. Join them with ffmpeg cross-dissolves at 0.2, 0.58, 0.74 and 0.9 of the beat (the voice's 'Click it' falls inside 45 to 55 %, so the click state E1-2b, the NoiseTexture2D with its Noise empty, is a spare and is not shown); ring boxes are fractions of the whole 1920x1080 frame (no crop). Real labels: the slot's menu has a Search box, a heading New, 19 bare class names (NoiseTexture2D last), then Quick Load... and Load...; inside the NoiseTexture2D the Noise slot's menu is the heading New, FastNoiseLite, Quick Load..., Load...; the NoiseTexture2D view lists Width, Height, Generate Mipmaps, Noise, Color Ramp, Seamless, Invert, In 3D Space, As Normal Map, Normalize and has NO preview; the grey clouds are in the FastNoiseLite view (preview with a 3D button, Noise Type, Seed, Frequency, Offset). No pointer is visible (Movie Maker records the window only): the clicks are the driver's, so the label says scripted editor session."
+      }
+    },
+    {
+      "beat_id": "B19",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now cut with it. Step compares each number with a threshold: below it, zero; at or above it, one. Slide the threshold up, and the clouds shrink into blobs that disappear.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (COLOR.a = step(threshold, n)). At right the teal Color Rect: at threshold 0 solid teal, then as the threshold sweeps up the cloud edges turn hard and the teal shrinks into blobs and disappears. A thin 0 to 1 strip under the window with a marker riding the threshold.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "step line highlighted: 0 below, 1 at or above"
+          },
+          {
+            "at": 0.35,
+            "event": "the sweep starts: hard edges"
+          },
+          {
+            "at": 0.62,
+            "event": "threshold line highlighted; blobs shrinking"
+          },
+          {
+            "at": 0.9,
+            "event": "almost nothing left"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform float threshold : hint_range(0.0, 1.0) = 0.5;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tCOLOR.a = step(threshold, n);\n}",
+            "codeFile": "lab-shaders/16-step-cut.gdshader",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  8
+                ],
+                "label": "step: 0 below the edge, 1 from the edge up"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4
+                ],
+                "label": "threshold: slide it up"
+              }
+            ],
+            "video": "godot-textures-and-color/step.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · threshold swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "threshold",
+                "x": 0.5,
+                "y": 0.97
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "ramp": {
+              "at": 0.1,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "The teal shrinks into hard-edged blobs and vanishes as the threshold marker rides from 0 to 1."
+      },
+      "lecture": {
+        "runner_up": "manim: a number line with a threshold",
+        "why": "A threshold sweeping through real clouds is what 'cut' means; a number line would not show the blobs.",
+        "capture_spec": "C16: Lab rect 360x360 logical with node color #5FA391, lab-shaders/16-step-cut.gdshader, noise_tex = the same NoiseTexture2D, `--animate threshold:0.1:0,0.97:1`, 30 fps, Forward+, 'scripted'. Verified teal share of the frame: threshold 0.25 = 92.2 %, 0.5 = 51.6 %, 0.75 = 8.4 % (plus-analysis.txt)."
+      }
+    },
+    {
+      "beat_id": "B20",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Use that cut on a sprite. If a pixel's noise is below the threshold, discard it, and the background shows through. Call the threshold progress. As it climbs from zero to one, the sprite is eaten away.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (if the noise is below progress, discard). At right the real teal test sprite on the stage: ragged holes open in the shape of the clouds and grow until the sprite is gone, with the stage showing through every hole. A 0 to 1 strip under the window with a marker riding progress.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "if and discard lines highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "the first holes open"
+          },
+          {
+            "at": 0.62,
+            "event": "progress line highlighted; about half the sprite gone"
+          },
+          {
+            "at": 0.88,
+            "event": "almost gone"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tif (n < progress) {\n\t\tdiscard;\n\t}\n}",
+            "codeFile": "lab-shaders/17-dissolve-cut.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  8,
+                  9
+                ],
+                "label": "discard: draw nothing here"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4
+                ],
+                "label": "progress: a uniform your game sets, a dial"
+              }
+            ],
+            "video": "godot-textures-and-color/dissolve-cut.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "progress",
+                "x": 0.5,
+                "y": 0.97
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "ramp": {
+              "at": 0.1,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "Holes open and grow in the shape of the clouds as the progress marker rides from 0 to 1."
+      },
+      "lecture": {
+        "runner_up": "manim: a sprite with holes appearing",
+        "why": "The stage showing through real holes is what discard does; a drawing would only claim it.",
+        "capture_spec": "C17: Lab sprite (teal test sprite, fit scale), lab-shaders/17-dissolve-cut.gdshader, noise_tex = the same NoiseTexture2D, `--animate progress:0.1:0,0.97:1`, 30 fps, Forward+, 'scripted'. Verified sprite pixels left (of 23,512): progress 0.25 = 90.0 %, 0.5 = 46.0 %, 0.75 = 8.7 %, 1.0 = 0 (plus-analysis.txt)."
+      }
+    },
+    {
+      "beat_id": "B21",
+      "act": "III · Noise as a Mask",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "To make it burn, color the pixels that are about to go. They sit right above the threshold: a thin band of noise values, a tenth wide. Everything in that band is next to disappear.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A horizontal strip of noise values from 0 to 1 drawn in light-to-mid grays with end labels '0' and '1'. A terracotta marker 'threshold' sits on the strip with a bracket just to its right marking a band one tenth wide, labelled 'band: a strip of noise values, a tenth wide'. Below the strip a row of twelve pixel cells, each holding a noise value: cells whose value is below the marker are drawn as empty outlines, cells inside the band glow yellow-orange-red, cells beyond stay teal. The marker slides right; the band moves with it and cells burn, then vanish, in order.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "strip, marker, bracket, the row of cells"
+          },
+          {
+            "at": 0.25,
+            "event": "marker slides from 0.2 to 0.45; cells under the band glow"
+          },
+          {
+            "at": 0.42,
+            "event": "marker settles at 0.45: band and glowing cells shown; held through 60 %"
+          },
+          {
+            "at": 0.65,
+            "event": "marker slides on to 0.7: glowing cells vanish behind it"
+          },
+          {
+            "at": 0.88,
+            "event": "hold"
+          }
+        ],
+        "manim": {
+          "class": "B21_Band"
+        },
+        "motion_claim": "The marker slides right and the band right behind it lights up the pixels that are next to go."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A moving marker with a band behind it is a quantity moving along a number line, which is Manim's job; the Lab render shows the effect, not why those pixels."
+      }
+    },
+    {
+      "beat_id": "B22",
+      "act": "III · Noise as a Mask",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "What color? Look it up in a second table: a ramp from dark red through orange to yellow. The nearer a pixel is to the edge, the hotter it is, and the further along the ramp you read. The address is a number you computed.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Left, a real Lab crop of the burning edge (a zoomed still of the dissolve at progress 0.5 with a thick yellow-to-dark-red rim); at the bottom the real burn ramp as a horizontal strip labelled 'ramp: a smooth run of colors', end labels '0' and '1' (dark red at 0, yellow at 1). Three sample pixels on the edge crop are boxed in terracotta; from each a thin line runs down to an address on the strip: the pixel nearest the hole to 1.0 (yellow), a middle one to 0.5 (orange), the outermost to 0.0 (dark red), each with a readout 'heat 1.0 / 0.5 / 0.0'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "edge crop and ramp strip"
+          },
+          {
+            "at": 0.3,
+            "event": "first boxed pixel (nearest the hole) and its line to 1.0"
+          },
+          {
+            "at": 0.42,
+            "event": "second pixel to 0.5; settles through 60 %"
+          },
+          {
+            "at": 0.66,
+            "event": "third pixel to 0.0"
+          },
+          {
+            "at": 0.85,
+            "event": "all three lines held"
+          }
+        ],
+        "manim": {
+          "class": "B22_RampLookup"
+        },
+        "motion_claim": "Lines run from three pixels on the edge to three addresses on the ramp, the nearest pixel to the hottest end."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the ramp strip",
+        "why": "Real pixels connected to real addresses on a real ramp is the lookup-by-number idea, drawn; the capture alone cannot show the connection."
+      }
+    },
+    {
+      "beat_id": "B23",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is the whole shader. Noise decides who goes first. Progress is the dial. The ramp colors the edge. Twelve lines of code, and the sprite burns away.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The full dissolve shader at left (twelve lines of code); at right the real sprite burning away with its yellow-to-red rim as progress sweeps from 0 to 1, a 0 to 1 strip under the window carrying a marker. The highlight walks through the code as the voice names noise, progress and the ramp.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "the noise lookup"
+          },
+          {
+            "at": 0.3,
+            "event": "progress, cut and discard"
+          },
+          {
+            "at": 0.62,
+            "event": "heat, the ramp lookup and the color"
+          },
+          {
+            "at": 0.85,
+            "event": "the whole function"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+            "codeFile": "lab-shaders/18-dissolve.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  8
+                ]
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  5,
+                  9,
+                  10
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4,
+                  11,
+                  12,
+                  13
+                ]
+              },
+              {
+                "at": 0.85,
+                "lines": [
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13
+                ]
+              }
+            ],
+            "video": "godot-textures-and-color/dissolve.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "progress",
+                "x": 0.5,
+                "y": 0.97
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "ramp": {
+              "at": 0.1,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "The highlight walks the code while the sprite burns away."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The payoff needs code and its running result together; the ramp-strip marker shows the dial.",
+        "capture_spec": "C18: Lab sprite (teal test sprite, fit scale), lab-shaders/18-dissolve.gdshader, noise_tex = NoiseTexture2D (seed 7, frequency 0.02, 256), ramp_tex = GradientTexture1D (#8A2A12, #F08A2C, #F7D46B), `--animate progress:0.1:0,0.97:1`, 30 fps, Forward+, 'scripted'. Verified (sprite 23,512 px): progress 0 whole, 0.25 = 20,391 sprite px + 2,371 burning, 0.5 = 8,815 + 4,132, 0.75 = 921 + 1,655, 1.0 = none."
+      }
+    },
+    {
+      "beat_id": "B24",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now swap the table. Put a left to right gradient where the noise was, and the same shader wipes instead of dissolves. Nothing in the code changed. A mask is only a table of amounts.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same dissolve shader at left with the noise slot highlighted. At right the real sprite: a straight burning edge sweeps across it from left to right, leaving the right part intact until it arrives. A caption 'gradient, not noise'.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "noise_tex line highlighted: the table you swap"
+          },
+          {
+            "at": 0.3,
+            "event": "the straight edge starts to travel"
+          },
+          {
+            "at": 0.85,
+            "event": "edge near the right side of the sprite"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+            "codeFile": "lab-shaders/18-dissolve.gdshader",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  3
+                ],
+                "label": "the table you swap"
+              }
+            ],
+            "video": "godot-textures-and-color/wipe.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · gradient where the noise was · progress swept by script",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "gradient, not noise",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "A straight burning edge travels left to right across the sprite."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the noise sweep next to it",
+        "why": "The same code with a different table and a different effect is the whole idea; a still frame would hide the travel.",
+        "capture_spec": "C19: Lab sprite (teal test sprite, fit scale), lab-shaders/18-dissolve.gdshader, noise_tex = the Lab's 'gradient' kind (its red channel runs 0 -> 1 left to right), ramp_tex as C18, `--animate progress:0.1:0.15,0.97:0.85`, 30 fps, Forward+, 'scripted'. Verified left edge of what is left at progress 0.35 / 0.5 / 0.65 = x 258 / 306 / 353 of 640."
+      }
+    },
+    {
+      "beat_id": "B25",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Check the ends. At zero the sprite should be untouched. The first version of this shader failed that: some pixels already burned, because at zero the band covered the darkest clouds. The fix: start the threshold a band's width below zero.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The fixed shader at left with the cut line highlighted. At right two real panels of the sprite at progress 0: on the left the first version, with a few specks of burning already on it, ringed in terracotta with a readout '160 pixels burning'; on the right the fixed version, perfectly clean. Labels 'first version' and 'fixed'.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "cut line highlighted"
+          },
+          {
+            "at": 0.2,
+            "event": "left panel labelled first version"
+          },
+          {
+            "at": 0.3,
+            "event": "ring on the specks; 160 pixels burning"
+          },
+          {
+            "at": 0.62,
+            "event": "right panel appears, clean, labelled fixed"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+            "codeFile": "lab-shaders/18-dissolve.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  9
+                ],
+                "label": "starts a band below zero"
+              }
+            ],
+            "video": "godot-textures-and-color/ends-check.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · progress 0, two shaders",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "first version",
+                "x": 0.25,
+                "y": 0.95
+              },
+              {
+                "at": 0.3,
+                "text": "160 pixels burning",
+                "x": 0.25,
+                "y": 0.12
+              },
+              {
+                "at": 0.64,
+                "text": "fixed",
+                "x": 0.75,
+                "y": 0.95
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.3,
+                "box": [
+                  0.2,
+                  0.34,
+                  0.285,
+                  0.6
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring lands on the specks in the left panel while the right panel stays clean."
+      },
+      "lecture": {
+        "runner_up": "manim: a band hanging off the noise range",
+        "why": "Real specks on a sprite that should be untouched are the bug in evidence; the number line explains why but does not show it.",
+        "capture_spec": "C20: two Lab renders of the sprite at progress 0, hstack: left lab-shaders/19-dissolve-first-try.gdshader, right lab-shaders/18-dissolve.gdshader (same noise and ramp as C18); right revealed at 60 %. Verified: first version 160 burning pixels in three specks (boxes in the 640x360 frame: (341,129)-(348,137), (271,160)-(291,175), (287,185)-(308,205)); fixed version 0. At progress 1 both are empty."
+      }
+    },
+    {
+      "beat_id": "B26",
+      "act": "III · Noise as a Mask",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "To drive it from the game, tween progress. One trap: a tween needs a starting value, so set progress from code first. Skip that, and Godot answers that the property does not exist.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A three-line GDScript card at left (set progress to 0.0; create a tween; tween the shader parameter progress to 1.0 over two seconds). At right the real sprite burning away over two seconds. A caption under the window quotes the real error that line one prevents.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "the set line highlighted: a start value first"
+          },
+          {
+            "at": 0.6,
+            "event": "the tween lines highlighted; the burn starts"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "$Sprite.material.set_shader_parameter(\"progress\", 0.0)\nvar tween := create_tween()\ntween.tween_property($Sprite.material, \"shader_parameter/progress\", 1.0, 2.0)",
+            "codeFile": "scene script (GDScript)",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  1
+                ],
+                "label": "a start value first"
+              },
+              {
+                "at": 0.6,
+                "lines": [
+                  2,
+                  3
+                ],
+                "label": "tween: Godot changes a value smoothly over time"
+              }
+            ],
+            "video": "godot-textures-and-color/tween.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted run: the tween starts at 1 s",
+            "readouts": [],
+            "rings": [],
+            "caption": "without line 1: \"The tweened property … does not exist\"",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The sprite burns away over two seconds once the tween lines run."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with only the error text",
+        "why": "Cause (three lines) and effect (the burn) together, with the verbatim error as the price of skipping line one.",
+        "capture_spec": "C21: scene with a Sprite2D 'Sprite' using lab-shaders/18-dissolve.gdshader (noise and ramp as C18); the scene script runs `start_tween` through `--call-at` at 25 % of the beat: set_shader_parameter(\"progress\", 0.0) then a Tween to 1.0 over 2.0 s; 30 fps, Forward+. Verified in run-10 (verify-tween-progress.gd): with the first line progress 0.4998 at 0.5 s, sprite gone by 1.2 s; without it the console prints 'The tweened property \"shader_parameter/progress\" does not exist' and nothing moves."
+      }
+    },
+    {
+      "beat_id": "B27",
+      "act": "IV · Two Ways to Count Light",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now the part that surprises people. Here is one three-D shader, run in two renderers. It blends two grays, point two and point eight, halfway. You would expect point five. On this Mac, Forward Plus reads point six in the middle. Compatibility reads point five.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Two Ways to Count Light' (serif 40) top-left. Code card at left (a spatial unshaded shader that mixes two source-color grays by UV.x). At right two real horizontal gray strips stacked, the same shader in two renderers: top labelled 'Forward+', bottom 'Compatibility'. A readout at the middle of the top strip '0.60', then at the middle of the bottom strip '0.50'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "spatial and unshaded lines highlighted"
+          },
+          {
+            "at": 0.2,
+            "event": "labels Forward+ and Compatibility"
+          },
+          {
+            "at": 0.32,
+            "event": "ALBEDO line highlighted"
+          },
+          {
+            "at": 0.68,
+            "event": "readout 0.60 on the top strip"
+          },
+          {
+            "at": 0.85,
+            "event": "readout 0.50 on the bottom strip"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type spatial;\nrender_mode unshaded;\n\nuniform vec4 from_color : source_color = vec4(0.2, 0.2, 0.2, 1.0);\nuniform vec4 to_color : source_color = vec4(0.8, 0.8, 0.8, 1.0);\n\nvoid fragment() {\n\tALBEDO = mix(from_color.rgb, to_color.rgb, UV.x);\n}",
+            "codeFile": "lab-shaders/20-blend-3d.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  1,
+                  2
+                ],
+                "label": "spatial: a 3D shader; unshaded: no lighting"
+              },
+              {
+                "at": 0.32,
+                "lines": [
+                  8
+                ],
+                "label": "ALBEDO: the color a 3D shader outputs"
+              }
+            ],
+            "video": "godot-textures-and-color/two-renderers.mp4",
+            "videoLabel": "Godot 4.7.2 · unshaded 3D quad · Forward+ above, Compatibility below · Apple M4 Pro",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "Forward+",
+                "x": 0.1,
+                "y": 0.06
+              },
+              {
+                "at": 0.24,
+                "text": "Compatibility",
+                "x": 0.14,
+                "y": 0.56
+              },
+              {
+                "at": 0.68,
+                "text": "0.60",
+                "x": 0.5,
+                "y": 0.28
+              },
+              {
+                "at": 0.85,
+                "text": "0.50",
+                "x": 0.5,
+                "y": 0.78
+              }
+            ],
+            "rings": [],
+            "caption": "Forward+: default on desktop · Compatibility: widest hardware, default on web",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The two strips differ visibly at the middle, and the readouts land top then bottom."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable with the two numbers",
+        "why": "The two strips side by side let the eye see the gap before the numbers say it; this is the film's central surprise.",
+        "capture_spec": "C22: two Lab renders of lab-shaders/20-blend-3d.gdshader (quad3d, 1280x360 logical each), vstack: top --renderer forward_plus, bottom --renderer gl_compatibility; stills. Verified at the middle (0.5, 0.5): Forward+ 0.600, Mobile 0.600, Compatibility 0.502; at 0.1: 0.329 / 0.333 / 0.259; at 0.9: 0.765 / 0.765 / 0.741. GATE T note: the 0.2 gray end is dark; strips are tall, so they are not text-shaped.",
+        "act_title_on_screen": "Two Ways to Count Light"
+      }
+    },
+    {
+      "beat_id": "B28",
+      "act": "IV · Two Ways to Count Light",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Neither renderer is broken. A pixel probe measures one thing: what this renderer drew for this shader. And a test that runs without a window has no pixels to read at all.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A left-to-right chain of four outline boxes: 'numbers you typed', 'shader math', 'the renderer', 'pixel on screen'. A terracotta token travels the chain. A magnifier (a circle and a handle) lands on the last box with the label 'probe: reads one pixel's color'. Under the chain a second, shorter chain 'no window' leads to a box 'no pixels' that is struck through, labelled 'null'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "the four boxes"
+          },
+          {
+            "at": 0.3,
+            "event": "token travels the chain"
+          },
+          {
+            "at": 0.46,
+            "event": "magnifier on the last box: a probe reads here; settled through 60 %"
+          },
+          {
+            "at": 0.74,
+            "event": "second chain: no window, no pixels, null"
+          }
+        ],
+        "manim": {
+          "class": "B28_Probe"
+        },
+        "motion_claim": "The token travels the chain and the magnifier lands at its end; the lower chain stops at an empty box."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "A pipeline with the probe at its very end shows that a probe sees only the last box's output; a table cannot show where the magnifier sits."
+      }
+    },
+    {
+      "beat_id": "B29",
+      "act": "IV · Two Ways to Count Light",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Why do they differ? There are two ways to count brightness. A color picker's numbers are spaced for the eye: that is s R G B. Light adds up in a straight line: that is linear. The two agree at zero and one, and disagree between.",
+      "estimated_duration_s": 15.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Axes: the horizontal axis 'typed number (sRGB: the scale color pickers use)' from 0 to 1, the vertical 'light (linear: numbers that add up like light)' from 0 to 1. A dashed diagonal marked 'if the two agreed'. The real sRGB curve is drawn from (0, 0) to (1, 1), bending under the diagonal. Rings on the two ends where it meets the diagonal. A dot slides along the curve to x = 0.5 and drops a dashed line to y = 0.21 with the label '0.5 typed = 0.21 light'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "axes and the dashed diagonal"
+          },
+          {
+            "at": 0.3,
+            "event": "the curve draws; rings on both ends"
+          },
+          {
+            "at": 0.45,
+            "event": "dot at x = 0.5 drops to 0.21; settled through 60 %"
+          },
+          {
+            "at": 0.78,
+            "event": "hold with the gap between curve and diagonal labelled"
+          }
+        ],
+        "manim": {
+          "class": "B29_TwoScales"
+        },
+        "motion_claim": "The curve draws itself under the diagonal; a dot rides it and drops to 0.21 at 0.5."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A curve under a diagonal is exactly 'the two scales agree at the ends and disagree between'; a render could not show a scale."
+      }
+    },
+    {
+      "beat_id": "B30",
+      "act": "IV · Two Ways to Count Light",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Blend point two and point eight halfway. Average the typed numbers, and you get point five. Convert to light, average there, and convert back, and you get point six. Same two colors, two different answers.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The same axes and curve. Two dots on the curve at typed 0.2 and 0.8 (light 0.03 and 0.60) joined by a thin chord. Path A: a dashed vertical from typed 0.5 marks the average of the typed numbers, a marker on the horizontal axis labelled '0.5'. Path B: a dashed horizontal at light 0.32 (the average of the two lights) runs to the curve and drops to the horizontal axis at '0.6'. Both markers stay on the axis, labelled 'average the typed numbers' and 'average the light'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "the curve with the two grays on it and their chord"
+          },
+          {
+            "at": 0.28,
+            "event": "path A: typed average, marker 0.5"
+          },
+          {
+            "at": 0.44,
+            "event": "path B: light average, marker 0.6; settled through 60 %"
+          },
+          {
+            "at": 0.78,
+            "event": "hold: 0.5 and 0.6 labelled"
+          }
+        ],
+        "manim": {
+          "class": "B30_TwoMidpoints"
+        },
+        "motion_claim": "Two dashed paths trace to two different markers on the axis, 0.5 and 0.6."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "Two paths to two numbers on one axis make 'same colors, two answers' visible; the renders in the previous beat show the pixels, this shows why."
+      }
+    },
+    {
+      "beat_id": "B31",
+      "act": "IV · Two Ways to Count Light",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Forward Plus and Mobile work in light, and convert to s R G B only to show the picture. In this test, Compatibility blends the numbers as typed. That is why one reads point six and the other point five.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A three-row table, one row ringed as each renderer is named, the third column carrying the real measured pixel and the fourth saying where each renderer is the default (desktop, mobile devices, web), which defines Mobile where it is first spoken.",
+        "show": [
+          {
+            "at": 0.14,
+            "event": "Forward+ row"
+          },
+          {
+            "at": 0.42,
+            "event": "Mobile row"
+          },
+          {
+            "at": 0.7,
+            "event": "Compatibility row"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "The same blend, three renderers",
+            "headers": [
+              "Renderer",
+              "Blends in",
+              "Middle reads",
+              "Default on"
+            ],
+            "rows": [
+              [
+                "Forward+",
+                "light",
+                "0.60",
+                "desktop"
+              ],
+              [
+                "Mobile",
+                "light",
+                "0.60",
+                "mobile devices"
+              ],
+              [
+                "Compatibility",
+                "typed numbers",
+                "0.50",
+                "web"
+              ]
+            ],
+            "note": "Unshaded 3D quad · grays 0.2 and 0.8 · Apple M4 Pro · Godot 4.7.2 · docs: OUTPUT_IS_SRGB",
+            "cues": [
+              0.14,
+              0.42,
+              0.7
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring steps down the rows with the voice."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "Three parallel facts with a measured number each is what the table component is for; the previous beat already showed the picture."
+      }
+    },
+    {
+      "beat_id": "B32",
+      "act": "IV · Two Ways to Count Light",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "In two-D, the default is different. Every renderer blends the typed numbers, and all three read point five. Turn on the project setting H D R two D, which works in light and keeps numbers past one for glow, and Forward Plus and Mobile read point six.",
+      "estimated_duration_s": 16.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A two-row table, the default row ringed first, then the HDR 2D row.",
+        "show": [
+          {
+            "at": 0.16,
+            "event": "default row: 0.50 everywhere"
+          },
+          {
+            "at": 0.62,
+            "event": "HDR 2D row: 0.60 and not supported"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "The same blend in 2D",
+            "headers": [
+              "2D setting",
+              "Forward+ and Mobile",
+              "Compatibility"
+            ],
+            "rows": [
+              [
+                "default",
+                "0.50",
+                "0.50"
+              ],
+              [
+                "HDR 2D on",
+                "0.60",
+                "not supported"
+              ]
+            ],
+            "note": "HDR 2D: 2D drawn in light, numbers past one kept · M4 Pro · Godot 4.7.2",
+            "cues": [
+              0.16,
+              0.62
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves from the first row to the second."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the HDR 2D project setting",
+        "why": "Two facts in two rows; the picture for the same blend was the previous Act's."
+      }
+    },
+    {
+      "beat_id": "B33",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The fix is a hint: source color, written after a color's name. Godot's docs say where it matters. Required in Forward Plus and Mobile, and in two-D when H D R two D is on. Optional in Compatibility, and in two-D when it is off.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Hint Colors, Not Masks' (serif 40) top-left. The real Godot 4.7 'Using source_color' section in a browser window; the camera pushes in on the paragraph that says where the hint is required and where it is optional, and a terracotta ring marks that paragraph.",
+        "show": [
+          {
+            "at": 0,
+            "event": "the documentation page"
+          },
+          {
+            "at": 0.3,
+            "event": "push-in and ring on the required / optional paragraph"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html#using-source-color",
+            "image": "godot-textures-and-color/docs-source-color.png",
+            "caption": "hint: the word after a colon that tells Godot how to treat a uniform",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.3,
+                "scale": 1
+              },
+              {
+                "at": 0.3,
+                "x": 0.45,
+                "y": 0.52,
+                "scale": 1.6
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera pushes in on the paragraph the voice is reading."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab: a hint line in code",
+        "why": "The claim is a documentation claim, and the matrix measured in the previous Act agrees with it: the documentation itself is the evidence (SHOW-THE-THING).",
+        "act_title_on_screen": "Hint Colors, Not Masks"
+      }
+    },
+    {
+      "beat_id": "B34",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "What does it do? It tells the engine the numbers are s R G B, so red, green and blue are converted to light before your math. Alpha stays a plain amount. And the Inspector shows a color picker, not four number boxes.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (two vec4 uniforms with the same numbers, one with source color, one without). At right a real still of the Inspector's Shader Parameters group from a scripted editor session: Picked is a color swatch (a click on it opens the picker), Typed is four number boxes x, y, z, w (0.2, 0.4, 0.6, 1.0). A terracotta ring on the swatch, then on the four boxes.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "picked line highlighted; ring on the swatch"
+          },
+          {
+            "at": 0.7,
+            "event": "typed line highlighted; ring on the four boxes"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec4 picked : source_color = vec4(0.2, 0.4, 0.6, 1.0);\nuniform vec4 typed = vec4(0.2, 0.4, 0.6, 1.0);\n\nvoid fragment() {\n\tCOLOR = mix(picked, typed, 0.5);\n}",
+            "codeFile": "lab-shaders/22-picker.gdshader",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  3
+                ],
+                "label": "source_color: the numbers are sRGB"
+              },
+              {
+                "at": 0.7,
+                "lines": [
+                  4
+                ],
+                "label": "no hint: four plain numbers"
+              }
+            ],
+            "video": "godot-textures-and-color/editor-picker.png",
+            "videoLabel": "Godot 4.7.2 editor · scripted editor session",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.25,
+                "box": [
+                  0.683,
+                  0.625,
+                  0.992,
+                  0.7
+                ]
+              },
+              {
+                "at": 0.72,
+                "box": [
+                  0.37,
+                  0.797,
+                  0.992,
+                  0.892
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves from the color swatch to the four number boxes."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab video of a Lab render with the same values",
+        "why": "Real editor frames, recorded by script, are the strongest evidence that a hinted color becomes a swatch that opens a picker; the type-level check agrees (FACTCHECK).",
+        "capture_spec": "E2 (DONE by script, 2026-10-13): `_godot-shaders-series/editor-capture/png/3456x1944/textures-and-color/textures-and-color_E2_picked-swatch-and-typed-four-boxes.png` (the 1920x1080 twin is in png/1920x1080/). Crop the Inspector from the native frame: the rectangle x 1275 to 1915, y 195 to 555 in 1920x1080 coordinates, times 1.8 for the native file (1152 x 648 px, 16:9); save as editor-picker.png (a still). The ring boxes below are fractions of that crop. Real labels: group Shader Parameters; Picked is an EditorPropertyColor (swatch, `source_color` vec4); Typed is four number boxes labelled x y z w. No pointer is visible; the clip is a scripted editor session. Type-level check: evidence/planning-checks/run-4-inspector-types.log (Color against Vector4)."
+      }
+    },
+    {
+      "beat_id": "B35",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Leave the hint off, and the engine takes typed numbers for light. In Forward Plus with H D R two D on, a color typed as point two, point four, point six comes out near point five, point seven, point eight. Washed out. Plain nodes need no hint.",
+      "estimated_duration_s": 16.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the hinted flat-color shader; the voice says the third patch has the same line without the hint). At right three real steel-blue patches: a Color Rect, a hinted shader patch, and an unhinted shader patch that is visibly lighter. Readouts under them: 'node color', 'hinted', 'no hint', then the numbers 0.20 0.40 0.60 under the first two and about 0.48 0.66 0.80 under the third.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "hint line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "labels node color, hinted, no hint"
+          },
+          {
+            "at": 0.62,
+            "event": "numbers land under the patches"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec4 tint : source_color = vec4(0.2, 0.4, 0.6, 1.0);\n\nvoid fragment() {\n\tCOLOR = tint;\n}",
+            "codeFile": "lab-shaders/23-patch-hinted.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  3
+                ],
+                "label": "source_color: the numbers are sRGB"
+              }
+            ],
+            "video": "godot-textures-and-color/three-patches.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · HDR 2D on · Apple M4 Pro",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "node color",
+                "x": 0.18,
+                "y": 0.95
+              },
+              {
+                "at": 0.34,
+                "text": "hinted",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.38,
+                "text": "no hint",
+                "x": 0.82,
+                "y": 0.95
+              },
+              {
+                "at": 0.62,
+                "text": "0.20 0.40 0.60",
+                "x": 0.34,
+                "y": 0.5
+              },
+              {
+                "at": 0.7,
+                "text": "0.48 0.66 0.80",
+                "x": 0.82,
+                "y": 0.5
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The third patch is visibly paler than the other two, and its numbers land under it."
+      },
+      "lecture": {
+        "runner_up": "manim: three swatches",
+        "why": "Three real patches, two identical and one pale, show the washed-out color at a glance; the voice points at the one that is wrong.",
+        "capture_spec": "C23: custom scene (reference script evidence/planning-checks/verify-patches.gd): three 96x140 patches on the stage at 320x180 logical, scaled to 4K: a ColorRect with color (0.2, 0.4, 0.6); a ColorRect with lab-shaders/23-patch-hinted.gdshader; a ColorRect with lab-shaders/24-patch-plain.gdshader; Viewport.use_hdr_2d = true, --rendering-method forward_plus; PNG converted from linear to what the screen shows. Verified centres: node (0.1999, 0.3999, 0.5998), hinted (0.1999, 0.3999, 0.5998), plain (0.4845, 0.6651, 0.7975) (an 8-bit capture reads 0.48, 0.66, 0.80). With HDR 2D off, or in Compatibility, all three are (0.2, 0.4, 0.6)."
+      }
+    },
+    {
+      "beat_id": "B36",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Setting a color from code works the same way. Pass the color exactly as you picked it, and let the hint convert it. Convert it yourself first, and it converts twice: that blue turns almost navy.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A two-line GDScript card at left (set the tint to the color as picked; set it to color.srgb_to_linear()). At right two real patches: steel blue for the first line, a dark navy for the second. Labels 'as picked' and 'converted first'.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "the as-picked line"
+          },
+          {
+            "at": 0.62,
+            "event": "the converted-first line; the navy patch appears"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "material.set_shader_parameter(\"tint\", color)\nmaterial.set_shader_parameter(\"tint\", color.srgb_to_linear())",
+            "codeFile": "scene script (GDScript)",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  1
+                ],
+                "label": "as picked"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  2
+                ],
+                "label": "converted twice"
+              }
+            ],
+            "video": "godot-textures-and-color/from-code.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · HDR 2D on · two patches",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "as picked",
+                "x": 0.28,
+                "y": 0.95
+              },
+              {
+                "at": 0.66,
+                "text": "converted first",
+                "x": 0.74,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The second patch is far darker than the first."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "Two patches from two lines of code is cause and effect; the navy one is the double conversion made visible.",
+        "capture_spec": "C24: custom scene as C23 with two patches using lab-shaders/23-patch-hinted.gdshader and HDR 2D on: the first with tint = Color(0.2, 0.4, 0.6), the second with tint = Color(0.2, 0.4, 0.6).srgb_to_linear() = (0.0331, 0.1328, 0.3184). Verified (runner_plus, HDR 2D, Forward+): (0.196, 0.396, 0.596) against (0.031, 0.129, 0.318). Also on an unshaded 3D quad in Forward+ (run-12 g): (0.200, 0.400, 0.600) against (0.031, 0.133, 0.318)."
+      }
+    },
+    {
+      "beat_id": "B37",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Textures follow the rule. A color texture gets the hint. Without it, in Forward Plus, the picture comes out lighter, the same washed out look. In Compatibility it makes no difference, so the mistake can hide.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (a spatial unshaded shader that shows a texture, with the hint). At right a two-by-two grid of real renders of the four-patch picture: top row Forward+ (hinted: true colors; not hinted: pale, washed out), bottom row Compatibility (both true). Labels 'hint' and 'no hint' above the columns, 'Forward+' and 'Compatibility' beside the rows.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "texture line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "column and row labels"
+          },
+          {
+            "at": 0.65,
+            "event": "ring on the one pale cell"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type spatial;\nrender_mode unshaded;\n\nuniform sampler2D picture : source_color;\n\nvoid fragment() {\n\tALBEDO = texture(picture, UV).rgb;\n}",
+            "codeFile": "lab-shaders/25-swatch-hinted.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  4
+                ],
+                "label": "color texture: hinted"
+              }
+            ],
+            "video": "godot-textures-and-color/swatch-grid.png",
+            "videoLabel": "Godot 4.7.2 · unshaded 3D quad · four real renders",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "hint",
+                "x": 0.25,
+                "y": 0.04
+              },
+              {
+                "at": 0.34,
+                "text": "no hint",
+                "x": 0.75,
+                "y": 0.04
+              },
+              {
+                "at": 0.38,
+                "text": "Forward+",
+                "x": 0.04,
+                "y": 0.25
+              },
+              {
+                "at": 0.42,
+                "text": "Compatibility",
+                "x": 0.06,
+                "y": 0.75
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.65,
+                "box": [
+                  0.5,
+                  0.0,
+                  1.0,
+                  0.5
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Only one cell of four is pale: the Forward+ render without the hint."
+      },
+      "lecture": {
+        "runner_up": "manim: a texture passing through two scales",
+        "why": "Four real cells where three agree and one is pale carry both claims, the washed-out look and the way the mistake hides in Compatibility.",
+        "capture_spec": "C25: four Lab renders of the swatches texture (quad3d, tex = picture) joined with ffmpeg xstack as a 2x2: lab-shaders/25-swatch-hinted.gdshader and 26-swatch-plain.gdshader, each in forward_plus and in gl_compatibility; stills. Verified (rose patch): Forward+ hinted (0.902, 0.349, 0.549), plain (0.957, 0.624, 0.765); Compatibility hinted and plain (0.902, 0.349, 0.549). Mobile matches Forward+ (plain 0.957, 0.627, 0.769)."
+      }
+    },
+    {
+      "beat_id": "B38",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A mask must not have the hint. Hint a mask in Forward Plus, and every number in it shifts. A threshold of one half then cuts about three quarters of the way across the ramp, not halfway.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the mask shader with the hint, cutting at 0.5). At right two real horizontal strips of the same gray ramp cut at one half: the top one without the hint switches colors at the middle, the bottom one with the hint switches about three quarters of the way across. Readouts 'no hint 0.50' and 'hint 0.74' (where each strip switches), with a terracotta ring on each switch.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "texture line highlighted: a mask with the hint"
+          },
+          {
+            "at": 0.4,
+            "event": "step line highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "ring on the top strip's cut: 0.50"
+          },
+          {
+            "at": 0.85,
+            "event": "ring on the bottom strip's cut: 0.74"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type spatial;\nrender_mode unshaded;\n\nuniform sampler2D mask : source_color;\nuniform vec3 cream : source_color = vec3(0.98, 0.98, 0.96);\nuniform vec3 teal : source_color = vec3(0.37, 0.64, 0.57);\n\nvoid fragment() {\n\tfloat cut = step(0.5, texture(mask, UV).r);\n\tALBEDO = mix(cream, teal, cut);\n}",
+            "codeFile": "lab-shaders/28-mask-hinted.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  4
+                ],
+                "label": "a mask with the hint: wrong"
+              },
+              {
+                "at": 0.4,
+                "lines": [
+                  9
+                ],
+                "label": "step at one half"
+              }
+            ],
+            "video": "godot-textures-and-color/mask-compare.png",
+            "videoLabel": "Godot 4.7.2 · unshaded 3D quad · Forward+ · two renders of a gray ramp",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "no hint 0.50",
+                "x": 0.3,
+                "y": 0.04
+              },
+              {
+                "at": 0.34,
+                "text": "hint 0.74",
+                "x": 0.5,
+                "y": 0.54
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.62,
+                "box": [
+                  0.45,
+                  0.0,
+                  0.56,
+                  0.5
+                ]
+              },
+              {
+                "at": 0.85,
+                "box": [
+                  0.7,
+                  0.5,
+                  0.81,
+                  1.0
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring jumps from the middle of the top strip to three quarters of the way across the bottom one."
+      },
+      "lecture": {
+        "runner_up": "manim: two number lines with a cut",
+        "why": "Two real strips cut in two places is the shifted threshold on screen; a diagram would assert it.",
+        "capture_spec": "C26: two Lab renders of the gray ramp (the 256-wide ramp_grey texture: value = x / 255) on a 3D unshaded quad, Forward+, vstack: top lab-shaders/27-mask-plain.gdshader, bottom lab-shaders/28-mask-hinted.gdshader (both with source-color cream and teal uniforms); stills. Verified: no hint flips cream -> teal between x = 0.50 and 0.51; hint flips between 0.73 and 0.74. In Compatibility both flip near 0.50. In HDR 2D (canvas_item) the same shift (run-6)."
+      }
+    },
+    {
+      "beat_id": "B39",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "So the rule is short. Hint every color you give a shader, uniform or texture. Never hint a mask. And if you ship on more than one renderer, look at each, because a number read from one may not hold in the others.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A four-row table, the answer column ringed row by row as each kind is named.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "color uniform: yes"
+          },
+          {
+            "at": 0.28,
+            "event": "color texture: yes"
+          },
+          {
+            "at": 0.62,
+            "event": "mask: no"
+          },
+          {
+            "at": 0.8,
+            "event": "plain number: no"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "Which numbers get the hint",
+            "headers": [
+              "It holds",
+              "source_color?"
+            ],
+            "rows": [
+              [
+                "a color uniform",
+                "yes"
+              ],
+              [
+                "a color texture",
+                "yes"
+              ],
+              [
+                "a mask, like noise",
+                "no"
+              ],
+              [
+                "a plain number",
+                "no"
+              ]
+            ],
+            "note": "Godot 4.7 shading language · name the renderer with every number you measure",
+            "cues": [
+              0.1,
+              0.28,
+              0.62,
+              0.8
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring steps down the four kinds."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A short rule over four kinds is the right shape for the table component; every row was demonstrated in the pictures before it."
+      }
+    },
+    {
+      "beat_id": "B40",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "To change a project's renderer, open Project Settings, then Rendering, Renderer. Set Rendering Method to forward plus, mobile or G L compatibility, then Save and Restart. Look at your colors in each renderer you ship on, because the same shader can show a different pixel.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Three real frames of the Godot editor's Project Settings dialog (a scripted editor session), joined by cross-dissolves: Rendering, Renderer open, with the Renderer entry in the left tree and then the Rendering Method row (forward_plus) ringed; the Rendering Method menu open, its three entries forward_plus, mobile, gl_compatibility ringed; then the dialog's note 'Changed settings will be applied to the editor after restarting.' with the Save & Restart button ringed.",
+        "show": [
+          {
+            "at": 0.22,
+            "event": "R1-C: the Renderer page ringed in the left tree"
+          },
+          {
+            "at": 0.3,
+            "event": "the Rendering Method row ringed (forward_plus)"
+          },
+          {
+            "at": 0.34,
+            "event": "dissolve to R1-D: the Rendering Method menu open"
+          },
+          {
+            "at": 0.38,
+            "event": "the three entries ringed: forward_plus, mobile, gl_compatibility"
+          },
+          {
+            "at": 0.56,
+            "event": "dissolve to R1-E: the restart note"
+          },
+          {
+            "at": 0.6,
+            "event": "Save & Restart ringed"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "godot-textures-and-color/editor-renderer.mp4",
+            "videoLabel": "Godot 4.7.2 editor · scripted editor session",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.22,
+                "box": [
+                  0.179,
+                  0.716,
+                  0.264,
+                  0.742
+                ]
+              },
+              {
+                "at": 0.3,
+                "box": [
+                  0.279,
+                  0.233,
+                  0.835,
+                  0.261
+                ]
+              },
+              {
+                "at": 0.38,
+                "box": [
+                  0.56,
+                  0.27,
+                  0.83,
+                  0.345
+                ]
+              },
+              {
+                "at": 0.6,
+                "box": [
+                  0.748,
+                  0.756,
+                  0.815,
+                  0.792
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves from the Renderer page to the Rendering Method row, to the three entries, to Save & Restart as the voice names each."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench (labelled reconstruction)",
+        "why": "Real editor frames, recorded by script, are the rung-1 SHOW-THE-THING answer; a reconstruction would only claim the labels, and the first plan's picture (the renderer's name in the upper right corner) is not what the 4.7.2 editor shows by default.",
+        "capture_spec": "E3 (replaced; DONE by script, 2026-10-13, README section 11): three full frames from `_godot-shaders-series/editor-capture/png/1920x1080/renderer-path/` (native twins in png/3456x1944/renderer-path/): renderer-path_R1-C_Project-Settings_Rendering-Renderer_menu-closed, R1-D_Project-Settings_Rendering-Method_menu-open, R1-E_Project-Settings_restart-note. Cross-dissolve at 0.34 and 0.56 of the beat; ring boxes are fractions of the whole 1920x1080 frame (no crop). Real labels: dialog 'Project Settings (project.godot)'; left tree Rendering > Renderer (a second page named Rendering sits under Internationalization: not that one); rows 'Rendering Method' (forward_plus), 'Rendering Method.web', 'Rendering Method.mobile'; the dropdown lists forward_plus, mobile, gl_compatibility; after a change the note reads 'Changed settings will be applied to the editor after restarting.' with the buttons Save & Restart and X. Save & Restart was never pressed, so the film says nothing about what follows. The frames show the scratch project name, and the editor draws its own menu bar inside the window (Use Embedded Menu on): label the clip 'scripted editor session'. NOT used: the title-bar renderer name (hidden by default in 4.7.2; shown only after Editor > Editor Settings > Interface > Editor > Appearance > Show Renderer Selector, frames R3-A, R3-B and the OFF-vs-ON composite)."
+      }
+    },
+    {
+      "beat_id": "B41",
+      "act": "V · Hint Colors, Not Masks",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Back to the burn. Its ramp is a color texture, so it carries the hint. Its noise is a mask, so it does not. Check those two lines whenever an AI hands you a shader like this.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The finished dissolve shader at left; the ramp_tex line highlighted with 'a color: hinted', then the noise_tex line with 'a mask: no hint'. At right the real sprite burning away again.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "ramp_tex line: a color, hinted"
+          },
+          {
+            "at": 0.58,
+            "event": "noise_tex line: a mask, no hint"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+            "codeFile": "lab-shaders/18-dissolve.gdshader",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  4
+                ],
+                "label": "a color: hinted"
+              },
+              {
+                "at": 0.58,
+                "lines": [
+                  3
+                ],
+                "label": "a mask: no hint"
+              }
+            ],
+            "video": "godot-textures-and-color/dissolve.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "progress",
+                "x": 0.5,
+                "y": 0.97
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "ramp": {
+              "at": 0.1,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "The highlight lands on the ramp line, then the noise line, while the sprite burns."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The film's own shader is the worked example of the rule, with its two texture lines marked.",
+        "capture_spec": "C18 reused (the same capture as B23)."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "verdict",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let's recap with Claude. A texture is a table you look up by address. A color is four numbers, so you can tint it, flip it, gray it and mix it. A noise texture is a mask: compare it with a threshold, and a sprite dissolves. The number you type is not always the color you see: there are two scales. Hint every color with source color, and never hint a mask. A number read from one renderer may not hold in another.",
+      "estimated_duration_s": 28.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "artifact page opens"
+          },
+          {
+            "at": 0.2,
+            "event": "recap lines land in narration order"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Recap",
+            "artifactHeading": "Textures and Color",
+            "artifactLines": [
+              "A texture is a table you look up by address.",
+              "A color is four numbers, so you can tint it, flip it, gray it and mix it.",
+              "A noise texture is a mask: compare it with a threshold, and a sprite dissolves.",
+              "The number you type is not always the color you see: there are two scales.",
+              "Hint every color with source color, and never hint a mask.",
+              "A number read from one renderer may not hold in another."
+            ]
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Mandated ClaudeVerdictArtifact bookend."
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "your turn",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Your turn. Paste this into Claude: Write a Godot canvas item shader that dissolves a sprite. A noise texture decides which pixels go first, a float uniform called progress from zero to one is the dial, and a ramp texture colors the burning edge. Mark which texture needs the source color hint, and say why. Then check two things yourself. At progress zero, is the sprite untouched, and at one, is it gone? And does the ramp carry the source color hint, while the noise does not?",
+      "estimated_duration_s": 29.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Composer opens: 'Your turn.'"
+          },
+          {
+            "at": 0.12,
+            "event": "the prompt types in full"
+          },
+          {
+            "at": 0.85,
+            "event": "two check lines land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "CLAUDE · YOUR TURN",
+            "segment": "Dissolve a Sprite With Noise",
+            "command": "Write a Godot canvas item shader that dissolves a sprite. A noise texture decides which pixels go first, a float uniform called progress from zero to one is the dial, and a ramp texture colors the burning edge. Mark which texture needs the source color hint, and say why.",
+            "runningText": "paste this into Claude…",
+            "output": [
+              "Check: at progress zero the sprite is untouched, and at one it is gone.",
+              "Check: the ramp has the source color hint and the noise does not."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Opus 5.5",
+            "effortLabel": "High"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "outro",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Textures and Color. At Nik Bear Brown.",
+      "estimated_duration_s": 4.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "title restates; handle; mascot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Textures and Color",
+            "slug": "claude-liam-lecture-textures-and-color",
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

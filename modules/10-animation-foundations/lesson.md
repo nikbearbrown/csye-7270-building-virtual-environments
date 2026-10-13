@@ -344,6 +344,25 @@ All of this ran on 27 September 2026 on the instructor's Mac with Godot 4.7.2, C
 
 **A test that sampled at the wrong moment.** The first `walker-3d-ik` navigation test read a bone pose between skeleton updates and failed a working rig, as described above. The fix was to observe at the moment the documentation says the pose is final, with no change to the game.
 
+## Practice assessment (ungraded)
+
+Answer in your own words, using the source and the running game:
+
+1. What does the check "second swing starts" establish, and what would a check that catches the swing-two bug have to record?
+2. Which of the final test's checks passed without `--fixed-fps`, and what does that say about checks that survive machine load?
+3. Why did reading `get_bone_global_pose()` after a timer miss the IK result, and what did the fix rely on?
+4. What does a passing 20 of 20 not tell you about the sword?
+
+The Canvas practice quiz covers the same ground. Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to pin timing and test animation changes; compare the visible movement and hitbox with the intended action. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module and Module 11 feed **Assignment 8 - Animation Wired to Player Actions**, which opens in Module 10 and is due about Day 80. Keep the habit from this week: pin the behavior, change one thing, and read every failure before you approve it. Module 11 connects animation states to player actions. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 10 — Animation Foundations](../../chapters/10-animation-foundations.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from their official documentation, checked in the chapter on 27 September 2026.
@@ -359,17 +378,10 @@ Unity and Unreal were not run for this module; the comparisons come from their o
 
 The biggest difference for an agent workflow is where the timing lives and whether it can be read. In Godot the sword scene carries its own timing as text an agent can edit and `git diff` shows. Unity's clips are text too, but curves are key lists with tangents, so the same change is a longer diff, and even a one-clip swing is a state in an Animator Controller. In Unreal the timing is spread across a Sequence, a Montage, a Notify State and the Blueprint that reacts, all binary: an agent can move a notify with an editor script but cannot show you a diff, and the proof must come from a test that runs the game. [The chapter](../../chapters/10-animation-foundations.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in your own words, using the source and the running game:
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/10-animation-foundations.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/script-AnimationWindowEvent.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. What does the check "second swing starts" establish, and what would a check that catches the swing-two bug have to record?
-2. Which of the final test's checks passed without `--fixed-fps`, and what does that say about checks that survive machine load?
-3. Why did reading `get_bone_global_pose()` after a timer miss the IK result, and what did the fix rely on?
-4. What does a passing 20 of 20 not tell you about the sword?
+## Doing the same thing in Unreal Engine
 
-The Canvas practice quiz covers the same ground. Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
-
-## The next step
-
-This module and Module 11 feed **Assignment 8 - Animation Wired to Player Actions**, which opens in Module 10 and is due about Day 80. Keep the habit from this week: pin the behavior, change one thing, and read every failure before you approve it. Module 11 connects animation states to player actions. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 10 — Animation Foundations](../../chapters/10-animation-foundations.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/10-animation-foundations.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/animation-notifies-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

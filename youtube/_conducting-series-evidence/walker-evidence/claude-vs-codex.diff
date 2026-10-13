@@ -1,0 +1,103 @@
+diff -r -x .git walker-demo-game/.claude/skills/asset-gen/SKILL.md walker-demo-game-codex/.agents/skills/asset-gen/SKILL.md
+5c5
+< default_prompt: "Use /asset-gen to generate images, 3D models, or animated sprites for this game."
+---
+> default_prompt: "Use $asset-gen to generate images, 3D models, or animated sprites for this game."
+13c13
+< Generate PNG images (Gemini or xAI Grok) and GLB 3D models (Tripo3D) from text prompts. These are paid APIs — every call costs real money. Tools live at `.claude/skills/asset-gen/tools/`; run from the project root and keep runtime-loaded outputs under `assets/`.
+---
+> Generate PNG images (Gemini or xAI Grok) and GLB 3D models (Tripo3D) from text prompts. These are paid APIs — every call costs real money. Tools live at `.agents/skills/asset-gen/tools/`; run from the project root and keep runtime-loaded outputs under `assets/`.
+27c27
+< python3 .claude/skills/asset-gen/tools/asset_gen.py image \
+---
+> python3 .agents/skills/asset-gen/tools/asset_gen.py image \
+41c41
+< Read `.claude/skills/asset-gen/rembg.md`. Key rule: **never prompt for a "transparent background"** (the generator bakes a checkerboard) — prompt a solid color, then matte it out.
+---
+> Read `.agents/skills/asset-gen/rembg.md`. Key rule: **never prompt for a "transparent background"** (the generator bakes a checkerboard) — prompt a solid color, then matte it out.
+59,61c59,61
+< python3 .claude/skills/asset-gen/tools/asset_gen.py glb  --image ref.png -o model.glb     # 30¢ default / 60¢ --quality hd
+< python3 .claude/skills/asset-gen/tools/asset_gen.py rig  --image ref.png -o rigged.glb    # +25¢, biped only
+< python3 .claude/skills/asset-gen/tools/asset_gen.py retarget --rigged rigged.glb \
+---
+> python3 .agents/skills/asset-gen/tools/asset_gen.py glb  --image ref.png -o model.glb     # 30¢ default / 60¢ --quality hd
+> python3 .agents/skills/asset-gen/tools/asset_gen.py rig  --image ref.png -o rigged.glb    # +25¢, biped only
+> python3 .agents/skills/asset-gen/tools/asset_gen.py retarget --rigged rigged.glb \
+86c86
+<   python3 .claude/skills/asset-gen/tools/asset_gen.py resume -o model.glb
+---
+>   python3 .agents/skills/asset-gen/tools/asset_gen.py resume -o model.glb
+100c100
+< result=$(python3 .claude/skills/asset-gen/tools/asset_gen.py image --prompt "..." -o p.png 2>"$_log") || tail -20 "$_log"
+---
+> result=$(python3 .agents/skills/asset-gen/tools/asset_gen.py image --prompt "..." -o p.png 2>"$_log") || tail -20 "$_log"
+Only in walker-demo-game-codex/.agents/skills/asset-gen: agents
+diff -r -x .git walker-demo-game/.claude/skills/asset-gen/rembg.md walker-demo-game-codex/.agents/skills/asset-gen/rembg.md
+20c20
+< Deps in `.claude/skills/asset-gen/tools/requirements.txt` (`pip install rembg[gpu,cli]`, or `rembg[cpu,cli]`). The script auto-detects CUDA and falls back to CPU with a warning.
+---
+> Deps in `.agents/skills/asset-gen/tools/requirements.txt` (`pip install rembg[gpu,cli]`, or `rembg[cpu,cli]`). The script auto-detects CUDA and falls back to CPU with a warning.
+24c24
+< python3 .claude/skills/asset-gen/tools/rembg_matting.py img/car.png -o img/car_nobg.png --preview
+---
+> python3 .agents/skills/asset-gen/tools/rembg_matting.py img/car.png -o img/car_nobg.png --preview
+26c26
+< python3 .claude/skills/asset-gen/tools/rembg_matting.py --batch frames/ -o clean/
+---
+> python3 .agents/skills/asset-gen/tools/rembg_matting.py --batch frames/ -o clean/
+43c43
+< Always pass `--preview` — it writes a `_qa.png` (the result composited on a contrasting color). Claude cannot judge transparency from a raw PNG; reading the `_qa` is the only reliable check. Delete it after inspection.
+---
+> Always pass `--preview` — it writes a `_qa.png` (the result composited on a contrasting color). Codex cannot judge transparency from a raw PNG; reading the `_qa` is the only reliable check. Delete it after inspection.
+diff -r -x .git walker-demo-game/.claude/skills/gdd/SKILL.md walker-demo-game-codex/.agents/skills/gdd/SKILL.md
+5c5
+< default_prompt: "Use /gdd <command> [target] [silent] to run a Zelda design step."
+---
+> default_prompt: "Use $gdd <command> [target] [silent] to run a Zelda design step."
+13c13
+< Invoke as `/gdd <command> [target...] [flags]`. Everything after
+---
+> Invoke as `$gdd <command> [target...] [flags]`. Everything after
+30,32c30,32
+< 1. Read `.claude/skills/gdd/persona.md`. Adopt it for the whole call.
+< 2. Resolve the command in `.claude/skills/gdd/commands.yaml`; read
+<    `.claude/skills/gdd/commands/<id>.md`.
+---
+> 1. Read `.agents/skills/gdd/persona.md`. Adopt it for the whole call.
+> 2. Resolve the command in `.agents/skills/gdd/commands.yaml`; read
+>    `.agents/skills/gdd/commands/<id>.md`.
+35c35
+<    the command writes files, create it from `.claude/skills/gdd/templates/`.
+---
+>    the command writes files, create it from `.agents/skills/gdd/templates/`.
+Only in walker-demo-game-codex/.agents/skills/gdd: agents
+diff -r -x .git walker-demo-game/.claude/skills/gdd/commands/p3.md walker-demo-game-codex/.agents/skills/gdd/commands/p3.md
+12c12
+< acceptance criteria at L4 per asset category. Reference `/asset-gen`
+---
+> acceptance criteria at L4 per asset category. Reference `$asset-gen`
+--- walker-demo-game/CLAUDE.md	2026-10-09 13:39:52
++++ walker-demo-game-codex/AGENTS.md	2026-10-09 13:39:53
+@@ -1,8 +1,8 @@
+ # Build Godot game from a description
+ 
+ - Keep durable project status in `README.md`: what is built, what is left, and an asset table.
+-- Generate visual assets with `/asset-gen`. Confirm the spend with the user before the first paid generation.
+-- Design lives in `design/` and is written by `/gdd`: `v1` for a brief, `draft` for a rough whole GDD, `reverse` to recover one from existing code, `status` to see where the project is. Build from `design/GDD.md` feature IDs, not from memory of the chat.
++- Generate visual assets with `$asset-gen`. Confirm the spend with the user before the first paid generation.
++- Design lives in `design/` and is written by `$gdd`: `v1` for a brief, `draft` for a rough whole GDD, `reverse` to recover one from existing code, `status` to see where the project is. Build from `design/GDD.md` feature IDs, not from memory of the chat.
+ - Read `godot.md` for engine guidance: stack, project layout, how to run, and how to capture.
+ 
+ ## Delivery
+--- walker-demo-game/.gitignore	2026-10-09 13:39:52
++++ walker-demo-game-codex/.gitignore	2026-10-09 13:39:53
+@@ -1,5 +1,6 @@
+-.claude
+-CLAUDE.md
++.agents
++AGENTS.md
++.codex
+ godot.md
+ assets
+ screenshots
+godot.md: IDENTICAL

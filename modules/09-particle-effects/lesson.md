@@ -237,6 +237,25 @@ Add a check for each to test_particles.gd. Change nothing else.
 
 **The benchmark measured the engine's idle sleep.** Codex wrote the cost script exactly as specified and printed 6.90 ms for every case, including an empty scene. Headless Godot sleeps toward a 6,900 µs frame period unless a fixed frame rate is set, so any work under 6.9 ms hides inside the sleep. The flaw was in the prompt, which did not name `--fixed-fps 60`. With it, the three CPU amounts cost 0.035, 0.33 and 1.61 ms per frame (a linear 0.032 µs per particle on that machine), and `GPUParticles2D` cost 0.0023 to 0.0024 ms, the same as an empty scene.
 
+## Practice assessment (ungraded)
+
+Answer in your own words, using the source and the running game:
+
+1. Why is `emitting == true` not enough to say a death burst was seen, and which property would you assert instead?
+2. Name two `DeathBurst` settings that pass state checks yet make a bad effect on screen. How would you find each without running anything?
+3. Why did the first cost run report 6.90 ms for an empty scene, and what changed with `--fixed-fps 60`?
+4. What can a headless `GPUParticles2D` measurement tell you about phone cost, and which tool would tell you more?
+
+The Canvas practice quiz covers the same ground. Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to implement emissions and measure the relevant cost; judge whether the effect helps or obscures play. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module feeds **Assignment 7 - Two Particle Effects, Tuned and Priced**. It opens in Module 9 and is due about Day 70. The earlier version of this course also asked for two particle effects and a video showing how they work and how you made them; that survives. The new part is the price: you will tune each effect and put a measured cost beside it. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 9 — Particle Effects](../../chapters/09-particle-effects.md). Module 10 turns to animation.
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from their official documentation, as checked in the chapter on 27 September 2026.
@@ -253,17 +272,10 @@ Unity and Unreal were not run for this module; the comparisons come from their o
 
 The biggest difference for an agent workflow is what it can read. A Godot `.tscn` is text, so the agent read and diffed `main.tscn` here. Unity's scenes and prefabs are YAML by default, but references go through GUIDs in `.meta` files, and a wrong one fails as quietly as a wrong path in a `.tscn`. A Niagara system is a binary `.uasset`: an agent can write the C++ that spawns it or drive the editor with Python, but cannot review the emitter as a diff. [The chapter](../../chapters/09-particle-effects.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in your own words, using the source and the running game:
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/09-particle-effects.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/ChoosingYourParticleSystem.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Why is `emitting == true` not enough to say a death burst was seen, and which property would you assert instead?
-2. Name two `DeathBurst` settings that pass state checks yet make a bad effect on screen. How would you find each without running anything?
-3. Why did the first cost run report 6.90 ms for an empty scene, and what changed with `--fixed-fps 60`?
-4. What can a headless `GPUParticles2D` measurement tell you about phone cost, and which tool would tell you more?
+## Doing the same thing in Unreal Engine
 
-The Canvas practice quiz covers the same ground. Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
-
-## The next step
-
-This module feeds **Assignment 7 - Two Particle Effects, Tuned and Priced**. It opens in Module 9 and is due about Day 70. The earlier version of this course also asked for two particle effects and a video showing how they work and how you made them; that survives. The new part is the price: you will tune each effect and put a measured cost beside it. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 9 — Particle Effects](../../chapters/09-particle-effects.md). Module 10 turns to animation.
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/09-particle-effects.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/creating-visual-effects-in-niagara-for-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

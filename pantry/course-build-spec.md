@@ -10,6 +10,10 @@
 
 ---
 
+## Preface and closing comparisons — October 12, 2026
+
+The unnumbered `modules/preface-conducting-ai/` precedes Module 0. It has a conceptual lesson, links page and six-question ungraded quiz. Its lesson uses the preface skeleton, not a fabricated Walker run; the checker recognizes this exception explicitly. All seventeen module lessons end with `Doing the same thing in Unity` followed by `Doing the same thing in Unreal Engine`. The numbered lessons retain their three-engine comparison under `If you know Unity or Unreal`, now placed after the next-step section and before the two closing pointers. Each numbered lesson includes a short Conducting AI decision section. Assignment numbers, points and due-day cadence are unchanged.
+
 ## 1. Paths
 
 Course root (call it `$C`): the root of this repository. Every path below is relative to it, and the build scripts resolve it themselves. The writers who built the first draft worked from an absolute path on the instructor's machine; that path is not part of the contract.
@@ -38,8 +42,8 @@ One module per week of the revised syllabus, plus Module 0 for setup. A graded a
 | 0 | — | `00-start-here` | Start Here: the toolchain | `00-the-toolchain.md` | — |
 | 1 | 1 | `01-walker-and-godot` | Walker and Godot | `01-walker-and-godot.md` | A1 Extend Walker Jumpman (Day 10) — written |
 | 2 | 2 | `02-prompting-game-art` | Prompting game art (and sound) | `02-prompting-game-art.md` | A2 Generate Art, Sound, and Music for Your Game (Day 20) — written |
-| 3 | 3 | `03-blender-mcp-to-godot` | Blender MCP to Godot | `03-blender-mcp-to-godot.md` | A3 (Day 30), with Module 4 |
-| 4 | 4 | `04-scenes-collision-and-physics` | Scenes, collision and physics | `04-scenes-collision-and-physics.md` | A3 |
+| 3 | 3 | `03-blender-mcp-to-godot` | Blender MCP to Godot | `03-blender-mcp-to-godot.md` | A3 (Day 30) |
+| 4 | 4 | `04-scenes-collision-and-physics` | Scenes, collision and physics | `04-scenes-collision-and-physics.md` | none of its own; used in A4 |
 | 5 | 5 | `05-the-gdd-and-virtual-worlds` | The GDD and virtual worlds | `05-the-gdd-and-virtual-worlds.md` | A4 (Day 40) |
 | 6 | 6 | `06-shader-foundations` | Shader foundations | `06-shader-foundations.md` | A5 (Day 50), with Module 7 |
 | 7 | 7 | `07-materials-and-textures` | Materials and textures | `07-materials-and-textures.md` | A5 |
@@ -56,7 +60,7 @@ Assignment files (`$C/assignments/`):
 
 | # | File | Title | Covers | Required film (Brutalist skill) |
 |---|---|---|---|---|
-| A3 | `03-blender-prop-into-godot.md` | Build a Prop in Blender and Make It Work in Godot | Modules 3, 4 | `godot-gamedev`, `walker` modifier |
+| A3 | `03-first-3d-assets-with-blender-mcp.md` | Your First 3D Game Assets with Claude, the Blender MCP, and Blender | Module 3 | `godot-gamedev`, `walker` modifier |
 | A4 | `04-specify-and-build-a-3d-interaction.md` | Specify It, Then Build One 3D Interaction | Module 5 | `godot-gdd`, `walker` modifier |
 | A5 | `05-shader-and-material.md` | A Shader and a Material That Say Something About Your Game | Modules 6, 7 | `godot-gamedev`, `walker` modifier |
 | A6 | `06-audit-a-shader-change.md` | Audit a Plausible but Incorrect Shader Change | Module 8 | `godot-gamedev`, `walker` modifier |

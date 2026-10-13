@@ -1,179 +1,151 @@
-# Assignment 3 - Build a Prop in Blender and Make It Work in Godot
+# Assignment 3 - Your First 3D Game Assets with Claude, the Blender MCP, and Blender
 
 CSYE 7270 · Fall 2026 · **100 points**
 
-Assignments follow a **10-day cadence**. Use this assignment's due date in Canvas. The syllabus's **10% daily late penalty** applies. Suggested Canvas due date: Day 30 after the first class day.
+**Due: Thursday, October 15, 2026, at 11:59 pm America/New_York.** Confirmed in Canvas. The **10% daily late penalty** applies.
 
-**Covers:** [Module 3 — Blender MCP to Godot](../modules/03-blender-mcp-to-godot/lesson.md) and [Module 4 — Scenes, collision and physics](../modules/04-scenes-collision-and-physics/lesson.md).
+**Covers:** [Module 3 — Blender MCP to Godot](../modules/03-blender-mcp-to-godot/lesson.md). Module 4 runs alongside it, and you do not need it here.
 
 **Required viewing:** [AI Policy for Professor Bear's Courses | Using AI Responsibly in Class](https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz).
 
 ## Executive summary
 
-You build one 3D prop for your own game in Blender, from a Python script that Blender runs without a window, and export it as glTF. In Godot you give it a collider you shaped, a named physics layer, and one physics role (static blocker, rigid body, or area trigger), and make it do that job in a scene of your game. A headless test proves the numbers: size, axes, scale, origin, triangle count, materials, collider fit, layers and masks, and behaviour. You hand in the repository tagged `a3`, the brief you wrote first, a test report, an honest log, and one `godot-gamedev` film. Grading is 60 points for the work and its explanation, 10 for the log, 10 for matching versions, and 20 relative. None of this proves the prop looks right under your game's lighting, reads as what it is, or feels fair to run into. Those are your human checks, and the rubric counts them.
+This is a gentle first assignment in 3D. You make **three simple 3D assets for your own game** by directing Claude through the Blender MCP in a running copy of Blender, do at least one edit yourself with the mouse, export each asset as a `.glb` file, and show all three together in a Godot 3D scene. The point is familiarity: what Blender's window shows, what Claude can and cannot do through the MCP, and what a game asset needs before an engine can use it (the right size, the right way up, a sensible origin, transforms applied). The assets are meant to be simple, built from basic shapes, so that the learning is in the workflow and not in the modelling. Grading is the usual 60 points for the work and its explanation, 10 for your Frictional log, 10 for matching versions on GitHub and Canvas, and 20 relative. One thing to know before you start: the course has **not** run the MCP route itself, so part of your job is to record honestly what happens on your machine. A passing check shows your assets arrived at the size you intended; it does not show they look right in your game, and that judgment is yours.
 
 ## Your task
 
-Design a prop your game needs (cover, a landmark, an obstacle, a crate, a switch) and specify it in numbers. Build it in Blender from a committed script, import it into Godot, and make it block, settle, or detect, as your brief says. Prove each property with a check you run yourself, and play the result.
+Choose **three simple assets** that your game could use: for example a prop (a crate, a lantern), a piece of the environment (a platform, a tree, a rock), or something the player collects (a coin, a gem). Prefer things you actually want in your game. Build each in Blender with Claude, export it, and show the three together in Godot.
+
+**What "simple" means here.** Each asset is built mainly from Blender's basic shapes (cube, cylinder, cone, sphere, plane), moved, scaled and combined, with a flat-colour material. No sculpting, no painted textures, no rigging, no animation. Keep each asset low-poly, with **no more than six basic shapes and no more than 500 triangles**. A Blender sphere or cylinder at its default settings can use a large share of that budget, so ask Claude to lower the segment counts. State your own triangle number in your brief, at or under 500. These are course limits for this assignment, so that everyone's work can be compared fairly; they are not engine limits.
 
 **The cumulative game.** From Assignment 2 on, you build one game: the one you chose in Assignment 2, in a repository whose name begins **`walker-`**. Assignments 3–10 each add one layer to that same repository and are submitted as a git tag on it (`a3` here), so the final project is the sum of the semester rather than a restart. You may change games once, before Assignment 4, with a short written justification in `FRICTIONAL.md`; the tags then continue on the new repository, and your submission note says so. This is an individual assignment.
 
-**If your game is 2D,** add a 3D scene to it: a 3D prop room, a 3D diorama, or a 2.5D stage. A project may mix 2D and 3D scenes. The 3D scene measures in metres, not pixels: Godot uses "1 unit being equal to 1 meter" in 3D ([Introduction to 3D](https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html)). It needs a floor with collision, a camera, and a light. Connect it to the game by a scene change (`change_scene_to_file()`, Module 4), or name the gap as a known limitation.
+**Your game does not have to be 3D.** If it is 2D, you still make three assets that suit it (a 3D prop room, a diorama or a 2.5D stage would give them a place), and you show them in a small Godot 3D scene that you add to your repository: a floor, one light, a camera, and your three assets side by side at game scale. Assignments 4 and 5 reuse that scene. You do not need to connect it to your 2D game yet.
 
-**Tools and cost.** Claude Code assistance is expected; use your Northeastern access. Blender is free and required from Week 3 ([Blender download](https://www.blender.org/download/)). The chapters ran Godot 4.7.2 and Blender 5.1.2; record your versions. Nothing paid is needed, and nothing paid earns credit.
+**Tools and cost.** Claude Code assistance is expected; use your Northeastern access. Blender is free and required from Week 3 ([Blender download](https://www.blender.org/download/)). The chapter ran Godot 4.7.2 and Blender 5.1.2; record your versions. The Blender MCP used here is the community project the syllabus names, [MCP for Blender](https://github.com/ahujasid/mcp-for-blender). Nothing paid is needed, and nothing paid earns credit.
 
-**Rights and provenance.** Build the geometry in Blender; a downloaded or AI-generated mesh does not satisfy this assignment. Materials and textures may come from your Assignment 2 asset log or the script; record each source and its terms in `SOURCES.md`. Never commit credentials.
+**Rights and provenance.** You build the geometry yourself, with Claude, in Blender. A downloaded model or an AI-generated mesh does not count. The community add-on can also fetch models (Poly Haven, Sketchfab, Poly Pizza) and call generation services (Hyper3D Rodin, Hunyuan3D, Tripo): **leave all of those switched off.** They call remote services and may cost money. Record every tool and its version in `SOURCES.md`. Never commit credentials.
 
-### What the prop must have
-
-| Property | Minimum |
-|---|---|
-| Purpose | A design reason, tied to an Assignment 2 pillar or storyboard panel. |
-| Build | A committed Blender Python script that rebuilds it headless. |
-| Format | `.glb`, or `.gltf` with a stated reason. |
-| Scale and axes | Stated dimensions in metres, within 1 cm in Godot; Blender's Z on Godot's Y; unit scale on every imported `MeshInstance3D`. |
-| Origin | Where your brief puts it (for a floor prop, usually the centre of its underside), within 1 cm. |
-| Triangle budget | A number you state and justify; the imported visual meshes stay within it. |
-| Materials | Named in Blender; exactly those names arrive in Godot. |
-| Collider | A separate, simple shape you shaped. It covers what should block or detect, and nothing else. |
-| Physics role | One: static blocker, rigid body, or area trigger. |
-| Layers and masks | The prop on a named 3D physics layer; masks changed only where detection needs it. |
-| Behaviour | The prop does its job in a scene of your game, exercised by the player or a labelled stand-in body. |
+**A safety note.** By default the MCP runs Python that Claude writes *inside* your Blender, without a guard. The project's own README says its socket has no authentication or encryption, so anyone who can reach that port can run Python inside Blender. The add-on opens that socket whenever Blender starts while the add-on is enabled, not only while you work on this assignment, so turn the add-on off in Preferences when you are not using it. Keep the port on `localhost`, save your work before you start, and do not open `.blend` files from people you do not trust while the server is running.
 
 ## 1. Predict
 
-Commit `CHANGE-BRIEF.md` before the first Blender run. Retain the original; add dated revisions below it rather than rewriting it.
+First do the short "Learn the window" session in Build It below, so your sizes and budget are informed guesses and not blind ones. Then, before you ask Claude to build anything, commit `CHANGE-BRIEF.md`. Retain the original; add later revisions rather than rewriting it to make every prediction look right.
 
-- **The specification:** every row of the table above, in numbers. The chapter gives no triangle budget, so justify yours from something you can measure: copies on screen, what your other models cost (counted the same way), the hardware you target.
-- **The collider:** shape type, what it must cover and leave out, and how much invisible collision beside the visible surface you will accept.
-- **The behaviour:** what should happen, and within how many frames at `--fixed-fps 60`.
-- **The layer plan:** a table (Object | Layer number and bit value | Mask | What it should detect). Layer *n* is the bit value 2^(n−1).
-- **Ownership and invariants:** who instances and frees the prop; what must not change (player tuning, other layers and masks, existing tests).
-- **Answers, before you delegate:** which Godot axis carries the height; what Godot reports for a `MeshInstance3D` with unapplied scale; what a copied `.import` does to a `-convcolonly` collider; which object's mask must change for your detection; whether `body_entered` fires again for an overlap that began earlier.
-- **At least three predicted failures** and how you will check each.
+- **The three assets.** For each: its name, what it is in your game, and where it appears.
+- **Size, in metres.** Width, depth and height, justified against something in your game (the player's height, a tile, a door). In Blender 1 unit is 1 metre, and Godot's 3D units are metres too, so nothing converts if you keep it that way.
+- **Origin.** Where its origin point sits (for a prop that stands on the floor, the centre of the underside is usual), and why. Build each asset around Blender's world origin, the point where the three axes meet, with its base on the floor there, and keep each asset in its own file: that point is where Godot will place it.
+- **Look.** What shape makes it recognisable, and its material colours.
+- **Budget.** Your triangle budget, and why that number.
+- **At least three predicted failure cases and how you will check each.** For example: an asset arrives lying on its side; it is the wrong size by a factor of ten; its origin is in the middle so it floats; Claude builds something far more detailed than you asked; the MCP server will not connect; a colour does not survive the export.
 
 ## 2. Build It
 
 ### Read first
 
-The [Module 3 lesson](../modules/03-blender-mcp-to-godot/lesson.md) and [Chapter 3](../chapters/03-blender-mcp-to-godot.md), which built and measured a checkpoint post in [walker-3d-platformer](https://github.com/nikbearbrown/walker-3d-platformer) ([record](../examples/03-blender-mcp-to-godot/)). The [Module 4 lesson](../modules/04-scenes-collision-and-physics/lesson.md) and [Chapter 4](../chapters/04-scenes-collision-and-physics.md), whose shield pickup in [walker-2d-dodge-the-creeps](https://github.com/nikbearbrown/walker-2d-dodge-the-creeps) shows layers, masks and mutation testing ([record](../examples/04-scenes-collision-and-physics/)). Both Walker projects keep the upstream MIT license.
+Read the [Module 3 lesson](../modules/03-blender-mcp-to-godot/lesson.md), especially "Two ways for an agent to drive Blender", "Units and axes" and "Apply transforms". For the long reading, see [Chapter 3](../chapters/03-blender-mcp-to-godot.md).
 
-### Choose the route
+### Learn the window
 
-**Script route (required record).** The agent writes `tools/blender/build_<prop>.py` with Blender's `bpy` API, and Blender runs it with no window. The path is the chapter's macOS one; use your own Blender executable elsewhere:
+Open Blender and spend a short session just looking, before any prompting. Orbit, pan and zoom the 3D viewport. In `BLENDER-NOTES.md`, in your own words, name and describe six parts of the interface: the **3D viewport**, the **toolbar**, the **Outliner**, the **Properties editor**, the **sidebar** (press **N**; it shows the active object's location, rotation, scale and dimensions), and the **mode selector** in the viewport's header, which switches between Object Mode and Edit Mode. Add one screenshot of your own Blender session with an object selected. The Blender manual's [interface chapter](https://docs.blender.org/manual/en/5.1/interface/index.html) and [3D Viewport pages](https://docs.blender.org/manual/en/5.1/editors/3dview/index.html) are the reference.
+
+### Connect Claude to Blender
+
+The course ran the script route in Module 3 and has **not run the MCP route**. The steps below are the manual setup the chapter recorded from the project's README on 27 September 2026 (version 2.1.1). The project changes quickly: by 6 October 2026 (version 2.1.9) the README led with a one-line installer (`curl … | sh`) and `uvx mcp-for-blender setup`, which find the MCP clients on your machine and let you pick which to set up, and kept these manual steps as the fallback. The course has run neither. **Use the manual steps below**, because the one-line installer reaches every MCP client it finds on your machine, not only Claude Code. Treat each line as a claim to check, and write down what differs on your machine. On macOS the README installs `uv` with Homebrew (it gives other installers for Windows and Linux), and warns against `pip install uv`:
 
 ```bash
-/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup --python-exit-code 1 --python tools/blender/build_<prop>.py
+brew install uv
 ```
 
-Keep `--python-exit-code 1`. Without it, Blender exits 0 when the script raises an exception.
+Register the server with Claude Code. The README's own line is `claude mcp add blender uvx mcp-for-blender`; the chapter's version below adds the README's `DISABLE_TELEMETRY=true` setting through Claude Code's `-e` option, which turns off the server's anonymous usage record. That combination is the chapter's adaptation, not a README line:
 
-**MCP route (optional, for exploring).** Chapter 3 documents the community MCP for Blender setup but did not run it; treat each step as a claim to check, and log what happened in `FRICTIONAL.md`. Keep its port on `localhost` and its generation and download services off. Copy every `execute_blender_code` body into the script and rebuild the submitted `.glb` from it, because Git records nothing about an MCP session.
+```bash
+claude mcp add blender -e DISABLE_TELEMETRY=true -- uvx mcp-for-blender
+```
 
-### Choose the collider route
+Put the server's name first. `-e` takes one or more values, so `claude mcp add -e DISABLE_TELEMETRY=true blender -- ...` reads `blender` as another variable and fails with `Invalid environment variable format: blender` (found in a real run on 2026-10-06; the same command with `--scope project` added in a scratch folder printed exactly that error).
 
-| Role | Godot body | Collider route | What your test should show |
-|---|---|---|---|
-| Static blocker | `StaticBody3D` | A separate mesh with the `-convcolonly` suffix, which the importer turns into a `StaticBody3D` with a `ConvexPolygonShape3D` ([node type customization](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/node_type_customization.html)), or a wrapper scene | A body driven into it stops at the collider. |
-| Rigid body | `RigidBody3D` | A wrapper scene: `RigidBody3D` root, the imported model, and a `CollisionShape3D` you author | It falls, rests on the floor within your frame budget, and responds to a push. |
-| Area trigger | `Area3D` | A wrapper scene: `Area3D` root, the model, and a `CollisionShape3D` | `body_entered` fires once per entry, only for bodies on layers in its mask, and the effect happens. |
+Install the add-on:
 
-For a wrapper, leave no `-convcolonly` mesh in the model, or the importer still builds a static body inside it. Concave shapes work only "within StaticBodies"; avoid scaling collision shapes ([Collision shapes (3D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html)). A `RigidBody3D` "cannot be controlled directly"; you apply forces ([RigidBody3D](https://docs.godotengine.org/en/stable/classes/class_rigidbody3d.html)). An area detects a body only when that body's layer is in the area's mask ([Area3D](https://docs.godotengine.org/en/stable/classes/class_area3d.html)). Name your layer under `[layer_names]` in `project.godot` (a `3d_physics/layer_N` key); in code, `set_collision_layer_value()` and `set_collision_mask_value()` take layer numbers, not bit values ([CollisionObject3D](https://docs.godotengine.org/en/stable/classes/class_collisionobject3d.html)). Test the layer on the running node.
+```bash
+uvx mcp-for-blender install-addon
+```
 
-### Work in inspectable increments
+In Blender, open **Edit > Preferences > Add-ons** and enable **Interface: MCP for Blender**. The add-on starts its server when Blender opens. To check, press **N** in the 3D viewport and open the **MCP for Blender** tab; if the server is not running, start it there. The README calls that button **Start MCP Server** in one place and **Connect to Claude** in another; the add-on's own code labels it **Connect to MCP server**. Leave every service and download checkbox off (they start off). Then start a new Claude Code session so it sees the server.
 
-One step at a time, each committed separately:
+If it does not work, that is data. Try honestly, for about two hours (a course rule for this assignment), and record each step you tried and its exact error in `FRICTIONAL.md`. If the MCP has not connected by then, you may build the assets with the **script route** from Module 3 instead (Claude writes a Blender Python script, and you run Blender with no window). State that clearly in your submission. An honest, specific account of a failed attempt, with a working script-route fallback, earns up to 6 of the 8 MCP points in the rubric, not all 8.
 
-1. **Blender script and log.** Done when Blender exits 0 with `--python-exit-code 1` and the log's names, dimensions, scales, materials and triangle counts match your brief. In Blender 5.1.2, `obj.dimensions` showed the old size until `bpy.context.view_layer.update()` ran, so make sure the log is current.
-2. **Import.** Done when a fresh `--import` prints no `ERROR` lines and the scene tree holds the body type you expect. Let Godot write the `.import` file; for the suffix route, `nodes/use_node_type_suffixes` must be `true`.
-3. **Role, layers and masks**, then **placement** on the floor of a scene in your game.
-4. **Test.** One headless `SceneTree` test that prints a `PASS` or `FAIL` line per check and exits non-zero on any failure.
+### Build the assets, one at a time
 
-Put the exact Blender, import and test commands in a `## Checks` paragraph of your `AGENTS.md` (or `CLAUDE.md`). In Chapter 0, that one paragraph fixed an agent running checks the wrong way.
-
-Ask Claude to propose a plan before editing:
+Ask Claude for a plan first, then build one asset per request. Adapt this prompt for each asset; it is an adaptation, not a prompt the course has run, so read what Claude does before approving it:
 
 ```text
-Read my CHANGE-BRIEF.md, README.md, AGENTS.md and the scene the prop will
-go into. This is my Godot 4.7.2 GDScript game. Use Walker's brief → build →
-playtest → inspect → revise workflow.
+We are using Walker's Game brief → Build → Playtest → Inspect → Revise → Export
+workflow. Use the Blender MCP tools in my open Blender session. Read
+CHANGE-BRIEF.md first.
 
-Task: build the prop in my brief in Blender from a Python script, export it
-as binary glTF, import it, give it the collider, physics role and collision
-layer my brief specifies, place it, and prove its size, axes, origin,
-triangle count, materials, collider fit, layers and masks, and behaviour
-with a headless test. Do not edit yet. First list the files you would
-create or change and the order of the steps.
+Task: build only this asset: <asset name>, exactly as the brief specifies (size
+in metres, origin, materials, triangle budget). Start from an empty scene with
+metric units; Blender is Z-up.
 
-Rules for every step after I approve the plan:
-- Run Blender only as <my Blender path> -b --factory-startup
-  --python-exit-code 1 --python tools/blender/<script>.py. Never open its
-  window or any other application.
-- Never write or copy a .import file. Let Godot write it, then tell me
-  which of its settings decide how my collider is imported.
-- Never invent uid:// values or unique_id numbers in a .tscn file.
-- Read expected values from my brief or from the scenes, not from
-  constants you choose. A floor ray must exclude the prop's own collider.
-- Run tests as timeout 120 godot --headless --path godot --script
-  res://tests/<test>.gd --fixed-fps 60 and report the real output.
-- Implement one step, show the diff, run its check, and stop. Tell me what
-  still needs a person to look at in the running game.
-- Do not change existing scripts, player tuning, other objects' layers or
-  masks, or my existing tests. If a check fails, do not weaken it.
+First call get_scene_info and tell me what is in the scene, then propose the
+steps. Do not build yet.
+
+After I approve: one execute_blender_code call per object. After each, call
+get_scene_info with the location, size, rotation and scale fields and report
+them. Apply rotation and scale before you finish. Then show me the result
+with the look tool.
+
+Do not use Poly Haven, Sketchfab, Poly Pizza, Hyper3D, Hunyuan3D or Tripo,
+and do not call generate_3d, search_assets or import_asset. Do not export
+yet. Say what you could not verify.
 ```
 
-This is a prompt to Claude Code, not an installed shell command. You decide whether to accept the plan.
+The chapter listed tools from version 2.1.1 (27 September 2026), among them `get_object_info`, `get_viewport_screenshot` and `export_scene`. Version 2.1.9 (6 October 2026) removed those three; its README lists nine tools: `execute_blender_code`, `look`, `get_scene_info`, `generate_3d`, `search_assets`, `import_asset`, `get_addon_status`, `disable_telemetry` and `record_trajectory_feedback`. The prompt above uses the 2.1.9 names. If your install names them differently, use what it has.
 
-### What the agent is likely to get wrong
+- **Look at it yourself** in Blender's viewport after each step. Claude cannot tell you whether it looks right.
+- **Make at least one change by hand** in Blender's window: move a part, scale it, or change a colour. Note what you changed and what the experience taught you about the interface.
+- **Save the code Claude ran.** Copy every `execute_blender_code` body into `tools/blender/build_<asset>.py`, or Git will not show how the asset was built.
+- **Save your `.blend` source** for each asset. Blender keeps older saved versions next to your file, named `.blend1` and so on ([Save Versions](https://docs.blender.org/manual/en/5.1/editors/preferences/save_load.html)); do not commit those.
 
-Each of these happened in the chapters' recorded runs.
+If you use the script route for an asset, run it with no window, and add `--python-exit-code 1`: without it Blender exits 0 when your script raises an exception. Replace the path with your Blender's:
 
-- **It writes the `.import` file itself.** Claude Code copied the demo enemy's, which sets `use_node_type_suffixes=false`. The collider arrived as a visible box with no collision.
-- **It guesses, then changes two things at once**, so nobody can tell which change fixed the collider.
-- **Its floor check finds the prop.** A downward ray stopped on the post's own collider: proof the post was solid, not that it stood on anything.
-- **It weakens a failing check**, here by skipping unnamed materials.
-- **It measures vertices, not surfaces.** Codex's check passed "no pennant length lies inside collider" while 55 of 1,066 sampled pennant points were inside.
-- **It invents engine identifiers** (`unique_id=987654321`), and writes tests that cannot fail: in Chapter 4, a shield cut from 3.0 s to 0.5 s still passed Claude Code's test 7 of 7.
-- **It looks for another way.** When Blender crashed in Codex's sandbox, Codex reached for a tool to operate the Blender application. Repeat "never open its window", and run Blender yourself outside a sandbox.
+```bash
+/Applications/Blender.app/Contents/MacOS/Blender -b --factory-startup --python-exit-code 1 --python tools/blender/build_<asset>.py
+```
 
-## 3. Use It
+### Export and place them in Godot
 
-Run every check yourself; the agent's pasted output is a claim. Record actual results in `TEST-REPORT.md` with the source revision, versions, and operating system.
+Export each asset as binary glTF (`.glb`), with the exporter's **+Y Up** option on, which is its default in Blender 5.1.2 ([glTF 2.0 add-on](https://docs.blender.org/manual/en/5.1/addons/import_export/scene_gltf2.html)). Version 2.1.9 has no export tool (2.1.1's `export_scene` took an absolute path and `glb` or `fbx`), so use Blender's own **File > Export > glTF 2.0**, or have Claude run Blender's glTF exporter through `execute_blender_code` and save that code with the rest. Put the three files inside your Godot project folder, then import:
 
 ```bash
 godot --headless --path godot --import
 ```
 
+Open the project, build the small 3D scene (floor, one light, a camera), and place the three assets side by side. Ask Claude Code to write one short headless script that loads each asset and prints its bounding-box size, its node scale and the axis it stands along, so you can compare the numbers with your brief. Run it as in Module 3:
+
 ```bash
-timeout 120 godot --headless --path godot --script res://tests/test_<prop>.gd --fixed-fps 60
+timeout 120 godot --headless --path godot --script res://tests/<your_check>.gd --fixed-fps 60
 ```
 
-`timeout` (GNU coreutils; Homebrew's `coreutils` on macOS) stops a test that errors before `quit()`; one in Chapter 3 ran for eight minutes. At 120 physics ticks per second, `--fixed-fps 60` gives two ticks per frame; state yours.
+These commands are written for macOS; on another system, use your equivalents and say so. On macOS `timeout` comes from Homebrew's `coreutils`, and it stops a script that errors before it quits. The check is Claude's, so read it: a check can prove less than it claims. In Module 3, an agent's floor check stopped on the object's own collider and proved nothing about the floor.
+
+## 3. Use It
+
+Record the actual result of each check in `TEST-REPORT.md`, with your Blender and Godot versions:
 
 | Check | Evidence to collect |
 |---|---|
-| Rebuild | The script reruns with exit 0, log values match the brief, and the `.glb` is unchanged (the chapter's rebuild was byte-identical in Git); otherwise say what differs and why. |
-| Import | The `.import` settings that decide your collider; an import log with no `ERROR` lines. Exit code 0 is not "no errors". |
-| Size, axes, scale | Merged visual AABB within 1 cm of the brief, height on Y, unit scale on every `MeshInstance3D`. |
-| Origin | The geometry's position relative to the prop's origin, within 1 cm of the brief. |
-| Triangle budget | Imported visual triangle count against your budget; in `Mesh.get_faces()`, "each three vertices represent one triangle" ([Mesh](https://docs.godotengine.org/en/stable/classes/class_mesh.html)). |
-| Materials | Exactly the named materials, none skipped. |
-| Collider fit | Sample what must not collide, and what must, on a grid fine enough to catch the gap you care about (the chapter used 1 cm), and ask the physics server which points are inside, as the chapter's [independent check](../examples/03-blender-mcp-to-godot/scripts/independent/verify_post_independent.gd) does. Report counts. |
-| Layers and masks | Values read from the running nodes and compared with your table, as Chapter 4's [reviewer check](../examples/04-scenes-collision-and-physics/reviewer/verify_shield_timing.gd) does. |
-| Behaviour | The role's assertion in frames under `--fixed-fps 60`, reached by ordinary input or by a fixture labelled as one. |
-| Placement | A floor ray excluding the prop's collider finds the floor within 2 cm of the base. |
-| Mutations | Two deliberate breaks, each caught and then restored: one in the asset pipeline (no +Y Up, unapplied scale, suffix setting off) and one in collision (a wrong mask bit, an oversized collider). |
-| Regression | Every earlier test in your repository still passes. |
+| Interface notes | The six parts named in your own words, and one screenshot of your own session. |
+| Size | For each asset, the dimensions Blender shows (in the sidebar) beside your brief, and the Godot bounding-box numbers beside both. |
+| Upright and scale | Each asset stands the right way up in Godot, and its node scale is 1, 1, 1 after export. |
+| Origin | Each origin is where the brief says: place each asset on the floor in Godot and see whether it sits on it or floats. |
+| Triangle count | Within your budget. Blender shows scene statistics (right-click the status bar and enable **Scene Statistics**). |
+| Imports and appears | All three import without errors and appear in your 3D scene. |
+| HUMAN CHECK: look | Walk the camera around each asset, including from behind and below. Do the shapes read as what they are at game size, beside your character if it is 3D? Any missing faces, wrong colours? |
+| What Claude got wrong | At least one thing, or an honest "nothing, and here is how I checked". |
 
-Do not delete a failing assertion or weaken an expected result merely to obtain a green report. A check that passes when the mechanism is broken is not measuring what its label claims.
-
-**HUMAN CHECKs.** Play the scene with normal controls and record what you saw.
-
-- Under your game's lighting, does the prop read as what it is? Do the materials read as intended? Is any single-faced part (a flag, a sign) visible from both sides?
-- With **Debug > Visible Collision Shapes** on, walk or push into the prop, then beside it. Is the invisible margin your sampling measured fair to the player?
-- Is the prop where the level needs it, and out of the way of anything it should not block?
-
-Include at least one documented inspect-and-revise cycle driven by an observation, such as a reshaped collider or a moved origin. If another person plays, record their actual feedback; do not invent a playtester. Your own playtest is required; a headless test does not replace it.
+Include at least one documented inspect-and-revise cycle based on an observation: a size you corrected, an origin you moved, a part you rebuilt. If you can have another person look at your scene, record what they actually say; do not invent a viewer. Do not delete a failing assertion to turn a report green.
 
 ## 4. Ship It — source and explainer
 
@@ -181,30 +153,27 @@ Include at least one documented inspect-and-revise cycle driven by an observatio
 
 Use the course-provided [Brutalist](https://github.com/nikbearbrown/brutalist.art) **`godot-gamedev`** workflow with the **`walker`** modifier ([Required Brutalist Godot explainers](../prerequisites/brutalist-godot-explainers.md)). Ask Claude Code to read the installed skill instructions and follow them; the skill name is not a standalone executable. If your checkout lacks the skill, request the course-provided version before proceeding.
 
-Make **one** landscape film that:
+Make **one** landscape film. A short, plain film is fine. It:
 
-1. Identifies your game, the prop's purpose, and what this assignment added.
-2. Traces the prop from source to scene, pairing each code excerpt with its result: the script's export call, the `.import` line that decides the collider, the imported scene tree, the prop in the running game.
-3. Shows the physics role in real play, with at least one labelled segment with Visible Collision Shapes on.
-4. Shows the headless test output, labelled as headless, and a mutation it caught.
-5. States what you tested, what your human checks found under the game's lighting, what remains uncertain, one next step, the human and AI contributions, and the source revision shown.
+1. Identifies your game, your three assets and why your game needs each.
+2. Shows your real Blender session. Use screen recordings or screenshots you made yourself, labelled as such; a reconstruction must be labelled a reconstruction. Show at least one prompt to Claude and what it built, and show your own hand edit. If the skill has no way to take your footage, say so and use your own screenshots as stills, or ask the instructor before inventing a workaround.
+3. Shows the three assets in the running Godot scene, and the headless numbers beside your brief, labelled as headless.
+4. States what you checked, what remains uncertain, what Claude got wrong, one next step, the human and AI contributions, and the source revision shown.
 
-Use the Walker opening/summary and Verdict → Your Turn → regular outro. AI narration, including Liam, is allowed. Label reconstructed editor views, scripted-input captures, and held frames accurately. A Blender render or a fixture is not gameplay.
-
-Follow the skill's native **4K landscape** rendering and quality checks, then watch the final export. Duration follows the explanation. A second film, a vertical Short, paid media generation, and public YouTube publication are **not required**.
+Use the Walker opening/summary and Verdict → Your Turn → regular outro. AI narration, including Liam, is allowed. Follow the skill's native **4K landscape** rendering and quality checks, then watch the final export. Duration follows the explanation, with no minimum. A second film, a vertical Short, paid media generation, and public YouTube publication are **not required**.
 
 ### Post the version on GitHub
 
 Your submitted source includes:
 
-- The Godot project with the prop, its `.glb` and `.import`, any wrapper scene, and the tests; `tools/blender/build_<prop>.py` and its log. Exclude `.godot/`, caches and credentials.
-- `README.md`: project name, starting point, Godot and Blender versions, how to rebuild the prop and run the game and checks, controls, what this assignment added, known limitations, and the final-film link.
-- `CHANGE-BRIEF.md`, `TEST-REPORT.md`, `FRICTIONAL.md`, and `SOURCES.md`.
+- The Godot project with the 3D scene, the three `.glb` files and their `.import` files, and your check script; for each asset, the `.blend` source and `tools/blender/build_<asset>.py`. Exclude `.godot/`, `.blend1` backups, caches and credentials.
+- `README.md`: project name, Godot, Blender and MCP versions, how to run the check and open the scene, what this assignment added, known limitations, and the final-film link.
+- `CHANGE-BRIEF.md`, `BLENDER-NOTES.md`, `TEST-REPORT.md`, `FRICTIONAL.md`, and `SOURCES.md`.
 - The film's beat sheet, script/prompts, and relevant evidence/coverage records.
 
 Keep MP3, MP4, and files over 25 MB out of GitHub. Store them in the designated course media storage and link them from the README. Identify the exact film by filename and SHA-256 checksum. Test reviewer access to the source and media.
 
-Use commit messages that describe a meaningful change and its purpose or check, for example `Reshape prop collider to clear the sign; rerun sampling check`. Tag the submitted commit `a3` and push the tag.
+Use commit messages that describe a meaningful change and its purpose or check, for example `Fix lantern height to 0.9 m; origin to base`. Tag the submitted commit `a3` and push the tag.
 
 ## 5. Verify and submit to Canvas
 
@@ -218,20 +187,21 @@ git clone <your-repository> ../a3-check
 git -C ../a3-check checkout a3
 ```
 
-In the clone, rebuild the prop, import once, run every check, and play the scene briefly. Confirm that the film depicts that source.
+In the clone, import once, run your check, and open the scene. Confirm that the film depicts that source.
 
 Submit a source ZIP of that same GitHub revision, excluding caches, credentials, and large media, together with `SUBMISSION.md`:
 
 ```text
-Assignment: Assignment 3 - Build a Prop in Blender and Make It Work in Godot
+Assignment: Assignment 3 - Your First 3D Game Assets with Claude, the Blender MCP, and Blender
 Student:
 Project name:
 GitHub repository URL:
 Git tag and submitted commit SHA:
 Game-source revision shown in the film:
 Godot version, Blender version, and operating system:
-Prop, physics role, and collision layer:
-Blender route (script only, or MCP then script):
+The three assets and what each is for:
+MCP project and version, or "script route" (and which assets used which):
+My hand edit in Blender:
 Checks run (command and result):
 Final film URL and filename:
 Final film SHA-256:
@@ -258,14 +228,14 @@ Canvas, GitHub, and the film must refer to the same submitted work. Do not move 
 
 | Criterion | Points |
 |---|---:|
-| Specification and Blender build: a brief with dimensions, origin, materials, a justified triangle budget, collider and layer plans, committed first (4); a committed script that rebuilds the prop headless, with its log (5); rebuild result and provenance recorded (3). | 12 |
-| Import and measurement: import settings correct for your collider route (4); headless checks of size, axes, unit scale, origin, triangle count and materials against the brief (8). | 12 |
-| Collision and physics role: collider fit measured by sampling, invisible margin stated (6); named layer and masks asserted on running nodes (4); the role working in a scene of your game under the pinned clock (6). | 16 |
-| Verification: two mutations your tests catch (3); human playtest with Visible Collision Shapes and HUMAN CHECKs recorded (4); an evidence-based revision and an honest limitation (3). | 10 |
-| Brutalist explainer: accurate explanation from script to running scene (4); actual mechanism and gameplay shown (3); traceable evidence and stated limits (2); readable, audible final film using the required workflow (1). | 10 |
+| Brief and predictions, committed before building: three assets chosen for your game and specified in numbers (6); at least three predicted failure cases, each with its check (4). | 10 |
+| Process with Claude, the MCP and Blender: the MCP route working for at least two assets, with the code Claude ran kept in `tools/blender/` (8), or, if it would not connect within the time box, an honest, specific account of the attempt plus a working script-route fallback (up to 6); interface notes in your own words with your own screenshot (3); at least one hand edit in Blender and what it taught you (3). | 14 |
+| The three assets, 6 points each: recognisably what the brief says (2); correct size, upright, origin sensible, transforms applied (3); a clean material (1). | 18 |
+| Godot import and checks: all three import and appear in your 3D scene at game scale (4); your numbers match the brief and you can say what the check does and does not show (3); an evidence-based revision and an honest limitation (3). | 10 |
+| Brutalist explainer: accurate explanation of your workflow and assets (3); your real Blender session and the Godot scene shown (3); traceable evidence and stated limits (1); readable, audible final film using the required workflow (1). | 8 |
 | **Subtotal** | **60** |
 
-Award partial credit for demonstrated work within each criterion. Claims must be defensible; attractive presentation does not repair an incorrect explanation. A passing headless test establishes the prop's measured size, collider, layers and behaviour in a pinned simulation; it does not establish that the prop looks right under your game's lighting, reads as what it is, or feels fair to collide with.
+Award partial credit for demonstrated work within each criterion. Claims must be defensible; attractive presentation does not repair an incorrect explanation. A passing check shows your assets arrived at the size, orientation and scale you measured; it does not show they look right under your game's lighting, read as what they are, or suit your game's style. Those are your human checks, and the rubric counts them.
 
 ### Frictional — honest log — 10 points
 
@@ -292,6 +262,6 @@ Meeting the stated criteria can earn the other **80 points**; it does not guaran
 
 ## You must be able to explain it
 
-Use `SOURCES.md` to credit your starting point, Blender and its version, any MCP server, texture or material sources, collaborators, and tools. Describe what AI contributed to the Blender script, the Godot scenes and code, the tests, and the film's script, beat sheet, visuals, and narration, and what you personally decided, checked, changed, or rejected.
+Use `SOURCES.md` to credit your starting point, Blender and its version, the MCP project and its version, any colour or material sources, collaborators, and tools. Describe what AI contributed to the Blender code, the Godot scene and check, and the film's script, beat sheet, visuals, and narration, and what you personally decided, checked, changed, or rejected.
 
-The instructor or a TA may ask you to rebuild the prop from your script, explain a layer or mask value, or show where the collider is wider than the art and why that is fair. Inability to explain reduces points under the relevant criteria. Misrepresenting authorship or verification is an academic-integrity matter under the [course AI policy video](https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz) and the course/university policies.
+The instructor or a TA may ask you to open one of your assets in Blender and show where its size, origin and applied transforms are, to explain why a scale that is not applied causes trouble in Godot, or to show which part you edited by hand. Inability to explain reduces points under the relevant criteria. Misrepresenting authorship or verification is an academic-integrity matter under the [course AI policy video](https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz) and the course/university policies.

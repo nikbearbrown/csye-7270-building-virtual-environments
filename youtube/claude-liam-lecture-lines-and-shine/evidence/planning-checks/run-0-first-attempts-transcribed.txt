@@ -1,0 +1,14 @@
+These are the first two attempts to read the GPU's tangent through pixel bytes (scratch-shaders/bits.gdshader), transcribed from the terminal on 2026-10-13
+(they were exploration, not saved to a log at the time). Both were wrong for reasons that are mine; the clean readings are in measurements.txt section B.
+
+== attempt 1: compile error
+SHADER ERROR: Invalid arguments to operator '>>': 'uint, int'.
+ERROR: Shader compilation failed.
+Cause: the shift counts were written as 8, 16, 24; Godot's shading language needs unsigned counts (8u, 16u, 24u). Fixed in the file.
+
+== attempt 2: every run printed the same bytes whatever the options
+Reading: (-22877334.0, '0xcbae8a4b') for mode=4 (the constant 1.0), mode=2 (radians(90)), mode=0 angle=90, and mode=0 angle=45.
+Cause: in zsh an unquoted $args does not split into words, so '--set mode=4' reached check_shader.sh as ONE argument and was ignored; all four runs used the defaults
+(angle 90, mode 0). Inconclusive and wrong as a set of four readings; redone with ${=args}: mode 4 gave 1.0 (0x3f800000), radians(90) gave 1.5707963705 (0x3fc90fdb),
+tan(radians(45)) gave 1.0, tan(radians(89)) gave 57.29, tan(30.0) without radians gave -6.405, tan(radians(30)) gave 0.57735, and tan(radians(90)) gave -22877334 as the defaults had shown.
+The self-test (mode 4 = 1.0) is the check that would have caught attempt 2 at once; run_lab_checks.py now runs it first.

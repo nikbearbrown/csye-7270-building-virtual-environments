@@ -1,0 +1,282 @@
+{
+ "B19": {
+  "lane": "manim",
+  "class": "B19_Restart",
+  "visual_intent": "Act title 'Loops and Curves' (serif 40) top-left. A rising straight line (the cycle count TIME × speed, which never stops) with whole-number ticks 0, 1, 2, 3 up the side. A copy of the line is cut at every whole number and drops back to 0, becoming a sawtooth between 0 and 1. A ramp strip with a marker under it jumps back to the left at every restart. Labels (glossary wording): 'fract(x): the part after the point: x minus floor(x)' and 'ramp: a smooth run of values from 0 up to 1'.",
+  "motion_claim": "The straight line is cut at each whole number and folds back to zero; the strip's marker restarts every time.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the never-ending count line"
+   },
+   {
+    "at": 0.36,
+    "event": "the cut copy drops to zero at each whole number: the sawtooth"
+   },
+   {
+    "at": 0.64,
+    "event": "the ramp strip with its restarting marker; labels"
+   }
+  ],
+  "runner_up": "ShaderLab capture of a loading bar",
+  "why": "A line cut at every whole number shows exactly what fract keeps; the restarting marker makes the loop visible.",
+  "sparse": true
+ },
+ "B20": {
+  "lane": "manim",
+  "class": "B20_Fold",
+  "visual_intent": "The sawtooth from the previous picture transforms in four small steps, each labelled: '× 2' (it now runs 0 to 2), '− 1' (−1 to 1), 'abs' (a V shape), '1 −' (flipped into a triangle). The strip marker now moves back and forth at a steady pace. Caption: 'abs(x): drops the minus sign'.",
+  "motion_claim": "The sawtooth folds step by step into a triangle and the marker turns around at each end.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the sawtooth"
+   },
+   {
+    "at": 0.33,
+    "event": "× 2 then − 1"
+   },
+   {
+    "at": 0.44,
+    "event": "abs: the V shape"
+   },
+   {
+    "at": 0.69,
+    "event": "1 − : the triangle; marker moves back and forth"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of the formula",
+  "why": "Four visible transforms are the recipe; a transform keeps the shape's identity from step to step.",
+  "sparse": true
+ },
+ "B21": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat cycles = TIME * 0.5;\n\tfloat saw = fract(cycles);\n\tfloat tri = 1.0 - abs(saw * 2.0 - 1.0);\n\tfloat sine = 0.5 + 0.5 * sin(TAU * (cycles - 0.25));\n\tfloat value = UV.y < 0.66 ? tri : saw;\n\tif (UV.y < 0.33) { value = sine; }\n\tif (fract(UV.y * 3.0) < 0.08) { value = 0.0; }\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tvec3 track = vec3(0.93, 0.92, 0.88);\n\tCOLOR = vec4(UV.x < value ? teal : track, 1.0);\n}",
+   "codeFile": "lab-shaders/04-three-shapes.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.42,
+     "lines": [
+      5
+     ]
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/three-shapes.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+   "readouts": [
+    {
+     "at": 0.06,
+     "text": "sine",
+     "x": 0.08,
+     "y": 0.16
+    },
+    {
+     "at": 0.06,
+     "text": "triangle",
+     "x": 0.1,
+     "y": 0.5
+    },
+    {
+     "at": 0.06,
+     "text": "sawtooth",
+     "x": 0.1,
+     "y": 0.84
+    }
+   ],
+   "rings": [],
+   "caption": "sawtooth: a ramp that restarts",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code card at left (04-three-shapes.gdshader); at right a real render of three horizontal teal bars on light tracks, separated by thin gaps, each filling from the left to its wave's value: top sine, middle triangle, bottom sawtooth, all with the same two-second period. Labels at the left of the rows: 'sine', 'triangle', 'sawtooth'. Caption: 'sawtooth: a ramp that restarts'.",
+  "motion_claim": "The sine bar eases at each end, the triangle bar turns sharply, the sawtooth bar fills and snaps back to empty.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "sine line highlighted; top bar eases at each end"
+   },
+   {
+    "at": 0.3,
+    "event": "triangle line highlighted; middle bar turns sharply"
+   },
+   {
+    "at": 0.42,
+    "event": "sawtooth line highlighted; bottom bar jumps back"
+   }
+  ],
+  "runner_up": "manim: three plots with three markers",
+  "why": "A bar's edge is a one-number motion: ease, steady and snap are visible as the edge moves; three rows in one shader prove the three share one count.",
+  "sparse": false,
+  "capture_spec": "C21: Lab rect, lab-shaders/04-three-shapes.gdshader, 12 s (six loops), 30 fps, Forward+, no input."
+ },
+ "B22": {
+  "lane": "manim",
+  "class": "B22_CurveStrip",
+  "visual_intent": "A drawn curve (the breath: a slow rise, a short hold, a long fall) above a thin horizontal strip whose brightness follows the curve (drawn in greys: dark where the curve is 0, light where it is 1). A vertical scan line slides along the strip with a dot on the curve at the same position. Labels: 'CurveTexture: a curve baked into a strip of pixels' and the call 'texture(curve, vec2(t, 0.0)).r' in monospace.",
+  "motion_claim": "The scan line slides along the strip and the dot follows the curve: the strip's brightness equals the curve's height.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the curve and its strip"
+   },
+   {
+    "at": 0.44,
+    "event": "the curve is drawn"
+   },
+   {
+    "at": 0.56,
+    "event": "the strip lights up beneath it; the scan line slides along"
+   }
+  ],
+  "runner_up": "ShaderLab capture of a scripted CurveTexture",
+  "why": "The mechanism is a mapping from height to brightness; the scan line shows both at one position.",
+  "sparse": true
+ },
+ "B23": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D curve;\n\nvoid fragment() {\n\tfloat t = fract(TIME * 0.5);\n\tfloat k = texture(curve, vec2(t, 0.0)).r;\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tvec3 cream = vec3(0.98, 0.97, 0.96);\n\tCOLOR = vec4(mix(teal, cream, k), 1.0);\n}",
+   "codeFile": "lab-shaders/05-curve-loop.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.61,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/curve-loop.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a CurveTexture made in a script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code card at left (05-curve-loop.gdshader); at right a real render: a square whose color follows the breath curve (a slow rise to cream, a short hold, a long fall back to teal), looping every two seconds. The lookup line is highlighted first, then the ramp line.",
+  "motion_claim": "The square follows the curve's shape, loop after loop.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "the texture lookup line highlighted"
+   },
+   {
+    "at": 0.61,
+    "event": "the fract ramp line highlighted; the loop restarts visibly"
+   }
+  ],
+  "runner_up": "manim: a dot riding the curve",
+  "why": "The real lookup driving a real color shows that the shape you drew is the shape you see.",
+  "sparse": false,
+  "capture_spec": "C23: evidence/planning-checks/scene-project/scenes/scene_c23_curve_loop.gd. A square (0.5 of the height, centred) with lab-shaders/05-curve-loop.gdshader; the 'curve' uniform is a CurveTexture of the breath curve (points (0,0), (0.40,1), (0.55,1), (1,0), flat tangents). 12 s, 30 fps, Forward+, no input."
+ },
+ "B24": {
+  "lane": "manim",
+  "class": "B24_SineOrRamp",
+  "visual_intent": "Two tracks, each with a copy of the breath curve and a dot on it, and the input drawn as a strip above each. Top track: the input is a sine, the dot runs along the curve to its end and then back along it. Bottom track: the input is the restarting ramp, the dot runs to the end and jumps back to the start. Labels: 'sine input: forward, then backward' and 'ramp input: one way, then restart'.",
+  "motion_claim": "The top dot goes out and comes back; the bottom dot goes out and jumps back.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "two tracks, two dots"
+   },
+   {
+    "at": 0.02,
+    "event": "top dot runs out and back"
+   },
+   {
+    "at": 0.38,
+    "event": "bottom dot runs out and jumps back"
+   }
+  ],
+  "runner_up": "ShaderLab two squares",
+  "why": "Out-and-back against out-and-jump is a path, and a path is best drawn as a moving dot.",
+  "sparse": true
+ },
+ "B25": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "One count, four looks",
+   "headers": [
+    "Look",
+    "It feels like",
+    "In code (c = TIME × speed)"
+   ],
+   "rows": [
+    [
+     "sine",
+     "smooth swing",
+     "0.5 + 0.5 * sin(TAU * c)"
+    ],
+    [
+     "triangle",
+     "steady back and forth",
+     "1.0 - abs(fract(c) * 2.0 - 1.0)"
+    ],
+    [
+     "sawtooth",
+     "one way, restart",
+     "fract(c)"
+    ],
+    [
+     "curve",
+     "whatever you draw",
+     "texture(curve, vec2(fract(c), 0.0)).r"
+    ]
+   ],
+   "note": "lab-shaders/04-three-shapes.gdshader and 05-curve-loop.gdshader · checked in Godot 4.7.2",
+   "cues": [
+    0.25,
+    0.38,
+    0.62,
+    0.71
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A four-row table, one row ringed as each look is named, with the code that makes it.",
+  "motion_claim": "The ring steps down the rows with the voice.",
+  "show": [
+   {
+    "at": 0.25,
+    "event": "sine row"
+   },
+   {
+    "at": 0.38,
+    "event": "triangle row"
+   },
+   {
+    "at": 0.62,
+    "event": "sawtooth row"
+   },
+   {
+    "at": 0.71,
+    "event": "curve row"
+   }
+  ],
+  "runner_up": "manim: four small plots",
+  "why": "Four parallel facts with a line of code each is a reference card; the previous beats already supplied the pictures.",
+  "sparse": false
+ }
+}

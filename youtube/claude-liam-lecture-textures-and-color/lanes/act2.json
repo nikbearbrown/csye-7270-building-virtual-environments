@@ -1,0 +1,509 @@
+{
+ "B08": {
+  "lane": "manim",
+  "class": "B08_FourNumbers",
+  "visual_intent": "Act title 'Color Is Math' (serif 40) top-left. A large orange swatch (1.0, 0.5, 0.0, 1.0) with four labelled bars beside it, R G B A, each an outline track with a terracotta dot at its value. A label 'vec4: a bundle of four numbers'. The G bar slides up to 0.9 and the swatch turns yellow-orange; the B bar slides to 0.4 and it pales.",
+  "motion_claim": "Sliding one bar changes the swatch: the color is nothing but the four numbers.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "swatch, four bars, vec4 label"
+   },
+   {
+    "at": 0.3,
+    "event": "orange: 1, 0.5, 0, 1"
+   },
+   {
+    "at": 0.38,
+    "event": "G bar slides to 0.9: swatch yellow-orange; settles through 60 %"
+   },
+   {
+    "at": 0.64,
+    "event": "B bar slides to 0.4: swatch pales"
+   },
+   {
+    "at": 0.85,
+    "event": "hold"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "Only a picture of numbers moving a swatch shows that the swatch IS the numbers; a render has no numbers to point at.",
+  "sparse": true
+ },
+ "B09": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV);\n}",
+   "codeFile": "lab-shaders/07-own-texture.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      4
+     ],
+     "label": "TEXTURE: the node's own picture"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ],
+     "label": "a plain lookup: the modulate is gone"
+    }
+   ],
+   "video": "godot-textures-and-color/modulate-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · node modulate 50 % gray · two renders",
+   "readouts": [
+    {
+     "at": 0.25,
+     "text": "keeps modulate",
+     "x": 0.25,
+     "y": 0.95
+    },
+    {
+     "at": 0.64,
+     "text": "drops it",
+     "x": 0.75,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "COLOR starts as the picture times modulate, the node's tint color",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C07: two Lab renders of the swatch picture on a Sprite2D at fit scale with modulate #808080, hstack: left lab-shaders/06-empty.gdshader (revealed at 20 %), right lab-shaders/07-own-texture.gdshader (revealed at 62 %); label 'scripted'. Verified (rose patch): left (0.451, 0.176, 0.275), right (0.902, 0.349, 0.549) (the picture untouched is the same as the right).",
+  "visual_intent": "Code card at left (COLOR = texture(TEXTURE, UV)). At right two real panels of the four-patch picture on a sprite whose modulate is 50 % gray: on the left an empty fragment (the picture is darker), on the right the plain lookup (the picture is full bright). Labels 'empty: keeps modulate' and 'plain lookup: drops it'.",
+  "motion_claim": "The right panel jumps to full brightness as the plain lookup throws the modulate away.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "TEXTURE line highlighted"
+   },
+   {
+    "at": 0.25,
+    "event": "left panel: dark (picture times modulate)"
+   },
+   {
+    "at": 0.62,
+    "event": "right panel appears: full bright"
+   }
+  ],
+  "runner_up": "manim: COLOR box with two inputs multiplied",
+  "why": "Two real panels with different brightness make the gotcha visible; the diagram of 'times modulate' cannot show the surprise.",
+  "sparse": false
+ },
+ "B10": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform vec3 tint : source_color = vec3(1.0, 0.7, 0.5);\n\nvoid fragment() {\n\tCOLOR.rgb *= tint;\n}",
+   "codeFile": "lab-shaders/08-tint.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      6
+     ],
+     "label": ".rgb: picks red, green and blue; alpha stays"
+    }
+   ],
+   "video": "godot-textures-and-color/tint.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "1.0, 0.7, 0.5",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C08: Lab sprite (swatches kind: rose, leaf, sky, sand), shader lab-shaders/08-tint.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, label 'scripted'. Verified patch centres: rose (0.902, 0.349, 0.549) -> (0.902, 0.243, 0.275); leaf (0.400, 0.651, 0.349) -> (0.400, 0.455, 0.176); sky (0.400, 0.502, 0.851) -> (0.400, 0.353, 0.427); sand (0.878, 0.690, 0.290) -> (0.878, 0.482, 0.145).",
+  "visual_intent": "Code card at left (a tint color multiplied into COLOR.rgb). At right the real four-patch picture, untouched, then the shader is switched on and every patch warms: the rose deepens, the sky patch turns slate. A readout '1.0, 0.7, 0.5' (the tint) appears.",
+  "motion_claim": "The picture turns warm the moment the tint is switched on.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "COLOR.rgb line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "shader switches on; readout 1.0, 0.7, 0.5"
+   }
+  ],
+  "runner_up": "manim: a bar of each channel shrinking",
+  "why": "The warm shift on the real patches is what a tint is; bars could only show the arithmetic.",
+  "sparse": false
+ },
+ "B11": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR.rgb = 1.0 - COLOR.rgb;\n}",
+   "codeFile": "lab-shaders/09-invert.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      4
+     ],
+     "label": "one minus"
+    }
+   ],
+   "video": "godot-textures-and-color/invert.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+   "readouts": [
+    {
+     "at": 0.4,
+     "text": "0.90 → 0.10",
+     "x": 0.38,
+     "y": 0.3
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C09: Lab sprite (swatches), lab-shaders/09-invert.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified: rose (0.902, 0.349, 0.549) -> (0.098, 0.651, 0.451); leaf -> (0.600, 0.349, 0.651); sky -> (0.600, 0.498, 0.149); sand -> (0.122, 0.310, 0.710).",
+  "visual_intent": "Code card at left (COLOR.rgb = 1.0 - COLOR.rgb). At right the real four-patch picture, untouched, then switched: rose becomes green, leaf becomes purple, sky becomes brown, sand becomes blue. A readout '0.90 → 0.10' on the rose patch.",
+  "motion_claim": "Every patch flips to its opposite the moment the shader switches on.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "shader switches on; every patch flips"
+   },
+   {
+    "at": 0.4,
+    "event": "readout 0.90 -> 0.10 on the rose patch"
+   }
+  ],
+  "runner_up": "manim: a channel bar flipping",
+  "why": "The opposite colors on the real patches are the claim; the arithmetic is one line.",
+  "sparse": false
+ },
+ "B12": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = vec4(1.0) - COLOR;\n}",
+   "codeFile": "lab-shaders/10-invert-all.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      4
+     ],
+     "label": "all four, alpha too"
+    }
+   ],
+   "video": "godot-textures-and-color/invert-all.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+   "readouts": [
+    {
+     "at": 0.58,
+     "text": "alpha 1→0",
+     "x": 0.5,
+     "y": 0.5
+    },
+    {
+     "at": 0.7,
+     "text": "alpha 0→1",
+     "x": 0.3,
+     "y": 0.2
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C10: Lab sprite (the teal test sprite with eyes), lab-shaders/10-invert-all.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified: centre of the sprite = the stage color (0.851, 0.835, 0.792) (alpha 0); a transparent corner = (1.0, 1.0, 1.0) (alpha 1). GATE V note: pale card on a pale stage.",
+  "visual_intent": "Code card at left (COLOR = vec4(1.0) - COLOR). At right the real teal test sprite on the stage, then switched: the sprite becomes a see-through hole and the empty square around it becomes a solid white card. Readouts 'alpha 1→0' on the sprite and 'alpha 0→1' on the card.",
+  "motion_claim": "The sprite punches out as a hole in a white card the moment the shader switches on.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "shader switches on: white card with a hole"
+   },
+   {
+    "at": 0.55,
+    "event": "readouts on the hole and on the card"
+   }
+  ],
+  "runner_up": "manim: alpha bar flipping",
+  "why": "The hole in a white card is a surprise that the numbers alone would not make you believe.",
+  "sparse": false
+ },
+ "B13": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR.rgb += UV.x;\n}",
+   "codeFile": "lab-shaders/11-brighten.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      4
+     ],
+     "label": "ramp: a smooth run of values from 0 up to 1"
+    }
+   ],
+   "video": "godot-textures-and-color/brighten.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+   "readouts": [
+    {
+     "at": 0.7,
+     "text": "cut at 1",
+     "x": 0.62,
+     "y": 0.5
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.7,
+     "box": [
+      0.5,
+      0.1,
+      0.74,
+      0.9
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C11: Lab sprite (swatches), lab-shaders/11-brighten.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified: rose patch (UV.x about 0.25) (1.0, 0.596, 0.796); leaf patch (UV.x about 0.75) (1.0, 1.0, 1.0). A separate script check (verify-clamp.gd): a shader writing 1.5, 1.2, 0.5 reads back 1.0, 1.0, 0.502 with HDR 2D off and 1.5, 1.2, 0.5 with it on.",
+  "visual_intent": "Code card at left (COLOR.rgb += UV.x). At right the real four-patch picture, untouched, then switched: the left edge is only a little brighter and the right edge is flat white, every patch ending in the same white. A ring on the flat white area and a readout 'cut at 1'.",
+  "motion_claim": "The picture washes out toward flat white from left to right when the shader switches on.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "shader switches on: brighter, ending in flat white on the right"
+   },
+   {
+    "at": 0.7,
+    "event": "ring on the white area; readout cut at 1"
+   }
+  ],
+  "runner_up": "manim: a bar growing past 1 and stopping",
+  "why": "The blown-out real picture shows the consequence of the cut-off, which a bar would only illustrate.",
+  "sparse": false
+ },
+ "B14": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat gray = COLOR.r;\n\tCOLOR.rgb = vec3(gray);\n}",
+   "codeFile": "lab-shaders/12-gray-red.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      4
+     ],
+     "label": "gray = the red channel"
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      5
+     ],
+     "label": "vec3(gray): the same number three times"
+    }
+   ],
+   "video": "godot-textures-and-color/gray-red.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader switched on by script",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "0.90",
+     "x": 0.39,
+     "y": 0.3
+    },
+    {
+     "at": 0.7,
+     "text": "0.40",
+     "x": 0.61,
+     "y": 0.3
+    },
+    {
+     "at": 0.78,
+     "text": "0.40",
+     "x": 0.39,
+     "y": 0.7
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C12: Lab sprite (swatches), lab-shaders/12-gray-red.gdshader switched on with `--material-at` at 25 % of the beat, 30 fps, Forward+, 'scripted'. Verified gray values: rose 0.902, leaf 0.400, sky 0.400, sand 0.878.",
+  "visual_intent": "Code card at left (gray = COLOR.r, then vec3(gray)). At right the real four-patch picture, untouched, then switched to gray: rose and sand turn light gray, leaf and sky turn a much darker gray. Readouts on three patches: 0.90, 0.40, 0.40.",
+  "motion_claim": "Three of the patches jump to very different grays the moment the shader switches on.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "gray line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "vec3 line highlighted; shader switches on"
+   },
+   {
+    "at": 0.62,
+    "event": "readouts 0.90, 0.40, 0.40 land"
+   }
+  ],
+  "runner_up": "manim: three bars and their grays",
+  "why": "A bright rose beside dark leaf and sky, from colors of similar brightness, is the flaw on show.",
+  "sparse": false
+ },
+ "B15": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat gray = dot(COLOR.rgb, vec3(0.2126, 0.7152, 0.0722));\n\tCOLOR.rgb = vec3(gray);\n}",
+   "codeFile": "lab-shaders/13-gray-weighted.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      4
+     ],
+     "label": "dot: multiply the matching parts, then add them"
+    }
+   ],
+   "video": "godot-textures-and-color/gray-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two renders, both switched on by script",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "0.48",
+     "x": 0.69,
+     "y": 0.3
+    },
+    {
+     "at": 0.7,
+     "text": "0.58",
+     "x": 0.86,
+     "y": 0.3
+    },
+    {
+     "at": 0.78,
+     "text": "0.51",
+     "x": 0.69,
+     "y": 0.7
+    }
+   ],
+   "rings": [],
+   "caption": "weights for the Rec. 709 primaries, the ones sRGB uses",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13: two Lab renders of the swatch picture, hstack: left lab-shaders/12-gray-red.gdshader, right lab-shaders/13-gray-weighted.gdshader, both switched on with `--material-at` at 12 %; right panel revealed at 40 %. Verified weighted grays: rose 0.482, leaf 0.577, sky 0.506, sand 0.702. The weights follow Rec. 709: derived from the primaries in evidence/planning-checks/derive-bt709-weights.py; Godot's Color.get_luminance() returns the same three weights.",
+  "visual_intent": "Code card at left (gray = dot(COLOR.rgb, vec3(0.2126, 0.7152, 0.0722))). At right two real panels of the four-patch picture in gray: on the left the crude red-channel version, on the right the weighted one where the rose, the leaf and the sky land on close grays and sand stays lightest. Readouts 0.48, 0.58, 0.51 on the weighted panel.",
+  "motion_claim": "The right panel's three patches settle at nearly the same gray while the left panel's do not.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "weights line highlighted"
+   },
+   {
+    "at": 0.25,
+    "event": "left panel: crude copy of red"
+   },
+   {
+    "at": 0.6,
+    "event": "right panel appears: close grays; readouts 0.48, 0.58, 0.51"
+   }
+  ],
+  "runner_up": "manim: a bar of weights",
+  "why": "Two grays of the same picture side by side is the comparison the sentence makes; the weights are in the code.",
+  "sparse": false
+ },
+ "B16": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float amount : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat gray = dot(COLOR.rgb, vec3(0.2126, 0.7152, 0.0722));\n\tCOLOR.rgb = mix(COLOR.rgb, vec3(gray), amount);\n}",
+   "codeFile": "lab-shaders/14-mix.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      3
+     ],
+     "label": "amount: 0 to 1"
+    },
+    {
+     "at": 0.32,
+     "lines": [
+      7
+     ],
+     "label": "mix: blends from a to b: t of 0 gives a, 1 gives b"
+    }
+   ],
+   "video": "godot-textures-and-color/mix.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "amount",
+     "x": 0.5,
+     "y": 0.97
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.1,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C14: Lab sprite (swatches), lab-shaders/14-mix.gdshader, `--animate amount:0.1:0,0.85:1`, 30 fps, Forward+, 'scripted'. Verified patch centres: amount 0.0 the picture untouched; amount 0.5 rose (0.690, 0.416, 0.514), leaf (0.486, 0.612, 0.463), sky (0.451, 0.502, 0.678), sand (0.788, 0.694, 0.494); amount 1.0 the weighted grays (0.482, 0.577, 0.506, 0.702).",
+  "visual_intent": "Code card at left (an amount uniform; mix of the color and its gray). At right the real four-patch picture draining of its color as the amount sweeps from 0 to 1, a thin 0 to 1 strip under the window with a marker riding the amount.",
+  "motion_claim": "The picture drains from full color to gray while the amount marker rides from 0 to 1.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "amount line highlighted"
+   },
+   {
+    "at": 0.32,
+    "event": "mix line highlighted; the sweep starts"
+   },
+   {
+    "at": 0.85,
+    "event": "all gray, marker at 1"
+   }
+  ],
+  "runner_up": "ShaderLab stills at three amounts",
+  "why": "A sweep with its marker is what 'an amount from zero to one' means; stills would lose the continuity.",
+  "sparse": false
+ }
+}

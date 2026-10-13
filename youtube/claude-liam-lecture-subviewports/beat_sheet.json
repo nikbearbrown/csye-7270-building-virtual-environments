@@ -1,0 +1,2757 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-subviewports",
+    "title": "SubViewports",
+    "topic": "GODOT SHADERS · SUBVIEWPORTS",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "engine": "kokoro",
+    "clock": "narration",
+    "palette": "claude",
+    "register": "Teardown",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "caption_policy": "sidecar",
+    "greeting_language": "Hallo",
+    "audience": "people making games in Godot, and anyone directing an AI that writes shaders for them",
+    "godot_version": "4.7.2",
+    "lecture_opening_description": "Draw into a picture, then shade the picture",
+    "lecture_opening_template": "lecture-title-slide-16x9",
+    "lecture_opening_title_lines": [
+      "SubViewports"
+    ],
+    "bookend_exempt": [
+      "cold-open",
+      "bvdt"
+    ],
+    "bookend_exempt_reason": "lecture skill: opens on the narrated identity card then the hesitant writer; no composer cold open.",
+    "source_doc": "Godot 4.7 documentation; Godot 4.7.2 runs and editor frames on Apple M4 Pro (evidence/planning-checks); see SOURCES.md",
+    "tags": [
+      "Godot",
+      "Shaders",
+      "SubViewport",
+      "ViewportTexture",
+      "Premultiplied alpha",
+      "HSV",
+      "Vertex shader",
+      "MeshInstance2D",
+      "Render target",
+      "Nik Bear Brown"
+    ]
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Sub Viewports. Learn how a Sub Viewport draws part of your game into a picture, and how to shade that picture with a second shader.",
+      "estimated_duration_s": 8.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "routing": {
+        "about": "Film identity and payoff",
+        "runner_up": "Minimal title card",
+        "reason": "The lecture skill's approved first beat: portrait, title, narrated summary."
+      },
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, exact film title and short payoff visible immediately.",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete populated lecture opener visible for the whole narration"
+          }
+        ]
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Identity card: portrait and title; teaching motion resumes in BIDEA."
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "the question",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. Most people think shaders cannot see each other's work: one shader, one node, and no way to build on what another drew. A Sub Viewport changes that. One shader can shade the picture another shader made.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "types the newcomer's assumption"
+          },
+          {
+            "at": 0.62,
+            "event": "backspaces 'cannot see' and types 'can build on'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "Shaders cannot see\neach other's work.",
+            "triggerWords": "cannot see",
+            "replacementWords": "can build on",
+            "fontSize": 66,
+            "charMs": 24,
+            "hesitateBetween": 6,
+            "hesitateWithin": 1,
+            "mistakeRate": 4,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-subviewports",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "motion_claim": "The writer types the assumption a newcomer arrives with and corrects it into the film's real subject.",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Hesitant-writer bookend: the correction is the motion."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "terms",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Five terms. A shader is a small program the graphics card runs to decide how something is drawn. A texture is an image a shader can read. A viewport is a rectangle the engine draws into. U V is a point's address on a shape. And alpha is how visible a pixel is.",
+      "estimated_duration_s": 18.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "'Shader' lands"
+          },
+          {
+            "at": 0.28,
+            "event": "'Texture' lands"
+          },
+          {
+            "at": 0.45999999999999996,
+            "event": "'Viewport' lands"
+          },
+          {
+            "at": 0.64,
+            "event": "'UV' lands"
+          },
+          {
+            "at": 0.82,
+            "event": "'Alpha' lands"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Shader",
+                "meaning": "a small program the graphics card runs to decide how something is drawn"
+              },
+              {
+                "term": "Texture",
+                "meaning": "an image a shader can read by address"
+              },
+              {
+                "term": "Viewport",
+                "meaning": "a rectangle the engine draws into"
+              },
+              {
+                "term": "UV",
+                "meaning": "a point's address on the shape: 0 to 1 across, 0 to 1 down"
+              },
+              {
+                "term": "Alpha",
+                "meaning": "how visible a pixel is: 0 invisible, 1 solid"
+              }
+            ],
+            "durationSeconds": "__AUDIO__",
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "TERMS card: prerequisites, one plain line each."
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A sprite spins. Rainbow stripes slide across it, and a ripple runs through the whole picture. Two shaders made this, one after the other. The second shades what the first one drew. The trick is drawing into a picture, not onto the screen.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'A Picture Off to the Side' (serif 40) top-left. A real Godot render on the cream stage: the teal blob turns, rainbow stripes slide across it, and the whole picture ripples like cloth. Nothing is labelled yet; the effect is the hook.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "the finished effect already running"
+          },
+          {
+            "at": 0.5,
+            "event": "stripes and ripple keep moving"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c01-hook.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted spin · offline render",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "A Picture Off to the Side"
+          }
+        },
+        "motion_claim": "The blob turns, the stripes slide and the picture ripples the whole time."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of the finished look",
+        "why": "A real render is the honest picture of an effect; a drawing would only claim it.",
+        "capture_spec": "C01 (scene c01): picture 512, blob 448 with 01-inner-gradient (turned by a script at 0.9 rad/s), shown on a QuadMesh 512 x -512, 31 x 31, with 09-rainbow-wobble. 18 s, 30 fps, Forward+.",
+        "act_title_on_screen": "A Picture Off to the Side"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "I · A Picture Off to the Side",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "That picture comes from a Sub Viewport: a node that draws its children into a picture of its own, not onto the screen. Drawn, but not shown directly: that is what off-screen means. Sprites, text, interface, even a three-D scene can go inside.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two frames on the cream stage. Right: a large outline rectangle labelled 'screen', empty. Left: a smaller dashed square labelled 'SubViewport'. A teal blob fades into the small square, then a text glyph 'Aa', a small button outline and a three-line cube join it. The screen stays empty the whole time. Caption under the square: 'off-screen: drawn, not shown directly'; a one-line definition on the square: 'draws its children into a picture of its own'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "screen frame and the SubViewport square"
+          },
+          {
+            "at": 0.3,
+            "event": "blob lands inside the square; the screen stays empty"
+          },
+          {
+            "at": 0.62,
+            "event": "text, button and cube join it"
+          },
+          {
+            "at": 0.84,
+            "event": "caption: off-screen"
+          }
+        ],
+        "manim": {
+          "class": "B02_OffScreenBox"
+        },
+        "motion_claim": "Children drop into the small square one by one while the screen frame stays empty."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "The claim is 'drawn, but not shown': a box that fills while the screen stays empty says it with motion."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "On its own, a Sub Viewport shows nothing. Its picture is a Viewport Texture: a texture that keeps the latest drawing. Give that texture to a sprite, and the sprite shows the picture.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the one real line at left; at right a real Godot window on the cream stage: empty for seven seconds, then the picture appears (a teal blob in a mid-grey box, the viewport's clear colour) at the moment the line runs.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "empty stage"
+          },
+          {
+            "at": 0.6,
+            "event": "line highlighted; the picture appears"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "display.texture = sub.get_texture()",
+            "codeFile": "scene script (GDScript)",
+            "cues": [
+              {
+                "at": 0.6,
+                "lines": [
+                  1
+                ],
+                "label": "ViewportTexture: the viewport's latest picture"
+              }
+            ],
+            "video": "subviewports/c02-texture-appears.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · texture handed over at 7 s · scripted",
+            "readouts": [
+              {
+                "at": 0.64,
+                "text": "texture handed over",
+                "x": 0.5,
+                "y": 0.08
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The stage is empty until the texture is handed over, then the picture appears."
+      },
+      "lecture": {
+        "runner_up": "manim: a drawn box feeding a screen",
+        "why": "Nothing on screen, then the picture on the very line that makes it appear, is the claim as a cause and an effect.",
+        "capture_spec": "C02 (scene c02): picture 512 opaque (clear colour #A8A090), blob 448, a Sprite2D whose texture is empty until 7.0 s, then `display.texture = sub.get_texture()`. 14 s, 30 fps, Forward+. Verified (run-7a): the centre is the stage (0.851, 0.835, 0.792) at 6 s and the teal blob (0.373, 0.639, 0.569) in the clear-coloured box at 8.5 s."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "I · A Picture Off to the Side",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "In the editor, add a Sub Viewport node and give it a size. Put a sprite inside it. Add a second sprite outside. In the second sprite's Texture slot, open the menu, and under New choose Viewport Texture. Then pick the Sub Viewport.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Three real frames of the whole Godot editor window, cross-dissolving: (1) subviewports_E1-1_subviewport-size: Scene dock Main > SubViewport > Sprite2D, Display; the SubViewport selected; the Inspector with its picture preview and Size 512 x 512, ring on Size; (2) subviewports_E2-1_texture-dropdown-new-viewporttexture: the Display sprite's Texture slot menu open (a Search box, the heading New, ViewportTexture highlighted), ring on ViewportTexture; (3) subviewports_E2-4_viewport-path-set: the ViewportTexture with Viewport Path = SubViewport, ring on Viewport Path.",
+        "show": [
+          {
+            "at": 0.08,
+            "event": "SubViewport Size ringed"
+          },
+          {
+            "at": 0.54,
+            "event": "the Texture slot's menu is open"
+          },
+          {
+            "at": 0.78,
+            "event": "ViewportTexture ringed under New"
+          },
+          {
+            "at": 0.89,
+            "event": "Viewport Path = SubViewport ringed"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/e1-setup.mp4",
+            "videoLabel": "Godot 4.7.2 editor · three real frames · scripted editor session",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves slot to slot as the voice names each step."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench (labelled reconstruction)",
+        "why": "Real editor frames are the first rung of SHOW-THE-THING; every label on them was read from the editor itself (planning evidence).",
+        "capture_spec": "E1-1, E2-1, E2-4: three static editor frames of the scratch project, recorded by the series' editor driver from this film's state script (evidence/planning-checks/editor-driver/state-scripts/subviewports-E1.json, run-15; the -wide variant widens the Inspector so long labels read in full). The clicks themselves are not shown, only the resulting states; the menu frame is the real Texture slot menu."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "I · A Picture Off to the Side",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "In code, it is five lines. Make the viewport, give it a size, add it to the scene, put the sprite inside, and hand its texture to the display.",
+      "estimated_duration_s": 9.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Left: a code card with five real lines (monospace): var sub := SubViewport.new() / sub.size = Vector2i(512, 512) / add_child(sub) / sub.add_child(inner_sprite) / display.texture = sub.get_texture(). Right: a diagram that builds with the focused line: a small tree 'Main' on top, a dashed box, a screen frame at the lower right. Line 1 draws the dashed box ('sub'); line 2 writes '512 x 512' along its edges; line 3 hooks it under 'Main'; line 4 drops a teal blob into it; line 5 draws an arrow from the box to a display sprite on the screen, and the blob appears on the screen.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "line 1: the dashed box"
+          },
+          {
+            "at": 0.27,
+            "event": "line 2: 512 x 512"
+          },
+          {
+            "at": 0.42,
+            "event": "line 3: hooked under Main"
+          },
+          {
+            "at": 0.6,
+            "event": "line 4: the blob drops in"
+          },
+          {
+            "at": 0.78,
+            "event": "line 5: the arrow and the picture on screen"
+          }
+        ],
+        "manim": {
+          "class": "B05_CodeBuilds"
+        },
+        "motion_claim": "Each line, when focused, makes its piece appear on the right."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace beside a static diagram",
+        "why": "A line and its consequence appear together; only a drawing built line by line shows that each line adds one piece."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The size is the picture's resolution, in pixels. A new Sub Viewport is five hundred twelve pixels square. Shrink it to a hundred twenty-eight, draw it four times bigger, and the pixels show. Set the sprite's Filter to Nearest, and they turn into crisp blocks.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two real displays of the same blob, both 512 px across on the stage: left a 512 px picture drawn 1:1 (crisp), right a 128 px picture drawn 4x (soft with the Linear filter). Partway, the right display's Filter switches to Nearest and the soft edge turns into hard blocks.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "512 px and 128 px pictures side by side"
+          },
+          {
+            "at": 0.82,
+            "event": "Filter: Nearest; the edge turns into blocks"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c03-size-is-resolution.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: Filter switches at 12.5 s",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "512 px",
+                "x": 0.278,
+                "y": 0.92
+              },
+              {
+                "at": 0.1,
+                "text": "128 px ×4",
+                "x": 0.722,
+                "y": 0.92
+              },
+              {
+                "at": 0.3,
+                "text": "Filter: Linear",
+                "x": 0.722,
+                "y": 0.06
+              },
+              {
+                "at": 0.82,
+                "text": "Filter: Nearest",
+                "x": 0.722,
+                "y": 0.06
+              }
+            ],
+            "rings": [],
+            "caption": "resolution: how many pixels the picture holds",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The right picture is soft, then snaps into crisp blocks when the filter changes."
+      },
+      "lecture": {
+        "runner_up": "manim pixel grid",
+        "why": "The softness and the blocks are the claim; only the real render shows what the engine does to a small picture.",
+        "capture_spec": "C03 (scene c03): two opaque viewports, 512 and 128 px (blob drawn natively at each size), displays at x = 100 and x = 668, the right at scale 4; Filter Linear until 12.5 s (on the words \"Filter to Nearest\"), then Nearest. 19 s, Forward+. Verified (run-7a): soft edge 8 pixels on the blob row with Linear at 7 s, 0 with Nearest at 14 s, runs 104 / 304 / 104 (multiples of 4)."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Inside the viewport, the top-left corner is the origin, and the picture covers only positive x and y from there. A centered sprite placed at zero, zero has three quarters of itself outside. The eyes are gone.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real display of a 512 px picture (mid-grey box). The blob starts in the middle, slides to the top-left corner and settles there: only its bottom-right quarter is in the picture and its eyes are gone. A terracotta ring marks the corner; a readout 'origin (0, 0)'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "blob in the middle"
+          },
+          {
+            "at": 0.18,
+            "event": "ring on the origin corner"
+          },
+          {
+            "at": 0.5,
+            "event": "the blob slides into the corner"
+          },
+          {
+            "at": 0.89,
+            "event": "three quarters out; no eyes"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c04a-origin.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+            "readouts": [
+              {
+                "at": 0.18,
+                "text": "origin (0, 0)",
+                "x": 0.35,
+                "y": 0.08
+              },
+              {
+                "at": 0.89,
+                "text": "no eyes",
+                "x": 0.5,
+                "y": 0.92
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.18,
+                "box": [
+                  0.27,
+                  0.1,
+                  0.34,
+                  0.2
+                ]
+              }
+            ],
+            "caption": "origin: where the picture's coordinates start, (0, 0)",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The blob slides into the corner and three quarters of it vanish, eyes first."
+      },
+      "lecture": {
+        "runner_up": "manim: axes with a clipped sprite",
+        "why": "The clipping is the claim; the real picture shows exactly which part survives.",
+        "capture_spec": "C04a (scene c04a): opaque picture 512, blob 448 centred at (256, 256), stays in the middle while the voice explains the origin, slides to (0, 0) between 6.4 s and 8.6 s (on \"placed at zero, zero\"), then holds; 16 s, Forward+. Verified (run-7a): 55,202 teal and 1,546 eye pixels at 5 s; at (0, 0) from 8.6 s the picture holds 14,187 teal pixels = 25.7 % of the whole blob and 0 eye pixels."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Slide it to the middle, and all of it appears. Slide it off an edge, and it is cut off. The picture is only as big as the viewport, and anything outside is not in it at all.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same display. The blob slides from the corner to the middle (all of it appears), holds, then slides off the right edge and is cut off sharply at the picture's edge. Readouts 'all of it' then 'cut off'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "corner quarter"
+          },
+          {
+            "at": 0.28,
+            "event": "whole in the middle"
+          },
+          {
+            "at": 0.62,
+            "event": "cut by the right edge"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c04b-cut-off.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+            "readouts": [
+              {
+                "at": 0.28,
+                "text": "all of it",
+                "x": 0.5,
+                "y": 0.92
+              },
+              {
+                "at": 0.62,
+                "text": "cut off",
+                "x": 0.78,
+                "y": 0.5
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The blob arrives whole in the middle, then is sliced by the picture's right edge."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The cut line is the claim; a real picture shows it cut without a seam.",
+        "capture_spec": "C04b (scene c04b): opaque picture 512, blob slides from (0, 0) to (256, 256) between 0.3 s and 3.3 s, holds, then to x = 560 between 4.0 s and 7.0 s; 16 s, Forward+. Verified (run-7a): 14,187 teal pixels at 0.2 s, 55,202 in the middle at 3.7 s, 15,470 when the blob is cut by the right edge at 9 s and at the end (centre at x = 560)."
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "See the box around the sprite? That is the picture's background, filled with the project's clear color. Turn on Transparent B G, and the empty parts become see-through. Now whatever is behind the picture shows through.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with one line at left; at right the display over a faint grey grid: first the picture's mid-grey box hides the grid, then at the moment the line runs the box vanishes and the grid shows through, leaving only the blob.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "box over the grid"
+          },
+          {
+            "at": 0.62,
+            "event": "Transparent BG on; the box vanishes"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "sub.transparent_bg = true",
+            "codeFile": "scene script (GDScript)",
+            "cues": [
+              {
+                "at": 0.62,
+                "lines": [
+                  1
+                ],
+                "label": "Transparent BG: empty parts become see-through"
+              }
+            ],
+            "video": "subviewports/c05-transparent.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: Transparent BG on at 8 s",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "clear color",
+                "x": 0.5,
+                "y": 0.08
+              },
+              {
+                "at": 0.72,
+                "text": "see-through",
+                "x": 0.5,
+                "y": 0.92
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The box disappears and the grid behind it shows through."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A box that vanishes to reveal what was behind it is the claim; the grid makes the see-through visible.",
+        "capture_spec": "C05 (scene c05): grid of 2 px lines every 64 px behind the display, opaque picture until 8.0 s then `transparent_bg = true`; 15 s, Forward+. Verified (run-7a): the empty pixel is the clear colour (0.659, 0.627, 0.565) before and the stage (0.851, 0.835, 0.792) after; the picture's empty pixel alpha goes from 1 to 0."
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "I · A Picture Off to the Side",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "One catch with see-through pictures, which hard edges hide. A half-transparent pixel is stored already multiplied by its alpha. Draw it the usual way, and soft edges come out too dark. Set the Blend Mode to Premultiplied Alpha, and they come out right.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "One real display of a soft gold glow over the faint grid. It starts with Blend Mode Mix: a muddy dark ring surrounds the glow. At the moment the blend mode changes to Premultiplied Alpha the dark ring vanishes and the glow is clean. A terracotta ring marks the dark ring; readouts name the two blend modes.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "glow with a dark ring (Mix)"
+          },
+          {
+            "at": 0.18,
+            "event": "ring on the dark band"
+          },
+          {
+            "at": 0.74,
+            "event": "Premultiplied Alpha: the ring is gone"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c06-premultiplied.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: Blend Mode changes at 10.5 s",
+            "readouts": [
+              {
+                "at": 0.08,
+                "text": "Blend Mode: Mix",
+                "x": 0.5,
+                "y": 0.07
+              },
+              {
+                "at": 0.74,
+                "text": "Premultiplied Alpha",
+                "x": 0.5,
+                "y": 0.93
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.18,
+                "box": [
+                  0.36,
+                  0.2,
+                  0.64,
+                  0.8
+                ]
+              }
+            ],
+            "caption": "premultiplied: each color already multiplied by its alpha",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The dark ring around the glow vanishes the moment the blend mode changes."
+      },
+      "lecture": {
+        "runner_up": "manim: two swatches and arithmetic",
+        "why": "The ring that vanishes is the claim; arithmetic would explain it, but the real glow is what a viewer will meet.",
+        "capture_spec": "C06 (scene c06): picture 512 transparent, glow image (gold, alpha falling to 0 over the outer 45 % of its radius) over the grid; the display uses a CanvasItemMaterial, Blend Mode Mix until 10.5 s then Premultiplied Alpha; 18 s, Forward+. Verified (run-7a, run-5 G1) at ring pixel (807, 360): Mix (0.655, 0.608, 0.490), Premultiplied (0.890, 0.800, 0.576), the glow drawn directly (0.890, 0.796, 0.576)."
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "II · Two Shaders, One Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Now give each side a shader. The inner shader sits on the sprite inside the viewport. The outer shader sits on the sprite that shows the picture. The inner one draws first. The outer one gets the finished picture.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Two Shaders, One Result' (serif 40) top-left. Left: the SubViewport square with the teal blob inside and a small tag 'inner shader' on the blob. A wide arrow labelled 'picture' runs right to a display sprite on a screen frame carrying a tag 'outer shader'. A token (a few teal dots) starts on the blob, turns gold passing the inner tag, rides the arrow, and on reaching the display passes the outer tag and is re-tinted. Small words 'first' under the left half and 'then' under the right.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "square, blob and inner tag"
+          },
+          {
+            "at": 0.32,
+            "event": "token turns gold at the inner tag"
+          },
+          {
+            "at": 0.6,
+            "event": "token rides the arrow as a picture"
+          },
+          {
+            "at": 0.8,
+            "event": "token re-tinted at the outer tag"
+          }
+        ],
+        "manim": {
+          "class": "B11_TwoPlaces"
+        },
+        "motion_claim": "A token passes the inner shader first, travels as a picture, then passes the outer shader."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "Two stations in order, with a token that changes at each, is the order of work as motion.",
+        "act_title_on_screen": "Two Shaders, One Result"
+      }
+    },
+    {
+      "beat_id": "B12",
+      "act": "II · Two Shaders, One Result",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "In the editor, that is each sprite's Material slot. The inner sprite's Material holds a Shader Material with the inner shader. The display's Material holds one with the outer shader. Each shader sits on its own node.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Three real frames of the whole Godot editor window, cross-dissolving: (1) subviewports_E4-1_inner-sprite-material: the inner Sprite2D selected, its Inspector's Material group open with the Material slot holding a ShaderMaterial, ring on Material; (2) subviewports_E4-2_display-material: the Display sprite selected, the same slot, ring on Material; (3) subviewports_E4-5_shader-editor: the shader editor open at the bottom showing the outer shader's text (04-stripes).",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "inner sprite's Material ringed"
+          },
+          {
+            "at": 0.57,
+            "event": "display's Material ringed"
+          },
+          {
+            "at": 0.82,
+            "event": "the outer shader's text in the shader editor"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/e4-materials.mp4",
+            "videoLabel": "Godot 4.7.2 editor · three real frames · scripted editor session",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves from the inner sprite's Material slot to the display's, then to the shader text."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench (labelled reconstruction)",
+        "why": "A question about where to click is answered by the real editor, with the labels it really shows.",
+        "capture_spec": "E4-1, E4-2, E4-5: static editor frames of the scratch project (shaders.tscn), recorded by the series' editor driver from evidence/planning-checks/editor-driver/state-scripts/subviewports-E4.json (run-15; the -wide variant widens the Inspector)."
+      }
+    },
+    {
+      "beat_id": "B13",
+      "act": "II · Two Shaders, One Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The inner shader is an ordinary one. Its fragment function runs once for each pixel and sets the color. This one blends the sprite from teal at the top to gold at the bottom, using U V, the sprite's own address.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the seven-line inner shader at left; at right a real display of the picture: a plain teal blob that, at the moment the voice names the gradient, turns teal at the top to gold at the bottom. Readouts 'UV.y 0' at the top of the blob and 'UV.y 1' at its bottom.",
+        "show": [
+          {
+            "at": 0.08,
+            "event": "fragment function highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "COLOR line"
+          },
+          {
+            "at": 0.6,
+            "event": "UV line; the gradient has appeared"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec4 tex = texture(TEXTURE, UV);\n\tvec3 gold = vec3(0.93, 0.76, 0.35);\n\tCOLOR = vec4(mix(tex.rgb, gold, UV.y), tex.a);\n}",
+            "codeFile": "lab-shaders/01-inner-gradient.gdshader",
+            "cues": [
+              {
+                "at": 0.08,
+                "lines": [
+                  3
+                ],
+                "label": "runs once for each pixel the shape covers; sets its color"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  6
+                ],
+                "label": "COLOR: the color of the pixel being drawn; fragment() sets it"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  6
+                ],
+                "label": "a point's address on the shape: 0 to 1 across, 0 to 1 down"
+              }
+            ],
+            "video": "subviewports/c07-inner-shader.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the shader goes on at 7 s",
+            "readouts": [
+              {
+                "at": 0.7,
+                "text": "UV.y 0",
+                "x": 0.62,
+                "y": 0.25
+              },
+              {
+                "at": 0.78,
+                "text": "UV.y 1",
+                "x": 0.62,
+                "y": 0.75
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The plain blob takes on the teal-to-gold gradient when the shader goes on."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Code and its result side by side with the switch-on is the claim: this line makes this look.",
+        "capture_spec": "C07 (scene c07): picture 512 transparent, blob 448; the plain sprite until 7.0 s, then 01-inner-gradient; the display uses 02-outer-passthrough; 17 s, Forward+. Verified (run-2 F1): the picture's colour at sprite UV.y 0.265 / 0.501 / 0.738 is (0.522, 0.671, 0.510) / (0.651, 0.698, 0.459) / (0.784, 0.729, 0.408) = mix(teal, gold, UV.y)."
+      }
+    },
+    {
+      "beat_id": "B14",
+      "act": "II · Two Shaders, One Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The outer shader gets the picture as its texture. It starts with one line that sets Premultiplied Alpha, and one line that copies the picture through unchanged. The result matches the picture exactly. Everything the inner shader made is already in there.",
+      "estimated_duration_s": 14.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the six-line pass-through at left; at right two real displays of the same moving picture side by side: the picture shown directly (Premultiplied Alpha) and the picture shown through the pass-through shader. They are identical frame by frame while the blob slides. Readout 'same pixels'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "TEXTURE line"
+          },
+          {
+            "at": 0.3,
+            "event": "render_mode line"
+          },
+          {
+            "at": 0.58,
+            "event": "copy line; both displays identical"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV);\n}",
+            "codeFile": "lab-shaders/02-outer-passthrough.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  5
+                ],
+                "label": "the node's own picture; texture(TEXTURE, uv) reads it"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  2
+                ],
+                "label": "blend_premul_alpha: colors already carry their alpha"
+              },
+              {
+                "at": 0.58,
+                "lines": [
+                  5
+                ]
+              }
+            ],
+            "video": "subviewports/c08-passthrough.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the sprite inside slides",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "shown directly",
+                "x": 0.278,
+                "y": 0.92
+              },
+              {
+                "at": 0.2,
+                "text": "through the shader",
+                "x": 0.722,
+                "y": 0.92
+              },
+              {
+                "at": 0.76,
+                "text": "same pixels",
+                "x": 0.5,
+                "y": 0.07
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The two displays follow the sliding blob identically."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Two identical moving pictures are the claim that a pass-through changes nothing; one picture could not show it.",
+        "capture_spec": "C08 (scene c08): picture 512 transparent, gradient blob sliding x = 256 + 60 sin(0.9 t); left display a Sprite2D with CanvasItemMaterial Premultiplied Alpha, right display 02-outer-passthrough; 18 s, Forward+. Verified: largest channel difference between the two displays 0.0 (run-7a); and all 262,144 pixels of the display equal the picture (run-2 F2)."
+      }
+    },
+    {
+      "beat_id": "B15",
+      "act": "II · Two Shaders, One Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now change something only the outer shader can. Multiply the picture by U V x, and it fades from nothing at the left edge to full at the right. Multiply the whole color, not only the alpha, because the picture's colors already carry their alpha.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the six-line fade shader at left; at right the display: the full gradient blob until the fade goes on, then it fades from nothing at the picture's left edge to full at its right edge. A thin 0-to-1 ramp strip under the display is traced as the fade appears.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "COLOR line; the fade appears"
+          },
+          {
+            "at": 0.62,
+            "event": "the whole color, alpha included"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV) * UV.x;\n}",
+            "codeFile": "lab-shaders/03-outer-fade.gdshader",
+            "cues": [
+              {
+                "at": 0.3,
+                "lines": [
+                  5
+                ],
+                "label": "UV.x: 0 at the picture's left edge, 1 at its right edge"
+              },
+              {
+                "at": 0.64,
+                "lines": [
+                  5
+                ],
+                "label": "the whole color, alpha included"
+              }
+            ],
+            "video": "subviewports/c09-fade.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the fade goes on at 4.5 s",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "ramp": {
+              "at": 0.3,
+              "from": 0,
+              "to": 1
+            }
+          }
+        },
+        "motion_claim": "The picture fades left to right the moment the shader goes on, and the ramp underneath is traced."
+      },
+      "lecture": {
+        "runner_up": "manim ramp strip",
+        "why": "The picture itself fading is the claim; the ramp under it shows the multiplier that does it.",
+        "capture_spec": "C09 (scene c09): picture 512 transparent, gradient blob; the display uses 02-outer-passthrough until 4.5 s then 03-outer-fade; 19 s, Forward+. Verified (run-7b) at picture x = 196 / 256 / 316: the multiplier is 0.389 / 0.500 / 0.622 (expected 0.384 / 0.501 / 0.618); on an opaque white picture it is x / 512 from edge to edge (run-2 F3)."
+      }
+    },
+    {
+      "beat_id": "B16",
+      "act": "II · Two Shaders, One Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is a question. The sprite now turns inside the viewport. Which effect turns with it: the inner gradient, the outer fade, or both? Decide before you look.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The picture frame with the teal blob at the centre. A short vertical ramp strip beside the blob labelled 'inner gradient' (teal at the top, gold at the bottom) and a horizontal ramp strip under the frame labelled 'outer fade' (0 to 1, left to right). A curved arrow circles the blob. Two grey question marks and two terracotta dots hover by the strips.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "frame, blob and both strips"
+          },
+          {
+            "at": 0.36,
+            "event": "the turn arrow sweeps around the blob"
+          },
+          {
+            "at": 0.66,
+            "event": "question dots pulse on both strips"
+          }
+        ],
+        "manim": {
+          "class": "B16_WhichTurns"
+        },
+        "motion_claim": "The curved arrow sweeps around the blob while both strips stay where they are, and the question dots pulse."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "FormACard with the question",
+        "why": "The question is about two pictures and a turn; the figure carries it (a card that names a visual is a PUNT)."
+      }
+    },
+    {
+      "beat_id": "B17",
+      "act": "II · Two Shaders, One Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The gradient turns with the sprite. The fade stays put. A shader's U V belongs to the thing it draws. The inner shader draws the sprite, and the sprite turns. The outer shader draws the picture, and the picture does not.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real display of the faded gradient blob. The sprite inside the viewport turns half a turn: the gold half swings from the bottom to the top and the eyes end up below, while the fade (transparent at the picture's left, solid at its right) does not move. Readouts 'gradient turns' and 'fade stays'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "the turn starts with the voice"
+          },
+          {
+            "at": 0.24,
+            "event": "gradient turns"
+          },
+          {
+            "at": 0.36,
+            "event": "fade stays"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c10-turn.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the half turn is scripted (a line of script, no shader)",
+            "readouts": [
+              {
+                "at": 0.24,
+                "text": "gradient turns",
+                "x": 0.5,
+                "y": 0.08
+              },
+              {
+                "at": 0.36,
+                "text": "fade stays",
+                "x": 0.5,
+                "y": 0.92
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The gold swings round with the sprite while the fade stays left to right."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A real turn with the two effects visible is the answer; a drawing could only assert it.",
+        "capture_spec": "C10 (scene c10): as C09 with the fade on from the start; the sprite turns half a turn (0 to pi) between 0.3 s and 3.3 s by script; 17 s, Forward+. Verified (run-7b): red 100 px above / below the centre goes 0.529 / 0.776 to 0.776 / 0.525 (gold flips); the multiplier at picture x = 196 / 256 / 316 stays 0.387 / 0.500 / 0.612; probes at two rotations in run-2 F4."
+      }
+    },
+    {
+      "beat_id": "B18",
+      "act": "II · Two Shaders, One Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Add a second sprite, and the same fade runs across both. The outer shader does not know how many things are inside. It sees one picture. Put a fade on each sprite instead, and every sprite starts over at its own edge.",
+      "estimated_duration_s": 14.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two framed panels. Left: two blobs with no viewport, each carrying its own fade shader: every blob fades from its own left edge to its own right edge. Right: a viewport holding the same two blobs, shown with one fade across the whole picture: the left blob is faint, the right blob solid. Both pairs slide left and right: the left fades ride along with their sprites, the right fade stays still and the sprites brighten as they move through it.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "two framed panels, sprites sliding"
+          },
+          {
+            "at": 0.2,
+            "event": "ring on the right panel: one fade"
+          },
+          {
+            "at": 0.62,
+            "event": "ring on the left panel: a fade each"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c11-group.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the sprites slide",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "one fade",
+                "x": 0.75,
+                "y": 0.8
+              },
+              {
+                "at": 0.62,
+                "text": "a fade each",
+                "x": 0.265,
+                "y": 0.8
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.2,
+                "box": [
+                  0.516,
+                  0.292,
+                  0.984,
+                  0.708
+                ]
+              },
+              {
+                "at": 0.62,
+                "box": [
+                  0.031,
+                  0.292,
+                  0.5,
+                  0.708
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "On the right the blobs brighten as they slide through a fixed fade; on the left each fade rides along."
+      },
+      "lecture": {
+        "runner_up": "manim two panels",
+        "why": "A fade that stays while content moves through it, against a fade that rides along, is the claim; only a moving capture shows both at once.",
+        "capture_spec": "C11 (scene c11): left panel Rect(40, 210, 600, 300): two 200 px blobs, each with 03-outer-fade (premultiplied) directly on the Sprite2D; right panel Rect(660, 210, 600, 300): a 600 x 300 transparent viewport holding the same blobs, shown with 03-outer-fade; sprites slide dx = 70 sin(0.8 t) in both; 18 s, Forward+. Verified (run-7b): per sprite 0.5 and 0.5; on the picture 0.254 and 0.754."
+      }
+    },
+    {
+      "beat_id": "B19",
+      "act": "II · Two Shaders, One Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "That is also the limit. By the time the outer shader runs, the sprites are gone. Only their pixels remain, already flattened together. It cannot ask a sprite where it is, or reach what hides behind another.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Three overlapping cards in the SubViewport square, drawn as a small exploded stack: the blob, a second blob and a rounded rectangle. They slide together and collapse into one flat picture card on the right. A circle-with-a-dot eye labelled 'outer shader' looks at the flat card; a dashed line from the eye back to the original stack is crossed out by two short bars.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "stack of three"
+          },
+          {
+            "at": 0.4,
+            "event": "collapse into one flat card"
+          },
+          {
+            "at": 0.7,
+            "event": "eye sees the card; the line to the sprites is crossed out"
+          }
+        ],
+        "manim": {
+          "class": "B19_Flattened"
+        },
+        "motion_claim": "The stack collapses into one flat card; the eye sees only the card, and the line back to the sprites is crossed out."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "A stack that becomes one flat card, with a crossed-out line back to the parts, is the limit as motion."
+      }
+    },
+    {
+      "beat_id": "B20",
+      "act": "II · Two Shaders, One Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Resolution splits the same way. The inner shader works in the picture's pixels. The outer shader works in the display's pixels. Here a small picture is drawn big under an outer shader that draws stripes: the picture is coarse, the stripes are sharp.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real display of a 64 px picture drawn eight times bigger with the Nearest filter: the blob is built from big square blocks, while moving stripes drawn by an outer shader slide across it with crisp one-pixel edges that cut through the blocks at any position. Readouts 'picture pixels' and 'display pixels'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "blocky blob, stripes sliding"
+          },
+          {
+            "at": 0.2,
+            "event": "picture pixels"
+          },
+          {
+            "at": 0.62,
+            "event": "display pixels"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c12-per-display-pixel.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: nothing but the stripes move",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "picture pixels",
+                "x": 0.36,
+                "y": 0.18
+              },
+              {
+                "at": 0.62,
+                "text": "display pixels",
+                "x": 0.7,
+                "y": 0.18
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The stripes' edges slide smoothly through the blocks of the blob, never snapping to them."
+      },
+      "lecture": {
+        "runner_up": "manim pixel grid",
+        "why": "Smooth edges cutting through coarse blocks is the claim; only a live render shows that the two shaders live at different resolutions.",
+        "capture_spec": "C12 (scene c12): transparent viewport 64 px (blob 64 px wide), display at scale 8 (512 px) with Nearest filter and 05-stripes-moving; 18 s, Forward+. Verified (run-6 X4, run-7b): the blob's own edges fall on multiples of 8 display pixels (x = 104 and 408 in run-6); the stripe edges do not (mod 8 = 7, 2, 5, 7, 2, 5, 7 in run-6; other values in run-7b, since the stripes move with TIME). Numbers are at scale 1; the 3x route multiplies them by 3."
+      }
+    },
+    {
+      "beat_id": "B21",
+      "act": "III · Stripes and Hue",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A fade is one kind of mask. Stripes are another. Start with a diagonal: add the two U V numbers together. The sum climbs from zero at the top left to two at the bottom right, and equal values line up along diagonals.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Stripes and Hue' (serif 40) top-left. A square picture (the kit's UV square: 0 to 1 axes, y pointing down) with thin grey isolines along its diagonals at u + v = 0.5, 1 and 1.5. A ramp strip along the diagonal reads 0 to 2 with end labels '0' and '2'. A terracotta dot travels from the top-left corner to the bottom-right corner with a live label 'u + v'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "square, axes and isolines"
+          },
+          {
+            "at": 0.4,
+            "event": "dot leaves the top-left corner, sum climbing"
+          },
+          {
+            "at": 0.75,
+            "event": "dot at the bottom right, sum 2"
+          }
+        ],
+        "manim": {
+          "class": "B21_Diagonal"
+        },
+        "motion_claim": "The dot moves along the diagonal while its sum climbs from 0 to 2, lighting each isoline as it crosses."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A coordinate system and a quantity that climbs along it is exactly what the kit's UV square is for.",
+        "act_title_on_screen": "Stripes and Hue"
+      }
+    },
+    {
+      "beat_id": "B22",
+      "act": "III · Stripes and Hue",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Fract keeps only what comes after the decimal point. Feed it a climbing number and you get a saw: up from zero to one, drop back, climb again. Multiply first, and the saw repeats faster. Times six, six saws.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The series' signature object: a ramp strip (0 to 1) at the top; below it a plot of fract(x * 6) as a six-tooth saw wave on grey axes; a terracotta dot rides the ramp and its twin rides the plot. Label 'fract(x × 6)' and a one-line definition 'the part after the point: x minus floor(x)'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "ramp strip and empty plot"
+          },
+          {
+            "at": 0.3,
+            "event": "dot traces both; the saw draws"
+          },
+          {
+            "at": 0.7,
+            "event": "six teeth counted"
+          }
+        ],
+        "manim": {
+          "class": "B22_Saw"
+        },
+        "motion_claim": "The dot climbs the ramp while its twin climbs a tooth, drops, climbs again, six times."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "A ramp going in and a function reshaping it into a saw is the claim as motion."
+      }
+    },
+    {
+      "beat_id": "B23",
+      "act": "III · Stripes and Hue",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Step makes a hard edge: zero while the saw is below the width, one once it passes. Take that from one, and you get a stripe: on while the saw is under the width. A wider width means thicker stripes.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "One saw tooth drawn large; a horizontal threshold line labelled 'width' at 0.5 with a handle; below it the step result as a square wave (0 then 1) with the definition '0 below the edge, 1 from the edge up'; below that '1 - step' as a bar of alternating on and off segments. The threshold handle slides from 0.25 up to 0.75 and the on segments thicken.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "tooth and threshold line"
+          },
+          {
+            "at": 0.35,
+            "event": "step square wave"
+          },
+          {
+            "at": 0.6,
+            "event": "stripe bar"
+          },
+          {
+            "at": 0.82,
+            "event": "width slides 0.25 to 0.75; stripes thicken"
+          }
+        ],
+        "manim": {
+          "class": "B23_StepStripe"
+        },
+        "motion_claim": "The width line slides up and every stripe on the bar thickens in step."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A threshold sliding across a saw while the stripes thicken is the relation as motion."
+      }
+    },
+    {
+      "beat_id": "B24",
+      "act": "III · Stripes and Hue",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Put it together in the outer shader. Multiply the picture by the stripe, and the sprite shows only inside the stripes. Count and width are uniforms: values your game sets from outside, from the Inspector or from code.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the twelve-line stripe shader at left; at right the display: diagonal stripes cut the gradient blob so it shows only inside them; the stripes thicken (width 0.08 up to 0.5), hold, then get finer (count 6 up to 12).",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "the diagonal, the saw and the stripe lines"
+          },
+          {
+            "at": 0.2,
+            "event": "COLOR line: the mask"
+          },
+          {
+            "at": 0.6,
+            "event": "uniform lines: count and width"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nuniform float count = 6.0;\nuniform float width = 0.5;\n\nvoid fragment() {\n\tfloat diagonal = UV.x + UV.y;\n\tfloat saw = fract(diagonal * count);\n\tfloat stripe = 1.0 - step(width, saw);\n\tCOLOR = texture(TEXTURE, UV) * stripe;\n}",
+            "codeFile": "lab-shaders/04-stripes.gdshader",
+            "cues": [
+              {
+                "at": 0.06,
+                "lines": [
+                  8,
+                  9,
+                  10
+                ]
+              },
+              {
+                "at": 0.2,
+                "lines": [
+                  11
+                ],
+                "label": "0 below the edge, 1 from the edge up"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4,
+                  5
+                ],
+                "label": "uniform: a value your game sets from outside"
+              }
+            ],
+            "video": "subviewports/c13-stripes-dials.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: width and count are swept",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The stripes thicken, then multiply, as the dials move; the empty parts stay empty."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "A mask whose dials move is the claim; code beside the live stripes shows which line does what.",
+        "capture_spec": "C13 (scene c13): picture 512 transparent, gradient blob, display uses 04-stripes; width sweeps 0.08 to 0.5 (0.5 s to 4.5 s), count 6 to 12 (8 s to 12 s); 16 s, Forward+. Verified (run-7b) at 2 / 6 / 10 s: width 0.213 / 0.5 / 0.5, count 6 / 6 / 9, 0 stripe mismatches over about 2,900 pixels each; on a plain rectangle the on-fraction equals width (0.500, 0.247, 0.800) and `count` complete stripes fit across."
+      }
+    },
+    {
+      "beat_id": "B25",
+      "act": "III · Stripes and Hue",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "To move them, subtract time. Time is the seconds on one clock shared by the whole game. Take speed times time off the diagonal, and every stripe slides along it, while the sprite turns underneath.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the twelve-line moving-stripes shader at left; at right the display: diagonal stripes slide down and right across the blob while the blob turns slowly underneath and the stripes keep their direction.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "the diagonal line with TIME"
+          },
+          {
+            "at": 0.34,
+            "event": "TIME defined on the line"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nuniform float count = 6.0;\nuniform float width = 0.5;\nuniform float speed = 0.12;\n\nvoid fragment() {\n\tfloat diagonal = UV.x + UV.y - TIME * speed;\n\tfloat stripe = 1.0 - step(width, fract(diagonal * count));\n\tCOLOR = texture(TEXTURE, UV) * stripe;\n}",
+            "codeFile": "lab-shaders/05-stripes-moving.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  9
+                ]
+              },
+              {
+                "at": 0.34,
+                "lines": [
+                  9
+                ],
+                "label": "TIME: seconds on one clock shared by the whole game"
+              }
+            ],
+            "video": "subviewports/c14-moving-stripes.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the sprite's turn is scripted",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The stripes slide steadily; the sprite turns and the stripes do not."
+      },
+      "lecture": {
+        "runner_up": "manim sine plot",
+        "why": "A live sliding is the claim; the code line beside it is what makes it slide.",
+        "capture_spec": "C14 (scene c14): as C13 with 05-stripes-moving (count 6, width 0.5, speed 0.12), the blob turning at 0.8 rad/s by script; 15 s, Forward+. Verified (run-7b): the stripe formula with the TIME read in the same draw predicts every probe (0 mismatches over about 2,900 pixels)."
+      }
+    },
+    {
+      "beat_id": "B26",
+      "act": "III · Stripes and Hue",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Now color. Screens mix red, green and blue, but people think in hue, saturation and value. Hue is the angle around a color wheel: which color. Saturation is how far from grey. Value is how bright.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A colour wheel of 72 coloured wedges (full saturation and value) at the left. A marker arrow rotates around it, labelled 'hue: which color'; a radial bar from the centre to the rim, labelled 'saturation: how far from grey' (white at the centre, vivid at the rim); and a short vertical swatch ramp at the right, labelled 'value: how bright'. Three small terracotta dots mark the three controls.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the wheel"
+          },
+          {
+            "at": 0.3,
+            "event": "hue arrow sweeps round"
+          },
+          {
+            "at": 0.58,
+            "event": "saturation marker slides centre to rim"
+          },
+          {
+            "at": 0.8,
+            "event": "value ramp brightens"
+          }
+        ],
+        "manim": {
+          "class": "B26_ColorWheel"
+        },
+        "motion_claim": "An arrow sweeps round the wheel, a marker slides from centre to rim, a swatch brightens."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LibraryIconRow",
+        "why": "Three controls on one colour need a wheel, a radius and a ramp; only drawing them shows what each changes."
+      }
+    },
+    {
+      "beat_id": "B27",
+      "act": "III · Stripes and Hue",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Call the hue a number from zero to one, once around the wheel. Zero is red. A sixth is yellow, a third is green, a half is cyan, two thirds is blue, five sixths is magenta. Then it wraps back to red.",
+      "estimated_duration_s": 14.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A ramp strip filled with the hue spectrum from 0 to 1 with seven ticks labelled 0, 1/6, 1/3, 1/2, 2/3, 5/6, 1 and a terracotta marker riding along. Under the marker a swatch shows its colour and a small triple of numbers updates: (1, 0, 0), (1, 1, 0), (0, 1, 0), (0, 1, 1), (0, 0, 1), (1, 0, 1), (1, 0, 0). A small wheel beside the strip turns its arrow with the marker. Credit: 'Godot 4.7.2 · same in Forward+ and Compatibility'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "strip, ticks and wheel"
+          },
+          {
+            "at": 0.3,
+            "event": "stops at 0 (red) and 1/6 (yellow)"
+          },
+          {
+            "at": 0.62,
+            "event": "1/3 (green) and 1/2 (cyan)"
+          },
+          {
+            "at": 0.86,
+            "event": "2/3 (blue), 5/6 (magenta), back to red"
+          }
+        ],
+        "manim": {
+          "class": "B27_HueRamp"
+        },
+        "motion_claim": "The marker rides the strip and stops at each sixth while the swatch and its numbers change."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "A marker riding a strip that changes colour is the ramp-in, colour-out idea as motion."
+      }
+    },
+    {
+      "beat_id": "B28",
+      "act": "III · Stripes and Hue",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Red, green and blue each follow the same plateau around the wheel: full for a third, zero for a third, with ramps between. Green is red's plateau pushed a third along. Blue is pushed two thirds.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A plot with hue 0 to 1 on x and 0 to 1 on y. One red plateau curve (full for a third, zero for a third, ramps between, wrapping round at the edges) draws first; a ghost copy slides a third to the right and becomes the green curve; another slides two thirds and becomes the blue curve. A vertical marker moves along the hue axis and reads three values off the curves into a swatch.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "red plateau"
+          },
+          {
+            "at": 0.36,
+            "event": "slides a third: green"
+          },
+          {
+            "at": 0.62,
+            "event": "slides two thirds: blue"
+          },
+          {
+            "at": 0.84,
+            "event": "marker reads three values into a swatch"
+          }
+        ],
+        "manim": {
+          "class": "B28_Plateaus"
+        },
+        "motion_claim": "The red plateau slides along to become green, then blue; a marker reads the three curves."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A curve sliding along to become the next is the claim; the plot is the picture of it."
+      }
+    },
+    {
+      "beat_id": "B29",
+      "act": "III · Stripes and Hue",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "In code, an absolute value and a clamp build the plateau, and fract wraps the hue. Mixing toward white sets the saturation, and the value scales the result. Tested at the six hues, it gives pure red, yellow, green, cyan, blue and magenta.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the ten real lines (plateau and hsv_to_rgb) at left; at right a still of the hue strip above six flat swatches. As the voice names each pure colour its swatch gets its RGB triple: 1 0 0, 1 1 0, 0 1 0, 0 1 1, 0 0 1, 1 0 1.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "abs defined on the plateau line"
+          },
+          {
+            "at": 0.17,
+            "event": "clamp defined"
+          },
+          {
+            "at": 0.27,
+            "event": "fract defined"
+          },
+          {
+            "at": 0.38,
+            "event": "the mix line"
+          },
+          {
+            "at": 0.62,
+            "event": "the six triples land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "float plateau(float x) {\n\treturn clamp(abs(fract(x) * 6.0 - 3.0) - 1.0, 0.0, 1.0);\n}\n\nvec3 hsv_to_rgb(float h, float s, float v) {\n\tfloat r = plateau(h);\n\tfloat g = plateau(h + 2.0 / 3.0);\n\tfloat b = plateau(h + 1.0 / 3.0);\n\treturn v * mix(vec3(1.0), vec3(r, g, b), s);\n}",
+            "codeFile": "lab-shaders/06-hsv-strip.gdshader · lines 3–12",
+            "cues": [
+              {
+                "at": 0.06,
+                "lines": [
+                  2
+                ],
+                "label": "abs drops the minus sign: -0.3 becomes 0.3"
+              },
+              {
+                "at": 0.17,
+                "lines": [
+                  2
+                ],
+                "label": "clamp holds a value between 0 and 1"
+              },
+              {
+                "at": 0.27,
+                "lines": [
+                  2
+                ],
+                "label": "the part after the point: x minus floor(x)"
+              },
+              {
+                "at": 0.38,
+                "lines": [
+                  9
+                ],
+                "label": "blends from a to b: t of 0 gives a, 1 gives b"
+              }
+            ],
+            "video": "subviewports/c15-hue-strip-and-swatches.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · six exact hues (hue uniform set) · same in Compatibility",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "1 0 0",
+                "x": 0.172,
+                "y": 0.74
+              },
+              {
+                "at": 0.68,
+                "text": "1 1 0",
+                "x": 0.305,
+                "y": 0.74
+              },
+              {
+                "at": 0.74,
+                "text": "0 1 0",
+                "x": 0.438,
+                "y": 0.74
+              },
+              {
+                "at": 0.8,
+                "text": "0 1 1",
+                "x": 0.57,
+                "y": 0.74
+              },
+              {
+                "at": 0.86,
+                "text": "0 0 1",
+                "x": 0.703,
+                "y": 0.74
+              },
+              {
+                "at": 0.92,
+                "text": "1 0 1",
+                "x": 0.836,
+                "y": 0.74
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The six swatches take their exact numbers one by one."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Code beside the six exact colours is the test the viewer can see; a still is enough because each number lands on its word.",
+        "capture_spec": "C15 (scene c15): the hue strip (06-hsv-strip) on a 1000 x 130 rectangle above six 160 px swatches, each a rectangle with 06b-hsv-probe and `hue` = 0, 1/6, 2/6, 3/6, 4/6, 5/6; one PNG frame (scene time 3 s; the scene is 8 s long), Forward+. Verified (run-3 H1, H1b, run-7c): the six swatches read (1,0,0) (1,1,0) (0,1,0) (0,1,1) (0,0,1) (1,0,1) exactly in both renderers; over 65,536 + 65,536 pixels the function agrees with the engine's Color.from_hsv within 0.002, and over 640 columns with Python's colorsys within 0.0019."
+      }
+    },
+    {
+      "beat_id": "B30",
+      "act": "III · Stripes and Hue",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now give the stripes a hue. Use the diagonal itself as the hue, and each stripe cuts out a band of the rainbow. The diagonal slides with time, so the colors travel with the stripes.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the seven-line fragment function at left; at right the display: rainbow stripes slide across the turning gradient blob, the gaps between them showing the gradient, the colours travelling with the stripes.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the diagonal line"
+          },
+          {
+            "at": 0.24,
+            "event": "the band line: hue from the diagonal"
+          },
+          {
+            "at": 0.6,
+            "event": "the mix line"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "void fragment() {\n\tvec4 picture = texture(TEXTURE, UV);\n\tfloat diagonal = UV.x + UV.y - TIME * speed;\n\tfloat stripe = 1.0 - step(width, fract(diagonal * count));\n\tvec4 band = vec4(hsv_to_rgb(diagonal, 1.0, 1.0), 1.0) * picture.a;\n\tCOLOR = mix(picture, band, stripe);\n}",
+            "codeFile": "lab-shaders/07-rainbow-stripes.gdshader · lines 19–25",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.24,
+                "lines": [
+                  5
+                ],
+                "label": "the diagonal itself is the hue"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  6
+                ],
+                "label": "blends from a to b: t of 0 gives a, 1 gives b"
+              }
+            ],
+            "video": "subviewports/c16-rainbow-stripes.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the sprite's turn is scripted",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The rainbow slides with the stripes while the gradient shows through the gaps."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The finished look beside its seven lines is the payoff of the act; only a live render shows the colours travelling.",
+        "capture_spec": "C16 (scene c16): as C14 with 07-rainbow-stripes (count 6, width 0.5, speed 0.12); 15 s, Forward+. Verified (run-3 H4, run-7c): stripe pixels equal Color.from_hsv(fract(diagonal)) within 0.002 over about 2,400 pixels; every gap pixel equals the picture (2,496 of 2,496 in run-3 H4)."
+      }
+    },
+    {
+      "beat_id": "B31",
+      "act": "IV · Wobble the Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A shader can move corners too. Its vertex function runs once for each vertex, each corner of a shape, and sets where it goes. A sprite has four corners, so it can lean, but it cannot bend.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Wobble the Result' (serif 40) top-left. A rectangle (the sprite) with four terracotta corner dots and the definition 'vertex: a corner point of a shape'. 'vertex' flashes on each dot in turn; the top-right and bottom-right dots slide down and the rectangle leans into a parallelogram with straight edges. A faint dashed curve tries to bend the top edge but the edge stays straight. Caption 'four corners, straight edges'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "rectangle with four corner dots"
+          },
+          {
+            "at": 0.35,
+            "event": "corners flash in turn"
+          },
+          {
+            "at": 0.62,
+            "event": "two corners slide, the shape leans"
+          },
+          {
+            "at": 0.85,
+            "event": "dashed curve rejected, edge straight"
+          }
+        ],
+        "manim": {
+          "class": "B31_FourCorners"
+        },
+        "motion_claim": "Two corners slide and the whole shape leans; the edge between them stays a straight line."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "Four dots, two of which slide while the edges stay straight, is the limit as motion.",
+        "act_title_on_screen": "Wobble the Result"
+      }
+    },
+    {
+      "beat_id": "B32",
+      "act": "IV · Wobble the Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "To bend a picture, give it more corners. A Quad Mesh, drawn by a Mesh Instance two D node, is a rectangle you can cut into a grid. Thirty-one cuts each way makes one thousand and eighty-nine corners.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A rectangle with four corner dots; cut lines appear in steps of 0, 1, 7, 15 and 31 cuts each way, the grid getting finer and a corner counter reading 4, 9, 81, 289 and 1,089 while the dots multiply and shrink. Labels 'Subdivide Width' and 'Subdivide Depth' beside the last two steps; caption 'Quad Mesh, drawn by Mesh Instance 2D'; the definition 'mesh: the set of vertices and triangles that make a shape'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "plain rectangle, 4 corners"
+          },
+          {
+            "at": 0.3,
+            "event": "1 and 7 cuts: 9 and 81 corners"
+          },
+          {
+            "at": 0.58,
+            "event": "15 cuts: 289 corners; labels"
+          },
+          {
+            "at": 0.84,
+            "event": "31 cuts: 1,089 corners"
+          }
+        ],
+        "manim": {
+          "class": "B32_CutIntoGrid"
+        },
+        "motion_claim": "The grid gets finer in steps and the corner counter climbs to 1,089."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "editor frame of the QuadMesh Inspector",
+        "why": "The cutting is the idea and the counter is its measure; the Inspector frame only shows where the numbers live."
+      }
+    },
+    {
+      "beat_id": "B33",
+      "act": "IV · Wobble the Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Same wobble, two meshes. On a plain quad, only four corners move, so the edge stays straight. On the grid, every corner moves on its own, and the edge becomes a wave.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two real meshes side by side showing one picture (a cream card with a teal frame and the gradient blob), both under the same wobble shader. Left, a plain quad: the card only leans, its edges straight. Right, the 31 x 31 grid: its edges ripple as a wave. Readouts '4 corners' and '1,089 corners'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "two meshes wobbling"
+          },
+          {
+            "at": 0.2,
+            "event": "corner counts"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c17-plain-vs-grid.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · offline render",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "4 corners",
+                "x": 0.26,
+                "y": 0.93
+              },
+              {
+                "at": 0.2,
+                "text": "1,089 corners",
+                "x": 0.74,
+                "y": 0.93
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The left card tilts with straight edges while the right card ripples."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "Straight edges against a wave on the same picture is the claim; a live render makes the difference undeniable.",
+        "capture_spec": "C17 (scene c17): one transparent 512 px viewport with a card (teal frame 20 px, cream inside) and the gradient blob; two MeshInstance2D, QuadMesh 480 x -480, subdivide 0 at (330, 360) and 31 at (950, 360), both with 08-wobble (amplitude 16, frequency 10, speed 3) and the Linear filter; 17 s, Forward+. Verified (run-7c): plain quad second differences of the top edge in {-1, 0, 1} (straight); grid edge within 0.23 to 0.26 px (rms) of 120 + sin(UV.x * 10 + TIME * 3) * 16 (the shape depends on TIME)."
+      }
+    },
+    {
+      "beat_id": "B34",
+      "act": "IV · Wobble the Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The wobble is one line in the outer shader's vertex function. Move each corner up or down by a sine of its U V x, plus time. Sine swings smoothly between minus one and one, and amplitude sets how far.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with the fourteen-line wobble shader at left; at right the 31 x 31 mesh carrying the card and the blob, rippling continuously. The vertex function and the VERTEX.y line are highlighted in turn.",
+        "show": [
+          {
+            "at": 0.08,
+            "event": "vertex function highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "the VERTEX.y line"
+          },
+          {
+            "at": 0.62,
+            "event": "sin defined on the line"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nuniform float amplitude = 16.0;\nuniform float frequency = 10.0;\nuniform float speed = 3.0;\n\nvoid vertex() {\n\tVERTEX.y += sin(UV.x * frequency + TIME * speed) * amplitude;\n}\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV);\n}",
+            "codeFile": "lab-shaders/08-wobble.gdshader",
+            "cues": [
+              {
+                "at": 0.08,
+                "lines": [
+                  8,
+                  9,
+                  10
+                ],
+                "label": "runs once for each vertex; places the corners"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  9
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  9
+                ],
+                "label": "sin: a smooth back and forth between -1 and 1"
+              }
+            ],
+            "video": "subviewports/c18-wobble.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · offline render",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The card ripples continuously while the highlighted line is the one that does it."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The live ripple beside its one line is the claim; nothing else shows that one line is enough.",
+        "capture_spec": "C18 (scene c18): the C17 picture on one MeshInstance2D, QuadMesh 512 x -512, 31 x 31, with 08-wobble; 17 s, Forward+. Verified (run-7c): top edge within 0.2 to 0.33 px (rms) of 104 + sin(UV.x * 10 + TIME * 3) * 16 (the shape depends on TIME)."
+      }
+    },
+    {
+      "beat_id": "B35",
+      "act": "IV · Wobble the Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "One catch in two-D. A Quad Mesh is built for three-D, where y points up, but in two-D y points down, so the picture lands upside down. Give the Quad Mesh a negative height, and it lands upright.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "One real mesh showing the card and the blob: first upside down (the eyes below the centre), then at the moment the height goes negative the picture is upright (eyes above). Readouts 'height 512' and 'height -512'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "upside down"
+          },
+          {
+            "at": 0.1,
+            "event": "height 512"
+          },
+          {
+            "at": 0.74,
+            "event": "height -512: upright"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c19-upside-down.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the height changes at 9.5 s",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "height 512",
+                "x": 0.5,
+                "y": 0.93
+              },
+              {
+                "at": 0.74,
+                "text": "height -512",
+                "x": 0.5,
+                "y": 0.07
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The face flips from upside down to upright when the height goes negative."
+      },
+      "lecture": {
+        "runner_up": "manim vertex arrows",
+        "why": "The flip is the claim; the picture turning right way up is what a viewer will want to see.",
+        "capture_spec": "C19 (scene c19): the C17 picture on a QuadMesh with size (512, 512) until 9.5 s, then (512, -512), pass-through shader; 16 s, Forward+. Verified (run-4 M1, M4, M6, both renderers; run-7c): with (512, 512) the picture's top-left marker lands at the screen's bottom-left; with a negative height it lands at the top-left; the mesh's own layout puts UV (0, 0) on the vertex with y = +1 (up in 3D, down in 2D)."
+      }
+    },
+    {
+      "beat_id": "B36",
+      "act": "IV · Wobble the Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "So the chain is this. Nodes draw into the viewport, and the inner shader colors them. The outer shader paints stripes on the picture and bends it. The sprite inside knows nothing about either.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A left-to-right chain on the cream stage: a dashed square holding the blob and card icons, then a tag 'inner shader', then the picture card, then a tag 'outer fragment: stripes', then a tag 'outer vertex: bend', then a screen frame with a wobbling frame on it. A token (the blob thumbnail) changes at each stage: plain, gradient, striped, striped and bent.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the chain drawn"
+          },
+          {
+            "at": 0.28,
+            "event": "token plain, then gradient"
+          },
+          {
+            "at": 0.6,
+            "event": "gradient, then striped"
+          },
+          {
+            "at": 0.82,
+            "event": "striped, then bent"
+          }
+        ],
+        "manim": {
+          "class": "B36_WholeChain"
+        },
+        "motion_claim": "The token passes each stage and changes its look: plain, gradient, striped, bent."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "A token that changes at every stage is the order of work, and the film's whole story, as motion."
+      }
+    },
+    {
+      "beat_id": "B37",
+      "act": "IV · Wobble the Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Nothing stops at two. Show a picture inside another Sub Viewport, and that picture can take a third shader. Each stage is a picture, and the next stage shades it.",
+      "estimated_duration_s": 10.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Three picture frames in a row: 'viewport' (the blob with an inner shader) leads to a picture, shown inside a second 'viewport' by a sprite with a fade shader, which leads to a second picture, shown on the screen by a sprite with a stripes shader. Three tags 'inner', 'middle' and 'outer'. A token flows along and picks up each shader's look.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "three frames and three tags"
+          },
+          {
+            "at": 0.35,
+            "event": "token through the inner shader"
+          },
+          {
+            "at": 0.6,
+            "event": "token through the middle shader"
+          },
+          {
+            "at": 0.82,
+            "event": "token through the outer shader"
+          }
+        ],
+        "manim": {
+          "class": "B37_StageToStage"
+        },
+        "motion_claim": "The token passes three shaders in a row, each time through a picture."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A token passing three stations is the generalisation of the chain; the run in evidence proves it works."
+      }
+    },
+    {
+      "beat_id": "B38",
+      "act": "IV · Wobble the Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "It is not free. A Sub Viewport is a picture the engine draws every frame it is shown. For a picture that never changes, set Update Mode to Once. It draws one time, then keeps that picture, however much the sprite inside moves.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card with one line at left; at right two real displays of two identical viewports whose sprite wanders about in a Lissajous path. Both follow it until the right one is set to Once; from then on the right picture freezes while the left keeps moving. Readouts 'default' and 'Update Mode: Once'.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "default label; both follow"
+          },
+          {
+            "at": 0.58,
+            "event": "Once: the right picture freezes"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "sub.render_target_update_mode = SubViewport.UPDATE_ONCE",
+            "codeFile": "scene script (GDScript)",
+            "cues": [
+              {
+                "at": 0.58,
+                "lines": [
+                  1
+                ],
+                "label": "Once: draw one time, then keep the picture"
+              }
+            ],
+            "video": "subviewports/c21-update-mode.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the right viewport is set to Once at 8.5 s",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "default",
+                "x": 0.278,
+                "y": 0.92
+              },
+              {
+                "at": 0.66,
+                "text": "Update Mode: Once",
+                "x": 0.722,
+                "y": 0.92
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The right picture freezes while the left one keeps following the wandering sprite."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "One frozen picture beside one live picture is the claim; the pair makes a non-event visible.",
+        "capture_spec": "C21 (scene c21): two opaque 512 px viewports, a 269 px blob in each moving as (256 + 150 sin 0.9 t, 256 + 90 cos 0.7 t); displays at x = 100 and 668; viewport 1 gets `render_target_update_mode = UPDATE_ONCE` at 8.5 s (on \"set Update Mode to Once\"); 18 s, Forward+. Verified (run-7c, run-11 O1, recorded through Movie Maker in run-13): at 12 s the left picture's first teal pixel is at x = 29 (formula 28); the right is at 323, frozen at its 8.5 s position (formula 322)."
+      }
+    },
+    {
+      "beat_id": "B39",
+      "act": "IV · Wobble the Result",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "One more limit. Mouse and key events do not reach a standalone Sub Viewport. Put it inside a Sub Viewport Container, and the container passes them in. Without that, a button inside the picture will not respond.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A screen frame with the display showing the picture of a small SubViewport square that holds a button icon. A cursor arrow (a drawn shape) clicks on the picture; the click ring bounces off the picture's edge and the button icon stays unlit. Then a wrapper frame labelled 'SubViewportContainer' appears around the square; the cursor clicks again, a dotted line carries the click through the container into the square and the button icon lights teal.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "screen, picture, button icon"
+          },
+          {
+            "at": 0.3,
+            "event": "click bounces; the button stays unlit"
+          },
+          {
+            "at": 0.6,
+            "event": "SubViewportContainer wraps the square"
+          },
+          {
+            "at": 0.82,
+            "event": "click passes in; the button lights"
+          }
+        ],
+        "manim": {
+          "class": "B39_ClickBounces"
+        },
+        "motion_claim": "The click bounces off a standalone viewport, then passes through the container and lights the button."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "A click that bounces, then passes, is the limit and its fix as motion."
+      }
+    },
+    {
+      "beat_id": "B40",
+      "act": "IV · Wobble the Result",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The picture is only a texture, so it fits wherever a texture does. A sprite, a panel in your interface, a flat plane in a three-D scene, or a sampler in any other shader. One picture, four places.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Four real panels in a row showing one live picture (a cream card with the turning gradient blob): a Sprite2D, a panel in the interface (a TextureRect inside a teal-bordered panel), a flat plane in a 3D scene (swaying about its vertical axis, rendered by its own 3D viewport), and a plain rectangle whose own shader reads the picture through a sampler uniform. Readouts name each place as the voice does.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "sprite named"
+          },
+          {
+            "at": 0.42,
+            "event": "interface panel named"
+          },
+          {
+            "at": 0.58,
+            "event": "3D plane named"
+          },
+          {
+            "at": 0.74,
+            "event": "shader sampler named"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "subviewports/c20-four-places.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the blob turns, the 3D plane sways",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "sprite",
+                "x": 0.14,
+                "y": 0.93
+              },
+              {
+                "at": 0.42,
+                "text": "interface panel",
+                "x": 0.37,
+                "y": 0.93
+              },
+              {
+                "at": 0.58,
+                "text": "3D plane",
+                "x": 0.62,
+                "y": 0.93
+              },
+              {
+                "at": 0.74,
+                "text": "shader sampler",
+                "x": 0.86,
+                "y": 0.93
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The same turning blob appears in all four places at once; the 3D plane sways."
+      },
+      "lecture": {
+        "runner_up": "manim: four icons receiving one picture",
+        "why": "One picture alive in four places at once is the claim; a drawing could not show that they all really work.",
+        "capture_spec": "C20 (scene c20): one 280 px opaque viewport (cream card, gradient blob turning at 0.7 rad/s) shown by a Sprite2D at (40, 220), a TextureRect in a PanelContainer at (332, 212), a flat QuadMesh with an unshaded StandardMaterial3D in a 280 px transparent 3D viewport shown as a Sprite2D at (640, 220), and a ColorRect at (940, 220) whose shader reads the picture through `uniform sampler2D picture`; 16 s, Forward+. Verified (run-7c) at 0 s: gold is below the centre in all four panels (red 0.773 below, 0.533 above in the flat ones; 0.792 / 0.510 in the 3D plane)."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "verdict",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let's recap with Claude. A Sub Viewport draws its children into a picture, and a Viewport Texture shows it anywhere. An inner shader makes the picture, and an outer shader shades it, using the picture's own U V. Stripes are a saw wave cut by a step, and a hue function colors them. Cut a mesh into a grid, and the outer vertex function can bend the whole picture.",
+      "estimated_duration_s": 23.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "artifact page opens"
+          },
+          {
+            "at": 0.2,
+            "event": "recap lines land in narration order"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Recap",
+            "artifactHeading": "SubViewports",
+            "artifactLines": [
+              "A Sub Viewport draws its children into a picture, and a Viewport Texture shows it anywhere.",
+              "An inner shader makes the picture, and an outer shader shades it, using the picture's own UV.",
+              "Stripes are a saw wave cut by a step, and a hue function colors them.",
+              "Cut a mesh into a grid, and the outer vertex function can bend the whole picture."
+            ]
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Mandated ClaudeVerdictArtifact bookend."
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "your turn",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Your turn. Paste this into Claude: Write a Godot four scene as a text file. A Sub Viewport, five hundred twelve pixels square with a transparent background, holds the Godot icon, its lower half painted red by its own shader. A second sprite shows the viewport's texture with Premultiplied Alpha, and its shader keeps only vertical stripes. Also tell me where each shader goes. Then check two things yourself. With the outer shader off, is the icon's lower half red, with no box around it? And when you turn the icon, do the stripes stay still?",
+      "estimated_duration_s": 32.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Composer opens: 'Your turn.'"
+          },
+          {
+            "at": 0.12,
+            "event": "the prompt types in full"
+          },
+          {
+            "at": 0.85,
+            "event": "two check lines land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "CLAUDE · YOUR TURN",
+            "segment": "Stripe a Turning Icon",
+            "command": "Write a Godot four scene as a text file. A Sub Viewport, five hundred twelve pixels square with a transparent background, holds the Godot icon, its lower half painted red by its own shader. A second sprite shows the viewport's texture with Premultiplied Alpha, and its shader keeps only vertical stripes. Also tell me where each shader goes.",
+            "runningText": "paste this into Claude…",
+            "output": [
+              "Check: with the outer shader off, the picture shows the icon with its lower half red, and no box around it.",
+              "Check: turn the icon inside the viewport. The red turns with it, and the stripes stay still."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Opus 5.5",
+            "effortLabel": "High"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "outro",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Sub Viewports. At Nik Bear Brown.",
+      "estimated_duration_s": 4.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "title restates; handle; mascot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "SubViewports",
+            "slug": "claude-liam-lecture-subviewports",
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

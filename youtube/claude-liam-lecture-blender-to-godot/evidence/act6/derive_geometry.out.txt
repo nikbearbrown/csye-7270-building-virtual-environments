@@ -1,0 +1,40 @@
+glb nodes: ['Base', 'Pole', 'Pennant', 'Collision-convcolonly']
+collision mesh 'Collision': 40 glTF vertices, 12 unique (Godot axes: x, y up, z)
+  vertex (-0.3, 0.0, -0.3)
+  vertex (-0.3, 0.0, 0.3)
+  vertex (-0.3, 0.1, -0.3)
+  vertex (-0.3, 0.1, 0.3)
+  vertex (-0.08, 1.8, -0.08)
+  vertex (-0.08, 1.8, 0.08)
+  vertex (0.08, 1.8, -0.08)
+  vertex (0.08, 1.8, 0.08)
+  vertex (0.3, 0.0, -0.3)
+  vertex (0.3, 0.0, 0.3)
+  vertex (0.3, 0.1, -0.3)
+  vertex (0.3, 0.1, 0.3)
+distinct vertex heights (y, m): [0.0, 0.1, 1.8]
+vertices at or above the pennant's lower edge (y >= 1.54), what the agent's check read: [(-0.08, 1.8, -0.08), (-0.08, 1.8, 0.08), (0.08, 1.8, -0.08), (0.08, 1.8, 0.08)]
+  max x among them = 0.08  -> pennant length inside = max(0, min(0.48, 0.08) - 0.08) = 0.0000 m
+
+hull half-width (x) by height:
+  y = 0.00 m: +-0.3000 m   beyond the pole's 0.08 m: 0.2200 m
+  y = 0.10 m: +-0.3000 m   beyond the pole's 0.08 m: 0.2200 m
+  y = 0.50 m: +-0.2482 m   beyond the pole's 0.08 m: 0.1682 m
+  y = 0.90 m: +-0.1965 m   beyond the pole's 0.08 m: 0.1165 m
+  y = 0.95 m: +-0.1900 m   beyond the pole's 0.08 m: 0.1100 m
+  y = 1.00 m: +-0.1835 m   beyond the pole's 0.08 m: 0.1035 m
+  y = 1.55 m: +-0.1124 m   beyond the pole's 0.08 m: 0.0324 m
+  y = 1.70 m: +-0.0929 m   beyond the pole's 0.08 m: 0.0129 m
+  y = 1.80 m: +-0.0800 m   beyond the pole's 0.08 m: 0.0000 m
+invisible collision each side of the pole: at the middle of the taper (y = 0.95 m) = 0.110 m; at half the post's height (y = 0.90 m) = 0.1165 m
+(the taper starts at y = 0.1, not 0.0: the base slab is a straight +-0.30 block)
+
+sample grid: 41 x-values (0.08..0.48) x 26 y-values (1.55..1.80) = 1066 points (log says 1066)
+BOX collider (x <= 0.30): points strictly inside = 572  (log: 572); points exactly on the face x = 0.30: 26 (a surface hit is not 'inside'); furthest inside x = 0.29 (log: 0.29)
+HULL collider: points strictly inside = 55  (log: 55); points on the surface: [(0.08, 1.8)]; furthest inside x = 0.11 (log: 0.11)
+  inside points per x column: {0.08: 25, 0.09: 18, 0.1: 10, 0.11: 2}  total 55
+  hull half-width at the pennant's lower edge y = 1.55: 0.1124 m; at its top y = 1.80: 0.0800 m
+  sliver: pennant root x = 0.08, deepest sample inside x = 0.11 -> 0.03 m = 3 cm
+
+ray geometry from logs/verify1-test_checkpoint_post.log: ray from y = -0.2; post base y = -4.0; post top = -4.0 + 1.8 = -2.2; ray start above post top = -0.2 - (-2.2) = 2.0 m; hit y = -2.2
+our ray (verify_post_independent.gd): from post origin + 0.5 m = y -3.5, post StaticBody3D excluded, to origin - 3 m; floor y -4.0; gap = -4.0 - (-4.0) = 0.0 m

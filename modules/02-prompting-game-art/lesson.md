@@ -310,6 +310,25 @@ Run on 27 September 2026 with Claude Code 2.1.150 and Codex CLI 0.153.4. Every t
 - **The effects were imported as "detect loop".** Both had `edit/loop_mode=0`, not Disabled, and did not loop only because the tone files carry no loop chunk.
 - **A fresh clone was broken while every test stayed green.** The `audio/` rule on `.gitignore` line 23 kept `godot/audio/` out of Git, which the agent reported honestly. In a clone, `main.tscn` printed a parse error, `test_audio_cues.gd` failed to parse, and `godot` still exited 0, while the other 62 checks passed.
 
+## Practice assessment (ungraded)
+
+Answer these in writing, from the source and the running game.
+
+1. Write the check that would have caught the yellow soldier's empty collider. Where should each soldier's collider data live so that switching the animation cannot leave the wrong box behind?
+2. Why did `godot` exit 0 when `test_audio_cues.gd` could not be parsed in the fresh clone? What would you add to a script so that case fails?
+3. Name one thing a headless audio test can establish and one thing only your ears can.
+4. For one asset you will generate for Assignment 2, write the prompt constraint, Godot check and human check for size, background and loop.
+
+The ungraded Canvas practice quiz has six questions with feedback. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer and check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to specify and import assets; choose the art and sound in the actual game context. Record the evidence, your decision and what would change it.
+
+## The next step
+
+Assignment 2, **"Generate Art, Sound, and Music for Your Game,"** opens in Module 2 and is due about Day 20; the Canvas page governs the date. Your constraint table feeds the prompts and predicted failures in `CHANGE-BRIEF.md`, your collider reasoning feeds the collision overlay in `CHARACTER-SHEET.md`, and the asset log and rights rules go into `SOURCES.md`. The one-cue-per-event test and the `git check-ignore` habit become your automated check and your fresh-copy run. This lesson adds no graded deliverable. For the long reading, see [Chapter 2 — Prompting Game Art (and Sound) Against the Engine](../../chapters/02-prompting-game-art.md).
+
 ## If you know Unity or Unreal
 
 | Godot 4.7 | Unity 6 | Unreal Engine 5 |
@@ -324,17 +343,10 @@ Run on 27 September 2026 with Claude Code 2.1.150 and Codex CLI 0.153.4. Every t
 
 For an agent workflow, the biggest difference is what it can read. Godot's `.import`, `.tres` and `.tscn` files are plain text it can diff. Unity's `.meta`, scenes and prefabs are diffable YAML under Force Text, the manual's default. Unreal's textures, sprites and flipbooks are binary `.uasset` files, so an agent works through editor Python. Unity and Unreal were not run; the comparisons come from their documentation, checked on 27 September 2026. The [chapter](../../chapters/02-prompting-game-art.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in writing, from the source and the running game.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/02-prompting-game-art.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/AssetMetadata.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Write the check that would have caught the yellow soldier's empty collider. Where should each soldier's collider data live so that switching the animation cannot leave the wrong box behind?
-2. Why did `godot` exit 0 when `test_audio_cues.gd` could not be parsed in the fresh clone? What would you add to a script so that case fails?
-3. Name one thing a headless audio test can establish and one thing only your ears can.
-4. For one asset you will generate for Assignment 2, write the prompt constraint, Godot check and human check for size, background and loop.
+## Doing the same thing in Unreal Engine
 
-The ungraded Canvas practice quiz has six questions with feedback. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer and check the source yourself.
-
-## The next step
-
-Assignment 2, **"Generate Art, Sound, and Music for Your Game,"** opens in Module 2 and is due about Day 20; the Canvas page governs the date. Your constraint table feeds the prompts and predicted failures in `CHANGE-BRIEF.md`, your collider reasoning feeds the collision overlay in `CHARACTER-SHEET.md`, and the asset log and rights rules go into `SOURCES.md`. The one-cue-per-event test and the `git check-ignore` habit become your automated check and your fresh-copy run. This lesson adds no graded deliverable. For the long reading, see [Chapter 2 — Prompting Game Art (and Sound) Against the Engine](../../chapters/02-prompting-game-art.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/02-prompting-game-art.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/paper-2d-overview-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

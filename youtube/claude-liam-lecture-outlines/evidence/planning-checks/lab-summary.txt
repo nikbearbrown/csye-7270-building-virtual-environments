@@ -1,0 +1,96 @@
+== A1  reading one step to the right slides the picture to the left (sprite at scale 1.0; blob centre in screen pixels)
+  look=0.000: blob centre x = 320.00  (shift +0.00 px)   expected shift = -look*128 = -0.0
+  look=0.125: blob centre x = 304.00  (shift -16.00 px)   expected shift = -look*128 = -16.0
+  look=0.250: blob centre x = 289.28  (shift -30.72 px)   expected shift = -look*128 = -32.0
+
+== A2  one question: where is the outline? (counts of outline-coloured pixels, left and right of the blob centre)
+  total outline px = 231; left of centre = 231; right of centre = 0
+
+== A3  four questions, no min vs min (literal step 0.02 of the picture = 2.56 image pixels)
+  04-lighter-diagonals: line-colour px = 420, over-bright (128,128,255) px = 252, total ring = 672
+  05-four-questions: line-colour px = 672, over-bright (128,128,255) px = 0, total ring = 672
+  share of the ring with the wrong colour when min is missing: 252/672 = 37.5%
+
+== A4  axis widths of the outline in screen px (scale 1.0), by shader and thickness
+  06-pixel-steps thickness 1: E=1, S=1, W=1, N=1
+  06-pixel-steps thickness 2: E=2, S=2, W=2, N=2
+  06-pixel-steps thickness 3: E=3, S=3, W=3, N=3
+  06-pixel-steps thickness 4: E=4, S=4, W=4, N=4
+  06-pixel-steps thickness 8: E=8, S=8, W=8, N=8
+  07-eight-reads thickness 1: E=1, S=1, W=1, N=1
+  07-eight-reads thickness 2: E=2, S=2, W=2, N=2
+  07-eight-reads thickness 3: E=3, S=3, W=3, N=3
+  07-eight-reads thickness 4: E=4, S=4, W=4, N=4
+  07-eight-reads thickness 8: E=8, S=8, W=8, N=8
+  08-loop thickness 1: E=1, S=1, W=1, N=1
+  08-loop thickness 2: E=2, S=2, W=2, N=2
+  08-loop thickness 3: E=3, S=3, W=3, N=3
+  08-loop thickness 4: E=4, S=4, W=4, N=4
+  08-loop thickness 8: E=8, S=8, W=8, N=8
+  10-ring thickness 1: E=1, S=1, W=1, N=1
+  10-ring thickness 2: E=2, S=2, W=2, N=2
+  10-ring thickness 3: E=3, S=3, W=3, N=3
+  10-ring thickness 4: E=4, S=4, W=4, N=4
+  10-ring thickness 8: E=8, S=8, W=8, N=8
+  05-four-questions (literal 0.02): E=3, S=3, W=3, N=3
+
+== A5  radial thickness (mean over +-3 degrees; E = 0, SE = 45) by shader, thickness 4 and 8: axis vs diagonal
+  t=1 06-pixel-steps  :     0deg= 1.00   22.5deg= 0.84     45deg= 0.77   67.5deg= 0.84     90deg= 1.00   diag/axis = 0.77
+  t=1 07-eight-reads  :     0deg= 1.00   22.5deg= 1.29     45deg= 1.41   67.5deg= 1.29     90deg= 1.00   diag/axis = 1.41
+  t=1 10-ring         :     0deg= 1.00   22.5deg= 1.29     45deg= 1.41   67.5deg= 1.29     90deg= 1.00   diag/axis = 1.41
+  t=2 06-pixel-steps  :     0deg= 2.00   22.5deg= 1.86     45deg= 1.41   67.5deg= 1.86     90deg= 2.00   diag/axis = 0.71
+  t=2 07-eight-reads  :     0deg= 2.00   22.5deg= 2.54     45deg= 2.81   67.5deg= 2.54     90deg= 2.00   diag/axis = 1.41
+  t=2 10-ring         :     0deg= 2.00   22.5deg= 2.21     45deg= 2.21   67.5deg= 2.21     90deg= 2.00   diag/axis = 1.11
+  t=4 06-pixel-steps  :     0deg= 4.00   22.5deg= 3.54     45deg= 2.81   67.5deg= 3.54     90deg= 4.00   diag/axis = 0.70
+  t=4 07-eight-reads  :     0deg= 4.00   22.5deg= 5.19     45deg= 5.67   67.5deg= 5.19     90deg= 4.00   diag/axis = 1.42
+  t=4 10-ring         :     0deg= 4.00   22.5deg= 4.37     45deg= 4.21   67.5deg= 4.37     90deg= 4.00   diag/axis = 1.05
+  t=8 06-pixel-steps  :     0deg= 8.00   22.5deg= 7.17     45deg= 5.07   67.5deg= 7.17     90deg= 8.00   diag/axis = 0.63
+  t=8 07-eight-reads  :     0deg= 8.00   22.5deg=10.30     45deg=11.40   67.5deg=10.30     90deg= 8.00   diag/axis = 1.42
+  t=8 10-ring         :     0deg= 8.00   22.5deg= 7.79     45deg= 8.50   67.5deg= 7.79     90deg= 8.00   diag/axis = 1.06
+
+== A6  loop against eight written-out reads: pixels that differ (scale 1.0)
+  thickness 1: 0 pixels differ
+  thickness 2: 0 pixels differ
+  thickness 3: 0 pixels differ
+  thickness 4: 0 pixels differ
+  thickness 8: 0 pixels differ
+
+== A7  the step counts image pixels: thickness 2 at three sprite scales (E-axis width in screen px)
+  sprite scale 1: E=2, S=2, W=2, N=2
+  sprite scale 2: E=4, S=4, W=4, N=4
+  sprite scale 3: E=6, S=6, W=6, N=6
+
+== A8  thickness 0 against no shader effect (look = 0 render): pixels that differ
+  0 pixels differ
+
+== A9  renderer: outline pixel colour, Forward+ against Compatibility
+  06-pixel-steps-t2: Forward+ pixel (64, 64, 191), Compatibility pixel (64, 64, 191); images identical: True
+  05-four-questions: Forward+ pixel (64, 64, 191), Compatibility pixel (64, 64, 191); images identical: True
+
+== A10  first bug: no empty-check (02-paints-the-sprite): what happens to the sprite's own pixels? (scale 1.0)
+  sprite pixels: 4637; of those now line-coloured: 4406 (95.0%); still their own colour: 231
+
+== A11  second bug at the film's two scales: share of the ring that comes out the wrong colour without min
+  04-lighter-diagonals: wrong-colour px 252 of 672 ring px = 37.5%
+  04-lighter-diagonals-fit: wrong-colour px 1107 of 2915 ring px = 38.0%
+
+== A12  guard against loop (hard-edged sprite): pixels that differ
+  thickness 1: 0 pixels differ
+  thickness 2: 0 pixels differ
+  thickness 3: 0 pixels differ
+  thickness 4: 0 pixels differ
+  thickness 8: 0 pixels differ
+  guard at thickness 0 against the untouched sprite: 0 pixels differ
+
+== A13  the soft-edge composite (11-soft-edges) against the plain mix (06-pixel-steps) on a hard-edged sprite: pixels that differ
+  thickness 1: 0 pixels differ (tolerance 1 of 255)
+  thickness 2: 0 pixels differ (tolerance 1 of 255)
+  thickness 3: 0 pixels differ (tolerance 1 of 255)
+  thickness 4: 0 pixels differ (tolerance 1 of 255)
+  thickness 8: 0 pixels differ (tolerance 1 of 255)
+
+== A14  where the over-bright ring pixels are (04-lighter-diagonals): angle of each ring pixel from the nearest axis (0 = straight right/left/up/down, 45 = a true diagonal)
+   0 to 10 degrees from an axis: 164 ring pixels,   8 over-bright
+  10 to 20 degrees from an axis: 160 ring pixels,  40 over-bright
+  20 to 30 degrees from an axis: 152 ring pixels,  64 over-bright
+  30 to 45 degrees from an axis: 196 ring pixels, 140 over-bright

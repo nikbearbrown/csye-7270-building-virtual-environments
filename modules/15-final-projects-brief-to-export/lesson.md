@@ -359,6 +359,25 @@ Run on 27 September 2026 with Claude Code 2.1.150 (`claude-sonnet-4-6`). Every c
 - **The version rule broke when another field changed.** `_load_best()` checked `format` and `level` before `version`, so a version-2 file with a renamed level or format was overwritten. The agent's own version-2 case changed only the version, so it passed; a human-written combined case failed twice.
 - **A test proved less than its labels said.** Case 01 reused a fixed directory, so on a second run "file exists" passed while the file kept its first-run timestamp and nothing was written. A check named `hud-best-field-set` tested nothing about the HUD.
 
+## Practice assessment (ungraded)
+
+Answer in writing, from the source and the running game, before the practice quiz.
+
+1. Open `godot/tests/test_keyboard.gd`. Which line "completes" the course, after how many physics ticks, and why is that harmless before FEAT-10 and data-corrupting after it?
+2. Reorder `_load_best()`'s checks so `level` comes before `version`. Which case in `test_best_time.gd`, and which in your own check, fails? Why didn't the agent's original version-2 case fail?
+3. List the files an `--import` of a fresh clone of your project creates, and say which belong in Git. Run `--export-pack`, list the ZIP, and name one file that should not ship and one that must.
+4. Write three sentences for your final film about your own project: something you decided, something the agent did, and something no check established.
+
+The ungraded Canvas practice quiz for this module has six multiple-choice questions with feedback. Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to reproduce, export and inspect the deliverable; have a person use it and decide whether the experience is ready. Record the evidence, your decision and what would change it.
+
+## The next step
+
+Assignment 10, **"Final Project: From Brief to Export,"** opens in Module 14 and is due about Day 100; the Canvas page governs the date. It covers Modules 14 and 15 and the whole semester, with two films, `godot-walkthrough` and `godot-gdd`, both with the `walker` modifier. Carry this module's habits into it: a clean-clone run of your tagged repository, the state you can honestly claim, and a record of what you decided and what the agent did. The syllabus gives Week 15 to final Brutalist films and class discussion, so be ready to explain any part of yours. This lesson adds no graded deliverable. The long reading is [Chapter 15 — Final Projects: From Brief to Export](../../chapters/15-final-projects-brief-to-export.md).
+
 ## If you know Unity or Unreal
 
 | Godot | Unity | Unreal Engine 5 |
@@ -373,17 +392,10 @@ Run on 27 September 2026 with Claude Code 2.1.150 (`claude-sonnet-4-6`). Every c
 
 The biggest difference for an agent workflow is how much of the pipeline is text it can read and diff. In Godot the preset, scenes and a JSON save are text, and the export is one flag on the editor binary. Unity's build profile is an asset file and its scenes are YAML by default, but installed modules are not in the project. Unreal packages through a separate tool and a cook step, and a Blueprint save graph is a binary `.uasset`. Unity and Unreal were not run for this course; the comparisons come from their documentation, checked on 27 September 2026. [Chapter 15](../../chapters/15-final-projects-brief-to-export.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in writing, from the source and the running game, before the practice quiz.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/15-final-projects-brief-to-export.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Open `godot/tests/test_keyboard.gd`. Which line "completes" the course, after how many physics ticks, and why is that harmless before FEAT-10 and data-corrupting after it?
-2. Reorder `_load_best()`'s checks so `level` comes before `version`. Which case in `test_best_time.gd`, and which in your own check, fails? Why didn't the agent's original version-2 case fail?
-3. List the files an `--import` of a fresh clone of your project creates, and say which belong in Git. Run `--export-pack`, list the ZIP, and name one file that should not ship and one that must.
-4. Write three sentences for your final film about your own project: something you decided, something the agent did, and something no check established.
+## Doing the same thing in Unreal Engine
 
-The ungraded Canvas practice quiz for this module has six multiple-choice questions with feedback. Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then check the source yourself.
-
-## The next step
-
-Assignment 10, **"Final Project: From Brief to Export,"** opens in Module 14 and is due about Day 100; the Canvas page governs the date. It covers Modules 14 and 15 and the whole semester, with two films, `godot-walkthrough` and `godot-gdd`, both with the `walker` modifier. Carry this module's habits into it: a clean-clone run of your tagged repository, the state you can honestly claim, and a record of what you decided and what the agent did. The syllabus gives Week 15 to final Brutalist films and class discussion, so be ready to explain any part of yours. This lesson adds no graded deliverable. The long reading is [Chapter 15 — Final Projects: From Brief to Export](../../chapters/15-final-projects-brief-to-export.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/15-final-projects-brief-to-export.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/saving-and-loading-your-game-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

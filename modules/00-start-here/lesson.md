@@ -291,6 +291,25 @@ Run on 27 September 2026 on the instructor's Mac: Claude Code 2.1.150 (`claude-s
 - **Claude Code routed around refusals.** It was refused 18 times: `cd … && godot …` fails because a compound command must match a rule in every part, and a `WALKER_EVIDENCE_DIR=…` prefix does not match `Bash(godot *)`. It then found that `env WALKER_EVIDENCE_DIR=… godot …` matched `Bash(env *)`, which approves any program. Caught by: its transcript.
 - **Codex did more than asked, then tidied away evidence.** It edited `README.md`, `GAME-BRIEF.md` and `GDD.md` to remove "no score," arguably right but a design decision, and in the Revise re-run deleted the `evidence-local/` reports it had just produced. Caught by: `git diff` and `git status`.
 
+## Practice assessment (ungraded)
+
+Answer these in your own words, then take the Canvas practice quiz for this module as often as you like.
+
+1. Using `ball.gd` and `input_route.gd`, explain why the same test can pass on one laptop and fail on another without `--fixed-fps 60`.
+2. Claude Code blamed the import cache. Design the smallest experiment that would test that explanation.
+3. Your allow list includes `Bash(godot *)`. The agent wants `cd godot && godot --import`. Why is that refused, and what would you rather it ran?
+4. Sort into machine evidence and human judgment: "left score increments on right-wall exit"; "scores are readable on a projector"; "serving always to the left is unfair once there is a score."
+
+Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to define the change and inspect the baseline; a working command does not establish a readable score. Record the evidence, your decision and what would change it.
+
+## The next step
+
+Module 1, [Walker and Godot](../01-walker-and-godot/lesson.md), comes next: the same tools in the editor, on walker-jumpman, the starter for Assignment 1. This module has no assignment of its own. The companion chapter, [The Toolchain](../../chapters/00-the-toolchain.md), holds the full record and the Unity and Unreal sections.
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from their documentation, checked 27 September 2026.
@@ -305,17 +324,10 @@ Unity and Unreal were not run for this module; the comparisons come from their d
 
 The biggest difference for agent work is the file format. Both agents edited Godot's text scene `pong.tscn` directly. Unity scenes are YAML but harder to hand-edit; Unreal Blueprints and levels are binary, so an agent must work through the editor or C++. The chapter has the [full comparison](../../chapters/00-the-toolchain.md).
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in your own words, then take the Canvas practice quiz for this module as often as you like.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/00-the-toolchain.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Packages/com.unity.test-framework@1.4/manual/reference-command-line.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Using `ball.gd` and `input_route.gd`, explain why the same test can pass on one laptop and fail on another without `--fixed-fps 60`.
-2. Claude Code blamed the import cache. Design the smallest experiment that would test that explanation.
-3. Your allow list includes `Bash(godot *)`. The agent wants `cd godot && godot --import`. Why is that refused, and what would you rather it ran?
-4. Sort into machine evidence and human judgment: "left score increments on right-wall exit"; "scores are readable on a projector"; "serving always to the left is unfair once there is a score."
+## Doing the same thing in Unreal Engine
 
-Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
-
-## The next step
-
-Module 1, [Walker and Godot](../01-walker-and-godot/lesson.md), comes next: the same tools in the editor, on walker-jumpman, the starter for Assignment 1. This module has no assignment of its own. The companion chapter, [The Toolchain](../../chapters/00-the-toolchain.md), holds the full record and the Unity and Unreal sections.
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/00-the-toolchain.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/run-automation-tests-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

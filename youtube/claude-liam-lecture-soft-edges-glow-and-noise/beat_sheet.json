@@ -1,0 +1,2905 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-soft-edges-glow-and-noise",
+    "title": "Soft Edges, Glow and Noise",
+    "topic": "GODOT SHADERS · SOFT EDGES, GLOW AND NOISE",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "engine": "kokoro",
+    "clock": "narration",
+    "palette": "claude",
+    "register": "Teardown",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "caption_policy": "sidecar",
+    "greeting_language": "Hallo",
+    "audience": "people making games in Godot, and anyone directing an AI that writes shaders for them",
+    "godot_version": "4.7.2",
+    "lecture_opening_description": "How to soften edges, layer effects, and add glow",
+    "lecture_opening_template": "lecture-title-slide-16x9",
+    "lecture_opening_title_lines": [
+      "Soft Edges, Glow",
+      "and Noise"
+    ],
+    "bookend_exempt": [
+      "cold-open",
+      "bvdt"
+    ],
+    "bookend_exempt_reason": "lecture skill: opens on the narrated identity card then the hesitant writer; no composer cold open.",
+    "source_doc": "Godot 4.7 documentation; Godot 4.7.2 runs on Apple M4 Pro (evidence/planning-checks); see SOURCES.md",
+    "tags": [
+      "Godot",
+      "Shaders",
+      "smoothstep",
+      "Glow",
+      "Noise",
+      "HDR 2D",
+      "Game development",
+      "Fragment shader",
+      "Nik Bear Brown"
+    ]
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Soft Edges, Glow and Noise. Learn how to soften an edge, layer a highlight on top, scroll noise through it, and make glow work for real, so your effects stop looking flat.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "routing": {
+        "about": "Film identity and payoff",
+        "runner_up": "Minimal title card",
+        "reason": "The lecture skill's approved first beat: portrait, title, narrated summary."
+      },
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, exact film title and short payoff visible immediately.",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete populated lecture opener visible for the whole narration"
+          }
+        ]
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Identity card: portrait and title; teaching motion resumes in BIDEA."
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "the question",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. Most people think a soft edge needs a blur. It does not. A soft edge is a ramp: a value that climbs from zero to one over a distance you choose. We will build one bubble a layer at a time, and finish with glow.",
+      "estimated_duration_s": 17.7,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "types the newcomer's assumption"
+          },
+          {
+            "at": 0.62,
+            "event": "backspaces 'a blur' and types 'a ramp'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A soft edge needs a blur.",
+            "triggerWords": "a blur",
+            "replacementWords": "a ramp",
+            "fontSize": 66,
+            "charMs": 24,
+            "hesitateBetween": 6,
+            "hesitateWithin": 1,
+            "mistakeRate": 4,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-soft-edges-glow-and-noise",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "motion_claim": "The writer types the assumption a newcomer arrives with and corrects it into the film's real subject.",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Hesitant-writer bookend: the correction is the motion."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "terms",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Five terms. A ramp is a smooth run of values from zero to one. A mask is a number from zero to one for each pixel: how much to show. U V is a pixel's address on the shape. A uniform is a value your game sets. Alpha is how visible a pixel is.",
+      "estimated_duration_s": 18.4,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "'Ramp' lands"
+          },
+          {
+            "at": 0.28,
+            "event": "'Mask' lands"
+          },
+          {
+            "at": 0.45999999999999996,
+            "event": "'UV' lands"
+          },
+          {
+            "at": 0.64,
+            "event": "'Uniform' lands"
+          },
+          {
+            "at": 0.82,
+            "event": "'Alpha' lands"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Ramp",
+                "meaning": "a smooth run of values from 0 up to 1"
+              },
+              {
+                "term": "Mask",
+                "meaning": "a number from 0 to 1 per pixel saying how much of something to show"
+              },
+              {
+                "term": "UV",
+                "meaning": "a point's address on the shape: 0 to 1 across, 0 to 1 down"
+              },
+              {
+                "term": "Uniform",
+                "meaning": "a value your game sets from outside; every pixel sees the same one"
+              },
+              {
+                "term": "Alpha",
+                "meaning": "how visible a pixel is: 0 invisible, 1 solid"
+              }
+            ],
+            "durationSeconds": "__AUDIO__",
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "TERMS card: prerequisites, one plain line each."
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "I · From Cut to Ramp",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "One circle, drawn two ways. First, an edge sharp enough to cut a finger. Then the same circle with the edge fading softly into the background. Nothing was blurred. One function made the difference.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'From Cut to Ramp' (serif 40) top-left. A real Godot render in a framed window on the cream stage: a teal disc with a razor-sharp edge sits still, then at the swap the same disc keeps its size and colour but its edge fades softly into the grey stage. Labels 'hard edge' then 'soft edge'.",
+        "show": [
+          {
+            "at": 0.05,
+            "event": "hard disc, label 'hard edge'"
+          },
+          {
+            "at": 0.6,
+            "event": "shader swapped: the rim fades, label 'soft edge'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - smoothstep(0.25, 0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+            "codeFile": "lab-shaders/02-soft-disc.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c01-hook.mp4",
+            "videoLabel": "Godot 4.7.2 · same circle, shader swapped at 6 s · scripted",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "hard edge",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "soft edge",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "From Cut to Ramp"
+          }
+        },
+        "motion_claim": "The sharp rim melts into a fade the moment the shader is swapped, with nothing else changing."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of a sharp and a soft circle",
+        "why": "A real render is the honest picture of 'nothing was blurred, one function changed'; a drawing would only claim it.",
+        "capture_spec": "C01: square target (ColorRect 576 x 576 logical px centred on the 1280 x 720 canvas), lab-shaders/01-hard-disc.gdshader from 0 s, material swapped to lab-shaders/02-soft-disc.gdshader at 6.0 s (`--material-at 6.0`), 10 s, 30 fps, Forward+, stage #D9D5CA, no input. Verified: 01 draws exactly two colors in a 256 px render; 02 has 16,780 in-between pixels of 65,536.",
+        "act_title_on_screen": "From Cut to Ramp"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "I · From Cut to Ramp",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "The hard edge comes from a function called step. Give it a line in the sand, and a value. Below the line, it answers zero. At the line or above, one. Nothing in between.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Axes on the cream stage: horizontal x from 0 to 1, vertical result 0 to 1. A grey dashed vertical line at the edge 0.4, labelled 'edge'. A terracotta dot slides along the bottom at height 0 from the left; when it crosses the line it jumps up to height 1 and runs on along the top, leaving a cliff-shaped curve behind it. Beneath the axes the GLOSSARY wording: 'step(edge, x): 0 below the edge, 1 from the edge up'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "axes and the line a"
+          },
+          {
+            "at": 0.3,
+            "event": "dot slides along zero"
+          },
+          {
+            "at": 0.62,
+            "event": "dot jumps to one; cliff curve drawn"
+          },
+          {
+            "at": 0.8,
+            "event": "rule label"
+          }
+        ],
+        "manim": {
+          "class": "B02_StepPlot"
+        },
+        "motion_claim": "The dot slides along zero, jumps to one at the line, and the curve behind it is a cliff."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace on the docs line 'b < a ? 0.0 : 1.0'",
+        "why": "A jump from zero to one is a motion; the code line would only state it."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "I · From Cut to Ramp",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A circle is a distance test. Distance asks how far apart two points are. Ask it how far each pixel's address is from the middle. One minus a step on that answer is one inside the radius, and zero outside.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the hard-disc shader); at right a real Godot window with the teal disc and its razor-sharp edge. A terracotta ring settles on the right-hand part of the rim. A label on each highlighted line defines distance and step (GLOSSARY wording).",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "distance line + definition label"
+          },
+          {
+            "at": 0.62,
+            "event": "step line + definition label; ring on the rim"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - step(0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+            "codeFile": "lab-shaders/01-hard-disc.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  4
+                ],
+                "label": "distance(a, b): how far apart two points are"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  5
+                ],
+                "label": "step(edge, x): 0 below the edge, 1 from the edge up"
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c02-hard-disc.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.7,
+                "box": [
+                  0.671,
+                  0.404,
+                  0.712,
+                  0.596
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The distance line is highlighted, then the step line; the ring lands on the rim as 'inside / outside' is said."
+      },
+      "lecture": {
+        "runner_up": "manim rings of equal distance around the middle",
+        "why": "The code and its exact result side by side is the claim; the rings picture would not show the real edge.",
+        "capture_spec": "C02: the same square target, lab-shaders/01-hard-disc.gdshader, still PNG at 3840 x 2160, Forward+. Verified in the 256 px Lab render: the pixel at UV x 0.8965 is body (alpha 1.0), the pixel at 0.9043 is stage (alpha 0.0)."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "I · From Cut to Ramp",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Zoom in on that edge. Every pixel is either all color or none. With nothing in between, the rim becomes a staircase of square steps. That is why hard edges look jagged.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A 10-by-7 block of big outline cells cut from the REAL hard-disc render (data in evidence/planning-checks/staircase-cells.txt: columns 196 to 205, rows 51 to 57): cells that are teal in the render are filled teal and labelled 1, empty ones are stage grey and labelled 0. A terracotta outline walks along the boundary one step at a time. Caption: 'no in-between values'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the block of cells from the real render"
+          },
+          {
+            "at": 0.35,
+            "event": "outline starts walking the boundary"
+          },
+          {
+            "at": 0.7,
+            "event": "caption 'no in-between values'"
+          }
+        ],
+        "manim": {
+          "class": "B04_Staircase"
+        },
+        "motion_claim": "The outline climbs the staircase one square step at a time along the real boundary."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab zoom of the hard-disc capture",
+        "why": "Cells with real 1 and 0 values show 'each pixel is all or none' better than a blurry magnified crop."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "I · From Cut to Ramp",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Smooth step takes two lines. Below the first, zero. Above the second, one. Between them, it climbs along a smooth curve: slow to start, fastest in the middle, slow to finish.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Axes: horizontal x from 0 to 0.5, vertical result 0 to 1. Two grey dashed vertical lines at a = 0.25 and b = 0.4, labelled 'a' and 'b'. A terracotta dot rides along the x axis; the curve behind it is flat at 0, S-shaped between the two lines, then flat at 1. Rule label under the plot in two lines, in the GLOSSARY wording (the two edges are the dashed lines a and b): 'smoothstep(a, b, x): a switch that eases in and out between two edges:' then '0 below a, 1 above b, a smooth S between'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "axes with lines a and b"
+          },
+          {
+            "at": 0.3,
+            "event": "dot rides; flat part drawn"
+          },
+          {
+            "at": 0.6,
+            "event": "S-shaped climb between a and b"
+          },
+          {
+            "at": 0.82,
+            "event": "rule label"
+          }
+        ],
+        "manim": {
+          "class": "B05_TwoLines"
+        },
+        "motion_claim": "The dot rides along and the curve it leaves is flat, then an S, then flat again."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab ramp strip",
+        "why": "A curve that bends between two lines is a plot; the dot makes 'slow, fast, slow' visible as speed."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "I · From Cut to Ramp",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "That curve is not a straight line. Ten percent of the way along, a straight ramp reads zero point one. Smooth step reads zero point zero two eight. The formula is three t squared minus two t cubed.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The same plot in unit form: t (labelled 'how far along the band, 0 to 1') from 0 to 1, a grey dashed diagonal (the straight ramp) and the terracotta S-curve. At t = 0.1 a vertical marker with two dots: the straight ramp at 0.1 and the curve at 0.028, a bracket between them. At t = 0.5 the dots coincide at 0.5. Typeset at top right: 3t^2 - 2t^3 (real MathTex, per docs/MATH-TYPESETTING.md) and under it, in monospace and labelled as code, t * t * (3.0 - 2.0 * t).",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "diagonal and S-curve"
+          },
+          {
+            "at": 0.3,
+            "event": "marker at t = 0.1, dots 0.1 and 0.028, bracket"
+          },
+          {
+            "at": 0.62,
+            "event": "marker moves to t = 0.5: dots coincide"
+          },
+          {
+            "at": 0.8,
+            "event": "typeset formula and code form"
+          }
+        ],
+        "manim": {
+          "class": "B06_SCurveNumber"
+        },
+        "motion_claim": "The marker lands at ten percent and the two dots split: 0.1 on the line, 0.028 on the curve."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable of t, line, curve",
+        "why": "The gap between a line and a curve at one marked spot is a picture; a table lists numbers without showing the gap."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "I · From Cut to Ramp",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Swap step for smooth step and give it two radii. Inside zero point two five, fully on. Beyond zero point four, fully off. In between, the value glides down. That band is the soft edge.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the soft-disc shader, one line changed from the hard disc); at right the real render: the teal disc whose edge fades over a band. A terracotta ring on the band at the right side, small labels '0.25' and '0.4' at the band's two ends.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "smoothstep line highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "ring on the band; '0.25' and '0.4' labels"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - smoothstep(0.25, 0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+            "codeFile": "lab-shaders/02-soft-disc.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  5
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  6
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c03-soft-disc.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "0.25",
+                "x": 0.613,
+                "y": 0.596
+              },
+              {
+                "at": 0.62,
+                "text": "0.4",
+                "x": 0.68,
+                "y": 0.596
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.62,
+                "box": [
+                  0.608,
+                  0.42,
+                  0.689,
+                  0.58
+                ]
+              }
+            ],
+            "caption": "band: the strip of pixels near the edge, between the two radii",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The smoothstep line is highlighted and the ring settles on the fading band."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The real picture of the band, next to the one line that makes it, is the claim.",
+        "capture_spec": "C03: the square target, lab-shaders/02-soft-disc.gdshader, still PNG 3840 x 2160. Verified in the 256 px render: body alpha 0.966 / 0.496 / 0.026 at t = 0.100 / 0.500 / 0.900 (formula 0.972 / 0.500 / 0.028); every pixel within 0.008 of the formula."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "I · From Cut to Ramp",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Tie the inner radius to a uniform and you get a softness dial. Small values give a crisp rim. Large ones give a cloud. The outer radius never moves.",
+      "estimated_duration_s": 9.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the soft-width shader); at right a real Godot window whose disc starts with a crisp rim and, as softness is swept up, spreads into a cloud while the outer edge stays put. Labels 'crisp' then 'cloud'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "uniform line highlighted"
+          },
+          {
+            "at": 0.34,
+            "event": "smoothstep line; sweep under way"
+          },
+          {
+            "at": 0.7,
+            "event": "label 'cloud'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform float softness : hint_range(0.02, 0.4) = 0.15;\n\nvoid fragment() {\n\tfloat width = max(softness, 0.01);\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - smoothstep(0.4 - width, 0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+            "codeFile": "lab-shaders/03-soft-width.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.34,
+                "lines": [
+                  8
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c04-softness-sweep.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · softness swept by script",
+            "readouts": [
+              {
+                "at": 0.12,
+                "text": "crisp",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "cloud",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The fade widens inward from the same outer edge as the dial climbs."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A dial moving a real picture is the claim: the inner edge travels, the outer one does not.",
+        "capture_spec": "C04: the square target, lab-shaders/03-soft-width.gdshader, softness 0.02 held 1 s, swept to 0.4 by 7 s, held (`--animate softness:0:0.02,1:0.02,7:0.4`); 12 s, 30 fps, Forward+. Verified stills: softness 0.05 gives 6,448 in-between pixels, 0.15 gives 16,780, 0.4 gives 27,400; outer edge unchanged."
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "I · From Cut to Ramp",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Squeeze the band to nothing, and smooth step becomes step. But the docs call equal lines undefined, and the range on that uniform cannot stop code from sending zero. So keep the width above zero with max.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The S-curve plot with its two lines a and b. The lines slide together; the S-curve steepens into a vertical cliff, a step, at the moment they touch. At the touch a label 'a = b: undefined (docs)' and, in grey, 'this Mac: a hard cut' with the small grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+ and Compatibility'. Then a code chip slides in beside it: max(softness, 0.01), with the label 'max(a, b): the larger of two values'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "S-curve with lines a and b"
+          },
+          {
+            "at": 0.35,
+            "event": "lines slide together; curve steepens"
+          },
+          {
+            "at": 0.68,
+            "event": "cliff; label 'a = b: undefined (docs)'"
+          },
+          {
+            "at": 0.85,
+            "event": "chip: max(softness, 0.01)"
+          }
+        ],
+        "manim": {
+          "class": "B09_BandsMeet"
+        },
+        "motion_claim": "The two dashed lines slide together and the smooth curve collapses into a cliff."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the docs sentence 'Results are undefined if a >= b.'",
+        "why": "The collapse of the S into a cliff is the picture of 'step is smoothstep with no band'; the docs sentence goes on the screen as the label."
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "I · From Cut to Ramp",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "You will also meet smooth step with its lines swapped, to flip the ramp. On this Mac that worked. The docs still call it undefined, so write one minus smooth step instead.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The smooth-curve plot with lines a = 0.25 and b = 0.4. The two lines swap places (b now left of a) and the S-curve flips to fall from one to zero. Label 'smoothstep(0.4, 0.25, x): flipped on this Mac, undefined in the docs' with the small grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+ and Compatibility'. Then, beneath the same flipped curve, the safe form slides in: '1.0 - smoothstep(0.25, 0.4, x)'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "S-curve and lines"
+          },
+          {
+            "at": 0.36,
+            "event": "lines swap; curve flips"
+          },
+          {
+            "at": 0.7,
+            "event": "safe form slides in under the flipped curve"
+          }
+        ],
+        "manim": {
+          "class": "B10_SwappedLines"
+        },
+        "motion_claim": "The curve flips when the lines swap, then the safe one-minus form draws the very same curve."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab render of the swapped shader",
+        "why": "Two curves that overlap exactly show that the safe form is the same picture; a render would hide the argument order."
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "II · Falloff and Highlight",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A falloff is how quickly a value fades as you move away from a point. The simplest is one minus the distance: one at the point, dropping steadily to zero a whole unit away.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Falloff and Highlight' (serif 40) top-left. An 11-by-11 pixel grid of outline cells with a terracotta spot on the cell left of centre. Concentric distance rings expand from the spot; each cell fills teal in proportion to 1 minus its distance, with its number written on one row: 1.0, 0.8, 0.6, 0.4, 0.2, 0.0. At right a profile: value against distance, a straight line falling from 1 to 0 at distance 1. Label 'falloff: how quickly a value fades with distance'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "grid and spot, act title"
+          },
+          {
+            "at": 0.35,
+            "event": "rings expand; cells fill with their numbers"
+          },
+          {
+            "at": 0.7,
+            "event": "profile line and the falloff label"
+          }
+        ],
+        "manim": {
+          "class": "B11_Falloff"
+        },
+        "motion_claim": "The rings spread from the spot and the cells behind them fill less and less, down to zero at distance one."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab render of the spot",
+        "why": "Numbers falling cell by cell as the rings spread is the definition of a falloff; the render comes next as proof.",
+        "act_title_on_screen": "Falloff and Highlight"
+      }
+    },
+    {
+      "beat_id": "B12",
+      "act": "II · Falloff and Highlight",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "As the alpha of a teal color, that is a soft spot of paint, thickest at the point. Notice where it stops: it does not. At the edge of the picture it is still more than a third on.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (four lines); at right the real render: a teal haze thickest at the spot near the upper left and still clearly teal at the right edge and the bottom of the picture, where it ends in a hard straight cut. A terracotta ring on the right edge with the label 'still 0.35'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "spot line highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "ring on the right edge: 'still 0.35'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat spot = 1.0 - distance(UV, vec2(0.35));\n\tCOLOR = vec4(0.37, 0.64, 0.57, spot);\n}",
+            "codeFile": "lab-shaders/04-spot.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  4
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  5
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c05-spot.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "still 0.35",
+                "x": 0.68,
+                "y": 0.26
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.62,
+                "box": [
+                  0.68,
+                  0.276,
+                  0.725,
+                  0.5
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The haze spreads from the spot to the picture's edge, and the ring marks the cut."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The cut at the picture's edge is only visible in the real render, and it is the whole point of the beat.",
+        "capture_spec": "C05: the square target, lab-shaders/04-spot.gdshader, still PNG 3840 x 2160. Verified in the 256 px render: alpha 0.351 at the right edge on the spot's row (formula 0.352), 0.082 at the far corner (0.084)."
+      }
+    },
+    {
+      "beat_id": "B13",
+      "act": "II · Falloff and Highlight",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Raise it to a power above one, and numbers between zero and one shrink. Zero point seven becomes zero point three four three at power three, and zero point one one eight at power six. The spot tightens.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Axes 0 to 1. Three curves drawn in turn: the straight line x^1, then x^3, then x^6, each labelled at its end. A vertical guide at x = 0.7 with a dot landing on each curve: 0.7, 0.343, 0.118. Label 'pow(x, p): x raised to the power p'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "axes and the straight line"
+          },
+          {
+            "at": 0.3,
+            "event": "x^3 curve; dot 0.343"
+          },
+          {
+            "at": 0.58,
+            "event": "x^6 curve; dot 0.118"
+          },
+          {
+            "at": 0.82,
+            "event": "pow label"
+          }
+        ],
+        "manim": {
+          "class": "B13_PowerCurves"
+        },
+        "motion_claim": "Each curve sags further below the straight line, and the dots on the guide drop: 0.7, 0.343, 0.118."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab power sweep",
+        "why": "Curves that sag further as the power climbs, with one input landing at three outputs, show 'raise to a power' as a function."
+      }
+    },
+    {
+      "beat_id": "B14",
+      "act": "II · Falloff and Highlight",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Make the power a uniform and watch the spot shrink as it climbs. Power one is a haze, three a soft highlight, eight a pinpoint. The clamp stops the number going negative, where a power is undefined.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the power shader); at right a real Godot window whose teal spot shrinks from a broad haze to a pinpoint as power sweeps from 1 to 8. Labels 'power 1', 'power 3', 'power 8' as the values pass; the clamp line is highlighted with its one-line definition at the end.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "power 1: haze"
+          },
+          {
+            "at": 0.3,
+            "event": "power 3: soft highlight"
+          },
+          {
+            "at": 0.62,
+            "event": "power 8: pinpoint; clamp line + definition"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform float power : hint_range(1.0, 8.0) = 3.0;\n\nvoid fragment() {\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tCOLOR = vec4(0.37, 0.64, 0.57, pow(spot, power));\n}",
+            "codeFile": "lab-shaders/05-spot-power.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  7
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  6
+                ],
+                "label": "clamp(x, lo, hi): keep x between lo and hi"
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c06-power-sweep.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · power swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "power 1",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.3,
+                "text": "power 3",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.62,
+                "text": "power 8",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The spot contracts as the power climbs; the clamp line lights up last."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A dial moving a real picture is the claim, with the numbers named as they pass.",
+        "capture_spec": "C06: the square target, lab-shaders/05-spot-power.gdshader, power 1 held 1.5 s, swept to 8 by 8.5 s, held (`--animate power:0:1,1.5:1,8.5:8`); 14 s, 30 fps, Forward+. Verified stills: alpha 0.895 / 0.722 / 0.422 at 0.1 from the spot for power 1 / 3 / 8."
+      }
+    },
+    {
+      "beat_id": "B15",
+      "act": "II · Falloff and Highlight",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A falloff never stops by itself, so cut it to a shape. Multiply it by the circle's mask, the disc. Where the disc is zero, the product is zero, and the highlight can only show on the bubble.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the spot-in-disc shader); at right a real Godot window: first the teal spot with its faint tail running past where the bubble will be, then at the swap the tail beyond the disc vanishes and the highlight is confined to the disc. A terracotta ring on the tail beyond the disc with readouts '0.09' then '0'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "unmasked spot with its tail"
+          },
+          {
+            "at": 0.62,
+            "event": "swap: tail gone; ring reads 0.09 then 0"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tCOLOR = vec4(0.37, 0.64, 0.57, pow(spot, 3.0) * disc);\n}",
+            "codeFile": "lab-shaders/06-spot-in-disc.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  5
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  7
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c07-spot-in-disc.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · shader swapped at 3 s · scripted",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "0.09",
+                "x": 0.68,
+                "y": 0.26
+              },
+              {
+                "at": 0.7,
+                "text": "0",
+                "x": 0.68,
+                "y": 0.26
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.3,
+                "box": [
+                  0.644,
+                  0.3,
+                  0.712,
+                  0.46
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The tail outside the disc disappears the moment the shader is swapped."
+      },
+      "lecture": {
+        "runner_up": "manim mask product",
+        "why": "The real before and after, with the same pixel reading 0.09 then 0, is the proof that multiplying cuts.",
+        "capture_spec": "C07: the square target, lab-shaders/05-spot-power.gdshader (power 3) from 0 s, swapped to lab-shaders/06-spot-in-disc.gdshader at 3.0 s (`--material-at 3.0`), 8 s, 30 fps, Forward+. Verified: at the pixel (230, 89) the alpha is 0.090 before and 0.000 after (formulas 0.091 and 0)."
+      }
+    },
+    {
+      "beat_id": "B16",
+      "act": "II · Falloff and Highlight",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A point is two numbers. Make them a uniform and the highlight follows. Slide it around, and you decide where the light seems to come from.",
+      "estimated_duration_s": 8.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the spot-moves shader); at right a real Godot window where the highlight travels once around inside the disc. A small terracotta dot marks spot_center's position on the render.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "vec2 uniform line highlighted"
+          },
+          {
+            "at": 0.34,
+            "event": "spot line highlighted; highlight starts to travel"
+          },
+          {
+            "at": 0.7,
+            "event": "highlight on its way round"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec2 spot_center = vec2(0.35);\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, spot_center), 0.0, 1.0);\n\tCOLOR = vec4(0.37, 0.64, 0.57, pow(spot, 3.0) * disc);\n}",
+            "codeFile": "lab-shaders/07-spot-moves.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.34,
+                "lines": [
+                  8
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c08-spot-orbit.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · spot_center moved by script",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The highlight circles inside the disc while the highlighted line says where it comes from."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A real highlight following a dial is the claim: 'you decide where the light comes from'.",
+        "capture_spec": "C08: the square target, lab-shaders/07-spot-moves.gdshader, spot_center driven by a scene script (`--scene`) along a circle of radius 0.18 around (0.5, 0.5), one turn in 6 s starting at the upper left, 9 s, 30 fps, Forward+. Verified stills: spot_center (0.35, 0.35) and (0.65, 0.4) match the formula within 0.008 on all pixels."
+      }
+    },
+    {
+      "beat_id": "B17",
+      "act": "III · Layering",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A layer is a color plus a mask: how much of that color to show. The body is teal, masked by the disc. The highlight is pale, masked by the spot. Stack them and you have a bubble.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Layering' (serif 40) top-left. Two sheets slide in over the stage: a teal disc sheet labelled 'body · mask: the disc' and a pale highlight sheet labelled 'highlight · mask: the spot'. They slide together into one bubble (a teal disc with a pale highlight) that settles where they met.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "teal sheet, act title"
+          },
+          {
+            "at": 0.35,
+            "event": "pale highlight sheet slides in"
+          },
+          {
+            "at": 0.65,
+            "event": "the sheets merge into a bubble"
+          }
+        ],
+        "manim": {
+          "class": "B17_Layers"
+        },
+        "motion_claim": "The two sheets slide together and settle into one bubble."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "isometric stack of two sheets (show-tell)",
+        "why": "Two things becoming one is the idea of layering; a flat slide-together keeps the cast (disc, spot) the viewer already knows.",
+        "act_title_on_screen": "Layering"
+      }
+    },
+    {
+      "beat_id": "B18",
+      "act": "III · Layering",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Two ways to combine masks. Multiply, and you keep only where both are on. Add, and you get where either is on, up to a cap of one. Multiply by zero erases. Add zero and nothing changes.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two overlapping discs A (teal outline) and B (pale outline) with four sample points: in both, only A, only B, in neither. A left column 'multiply' lights the lens where both are one and writes each point's product: 1, 0, 0, 0. A right column 'add' lights the union and writes the sums: 2 (capped to 1), 1, 1, 0.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "two discs and four points"
+          },
+          {
+            "at": 0.35,
+            "event": "multiply: the lens lights; products"
+          },
+          {
+            "at": 0.68,
+            "event": "add: the union lights; sums, 2 capped to 1"
+          }
+        ],
+        "manim": {
+          "class": "B18_MultiplyAdd"
+        },
+        "motion_claim": "The lens lights up under 'multiply', the whole union under 'add', and each point shows its number."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable of products and sums",
+        "why": "Overlapping regions with a number at each point make 'both' and 'either' visible; a table would list them."
+      }
+    },
+    {
+      "beat_id": "B19",
+      "act": "III · Layering",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "Each layer's color is a uniform with the hint source color. A hint is the word after the colon that tells Godot how to treat a uniform. For a color, that is a color picker in the editor.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left with the two color-uniform lines highlighted; at right a real still of Godot's Inspector from a scripted editor session, the material's Shader Parameters group showing two color swatches (Body Color and Highlight Color) and a Brightness number box with a slider bar, with a terracotta ring on the first swatch; then the same swatch clicked, its picker open (color wheel, brightness bar, RGB, HSV, Linear, Hex). The one-line definition of a hint (GLOSSARY wording) sits under the result.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "uniform lines highlighted; hint label and the definition caption"
+          },
+          {
+            "at": 0.62,
+            "event": "'source_color' label on the code lines"
+          },
+          {
+            "at": 0.72,
+            "event": "ring on the Body Color swatch (E3-1)"
+          },
+          {
+            "at": 0.86,
+            "event": "dissolve to E3-2: the swatch's picker open"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float brightness : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = (body_color + highlight_color * highlight) * brightness;\n\tCOLOR = vec4(rgb, disc);\n}",
+            "codeFile": "lab-shaders/08-bubble.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  3,
+                  4
+                ],
+                "label": "hint: how Godot treats this uniform"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  3,
+                  4
+                ],
+                "label": "source_color: a color picker"
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/e3-color-pickers.mp4",
+            "videoLabel": "Godot 4.7.2 editor · scripted editor session",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.72,
+                "box": [
+                  0.777,
+                  0.625,
+                  0.983,
+                  0.7
+                ]
+              }
+            ],
+            "caption": "hint: the word after a colon that tells Godot how to treat a uniform",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The uniform lines light up, the ring lands on the color swatch they produce, and the swatch opens its picker."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab render of the bubble (labelled)",
+        "why": "Real editor frames, recorded by script, are the rung-1 SHOW-THE-THING answer for 'the editor shows a color picker': a swatch, and the picker it opens; the Lab render of the bubble does not show an editor widget.",
+        "capture_spec": "E3 (DONE by script, 2026-10-13: the one film-specific editor run; state script, scene and log in evidence/planning-checks/editor-capture/): the bubble material (lab-shaders/08-bubble.gdshader, byte-identical in the scratch project) on a 480 x 480 ColorRect. Frames in `_godot-shaders-series/editor-capture/png/1920x1080/soft-edges-glow-and-noise/`: soft-edges_E3-1_bubble-shader-parameters-two-color-swatches-and-slider (group Shader Parameters: rows Body Color and Highlight Color, both color swatches, and Brightness, a number box with a slider bar) and soft-edges_E3-2_body-color-picker-popup-open (the picker after a scripted click on the Body Color swatch: R 94, G 163, B 145, Hex 5ea391, Swatches, Recent Colors). Only 1920x1080 was recorded (one run); a 640 x 360 crop of it would blur in the 4K window, so re-record at native size (recipe in CAPTURE-PLAN.md section E, about 30 s) and crop the native frames: E3-1 x 1275 to 1915, y 195 to 555 (1920 coordinates, times 1.8 for native), E3-2 x 1275 to 1915, y 410 to 770, which ends above the line 'Screen Recording permission missing!' (the eyedropper needs a macOS permission). The ring box is a fraction of the E3-1 crop. Cross-dissolve at 0.86. No pointer is visible (the picker was opened by a scripted click): label 'scripted editor session'."
+      }
+    },
+    {
+      "beat_id": "B20",
+      "act": "III · Layering",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now the sum. The body color, plus the highlight color times the highlight mask. Where the mask is zero, nothing is added. Where it is one, the highlight color lands in full.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 14-line bubble shader); at right the real render: the teal bubble with its pale highlight at the upper left. The rgb line is highlighted first, then the highlight line.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "rgb line highlighted"
+          },
+          {
+            "at": 0.62,
+            "event": "highlight line highlighted; 'highlight: the mask'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float brightness : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = (body_color + highlight_color * highlight) * brightness;\n\tCOLOR = vec4(rgb, disc);\n}",
+            "codeFile": "lab-shaders/08-bubble.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  12
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  11
+                ],
+                "label": "highlight: the mask"
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c09-bubble.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The sum line lights up, then the highlight mask line."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The complete bubble next to its one summing line is the claim of the beat.",
+        "capture_spec": "C09: the square target, lab-shaders/08-bubble.gdshader at its defaults (brightness 1.0), still PNG 3840 x 2160, Forward+. Verified: the highlight's centre reads (0.918, 1.000, 1.000) on screen (the shader's rgb is 0.919, 1.159, 1.019 before the screen clips it); the body away from the highlight reads (0.514, 0.776, 0.690)."
+      }
+    },
+    {
+      "beat_id": "B21",
+      "act": "III · Layering",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A trap. Add a brightness dial for the whole bubble. Multiplication always happens before addition. So a plus b times c multiplies b and c first, and only the highlight dims. Wrap the sum in parentheses.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The expression a + b * c as a small tree: b * c is ringed first (terracotta), then the plus. Beneath it the parenthesised (a + b) * c with the plus ringed first. Numbers on the leaves: a = 0.64 (the body, green channel), b = 0.52 (the highlight, green channel), c = 0.6 (brightness); results written under each: 0.95 and 0.70. Label 'multiply binds first'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "left tree a + b * c"
+          },
+          {
+            "at": 0.34,
+            "event": "ring on b * c; result 0.95"
+          },
+          {
+            "at": 0.66,
+            "event": "right tree (a + b) * c; ring on a + b; result 0.70"
+          }
+        ],
+        "manim": {
+          "class": "B21_EvaluationOrder"
+        },
+        "motion_claim": "The ring lands on b * c first in the left tree and on a + b first in the right one, and the two results differ."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the docs operator table",
+        "why": "A tree with the order of work ringed step by step shows what the rule does to real numbers; the table is the next beat."
+      }
+    },
+    {
+      "beat_id": "B22",
+      "act": "III · Layering",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Real numbers from this Mac, brightness point six. With the parentheses, the highlight's center reads point seven in green, and the whole bubble dims. Without them, point nine five, and the body barely moves.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two real Godot panels side by side on the cream stage: the left bubble uses the shader with the parentheses, the right one the shader without. Brightness is swept from 1.0 to 0.6 on both; the left bubble dims all over, the right one keeps its teal body and only its highlight dims. Readouts under each: 'with: green 0.70' and 'without: green 0.95'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "two bubbles at brightness 1.0"
+          },
+          {
+            "at": 0.3,
+            "event": "the sweep to 0.6 starts"
+          },
+          {
+            "at": 0.65,
+            "event": "left dimmed, right nearly unchanged; readouts"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float brightness : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = (body_color + highlight_color * highlight) * brightness;\n\tCOLOR = vec4(rgb, disc);\n}",
+            "codeFile": "lab-shaders/08-bubble.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c10-bubble-two-up.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · brightness swept by script on both",
+            "readouts": [
+              {
+                "at": 0.65,
+                "text": "with: green 0.70",
+                "x": 0.27,
+                "y": 0.95
+              },
+              {
+                "at": 0.65,
+                "text": "without: green 0.95",
+                "x": 0.73,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Both bubbles are dialled down together: one dims all over, the other barely changes."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "The two results side by side under the same sweep are the proof; a still pair would hide the dial moving.",
+        "capture_spec": "C10: two-panel scene script (`--scene`, as the Lines film's two_panels.gd): two square targets side by side (left lab-shaders/08-bubble.gdshader, right lab-shaders/09-bubble-bug.gdshader), brightness 1.0 held 1.5 s then swept to 0.6 by 4.5 s on both (`--animate left.brightness:0:1,1.5:1,4.5:0.6` and the same for right), held; 12 s, 30 fps, Forward+, stage #D9D5CA. Verified: at brightness 0.6 the highlight centre reads green 0.694 (with parentheses) and 0.953 (without); the body away from the highlight reads green 0.467 and 0.722; at 1.0 both read 0.776."
+      }
+    },
+    {
+      "beat_id": "B23",
+      "act": "III · Layering",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot's own table says the same. Parentheses come first, then multiply and divide, then add and subtract. When in doubt, add a pair. They cost nothing.",
+      "estimated_duration_s": 8.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real Godot 4.7 'Operators' table in a browser window; the camera pushes in on the first four rows (parenthetical grouping, unary, multiplicative, additive) and a terracotta ring marks the multiplicative and additive rows.",
+        "show": [
+          {
+            "at": 0,
+            "event": "page"
+          },
+          {
+            "at": 0.25,
+            "event": "push-in; ring on the multiplicative and additive rows"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html#operators",
+            "image": "soft-edges-glow-and-noise/d2-operators.png",
+            "caption": "Godot 4.7 documentation · Shading language · Operators · captured at build time",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.3,
+                "scale": 1
+              },
+              {
+                "at": 0.25,
+                "x": 0.5,
+                "y": 0.45,
+                "scale": 1.5
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera pushes in on the table and the ring lands on 'multiplicative' above 'additive'."
+      },
+      "lecture": {
+        "runner_up": "manim table redrawn",
+        "why": "The rule is a documentation fact; the documentation itself is the evidence (SHOW-THE-THING)."
+      }
+    },
+    {
+      "beat_id": "B24",
+      "act": "IV · Noise That Moves",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "Noise is a texture of smooth random values: nearby pixels look alike, far ones do not. Godot makes it for you: a noise texture two D, filled by a fast noise lite generator.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Noise That Moves' (serif 40) top-left. Code card at left with the sampler line highlighted twice, each time with its definition label (noise, then texture). At right two real stills of Godot's Inspector from a scripted editor session, one after the other: first the NoiseTexture2D itself (Width 512 px, Height 512 px, its Noise slot holding a FastNoiseLite, a Seamless row; this view has no preview), with a terracotta ring on the NoiseTexture2D header and then on the Noise slot; then the FastNoiseLite itself, where the grey clouds preview appears, with the ring on the preview.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "sampler line + 'noise' definition; the NoiseTexture2D view"
+          },
+          {
+            "at": 0.62,
+            "event": "'texture' definition"
+          },
+          {
+            "at": 0.66,
+            "event": "ring on the NoiseTexture2D header"
+          },
+          {
+            "at": 0.78,
+            "event": "ring on the Noise slot (FastNoiseLite)"
+          },
+          {
+            "at": 0.84,
+            "event": "dissolve to the FastNoiseLite view"
+          },
+          {
+            "at": 0.9,
+            "event": "ring on the clouds preview"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise : repeat_enable;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat n = texture(noise, UV).r;\n\tCOLOR = vec4(0.37, 0.64, 0.57, disc * n);\n}",
+            "codeFile": "lab-shaders/10-noise-cloud.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ],
+                "label": "noise: a texture of smooth random values"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  3
+                ],
+                "label": "texture: an image a shader can read by address"
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/e1-noise-inspector.mp4",
+            "videoLabel": "Godot 4.7.2 editor · scripted editor session",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.66,
+                "box": [
+                  0.352,
+                  0.028,
+                  0.992,
+                  0.125
+                ]
+              },
+              {
+                "at": 0.78,
+                "box": [
+                  0.356,
+                  0.417,
+                  0.995,
+                  0.5
+                ]
+              },
+              {
+                "at": 0.9,
+                "box": [
+                  0.352,
+                  0.025,
+                  0.992,
+                  0.497
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "Noise That Moves"
+          }
+        },
+        "motion_claim": "The ring lands on the NoiseTexture2D, then on its Noise slot, then on the cloud preview of the generator, as the voice names them."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab render of the noise texture as teal alpha (labelled)",
+        "why": "The real Inspector is the thing the sentence names (SHOW-THE-THING), and the two views are the honest order: the texture holds a generator, the generator shows the clouds; the Lab render of the same texture does not show an editor.",
+        "capture_spec": "E1 (reused; DONE by script, 2026-10-13): two frames recorded in the same scratch project for the Textures and Color film and shown here because they show the same thing (the resource itself, not the slot's label, so the other film's shader does not show): `_godot-shaders-series/editor-capture/png/1920x1080/textures-and-color/textures-and-color_E1-3a_NoiseTexture2D-width-height-noise-FastNoiseLite.png` (the NoiseTexture2D view: Width, Height, Generate Mipmaps, Noise = FastNoiseLite, Color Ramp, Seamless, Invert, In 3D Space, As Normal Map, Normalize; NO preview) and `textures-and-color_E1-3b_inside-FastNoiseLite-preview-clouds.png` (the FastNoiseLite view: the grey clouds preview with a 3D button, Noise Type Simplex Smooth, Seed 0, Frequency 0.01, Offset, Fractal, Domain Warp). Both also exist as native 3456x1944 twins in png/3456x1944/textures-and-color/: crop those, x 1275 to 1915, y 195 to 555 in 1920 coordinates (times 1.8 for native). Cross-dissolve at 0.84; the ring boxes are fractions of that crop. (This film's own scene with a `noise` slot was never recorded: the frames above show the same two views.) No pointer: label 'scripted editor session'.",
+        "act_title_on_screen": "Noise That Moves"
+      }
+    },
+    {
+      "beat_id": "B25",
+      "act": "IV · Noise That Moves",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A shader reads it through a sampler two D uniform, the type for a texture. The function texture does a lookup: what value sits at this address? Multiply that into the alpha, and the disc turns to cloud.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the noise-cloud shader); at right the real render: the teal disc turned to cloud, bright patches where the noise is high and see-through patches where it is low.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "sampler2D line + definition"
+          },
+          {
+            "at": 0.38,
+            "event": "texture line + 'lookup'"
+          },
+          {
+            "at": 0.65,
+            "event": "COLOR line: noise into the alpha"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise : repeat_enable;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat n = texture(noise, UV).r;\n\tCOLOR = vec4(0.37, 0.64, 0.57, disc * n);\n}",
+            "codeFile": "lab-shaders/10-noise-cloud.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ],
+                "label": "sampler2D: the type of a texture a shader reads"
+              },
+              {
+                "at": 0.38,
+                "lines": [
+                  8
+                ],
+                "label": "texture(noise, UV): a texture read at this address"
+              },
+              {
+                "at": 0.65,
+                "lines": [
+                  9
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c11-noise-cloud.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · NoiseTexture2D, seamless on",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The three lines light up in turn while the clouds sit in the disc."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The cloud is the real result of the lookup, next to the line that does it.",
+        "capture_spec": "C11: scene script (`--scene`; the Lab only binds a plain image): NoiseTexture2D with FastNoiseLite defaults, 512 x 512, seamless on, bound to the 'noise' uniform of lab-shaders/10-noise-cloud.gdshader on the square target; still PNG 3840 x 2160, Forward+. Node setup as in evidence/planning-checks/noise_check.gd (make_noise, make_rect)."
+      }
+    },
+    {
+      "beat_id": "B26",
+      "act": "IV · Noise That Moves",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "To move it, add time to the address. Time is seconds on one clock shared by the whole game. Each second, the lookup slides a tenth of the way along, and the clouds drift.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the scroll shader: the lookup now adds TIME times a tenth to the address); at right the real render: the clouds drift steadily sideways inside the disc. The TIME definition is on screen.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "lookup line + TIME definition"
+          },
+          {
+            "at": 0.45,
+            "event": "clouds drifting"
+          },
+          {
+            "at": 0.8,
+            "event": "still drifting"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise : repeat_enable;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat n = texture(noise, UV + vec2(TIME * 0.1, 0.0)).r;\n\tCOLOR = vec4(0.37, 0.64, 0.57, disc * n);\n}",
+            "codeFile": "lab-shaders/11-noise-scroll.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  8
+                ],
+                "label": "TIME: seconds on one clock shared by the whole game"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  9
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c12-noise-scroll.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · a live clock",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The clouds drift while the lookup line is highlighted."
+      },
+      "lecture": {
+        "runner_up": "manim sliding lookup",
+        "why": "A live render of the drift is the claim; the direction detail comes next.",
+        "capture_spec": "C12: scene script as C11 (NoiseTexture2D seamless on) with lab-shaders/11-noise-scroll.gdshader; 12 s, 30 fps, Forward+, `--time-origin 0` so TIME is 0 at the first frame (no scripted input). Verified: a 3.0 s clock step moves the shader's TIME by 3.01 s and the pattern by 0.3 of the width, i.e. 0.1 per second (noise_check Z); the natural clock matched the engine's ticks in an earlier run (run-0 transcription, item 7)."
+      }
+    },
+    {
+      "beat_id": "B27",
+      "act": "IV · Noise That Moves",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the direction. Adding to the address slides the lookup right, so the picture moves left. Measured here: add one eighth, and the clouds moved thirty-two pixels left, exactly one eighth of the width.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A long strip of noise bars (grey tones) with a terracotta window frame laid over it, the picture seen through the frame shown above. The frame slides right along the strip while the pattern seen through it shifts left. Labels 'lookup moves right' and 'picture moves left'; a readout '+0.125 → 32 px left' with the small grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "strip, frame and the view through it"
+          },
+          {
+            "at": 0.4,
+            "event": "frame slides right; view shifts left"
+          },
+          {
+            "at": 0.75,
+            "event": "readout '+0.125 → 32 px left'"
+          }
+        ],
+        "manim": {
+          "class": "B27_WindowSlides"
+        },
+        "motion_claim": "The frame slides right and the pattern inside it slides left."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a direction arrow",
+        "why": "A window sliding over a fixed strip is the exact reason the picture appears to move the other way."
+      }
+    },
+    {
+      "beat_id": "B28",
+      "act": "IV · Noise That Moves",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now delete the hint on that uniform and let it run. Past the edge of the texture, a lookup returns the edge pixel, row after row. The right side smears into streaks, and the motion stops.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left: the same scroll shader with the hint removed from the uniform line; at right the real render: the clouds drift for a moment, then the right side of the disc smears into horizontal streaks that grow leftward as time passes. A terracotta ring on the streaks.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the uniform line without its hint"
+          },
+          {
+            "at": 0.4,
+            "event": "streaks begin at the right"
+          },
+          {
+            "at": 0.7,
+            "event": "ring on the streaks; they have spread"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat n = texture(noise, UV + vec2(TIME * 0.1, 0.0)).r;\n\tCOLOR = vec4(0.37, 0.64, 0.57, disc * n);\n}",
+            "codeFile": "lab-shaders/12-noise-no-repeat.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.7,
+                "lines": [
+                  8
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c13-noise-no-repeat.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the hint deleted",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.7,
+                "box": [
+                  0.545,
+                  0.34,
+                  0.703,
+                  0.66
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Streaks grow from the right edge and take over the picture while the clouds stop moving there."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A real streak growing across the picture is the failure the hint prevents; a drawing would not show how it spreads.",
+        "capture_spec": "C13: scene script as C11 with lab-shaders/12-noise-no-repeat.gdshader; 12 s, 30 fps, Forward+, `--time-origin 0`. Verified: a raw greyscale check with lookups past 1.0 has row standard deviation 0.0 in the clamped half (identical along every row) and 0.1485 with repeat_enable (noise_check C)."
+      }
+    },
+    {
+      "beat_id": "B29",
+      "act": "IV · Noise That Moves",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Put the hint back: repeat enable. A lookup past one now wraps around to the start, so the scroll never ends. But look at the line where the right edge meets the left.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the hint is back on the uniform line); at right the real render with a plain, non-seamless noise texture: the clouds scroll forever, and a straight vertical line, a seam, crosses the disc and travels left. A terracotta ring on the seam.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the hint highlighted"
+          },
+          {
+            "at": 0.38,
+            "event": "clouds wrap; the seam enters the disc"
+          },
+          {
+            "at": 0.68,
+            "event": "ring on the seam"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise : repeat_enable;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat n = texture(noise, UV + vec2(TIME * 0.1, 0.0)).r;\n\tCOLOR = vec4(0.37, 0.64, 0.57, disc * n);\n}",
+            "codeFile": "lab-shaders/11-noise-scroll.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3
+                ],
+                "label": "repeat_enable: past one, wrap to the start"
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c14-noise-seam.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · NoiseTexture2D, seamless off",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.68,
+                "box": [
+                  0.455,
+                  0.26,
+                  0.545,
+                  0.74
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The seam travels left across the disc as the clouds scroll."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A straight line cutting through the clouds is the defect; only a real render shows how visible it is.",
+        "capture_spec": "C14: scene script: NoiseTexture2D with FastNoiseLite defaults, 512 x 512, seamless OFF, bound to lab-shaders/11-noise-scroll.gdshader on the square target; 12 s, 30 fps, Forward+, `--time-origin 0` (the seam then sits at UV x 0.9 at 1 s and 0.2 at 8 s). Verified: the plain texture's wrap difference is 14.25x the normal neighbour difference; the render's biggest column jump sits at the wrap position (ratio 7.4 to 7.7) and moves as 1 - 0.1 * TIME (77 px per 3 s step)."
+      }
+    },
+    {
+      "beat_id": "B30",
+      "act": "IV · Noise That Moves",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "That line is real: this texture's edges do not match. In the noise texture, switch on seamless, and Godot blends the edges so they meet. The docs warn it may cost some contrast. Here, a little.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two real Godot panels side by side showing the scrolling disc: the left uses a plain noise texture and a seam crosses it; the right uses the same settings with Seamless switched on and no seam appears. Labels 'seamless off' and 'seamless on'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "both discs scrolling; labels"
+          },
+          {
+            "at": 0.4,
+            "event": "seam crosses the left disc"
+          },
+          {
+            "at": 0.7,
+            "event": "right disc still clean"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c15-noise-two-up.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · two NoiseTexture2D, seamless off and on",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "seamless off",
+                "x": 0.27,
+                "y": 0.95
+              },
+              {
+                "at": 0.1,
+                "text": "seamless on",
+                "x": 0.73,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "seamless: the edges match, so repeats show no seam",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The seam crosses the left disc while the right disc scrolls cleanly."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stills",
+        "why": "The two results under the same scroll are the proof; the seam is a motion across the picture.",
+        "capture_spec": "C15: two-panel scene script (`--scene`): two square targets side by side with lab-shaders/11-noise-scroll.gdshader, left NoiseTexture2D seamless off, right seamless on (same FastNoiseLite defaults, 512 x 512); 12 s, 30 fps, Forward+, `--time-origin 0`. Verified: wrap difference 14.25x the neighbour difference (off) against 1.07x (on); contrast (standard deviation) 0.168 against 0.158; the render has no outlier column with seamless on (ratio 1.3 to 1.6)."
+      }
+    },
+    {
+      "beat_id": "B31",
+      "act": "IV · Noise That Moves",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Noise can also hide and show. Compare it with a number climbing from zero to one: wherever the noise is below the number, show the pixel. The disc blooms in blotches. That number is a uniform.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the reveal shader); at right the real render: as progress climbs from 0 to 1 the disc blooms in blotches, small islands first, then merging until the whole disc is on. A label with the progress value.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "progress line highlighted"
+          },
+          {
+            "at": 0.4,
+            "event": "step line; first islands"
+          },
+          {
+            "at": 0.7,
+            "event": "islands merging"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D noise : repeat_enable;\nuniform float progress : hint_range(0.0, 1.0) = 0.5;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat n = texture(noise, UV).r;\n\tCOLOR = vec4(0.37, 0.64, 0.57, disc * step(n, progress));\n}",
+            "codeFile": "lab-shaders/13-noise-reveal.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  4
+                ]
+              },
+              {
+                "at": 0.4,
+                "lines": [
+                  10
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c16-noise-reveal.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Islands of teal appear, grow and merge as the number climbs."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The reveal is a motion by nature; the real render shows the noise's own blotch pattern.",
+        "capture_spec": "C16: custom scene as C11 (seamless on) with lab-shaders/13-noise-reveal.gdshader, progress held 0 for 1 s, swept to 1 by 9 s, held (`--animate progress:0:0,1:0,9:1`); 12 s, 30 fps, Forward+. Verified: coverage of the disc interior 1.3 % / 43.7 % / 93.1 % at progress 0.25 / 0.5 / 0.75 (noise_check R)."
+      }
+    },
+    {
+      "beat_id": "B32",
+      "act": "IV · Noise That Moves",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Progress is not percent shown. Noise values bunch near the middle. At one quarter, about one percent of the disc is on. At one half, forty-four percent. At three quarters, ninety-three. Remap the number for an even pace.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Top: a bell-shaped histogram of the noise values from 0 to 1 (20 bars, real data from noise_check T-seamless), centred near 0.5. Below it the cumulative curve from the same noise (real data, noise_check R-curve): an S rising slowly, then fast, then slowly. Three terracotta dots on the curve at progress 0.25, 0.5 and 0.75, labelled '1 %', '44 %' and '93 %'. Label 'progress is not percent shown' and the small grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+ · NoiseTexture2D defaults'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "histogram bars"
+          },
+          {
+            "at": 0.4,
+            "event": "cumulative curve draws"
+          },
+          {
+            "at": 0.7,
+            "event": "three dots with their percentages"
+          }
+        ],
+        "manim": {
+          "class": "B32_RevealPace"
+        },
+        "motion_claim": "The bars rise into a bell, the curve draws as their running total, and the three dots land at 1, 44 and 93 percent."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a percent readout",
+        "why": "A running total of a bell is an S-curve: the same shape as smoothstep, and the picture shows why the pace is uneven."
+      }
+    },
+    {
+      "beat_id": "B33",
+      "act": "V · Glow, Honestly",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "The trick you will see everywhere: multiply a color by a number above one. Teal times six puts green and blue well above one. The screen cuts everything above one, so the bubble turns white.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Glow, Honestly' (serif 40) top-left. Three vertical bars (red, green, blue channels of teal times six: heights 2.2, 3.8 and 3.4) grow past a horizontal line at 1.0 labelled 'the screen stops here'. The parts above the line are cut away in hatched grey and all three bars end at 1. A swatch at right turns from teal to white. Label 'teal × 6'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "bars and the line at 1.0, act title"
+          },
+          {
+            "at": 0.38,
+            "event": "bars grow past the line"
+          },
+          {
+            "at": 0.68,
+            "event": "tops cut away; swatch turns white"
+          }
+        ],
+        "manim": {
+          "class": "B33_ClipAtOne"
+        },
+        "motion_claim": "The bars grow past the line, the tops are cut off, and the swatch turns white."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab render of the flat white bubble",
+        "why": "Bars crossing a line and being cut off is the clipping, and it comes before the render that proves it.",
+        "act_title_on_screen": "Glow, Honestly"
+      }
+    },
+    {
+      "beat_id": "B34",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "In the shader, the dial is one plus glow times five, in parentheses, as before. Turn glow up, and the bubble does not glow. It goes flat white. The teal and the highlight are both gone.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the 14-line glow shader); at right a real Godot window on a slate-blue stage: the teal bubble with its highlight turns paler and then flat white as glow is swept from 0 to 1. Readouts 'glow 0' and 'glow 1'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "COLOR line with the parentheses"
+          },
+          {
+            "at": 0.4,
+            "event": "glow uniform; sweep under way"
+          },
+          {
+            "at": 0.7,
+            "event": "flat white, readout 'glow 1'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+            "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  13
+                ],
+                "label": "multiply binds first: the sum needs parentheses"
+              },
+              {
+                "at": 0.4,
+                "lines": [
+                  5
+                ]
+              }
+            ],
+            "video": "soft-edges-glow-and-noise/c17-glow-dial-sdr.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · default 2D rendering · glow swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "glow 0",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "glow 1",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "glow: bright pixels bleeding light onto the pixels around them",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The bubble loses its teal and its highlight and ends as a flat white disc."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "The flat white disc is the real result of the multiplier in the default pipeline.",
+        "capture_spec": "C17: the square target, lab-shaders/14-glow-bubble.gdshader, default 2D rendering (no HDR 2D, no environment), stage #5F7A96, glow 0 held 1 s, swept to 1 by 7 s, held (`--animate glow:0:0,1:0,7:1`; stage via `--clear`/the scene script); 12 s, 30 fps, Forward+. Verified: glow 0 body (0.514, 0.776, 0.690); glow 1 body (1, 1, 1), spot (1, 1, 1) (glow-results G0, G1)."
+      }
+    },
+    {
+      "beat_id": "B35",
+      "act": "V · Glow, Honestly",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "H D R means high dynamic range: colors allowed to go brighter than one. Godot's two D drawing does not allow them by default. The setting is H D R two D, under Rendering, Viewport. Restart after switching it on.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real 'Using glow in 2D' section of the Godot 4.7 documentation in a browser window; the camera pushes in on 'To enable HDR in 2D, open the Project Settings, enable Rendering > Viewport > HDR 2D then restart the editor.' and a terracotta ring marks it. The caption under the browser window is the GLOSSARY definition of HDR 2D, one line; the real address in the window's bar and SOURCES.md carry the provenance.",
+        "show": [
+          {
+            "at": 0,
+            "event": "page"
+          },
+          {
+            "at": 0.28,
+            "event": "push-in; ring on the HDR 2D sentence; HDR 2D definition"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html#using-glow-in-2d",
+            "image": "soft-edges-glow-and-noise/d1-using-glow-in-2d.png",
+            "caption": "HDR 2D: a project setting: 2D is drawn in light and numbers past one are kept",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.3,
+                "scale": 1
+              },
+              {
+                "at": 0.25,
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 1.5
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera pushes in on the sentence the voice is describing."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench reconstruction of Project Settings (labelled)",
+        "why": "The setting's name and the restart note are documentation facts; the documentation itself is the evidence (SHOW-THE-THING)."
+      }
+    },
+    {
+      "beat_id": "B36",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Run one: H D R two D on, glow off. Still white, with a tinted rim, because green and blue are cut off before red. On this Mac the frame holds the real numbers: green reads about two and a half.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real Godot window on the slate-blue stage showing the flat white bubble (glow 1), then at 2 s H D R 2D is switched on: the disc stays white but its rim picks up a teal-cyan tint. Readouts 'HDR 2D on', 'frame: green 2.57' and 'screen: 1.0'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "flat white bubble"
+          },
+          {
+            "at": 0.4,
+            "event": "H D R 2D switched on; the rim picks up a tint"
+          },
+          {
+            "at": 0.7,
+            "event": "readouts 'frame: green 2.57' and 'screen: 1.0'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+            "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c18-hdr-on.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D switched on at 2 s · scripted",
+            "readouts": [
+              {
+                "at": 0.4,
+                "text": "HDR 2D on",
+                "x": 0.5,
+                "y": 0.05
+              },
+              {
+                "at": 0.7,
+                "text": "frame: green 2.57",
+                "x": 0.27,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "screen: 1.0",
+                "x": 0.73,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The rim turns cyan the moment the setting is switched on, and the two readouts show what the frame holds and what the screen shows."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A real switch with a real before and after is the claim; the two readouts are measured values.",
+        "capture_spec": "C18: custom scene: the square target with lab-shaders/14-glow-bubble.gdshader (glow 1.0), stage #5F7A96, root Viewport.use_hdr_2d set to true at 2.0 s (`--call-at 2.0:enable_hdr_2d`, scripted), no environment; 8 s, 30 fps, Forward+. Verified (toggle_check, glow-results G1 and G3): the soft band reads (0.678, 0.733, 0.788) before and (0.726, 1.000, 1.000) after; a 256 px SubViewport with use_hdr_2d holds green 2.572 at the sample pixel (format RGBAH) while the screen shows 1.0; with it off the frame holds 1.0."
+      }
+    },
+    {
+      "beat_id": "B37",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Run two: add a world environment, switch glow on, and set its background to canvas. Now the bright disc bleeds a halo, tinted teal. The halo belongs to the environment. Your shader only supplied the number.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same window, H D R 2D already on, flat white bubble on the slate-blue stage. At 2 s a world environment with glow on, background Canvas and intensity 2 comes into effect: a soft teal halo blooms around the disc. Readouts 'glow on', 'background: Canvas' and 'intensity 2'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "white bubble, H D R 2D on"
+          },
+          {
+            "at": 0.4,
+            "event": "environment glow on: the halo blooms"
+          },
+          {
+            "at": 0.7,
+            "event": "readouts: glow on, background Canvas, intensity 2"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+            "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c19-env-glow-on.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D on · glow switched on at 2 s · scripted",
+            "readouts": [
+              {
+                "at": 0.7,
+                "text": "glow on",
+                "x": 0.2,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "background: Canvas",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "intensity 2",
+                "x": 0.8,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "A teal halo blooms around the white disc the moment the environment's glow is switched on."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A real halo appearing at a real switch is the claim; the readouts name the three settings used.",
+        "capture_spec": "C19: custom scene: as C18 with use_hdr_2d already true; at 2.0 s a WorldEnvironment with an Environment (glow_enabled true, background_mode Canvas, glow_intensity 2.0, everything else default) is added (`--call-at 2.0:add_environment`, scripted); 8 s, 30 fps, Forward+. Verified (toggle_check step 2, glow-results G6): the stage next to the disc reads (0.373, 0.478, 0.588); 6 px beyond the band the halo reads (0.419, 0.553, 0.629), 16 px beyond (0.394, 0.513, 0.607), 28 px beyond (0.382, 0.494, 0.596). Without the Canvas background the same environment changes nothing (G4)."
+      }
+    },
+    {
+      "beat_id": "B38",
+      "act": "V · Glow, Honestly",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "So glow is three agreements. Your shader makes a number above one. The viewport keeps it. The environment turns it into light. Break any one, and you get plain white.",
+      "estimated_duration_s": 10.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A flow of three stages left to right with a tall bar (the number above one) travelling through them: 'shader · makes a number above one', 'viewport · keeps it (H D R 2D)', 'environment · turns it into light (glow, Canvas)'. Run A: the bar passes all three and a halo blooms at the end. Run B: the viewport stage is off, a gate at height 1 cuts the bar to a stub and the picture ends flat white. Run C: the environment stage is missing, the tall bar arrives intact and nothing blooms.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "three stages"
+          },
+          {
+            "at": 0.3,
+            "event": "run A: bar passes; halo"
+          },
+          {
+            "at": 0.55,
+            "event": "run B: the gate at one cuts the bar"
+          },
+          {
+            "at": 0.8,
+            "event": "run C: no environment, no bloom"
+          }
+        ],
+        "manim": {
+          "class": "B38_ThreeAgreements"
+        },
+        "motion_claim": "A tall bar travels the chain: it blooms at the end when every stage is on, and is cut or ignored when one is off."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "A bar that is cut at a gate shows exactly where each missing agreement stops the effect; an isometric chain would draw the stages but not the height that matters."
+      }
+    },
+    {
+      "beat_id": "B39",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The halo grows with how far above one you go. At glow point five, it is faint. At one, clear. And glow adds light, so on a light background it has almost nowhere to go.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The slate-blue stage with the white-hot bubble: as glow is swept from 0 to 1 the teal halo is absent, then faint around 0.5, then clear at 1. Near the end the stage colour is switched to the pale warm grey and the halo almost vanishes. Readouts 'glow 0.5', 'glow 1', 'light stage'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "glow 0, no halo"
+          },
+          {
+            "at": 0.35,
+            "event": "glow 0.5: faint; glow 1: clear"
+          },
+          {
+            "at": 0.78,
+            "event": "stage switched to light grey: the halo all but vanishes"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+            "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c20-glow-dial-full.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D on, glow on, Canvas, intensity 2 · glow swept and the stage switched by script",
+            "readouts": [
+              {
+                "at": 0.35,
+                "text": "glow 0.5",
+                "x": 0.2,
+                "y": 0.95
+              },
+              {
+                "at": 0.45,
+                "text": "glow 1",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.85,
+                "text": "light stage",
+                "x": 0.8,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The halo swells as the dial climbs, then fades into a pale stage when the stage colour is switched."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A halo that grows with the dial and disappears on a light stage is the claim; it needs the real render.",
+        "capture_spec": "C20: custom scene: as C19 (H D R 2D on, environment from the start), glow held 0 for 1 s, swept to 1 by 7 s, held (`--animate glow:0:0,1:0,7:1`), then at 9.0 s the clear colour switched from #5F7A96 to #D9D5CA (`--call-at 9.0:use_light_stage`, scripted); 12 s, 30 fps, Forward+. Verified (glow-results G11 to G15): halo at 6 px beyond the band: glow 0.1 and 0.3 none, 0.5 +0.003/+0.006/+0.003, 1.0 +0.046/+0.075/+0.041; on the light stage +0.008/+0.020/+0.020."
+      }
+    },
+    {
+      "beat_id": "B40",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Turning on H D R two D changes more than glow. Two D now renders in linear light. On this Mac, a color without the source color hint came out washed out: red point six four, not point three seven.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Two flat teal squares side by side on the stage, one whose color uniform has the source color hint and one without, identical at first. At 2 s H D R 2D is switched on: the left one stays teal, the right one turns pale. Readouts 'hinted: red 0.37' and 'unhinted: red 0.64'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "two identical teal squares"
+          },
+          {
+            "at": 0.4,
+            "event": "H D R 2D on: the right square washes out"
+          },
+          {
+            "at": 0.7,
+            "event": "readouts"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c21-hint-swatches.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D switched on at 2 s · scripted",
+            "readouts": [
+              {
+                "at": 0.7,
+                "text": "hinted: red 0.37",
+                "x": 0.27,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "unhinted: red 0.64",
+                "x": 0.73,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "linear light: the scale light adds up on, in a straight line",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The right square washes out at the switch while the left one stays the same."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "Two squares that start identical and part ways at one switch are the proof.",
+        "capture_spec": "C21: custom scene: two 60 x 60 flat-color squares (uniform vec4 flat_color = vec4(0.37, 0.64, 0.57, 1.0), left with source_color, right without; evidence/planning-checks/shaders/ev-flat-hint.gdshader and ev-flat-nohint.gdshader), root use_hdr_2d set to true at 2.0 s (`--call-at 2.0:enable_hdr_2d`, scripted); 6 s, 30 fps, Forward+. Verified: SDR both read (0.369, 0.639, 0.569); H D R 2D with the hint (0.370, 0.640, 0.570), without (0.642, 0.821, 0.780). The Compatibility renderer shows no difference (not shown)."
+      }
+    },
+    {
+      "beat_id": "B41",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Without H D R two D, the docs say to lower the glow threshold below one, so ordinary white glows. On this Mac that gave a faint halo with no color. H D R two D gives you both.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The slate-blue stage with the white bubble in the default pipeline and a world environment with glow on, background Canvas, threshold 0.5, intensity 2: only a faint, colourless halo. At 3 s H D R 2D is switched on and the threshold returns to 1: the halo grows and turns teal. Readouts 'threshold 0.5' then 'HDR 2D'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "faint halo, threshold 0.5"
+          },
+          {
+            "at": 0.45,
+            "event": "H D R 2D on, threshold 1: the halo grows and tints"
+          },
+          {
+            "at": 0.75,
+            "event": "readout 'HDR 2D'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+            "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c22-sdr-threshold.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · threshold 0.5 without H D R 2D, then H D R 2D at 3 s · scripted",
+            "readouts": [
+              {
+                "at": 0.15,
+                "text": "threshold 0.5",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.7,
+                "text": "HDR 2D",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "threshold: the brightness above which light starts to bleed",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "A faint grey halo becomes a clear teal one at the switch."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "A real faint halo turning into a clear one at one switch is the comparison.",
+        "capture_spec": "C22: custom scene: the square target with lab-shaders/14-glow-bubble.gdshader (glow 1.0), stage #5F7A96, WorldEnvironment (glow on, Canvas background, intensity 2) with glow_hdr_threshold 0.5 and no HDR 2D; at 3.0 s use_hdr_2d true and the threshold back to 1.0 (`--call-at 3.0:enable_hdr_2d_and_reset_threshold`, scripted); 8 s, 30 fps, Forward+. Verified (glow-results G8 against G6): 6 px beyond the band the halo is +0.008/+0.004/+0.004 (no tint) against +0.046/+0.075/+0.041."
+      }
+    },
+    {
+      "beat_id": "B42",
+      "act": "V · Glow, Honestly",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now all the layers together: the soft edge, the highlight, the noise drifting through, and the glow dial. One bubble, built a layer at a time.",
+      "estimated_duration_s": 8.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The slate-blue stage with the finished bubble: a teal disc with a soft edge, a pale highlight at the upper left, clouds of noise drifting through it, and the glow dial sweeping from 0 to 1 so the bubble brightens toward white with a soft halo. Readouts 'glow 0' and 'glow 1'. No code panel: the shader is 16 lines (lab-shaders/15-bubble-complete.gdshader) and every line has been on screen already.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the bubble at glow 0: soft edge, highlight, drifting clouds"
+          },
+          {
+            "at": 0.45,
+            "event": "glow rising: brighter, halo starting"
+          },
+          {
+            "at": 0.8,
+            "event": "glow 1: near white with the halo; readout"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "lab-shaders/15-bubble-complete.gdshader",
+            "cues": [],
+            "video": "soft-edges-glow-and-noise/c23-bubble-complete.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D on, glow on, Canvas, intensity 2 · glow swept by script",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "glow 0",
+                "x": 0.5,
+                "y": 0.95
+              },
+              {
+                "at": 0.8,
+                "text": "glow 1",
+                "x": 0.5,
+                "y": 0.95
+              }
+            ],
+            "rings": [],
+            "caption": "lab-shaders/15-bubble-complete.gdshader · Forward+ · scripted glow sweep",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The finished bubble drifts and brightens as the dial climbs, all five layers at once."
+      },
+      "lecture": {
+        "runner_up": "manim exploded view of the five layers",
+        "why": "The payoff of the film is the real, finished effect with every layer running at once; an exploded drawing would show the parts but not the whole alive.",
+        "capture_spec": "C23: scene script (`--scene`): the square target with lab-shaders/15-bubble-complete.gdshader and a seamless NoiseTexture2D (FastNoiseLite defaults, 512 x 512) bound to `noise`, H D R 2D on and a WorldEnvironment (glow on, Canvas background, intensity 2) from the first frame, stage #5F7A96, glow held 0 for 2 s, swept to 1 by 9 s, held (`--animate glow:0:0,2:0,9:1`), `--time-origin 0`; 12 s, 30 fps, Forward+. Verified (finale_check.gd, run-finale.log): the body at the sample pixel shows about (0.45, 0.66, 0.61) at glow 0, (0.66, 0.96, 0.87) at 0.3, (0.80, 1, 1) at 0.6, (0.98, 1, 1) at 1 (the scrolling noise moves each value by about 0.02 from run to run); the highlight centre reaches (1, 1, 1) by glow 0.6; 6 px beyond the band the stage (0.373, 0.478, 0.588) reads (0.383, 0.494, 0.597) at glow 1 (a faint halo: the noise thins the alpha)."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "verdict",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let's recap with Claude. A soft edge is a ramp, and smooth step lets you choose its width. A falloff fades with distance, and a power tightens it. Multiply masks to keep both, add them to show either. Wrap a sum in parentheses before you scale it. Noise gives structure, time scrolls it, repeat and seamless keep it going. A color above one glows only when the shader, the viewport and the environment agree.",
+      "estimated_duration_s": 25.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "artifact page opens"
+          },
+          {
+            "at": 0.2,
+            "event": "recap lines land in narration order"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Recap",
+            "artifactHeading": "Soft Edges, Glow and Noise",
+            "artifactLines": [
+              "A soft edge is a ramp, and smoothstep lets you choose its width.",
+              "A falloff fades with distance, and a power tightens it.",
+              "Multiply masks to keep both, add them to show either.",
+              "Wrap a sum in parentheses before you scale it.",
+              "Noise gives structure, time scrolls it, repeat and seamless keep it going.",
+              "A color above one glows only when the shader, the viewport and the environment agree."
+            ]
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Mandated ClaudeVerdictArtifact bookend."
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "your turn",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Your turn. Paste this into Claude: Write a Godot canvas item shader for a square Color Rect. Draw a teal disc with a soft edge, using smooth step on the distance from the middle. Add a float uniform called softness with a hint range from zero point zero two to zero point four, and keep the width above zero with max. Then point me to the three lines I should check. Then check two things yourself. Does dragging softness widen and narrow the fade? And is the shape a circle, not an oval?",
+      "estimated_duration_s": 31.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Composer opens: 'Your turn.'"
+          },
+          {
+            "at": 0.12,
+            "event": "the prompt types in full"
+          },
+          {
+            "at": 0.85,
+            "event": "two check lines land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "CLAUDE · YOUR TURN",
+            "segment": "Make a Soft Edge with a Dial",
+            "command": "Write a Godot canvas item shader for a square Color Rect. Draw a teal disc with a soft edge, using smooth step on the distance from the middle. Add a float uniform called softness with a hint range from zero point zero two to zero point four, and keep the width above zero with max. Then point me to the three lines I should check.",
+            "runningText": "paste this into Claude…",
+            "output": [
+              "Check: dragging softness in the Inspector widens and narrows the fade, with no hard jump at the lowest setting.",
+              "Check: the shape is a circle, not an oval."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Opus 5.5",
+            "effortLabel": "High"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "outro",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Soft Edges, Glow and Noise. At Nik Bear Brown.",
+      "estimated_duration_s": 4.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "title restates; handle; mascot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Soft Edges, Glow and Noise",
+            "slug": "claude-liam-lecture-soft-edges-glow-and-noise",
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

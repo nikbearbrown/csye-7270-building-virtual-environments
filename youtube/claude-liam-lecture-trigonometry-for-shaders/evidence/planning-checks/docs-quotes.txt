@@ -1,0 +1,71 @@
+Documentation quotes behind FACTCHECK.md: Trigonometry for Shaders. Read 2026-10-13 from the live Godot 4.7 documentation (docs.godotengine.org/en/stable).
+
+How they were read: each page was fetched live and its HTML text extracted (tags stripped, whitespace collapsed, so spacing around code is as the extraction gave it).
+Quotes marked [fetch tool] came through the WebFetch tool's answer instead and are less exact in spacing. Nothing else from these pages is stored here.
+No third-party course text is stored anywhere in this folder.
+
+------------------------------------------------------------------------------------------------------------------------
+1. Vector2 class reference   https://docs.godotengine.org/en/stable/classes/class_vector2.html   (anchor ids found in the HTML: class-vector2-method-from-angle, class-vector2-method-angle)
+------------------------------------------------------------------------------------------------------------------------
+from_angle:  "Creates a Vector2 rotated to the given angle in radians. This is equivalent to doing Vector2(cos(angle), sin(angle)) or Vector2.RIGHT.rotated(angle)."
+angle:       "Returns this vector's angle with respect to the positive X axis, or (1, 0) vector, in radians. For example, Vector2.RIGHT.angle() will return zero,
+              Vector2.DOWN.angle() will return PI / 2 (a quarter turn, or 90 degrees), and Vector2(1, -1).angle() will return -PI / 4 (a negative eighth turn, or -45 degrees).
+              This is equivalent to calling @GlobalScope.atan2() with y and x."
+DOWN [fetch tool]: "Down unit vector. Y is down in 2D, so this vector points +Y."
+rotated [fetch tool]: "Returns the result of rotating this vector by angle (in radians)."
+
+------------------------------------------------------------------------------------------------------------------------
+2. CanvasItem shaders   https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html   (anchor id: global-built-ins)
+------------------------------------------------------------------------------------------------------------------------
+Global built-ins:
+  "in float PI A PI constant ( 3.141592 ). The ratio of a circle's circumference to its diameter and the number of radians in a half turn."
+  "in float TAU A TAU constant ( 6.283185 ). Equivalent to PI * 2 and the number of radians in a full turn."
+  "in float E An E constant ( 2.718281 ). Euler's number, the base of the natural logarithm."
+  "in float TIME Global time since the engine has started, in seconds. It repeats after every 3,600 seconds (which can be changed with the rollover setting).
+   It's affected by time_scale but not by pausing."
+Vertex built-ins [fetch tool]: UV "Normalized texture coordinates. Range from 0.0 to 1.0."
+Fragment built-ins [fetch tool]: COLOR "COLOR from the vertex() function multiplied by the TEXTURE color. Also output color value."
+Note: the Shading language page itself does NOT list PI, TAU or E; they are listed here, in the per-shader-type reference. Lab run 20-constants confirms they compile undeclared in 4.7.2.
+
+------------------------------------------------------------------------------------------------------------------------
+3. Built-in shader functions   https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shader_functions.html   (anchor ids: shader-func-atan2 = the two-argument entry, shader-func-atan = the one-argument entry, shader-func-sin, shader-func-radians)
+------------------------------------------------------------------------------------------------------------------------
+Intro: "Godot supports a large number of built-in shader functions, conforming roughly to the GLSL ES 3.0 specification."
+sin:     "Returns the trigonometric sine of angle . param angle : The quantity, in radians, of which to return the sine."   (cos and tan are worded the same way)
+radians: "Converts a quantity specified in degrees into radians, with the formula degrees * (PI / 180) ."
+atan(y, x): "Calculates the arc tangent given a numerator and denominator. The signs of y and x are used to determine the quadrant that the angle lies in.
+             The result is undefined if x == 0 . Equivalent to atan2() in GDScript. param y : The numerator of the fraction whose arc tangent to return.
+             param x : The denominator of the fraction whose arc tangent to return. return : The trigonometric arc tangent of y/x and is in the range [-PI, PI] ."
+atan(y_over_x): "Calculates the arc tangent given a tangent value of y/x . Note Because of the sign ambiguity, the function cannot determine with certainty in which quadrant
+             the angle falls only by its tangent value. If you need to know the quadrant, use atan(vec_type y, vec_type x) . ... return : The trigonometric arc-tangent of y_over_x
+             and is in the range [-PI/2, PI/2] ."
+length:   "Returns the length of the vector. ie. sqrt(x[0] * x[0] + x[1] * x[1] + ... + x[n] * x[n])"
+distance: "Returns the distance between the two points a and b. i.e., length(b - a);"
+fract:    "Fractional (returns x - floor(x) )."
+mix [fetch tool]: "Linear interpolate between a and b by c."
+
+------------------------------------------------------------------------------------------------------------------------
+4. Matrices and transforms   https://docs.godotengine.org/en/stable/tutorials/math/matrices_and_transforms.html
+------------------------------------------------------------------------------------------------------------------------
+"As mentioned in the previous tutorial, it is important to remember that in Godot, the Y axis points down in 2D. This is the opposite of how most schools teach linear algebra, with the Y axis pointing up."
+"Godot represents all rotations with radians, not degrees. A full turn is TAU or PI*2 radians, and a quarter turn of 90 degrees is TAU/4 or PI/2 radians. Working with TAU usually results in more readable code."
+"Fun fact: In addition to Y being down in Godot, rotation is represented clockwise. This means that all the math and trig functions behave the same as a Y-is-up CCW system, since these differences "cancel out". You can think of rotations in both systems being "from X to Y"."
+
+------------------------------------------------------------------------------------------------------------------------
+5. Introduction to shaders [fetch tool]   https://docs.godotengine.org/en/stable/tutorials/shaders/introduction_to_shaders.html
+------------------------------------------------------------------------------------------------------------------------
+"Shaders are a special kind of program that runs on Graphics Processing Units (GPUs)."
+"The fragment() function runs for every pixel covered by the mesh."
+"Shader code runs on each vertex or pixel in isolation."
+
+------------------------------------------------------------------------------------------------------------------------
+6. Shading language [fetch tool]   https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html
+------------------------------------------------------------------------------------------------------------------------
+"Uniforms can't be written from within the shader."
+(No PI, TAU or E on this page; no function table: it points to the built-in functions page.)
+
+------------------------------------------------------------------------------------------------------------------------
+7. Khronos OpenGL ES 3 reference page for atan [fetch tool]   https://registry.khronos.org/OpenGL-Refpages/es3.0/html/atan.xhtml
+------------------------------------------------------------------------------------------------------------------------
+"In the first overload, the signs of y and x are used to determine the quadrant that the angle lies in. The value returned by atan in this case is in the range [-pi, pi]. The result is undefined if x = 0."
+(Godot's own page above says the same, so this is a second source for the range, not the only one.)

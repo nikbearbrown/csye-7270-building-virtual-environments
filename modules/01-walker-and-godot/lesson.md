@@ -238,19 +238,6 @@ On 27 September 2026 the companion chapter's trace prompt (trace Space from the 
 
 Two agents, one prompt, different mistakes. The check is the source, not a second agent. And in the speed experiment, the agent's own prediction that the route would fail was wrong: it passed, because every landing in the first level is wide enough to absorb the extra distance. Nothing in the test, and nothing the agent read, said so in advance.
 
-## If you know Unity or Unreal
-
-| Godot | Unity | Unreal Engine 5 |
-|---|---|---|
-| Node | GameObject plus Components | Actor and its Components |
-| Scene (`.tscn`, text) | Scene or Prefab, YAML under Force Text | Level or Blueprint class, binary |
-| GDScript | C# MonoBehaviour | Blueprint graphs or C++ |
-| `Resource` with `@export` | `ScriptableObject` asset | Data Asset |
-| Signal | C# event or `UnityEvent` | Event Dispatcher or delegate |
-| `godot --headless --script …` | `Unity -batchmode -runTests …` | `UnrealEditor-Cmd … -ExecCmds="Automation RunTest …"` |
-
-The biggest difference for working with a coding agent is the file format. A Godot scene, resource and project file are plain text an agent can read and diff. Unity can store scenes as text, but they refer to each other through GUIDs that are hard to check by eye. Unreal's assets and levels are binary, so an agent cannot read or change a Blueprint by editing a file. Unity and Unreal were not run for this course material; the comparisons come from their official documentation, and the [companion chapter](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/main/chapters/01-walker-and-godot.md) has the full treatment.
-
 ## Practice assessment (ungraded)
 
 These are ungraded practice questions, not an additional assignment. There is also an ungraded practice quiz in Canvas for this module; take it as often as you like and read the feedback.
@@ -265,6 +252,31 @@ These are **ungraded practice assessments**, not an additional assignment:
 
 Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
 
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to trace the input and predict the effect of a change; decide whether the movement serves the intended player. Record the evidence, your decision and what would change it.
+
 ## The next step
 
 Open the separate Canvas assignment **“Assignment 1 - Extend Walker Jumpman.”** You will change the main character's visual identity, extend the playable level, and use a Brutalist Godot explainer to show what you built and how you checked it. That assignment has its own submission instructions and 100-point rubric; this lesson page does not add another graded deliverable. The full chapter, [Walker and Godot](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/main/chapters/01-walker-and-godot.md), has the complete record of the agents' runs.
+
+## If you know Unity or Unreal
+
+| Godot | Unity | Unreal Engine 5 |
+|---|---|---|
+| Node | GameObject plus Components | Actor and its Components |
+| Scene (`.tscn`, text) | Scene or Prefab, YAML under Force Text | Level or Blueprint class, binary |
+| GDScript | C# MonoBehaviour | Blueprint graphs or C++ |
+| `Resource` with `@export` | `ScriptableObject` asset | Data Asset |
+| Signal | C# event or `UnityEvent` | Event Dispatcher or delegate |
+| `godot --headless --script …` | `Unity -batchmode -runTests …` | `UnrealEditor-Cmd … -ExecCmds="Automation RunTest …"` |
+
+The biggest difference for working with a coding agent is the file format. A Godot scene, resource and project file are plain text an agent can read and diff. Unity can store scenes as text, but they refer to each other through GUIDs that are hard to check by eye. Unreal's assets and levels are binary, so an agent cannot read or change a Blueprint by editing a file. Unity and Unreal were not run for this course material; the comparisons come from their official documentation, and the [companion chapter](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/main/chapters/01-walker-and-godot.md) has the full treatment.
+
+## Doing the same thing in Unity
+
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/01-walker-and-godot.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/ScriptReference/Time-fixedDeltaTime.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
+
+## Doing the same thing in Unreal Engine
+
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/01-walker-and-godot.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/Engine/UCharacterMovementComponent) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

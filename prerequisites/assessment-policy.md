@@ -2,9 +2,9 @@
 
 CSYE 7270 · Fall 2026 · Instructor-specified proportions
 
-Graded assignments are **due every 10 days and worth 100 points each**. Canvas supplies the actual deadlines; a teaching module is not automatically a separate graded assignment. Each assignment identifies the modules and project work it covers. Ungraded practice assessments do not receive these points.
+The ten numbered assignment drafts retain **100-point** rubrics and follow an approximately ten-day rhythm; see the [Fall 2026 schedule](../assignments/fall-2026-assignment-schedule.md) for exact planned dates. The existing October 19 GDD is a separate **five-point milestone** governed by its Canvas brief. The live legacy final portfolio is 250 points, while the local final draft is 100; reconcile that difference before posting the new final. Canvas supplies the actual deadlines; a teaching module is not automatically a separate graded assignment. Each assignment identifies the modules and project work it covers. Ungraded practice assessments do not receive these points.
 
-Every assignment reserves **exactly 20 points for Relative Quartile**. This is part of the 100-point total, not a bonus added afterward. The other 80 points are criterion-based.
+Each numbered 100-point draft reserves **exactly 20 points for Relative Quartile**. This is part of the 100-point total, not a bonus added afterward. The other 80 points are criterion-based.
 
 | Component | Points |
 |---|---:|
@@ -14,7 +14,7 @@ Every assignment reserves **exactly 20 points for Relative Quartile**. This is p
 | Relative Quartile | 20 |
 | **Total** | **100** |
 
-**Every assignment includes an explainer video made with Brutalist's Godot skills.** The assignment specifies the appropriate skill and coverage. Its 60-point rubric evaluates the requested work and how accurately it is demonstrated and explained; video production is not a fifth point category. Rendering a film does not replace implementing the required feature. See [Required Brutalist Godot explainers](brutalist-godot-explainers.md).
+**Every numbered assignment draft includes an explainer video made with Brutalist's Godot skills.** The assignment specifies the appropriate skill and coverage. Its 60-point rubric evaluates the requested work and how accurately it is demonstrated and explained; video production is not a fifth point category. Rendering a film does not replace implementing the required feature. See [Required Brutalist Godot explainers](brutalist-godot-explainers.md).
 
 The instructor's 25-point example illustrates the same proportions; it is not a separate scheduled assignment or the point value for this course's regular assignments.
 

@@ -1,0 +1,336 @@
+{
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform float flip : hint_range(0.0, 1.0) = 0.0;\nuniform vec2 pivot = vec2(-64.0, 0.0);\n\nvoid vertex() {\n\tfloat a = TAU * flip;\n\tvec3 x_arrow = vec3(cos(a), 0.0, -sin(a));\n\tvec3 y_arrow = vec3(0.0, 1.0, 0.0);\n\tvec3 z_arrow = vec3(sin(a), 0.0, cos(a));\n\tvec3 p = vec3(VERTEX - pivot, 0.0);\n\tp = mat3(x_arrow, y_arrow, z_arrow) * p;\n\tVERTEX = p.xy + pivot;\n}",
+   "codeFile": "lab-shaders/11-door.gdshader",
+   "cues": [],
+   "video": "godot-shaders/matrices-door-intro.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep of flip, pivot on the left edge",
+   "readouts": [
+    {
+     "at": 0.34,
+     "text": "pivot",
+     "x": 0.4,
+     "y": 0.62
+    }
+   ],
+   "rings": [],
+   "caption": "pivot: the point it turns around",
+   "durationSeconds": "__AUDIO__",
+   "title": "The Pivot"
+  },
+  "capture_spec": "C13: 11-door.gdshader with pivot (-64, 0) x U on the card; card texture drawn at 1024 px (U = 8 times the 128 px card; a clean cream card, warm grey border, teal arrow pointing right, small teal square top left), node scale k/8 with k = 2.0 in a 1280x720 logical canvas, every pixel-valued uniform multiplied by U; a terracotta dot (radius 6 logical px) at the pivot, placed at the card's left edge midpoint; 4K SubViewport route, Forward+, 30 fps, offline fixed tick, no input; 15 s. flip keyframes: 0.0 from 0.00 to 0.10, 0.15 at 0.36 (ease), hold 0.15. At the 50 % and 85 % marks: the card at 54 degrees, its left edge at the hinge dot. Verified: left edge stays at -64; right edge at -64 + 128 cos (geometry-summary.txt).",
+  "visual_intent": "Act title 'The Pivot' (serif 40) top-left. A framed Godot window: the card swings like a door about its LEFT edge, a terracotta dot marks that edge (the hinge) and does not move while the rest of the card narrows toward it. Readout 'pivot' beside the dot; the caption reads 'pivot: the point it turns around'.",
+  "motion_claim": "The card swings about its left edge; the terracotta hinge dot never moves.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "card at rest, hinge dot on its left edge"
+   },
+   {
+    "at": 0.24,
+    "event": "card swings to a door-ajar pose about the hinge"
+   },
+   {
+    "at": 0.34,
+    "event": "readout 'pivot'; caption defines the pivot"
+   },
+   {
+    "at": 0.62,
+    "event": "held"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The target look first: a real door-like swing with a fixed hinge dot makes 'pivot' something the viewer can see.",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "manim",
+  "class": "B36_SlideTurnSlideBack",
+  "visual_intent": "The screen-direction grid with a small cross at the origin and a card whose left edge carries a terracotta pivot dot. Step 1 (label '1 slide in'): the card slides so that the pivot dot lands on the origin cross. Step 2 ('2 turn'): the card's width narrows and widens about the origin (a flip). Step 3 ('3 slide back'): the card slides back by the same amount, and the pivot dot returns to its original place; label 'the pivot never moved'.",
+  "motion_claim": "The card slides so the hinge dot sits on the origin, flips there, then slides back to where it was.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "card with its pivot dot, origin cross"
+   },
+   {
+    "at": 0.18,
+    "event": "step 1: the card slides; dot on the cross"
+   },
+   {
+    "at": 0.28,
+    "event": "step 2: the card flips about the cross"
+   },
+   {
+    "at": 0.38,
+    "event": "step 3: the card slides back; dot home"
+   },
+   {
+    "at": 0.66,
+    "event": "label 'the pivot never moved'"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "Three steps in order is a short animation; the card visibly travelling in, turning and travelling back is the claim.",
+  "sparse": true
+ },
+ "B37": {
+  "lane": "remotion",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "code",
+   "code": "void vertex() {\n\tmat3 m = slide_by(pivot)\n\t\t* turn_by(angle)\n\t\t* slide_by(-pivot);\n\tVERTEX = (m * vec3(VERTEX, 1.0)).xy;\n}",
+   "codeFile": "lab-shaders/10-spin-about-corner.gdshader (the vertex function)",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      4
+     ],
+     "label": "first: slide in"
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      3
+     ],
+     "label": "second: turn"
+    },
+    {
+     "at": 0.58,
+     "lines": [
+      2
+     ],
+     "label": "third: slide back"
+    },
+    {
+     "at": 0.8,
+     "lines": [
+      2,
+      3,
+      4
+     ],
+     "label": "one table for all three"
+    }
+   ],
+   "video": "",
+   "videoLabel": "",
+   "readouts": [],
+   "rings": [],
+   "caption": "read it from the right",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A full-frame code card with the real six-line vertex function (the product written over three lines, one table per line). Focus climbs the product from the bottom line (slide in) to the middle (turn) to the top (slide back), then all three lines glow together.",
+  "motion_claim": "Focus climbs the three lines from the bottom up, the way the point meets the tables.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "bottom table line: slide in"
+   },
+   {
+    "at": 0.3,
+    "event": "middle table line: turn"
+   },
+   {
+    "at": 0.58,
+    "event": "top table line: slide back"
+   },
+   {
+    "at": 0.8,
+    "event": "all three lines together"
+   }
+  ],
+  "runner_up": "LectureCodeTrace",
+  "why": "The reading order runs bottom to top; LectureCodeTrace's focus only moves downward, so this needs ShaderLab's free line cues.",
+  "sparse": false
+ },
+ "B38": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "void vertex() {\n\tmat3 m = slide_by(pivot)\n\t\t* turn_by(angle)\n\t\t* slide_by(-pivot);\n\tVERTEX = (m * vec3(VERTEX, 1.0)).xy;\n}",
+   "codeFile": "lab-shaders/10-spin-about-corner.gdshader (the vertex function)",
+   "cues": [],
+   "video": "godot-shaders/matrices-corner-spin.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep of angle, pivot on the top left corner",
+   "readouts": [
+    {
+     "at": 0.22,
+     "text": "pivot",
+     "x": 0.41,
+     "y": 0.3
+    },
+    {
+     "at": 0.72,
+     "text": "corner stays",
+     "x": 0.5,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C14: 10-spin-about-corner.gdshader with pivot (-64, -64) x U on the card; card texture drawn at 1024 px (U = 8 times the 128 px card; a clean cream card, warm grey border, teal arrow pointing right, small teal square top left), node scale k/8 with k = 2.0 in a 1280x720 logical canvas, every pixel-valued uniform multiplied by U; a terracotta dot at the pivot; 4K SubViewport route, Forward+, 30 fps, offline fixed tick, no input; 10 s. angle keyframes: 0 from 0.00 to 0.10, 0.7854 at 0.36 (ease), hold until 0.62, 1.5708 at 0.80 (ease), hold. At the 50 % mark: the card turned 45 degrees about the corner. At 85 %: a quarter turn. Verified: bbox x -155 to 26, y -64 to 117 at 0.7854 (expected -154.5, 26.5, -64, 117); the top left corner stays at (-64, -64) (geometry-summary.txt).",
+  "visual_intent": "A framed Godot window: the card swings like a pendulum about its TOP LEFT corner while a terracotta dot marks that corner and does not move. Readout 'pivot' beside the dot early, 'corner stays' when it has swung.",
+  "motion_claim": "The card swings round its top left corner; the terracotta dot stays put.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "card at rest, dot on its top left corner"
+   },
+   {
+    "at": 0.22,
+    "event": "readout 'pivot'"
+   },
+   {
+    "at": 0.3,
+    "event": "card swings clockwise about the corner"
+   },
+   {
+    "at": 0.72,
+    "event": "readout 'corner stays'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real swing with a fixed dot at the corner is the claim; the same file with a different pivot is the whole demonstration.",
+  "sparse": false
+ },
+ "B39": {
+  "lane": "manim",
+  "class": "B39_PixelsFromTheOrigin",
+  "visual_intent": "Two cards side by side, each with a ruler along its top edge. Left card 'centered': the origin dot in the middle, ruler ticks -64, 0, 64; a terracotta tick on the right edge reads '64'. Right card 'not centered': the origin dot at its top left corner, ticks 0 and 128; its right edge reads '128'. The right card appears later.",
+  "motion_claim": "Each card shows its origin dot and the number on its right edge: sixty-four for one, one hundred twenty-eight for the other.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "left card, origin dot in the middle, ruler"
+   },
+   {
+    "at": 0.3,
+    "event": "right edge reads 64"
+   },
+   {
+    "at": 0.4,
+    "event": "settled"
+   },
+   {
+    "at": 0.6,
+    "event": "right card: origin dot at its corner"
+   },
+   {
+    "at": 0.78,
+    "event": "right edge reads 128"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "The point is where the zero is; two cards with the zero in different places and different numbers on the same edge is the point.",
+  "sparse": true
+ },
+ "B40": {
+  "lane": "remotion",
+  "pattern": "LectureCodeTrace",
+  "props": {
+   "title": "Subtract, turn, add back",
+   "code": "void vertex() {\n\tfloat a = TAU * flip;\n\tvec3 x_arrow = vec3(cos(a), 0.0, -sin(a));\n\tvec3 y_arrow = vec3(0.0, 1.0, 0.0);\n\tvec3 z_arrow = vec3(sin(a), 0.0, cos(a));\n\tvec3 p = vec3(VERTEX - pivot, 0.0);\n\tp = mat3(x_arrow, y_arrow, z_arrow) * p;\n\tVERTEX = p.xy + pivot;\n}",
+   "note": "A turn around y is a three-by-three table, so the slides are plain subtraction and addition · Godot 4.7.2",
+   "cues": [
+    0.04,
+    0.08,
+    0.14,
+    0.18,
+    0.22,
+    0.58,
+    0.72,
+    0.86,
+    0.92
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A cream code card with the real nine-line vertex function of the door shader; focus runs down the three arrow lines, then lands on the subtraction line, the turn line and the add-back line as each is named.",
+  "motion_claim": "Focus steps down the lines: the three arrows, then subtract the pivot, then turn, then add it back.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "the three arrow lines"
+   },
+   {
+    "at": 0.58,
+    "event": "subtract the pivot"
+   },
+   {
+    "at": 0.72,
+    "event": "turn"
+   },
+   {
+    "at": 0.86,
+    "event": "add the pivot back"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The three steps are three real lines of code in the order they run; paced line focus is exactly 'subtract, turn, add'.",
+  "sparse": false
+ },
+ "B41": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform float flip : hint_range(0.0, 1.0) = 0.0;\nuniform vec2 pivot = vec2(-64.0, 0.0);\n\nvoid vertex() {\n\tfloat a = TAU * flip;\n\tvec3 x_arrow = vec3(cos(a), 0.0, -sin(a));\n\tvec3 y_arrow = vec3(0.0, 1.0, 0.0);\n\tvec3 z_arrow = vec3(sin(a), 0.0, cos(a));\n\tvec3 p = vec3(VERTEX - pivot, 0.0);\n\tp = mat3(x_arrow, y_arrow, z_arrow) * p;\n\tVERTEX = p.xy + pivot;\n}",
+   "codeFile": "lab-shaders/11-door.gdshader",
+   "cues": [],
+   "video": "godot-shaders/matrices-door-swing.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep of flip, pivot on the left edge",
+   "readouts": [
+    {
+     "at": 0.36,
+     "text": "edge stays put",
+     "x": 0.5,
+     "y": 0.92
+    },
+    {
+     "at": 0.84,
+     "text": "far side, mirrored",
+     "x": 0.5,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C15: 11-door.gdshader with pivot (-64, 0) x U on the card; card texture drawn at 1024 px (U = 8 times the 128 px card; a clean cream card, warm grey border, teal arrow pointing right, small teal square top left), node scale k/8 with k = 2.0 in a 1280x720 logical canvas, every pixel-valued uniform multiplied by U; a terracotta dot at the pivot; 4K SubViewport route, Forward+, 30 fps, offline fixed tick, no input; 14 s. flip keyframes: 0.0 from 0.00 to 0.10, 0.125 at 0.30 (ease), hold until 0.60, 0.5 at 0.80 (ease; passes edge-on near 0.68), hold. At the 50 % mark: the card at 45 degrees with its left edge at the hinge. At 85 %: the card lies on the far side (left of the hinge), mirrored. Verified: left edge fixed at -64 at flip 0.0625, 0.125, 0.1875; at flip 0.5 the card spans -192 to -64 and its gradient corners are mirrored (geometry-summary.txt).",
+  "visual_intent": "A framed Godot window: the card swings like a door about its left edge, which carries the terracotta hinge dot. It folds toward the hinge to a door-ajar pose, then passes edge-on and ends flat on the far side of the hinge, mirrored (arrow pointing left). Readouts 'edge stays put' and 'far side, mirrored'.",
+  "motion_claim": "The card folds toward the hinge, vanishes for an instant, and ends lying on the other side, mirrored.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "card at rest, hinge dot at its left edge"
+   },
+   {
+    "at": 0.22,
+    "event": "card folds toward the hinge"
+   },
+   {
+    "at": 0.36,
+    "event": "readout 'edge stays put'"
+   },
+   {
+    "at": 0.7,
+    "event": "card passes edge-on and lands on the far side"
+   },
+   {
+    "at": 0.84,
+    "event": "readout 'far side, mirrored'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The payoff: the whole film in one render, a real door with a fixed hinge, mirrored on the far side.",
+  "sparse": false
+ }
+}

@@ -295,6 +295,24 @@ This record is from 27 September 2026: Claude Code 2.1.150 (`claude-sonnet-4-6`)
 
 **The agent's FRICTIONAL entries credited a named person with work that person did not do.** Codex credited that person with supplying review findings and scoping the session, and did it again after the first correction. Nothing in the repository or the prompt said who the human was. Read who an agent says did the work before you sign your name under it.
 
+## Practice assessment (ungraded)
+
+Answer these in your own words, then take the Canvas practice quiz for this module. Do not paste Claude's explanation as proof of your understanding.
+
+1. Why does the seeded change pass every check at 60 fps? Which rungs catch it, and which do not?
+2. Why is the known-good code's worst error at 144 fps (0.0369) larger than at 30 fps (0.0303), even though 144 fps samples more often?
+3. `test_flash_bench.gd` passed on the seeded commit. What does it check, and why can none of it see the shader bug?
+4. Claude Code's review predicted Clawd turns white. What would you see on the bench if `TEXTURE` defaulted to a different colour, and which part of your procedure still catches the bug?
+5. A ShaderToy port uses `UV` where the original used `fragCoord`. Write the controlled input, predicted value and check that would catch it.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to challenge both the change and its tests; compare the visible result with the intended effect. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module feeds Assignment 6, "Audit a Plausible but Incorrect Shader Change". It covers Module 8, opens in Module 8 and is due about Day 60; its own page has the brief and the rubric, and nothing in this lesson is graded by itself. Bring this module's habits: know which rung a claim stands on, use controlled inputs, and test the test. Read the companion chapter, [Chapter 8 — Shader Verification](../../chapters/08-shader-verification.md), for the full run, the transcripts and the Unity and Unreal comparison.
+
 ## If you know Unity or Unreal
 
 *Unity and Unreal were not run for this module; this comparison comes from their official documentation, checked on 27 September 2026.*
@@ -309,16 +327,10 @@ This record is from 27 September 2026: Claude Code 2.1.150 (`claude-sonnet-4-6`)
 
 The review workflow carries over unchanged. The biggest difference is tooling for the last rung: Unity's Graphics Test Framework (experimental; version 8.3.3-exp.1 was documented) compares renders with reference images organised by colour space, platform and graphics API, and Unreal has a built-in screenshot comparison browser, while Godot 4.7.2's command line as used here has no counterpart, so the course uses a bench and a person. The [chapter](../../chapters/08-shader-verification.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in your own words, then take the Canvas practice quiz for this module. Do not paste Claude's explanation as proof of your understanding.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/08-shader-verification.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/ScriptReference/Time-captureDeltaTime.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Why does the seeded change pass every check at 60 fps? Which rungs catch it, and which do not?
-2. Why is the known-good code's worst error at 144 fps (0.0369) larger than at 30 fps (0.0303), even though 144 fps samples more often?
-3. `test_flash_bench.gd` passed on the seeded commit. What does it check, and why can none of it see the shader bug?
-4. Claude Code's review predicted Clawd turns white. What would you see on the bench if `TEXTURE` defaulted to a different colour, and which part of your procedure still catches the bug?
-5. A ShaderToy port uses `UV` where the original used `fragCoord`. Write the controlled input, predicted value and check that would catch it.
+## Doing the same thing in Unreal Engine
 
-## The next step
-
-This module feeds Assignment 6, "Audit a Plausible but Incorrect Shader Change". It covers Module 8, opens in Module 8 and is due about Day 60; its own page has the brief and the rubric, and nothing in this lesson is graded by itself. Bring this module's habits: know which rung a claim stands on, use controlled inputs, and test the test. Read the companion chapter, [Chapter 8 — Shader Verification](../../chapters/08-shader-verification.md), for the full run, the transcripts and the Unity and Unreal comparison.
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/08-shader-verification.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-engine-command-line-arguments-reference) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

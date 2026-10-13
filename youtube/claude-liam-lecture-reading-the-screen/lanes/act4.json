@@ -1,0 +1,486 @@
+{
+ "B30": {
+  "lane": "manim",
+  "class": "B30_OnceBeforeTheFirstReader",
+  "visual_intent": "Act title 'What It Can See' (serif 40) top-left. A row of draw-step tiles inside a bracket 'layer 0': ground, tree, reader 1 (a window), player, reader 2 (a second window); 'reader: a node whose shader reads the screen texture'. A camera flash fires just before 'reader 1' and a copy tile drops below the row, labelled 'the copy'. Tiles before the flash get a check mark; the tiles after it do not. An arrow from reader 2 points at the same copy tile, not a new one.",
+  "motion_claim": "The flash fires once, before the first reader; checks land on the earlier tiles only; the second reader's arrow points at the same copy.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "tiles in a layer bracket; act title"
+   },
+   {
+    "at": 0.36,
+    "event": "flash before reader 1; the copy tile drops"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: row and the copy tile"
+   },
+   {
+    "at": 0.6,
+    "event": "arrow from reader 2 to the same copy"
+   },
+   {
+    "at": 0.78,
+    "event": "checks on the earlier tiles"
+   },
+   {
+    "at": 0.9,
+    "event": "later tiles stay unchecked"
+   }
+  ],
+  "runner_up": "BrowserCapture of the docs 'Behind the scenes' paragraph",
+  "why": "The rule is an order of events, which a timeline shows as motion; the docs paragraph is quoted in FACTCHECK.",
+  "sparse": true
+ },
+ "B31": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tCOLOR.rgb = texture(screen_texture, UV).rgb;\n}",
+   "codeFile": "lab-shaders/02-miniature.gdshader",
+   "cues": [],
+   "video": "reading-the-screen/xray.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the lens is moved later in the tree at 76 percent",
+   "readouts": [
+    {
+     "at": 0.42,
+     "text": "drawn before",
+     "x": 0.16,
+     "y": 0.55
+    },
+    {
+     "at": 0.62,
+     "text": "drawn after",
+     "x": 0.6,
+     "y": 0.53
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C17: scene_c17_xray.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Tree order World, X (mustard block, 0.16 x 0.26 at (0.08, 0.60)), Lens (02-miniature, 0.30 x 0.30 at (0.60, 0.06)), Y (violet block at (0.52, 0.58)); at u = 0.76 the lens is moved to the end of the tree. Verified: before the move the lens shows X and not Y (red and blue test blocks in verify2 M1 give the same result).",
+  "visual_intent": "A real Godot window: the meadow with a big mustard block at lower left (drawn before the lens) and a violet block at lower centre (drawn after it); top right, a lens in a cream frame shows a tiny copy of the screen, with the mustard block in it and no violet block. Labels 'drawn before' and 'drawn after'. At 76 percent the lens moves later in the tree and the violet block appears inside it.",
+  "motion_claim": "The violet block appears inside the lens when the lens moves later in the draw order.",
+  "show": [
+   {
+    "at": 0.42,
+    "event": "label 'drawn before'"
+   },
+   {
+    "at": 0.62,
+    "event": "label 'drawn after'"
+   },
+   {
+    "at": 0.76,
+    "event": "the lens moves later; the violet block appears in it"
+   }
+  ],
+  "runner_up": "manim two copies side by side",
+  "why": "The lens is the film's one instrument for looking inside the copy, and the change at 76 percent is the proof that draw order decides.",
+  "sparse": false
+ },
+ "B32": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 behind = texture(screen_texture, SCREEN_UV).rgb;\n\tCOLOR.rgb = 1.0 - behind;\n}",
+   "codeFile": "lab-shaders/03-invert.gdshader",
+   "cues": [],
+   "video": "reading-the-screen/overlap.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the second window appears at 30 percent",
+   "readouts": [
+    {
+     "at": 0.43,
+     "text": "expected: original",
+     "x": 0.84,
+     "y": 0.5
+    },
+    {
+     "at": 0.64,
+     "text": "got: flipped",
+     "x": 0.84,
+     "y": 0.58
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.6,
+     "box": [
+      0.37,
+      0.29,
+      0.51,
+      0.59
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: scene_c18_overlap.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. A = 03-invert at (0.16, 0.12), B = 03-invert at (0.38, 0.30), both 0.34 x 0.46, same canvas; B hidden until u = 0.30. Overlap region (0.38, 0.30) to (0.50, 0.58). Verified: the overlap reads inverted once (1 minus meadow), in both renderers.",
+  "visual_intent": "A real Godot window: window A (cream frame) flips the colours over the meadow. At 30 percent window B (cream frame) appears, overlapping A's lower right. The overlap looks exactly like the rest of A and B, flipped once. A terracotta ring settles on the overlap; labels 'expected: original' and 'got: flipped'.",
+  "motion_claim": "B appears over A and the overlap is flipped once, not twice.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "window B appears over A"
+   },
+   {
+    "at": 0.43,
+    "event": "label 'expected: original'"
+   },
+   {
+    "at": 0.6,
+    "event": "ring on the overlap"
+   },
+   {
+    "at": 0.64,
+    "event": "label 'got: flipped'"
+   }
+  ],
+  "runner_up": "manim two layered panes",
+  "why": "The unexpected result is the lesson, and a real overlap that does not flip back is more convincing than a diagram that says it.",
+  "sparse": false
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 behind = texture(screen_texture, SCREEN_UV).rgb;\n\tCOLOR.rgb = 1.0 - behind;\n}",
+   "codeFile": "lab-shaders/03-invert.gdshader",
+   "cues": [],
+   "video": "reading-the-screen/overlap-fix.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the node is switched on at 76 percent",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "Back Buffer Copy",
+     "x": 0.5,
+     "y": 0.06
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.84,
+     "box": [
+      0.37,
+      0.29,
+      0.51,
+      0.59
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: scene_c19_overlap_fix.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. As C18 with both windows visible from the start and a BackBufferCopy (copy_mode Viewport) between A and B, visible (switched on) from u = 0.76. Verified: with it the overlap reads as the original meadow; with a default BackBufferCopy (Rect mode) it does not.",
+  "visual_intent": "The same two windows from the start; a BackBufferCopy node sits between them in the tree and is switched on at 76 percent. Before it, the overlap is flipped once; after it, the overlap shows the original meadow colours. Label 'Back Buffer Copy · Viewport' appears early; a ring settles on the overlap at the end.",
+  "motion_claim": "The overlap snaps back to the original colours at the cue.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "label 'Back Buffer Copy · Viewport'"
+   },
+   {
+    "at": 0.76,
+    "event": "the node switches on; the overlap restores"
+   },
+   {
+    "at": 0.84,
+    "event": "ring on the overlap"
+   }
+  ],
+  "runner_up": "manim node between two panes",
+  "why": "The restoring overlap is the proof of the fix, in the very frame where the bug was shown.",
+  "sparse": false
+ },
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat gray = dot(c, vec3(0.299, 0.587, 0.114));\n\tCOLOR.rgb = mix(c, vec3(gray), amount);\n}",
+   "codeFile": "lab-shaders/05-gray.gdshader",
+   "cues": [],
+   "video": "reading-the-screen/fresh-layer.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+   "readouts": [
+    {
+     "at": 0.26,
+     "text": "own layer",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.57,
+     "box": [
+      0.05,
+      0.5,
+      0.47,
+      0.93
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C20: scene_c20_fresh_layer.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. Meadow, 12-pool, player on layer 0; 05-gray on a full-screen ColorRect in a CanvasLayer (layer 1), amount 0 until u = 0.72, then 1 by u = 0.90. No BackBufferCopy. Verified: the player's pixel and the pool's pixel equal their luma grays (player 0.5529 against 0.5514; pool 0.5804 against 0.5795).",
+  "visual_intent": "A real Godot window: the meadow, the live pool and the player on the game layer; a gray filter on its own layer starts at amount 0. At 72 to 90 percent the amount rises and the whole picture, pool and player included, turns gray together. Label 'own layer'; a ring on the pool.",
+  "motion_claim": "Pool, player and grass all go gray together.",
+  "show": [
+   {
+    "at": 0.26,
+    "event": "label 'own layer'"
+   },
+   {
+    "at": 0.57,
+    "event": "ring on the pool"
+   },
+   {
+    "at": 0.72,
+    "event": "the filter amount rises"
+   },
+   {
+    "at": 0.9,
+    "event": "everything gray"
+   }
+  ],
+  "runner_up": "manim layered panes",
+  "why": "The pool turning gray with the grass is the proof that the filter saw it, and nothing but the render shows that.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat gray = dot(c, vec3(0.299, 0.587, 0.114));\n\tCOLOR.rgb = mix(c, vec3(gray), amount);\n}",
+   "codeFile": "lab-shaders/05-gray.gdshader",
+   "cues": [],
+   "video": "reading-the-screen/hud.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the health bar's layer is set to two at 58 percent",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "layer 0: gray",
+     "x": 0.14,
+     "y": 0.16
+    },
+    {
+     "at": 0.74,
+     "text": "layer 2: color",
+     "x": 0.14,
+     "y": 0.16
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21: scene_c21_hud.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Meadow + player; 05-gray on layer 1 at amount 1 from the first frame; the health bar in its own CanvasLayer, index 0 until u = 0.58, then 2. Verified: a bar on layer 2 keeps its colour (0.902, 0.722, 0.251), a bar below the filter is flipped or grayed.",
+  "visual_intent": "A real Godot window: the game is already gray. The health bar, top left, starts on layer 0 and is gray with it; at 58 percent its layer index is set to 2 and it turns mustard while the game stays gray. Labels 'layer 0: gray' and 'layer 2: color'.",
+  "motion_claim": "The health bar regains its colour at the cue while the game stays gray.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "label 'layer 0: gray' on the bar"
+   },
+   {
+    "at": 0.58,
+    "event": "the bar's layer is set to 2; it turns mustard"
+   },
+   {
+    "at": 0.74,
+    "event": "label 'layer 2: color'"
+   }
+  ],
+  "runner_up": "manim stacked panes",
+  "why": "The bar regaining its colour in the same frame is the proof; a pane diagram would only say it.",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture,\n\t\trepeat_disable, filter_nearest;\nuniform float shift : hint_range(-0.5, 0.5) = 0.0;\n\nvoid fragment() {\n\tvec2 spot = SCREEN_UV + vec2(shift, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+   "codeFile": "lab-shaders/15-edge-clamp.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      3,
+      4
+     ]
+    },
+    {
+     "at": 0.17,
+     "lines": [
+      4
+     ],
+     "label": "repeat_disable: past the edge, the edge pixel"
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      4
+     ],
+     "label": "filter_nearest: the exact pixel, no blending"
+    },
+    {
+     "at": 0.8,
+     "lines": [
+      4
+     ],
+     "label": "renderer: how Godot draws; your project picks one of three"
+    }
+   ],
+   "video": "reading-the-screen/edge.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shift swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C22: scene_c22_edge.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Window 0.40 x 0.44 at (0.60, 0.20) flush with the right edge, 15-edge-clamp; shift 0 until u = 0.28, then 0.30 by u = 0.62. Verified: with repeat_disable (and with no repeat hint) a read past the edge returns the edge pixel in both renderers. filter_nearest is a Forward+ result only: magnified 50 times, Forward+ gives a hard step where filter_linear gives 35 distinct colours; Compatibility reads all three alike (34), so the narration names the renderer (verify4 L7b, verify9). This capture does not show that difference.",
+  "visual_intent": "Code card at left (the 10-line shader with the full declaration over two lines); at right a real Godot window: a window flush with the right edge of the screen; as the shift grows its right part reads past the edge and fills with horizontal streaks, the edge pixels repeated. The third label defines 'renderer' where the narration first says it; the capture is Forward+ (the video label says so), so the Compatibility half of the sentence is carried by the narration alone.",
+  "motion_claim": "The window's right part smears into streaks as it reads past the edge of the screen.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "the declaration highlighted"
+   },
+   {
+    "at": 0.17,
+    "event": "repeat_disable highlighted"
+   },
+   {
+    "at": 0.28,
+    "event": "the smear begins"
+   },
+   {
+    "at": 0.57,
+    "event": "filter_nearest highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "full smear"
+   },
+   {
+    "at": 0.8,
+    "event": "label defines 'renderer'"
+   }
+  ],
+  "runner_up": "BrowserCapture of the docs declaration",
+  "why": "The smear is what repeat_disable does, in the one place it shows; filter_nearest changes nothing visible at this size, so it gets a label and a sentence, not a picture.",
+  "sparse": false
+ },
+ "B37": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reading-the-screen/finale.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C23: scene_c23_finale.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. Layer 0: meadow, 12-pool, the player on a wide ellipse (0.34 x 0.10 of the canvas around (0.50, 0.62)); layer 1: 07-spotlight (radius 0.25) fed by the scene's _process; layer 2: the health bar. Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel).",
+  "visual_intent": "A real Godot window: the pool, the player walking a wide flat ellipse, the spotlight following him (gray outside, colour inside), the health bar above everything in colour. Where the player passes the pool, the pool turns to colour as the light arrives and the water keeps rippling.",
+  "motion_claim": "The light follows the player across the pool, which turns to colour and ripples under it, while the health bar never changes.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the player near the pool; the pool in colour"
+   },
+   {
+    "at": 0.45,
+    "event": "the player far right; the pool gray"
+   },
+   {
+    "at": 0.9,
+    "event": "the player returns to the pool"
+   }
+  ],
+  "runner_up": "manim three icons",
+  "why": "The three effects living together, with the order rules holding, is the closing proof.",
+  "sparse": false
+ },
+ "B38": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "When a screen shader misbehaves",
+   "headers": [
+    "What you see",
+    "Why",
+    "Fix"
+   ],
+   "rows": [
+    [
+     "Error naming SCREEN_TEXTURE",
+     "a Godot 3 shortcut",
+     "hint_screen_texture"
+    ],
+    [
+     "A sprite missing from the copy",
+     "drawn after the reader",
+     "draw it earlier"
+    ],
+    [
+     "A second effect ignores the first",
+     "one copy per layer",
+     "Back Buffer Copy"
+    ],
+    [
+     "Health bar turns gray",
+     "below the filter",
+     "a higher layer"
+    ]
+   ],
+   "note": "Godot 4.7 docs and runs on Godot 4.7.2",
+   "cues": [
+    0.3,
+    0.41,
+    0.57,
+    0.7
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A four-row table, one row ringed as the voice names each cause.",
+  "motion_claim": "The ring steps down the rows with the voice.",
+  "show": [
+   {
+    "at": 0.28,
+    "event": "the old name row"
+   },
+   {
+    "at": 0.43,
+    "event": "the draw order row"
+   },
+   {
+    "at": 0.62,
+    "event": "the copy for each layer row"
+   },
+   {
+    "at": 0.8,
+    "event": "the health bar row"
+   }
+  ],
+  "runner_up": "manim checklist",
+  "why": "Four parallel facts, each a symptom and a cause, are exactly what the table component is for.",
+  "sparse": false
+ }
+}

@@ -1,0 +1,468 @@
+{
+ "B33": {
+  "lane": "manim",
+  "class": "B33_ClipAtOne",
+  "visual_intent": "Act title 'Glow, Honestly' (serif 40) top-left. Three vertical bars (red, green, blue channels of teal times six: heights 2.2, 3.8 and 3.4) grow past a horizontal line at 1.0 labelled 'the screen stops here'. The parts above the line are cut away in hatched grey and all three bars end at 1. A swatch at right turns from teal to white. Label 'teal × 6'.",
+  "motion_claim": "The bars grow past the line, the tops are cut off, and the swatch turns white.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "bars and the line at 1.0, act title"
+   },
+   {
+    "at": 0.38,
+    "event": "bars grow past the line"
+   },
+   {
+    "at": 0.68,
+    "event": "tops cut away; swatch turns white"
+   }
+  ],
+  "runner_up": "ShaderLab render of the flat white bubble",
+  "why": "Bars crossing a line and being cut off is the clipping, and it comes before the render that proves it.",
+  "sparse": true
+ },
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+   "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      13
+     ],
+     "label": "multiply binds first: the sum needs parentheses"
+    },
+    {
+     "at": 0.4,
+     "lines": [
+      5
+     ]
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c17-glow-dial-sdr.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · default 2D rendering · glow swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "glow 0",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "glow 1",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "glow: bright pixels bleeding light onto the pixels around them",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C17: the square target, lab-shaders/14-glow-bubble.gdshader, default 2D rendering (no HDR 2D, no environment), stage #5F7A96, glow 0 held 1 s, swept to 1 by 7 s, held (`--animate glow:0:0,1:0,7:1`; stage via `--clear`/the scene script); 12 s, 30 fps, Forward+. Verified: glow 0 body (0.514, 0.776, 0.690); glow 1 body (1, 1, 1), spot (1, 1, 1) (glow-results G0, G1).",
+  "visual_intent": "Code card at left (the 14-line glow shader); at right a real Godot window on a slate-blue stage: the teal bubble with its highlight turns paler and then flat white as glow is swept from 0 to 1. Readouts 'glow 0' and 'glow 1'.",
+  "motion_claim": "The bubble loses its teal and its highlight and ends as a flat white disc.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "COLOR line with the parentheses"
+   },
+   {
+    "at": 0.4,
+    "event": "glow uniform; sweep under way"
+   },
+   {
+    "at": 0.7,
+    "event": "flat white, readout 'glow 1'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The flat white disc is the real result of the multiplier in the default pipeline.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "remotion",
+  "pattern": "BrowserCapture",
+  "props": {
+   "url": "https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html#using-glow-in-2d",
+   "image": "soft-edges-glow-and-noise/d1-using-glow-in-2d.png",
+   "caption": "HDR 2D: a project setting: 2D is drawn in light and numbers past one are kept",
+   "frame": "browser",
+   "moves": [
+    {
+     "at": 0,
+     "x": 0.5,
+     "y": 0.3,
+     "scale": 1
+    },
+    {
+     "at": 0.25,
+     "x": 0.5,
+     "y": 0.5,
+     "scale": 1.5
+    }
+   ],
+   "ringColor": "#A64A24",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "The real 'Using glow in 2D' section of the Godot 4.7 documentation in a browser window; the camera pushes in on 'To enable HDR in 2D, open the Project Settings, enable Rendering > Viewport > HDR 2D then restart the editor.' and a terracotta ring marks it. The caption under the browser window is the GLOSSARY definition of HDR 2D, one line; the real address in the window's bar and SOURCES.md carry the provenance.",
+  "motion_claim": "The camera pushes in on the sentence the voice is describing.",
+  "show": [
+   {
+    "at": 0,
+    "event": "page"
+   },
+   {
+    "at": 0.28,
+    "event": "push-in; ring on the HDR 2D sentence; HDR 2D definition"
+   }
+  ],
+  "runner_up": "GodotDevWorkbench reconstruction of Project Settings (labelled)",
+  "why": "The setting's name and the restart note are documentation facts; the documentation itself is the evidence (SHOW-THE-THING).",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+   "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c18-hdr-on.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D switched on at 2 s · scripted",
+   "readouts": [
+    {
+     "at": 0.4,
+     "text": "HDR 2D on",
+     "x": 0.5,
+     "y": 0.05
+    },
+    {
+     "at": 0.7,
+     "text": "frame: green 2.57",
+     "x": 0.27,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "screen: 1.0",
+     "x": 0.73,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: custom scene: the square target with lab-shaders/14-glow-bubble.gdshader (glow 1.0), stage #5F7A96, root Viewport.use_hdr_2d set to true at 2.0 s (`--call-at 2.0:enable_hdr_2d`, scripted), no environment; 8 s, 30 fps, Forward+. Verified (toggle_check, glow-results G1 and G3): the soft band reads (0.678, 0.733, 0.788) before and (0.726, 1.000, 1.000) after; a 256 px SubViewport with use_hdr_2d holds green 2.572 at the sample pixel (format RGBAH) while the screen shows 1.0; with it off the frame holds 1.0.",
+  "visual_intent": "A real Godot window on the slate-blue stage showing the flat white bubble (glow 1), then at 2 s H D R 2D is switched on: the disc stays white but its rim picks up a teal-cyan tint. Readouts 'HDR 2D on', 'frame: green 2.57' and 'screen: 1.0'.",
+  "motion_claim": "The rim turns cyan the moment the setting is switched on, and the two readouts show what the frame holds and what the screen shows.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "flat white bubble"
+   },
+   {
+    "at": 0.4,
+    "event": "H D R 2D switched on; the rim picks up a tint"
+   },
+   {
+    "at": 0.7,
+    "event": "readouts 'frame: green 2.57' and 'screen: 1.0'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real switch with a real before and after is the claim; the two readouts are measured values.",
+  "sparse": false
+ },
+ "B37": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+   "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c19-env-glow-on.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D on · glow switched on at 2 s · scripted",
+   "readouts": [
+    {
+     "at": 0.7,
+     "text": "glow on",
+     "x": 0.2,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "background: Canvas",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "intensity 2",
+     "x": 0.8,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: custom scene: as C18 with use_hdr_2d already true; at 2.0 s a WorldEnvironment with an Environment (glow_enabled true, background_mode Canvas, glow_intensity 2.0, everything else default) is added (`--call-at 2.0:add_environment`, scripted); 8 s, 30 fps, Forward+. Verified (toggle_check step 2, glow-results G6): the stage next to the disc reads (0.373, 0.478, 0.588); 6 px beyond the band the halo reads (0.419, 0.553, 0.629), 16 px beyond (0.394, 0.513, 0.607), 28 px beyond (0.382, 0.494, 0.596). Without the Canvas background the same environment changes nothing (G4).",
+  "visual_intent": "The same window, H D R 2D already on, flat white bubble on the slate-blue stage. At 2 s a world environment with glow on, background Canvas and intensity 2 comes into effect: a soft teal halo blooms around the disc. Readouts 'glow on', 'background: Canvas' and 'intensity 2'.",
+  "motion_claim": "A teal halo blooms around the white disc the moment the environment's glow is switched on.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "white bubble, H D R 2D on"
+   },
+   {
+    "at": 0.4,
+    "event": "environment glow on: the halo blooms"
+   },
+   {
+    "at": 0.7,
+    "event": "readouts: glow on, background Canvas, intensity 2"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real halo appearing at a real switch is the claim; the readouts name the three settings used.",
+  "sparse": false
+ },
+ "B38": {
+  "lane": "manim",
+  "class": "B38_ThreeAgreements",
+  "visual_intent": "A flow of three stages left to right with a tall bar (the number above one) travelling through them: 'shader · makes a number above one', 'viewport · keeps it (H D R 2D)', 'environment · turns it into light (glow, Canvas)'. Run A: the bar passes all three and a halo blooms at the end. Run B: the viewport stage is off, a gate at height 1 cuts the bar to a stub and the picture ends flat white. Run C: the environment stage is missing, the tall bar arrives intact and nothing blooms.",
+  "motion_claim": "A tall bar travels the chain: it blooms at the end when every stage is on, and is cut or ignored when one is off.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "three stages"
+   },
+   {
+    "at": 0.3,
+    "event": "run A: bar passes; halo"
+   },
+   {
+    "at": 0.55,
+    "event": "run B: the gate at one cuts the bar"
+   },
+   {
+    "at": 0.8,
+    "event": "run C: no environment, no bloom"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A bar that is cut at a gate shows exactly where each missing agreement stops the effect; an isometric chain would draw the stages but not the height that matters.",
+  "sparse": true
+ },
+ "B39": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+   "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c20-glow-dial-full.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D on, glow on, Canvas, intensity 2 · glow swept and the stage switched by script",
+   "readouts": [
+    {
+     "at": 0.35,
+     "text": "glow 0.5",
+     "x": 0.2,
+     "y": 0.95
+    },
+    {
+     "at": 0.45,
+     "text": "glow 1",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.85,
+     "text": "light stage",
+     "x": 0.8,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C20: custom scene: as C19 (H D R 2D on, environment from the start), glow held 0 for 1 s, swept to 1 by 7 s, held (`--animate glow:0:0,1:0,7:1`), then at 9.0 s the clear colour switched from #5F7A96 to #D9D5CA (`--call-at 9.0:use_light_stage`, scripted); 12 s, 30 fps, Forward+. Verified (glow-results G11 to G15): halo at 6 px beyond the band: glow 0.1 and 0.3 none, 0.5 +0.003/+0.006/+0.003, 1.0 +0.046/+0.075/+0.041; on the light stage +0.008/+0.020/+0.020.",
+  "visual_intent": "The slate-blue stage with the white-hot bubble: as glow is swept from 0 to 1 the teal halo is absent, then faint around 0.5, then clear at 1. Near the end the stage colour is switched to the pale warm grey and the halo almost vanishes. Readouts 'glow 0.5', 'glow 1', 'light stage'.",
+  "motion_claim": "The halo swells as the dial climbs, then fades into a pale stage when the stage colour is switched.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "glow 0, no halo"
+   },
+   {
+    "at": 0.35,
+    "event": "glow 0.5: faint; glow 1: clear"
+   },
+   {
+    "at": 0.78,
+    "event": "stage switched to light grey: the halo all but vanishes"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A halo that grows with the dial and disappears on a light stage is the claim; it needs the real render.",
+  "sparse": false
+ },
+ "B40": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c21-hint-swatches.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D switched on at 2 s · scripted",
+   "readouts": [
+    {
+     "at": 0.7,
+     "text": "hinted: red 0.37",
+     "x": 0.27,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "unhinted: red 0.64",
+     "x": 0.73,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "linear light: the scale light adds up on, in a straight line",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21: custom scene: two 60 x 60 flat-color squares (uniform vec4 flat_color = vec4(0.37, 0.64, 0.57, 1.0), left with source_color, right without; evidence/planning-checks/shaders/ev-flat-hint.gdshader and ev-flat-nohint.gdshader), root use_hdr_2d set to true at 2.0 s (`--call-at 2.0:enable_hdr_2d`, scripted); 6 s, 30 fps, Forward+. Verified: SDR both read (0.369, 0.639, 0.569); H D R 2D with the hint (0.370, 0.640, 0.570), without (0.642, 0.821, 0.780). The Compatibility renderer shows no difference (not shown).",
+  "visual_intent": "Two flat teal squares side by side on the stage, one whose color uniform has the source color hint and one without, identical at first. At 2 s H D R 2D is switched on: the left one stays teal, the right one turns pale. Readouts 'hinted: red 0.37' and 'unhinted: red 0.64'.",
+  "motion_claim": "The right square washes out at the switch while the left one stays the same.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "two identical teal squares"
+   },
+   {
+    "at": 0.4,
+    "event": "H D R 2D on: the right square washes out"
+   },
+   {
+    "at": 0.7,
+    "event": "readouts"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "Two squares that start identical and part ways at one switch are the proof.",
+  "sparse": false
+ },
+ "B41": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform vec3 body_color : source_color = vec3(0.37, 0.64, 0.57);\nuniform vec3 highlight_color : source_color = vec3(0.55, 0.52, 0.45);\nuniform float glow : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tfloat highlight = pow(spot, 3.0);\n\tvec3 rgb = body_color + highlight_color * highlight;\n\tCOLOR = vec4(rgb * (1.0 + glow * 5.0), disc);\n}",
+   "codeFile": "lab-shaders/14-glow-bubble.gdshader",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c22-sdr-threshold.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · threshold 0.5 without H D R 2D, then H D R 2D at 3 s · scripted",
+   "readouts": [
+    {
+     "at": 0.15,
+     "text": "threshold 0.5",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "HDR 2D",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "threshold: the brightness above which light starts to bleed",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C22: custom scene: the square target with lab-shaders/14-glow-bubble.gdshader (glow 1.0), stage #5F7A96, WorldEnvironment (glow on, Canvas background, intensity 2) with glow_hdr_threshold 0.5 and no HDR 2D; at 3.0 s use_hdr_2d true and the threshold back to 1.0 (`--call-at 3.0:enable_hdr_2d_and_reset_threshold`, scripted); 8 s, 30 fps, Forward+. Verified (glow-results G8 against G6): 6 px beyond the band the halo is +0.008/+0.004/+0.004 (no tint) against +0.046/+0.075/+0.041.",
+  "visual_intent": "The slate-blue stage with the white bubble in the default pipeline and a world environment with glow on, background Canvas, threshold 0.5, intensity 2: only a faint, colourless halo. At 3 s H D R 2D is switched on and the threshold returns to 1: the halo grows and turns teal. Readouts 'threshold 0.5' then 'HDR 2D'.",
+  "motion_claim": "A faint grey halo becomes a clear teal one at the switch.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "faint halo, threshold 0.5"
+   },
+   {
+    "at": 0.45,
+    "event": "H D R 2D on, threshold 1: the halo grows and tints"
+   },
+   {
+    "at": 0.75,
+    "event": "readout 'HDR 2D'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real faint halo turning into a clear one at one switch is the comparison.",
+  "sparse": false
+ },
+ "B42": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "lab-shaders/15-bubble-complete.gdshader",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c23-bubble-complete.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · H D R 2D on, glow on, Canvas, intensity 2 · glow swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "glow 0",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.8,
+     "text": "glow 1",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "lab-shaders/15-bubble-complete.gdshader · Forward+ · scripted glow sweep",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C23: scene script (`--scene`): the square target with lab-shaders/15-bubble-complete.gdshader and a seamless NoiseTexture2D (FastNoiseLite defaults, 512 x 512) bound to `noise`, H D R 2D on and a WorldEnvironment (glow on, Canvas background, intensity 2) from the first frame, stage #5F7A96, glow held 0 for 2 s, swept to 1 by 9 s, held (`--animate glow:0:0,2:0,9:1`), `--time-origin 0`; 12 s, 30 fps, Forward+. Verified (finale_check.gd, run-finale.log): the body at the sample pixel shows about (0.45, 0.66, 0.61) at glow 0, (0.66, 0.96, 0.87) at 0.3, (0.80, 1, 1) at 0.6, (0.98, 1, 1) at 1 (the scrolling noise moves each value by about 0.02 from run to run); the highlight centre reaches (1, 1, 1) by glow 0.6; 6 px beyond the band the stage (0.373, 0.478, 0.588) reads (0.383, 0.494, 0.597) at glow 1 (a faint halo: the noise thins the alpha).",
+  "visual_intent": "The slate-blue stage with the finished bubble: a teal disc with a soft edge, a pale highlight at the upper left, clouds of noise drifting through it, and the glow dial sweeping from 0 to 1 so the bubble brightens toward white with a soft halo. Readouts 'glow 0' and 'glow 1'. No code panel: the shader is 16 lines (lab-shaders/15-bubble-complete.gdshader) and every line has been on screen already.",
+  "motion_claim": "The finished bubble drifts and brightens as the dial climbs, all five layers at once.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the bubble at glow 0: soft edge, highlight, drifting clouds"
+   },
+   {
+    "at": 0.45,
+    "event": "glow rising: brighter, halo starting"
+   },
+   {
+    "at": 0.8,
+    "event": "glow 1: near white with the halo; readout"
+   }
+  ],
+  "runner_up": "manim exploded view of the five layers",
+  "why": "The payoff of the film is the real, finished effect with every layer running at once; an exploded drawing would show the parts but not the whole alive.",
+  "sparse": false
+ }
+}

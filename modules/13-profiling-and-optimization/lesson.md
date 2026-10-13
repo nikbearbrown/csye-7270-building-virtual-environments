@@ -192,6 +192,25 @@ The recorded run (Claude Code 2.1.150 with `claude-sonnet-4-6`, 27 September 202
 
 **Correct code, wrong description of its own instrument.** `bench.gd` labels `TIME_PROCESS` as time spent "last frame." Its own output refutes that: servers at 5,000 printed `TIME_PHYSICS_PROCESS=33.452 ms` for a run whose mean frame was 2.67 ms and worst was 37.7 ms. A one-second maximum explains the number; "the last frame" cannot. At 500 bullets both monitors printed 0.000, because 720 fixed-step frames took under a second. The agent still committed an 82-line `FRICTIONAL.md` entry repeating the wrong definition; only reading the engine source caught it.
 
+## Practice assessment (ungraded)
+
+Answer these in your own words, then check the source:
+
+1. Your benchmark prints `Performance.TIME_PROCESS` once, at the end of a 600-frame run that took half a second. What does it print, and why?
+2. Without `--fixed-fps`, a headless benchmark reports 6.9 ms for every case, even an empty scene. Why, and what does the flag change about what the number means?
+3. Using the table above, decide whether servers are justified at 500 bullets and at 5,000, in milliseconds and share of a 60 Hz budget, and name the evidence that would change your mind.
+4. Your target is a standalone headset at 90 Hz using the Mobile renderer. Write the measurement plan you would run on the device before choosing between nodes and servers for 2,000 bullets.
+
+An ungraded practice quiz is on this module's Canvas page. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer from the source.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to measure comparable behavior under stated conditions; decide whether the improvement justifies its complexity. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module, with Module 12, completes the material for Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford." That assignment opens in Module 12 and is due about Day 90 (Canvas dates govern); its own page sets the task and the required `godot-gamedev` film, and this lesson adds no graded deliverable. Carry the method into it: name the budget, benchmark with a parity test, repeat in fresh processes, state what the number excludes. Module 14, game AI and systems, comes next. The long reading is [Chapter 13 — Profiling and Optimization](../../chapters/13-profiling-and-optimization.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run; these comparisons come from their official documentation, checked on 27 September 2026.
@@ -207,17 +226,10 @@ Unity and Unreal were not run; these comparisons come from their official docume
 
 The biggest difference for an agent workflow is what the agent can read. A Godot benchmark, its parity test and its CSV output are text an agent can write, run and diff. Unity's Profiler captures are binary data viewed in the editor: an agent can trigger one but cannot read a flame chart as it reads a CSV line, so ask for CSV or test output a script can compare. Unreal's CSV Profiler writes text, but an actor-per-bullet Blueprint would live in a binary `.uasset` file. The [companion chapter](../../chapters/13-profiling-and-optimization.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in your own words, then check the source:
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/13-profiling-and-optimization.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/profiler-modules-introduction.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Your benchmark prints `Performance.TIME_PROCESS` once, at the end of a 600-frame run that took half a second. What does it print, and why?
-2. Without `--fixed-fps`, a headless benchmark reports 6.9 ms for every case, even an empty scene. Why, and what does the flag change about what the number means?
-3. Using the table above, decide whether servers are justified at 500 bullets and at 5,000, in milliseconds and share of a 60 Hz budget, and name the evidence that would change your mind.
-4. Your target is a standalone headset at 90 Hz using the Mobile renderer. Write the measurement plan you would run on the device before choosing between nodes and servers for 2,000 bullets.
+## Doing the same thing in Unreal Engine
 
-An ungraded practice quiz is on this module's Canvas page. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer from the source.
-
-## The next step
-
-This module, with Module 12, completes the material for Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford." That assignment opens in Module 12 and is due about Day 90 (Canvas dates govern); its own page sets the task and the required `godot-gamedev` film, and this lesson adds no graded deliverable. Carry the method into it: name the budget, benchmark with a parity test, repeat in fresh processes, state what the number excludes. Module 14, game AI and systems, comes next. The long reading is [Chapter 13 — Profiling and Optimization](../../chapters/13-profiling-and-optimization.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/13-profiling-and-optimization.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/stat-commands-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

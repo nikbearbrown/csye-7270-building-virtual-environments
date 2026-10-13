@@ -1,0 +1,450 @@
+{
+ "B11": {
+  "lane": "manim",
+  "class": "B11_FullRect",
+  "visual_intent": "Act title 'Full-Screen Effects' (serif 40) top-left. A screen outline (the game screen) with a small teal rectangle labelled 'ColorRect' inside it. Four terracotta anchor dots on the rectangle's corners fly out to the screen's four corners and the rectangle stretches to fill it; the label 'Layout > Anchors Preset: Full Rect' (the editor's own words) appears. The screen outline then grows wider and narrower in turn and the rectangle follows.",
+  "motion_claim": "Four dots fly to the four corners, the rectangle fills the screen, and it keeps filling it when the screen is resized.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "screen outline, small rectangle; act title"
+   },
+   {
+    "at": 0.34,
+    "event": "corner dots fly out; rectangle fills the screen"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: filled screen, label 'Full Rect'"
+   },
+   {
+    "at": 0.72,
+    "event": "screen resizes; rectangle follows"
+   }
+  ],
+  "runner_up": "an editor capture of the Layout menu (E1, optional)",
+  "why": "Corners snapping to corners is a motion, and the follow-on resize is the point of anchors; the editor frame is an optional upgrade, recorded in CAPTURE-PLAN.",
+  "sparse": true
+ },
+ "B12": {
+  "lane": "manim",
+  "class": "B12_LayerStack",
+  "visual_intent": "Two panes in an exploded side view: the lower pane 'game · 0' with a tiny meadow and player; the upper pane 'canvas layer 1' holding the full-rect colour rect, tinted pale grey, with the definition 'canvas layer: a group drawn together, with a number; higher is drawn later'. The lower pane slides in first, then the upper one is drawn on top of it with its number. A drawn arrow runs from the upper pane down through the lower: 'reads everything below'.",
+  "motion_claim": "The panes arrive in order, zero then one, and the arrow shows the upper layer reading everything beneath it.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "color rect inside a layer pane"
+   },
+   {
+    "at": 0.34,
+    "event": "layer pane with its number"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: layer 1 pane"
+   },
+   {
+    "at": 0.58,
+    "event": "game pane below it, number 0"
+   },
+   {
+    "at": 0.76,
+    "event": "arrow: reads everything below"
+   }
+  ],
+  "runner_up": "LibraryIconRow of layer icons",
+  "why": "Layers are a stack, and a stack with a drawing order is clearest as panes sliding into place.",
+  "sparse": true
+ },
+ "B13": {
+  "lane": "manim",
+  "class": "B13_ClicksStop",
+  "visual_intent": "The two panes again, side view: the game pane below, the full-rect colour rect pane above, labelled 'Mouse > Filter: Stop' (the editor's own words). A click (a drawn arrow tip with an expanding ring) comes down from above and stops at the colour rect, which flashes. The label changes to 'Mouse > Filter: Ignore' and the next click passes through the colour rect to the game pane, which flashes.",
+  "motion_claim": "The first click stops at the rect; after the label changes the second click passes straight through.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "two panes, label Stop"
+   },
+   {
+    "at": 0.3,
+    "event": "click 1 stops at the rect"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: click stopped"
+   },
+   {
+    "at": 0.7,
+    "event": "label Ignore; click 2 reaches the game"
+   }
+  ],
+  "runner_up": "ShaderLab with a scripted click",
+  "why": "A click that stops or passes is a path, and a path is a drawn arrow; a Godot capture would need an input log nobody can see.",
+  "sparse": true
+ },
+ "B14": {
+  "lane": "manim",
+  "class": "B14_WeightedSum",
+  "visual_intent": "One meadow pixel as a green swatch. Three horizontal bars show its red, green and blue values. Each bar is multiplied by a weight chip (0.299, 0.587, 0.114) and shrinks to a partial bar; the three partial bars then slide together end to end into one gray bar and a gray swatch appears beside the green one. The 0.587 chip is ringed last. Caption 'dot(a, b): multiply the matching parts and add them' (the GLOSSARY's wording).",
+  "motion_claim": "Three bars shrink by their weights and join end to end into one gray bar, and the gray swatch appears.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "pixel swatch; three channel bars"
+   },
+   {
+    "at": 0.3,
+    "event": "weight chips; bars shrink"
+   },
+   {
+    "at": 0.42,
+    "event": "bars join into one gray bar"
+   },
+   {
+    "at": 0.5,
+    "event": "settled: gray bar and swatch"
+   },
+   {
+    "at": 0.74,
+    "event": "the 0.587 chip ringed"
+   }
+  ],
+  "runner_up": "plot of luma against green",
+  "why": "A sum is three pieces becoming one, and that is a shape change, which Manim transforms rather than cuts.",
+  "sparse": true
+ },
+ "B15": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 1.0) = 1.0;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat gray = dot(c, vec3(0.299, 0.587, 0.114));\n\tCOLOR.rgb = mix(c, vec3(gray), amount);\n}",
+   "codeFile": "lab-shaders/05-gray.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      9
+     ],
+     "label": "mix(a, b, t): blends from a to b: t of 0 gives a, 1 gives b"
+    },
+    {
+     "at": 0.42,
+     "lines": [
+      4
+     ],
+     "label": "hint_range: a slider from 0 to 1"
+    },
+    {
+     "at": 0.75,
+     "lines": [
+      9
+     ]
+    }
+   ],
+   "video": "reading-the-screen/gray.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "amount 0",
+     "x": 0.5,
+     "y": 0.94
+    },
+    {
+     "at": 0.92,
+     "text": "amount 1",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C05: scene_c05_gray.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Meadow + player, 05-gray on a full-screen ColorRect in a CanvasLayer (layer 1); amount 0 until u = 0.62, then 1 by u = 0.95. Verified: amount 0, 0.5, 1 match the weights and mix exactly (within 1/255, 9 of 9).",
+  "visual_intent": "Code card at left (the 10-line gray shader); at right a real Godot window: the meadow and the teal player under a full-screen filter. The amount uniform sweeps from 0 to 1 and the colour drains out of the whole picture, grass, path, flowers and player together.",
+  "motion_claim": "The colour drains from everything at once as the dial turns.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "mix line highlighted"
+   },
+   {
+    "at": 0.43,
+    "event": "amount line highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "colour starts to drain"
+   },
+   {
+    "at": 0.95,
+    "event": "fully gray"
+   }
+  ],
+  "runner_up": "ShaderLab stills of amount 0 and 1",
+  "why": "A dial turning is a continuous change and the whole picture draining is the claim; two stills would lose the dial.",
+  "sparse": false
+ },
+ "B16": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec2 player = vec2(0.5);\nuniform float radius = 0.25;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tif (distance(SCREEN_UV, player) > radius) {\n\t\tc = vec3(dot(c, vec3(0.299, 0.587, 0.114)));\n\t}\n\tCOLOR.rgb = c;\n}",
+   "codeFile": "lab-shaders/06-spotlight-oval.gdshader",
+   "cues": [
+    {
+     "at": 0.58,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.74,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "reading-the-screen/spot-oval.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06: scene_c06_spot_oval.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. The player walks one lap of an ellipse (0.20 x 0.12 of the canvas) round the middle; every frame the scene's _process sends player position / canvas size to the filter; radius 0.25. The same capture serves B17. Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel).",
+  "visual_intent": "Code card at left (the 12-line spotlight shader with the plain distance test); at right a real Godot window: the meadow in gray with a coloured area around the teal player, who walks one lap of a flat ellipse. The uniform lines light up as the voice names them.",
+  "motion_claim": "The coloured area follows the walking player.",
+  "show": [
+   {
+    "at": 0.4,
+    "event": "player uniform line highlighted"
+   },
+   {
+    "at": 0.7,
+    "event": "radius uniform line highlighted"
+   }
+  ],
+  "runner_up": "ShaderLab stills",
+  "why": "The effect following the player is the picture the next four beats take apart; a still would hide that it follows.",
+  "sparse": false
+ },
+ "B17": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec2 player = vec2(0.5);\nuniform float radius = 0.25;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tif (distance(SCREEN_UV, player) > radius) {\n\t\tc = vec3(dot(c, vec3(0.299, 0.587, 0.114)));\n\t}\n\tCOLOR.rgb = c;\n}",
+   "codeFile": "lab-shaders/06-spotlight-oval.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      8
+     ],
+     "label": "distance: the gap between two addresses"
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.87,
+     "lines": [
+      11
+     ]
+    }
+   ],
+   "video": "reading-the-screen/spot-oval.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06 again (see B16): reuse the same video file.",
+  "visual_intent": "The same capture as the previous beat with different lines lit: the distance test, the gray line, the final colour line.",
+  "motion_claim": "The coloured area keeps following the player while the lines of the test light up in order.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "distance test highlighted"
+   },
+   {
+    "at": 0.58,
+    "event": "gray line highlighted"
+   },
+   {
+    "at": 0.82,
+    "event": "colour line highlighted"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Code with its running result beats code alone: the viewer sees which pixels each line decides.",
+  "sparse": false
+ },
+ "B18": {
+  "lane": "manim",
+  "class": "B18_StretchedAddresses",
+  "visual_intent": "A unit square labelled 'addresses: 0 to 1 across, 0 to 1 down' with a circle of radius 0.25 drawn inside it. The square stretches sideways into a 16:9 screen rectangle and the circle becomes an ellipse. Two measurements appear along the ellipse: sideways '0.25 × 1280 = 320 px', up and down '0.25 × 720 = 180 px'. Caption 'oval'.",
+  "motion_claim": "The square stretches into the wide screen and the circle stretches with it into an oval.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "unit square with a circle"
+   },
+   {
+    "at": 0.34,
+    "event": "the square stretches into the 16:9 screen"
+   },
+   {
+    "at": 0.46,
+    "event": "settled: ellipse"
+   },
+   {
+    "at": 0.64,
+    "event": "the two measurements"
+   }
+  ],
+  "runner_up": "ShaderLab with readouts on the oval capture",
+  "why": "The cause is the stretch from a square of addresses to a wide screen, which is a transformation; the numbers then name it.",
+  "sparse": true
+ },
+ "B19": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec2 player = vec2(0.5);\nuniform float radius = 0.25;\n\nvoid fragment() {\n\tvec3 c = texture(screen_texture, SCREEN_UV).rgb;\n\tvec2 px = SCREEN_PIXEL_SIZE;\n\tvec2 aspect = vec2(px.y / px.x, 1.0);\n\tif (distance(SCREEN_UV * aspect, player * aspect) > radius) {\n\t\tc = vec3(dot(c, vec3(0.299, 0.587, 0.114)));\n\t}\n\tCOLOR.rgb = c;\n}",
+   "codeFile": "lab-shaders/07-spotlight.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      8,
+      9
+     ],
+     "label": "SCREEN_PIXEL_SIZE: one pixel, as a fraction of the screen"
+    },
+    {
+     "at": 0.38,
+     "lines": [
+      9
+     ],
+     "label": "aspect ratio: width divided by height"
+    },
+    {
+     "at": 0.72,
+     "lines": [
+      9,
+      10
+     ]
+    }
+   ],
+   "video": "reading-the-screen/spot-swap.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader swapped at 72 percent",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C07: scene_c07_spot_swap.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. As C06; at u = 0.72 the material is swapped from 06-spotlight-oval to 07-spotlight (radius 0.25 carried over). Verified: 07 reaches 180 px both ways. Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel).",
+  "visual_intent": "Code card at left (the 14-line fixed spotlight); at right the same walk: the coloured area is an oval until 72 percent of the beat, when the shader is swapped and it becomes a circle.",
+  "motion_claim": "The oval snaps to a circle at the cue.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "the pixel size and aspect lines highlighted"
+   },
+   {
+    "at": 0.38,
+    "event": "label defines 'aspect ratio'"
+   },
+   {
+    "at": 0.72,
+    "event": "the multiply lines highlighted"
+   },
+   {
+    "at": 0.72,
+    "event": "the oval becomes a circle"
+   }
+  ],
+  "runner_up": "ShaderLab with a split view of both shaders",
+  "why": "A before and after on the same walk is the proof; the swap makes the cause (the extra two lines) and the effect (round) one event.",
+  "sparse": false
+ },
+ "B20": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "func _process(_delta):\n\tvar size := get_viewport_rect().size\n\tvar on_screen: Vector2 = $Player.get_global_transform_with_canvas().origin\n\t$Layer/Filter.material.set_shader_parameter(\"player\", on_screen / size)",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.16,
+     "lines": [
+      1
+     ]
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.43,
+     "lines": [
+      2,
+      4
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ],
+     "label": "set_shader_parameter: sends a value to a uniform"
+    }
+   ],
+   "video": "reading-the-screen/spot-game.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C08: scene_c08_spot_game.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. The scene's own _process is exactly the four lines shown. Verified: the centroid of the lit area sits on the player within 1 px (verify7 C08); with a moved Camera2D the canvas-transform version lands on the player while plain position / size does not (verify8). Route check: the spotlight scenes look the same on the 4K route as in a plain 1280 x 720 window (verify10 B, within 1 canvas pixel).",
+  "visual_intent": "Code card at left with the four-line GDScript _process; at right the finished circular spotlight following the walking player.",
+  "motion_claim": "The lines light up as the voice names them while the circle follows the player.",
+  "show": [
+   {
+    "at": 0.18,
+    "event": "func line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "the on-screen position line highlighted"
+   },
+   {
+    "at": 0.5,
+    "event": "the division lines highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "the call highlighted"
+   }
+  ],
+  "runner_up": "LectureCodeTrace on the GDScript",
+  "why": "The cause (four lines) and the effect (the circle following) together.",
+  "sparse": false
+ }
+}

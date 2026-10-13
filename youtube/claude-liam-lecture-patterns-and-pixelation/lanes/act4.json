@@ -1,0 +1,343 @@
+{
+ "B26": {
+  "lane": "manim",
+  "class": "B26_SumsGrid",
+  "visual_intent": "Act title 'Checkerboards and Stripes' (serif 40) top-left. A four by four grid of outline cells (no fill behind text) with the sum of column and row written in each cell: 0 1 2 3 / 1 2 3 4 / 2 3 4 5 / 3 4 5 6; column numbers along the top, row numbers down the left. A terracotta dot steps one cell right (the number pops from 2 to 3 with '+1') then one cell down (+1 again). Midpoint still (45 to 55 %): the dot has stepped one cell to the right and the number shows '+1'; the step down comes after the midpoint.",
+  "motion_claim": "The dot steps right and down and the number in its cell goes up by one each time.",
+  "show": [
+   {
+    "at": 0.04,
+    "event": "act title; the grid with its sums"
+   },
+   {
+    "at": 0.36,
+    "event": "dot steps right: +1"
+   },
+   {
+    "at": 0.74,
+    "event": "dot steps down: +1"
+   }
+  ],
+  "runner_up": "ShaderLab render of the finished checkerboard",
+  "why": "Numbers in cells that change by one per step are best shown in a grid with a dot moving through it.",
+  "sparse": true
+ },
+ "B27": {
+  "lane": "manim",
+  "class": "B27_RemainderColors",
+  "visual_intent": "The same grid of sums. Under each sum a small remainder after two appears, 0 or 1. Beside the grid a second, text-free four by four checkerboard fills cell by cell in teal and cream as each remainder is found (teal for 0, cream for 1). The label 'mod(x, y): the remainder after dividing' and the line '3 mod 2 = 1' sit below. Midpoint still (45 to 55 %): the remainders are under the sums and the plain checkerboard beside the grid is complete; the line '3 mod 2 = 1' has not typed yet.",
+  "motion_claim": "Each sum gets its remainder and the second grid fills with the checkerboard cell by cell.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "remainders 0 and 1 appear under the sums; label mod"
+   },
+   {
+    "at": 0.21,
+    "event": "the plain checkerboard fills row by row beside the grid (finished by 44 %)"
+   },
+   {
+    "at": 0.85,
+    "event": "line '3 mod 2 = 1' with the 3 in the grid ringed"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "The checkerboard has to appear from the numbers; a table lists them but cannot fill the pattern.",
+  "sparse": true
+ },
+ "B28": {
+  "lane": "manim",
+  "class": "B28_DiagonalStep",
+  "visual_intent": "The same grid, now showing the checkerboard colors as outlines (teal and cream rings, no fill behind numbers). A terracotta dot jumps from cell (0, 0) to cell (1, 1) with the label '+2' on the jump; two flip marks (one per step of one) appear on the way, the two cells carry the same color and a small bracket joins them. A corner point where four cells meet is marked with a small terracotta dot and the label 'corners touch'. Midpoint still (45 to 55 %): the dot sits on cell (1, 1) with the '+2' label, two flip marks on the way and the bracket joining the pair; the corner mark arrives after the midpoint.",
+  "motion_claim": "The dot jumps diagonally and lands on a cell of its own color; the bracket joins the pair.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "dot jumps from (0, 0) to (1, 1): +2"
+   },
+   {
+    "at": 0.23,
+    "event": "two flips marked on the two steps; the pair bracketed"
+   },
+   {
+    "at": 0.68,
+    "event": "a corner where four cells meet marked 'corners touch'"
+   }
+  ],
+  "runner_up": "ShaderLab render of the finished checkerboard",
+  "why": "A jump landing on its own color is the argument; it needs the grid and a dot, not pixels.",
+  "sparse": true
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec2 cell = floor(UV * 8.0);\n\tfloat parity = mod(cell.x + cell.y, 2.0);\n\tvec3 teal = vec3(0.373, 0.639, 0.569);\n\tvec3 cream = vec3(0.980, 0.976, 0.961);\n\tCOLOR = vec4(mix(teal, cream, parity), 1.0);\n}",
+   "codeFile": "lab-shaders/09-checker.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.28,
+     "lines": [
+      5
+     ],
+     "label": "mod(x, y): the remainder of x divided by y"
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      8
+     ],
+     "label": "mix(a, b, t): zero gives a, one gives b"
+    }
+   ],
+   "video": "patterns-and-pixelation/checker.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · nearest filter · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.66,
+     "text": "percent: error",
+     "x": 0.8,
+     "y": 0.45
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13: Lab sprite, white texture, lab-shaders/09-checker.gdshader, still PNG. Verified: all 64 cells match mod(column + row, 2); top-left cell teal; probes (0,0) teal, (1,0) cream, (0,1) cream, (1,1) teal. Lab: percent on decimals is a shader error (chk-percent-on-floats).",
+  "visual_intent": "Code card at left (cell, parity with mod, two colors, the mix); at right a real Godot window: an eight by eight teal-and-cream checkerboard. The mod and COLOR lines carry short labels: mod(x, y): the remainder of x divided by y; mix(a, b, t): zero gives a, one gives b.",
+  "motion_claim": "The cell line, the mod line and the mix line are highlighted in turn while the checkerboard sits in the window.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "cell line highlighted"
+   },
+   {
+    "at": 0.28,
+    "event": "mod line highlighted"
+   },
+   {
+    "at": 0.57,
+    "event": "COLOR line highlighted; caption on mix"
+   },
+   {
+    "at": 0.66,
+    "event": "readout 'percent: error on decimals'"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Four lines and their result together are the claim; the pattern is the proof the arithmetic worked.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "manim",
+  "class": "B30_DiagonalRamp",
+  "visual_intent": "A square (the shape) shaded with a diagonal gradient in mid-tone greys, with five grey isolines running along the other diagonal at x + y = 0.5, 1, 1.5 ... and a ramp strip below labelled 0 and 2 with the word 'ramp'. A terracotta dot slides along the main diagonal with a live label 'UV.x + UV.y = ...' counting from 0 up to 2. Midpoint still (45 to 55 %): the dot is held at the middle of the diagonal with the label 'UV.x + UV.y = 1.0' (it slides there between 36 and 44 %); the far corner comes after the midpoint.",
+  "motion_claim": "The dot slides corner to corner and the sum counts from zero to two.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "square with the diagonal gradient and isolines"
+   },
+   {
+    "at": 0.36,
+    "event": "dot slides to the middle of the diagonal; label counts to 1.0 (finished by 44 %)"
+   },
+   {
+    "at": 0.69,
+    "event": "dot slides on to the far corner; ramp strip labelled 0 and 2"
+   }
+  ],
+  "runner_up": "ShaderLab render of the finished stripes",
+  "why": "A ramp that runs corner to corner is a coordinate picture, and the isolines show where stripes will run.",
+  "sparse": true
+ },
+ "B31": {
+  "lane": "manim",
+  "class": "B31_SawtoothCut",
+  "visual_intent": "A plot over the diagonal 0 to 2: the sawtooth of fract(ramp × 4) with eight teeth, drawing left to right. A horizontal threshold line at 0.5 labelled 'width'. Under the plot a one-dimensional bar fills in gold where a tooth is below the threshold and cream above it. Then the threshold moves to 0.25 and back to 0.75 and the gold parts thin and thicken. The label 'step(edge, x): 0 below the edge, 1 from the edge' sits above, and the word 'sawtooth' labels the curve. Midpoint still (45 to 55 %): the full sawtooth of eight teeth is drawn and labelled 'sawtooth'; the threshold line and the stripe bar arrive after the midpoint.",
+  "motion_claim": "The sawtooth draws, the threshold cuts every tooth, and the stripe bar below fills; moving the threshold changes the stripe widths.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "sawtooth of eight teeth draws"
+   },
+   {
+    "at": 0.56,
+    "event": "threshold line and step label; stripe bar fills"
+   },
+   {
+    "at": 0.81,
+    "event": "threshold moves 0.25, 0.75; the gold parts thin and thicken"
+   }
+  ],
+  "runner_up": "LectureCodeTrace",
+  "why": "The sawtooth cut by a line into a bar of stripes is a plot with a threshold: a function reshaping a ramp, which is what the kit's plot object is for.",
+  "sparse": true
+ },
+ "B32": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float count = 4.0;\nuniform float width = 0.5;\n\nvoid fragment() {\n\tfloat diagonal = UV.x + UV.y;\n\tfloat f = fract(diagonal * count);\n\tfloat stripe = step(width, f);\n\tvec3 gold = vec3(0.925, 0.769, 0.380);\n\tvec3 cream = vec3(0.980, 0.976, 0.961);\n\tCOLOR = vec4(mix(gold, cream, stripe), 1.0);\n}",
+   "codeFile": "lab-shaders/10-stripes.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      8
+     ]
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      9
+     ],
+     "label": "step(edge, x): 0 below the edge, 1 from it"
+    }
+   ],
+   "video": "patterns-and-pixelation/stripes.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · nearest filter · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.23,
+     "text": "count 4",
+     "x": 0.8,
+     "y": 0.35
+    },
+    {
+     "at": 0.57,
+     "text": "width 0.5",
+     "x": 0.8,
+     "y": 0.55
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C14: Lab sprite, white texture, lab-shaders/10-stripes.gdshader, count 4, width 0.5, still PNG. Verified: four gold stripes end along the top row; gold share 0.500 (0.253 at width 0.25, 0.753 at 0.75); edges follow lines of constant x + y.",
+  "visual_intent": "Code card at left (count and width uniforms, the diagonal, fract, step, the mix of gold and cream); at right a real Godot window: gold-and-cream diagonal stripes, four pairs across. Two readouts 'count 4' and 'width 0.5'.",
+  "motion_claim": "The fract line, then the step line, are highlighted while four gold stripes run across the square.",
+  "show": [
+   {
+    "at": 0.23,
+    "event": "fract line highlighted; readout count 4"
+   },
+   {
+    "at": 0.57,
+    "event": "step line highlighted; readout width 0.5"
+   }
+  ],
+  "runner_up": "manim strip of stripes",
+  "why": "The stripes and the two numbers that set them, together, in a real render.",
+  "sparse": false
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float count = 4.0;\nuniform float width = 0.5;\nuniform float speed = 0.5;\n\nvoid fragment() {\n\tfloat diagonal = UV.x + UV.y;\n\tfloat f = fract(diagonal * count - TIME * speed);\n\tfloat stripe = step(width, f);\n\tvec3 gold = vec3(0.925, 0.769, 0.380);\n\tvec3 cream = vec3(0.980, 0.976, 0.961);\n\tCOLOR = vec4(mix(gold, cream, stripe), 1.0);\n}",
+   "codeFile": "lab-shaders/11-stripes-moving.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      9
+     ],
+     "label": "TIME: seconds on one clock for the game"
+    }
+   ],
+   "video": "patterns-and-pixelation/stripes-moving.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · nearest filter · live TIME",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C15: Lab sprite, white texture, lab-shaders/11-stripes-moving.gdshader, defaults, 8 s live TIME, 30 fps, Forward+, nearest filter. Verified: the render equals the formula for the engine's TIME (0.00 % pixels differ in three of four renders; one fit less well, 1.1 %, kept), and the pattern moves toward larger x + y as TIME grows. fract(-0.25) = 0.75 (chk-negative-fract-mod).",
+  "visual_intent": "Code card at left with the TIME line highlighted; at right a real Godot window: the same gold-and-cream stripes sliding toward the bottom right. The highlighted line carries the label 'TIME: seconds on one clock for the game'.",
+  "motion_claim": "The stripes slide steadily toward the bottom right the whole time.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "TIME line highlighted; stripes begin to slide"
+   },
+   {
+    "at": 0.33,
+    "event": "label on TIME stays"
+   },
+   {
+    "at": 0.56,
+    "event": "stripes keep sliding toward the bottom right"
+   }
+  ],
+  "runner_up": "manim animation of sliding stripes",
+  "why": "Sliding stripes are a motion claim; a still could not show it.",
+  "sparse": false
+ },
+ "B34": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "One recipe, two patterns",
+   "headers": [
+    "Step",
+    "Checkerboard",
+    "Stripes"
+   ],
+   "rows": [
+    [
+     "one number per pixel",
+     "column + row",
+     "UV.x + UV.y"
+    ],
+    [
+     "make it repeat",
+     "mod 2",
+     "fract"
+    ],
+    [
+     "cut into two colors",
+     "mix",
+     "step, then mix"
+    ]
+   ],
+   "note": "Godot 4.7 shader reference · both patterns checked in Godot 4.7.2",
+   "cues": [
+    0.14,
+    0.58,
+    0.82
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A three-row table with a row per step and a column per pattern; the row for each step is ringed as the voice names it.",
+  "motion_claim": "The ring steps down the three steps with the voice.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "row one"
+   },
+   {
+    "at": 0.58,
+    "event": "row two"
+   },
+   {
+    "at": 0.82,
+    "event": "row three"
+   }
+  ],
+  "runner_up": "manim table drawn on cue",
+  "why": "Two parallel recipes in three steps is a table; both patterns were just shown moving.",
+  "sparse": false
+ }
+}

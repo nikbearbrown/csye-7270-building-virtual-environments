@@ -1,0 +1,38 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://sprite.png" id="1"]
+[ext_resource type="Shader" path="res://01-inner-gradient.gdshader" id="2"]
+[ext_resource type="Shader" path="res://04-stripes.gdshader" id="3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_inner"]
+shader = ExtResource("2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_outer"]
+shader = ExtResource("3")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1"]
+blend_mode = 4
+
+[node name="Main" type="Node2D"]
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+size = Vector2i(512, 512)
+
+[node name="Sprite2D" type="Sprite2D" parent="SubViewport"]
+material = SubResource("ShaderMaterial_inner")
+position = Vector2(256, 256)
+texture = ExtResource("1")
+
+[node name="Display" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_outer")
+position = Vector2(700, 400)
+texture = SubResource("ViewportTexture_1")
+
+[node name="DisplayPremul" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_1")
+position = Vector2(1200, 400)
+texture = SubResource("ViewportTexture_1")

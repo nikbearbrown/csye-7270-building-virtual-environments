@@ -2,7 +2,7 @@
 
 CSYE 7270 · Fall 2026 · **100 points**
 
-Assignments follow a **10-day cadence**. Use this assignment's due date in Canvas. The syllabus's **10% daily late penalty** applies.
+**Due: Wednesday, October 7, 2026, at 11:59 pm America/New_York.** Confirmed in Canvas. The **10% daily late penalty** applies.
 
 **Required viewing:** [AI Policy for Professor Bear's Courses | Using AI Responsibly in Class](https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz).
 

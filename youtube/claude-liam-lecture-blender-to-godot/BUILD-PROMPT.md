@@ -1,0 +1,10 @@
+# BUILD-PROMPT.md — rebuild this lecture from scratch (paste into Claude Code, run from `books/`)
+
+Build `csye-7270-building-virtual-environments/youtube/claude-liam-lecture-blender-to-godot/` with the `lecture` skill (brutalist.art/skills/make/lecture/SKILL.md; read it and the skills it borrows lanes from first). Channel claude-liam (Liam in for Bear, Kokoro am_onyx), @NikBearBrown outro, no course credit. Free steps run straight through; stop at the master; never stage or publish.
+
+1. Source: `chapters/03-blender-mcp-to-godot.md` (read whole) + `examples/03-blender-mcp-to-godot/` (real logs, transcripts, scripts). The chapter's counts are wrong: use 15 PASS (run 1) and 16 PASS (run 2) from the logs.
+2. Narration: `narration.py` (75 body beats, five acts). `python3 make_sheet.py` merges `lanes/act*.json`. Beat IDs are UPPER-CASE. `python3 brutalist.art/runtime/scripts/generate_audio_kokoro.py <reel>`; pad BOUT with a 1.0 s tail (apad) and write `actual_duration_s` back; whisper-check; after `--only` re-voices, re-pad BOUT.
+3. Evidence (all re-runnable): `evidence/probe/*` (three-column mutation, stale dimensions, exit code), `evidence/render_post.py` (Blender Workbench renders), `evidence/gui_shot.py` (real Blender window; set `BLENDER_USER_CONFIG` to a scratch folder), `evidence/act{2..6}/` (per-act captures, probes, reproduce scripts).
+4. Scenes: `kit.py` + `scenes_act{1..6}.py` → `python3 assemble_scenes.py` → `scenes.py`. `./preflight.sh <act> <Class…>` per scene (Gate A static from a scenes.py-only folder, layout audit, still); `python3 gate_probe.py <act> <Class…>` previews Gate T/V at the midpoint.
+5. Paperwork: `lanes/*.json` → SHOTLIST, `factcheck/*.md` → FACTCHECK (`python3 build_docs.py`), ACTS.md, SOURCES.md, PROMPTS.md, SESSION-act5/6.md.
+6. Render: `./brutalist.art/art run <reel> --height 2160` (ONE run at a time, as the background task itself), then `./brutalist.art/art final <reel> --height 2160 --out <reel>/exports/landscape` (GATE T first). Verify: 3840×2160, runtime vs audio, silent tail, `bookend_check.py`.

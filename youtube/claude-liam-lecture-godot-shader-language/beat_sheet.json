@@ -1,0 +1,2546 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-godot-shader-language",
+    "title": "Godot Shader Language",
+    "topic": "GODOT SHADERS · THE LANGUAGE",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "engine": "kokoro",
+    "clock": "narration",
+    "palette": "claude",
+    "register": "Teardown",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "caption_policy": "sidecar",
+    "greeting_language": "Hallo",
+    "audience": "people making games in Godot, and anyone directing an AI that writes shaders for them",
+    "godot_version": "4.7.2",
+    "lecture_opening_description": "How to read any shader, one type at a time",
+    "lecture_opening_template": "lecture-title-slide-16x9",
+    "lecture_opening_title_lines": [
+      "Godot Shader",
+      "Language"
+    ],
+    "bookend_exempt": [
+      "cold-open",
+      "bvdt"
+    ],
+    "bookend_exempt_reason": "lecture skill: opens on the narrated identity card then the hesitant writer; no composer cold open.",
+    "source_doc": "Godot 4.7 documentation; Godot 4.7.2 runs on Apple M4 Pro (evidence/planning-checks); see SOURCES.md",
+    "tags": [
+      "Godot",
+      "Shaders",
+      "Shader language",
+      "GDScript",
+      "Vectors",
+      "Swizzling",
+      "Functions",
+      "Game development",
+      "Nik Bear Brown"
+    ]
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Language. Learn how a shader file is built, what its types and vectors mean, and how to read any shader line by line, even one an AI wrote for you.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "routing": {
+        "about": "Film identity and payoff",
+        "runner_up": "Minimal title card",
+        "reason": "The lecture skill's approved first beat: portrait, title, narrated summary."
+      },
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, exact film title and short payoff visible immediately.",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete populated lecture opener visible for the whole narration"
+          }
+        ]
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Identity card: portrait and title; teaching motion resumes in BIDEA."
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "the question",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. When you first read shader code, it is natural to assume each line works on one number at a time. It does not. Many values in a shader are bundles of numbers, and one operator works on the whole bundle at once.",
+      "estimated_duration_s": 16.7,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "types the newcomer's assumption"
+          },
+          {
+            "at": 0.62,
+            "event": "backspaces 'one number' and types 'a bundle of numbers'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A shader line works on\none number at a time.",
+            "triggerWords": "one number",
+            "replacementWords": "a bundle of numbers",
+            "fontSize": 66,
+            "charMs": 24,
+            "hesitateBetween": 6,
+            "hesitateWithin": 1,
+            "mistakeRate": 4,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-godot-shader-language",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "motion_claim": "The writer types the assumption a newcomer arrives with and corrects it into the film's real subject.",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Hesitant-writer bookend: the correction is the motion."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "terms",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Five terms. A shader is a small program the graphics card runs to decide how something is drawn. A pixel is one dot of the picture. A type is the kind of value something holds. A function is a named block of code you can call. An argument is a value you hand it.",
+      "estimated_duration_s": 18.4,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "'Shader' lands"
+          },
+          {
+            "at": 0.28,
+            "event": "'Pixel' lands"
+          },
+          {
+            "at": 0.45999999999999996,
+            "event": "'Type' lands"
+          },
+          {
+            "at": 0.64,
+            "event": "'Function' lands"
+          },
+          {
+            "at": 0.82,
+            "event": "'Argument' lands"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Shader",
+                "meaning": "a small program the graphics card runs to decide how something is drawn"
+              },
+              {
+                "term": "Pixel",
+                "meaning": "one dot of the picture on screen"
+              },
+              {
+                "term": "Type",
+                "meaning": "the kind of value something holds: whole number, decimal, bundle"
+              },
+              {
+                "term": "Function",
+                "meaning": "a named block of code you can call"
+              },
+              {
+                "term": "Argument",
+                "meaning": "a value you hand to a function when you call it"
+              }
+            ],
+            "durationSeconds": "__AUDIO__",
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "TERMS card: prerequisites, one plain line each."
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "I · The Shape of a File",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is a real shader, fourteen lines long. It makes a color breathe between pale gray and teal. Godot refuses a line that breaks the rules. It will not warn you when a legal line does something you did not mean. So you have to read it.",
+      "estimated_duration_s": 16.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'The Shape of a File' (serif 40) top-left. The real 14-line file `lab-shaders/01-breathe.gdshader` in the code panel at left with line numbers; at right a framed real Godot render that breathes between pale gray and teal. Window label: 'Godot 4.7.2 · Forward+ · tint set to teal'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "file and window on the stage; window labelled"
+          },
+          {
+            "at": 0.2,
+            "event": "the pulse swings: gray to teal and back"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec4 tint : source_color;\nuniform float speed = 2.0;\n\nvec3 breathe(vec3 base, float t) {\n\tfloat wave = 0.5 + 0.5 * sin(t);\n\treturn mix(vec3(0.9), base, wave);\n}\n\nvoid fragment() {\n\tvec3 color = breathe(tint.rgb, TIME * speed);\n\tCOLOR = vec4(color, tint.a);\n}",
+            "codeFile": "lab-shaders/01-breathe.gdshader",
+            "cues": [],
+            "video": "godot-shader-language/breathe-b01.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · tint set to teal",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "The Shape of a File"
+          }
+        },
+        "motion_claim": "The render swings from pale gray to teal and back while the file stays still beside it."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The promise of the film is that this file can be read; the real file beside its real result is the claim, and nothing drawn could be as honest.",
+        "capture_spec": "C01a: Lab rect, lab-shaders/01-breathe.gdshader, --set tint=#5FA391 (the Inspector would set it), live TIME, a clip a little longer than this beat's measured audio (about 16 s) at 30 fps, Forward+, no input. Verified: the pulse swings between about 0.90 gray and (0.38, 0.64, 0.57); period about 3.2 s (evidence/planning-checks/pulse-range.txt). Gate V samples the 50 and 85 percent frames and fails a pale fill on the cream stage, so set --time-origin t0 so that wave = 0.5 + 0.5 * sin(2 * (t0 + t)) is 0.4 or less at t = 0.5 and 0.85 times this beat's measured audio (for 16.0 s, t0 about 0.98 s gives 0.11 at both). B40 needs its OWN clip (C01b): one origin cannot serve both beats.",
+        "act_title_on_screen": "The Shape of a File"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "I · The Shape of a File",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "A shader file has three zones, read from the top down. The header says what kind of shader this is. The globals are values declared outside every function. The functions are where the work happens.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same 14-line file alone on the stage (layout 'code', line numbers on). Three bands light in turn with a one-word chip beside each: line 1 'header', lines 3 to 4 'globals', lines 6 to 14 'functions'.",
+        "show": [
+          {
+            "at": 0.33,
+            "event": "band on line 1: header"
+          },
+          {
+            "at": 0.58,
+            "event": "band on lines 3 and 4: globals"
+          },
+          {
+            "at": 0.82,
+            "event": "band on lines 6 to 14: functions"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "code",
+            "code": "shader_type canvas_item;\n\nuniform vec4 tint : source_color;\nuniform float speed = 2.0;\n\nvec3 breathe(vec3 base, float t) {\n\tfloat wave = 0.5 + 0.5 * sin(t);\n\treturn mix(vec3(0.9), base, wave);\n}\n\nvoid fragment() {\n\tvec3 color = breathe(tint.rgb, TIME * speed);\n\tCOLOR = vec4(color, tint.a);\n}",
+            "codeFile": "lab-shaders/01-breathe.gdshader",
+            "cues": [
+              {
+                "at": 0.33,
+                "lines": [
+                  1
+                ],
+                "label": "header"
+              },
+              {
+                "at": 0.58,
+                "lines": [
+                  3,
+                  4
+                ],
+                "label": "globals"
+              },
+              {
+                "at": 0.82,
+                "lines": [
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14
+                ],
+                "label": "functions"
+              }
+            ],
+            "video": "",
+            "videoLabel": "",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "A highlight band slides down the file and stops on each zone as the voice names it."
+      },
+      "lecture": {
+        "runner_up": "manim code card with bands",
+        "why": "A Manim card at the 32-point type floor holds about 8 lines of code (measured: Menlo at 32 is 0.25 unit per character, 0.6 per line); ShaderLab's code layout shows all 14 real lines."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "I · The Shape of a File",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "The header starts with shader type, and it must be the first line. Canvas item means two-D drawing and interface. Spatial means three-D. An optional second line, render mode, picks options, such as how a pixel blends with the background.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "`shader_type canvas_item;` in monospace (size 40) upper center. Under it a row of tiles: `canvas_item` captioned '2D + interface' and `spatial` captioned '3D' (both outlined), and three small tiles `particles`, `sky`, `fog` under a bracket labelled 'more'. A terracotta ring settles on canvas_item, in the line and on its tile. Serif 32 caption: 'shader type: the first line; says what the shader is for'. Last, a dimmer second line `render_mode blend_add;` slides in below with a tag 'optional' and a drawn pair of overlapping outlined squares whose overlap is tinted lighter, labelled 'blend'.",
+        "show": [
+          {
+            "at": 0.08,
+            "event": "first line types in"
+          },
+          {
+            "at": 0.22,
+            "event": "five tiles appear under it"
+          },
+          {
+            "at": 0.36,
+            "event": "ring on canvas_item"
+          },
+          {
+            "at": 0.62,
+            "event": "render_mode line slides in, tagged optional"
+          },
+          {
+            "at": 0.78,
+            "event": "overlapping squares: blend"
+          }
+        ],
+        "manim": {
+          "class": "B03_Header"
+        },
+        "motion_claim": "The first line types in and the tiles line up under it; a ring picks canvas item; then an optional second line slides in below."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable of shader types",
+        "why": "The first line is the picture; tiles under the real line show what the line chooses, which a table would only list."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "I · The Shape of a File",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Globals sit outside every function. A uniform is a value your game sets from outside. A const never changes. A varying hands a value from a shape's corners to its pixels. Declare each one above the code that uses it.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A band labelled 'globals' with three rows stacked, each a declaration copied from lab-shaders/04-globals.gdshader in monospace with a serif 32 caption beneath in the GLOSSARY wording: `uniform float level = 0.8;` / 'a value your game sets from outside; every pixel sees the same one'; `const vec3 TEAL = vec3(0.37, 0.64, 0.57);` / 'a named value that never changes'; `varying vec2 corner_uv;` / 'a value set at each corner, blended across the shape for fragment() to read'. Below the band a thin bar labelled 'functions' and a drawn downward arrow from the band into it, labelled 'readable below'. Captions may wrap to two lines.",
+        "show": [
+          {
+            "at": 0.13,
+            "event": "uniform row"
+          },
+          {
+            "at": 0.36,
+            "event": "const row"
+          },
+          {
+            "at": 0.56,
+            "event": "varying row"
+          },
+          {
+            "at": 0.84,
+            "event": "arrow into the functions bar"
+          }
+        ],
+        "manim": {
+          "class": "B04_Globals"
+        },
+        "motion_claim": "The three declarations land one by one as they are named; a downward arrow then runs from them into the functions bar."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable with three rows",
+        "why": "Three declarations with their one-line meanings, and the direction they are visible in, are a structure drawn on cue; a table cannot show the arrow."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "I · The Shape of a File",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Then come the functions. Godot calls three of them for you. Vertex places the corners, fragment sets the color of each pixel, and light handles each light that touches a pixel. This film uses fragment. Any other function is one you write yourself.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A three-row table in the GLOSSARY wording, one row ringed as each function is named: vertex(), fragment(), light().",
+        "show": [
+          {
+            "at": 0.27,
+            "event": "vertex() row"
+          },
+          {
+            "at": 0.36,
+            "event": "fragment() row"
+          },
+          {
+            "at": 0.58,
+            "event": "light() row"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "The functions Godot calls",
+            "headers": [
+              "Function",
+              "Runs",
+              "Its job"
+            ],
+            "rows": [
+              [
+                "vertex()",
+                "once for each vertex",
+                "places the corners"
+              ],
+              [
+                "fragment()",
+                "once for each pixel the shape covers",
+                "sets that pixel's color"
+              ],
+              [
+                "light()",
+                "once per pixel, for each light that touches it",
+                "replaces the default lighting"
+              ]
+            ],
+            "note": "Godot 4.7 shader reference · canvas item",
+            "cues": [
+              0.27,
+              0.36,
+              0.58
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring steps down the rows with the voice; fragment() stays ringed longest."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab code layout with two labelled ranges",
+        "why": "Three terms are defined here for the first time, and a table of kinds is exactly what the evidence-table component is for."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "I · The Shape of a File",
+      "lane": "terminal",
+      "proof_gate": "SHOW",
+      "narration_text": "Inside a function, every statement ends with a semicolon, and braces group statements into a block. Forget one semicolon and Godot refuses the whole shader. Here it points at the next line, where it noticed.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A terminal window titled 'Godot 4.7.2 · shader compile error · printed by the engine' holding the engine's own log of lab-shaders/40-err-semicolon.gdshader, word for word: the source lines around the error with the offending line marked, then the error message. A terracotta ring lands on the marked line (the line AFTER the one missing its semicolon) late in the beat.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "log lines land"
+          },
+          {
+            "at": 0.65,
+            "event": "ring on the marked line: the next line, where Godot noticed"
+          }
+        ],
+        "remotion": {
+          "pattern": "CCPlainShell",
+          "props": {
+            "title": "Godot 4.7.2 · shader compile error · printed by the engine",
+            "lines": [
+              "--Main Shader--",
+              "    3 | void fragment() {",
+              "    4 |  COLOR = vec4(0.4, 0.7, 0.6, 1.0)",
+              "E   5-> }",
+              "    6 |",
+              "SHADER ERROR: Expected a ';'.",
+              "          at: (null) (:5)"
+            ],
+            "startCue": 10,
+            "lineGap": 12,
+            "fontSize": 36,
+            "windowMargin": 90,
+            "rings": [
+              {
+                "line": 3,
+                "cue": 194
+              }
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The log lines land one by one; a ring then settles on the marked line."
+      },
+      "lecture": {
+        "runner_up": "ClaudeCodeBeat (cream code card)",
+        "why": "The engine's real message beats any retelling; CCPlainShell plays real output verbatim (SHOW-THE-THING). If GATE T flags the dark window, fall back to the cream code card with the same lines."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "I · The Shape of a File",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Spacing and line breaks are for people. Here is one shader that draws a soft gradient, written three ways: neat, squeezed onto one line, and spread over many. Godot draws the same picture for all three.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Top region: one code card that holds one shader in three spellings in turn: neat (the five lines of 02-spacing-neat), squeezed (two lines: `shader_type canvas_item;` then `void fragment(){COLOR=vec4(0.4+0.6*UV,0.7,1.0);}`, 48 characters, the widest line), and spread (the seven lines of 02-spacing-spread). The characters slide and the line breaks collapse and reopen as one spelling becomes the next. Bottom region, never changing: ONE framed real Godot render (lab_window of png/02-spacing-neat.png, a pastel gradient) captioned 'Godot 4.7.2 · Forward+', with a drawn equals sign (two short bars) between code and picture, labelled 'same picture'. Type at least 32; keep the card inside 12 units.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "neat spelling and the picture"
+          },
+          {
+            "at": 0.3,
+            "event": "neat collapses into the squeezed spelling"
+          },
+          {
+            "at": 0.62,
+            "event": "squeezed opens into the spread spelling"
+          },
+          {
+            "at": 0.84,
+            "event": "equals sign: same picture"
+          }
+        ],
+        "manim": {
+          "class": "B07_ThreeSpellings"
+        },
+        "motion_claim": "The code is rewritten three times while the picture below it never changes."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stack layout with one spelling",
+        "why": "Three spellings and one unchanging picture can only be told by a transformation; a static code panel shows one spelling."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "I · The Shape of a File",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Comments are notes for people. Two slashes comment out the rest of a line. Slash star starts a block comment, and star slash ends it. Godot skips both, so a commented-out line does nothing.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Left: the nine-line card of lab-shaders/03-comment-on.gdshader with a block comment above the function and a trailing `// soften` comment: both comment spans are grayed from the first frame. Right: a framed real render (lab_window of png/03-comment-on.png, the pastel gradient). Then `//` is typed at the start of the line `c = 0.4 + 0.6 * c;` (the line grays out, as in lab-shaders/03-comment-off.gdshader) and the render cross-fades to the real png/03-comment-off.png (the same colors, much more saturated, dark top-left corner). Captions: 'line comment', 'block comment'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "code with both comment kinds grayed; pastel render"
+          },
+          {
+            "at": 0.4,
+            "event": "`//` typed at the start of the c line"
+          },
+          {
+            "at": 0.62,
+            "event": "render cross-fades to the saturated picture"
+          }
+        ],
+        "manim": {
+          "class": "B08_CommentOut"
+        },
+        "motion_claim": "Typing two slashes grays a line out and the picture beside the code changes at once."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "A commented-out line changing the picture is the claim, and it needs code and a real result changing together."
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "I · The Shape of a File",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot's language is close to G L S L, the shading language of OpenGL, but not identical. Names must match exactly, capitals included: a capital L makes level a different name. The other language's G L frag color is unknown here. Godot calls it color.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two panels. Left: two name tags in monospace, `level` with a drawn check and `Level` with a drawn cross, a drawn capital-L highlight on the difference. Right: `gl_FragColor` with a drawn cross, a drawn arrow to `COLOR` with a drawn check, captioned 'Godot's name for the output'. Top caption in serif 32: 'GLSL: the OpenGL Shading Language; Godot's is close to GLSL ES 3.0'. No engine messages on screen (the narration says unknown identifier).",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "caption and the left tags"
+          },
+          {
+            "at": 0.3,
+            "event": "cross on Level, capital L highlighted"
+          },
+          {
+            "at": 0.64,
+            "event": "gl_FragColor crossed; arrow to COLOR; check"
+          }
+        ],
+        "manim": {
+          "class": "B09_NamesMustMatch"
+        },
+        "motion_claim": "A cross lands on the wrong-case name and on the other language's name; the check lands on Godot's."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "CCPlainShell with two logs",
+        "why": "Two kinds of wrong name (wrong case, other language) are a contrast of name tags with marks; the logs for both were run and are in the evidence."
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "II · Types and Vectors",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Every value has a type. A float is a decimal number, an int is a whole number, and a bool is true or false. A texture has a type too, called sampler two D. You declare a variable with its type first, then its name.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Types and Vectors' (serif 40) top-left. Four outlined tiles in a row, each a type with a sample value in monospace: `float` / 0.5, `int` / 3, `bool` / true, `sampler2D` / a small drawn picture icon (a framed square with a hill shape). Under each tile a plain label: 'a decimal number', 'a whole number', 'true or false', 'the type of a texture a shader reads'. A one-line serif 32 caption under the row, in the GLOSSARY wording: 'texture: an image a shader can read by address'. Below, the declaration `float level = 0.5;` (a line of lab-shaders/32-declaration.gdshader) with three drawn brackets under it labelled 'type', 'name', 'value'.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "act title; float, int, bool tiles pop in"
+          },
+          {
+            "at": 0.3,
+            "event": "sampler2D tile"
+          },
+          {
+            "at": 0.6,
+            "event": "declaration types in"
+          },
+          {
+            "at": 0.78,
+            "event": "type, name, value brackets"
+          }
+        ],
+        "manim": {
+          "class": "B10_ThreeTypes"
+        },
+        "motion_claim": "The tiles pop in as each type is named; the declaration types in and its three parts are bracketed."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable of types",
+        "why": "A declaration with its parts bracketed cannot be done in a table; the tiles and the bracketed line are one picture.",
+        "act_title_on_screen": "Types and Vectors"
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "II · Types and Vectors",
+      "lane": "terminal",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot is strict about this. A two with no decimal point is an int, and Godot will not quietly turn it into a float. Put it in a float, or add it to one, and the shader will not compile. Write two point zero.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A terminal window holding two short excerpts of the engine's own log, word for word and separated by a blank line: the marked line `float a = 2;` with 'Invalid assignment of 'int' to 'float'.' and the marked line `float a = 1 + 1.0;` with 'Invalid arguments to operator '+': 'int, float'.' A ring lands on each message.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "first excerpt lands"
+          },
+          {
+            "at": 0.4,
+            "event": "second excerpt lands"
+          },
+          {
+            "at": 0.7,
+            "event": "rings on both messages"
+          }
+        ],
+        "remotion": {
+          "pattern": "CCPlainShell",
+          "props": {
+            "title": "Godot 4.7.2 · two compile errors · excerpts of the engine's log",
+            "lines": [
+              "--Main Shader--",
+              "E   4->  float a = 2;",
+              "SHADER ERROR: Invalid assignment of 'int' to 'float'.",
+              "",
+              "--Main Shader--",
+              "E   4->  float a = 1 + 1.0;",
+              "SHADER ERROR: Invalid arguments to operator '+': 'int, float'."
+            ],
+            "startCue": 10,
+            "lineGap": 12,
+            "fontSize": 36,
+            "windowMargin": 90,
+            "rings": [
+              {
+                "line": 2,
+                "cue": 244
+              },
+              {
+                "line": 6,
+                "cue": 252
+              }
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "Each marked line lands with its message; a ring settles on the type names in the message."
+      },
+      "lecture": {
+        "runner_up": "Manim code line with a refusal mark",
+        "why": "Two refusals in the engine's own words (assignment and arithmetic) make the strictness concrete; excerpts keep both on one screen."
+      }
+    },
+    {
+      "beat_id": "B12",
+      "act": "II · Types and Vectors",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Shaders are full of vectors, bundles of two to four numbers: vec two, vec three, vec four. A color is a vec four: red, green, blue and alpha, how solid it is. Reading a texture gives back a vec four too.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Rows of outlined cells (the bundle cast), stacked: `vec2` two cells, `vec3` three cells, `vec4` four cells labelled r g b a, the vec4 cells holding 0.37, 0.64, 0.57, 1.0 with a plain teal swatch to its right labelled 'a color'. Far left of the vec4 row, a framed small drawn texture (gradient square) with a drawn arrow into the row, labelled 'texture lookup'. Serif 32 caption: 'vector: a bundle of two to four numbers'. Under the last cell, in the GLOSSARY wording, 'alpha: how visible a pixel is: 0 invisible, 1 solid'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "vec2 row"
+          },
+          {
+            "at": 0.2,
+            "event": "vec3 row"
+          },
+          {
+            "at": 0.3,
+            "event": "vec4 row with r g b a and swatch"
+          },
+          {
+            "at": 0.7,
+            "event": "texture arrow into the vec4 row"
+          }
+        ],
+        "manim": {
+          "class": "B12_Bundles"
+        },
+        "motion_claim": "Rows of cells pop in one after another as the sizes are named; the texture arrow feeds the vec4 row last."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "Cells whose count IS the size are the clearest picture of a bundle; the series' bundle cast starts here."
+      }
+    },
+    {
+      "beat_id": "B13",
+      "act": "II · Types and Vectors",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "You build a vector by naming its type. Give vec three one number and it fills all three parts. Give vec four a vec three and a number and it joins them. The pieces must add up to the size, or Godot refuses.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Three mini-diagrams stacked, using the bundle cells. (1) `vec3(0.5)`: one cell [0.5] sprouts two copies to make [0.5][0.5][0.5]. (2) `vec4(c, 1.0)`: a three-cell bundle c and a one-cell [1.0] slide together into a four-cell bundle, a drawn counter 3 + 1 = 4. (3) `vec3(0.1, 0.2)`: two cells and a dashed empty cell with a drawn cross, counter 2 of 3, labelled 'too few'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "one number fills three cells"
+          },
+          {
+            "at": 0.36,
+            "event": "three plus one join into four"
+          },
+          {
+            "at": 0.66,
+            "event": "two cells and a gap: crossed"
+          }
+        ],
+        "manim": {
+          "class": "B13_BuildAVector"
+        },
+        "motion_claim": "Cells copy, slide together and join into a bundle of the right size; the short one is refused."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab",
+        "why": "Constructing a vector is cells joining; the sizes adding up is a counter you can watch."
+      }
+    },
+    {
+      "beat_id": "B14",
+      "act": "II · Types and Vectors",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Arithmetic works on every part at once. Multiply a vec three by two point zero and all three numbers double. Multiply two vectors and each part meets its partner. That is why shader code is so short.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Top: a three-cell bundle (0.2, 0.3, 0.4), a drawn times sign, a single cell 2.0; three parallel drawn arrows leave the 2.0 for each cell at the same instant; the result bundle (0.4, 0.6, 0.8) appears. Bottom: the same bundle times a second bundle (2.0, 1.0, 0.5); three short drawn arrows pair cell to cell, top to bottom; the result (0.4, 0.3, 0.2). Labels in monospace: `* 2.0`, `* vec3(2.0, 1.0, 0.5)`.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "bundle times 2.0"
+          },
+          {
+            "at": 0.28,
+            "event": "three arrows at once; result (0.4, 0.6, 0.8)"
+          },
+          {
+            "at": 0.62,
+            "event": "bundle times bundle, cell to cell"
+          },
+          {
+            "at": 0.82,
+            "event": "result (0.4, 0.3, 0.2)"
+          }
+        ],
+        "manim": {
+          "class": "B14_AllAtOnce"
+        },
+        "motion_claim": "Three arrows fire at the same instant and all three numbers change together; then each part meets its partner."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "'Every part at once' is simultaneous motion; three arrows leaving one cell in the same frame is the claim."
+      }
+    },
+    {
+      "beat_id": "B15",
+      "act": "II · Types and Vectors",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here it is in use. U V is the address of each pixel, a vec two. Join it with one half to make a vec three, scale by zero point six, add zero point four. Red grows to the right, green grows downward.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code panel at left with the five-line shader; at right a framed real render: a pastel gradient, red growing to the right and green growing downward, blue constant. Short readouts 'more red' near the top-right corner and 'more green' near the bottom-left corner. Caption under the render: 'UV: a point's address on the shape: 0 to 1 across, 0 to 1 down'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "vec3 line highlighted"
+          },
+          {
+            "at": 0.78,
+            "event": "readouts: more red, more green"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec3 c = 0.4 + 0.6 * vec3(UV, 0.5);\n\tCOLOR = vec4(c, 1.0);\n}",
+            "codeFile": "lab-shaders/05-pastel.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  4
+                ]
+              }
+            ],
+            "video": "godot-shader-language/pastel.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [
+              {
+                "at": 0.78,
+                "text": "more red",
+                "x": 0.86,
+                "y": 0.1
+              },
+              {
+                "at": 0.78,
+                "text": "more green",
+                "x": 0.16,
+                "y": 0.9
+              }
+            ],
+            "rings": [],
+            "caption": "UV: a point's address on the shape: 0 to 1 across, 0 to 1 down",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The vector line is highlighted; the two readouts then name the directions the colors grow."
+      },
+      "lecture": {
+        "runner_up": "manim with the render inset",
+        "why": "Code and its real result side by side is the evidence for 'scale and shift every part at once'.",
+        "capture_spec": "C04: Lab rect, lab-shaders/05-pastel.gdshader, still PNG 1920x1080, Forward+. Probes: (0.02,0.02) (0.4118, 0.4118, 0.702); (0.98,0.02) (0.9882, 0.4118, 0.702); (0.02,0.98) (0.4118, 0.9843, 0.702); (0.98,0.98) (0.9882, 0.9843, 0.702)."
+      }
+    },
+    {
+      "beat_id": "B16",
+      "act": "II · Types and Vectors",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "You can reach into a vector by name. Dot R G B takes red, green and blue from a vec four. Dot X Y takes the first two parts. Picking or reordering parts like this is called swizzling.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A four-cell vec4 row with THREE label rows: x y z w above the cells, r g b a below them, and a fainter s t p q under those (the third set, for texture coordinates). A drawn bracket over the first three cells labelled `.rgb` lifts them out into a three-cell vec3 row; then a bracket over the first two labelled `.xy` lifts them into a two-cell vec2 row. Serif 32 caption: 'swizzle: picking or reordering a vector's parts'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "vec4 row with both label rows"
+          },
+          {
+            "at": 0.3,
+            "event": ".rgb bracket lifts three cells out"
+          },
+          {
+            "at": 0.58,
+            "event": ".xy bracket lifts two cells out"
+          },
+          {
+            "at": 0.8,
+            "event": "caption: swizzle"
+          }
+        ],
+        "manim": {
+          "class": "B16_Swizzle"
+        },
+        "motion_claim": "A bracket closes round the first three cells and lifts them out as a new, smaller bundle; then the first two."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "Picking parts is cells lifting out of a row; the two names for the same cells are the key fact."
+      }
+    },
+    {
+      "beat_id": "B17",
+      "act": "II · Types and Vectors",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Order is yours to choose. Dot B G R reverses the order, and the gradient's colors turn over. R G B A, X Y Z W and S T P Q name the same parts, but never mix sets in one swizzle. Godot refuses.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code panel at left with the five-line shader whose COLOR line reads `vec4(c.bgr, 1.0)`; at right a framed real render that starts as the pastel gradient of the previous picture and dissolves into the same gradient with its colors turned over (top-left salmon, top-right violet, bottom-left lime, bottom-right cyan). Readout 'bgr' on the picture.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "COLOR line with .bgr highlighted"
+          },
+          {
+            "at": 0.36,
+            "event": "the picture dissolves to the reversed colors"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec3 c = 0.4 + 0.6 * vec3(UV, 0.5);\n\tCOLOR = vec4(c.bgr, 1.0);\n}",
+            "codeFile": "lab-shaders/06-pastel-bgr.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  5
+                ]
+              }
+            ],
+            "video": "godot-shader-language/pastel-to-bgr.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · two real renders, dissolved",
+            "readouts": [
+              {
+                "at": 0.4,
+                "text": "bgr",
+                "x": 0.5,
+                "y": 0.1
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The picture dissolves from the earlier colors to the reversed ones while the swizzle is highlighted."
+      },
+      "lecture": {
+        "runner_up": "manim with both pictures",
+        "why": "Seeing the same gradient with red and blue swapped is the effect of `.bgr`; both frames are real renders.",
+        "capture_spec": "C05: ffmpeg video, 14 s at 30 fps: 1.8 s hold of the real render of 05-pastel, 0.7 s dissolve, then a hold of the real render of 06-pastel-bgr to the end (both Lab stills 1920x1080, Forward+; re-time the dissolve to start at about 14 percent of the beat once the audio is measured). Probes of the second: (0.02,0.02) (0.702, 0.4118, 0.4118); (0.98,0.02) (0.702, 0.4118, 0.9882); (0.02,0.98) (0.702, 0.9843, 0.4118); (0.98,0.98) (0.702, 0.9843, 0.9882)."
+      }
+    },
+    {
+      "beat_id": "B18",
+      "act": "II · Types and Vectors",
+      "lane": "terminal",
+      "proof_gate": "SHOW",
+      "narration_text": "The type on the left must match the type on the right. Color is a vec four. Hand it a vec three and Godot refuses. Fix it by adding alpha: vec four of c and one point zero.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A terminal window with the engine's own log of lab-shaders/44-err-vec3-to-color.gdshader, word for word: the source lines around `COLOR = c;` with that line marked, then 'Invalid arguments to operator '=': 'vec4, vec3'.' A ring lands on 'vec4, vec3'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "log lines land"
+          },
+          {
+            "at": 0.65,
+            "event": "ring on vec4, vec3"
+          }
+        ],
+        "remotion": {
+          "pattern": "CCPlainShell",
+          "props": {
+            "title": "Godot 4.7.2 · shader compile error · printed by the engine",
+            "lines": [
+              "--Main Shader--",
+              "    3 | void fragment() {",
+              "    4 |  vec3 c = 0.4 + 0.6 * vec3(UV, 0.5);",
+              "E   5->  COLOR = c;",
+              "    6 | }",
+              "    7 |",
+              "SHADER ERROR: Invalid arguments to operator '=': 'vec4, vec3'.",
+              "          at: (null) (:5)"
+            ],
+            "startCue": 10,
+            "lineGap": 12,
+            "fontSize": 36,
+            "windowMargin": 90,
+            "rings": [
+              {
+                "line": 6,
+                "cue": 211
+              }
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The log lands line by line; a ring settles on the two type names that disagree."
+      },
+      "lecture": {
+        "runner_up": "Manim: a vec4 slot refusing a vec3 bundle",
+        "why": "The most common slip in a shader is a type that does not match; the engine's own words name both types."
+      }
+    },
+    {
+      "beat_id": "B19",
+      "act": "II · Types and Vectors",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "To read any line, say the type of each piece, from the inside out. U V is a vec two. Joined with one half, a vec three. Times a float, still a vec three. Plus a float, still a vec three.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The expression `0.4 + 0.6 * vec3(UV, 0.5)` (35 characters) centered in monospace with `vec3 c =` to its left. Beneath it nested drawn brackets grow from the inside out, each landing a small type tag: under `UV` a bracket tagged vec2; under `vec3(UV, 0.5)` tagged vec3; under `0.6 * vec3(UV, 0.5)` tagged vec3; under the whole right-hand side tagged vec3; a final arrow into `c` tagged vec3.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the expression"
+          },
+          {
+            "at": 0.24,
+            "event": "bracket on UV: vec2"
+          },
+          {
+            "at": 0.36,
+            "event": "bracket on vec3(UV, 0.5): vec3"
+          },
+          {
+            "at": 0.62,
+            "event": "bracket on 0.6 * ...: vec3"
+          },
+          {
+            "at": 0.8,
+            "event": "whole right-hand side: vec3"
+          }
+        ],
+        "manim": {
+          "class": "B19_TypeChain"
+        },
+        "motion_claim": "Brackets widen outward from UV, and a type tag lands on each as the voice says it."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "Inside-out nesting IS the method; widening brackets with tags show it as shape, which a highlighted line cannot."
+      }
+    },
+    {
+      "beat_id": "B20",
+      "act": "III · Your Own Functions",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Now your own functions. The first line of a function is its signature. It has three parts: the type it hands back, its name, and its arguments, each with a type.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Act title 'Your Own Functions' (serif 40) top-left. The line `vec3 soften(vec3 c) {` in monospace (size 40) centered, with the body line `return 0.4 + 0.6 * c;` and a closing brace beneath it. Three drawn brackets under the first line land in order, each with a plain label: under `vec3` 'hands back', under `soften` 'name', under `(vec3 c)` 'arguments, each with a type'. Serif 32 caption: 'signature: the first line of a function'.",
+        "show": [
+          {
+            "at": 0.08,
+            "event": "act title; the function"
+          },
+          {
+            "at": 0.4,
+            "event": "bracket: hands back"
+          },
+          {
+            "at": 0.62,
+            "event": "bracket: name"
+          },
+          {
+            "at": 0.8,
+            "event": "bracket: arguments"
+          }
+        ],
+        "manim": {
+          "class": "B20_Signature"
+        },
+        "motion_claim": "Three brackets close in turn round the type, the name and the argument list."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "A signature is three parts of one line; brackets that close on each part in order are the clearest way to separate them.",
+        "act_title_on_screen": "Your Own Functions"
+      }
+    },
+    {
+      "beat_id": "B21",
+      "act": "III · Your Own Functions",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Calling the function hands values into the arguments, in order. The body runs. Then return hands one value back, and it must have the type the signature promised. Break that promise and Godot says so.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "At left the call `soften(vec3(UV, 0.5))`; a small three-cell token travels along a drawn path into the argument slot `c` of a rounded box that holds `return 0.4 + 0.6 * c;`; the box pulses; a new three-cell token leaves the box and returns to the call, tagged 'vec3, as promised'. Then a four-cell token leaves the box instead and bounces off a drawn bar with a cross, with the engine's message in two short lines under it: `Expected return with an expression` / `of type 'vec3'.`",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "call and box"
+          },
+          {
+            "at": 0.26,
+            "event": "token travels into the argument"
+          },
+          {
+            "at": 0.4,
+            "event": "token returns, tagged vec3"
+          },
+          {
+            "at": 0.66,
+            "event": "wrong-size token bounces, message appears"
+          }
+        ],
+        "manim": {
+          "class": "B21_CallAndReturn"
+        },
+        "motion_claim": "A bundle goes into the function and a bundle comes back out; a bundle of the wrong size bounces."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "In and out is a flow; a token entering and leaving the box makes 'hands values in, hands one value back' literal."
+      }
+    },
+    {
+      "beat_id": "B22",
+      "act": "III · Your Own Functions",
+      "lane": "terminal",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot reads from the top down. A function must be defined above the one that calls it. Call it first and the message says no matching function found. It does not say the order is wrong.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A terminal window with the engine's own log of lab-shaders/47-err-call-before-define.gdshader, word for word: the source lines around the call `COLOR = vec4(soften(vec3(UV, 0.5)), 1.0);` with that line marked, then 'No matching function found for: 'soften'.' A ring lands on the message.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "log lines land"
+          },
+          {
+            "at": 0.68,
+            "event": "ring on the message"
+          }
+        ],
+        "remotion": {
+          "pattern": "CCPlainShell",
+          "props": {
+            "title": "Godot 4.7.2 · shader compile error · printed by the engine",
+            "lines": [
+              "--Main Shader--",
+              "    2 |",
+              "    3 | void fragment() {",
+              "E   4->  COLOR = vec4(soften(vec3(UV, 0.5)), 1.0);",
+              "    5 | }",
+              "    6 |",
+              "SHADER ERROR: No matching function found for: 'soften'.",
+              "          at: (null) (:4)"
+            ],
+            "startCue": 10,
+            "lineGap": 12,
+            "fontSize": 36,
+            "windowMargin": 90,
+            "rings": [
+              {
+                "line": 6,
+                "cue": 200
+              }
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The log lands line by line; a ring settles on the message that does not mention order."
+      },
+      "lecture": {
+        "runner_up": "Manim: two function boxes with an arrow pointing up",
+        "why": "The order rule is about what Godot SAYS; the real message (which never mentions order) is the point."
+      }
+    },
+    {
+      "beat_id": "B23",
+      "act": "III · Your Own Functions",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A function you write cannot see most built-ins. A built-in is a value the engine hands to a function. U V and color are handed to fragment, not to your function. Use U V inside yours and Godot says unknown identifier.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two rounded boxes: right, `fragment()` containing three outlined chips `UV`, `COLOR`, `TEXTURE`; left, a box `soften()` of your own. A thick gray vertical wall stands between them. The UV chip leaves fragment, crosses toward the function, hits the wall and bounces back; a small drawn bubble near the bounce reads 'unknown identifier'. Serif 32 caption: 'built-in: a value the engine hands to a function, or collects from it'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the two boxes, the wall, the chips"
+          },
+          {
+            "at": 0.34,
+            "event": "caption: built-in"
+          },
+          {
+            "at": 0.62,
+            "event": "UV chip bounces off the wall"
+          }
+        ],
+        "manim": {
+          "class": "B23_TheWall"
+        },
+        "motion_claim": "A chip travels toward the function, strikes the wall and is thrown back."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the failing file",
+        "why": "A wall between two boxes is the picture of 'cannot see'; the bounce is the event."
+      }
+    },
+    {
+      "beat_id": "B24",
+      "act": "III · Your Own Functions",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The fix is to pass what you need in as an argument. Here U V goes in as address, and the same gradient appears. A few built-ins are global, such as time and pi, and any function can read those.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code panel at left with the nine-line fixed shader: `vec3 soften(vec2 address)` and the call `soften(UV)`; at right a framed real render: the same pastel gradient as before. Caption under the render (one line, 72 characters): 'global: TIME (seconds on one clock shared by the whole game), PI, TAU, E'.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "parameter line highlighted"
+          },
+          {
+            "at": 0.34,
+            "event": "call line highlighted"
+          },
+          {
+            "at": 0.6,
+            "event": "caption: global built-ins"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvec3 soften(vec2 address) {\n\treturn 0.4 + 0.6 * vec3(address, 0.5);\n}\n\nvoid fragment() {\n\tCOLOR = vec4(soften(UV), 1.0);\n}",
+            "codeFile": "lab-shaders/10-pass-uv-in.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  3
+                ]
+              },
+              {
+                "at": 0.34,
+                "lines": [
+                  8
+                ]
+              }
+            ],
+            "video": "godot-shader-language/pass-uv.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [],
+            "rings": [],
+            "caption": "global: TIME (seconds on one clock shared by the whole game), PI, TAU, E",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The parameter line is highlighted, then the call; the same gradient sits beside them."
+      },
+      "lecture": {
+        "runner_up": "manim: UV passing through the wall",
+        "why": "The fix is code; the real file next to the unchanged picture proves it works.",
+        "capture_spec": "C06: Lab rect, lab-shaders/10-pass-uv-in.gdshader, still PNG 1920x1080, Forward+ (identical to the 05-pastel render: 0 pixels differ)."
+      }
+    },
+    {
+      "beat_id": "B25",
+      "act": "III · Your Own Functions",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Arguments come in three modes. In, the default, hands over a copy, so changes stay inside the function. In out hands over the original, so the caller's variable changes. Out is for writing a result back.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Top strip: three chips with one-to-three-word captions, `in` 'a copy', `inout` 'the original', `out` 'writes back'; the active chip is ringed. Middle: the caller's variable box `a = 0.25`. Bottom: the function signature card, which changes with the active mode. IN (`float bump(float x)`): a ghost copy of 0.25 goes into the function, becomes 0.75 and returns to `b`; the box a still reads 0.25. INOUT (`void bump(inout float x)`): a double-headed drawn arrow ties the function to the box a itself, which changes to 0.75. OUT (`void make(out vec3 c)`): the function writes (0.1, 0.5, 0.9) into an empty three-cell box c in the caller.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "in: copy goes in, a stays 0.25, b = 0.75"
+          },
+          {
+            "at": 0.4,
+            "event": "inout: a becomes 0.75"
+          },
+          {
+            "at": 0.7,
+            "event": "out: c filled with (0.1, 0.5, 0.9)"
+          }
+        ],
+        "manim": {
+          "class": "B25_InOutInout"
+        },
+        "motion_claim": "A copy changes and the original does not; then the original itself changes; then an empty box is filled."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable of three modes",
+        "why": "Copy versus original is a thing moving or not moving; the table would list the words but not the difference."
+      }
+    },
+    {
+      "beat_id": "B26",
+      "act": "III · Your Own Functions",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The functions Godot gives you follow the same pattern, and the documentation lists each signature. In it, vec type means a float or a vec two, three or four. Sine takes one of those and hands back the same type.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real Godot 4.7 'Built-in shader functions' page in a browser window, scrolled to the 'Trigonometric functions' table: three columns 'Return Type', 'Function', 'Description / Return value' with the rows radians, degrees, sin, cos, tan. The camera pushes in on the sin row, `vec_type` / `sin(vec_type x)` / 'Sine.', and a terracotta ring marks the signature.",
+        "show": [
+          {
+            "at": 0,
+            "event": "the docs page, trigonometric table"
+          },
+          {
+            "at": 0.3,
+            "event": "push-in and ring on the sin signature"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shader_functions.html",
+            "image": "godot-shader-language/docs-shader-functions.png",
+            "caption": "Godot 4.7 documentation · Built-in shader functions · captured at build time",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.4,
+                "scale": 1
+              },
+              {
+                "at": 0.3,
+                "x": 0.4,
+                "y": 0.5,
+                "scale": 1.6
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera pushes in on the sin row and the ring marks the type going in and the type coming out."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable of sin, mix, length signatures",
+        "why": "The signature belongs to the documentation, and the documentation itself is the evidence (SHOW-THE-THING)."
+      }
+    },
+    {
+      "beat_id": "B27",
+      "act": "III · Your Own Functions",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A name can be reused if the argument types differ, and Godot picks by type. This call passes one, an int, and gets teal. This one passes one point zero, a float, and gets sand. Same name, same digit, different function.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code panel at left with the 14-line shader: two functions named get_color (one taking an int, one a float) and two calls, `get_color(1)` and `get_color(1.0)`; at right a framed real render: the left half teal, the right half sand. Readouts 'int: teal' on the left half and 'float: sand' on the right.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the two same-named functions"
+          },
+          {
+            "at": 0.4,
+            "event": "get_color(1) highlighted; left half teal"
+          },
+          {
+            "at": 0.62,
+            "event": "get_color(1.0) highlighted; right half sand"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvec3 get_color(int t) {\n\treturn vec3(0.37, 0.64, 0.57);\n}\nvec3 get_color(float t) {\n\treturn vec3(0.95, 0.80, 0.50);\n}\n\nvoid fragment() {\n\tvec3 left = get_color(1);\n\tvec3 right = get_color(1.0);\n\tCOLOR = vec4(UV.x < 0.5 ? left : right, 1.0);\n}",
+            "codeFile": "lab-shaders/15-overload.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  3,
+                  6
+                ]
+              },
+              {
+                "at": 0.4,
+                "lines": [
+                  11
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  12
+                ]
+              }
+            ],
+            "video": "godot-shader-language/overload.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [
+              {
+                "at": 0.42,
+                "text": "int: teal",
+                "x": 0.25,
+                "y": 0.1
+              },
+              {
+                "at": 0.66,
+                "text": "float: sand",
+                "x": 0.75,
+                "y": 0.1
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The two function lines light, then each call lights as the matching half of the picture is named."
+      },
+      "lecture": {
+        "runner_up": "manim: one name, two doors",
+        "why": "The result is a picture: one name, two different colors from the same-looking call, with the code that did it beside it.",
+        "capture_spec": "C07: Lab rect, lab-shaders/15-overload.gdshader, still PNG 1920x1080, Forward+. Probes: (0.25, 0.5) (0.3686, 0.6392, 0.5686) teal; (0.75, 0.5) (0.949, 0.8, 0.502) sand."
+      }
+    },
+    {
+      "beat_id": "B28",
+      "act": "IV · Choices and Loops",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "An if needs a bool. A comparison, like U V dot X less than one half, gives true or false. If true, the first block runs, otherwise the else block. Declare c above: a variable made inside braces ends at the closing brace.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Choices and Loops' (serif 40) top-left. Code panel at left with the 13-line shader: `vec3 c;` then an if/else on `UV.x < 0.5`; at right a framed real render: the left half teal, the right half pale. Readouts 'true' over the left half and 'false' over the right half.",
+        "show": [
+          {
+            "at": 0.14,
+            "event": "condition line highlighted; true on the left, false on the right"
+          },
+          {
+            "at": 0.72,
+            "event": "vec3 c; line highlighted (declared above)"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tvec3 pale = vec3(0.95);\n\tvec3 c;\n\tif (UV.x < 0.5) {\n\t\tc = teal;\n\t} else {\n\t\tc = pale;\n\t}\n\tCOLOR = vec4(c, 1.0);\n}",
+            "codeFile": "lab-shaders/16-split-if.gdshader",
+            "cues": [
+              {
+                "at": 0.14,
+                "lines": [
+                  7
+                ]
+              },
+              {
+                "at": 0.72,
+                "lines": [
+                  6
+                ]
+              }
+            ],
+            "video": "godot-shader-language/split-if.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "true",
+                "x": 0.25,
+                "y": 0.12
+              },
+              {
+                "at": 0.3,
+                "text": "false",
+                "x": 0.75,
+                "y": 0.12
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "Choices and Loops"
+          }
+        },
+        "motion_claim": "The condition line is highlighted and the left half is tagged true; then the declaration above the if is highlighted."
+      },
+      "lecture": {
+        "runner_up": "manim: a branching arrow",
+        "why": "A bool deciding which half is which color is best shown on the real picture next to the exact condition.",
+        "capture_spec": "C08: Lab rect, lab-shaders/16-split-if.gdshader, still PNG 1920x1080, Forward+. Probes: (0.25, 0.5) (0.3686, 0.6392, 0.5686) teal; (0.75, 0.5) (0.949, 0.949, 0.949) pale.",
+        "act_title_on_screen": "Choices and Loops"
+      }
+    },
+    {
+      "beat_id": "B29",
+      "act": "IV · Choices and Loops",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "The ternary is a one-line if. Write the condition, a question mark, the value if true, a colon, then the value if false. It gives back a value, so it can sit inside a longer line. Same picture, one line.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Top region: the six-line choice from lab-shaders/16-split-if (`vec3 c;` / `if (UV.x < 0.5) {` / `c = teal;` / `} else {` / `c = pale;` / `}`) collapses into the single line `vec3 c = UV.x < 0.5 ? teal : pale;` (34 characters) with thin drawn brackets labelled 'condition', 'if true', 'if false' under its three parts, the `?` and `:` ringed, and a serif 32 caption 'ternary: a one-line if'. Bottom region, never changing: ONE framed real render (lab_window of png/16-split-if.png: left half teal, right half pale) captioned 'Godot 4.7.2 · Forward+ · same pixels', with a drawn equals sign.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the six-line choice and the picture"
+          },
+          {
+            "at": 0.32,
+            "event": "the lines fold into one line"
+          },
+          {
+            "at": 0.62,
+            "event": "brackets: condition, if true, if false"
+          },
+          {
+            "at": 0.82,
+            "event": "equals sign: same pixels"
+          }
+        ],
+        "manim": {
+          "class": "B29_Collapse"
+        },
+        "motion_claim": "Six lines fold into one while the picture below never changes."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab stack layout",
+        "why": "A fold from six lines to one with the picture held still is the claim 'same picture, one line'."
+      }
+    },
+    {
+      "beat_id": "B30",
+      "act": "IV · Choices and Loops",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A for loop repeats a block. This one runs five times, with the counter i going from zero to four, and each pass draws one stripe. The counter is an int, so convert it with float of i before mixing it with decimals.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code panel at left with the 12-line shader; at right a framed real render: five teal stripes on a pale field, evenly spaced. Readout 'five stripes' near the picture. The cue on the stripe test carries the label 'abs: drops the minus sign: -0.3 becomes 0.3' (the GLOSSARY wording; abs is on screen but not spoken).",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "for line highlighted"
+          },
+          {
+            "at": 0.3,
+            "event": "stripe test highlighted; five stripes in the picture"
+          },
+          {
+            "at": 0.64,
+            "event": "float(i) line highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec3 c = vec3(0.95);\n\tfor (int i = 0; i < 5; i++) {\n\t\tfloat y = 0.1 + 0.2 * float(i);\n\t\tif (abs(UV.y - y) < 0.03) {\n\t\t\tc = vec3(0.37, 0.64, 0.57);\n\t\t}\n\t}\n\tCOLOR = vec4(c, 1.0);\n}",
+            "codeFile": "lab-shaders/18-stripes.gdshader",
+            "cues": [
+              {
+                "at": 0.06,
+                "lines": [
+                  5
+                ]
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  7,
+                  8,
+                  9
+                ],
+                "label": "abs: drops the minus sign: -0.3 becomes 0.3"
+              },
+              {
+                "at": 0.64,
+                "lines": [
+                  6
+                ]
+              }
+            ],
+            "video": "godot-shader-language/stripes.png",
+            "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+            "readouts": [
+              {
+                "at": 0.34,
+                "text": "five stripes",
+                "x": 0.5,
+                "y": 0.05
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The loop line is highlighted, then the stripe test, then the float(i) line as the voice moves on."
+      },
+      "lecture": {
+        "runner_up": "manim: a counter stepping 0 to 4",
+        "why": "Five stripes from one loop is the payoff of the loop and is best shown as the real picture beside the loop.",
+        "capture_spec": "C09: Lab rect, lab-shaders/18-stripes.gdshader, still PNG 1920x1080, Forward+. Five stripes centered at 0.1, 0.3, 0.5, 0.7, 0.9 of the height (measured at 640x360: rows 25-46, 97-118, 169-190, 241-262, 313-334)."
+      }
+    },
+    {
+      "beat_id": "B31",
+      "act": "IV · Choices and Loops",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Use for when you know the count, and while when you do not. Take care: on modern graphics cards an infinite loop can freeze your application, the editor included, and Godot cannot protect you from it.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real Godot 4.7 'Flow control' section in a browser window: the for and while snippets with their comments, and the paragraph below them about infinite loops. The camera pushes in on that paragraph and a terracotta ring marks the sentence about freezing the application, including the editor.",
+        "show": [
+          {
+            "at": 0,
+            "event": "the for and while snippets"
+          },
+          {
+            "at": 0.6,
+            "event": "push-in and ring on the infinite-loop warning"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html",
+            "image": "godot-shader-language/docs-flow-control.png",
+            "caption": "Godot 4.7 documentation · Flow control · captured at build time",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.35,
+                "scale": 1
+              },
+              {
+                "at": 0.6,
+                "x": 0.45,
+                "y": 0.62,
+                "scale": 1.6
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera drifts from the for and while snippets to the warning paragraph and rings it."
+      },
+      "lecture": {
+        "runner_up": "manim: a loop arrow that never ends",
+        "why": "An infinite loop cannot be run safely, so the documentation's own warning is the honest evidence (SHOW-THE-THING)."
+      }
+    },
+    {
+      "beat_id": "B32",
+      "act": "IV · Choices and Loops",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Compare floats against a range, not with equals. Light U V dot X equal to exactly one half, and nothing draws here: no pixel center lands on it. A small range draws a thin line. The documentation warns float math varies by hardware.",
+      "estimated_duration_s": 14.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Top: a schematic row of 12 outlined pixel cells with a dot at each cell center, an axis 0 to 1 and a vertical line at 0.5 that falls BETWEEN cells 6 and 7; the row is labelled 'schematic: 12 pixels'. Two code lines in monospace under it: `if (UV.x == 0.5)` and `if (abs(UV.x - 0.5) < 0.005)`, the second with a serif 32 label in the GLOSSARY wording, 'abs: drops the minus sign: -0.3 becomes 0.3'. A probe sweeps the row for the first test and no cell lights (label 'no pixel center is exactly 0.5'); for the second the two cells nearest 0.5 light teal. Bottom: two framed REAL renders side by side (lab_window of png/19-float-equals-1920.png, a pale field with nothing on it, and png/20-float-range-1920.png, the same field with a thin teal line), each captioned 'Godot 4.7.2 · Forward+ · 1920 pixels wide'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "pixel row and the 0.5 line between two cells"
+          },
+          {
+            "at": 0.3,
+            "event": "== test: probe sweeps, nothing lights"
+          },
+          {
+            "at": 0.62,
+            "event": "range test: two cells light"
+          },
+          {
+            "at": 0.82,
+            "event": "the two real renders"
+          }
+        ],
+        "manim": {
+          "class": "B32_NoPixelLands"
+        },
+        "motion_claim": "A probe finds no cell exactly on one half; the range test lights the two nearest; the real renders confirm it."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the two renders",
+        "why": "WHY nothing is drawn is a geometry fact (a line between cell centers); the real renders prove it on the real thing."
+      }
+    },
+    {
+      "beat_id": "B33",
+      "act": "IV · Choices and Loops",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Two performance notes from the documentation. Discard, which throws a pixel away, has a cost. Modern graphics cards handle an if well when every pixel takes the same path, but too many branches can slow a shader down. This film did not measure either.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A two-row table in the documentation's own words, each row ringed as it is spoken: 'discard (throws a pixel away)', 'it has a performance cost'; if, 'handled well when every pixel takes the same path; too many branches can slow a shader down'. The note line names the two documentation pages and says nothing here was measured.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "discard row"
+          },
+          {
+            "at": 0.38,
+            "event": "if row"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "Two performance notes",
+            "headers": [
+              "Keyword",
+              "The documentation says"
+            ],
+            "rows": [
+              [
+                "discard (throws a pixel away)",
+                "it has a performance cost"
+              ],
+              [
+                "if",
+                "handled well when every pixel takes the same path; too many branches can slow a shader down"
+              ]
+            ],
+            "note": "Godot 4.7 documentation · Shading language (Discarding) and Shader preprocessor (#if versus if) · not measured in this film",
+            "cues": [
+              0.15,
+              0.38
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves from the discard row to the if row as the voice moves on."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the preprocessor page",
+        "why": "Two short sourced statements with their pages named are what the evidence table is for; the 'if is slow' rumour is answered by the page that actually discusses branches."
+      }
+    },
+    {
+      "beat_id": "B34",
+      "act": "V · Read One Aloud",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Now read the file from the top. Use the same method: say the type of each piece, inside out, and check that every line's types fit together.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Read One Aloud' (serif 40) top-left. The 14-line file alone on the stage, line numbers prominent (the next beats say 'line three', 'line six'). A focus box rests on line 1, then moves to line 3 where the reading will start.",
+        "show": [
+          {
+            "at": 0.15,
+            "event": "focus on line 1"
+          },
+          {
+            "at": 0.62,
+            "event": "focus moves to line 3"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "code",
+            "code": "shader_type canvas_item;\n\nuniform vec4 tint : source_color;\nuniform float speed = 2.0;\n\nvec3 breathe(vec3 base, float t) {\n\tfloat wave = 0.5 + 0.5 * sin(t);\n\treturn mix(vec3(0.9), base, wave);\n}\n\nvoid fragment() {\n\tvec3 color = breathe(tint.rgb, TIME * speed);\n\tCOLOR = vec4(color, tint.a);\n}",
+            "codeFile": "lab-shaders/01-breathe.gdshader",
+            "cues": [
+              {
+                "at": 0.15,
+                "lines": [
+                  1
+                ]
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  3
+                ]
+              }
+            ],
+            "video": "",
+            "videoLabel": "",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "Read One Aloud"
+          }
+        },
+        "motion_claim": "The focus box leaves the header and settles on line three, ready to read."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "The file with its line numbers is the stage for the next eight beats; ShaderLab shows all 14 lines at once.",
+        "act_title_on_screen": "Read One Aloud"
+      }
+    },
+    {
+      "beat_id": "B35",
+      "act": "V · Read One Aloud",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Line three is a uniform, a vec four, so a color. Source color is a hint: the editor treats the value as a color. With no default, it is black until something sets it. Line four is a float with a default of two.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two lines in monospace (size 36), lines 3 and 4 of the file: `uniform vec4 tint : source_color;` and `uniform float speed = 2.0;`. Drawn tags land beneath their pieces: under `uniform` 'set from outside'; under `vec4` 'a color'; a bracket under `: source_color` labelled 'hint' with a small outlined round swatch and the label 'treated as a color'; a tag at the end of line 3 'no default: black'; under `float` 'a decimal number'; a bracket under `= 2.0` labelled 'default'. Serif 32 caption, in the GLOSSARY wording: 'hint: the word after a colon that tells Godot how to treat a uniform'.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "line three; uniform and vec4 tags"
+          },
+          {
+            "at": 0.28,
+            "event": "hint bracket, picker swatch"
+          },
+          {
+            "at": 0.56,
+            "event": "no default: black"
+          },
+          {
+            "at": 0.8,
+            "event": "line four: float and default tags"
+          }
+        ],
+        "manim": {
+          "class": "B35_ReadUniforms"
+        },
+        "motion_claim": "Tags fly out to the pieces of line three, then to the pieces of line four, as each is read."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a label per cue",
+        "why": "Each piece of two real lines gets its own small tag in place; the whole-file panel can only label a line as a whole."
+      }
+    },
+    {
+      "beat_id": "B36",
+      "act": "V · Read One Aloud",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Line six declares breathe. It hands back a vec three. It takes two arguments: a vec three called base, and a float called t. So the body gets a color and a number, and it must return a color.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Line 6 `vec3 breathe(vec3 base, float t) {` in monospace (size 36), centered. Drawn tags land beneath: `vec3` 'hands back a vec3'; `breathe` 'name'; `vec3 base` 'argument: vec3'; `float t` 'argument: float'. Below, a small three-cell token and a one-cell token flow into the parentheses and a three-cell token leaves, with the note 'the body must return a vec3'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "line six; return type tag"
+          },
+          {
+            "at": 0.3,
+            "event": "name tag"
+          },
+          {
+            "at": 0.58,
+            "event": "argument tags"
+          },
+          {
+            "at": 0.8,
+            "event": "tokens in and out; must return vec3"
+          }
+        ],
+        "manim": {
+          "class": "B36_ReadSignature"
+        },
+        "motion_claim": "Tags land on the four pieces of the signature, then a token flows through."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a label per cue",
+        "why": "The same four pieces of one real line, read in place."
+      }
+    },
+    {
+      "beat_id": "B37",
+      "act": "V · Read One Aloud",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Line seven. Sine of t is a float that swings between minus one and one. Half of that, plus a half, is still a float, now swinging between zero and one. It is stored in wave.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Line 7 `float wave = 0.5 + 0.5 * sin(t);` in monospace (size 36). Nested drawn brackets from the inside out with tags: `t` float; `sin(t)` float; `0.5 * sin(t)` float; `0.5 + 0.5 * sin(t)` float; into `wave` float. At the right (or below), a small drawn sine curve on axes marked -1 and 1, then squeezed and lifted to span 0 to 1, with a dot riding the curve.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the line"
+          },
+          {
+            "at": 0.26,
+            "event": "brackets and float tags, inside out"
+          },
+          {
+            "at": 0.62,
+            "event": "the sine curve squeezed into 0 to 1"
+          },
+          {
+            "at": 0.84,
+            "event": "into wave"
+          }
+        ],
+        "manim": {
+          "class": "B37_ReadWave"
+        },
+        "motion_claim": "Brackets widen outward with a float tag on each; a sine curve is squeezed from -1..1 into 0..1."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace",
+        "why": "The range change from -1..1 to 0..1 is a curve being squeezed and lifted; the tags show the type never leaves float."
+      }
+    },
+    {
+      "beat_id": "B38",
+      "act": "V · Read One Aloud",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Line eight. Vec three of zero point nine fills all three parts: a pale gray. Mix blends that gray toward base by the amount wave. Zero gives the gray, one gives base. The result is a vec three, as promised.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Line 8 `return mix(vec3(0.9), base, wave);` in monospace (size 36). Tags: `vec3(0.9)` 'fills all three: a pale gray' with a small gray swatch; `base` 'vec3'; `wave` 'float: 0 to 1'; the whole `mix(...)` 'vec3'; `return` 'matches the signature'. A serif 32 label in the GLOSSARY wording, 'mix(a, b, t): blends from a to b: t of 0 gives a, 1 gives b'. Below, a horizontal ramp strip from pale gray (left) to teal (right) with a terracotta dot that rides from the gray end to the teal end as wave goes from 0 to 1, labelled '0 gives the gray, 1 gives base'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "the line"
+          },
+          {
+            "at": 0.24,
+            "event": "vec3(0.9) tag and swatch; base; wave"
+          },
+          {
+            "at": 0.62,
+            "event": "dot rides the ramp from gray to teal"
+          },
+          {
+            "at": 0.84,
+            "event": "return matches the signature"
+          }
+        ],
+        "manim": {
+          "class": "B38_ReadReturn"
+        },
+        "motion_claim": "A dot rides a gray-to-teal ramp as wave goes from zero to one while the tags land on the pieces."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a label per cue",
+        "why": "The ramp strip with a riding marker is the series' picture of a blend; the tags show the types fit."
+      }
+    },
+    {
+      "beat_id": "B39",
+      "act": "V · Read One Aloud",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "In fragment, tint dot R G B is a vec three, and time times speed is a float. Breathe turns them into a vec three. Vec four adds tint's alpha, and color, a vec four, takes it.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Lines 12 and 13 in monospace (size 32): `vec3 color = breathe(tint.rgb, TIME * speed);` (45 characters) and `COLOR = vec4(color, tint.a);`. Tags land inside out: `tint.rgb` vec3 (swizzle); `TIME * speed` float; `breathe(...)` vec3; into `color` vec3; then `vec4(color, tint.a)` vec4 into `COLOR`, a vec4. Captions in serif 32: 'TIME: seconds on one clock shared by the whole game' and 'COLOR: the color of the pixel being drawn; fragment() sets it'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "line twelve"
+          },
+          {
+            "at": 0.22,
+            "event": "tint.rgb, TIME * speed, breathe(...) tags"
+          },
+          {
+            "at": 0.62,
+            "event": "line thirteen: vec4(color, tint.a)"
+          },
+          {
+            "at": 0.82,
+            "event": "COLOR takes a vec4"
+          }
+        ],
+        "manim": {
+          "class": "B39_ReadFragment"
+        },
+        "motion_claim": "Tags land inside out on line twelve, then on line thirteen, ending on COLOR."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with a label per cue",
+        "why": "Two real lines read inside out, with the types landing on each piece, are the film's method applied."
+      }
+    },
+    {
+      "beat_id": "B40",
+      "act": "V · Read One Aloud",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now watch it run. Pale gray blends to teal and back, and speed sets how fast. Every piece has a type, and every type fits. That is what it means to read a shader.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same file and the same pulsing render as the opening picture, side by side. The wave and mix lines light first, then the two fragment lines.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "wave and mix lines highlighted"
+          },
+          {
+            "at": 0.6,
+            "event": "the two fragment lines highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform vec4 tint : source_color;\nuniform float speed = 2.0;\n\nvec3 breathe(vec3 base, float t) {\n\tfloat wave = 0.5 + 0.5 * sin(t);\n\treturn mix(vec3(0.9), base, wave);\n}\n\nvoid fragment() {\n\tvec3 color = breathe(tint.rgb, TIME * speed);\n\tCOLOR = vec4(color, tint.a);\n}",
+            "codeFile": "lab-shaders/01-breathe.gdshader",
+            "cues": [
+              {
+                "at": 0.2,
+                "lines": [
+                  7,
+                  8
+                ]
+              },
+              {
+                "at": 0.6,
+                "lines": [
+                  12,
+                  13
+                ]
+              }
+            ],
+            "video": "godot-shader-language/breathe-b40.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · tint set to teal",
+            "readouts": [],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The pulse keeps running while the lines that make it light up."
+      },
+      "lecture": {
+        "runner_up": "manim: the file with all tags at once",
+        "why": "Closing the loop on the opening picture: the same real pulse, now readable.",
+        "capture_spec": "C01b: the same capture as C01a (same shader, same --set tint=#5FA391, live TIME) as a separate clip, with its OWN --time-origin chosen from THIS beat's measured audio by the same rule (for 11.6 s, t0 about 2.38 s gives 0.20 at both sample times)."
+      }
+    },
+    {
+      "beat_id": "B41",
+      "act": "V · Read One Aloud",
+      "lane": "terminal",
+      "proof_gate": "SHOW",
+      "narration_text": "Now change one thing. Make tint a vec three, and keep reading its alpha. A vec three has no alpha, and Godot says invalid member. Reading by types catches that before you run it.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A terminal window with the engine's own log of lab-shaders/57-err-alpha-on-vec3.gdshader (the same file with the uniform changed to `vec3 tint`), word for word: the source lines around `COLOR = vec4(color, tint.a);` with that line marked, then 'Invalid member for 'vec3' expression: '.a'.' A ring lands on the message.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "log lines land"
+          },
+          {
+            "at": 0.66,
+            "event": "ring on 'Invalid member for vec3'"
+          }
+        ],
+        "remotion": {
+          "pattern": "CCPlainShell",
+          "props": {
+            "title": "Godot 4.7.2 · shader compile error · printed by the engine",
+            "lines": [
+              "--Main Shader--",
+              "   11 | void fragment() {",
+              "   12 |  vec3 color = breathe(tint.rgb, TIME * speed);",
+              "E  13->  COLOR = vec4(color, tint.a);",
+              "   14 | }",
+              "   15 |",
+              "SHADER ERROR: Invalid member for 'vec3' expression: '.a'.",
+              "          at: (null) (:13)"
+            ],
+            "startCue": 10,
+            "lineGap": 12,
+            "fontSize": 36,
+            "windowMargin": 90,
+            "rings": [
+              {
+                "line": 6,
+                "cue": 189
+              }
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The log lands line by line; a ring settles on the message about the missing member."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the changed file",
+        "why": "The film's method pays off as a caught mistake; the engine's own words are the proof."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "verdict",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let's recap with Claude. A shader file has a header, globals and functions. Every value has a type, and Godot will not quietly convert between int and float. Many values are vectors, and arithmetic works on every part at once. A function has a signature, and per-pixel built-ins must be passed in. Choices need a bool, and floats are compared against a range. To read a line, say the type of each piece.",
+      "estimated_duration_s": 24.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "artifact page opens"
+          },
+          {
+            "at": 0.2,
+            "event": "recap lines land in narration order"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Recap",
+            "artifactHeading": "Godot Shader Language",
+            "artifactLines": [
+              "A shader file has a header, globals and functions.",
+              "Every value has a type, and Godot will not quietly convert between int and float.",
+              "Many values are vectors, and arithmetic works on every part at once.",
+              "A function has a signature, and per-pixel built-ins must be passed in.",
+              "Choices need a bool, and floats are compared against a range.",
+              "To read a line, say the type of each piece."
+            ]
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Mandated ClaudeVerdictArtifact bookend."
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "your turn",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Your turn. Paste this into Claude: Go through the Godot canvas item shader below one line at a time. After each line, add a comment giving the type of each piece. Flag any line where two types do not match. Then say in one sentence what it draws. Put your own shader under it. Now check two things yourself. Pick one line and say the type of each piece before you read Claude's answer. And run the shader: does it draw what Claude's one sentence says?",
+      "estimated_duration_s": 29.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Composer opens: 'Your turn.'"
+          },
+          {
+            "at": 0.12,
+            "event": "the prompt types in full"
+          },
+          {
+            "at": 0.85,
+            "event": "two check lines land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "CLAUDE · YOUR TURN",
+            "segment": "Read a Shader by Its Types",
+            "command": "Go through the Godot canvas item shader below one line at a time. After each line, add a comment giving the type of each piece. Flag any line where two types do not match. Then say in one sentence what it draws.",
+            "runningText": "paste this into Claude…",
+            "output": [
+              "Check: pick one line and say the type of each piece yourself before you read Claude's.",
+              "Check: run the shader. Does it draw what Claude's one sentence says?"
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Opus 5.5",
+            "effortLabel": "High"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "outro",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot Shader Language. At Nik Bear Brown.",
+      "estimated_duration_s": 4.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "title restates; handle; mascot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Godot Shader Language",
+            "slug": "claude-liam-lecture-godot-shader-language",
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

@@ -239,6 +239,26 @@ Run on 27 September 2026 (Godot 4.7.2, Claude Code 2.1.150, Codex CLI 0.153.4) a
 2. **Engine bookkeeping invented by hand.** Claude Code wrote `pickup.gd.uid` with a made-up value and cited it from `pickup.tscn`; Godot rejected it with an `invalid UID` warning and the agent deleted the reference. Two other invented identifiers stayed, the scene's own `uid` and a `unique_id` on `PickupTimer`. Godot loads them, but they are the engine's bookkeeping, not fields to write. Codex left them out; its own slip was naming layer 1 "Mobs" although the Player sits on layer 1 too. One thing went right: when Claude Code's first test run failed, the agent fixed the **test** with a 2.2 s wait and did not weaken the assertion.
 3. **An exit code that hid 55 errors.** A fresh clone ran `test_shield.gd` before importing and printed seven `PASS` lines, exit code 0, and 55 `ERROR` lines for textures and sounds that could not load. After the import the same tests ran with zero errors. Exit code 0 is not a clean run; read the log.
 
+## Practice assessment (ungraded)
+
+Answer in your own words, from your own run and the source. An ungraded practice quiz on Canvas covers the same ground; take it as often as you like and read the feedback.
+
+1. A creep overlaps you when a 3-second shield ends. Explain why a game guarded only by `body_entered` lets you survive, and name the call both agents used to fix it.
+2. Give the `collision_layer` value for an object on layer 3 and on layer 2. Which single wrong digit in a player mask would make the player stop seeing pickups?
+3. You shorten the shield to 0.5 s and the agent's test still passes. What does that tell you about the test, and what would a better check record?
+4. Why is moving an `Area2D` in `_process` acceptable here, and why would it not be for a `CharacterBody2D` that must stop at walls?
+5. Name two things a headless pass cannot tell you about the shield, and the human check for each.
+
+Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test collision behavior against the intended rule; play the contact and decide whether it feels fair. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module has no assignment of its own. You use it in **Assignment 4**, where the 3D interaction you specify has to detect, collide and respond correctly, and in every layer of your game after that. Treat it as the physics behind your Assignment 3 assets: once one of them carries a collider, its visible mesh and its collision shape are separate things, and layers, masks and signals on entry decide whether anything notices it. The shield is taught in 2D because those builds are small enough to read; Chapter 5's 3D example uses `Area3D` with the same layer arithmetic. Read the assignment's own text for what it requires. Module 5 then moves to specifying an interaction before building it. The long reading is the companion chapter, [Chapter 4 — Scenes, Collision and Physics](../../chapters/04-scenes-collision-and-physics.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from official documentation, checked on 27 September 2026.
@@ -254,18 +274,10 @@ Unity and Unreal were not run for this module; the comparisons come from officia
 
 Overlap events fire on entry in all three, so the shield-expiry question is the same everywhere. The big difference for an agent workflow is what it can read. Godot's `.tscn` files are text an agent can diff. Unity's default scene and prefab serialization is text too, but it references assets by GUIDs and file IDs, so a careless hand edit is the Unity version of the invented `uid://`. Unreal's Blueprints and levels are binary: an agent can review a C++ pickup but not a Blueprint graph, so more review lands on you in the editor. The [chapter](../../chapters/04-scenes-collision-and-physics.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in your own words, from your own run and the source. An ungraded practice quiz on Canvas covers the same ground; take it as often as you like and read the feedback.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/04-scenes-collision-and-physics.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/Prefabs.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. A creep overlaps you when a 3-second shield ends. Explain why a game guarded only by `body_entered` lets you survive, and name the call both agents used to fix it.
-2. Give the `collision_layer` value for an object on layer 3 and on layer 2. Which single wrong digit in a player mask would make the player stop seeing pickups?
-3. You shorten the shield to 0.5 s and the agent's test still passes. What does that tell you about the test, and what would a better check record?
-4. Why is moving an `Area2D` in `_process` acceptable here, and why would it not be for a `CharacterBody2D` that must stop at walls?
-5. Name two things a headless pass cannot tell you about the shield, and the human check for each.
+## Doing the same thing in Unreal Engine
 
-Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then answer and check the source yourself.
-
-## The next step
-
-Next is **Assignment 3, "Build a Prop in Blender and Make It Work in Godot."** It opens in Module 3, this module completes it, and it is due about Day 30. Treat this module as the physics half of that work: once your prop is in Godot, its visible mesh and its collision shape are separate things, and layers, masks and signals on entry decide whether anything notices it. The shield is taught in 2D because those builds are small enough to read; Chapter 5's 3D example uses `Area3D` with the same layer arithmetic. Read the assignment's own text for what it requires. Module 5 then moves to specifying an interaction before building it. The long reading is the companion chapter, [Chapter 4 — Scenes, Collision and Physics](../../chapters/04-scenes-collision-and-physics.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/04-scenes-collision-and-physics.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/BlueprintAPI/Collision/GetOverlappingActors) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

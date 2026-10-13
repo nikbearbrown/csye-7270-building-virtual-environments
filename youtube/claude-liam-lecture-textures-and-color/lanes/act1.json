@@ -1,0 +1,430 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D noise_tex;\nuniform sampler2D ramp_tex : source_color;\nuniform float progress : hint_range(0.0, 1.0) = 0.0;\n\nvoid fragment() {\n\tfloat n = texture(noise_tex, UV).r;\n\tfloat cut = mix(-0.1, 1.0, progress);\n\tif (n <= cut) discard;\n\tfloat heat = 1.0 - (n - cut) / 0.1;\n\tvec3 fire = texture(ramp_tex, vec2(heat, 0.5)).rgb;\n\tif (heat > 0.0) COLOR.rgb = fire;\n}",
+   "codeFile": "lab-shaders/18-dissolve.gdshader",
+   "cues": [],
+   "video": "godot-textures-and-color/dissolve-preview.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · progress swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "progress",
+     "x": 0.5,
+     "y": 0.97
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Reading a Texture",
+   "ramp": {
+    "at": 0.1,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C01: Lab sprite (teal test sprite, scale to fit 640x360), lab-shaders/18-dissolve.gdshader; noise_tex = NoiseTexture2D (FastNoiseLite seed 7, frequency 0.02, 256 x 256: the Lab's 'noise' kind); ramp_tex = GradientTexture1D (#8A2A12, #F08A2C, #F7D46B, 256 wide); `--animate progress:0.05:0,0.97:1` (fractions of the beat), 30 fps, Forward+, scripted sweep (label it). Verified frames: evidence/planning-checks/png/plus-a3-18-dissolve-*.png (sprite 23,512 px whole at 0; 0 px at 1).",
+  "visual_intent": "Act title 'Reading a Texture' (serif 40) top-left. A real Godot render in a framed window on the cream stage: the teal test sprite sits whole, then burns away from the edges in, a yellow-orange-red rim around every hole, while a thin 0 to 1 strip under the window carries a marker labelled 'progress' that rides from 0 to 1 with the burn.",
+  "motion_claim": "The sprite burns away as the progress marker rides from 0 to 1.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "sprite whole, marker at 0"
+   },
+   {
+    "at": 0.25,
+    "event": "the first holes open at the darkest clouds"
+   },
+   {
+    "at": 0.6,
+    "event": "most of the sprite gone"
+   },
+   {
+    "at": 0.88,
+    "event": "gone, marker at 1"
+   }
+  ],
+  "runner_up": "manim drawing of a sprite dissolving",
+  "why": "A real render of the finished effect is the honest promise for the next ten minutes; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_LookupTable",
+  "visual_intent": "A 6-by-6 grid of cells: the cream letter F on teal (the film's tiny table), with a one-cell teal margin. Beside it a swatch box with four numbers under it, and under the grid an address readout '(u, v)'. A terracotta dot (the address) starts at the top-left cell, a thin line runs from the dot to the swatch, the swatch takes that cell's color and the four numbers fill in (0.98, 0.98, 0.96, 1.0). Labels: 'texture', 'address', 'color'.",
+  "motion_claim": "The address dot hops from cell to cell and, each time, the swatch changes to that entry's color.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "the grid and its labels"
+   },
+   {
+    "at": 0.25,
+    "event": "dot on a cream cell: swatch cream, four numbers"
+   },
+   {
+    "at": 0.38,
+    "event": "dot on a teal cell: swatch teal (0.37, 0.64, 0.57, 1.0); settles through 60 %"
+   },
+   {
+    "at": 0.64,
+    "event": "dot on the next cream cell"
+   },
+   {
+    "at": 0.84,
+    "event": "numbers pulse once"
+   }
+  ],
+  "runner_up": "ShaderLab with a Lab render",
+  "why": "A grid with a moving address and a swatch that answers is the whole idea of a lookup, as motion; a render would show the result but not the asking.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D tex;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV);\n}",
+   "codeFile": "lab-shaders/01-lookup.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      5
+     ],
+     "label": "fragment(): runs once for each pixel the shape covers"
+    },
+    {
+     "at": 0.32,
+     "lines": [
+      6
+     ],
+     "label": "COLOR: the color of the pixel being drawn"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      6
+     ],
+     "label": "texture(table, address): returns a color"
+    }
+   ],
+   "video": "godot-textures-and-color/lookup-checker.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a ColorRect with no image of its own",
+   "readouts": [
+    {
+     "at": 0.42,
+     "text": "0.06, 0.06",
+     "x": 0.2,
+     "y": 0.2
+    },
+    {
+     "at": 0.7,
+     "text": "0.19, 0.06",
+     "x": 0.33,
+     "y": 0.2
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.42,
+     "box": [
+      0.0,
+      0.0,
+      0.125,
+      0.125
+     ]
+    },
+    {
+     "at": 0.7,
+     "box": [
+      0.125,
+      0.0,
+      0.25,
+      0.125
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: Lab rect 360x360 logical, lab-shaders/01-lookup.gdshader, --tex tex=checker, still PNG at 4K. Verified probes: (0.06, 0.06) = (0.980, 0.977, 0.961) cream; (0.19, 0.06) = (0.372, 0.639, 0.569) teal.",
+  "visual_intent": "Code card at left (the four-line lookup shader); at right a real Godot window: a plain Color Rect that now shows the 8-by-8 teal and cream checker picture. A terracotta ring moves to one cream cell and then one teal cell, each with its address as a readout.",
+  "motion_claim": "The ring hops to a cell, and its address and color are read out.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "fragment line highlighted with its meaning"
+   },
+   {
+    "at": 0.32,
+    "event": "COLOR defined on the lookup line"
+   },
+   {
+    "at": 0.42,
+    "event": "ring on a cream cell, address (0.06, 0.06)"
+   },
+   {
+    "at": 0.62,
+    "event": "texture(table, address) label"
+   },
+   {
+    "at": 0.7,
+    "event": "ring on a teal cell, address (0.19, 0.06)"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Code and its result side by side is the claim: one line fills the whole shape from a table the shape never owned.",
+  "sparse": false
+ },
+ "B04": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D tex;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV);\n}",
+   "codeFile": "lab-shaders/01-lookup.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ],
+     "label": "uniform: a value your game sets from outside"
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      3
+     ],
+     "label": "sampler2D: the type of a texture a shader reads"
+    }
+   ],
+   "video": "godot-textures-and-color/swap-tables.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · same shader, three tables, switched by script",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "same code",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: three Lab stills of lab-shaders/01-lookup.gdshader on a 360x360 rect, joined with ffmpeg, one third of the clip each: tex = tiny_f (the 6x6 F, default filter: smeared), gradient, noise (Lab kinds). Verified: F centre probes (0.25, 0.25) cream, (0.0833, 0.0833) teal; the F at (0.15, 0.25) blends to (0.608, 0.769, 0.722).",
+  "visual_intent": "Code card at left with the uniform line highlighted. At right the same real Godot window shows three tables in turn with no change to the code: the small cream F on teal (smeared, because it is tiny), the red-green gradient, the grey noise. A caption under the window says 'same code'.",
+  "motion_claim": "The window's picture changes from table to table while the code stays put.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "uniform line: set from outside"
+   },
+   {
+    "at": 0.3,
+    "event": "sampler2D: a texture slot"
+   },
+   {
+    "at": 0.35,
+    "event": "gradient replaces the F"
+   },
+   {
+    "at": 0.68,
+    "event": "noise replaces the gradient"
+   }
+  ],
+  "runner_up": "manim: a slot with three tables plugging in",
+  "why": "Three real renders of one unchanged shader are the proof that the table is the variable; the drawing would only say so.",
+  "sparse": false
+ },
+ "B05": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D tex : filter_nearest;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV);\n}",
+   "codeFile": "lab-shaders/02-nearest.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      3
+     ],
+     "label": "filter_nearest: a hint; reads the closest entry only"
+    }
+   ],
+   "video": "godot-textures-and-color/filter-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two renders of the same table",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "default",
+     "x": 0.25,
+     "y": 0.95
+    },
+    {
+     "at": 0.4,
+     "text": "filter_nearest",
+     "x": 0.75,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: two Lab renders of the 6x6 F table on 360x360 rects, side by side (ffmpeg hstack): left lab-shaders/01-lookup.gdshader, right lab-shaders/02-nearest.gdshader; right panel revealed at 40 % of the beat. Verified at (0.15, 0.25): linear (0.608, 0.769, 0.722) blend, nearest (0.372, 0.639, 0.569) the closest entry.",
+  "visual_intent": "Code card at left with the hint highlighted. At right two real panels of the small F table side by side: on the left the smeared default, on the right the crisp blocks after the hint. Panel labels 'default' and 'filter_nearest'.",
+  "motion_claim": "The right panel snaps from smeared to crisp blocks next to the unchanged left one.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "hint highlighted"
+   },
+   {
+    "at": 0.2,
+    "event": "left panel labelled default (smeared)"
+   },
+   {
+    "at": 0.4,
+    "event": "right panel appears: crisp blocks, labelled filter_nearest"
+   }
+  ],
+  "runner_up": "ShaderLab with one panel and a toggle",
+  "why": "A smeared F beside a crisp F is the whole difference; the voice points at the left, then the right.",
+  "sparse": false
+ },
+ "B06": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D tex : filter_nearest;\n\nvoid fragment() {\n\tvec2 address = vec2(1.0 - UV.x, UV.y);\n\tCOLOR = texture(tex, address);\n}",
+   "codeFile": "lab-shaders/03-flip.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      6
+     ],
+     "label": "one minus u: flips it"
+    },
+    {
+     "at": 0.35,
+     "lines": [
+      7
+     ]
+    }
+   ],
+   "video": "godot-textures-and-color/flip-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · same table, new address",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "same table",
+     "x": 0.25,
+     "y": 0.95
+    },
+    {
+     "at": 0.42,
+     "text": "new address",
+     "x": 0.75,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C05: two Lab renders of the F table (filter_nearest) on 360x360 rects, hstack: left lab-shaders/02-nearest.gdshader, right lab-shaders/03-flip.gdshader; right panel revealed at 40 %. Verified: stem texel (0.25, 0.4167) cream in the original and teal when flipped; (0.75, 0.4167) teal in the original and cream when flipped.",
+  "visual_intent": "Code card at left with the address line highlighted. At right two real panels: the F table as it is, then, beside it, the same table flipped left to right (the F's stem moves from left to right). Labels 'same table' and 'new address'.",
+  "motion_claim": "The F's stem jumps from the left side to the right side as the new address is applied.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "address line highlighted"
+   },
+   {
+    "at": 0.2,
+    "event": "left panel labelled same table"
+   },
+   {
+    "at": 0.4,
+    "event": "right panel appears: the F flipped, labelled new address"
+   }
+  ],
+  "runner_up": "manim: a flipped grid",
+  "why": "A real flipped F next to the original is the evidence that the lookup, not the table, changed.",
+  "sparse": false
+ },
+ "B07": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D tex : filter_nearest, repeat_enable;\n\nvoid fragment() {\n\tCOLOR = texture(tex, UV * 2.0);\n}",
+   "codeFile": "lab-shaders/05-repeat-on.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      6
+     ],
+     "label": "UV * 2: past the end"
+    },
+    {
+     "at": 0.4,
+     "lines": [
+      3
+     ],
+     "label": "repeat_enable: a hint; the table starts over"
+    }
+   ],
+   "video": "godot-textures-and-color/repeat-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two renders, UV times two",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "repeat_disable",
+     "x": 0.25,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "repeat_enable",
+     "x": 0.75,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06: two Lab renders of the F table on 360x360 rects, hstack: left lab-shaders/04-repeat-off.gdshader (revealed at 25 %), right lab-shaders/05-repeat-on.gdshader (revealed at 65 %). Verified probes (0.625, 0.2083) and (0.125, 0.625): repeat off = teal, teal; repeat on = cream, cream.",
+  "visual_intent": "Code card at left (repeat enable). At right two real panels of the F table asked for twice the address: on the left with repeat disabled a half-size F in the top-left corner with the edge entries smeared out to the right and downward; on the right with repeat enabled a two-by-two tiling of F. Labels 'repeat_disable' and 'repeat_enable'.",
+  "motion_claim": "The left panel streaks outward; the right panel tiles.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "UV * 2 line highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "left panel appears, labelled repeat_disable: edges stretched"
+   },
+   {
+    "at": 0.7,
+    "event": "right panel appears, labelled repeat_enable: four tiles"
+   }
+  ],
+  "runner_up": "manim: a table with an arrow running off its edge",
+  "why": "Streaks beside tiles show both settings at once; a diagram would need to explain what the render simply shows.",
+  "sparse": false
+ }
+}

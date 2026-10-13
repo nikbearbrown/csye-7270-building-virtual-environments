@@ -173,10 +173,10 @@ claude mcp add -e DISABLE_TELEMETRY=true blender -- uvx mcp-for-blender
 codex mcp add --env DISABLE_TELEMETRY=true blender -- uvx mcp-for-blender
 ```
 
-   `DISABLE_TELEMETRY=true` turns off the usage record the server otherwise sends. `BLENDER_MCP_SAFE_MODE=1` also exists: it blocks scripts that read or write files directly, run other programs or use the network, which would push your export through the server's `export_scene` tool.
+   `DISABLE_TELEMETRY=true` turns off the usage record the server otherwise sends. `BLENDER_MCP_SAFE_MODE=1` also exists: it blocks scripts that read or write files directly, run other programs or use the network.
 3. Install the add-on with `uvx mcp-for-blender install-addon`, then in Blender enable **Interface: MCP for Blender** under **Edit > Preferences > Add-ons**.
-4. In the 3D viewport press **N**, open the **MCP for Blender** tab and start the server. Leave the Poly Haven, Sketchfab, Hyper3D, Hunyuan3D and Tripo checkboxes off unless you mean to use them.
-5. Give the agent the specification above, but ask for tool calls: `get_scene_info` first, one `execute_blender_code` call per object, `get_object_info` after each, `export_scene` to finish. Then copy every `execute_blender_code` body into `tools/blender/build_checkpoint_post.py`, or Git will not show how the post was built.
+4. In the 3D viewport press **N** and open the **MCP for Blender** tab. By 6 October 2026 the add-on starts its server when Blender opens, so check that it is running. Leave the Poly Haven, Sketchfab, Hyper3D, Hunyuan3D and Tripo checkboxes off unless you mean to use them.
+5. Give the agent the specification above, but ask for tool calls: `get_scene_info` first, then one `execute_blender_code` call per object, and a check of the result after each. The server's tool names changed between 27 September (version 2.1.1: `get_object_info`, `get_viewport_screenshot`, `export_scene`) and 6 October (2.1.9: `look`), so ask the agent to list the tools it has. Then copy every `execute_blender_code` body into `tools/blender/build_checkpoint_post.py`, or Git will not show how the post was built.
 
 Blender Lab's server lists `execute_blender_code_for_cli`, which runs Python in a background Blender process, so an MCP client can also drive headless Blender. It requires Blender 5.1+ and was not tested.
 
@@ -228,18 +228,6 @@ Run on 27 September 2026 with Claude Code 2.1.150 and Codex CLI 0.153.4. An agen
 - **A check that looked at the wrong thing.** Codex's pennant check read only the hull's vertices and printed `overlap 0.0000`. Sampling the pennant on a 1 cm grid, 55 of 1,066 points were inside the collider, reaching x = 0.11 m. That is far better than the first box's 572, and still not zero.
 - **A sandbox crash became a hunt for another route.** Blender crashed four times inside Codex's sandbox (exit 139). Codex then reached for a Computer Use tool to operate the Blender application, which refused. The prompt had not repeated "never open its window", and an agent will look for another way when its first one fails.
 
-## If you know Unity or Unreal
-
-| Godot 4.7 | Unity 6 | Unreal Engine 5.8 |
-|---|---|---|
-| 1 unit = 1 m, Y-up, right-handed | 1 unit = 1 m, Y-up, left-handed | 1 unit = 1 cm, Z-up, left-handed |
-| glTF 2.0 built in (recommended) | FBX built in; glTF through the glTFast package | Interchange glTF importer, producing a Static Mesh `.uasset` |
-| `.glb.import` (ConfigFile text) | model `.meta` (YAML) | import settings inside a binary `.uasset` |
-| `-convcolonly` name suffix | Generate Colliders, or a collider in a prefab | `UCX_` prefix (documented for FBX) |
-| `godot --headless --script` with `MeshInstance3D.get_aabb()` | `Unity -batchmode -runTests` with `Renderer.bounds` | Automation test, or editor Python through `-run=pythonscript` |
-
-The Blender half does not change in any engine: the same `bpy` script, the same headless run, the same apply-transforms step. For an agent workflow, the biggest difference is what it can read. Godot's `.import` and `.tscn` files are text it can diff, and Unity's `.meta` and prefabs are diffable YAML under Force Text. Unreal's imported meshes and collision are binary `.uasset` files, inspected through editor Python. Unreal 5.8 also ships an Experimental MCP plugin that its documentation says has no authentication layer. Unity and Unreal were not run; the comparisons come from their documentation, checked on 27 September 2026. The [chapter](../../chapters/03-blender-mcp-to-godot.md) has the full comparison.
-
 ## Practice assessment (ungraded)
 
 Answer these in writing, from the source and the running game.
@@ -252,6 +240,30 @@ Answer these in writing, from the source and the running game.
 
 The ungraded Canvas practice quiz has six questions with feedback. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer and check the source yourself.
 
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to create and inspect simple 3D assets; judge their scale, meaning and appearance inside the scene. Record the evidence, your decision and what would change it.
+
 ## The next step
 
-Assignment 3, **"Build a Prop in Blender and Make It Work in Godot,"** opens in Module 3, covers Modules 3 and 4, and is due about Day 30. The Canvas assignment page holds its requirements; this lesson adds no graded deliverable. What you practised here, a reproducible script, the import settings, and measurements you can rerun, is what makes a prop of your own provably work in Godot. Module 4 turns to scenes, collision and physics in depth. For the long reading, see [Chapter 3 — Blender to Godot: MCP, Scripts, and a Prop You Can Measure](../../chapters/03-blender-mcp-to-godot.md).
+Assignment 3, **"Your First 3D Game Assets with Claude, the Blender MCP, and Blender,"** opens in Module 3 and is due about Day 30. It is a gentle first assignment: three simple assets for your own game, built with Claude through the Blender MCP, exported and shown in a Godot scene. The Canvas assignment page holds its requirements; this lesson adds no graded deliverable. What you practised here, the units and axes, applying transforms, and measurements you can rerun, is what makes an asset of your own arrive in Godot at the size you meant. Module 4 turns to scenes, collision and physics in depth. For the long reading, see [Chapter 3 — Blender to Godot: MCP, Scripts, and a Prop You Can Measure](../../chapters/03-blender-mcp-to-godot.md).
+
+## If you know Unity or Unreal
+
+| Godot 4.7 | Unity 6 | Unreal Engine 5.8 |
+|---|---|---|
+| 1 unit = 1 m, Y-up, right-handed | 1 unit = 1 m, Y-up, left-handed | 1 unit = 1 cm, Z-up, left-handed |
+| glTF 2.0 built in (recommended) | FBX built in; glTF through the glTFast package | Interchange glTF importer, producing a Static Mesh `.uasset` |
+| `.glb.import` (ConfigFile text) | model `.meta` (YAML) | import settings inside a binary `.uasset` |
+| `-convcolonly` name suffix | Generate Colliders, or a collider in a prefab | `UCX_` prefix (documented for FBX) |
+| `godot --headless --script` with `MeshInstance3D.get_aabb()` | `Unity -batchmode -runTests` with `Renderer.bounds` | Automation test, or editor Python through `-run=pythonscript` |
+
+The Blender half does not change in any engine: the same `bpy` script, the same headless run, the same apply-transforms step. For an agent workflow, the biggest difference is what it can read. Godot's `.import` and `.tscn` files are text it can diff, and Unity's `.meta` and prefabs are diffable YAML under Force Text. Unreal's imported meshes and collision are binary `.uasset` files, inspected through editor Python. Unreal 5.8 also ships an Experimental MCP plugin that its documentation says has no authentication layer. Unity and Unreal were not run; the comparisons come from their documentation, checked on 27 September 2026. The [chapter](../../chapters/03-blender-mcp-to-godot.md) has the full comparison.
+
+## Doing the same thing in Unity
+
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/03-blender-mcp-to-godot.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/FBXImporter-Model.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
+
+## Doing the same thing in Unreal Engine
+
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/03-blender-mcp-to-godot.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/unreal-engine/importing-assets-using-interchange-in-unreal-engine?lang=en-US) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

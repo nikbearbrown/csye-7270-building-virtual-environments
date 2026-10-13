@@ -1,0 +1,253 @@
+{
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec4 tint : source_color = vec4(0.2, 0.5, 1.0, 1.0);\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\nconst vec3 COAST = vec3(0.0, 1.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tfloat coast = float(distance(label, COAST) < 0.1);\n\tCOLOR.a *= water * 0.5 + coast * 0.3;\n\tCOLOR.rgb = mix(COLOR.rgb, tint.rgb, 0.5);\n}",
+   "codeFile": "lab-shaders/03-reflection-final.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      6
+     ],
+     "label": "COAST: the coast's label, pure green"
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      11
+     ]
+    },
+    {
+     "at": 0.58,
+     "lines": [
+      12
+     ]
+    }
+   ],
+   "video": "reflections/coast-alpha.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk · tint neutral",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "open water",
+     "x": 0.33,
+     "y": 0.8
+    },
+    {
+     "at": 0.78,
+     "text": "coast",
+     "x": 0.55,
+     "y": 0.88
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Polish and Limits"
+  },
+  "capture_spec": "C17: capture_scenes.gd id C17 (pond; shader lab-shaders/03-reflection-final.gdshader with the tint uniform set to the sprite's own colour so only the alpha shows; Player static at x 420 until 7.0 s, then walks to x 900 by 12.5 s); 13 s, 30 fps, Forward+, scripted.",
+  "visual_intent": "Title 'Polish and Limits' (serif 40). Code card at left (the fourteen-line final shader; the coast constant, the coast test and the alpha sum lit in turn); at right the real pond: the reflection stands in open water at half strength, then the blob walks toward the sandbar and the reflection grows fainter across the green ring before the sand hides it. Readouts 'open water' and 'coast'.",
+  "motion_claim": "The reflection is stronger in open water and fainter as it crosses the ring around the sandbar.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "coast constant lit"
+   },
+   {
+    "at": 0.3,
+    "event": "coast test lit"
+   },
+   {
+    "at": 0.58,
+    "event": "alpha sum lit"
+   },
+   {
+    "at": 0.62,
+    "event": "readout 'open water'"
+   },
+   {
+    "at": 0.78,
+    "event": "readout 'coast'; reflection fainter over the ring"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The faint-over-the-ring crossing is the claim and only a real moving frame shows the two strengths side by side.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec4 tint : source_color = vec4(0.2, 0.5, 1.0, 1.0);\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\nconst vec3 COAST = vec3(0.0, 1.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tfloat coast = float(distance(label, COAST) < 0.1);\n\tCOLOR.a *= water * 0.5 + coast * 0.3;\n\tCOLOR.rgb = mix(COLOR.rgb, tint.rgb, 0.5);\n}",
+   "codeFile": "lab-shaders/03-reflection-final.gdshader",
+   "cues": [
+    {
+     "at": 0.22,
+     "lines": [
+      13
+     ],
+     "label": "mix: blends from a to b: t of 0 gives a, 1 gives b"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ],
+     "label": "uniform: a value your game sets; same for every pixel"
+    }
+   ],
+   "video": "reflections/tint-toggle.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the tint is switched at run time)",
+   "readouts": [
+    {
+     "at": 0.03,
+     "text": "no tint",
+     "x": 0.3,
+     "y": 0.8
+    },
+    {
+     "at": 0.2,
+     "text": "tint",
+     "x": 0.3,
+     "y": 0.8
+    },
+    {
+     "at": 0.34,
+     "text": "no tint",
+     "x": 0.3,
+     "y": 0.8
+    },
+    {
+     "at": 0.44,
+     "text": "tint",
+     "x": 0.3,
+     "y": 0.8
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: capture_scenes.gd id C18 (pond; shader 03; Player static at x 420; the tint uniform set to the sprite colour (no effect) or to (0.2, 0.5, 1.0): blue from 1.8 s to 3.2 s and from 4.6 s on); 10.5 s, 30 fps, Forward+, scripted.",
+  "visual_intent": "Code card at left (the same fourteen lines; the mix line lit, then the tint uniform); at right the real pond with the blob standing still: the reflection is teal-grey, then turns a clearer blue as the tint is switched on, off, and on again. Readouts 'no tint' and 'tint'.",
+  "motion_claim": "The reflection's color shifts toward blue each time the tint is switched on.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "readout 'no tint'"
+   },
+   {
+    "at": 0.2,
+    "event": "readout 'tint'; reflection bluer"
+   },
+   {
+    "at": 0.22,
+    "event": "mix line lit"
+   },
+   {
+    "at": 0.34,
+    "event": "readout 'no tint'"
+   },
+   {
+    "at": 0.44,
+    "event": "readout 'tint'"
+   },
+   {
+    "at": 0.62,
+    "event": "tint uniform lit"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "A hue shift is only visible in a flicker between states; the real frames alternate with the line that causes it lit.",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "manim",
+  "class": "B36_NoScenery",
+  "visual_intent": "The pond picture with a waterline drawn across it: sky, grass and the blob above; below it the reflection area. Under the line a flipped teal blob stays; dashed flipped outlines of the sky band and the grass band try to appear under the line and are each crossed out. A small label 'the character only'.",
+  "motion_claim": "Dashed flipped outlines of the sky and the grass appear under the waterline and are crossed out; only the flipped blob stays.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "pond picture with waterline and the flipped blob"
+   },
+   {
+    "at": 0.4,
+    "event": "dashed flipped sky and grass appear"
+   },
+   {
+    "at": 0.7,
+    "event": "each is crossed out; label settles"
+   }
+  ],
+  "runner_up": "ShaderLab capture of the mirror-the-screen technique",
+  "why": "A limit is a negative and a drawing that crosses out what is missing says it; a capture would show only what is there.",
+  "sparse": true
+ },
+ "B37": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec4 tint : source_color = vec4(0.2, 0.5, 1.0, 1.0);\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\nconst vec3 COAST = vec3(0.0, 1.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tfloat coast = float(distance(label, COAST) < 0.1);\n\tCOLOR.a *= water * 0.5 + coast * 0.3;\n\tCOLOR.rgb = mix(COLOR.rgb, tint.rgb, 0.5);\n}",
+   "codeFile": "lab-shaders/03-reflection-final.gdshader",
+   "cues": [],
+   "video": "reflections/jump.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted (scripted jump)",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "jump",
+     "x": 0.5,
+     "y": 0.12
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.34,
+     "box": [
+      0.17,
+      0.46,
+      0.3,
+      0.6
+     ]
+    },
+    {
+     "at": 0.66,
+     "box": [
+      0.17,
+      0.46,
+      0.3,
+      0.6
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: capture_scenes.gd id C19 (pond; shader 03; Player static at x 300; Player.y lifted 80 px by a half sine over 3.0 to 4.0 s and again over 6.5 to 7.5 s); 10.5 s, 30 fps, Forward+, scripted.",
+  "visual_intent": "The real pond with the blob standing at the shore. It jumps 80 px up, twice. Each time the reflection also moves up (where a real one would move down) and the top part of it is cut off at the shoreline. Readouts 'jump' and a terracotta ring on the cut part.",
+  "motion_claim": "The blob jumps up and the reflection rises with it and is cut off at the shoreline.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "first jump: reflection rises and is clipped"
+   },
+   {
+    "at": 0.34,
+    "event": "ring on the cut part"
+   },
+   {
+    "at": 0.64,
+    "event": "second jump"
+   }
+  ],
+  "runner_up": "manim drawing of a mirror image dropping",
+  "why": "The honest picture of the limit is the real effect misbehaving; a drawing could only say a real one would drop.",
+  "sparse": false
+ }
+}

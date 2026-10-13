@@ -1,0 +1,75 @@
+# Independent checks (evidence agent), 2026-10-09 13:43 EDT
+
+## 1. Re-run the demo agent's own check
+$ godot --headless --path /private/tmp/claude-501/godot-evidence-work/pong-demo --script res://check_label.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+HelloLabel text: Hello from a text file
+PASS
+exit=0  wall=0.16s
+
+## 2. Independent check script (outside the project) on the EDITED scene
+$ godot --headless --path /private/tmp/claude-501/godot-evidence-work/pong-demo --script /private/tmp/claude-501/godot-evidence-work/independent-check/independent_check.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PackedScene node_count: 22
+Instantiated nodes: 22
+Original nodes present: 21/21
+Label found: path=HelloLabel class=Label parent=Pong text="Hello from a text file"
+script on Left: res://logic/paddle.gd
+script on Right: res://logic/paddle.gd
+script on Ball: res://logic/ball.gd
+script on LeftWall: res://logic/wall.gd
+script on RightWall: res://logic/wall.gd
+script on Ceiling: res://logic/ceiling_floor.gd
+script on Floor: res://logic/ceiling_floor.gd
+Signal connections on Left: 1
+INDEPENDENT RESULT: PASS
+exit=0  wall=0.16s
+
+## 3. Control: same independent check on the UNEDITED scene (should FAIL: no Label)
+$ godot --headless --path /private/tmp/claude-501/godot-evidence-work/pong-control --script /private/tmp/claude-501/godot-evidence-work/independent-check/independent_check.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PackedScene node_count: 21
+Instantiated nodes: 21
+Original nodes present: 21/21
+Expected exactly 1 Label, found 0
+script on Left: res://logic/paddle.gd
+script on Right: res://logic/paddle.gd
+script on Ball: res://logic/ball.gd
+script on LeftWall: res://logic/wall.gd
+script on RightWall: res://logic/wall.gd
+script on Ceiling: res://logic/ceiling_floor.gd
+script on Floor: res://logic/ceiling_floor.gd
+Signal connections on Left: 1
+INDEPENDENT RESULT: FAIL (1)
+exit=1  wall=0.16s
+
+## 4. Run the edited game's main scene headless for 60 frames
+$ godot --headless --path /private/tmp/claude-501/godot-evidence-work/pong-demo --quit-after 60
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+exit=0  wall=0.56s
+
+## 5. Editor import pass on the edited project
+$ godot --headless --path /private/tmp/claude-501/godot-evidence-work/pong-demo --import
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] first_scan_filesystem | Started Project initialization (5 steps)
+[   0% ] first_scan_filesystem | Scanning file structure...
+[  16% ] first_scan_filesystem | Loading global class names...
+[  33% ] first_scan_filesystem | Verifying GDExtensions...
+[  50% ] first_scan_filesystem | Creating autoload scripts...
+[  66% ] first_scan_filesystem | Initializing plugins...
+[  83% ] first_scan_filesystem | Starting file scan...
+[ DONE ] first_scan_filesystem
+
+[   0% ] loading_editor_layout | Started Loading editor (5 steps)
+[   0% ] loading_editor_layout | Loading editor layout...
+[  16% ] loading_editor_layout | Loading docks...
+[ DONE ] loading_editor_layout
+
+exit=0  wall=1.96s
+
+## 6. grep for errors/warnings across all runs above: see below

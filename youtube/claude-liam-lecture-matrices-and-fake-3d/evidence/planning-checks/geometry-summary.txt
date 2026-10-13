@@ -1,0 +1,64 @@
+Matrices and Fake 3D: geometry checks, 2026-10-13. Machine: Apple M4 Pro, macOS, Godot 4.7.2 stable (official), Forward+ unless a line says [gl_compatibility] (the RESULT lines in lab-results.jsonl name the renderer for every run).
+61 PASS, 0 FAIL.
+
+PASS  u1-columns (t01-columns.gdshader): rows GGGGGGGGGGRR expected GGGGGGGGGGRR (G = check true, R = check false; the R rows are the negative controls)
+PASS  u2-constants (t02-constants.gdshader): rows GGGGGGGR expected GGGGGGGR (G = check true, R = check false; the R rows are the negative controls)
+PASS  u3-products (t03-products.gdshader): rows GGGGGGGGGGGGGGGRRR expected GGGGGGGGGGGGGGGRRR (G = check true, R = check false; the R rows are the negative controls)
+PASS  01-table-check shows the agree colour: probe [0.3686, 0.6392, 0.5686, 1.0]: teal (0.37, 0.64, 0.57) means the shader's answer equals (23, 34); the disagree colour would be (0.85, 0.2, 0.2)
+PASS  02-grow at 0.5: a 128 px square becomes 64 px: measured bbox [-32.0, -32.0, 32.0, 32.0], expected [-32.0, -32.0, 32.0, 32.0] (tolerance 1.6 px)
+PASS  02-grow at 1.0: a 128 px square becomes 128 px: measured bbox [-64.0, -64.0, 64.0, 64.0], expected [-64.0, -64.0, 64.0, 64.0] (tolerance 1.6 px)
+PASS  02-grow at 1.5: a 128 px square becomes 192 px: measured bbox [-96.0, -96.0, 96.0, 96.0], expected [-96.0, -96.0, 96.0, 96.0] (tolerance 1.6 px)
+PASS  02-grow at 2.0: a 128 px square becomes 256 px: measured bbox [-128.0, -128.0, 128.0, 128.0], expected [-128.0, -128.0, 128.0, 128.0] (tolerance 1.6 px)
+PASS  03-turn at 0.5236 rad: corners turned clockwise: measured bbox [-87.0, -87.0, 87.0, 87.0], expected [-87.4, -87.4, 87.4, 87.4] (tolerance 1.6 px)
+PASS  03-turn at 0.5236 rad keeps the area: area 16384 px, a 128 px square is 16384
+PASS  03-turn at 0.7854 rad: corners turned clockwise: measured bbox [-90.0, -90.0, 90.0, 90.0], expected [-90.5, -90.5, 90.5, 90.5] (tolerance 1.6 px)
+PASS  03-turn at 0.7854 rad keeps the area: area 16380 px, a 128 px square is 16384
+PASS  03-turn at 1.5708 rad: corners turned clockwise: measured bbox [-64.0, -64.0, 64.0, 64.0], expected [-64.0, -64.0, 64.0, 64.0] (tolerance 1.6 px)
+PASS  03-turn at 1.5708 rad keeps the area: area 16384 px, a 128 px square is 16384
+PASS  03-turn gradient texture at 0.0 rad: corner colours TL, TR, BL, BR: ['black', 'red', 'green', 'yellow'], expected ['black', 'red', 'green', 'yellow'] (a clockwise quarter turn moves black to the top right)
+PASS  03-turn gradient texture at 1.5708 rad: corner colours TL, TR, BL, BR: ['green', 'black', 'yellow', 'red'], expected ['green', 'black', 'yellow', 'red'] (a clockwise quarter turn moves black to the top right)
+PASS  04-slide by (100, 0) moves the centre by exactly that: centroid [100.0, 0.0] (y counts DOWN); size 128 x 128
+PASS  04-slide by (0, 100) moves the centre by exactly that: centroid [0.0, 100.0] (y counts DOWN); size 128 x 128
+PASS  04-slide by (100, -40) moves the centre by exactly that: centroid [100.0, -40.0] (y counts DOWN); size 128 x 128
+PASS  05 slide_by * turn_by (turn first, then slide): centre at (100, 0): centroid [100.0, 0.0]
+PASS  06 turn_by * slide_by (slide first, then turn): centre at (0, 100): centroid [0.0, 100.0]
+PASS  07-three-moves (grow 1.5, angle 0.5236, slide 100, -40) matches scale, then turn, then slide: measured bbox [-31.0, -171.0, 231.0, 91.0], expected [-31.1, -171.1, 231.1, 91.1] (tolerance 1.6 px)
+PASS  07-three-moves: the slide was not scaled or turned: centroid [100.0, -40.0], slide was (100, -40)
+PASS  08-flip at 0.0: width is 128 * |cos(TAU * flip)|: measured 128 x 128, expected 128.0 x 128
+PASS  08-flip at 0.0625: width is 128 * |cos(TAU * flip)|: measured 118 x 128, expected 118.3 x 128
+PASS  08-flip at 0.125: width is 128 * |cos(TAU * flip)|: measured 90 x 128, expected 90.5 x 128
+PASS  08-flip at 45 degrees: the far and near edges are the same height (no perspective): columns 44.5 px left and right of centre are 128 and 128 px tall
+PASS  08-flip at 0.1875: width is 128 * |cos(TAU * flip)|: measured 48 x 128, expected 49.0 x 128
+PASS  08-flip at 0.25: edge-on, nothing drawn: frame is empty; expected width 128 * |cos| = 0.000 px
+PASS  08-flip at 0.3125: width is 128 * |cos(TAU * flip)|: measured 48 x 128, expected 49.0 x 128
+PASS  08-flip at 0.375: width is 128 * |cos(TAU * flip)|: measured 90 x 128, expected 90.5 x 128
+PASS  08-flip at 0.5: width is 128 * |cos(TAU * flip)|: measured 128 x 128, expected 128.0 x 128
+PASS  08-flip at 0.75: edge-on, nothing drawn: frame is empty; expected width 128 * |cos| = 0.000 px
+PASS  08-flip at 1.0: width is 128 * |cos(TAU * flip)|: measured 128 x 128, expected 128.0 x 128
+PASS  08-flip gradient texture at 0.0: corner colours TL, TR, BL, BR: ['black', 'red', 'green', 'yellow'], expected ['black', 'red', 'green', 'yellow'] (the original picture)
+PASS  08-flip gradient texture at 0.5: corner colours TL, TR, BL, BR: ['red', 'black', 'yellow', 'green'], expected ['red', 'black', 'yellow', 'green'] (mirrored left to right)
+PASS  08-flip gradient texture at 1.0: corner colours TL, TR, BL, BR: ['black', 'red', 'green', 'yellow'], expected ['black', 'red', 'green', 'yellow'] (the original picture)
+PASS  09-flip-and-tip at flip 0.0, tip 0.1: bounding box follows Rx * Ry: measured bbox [-64.0, -52.0, 64.0, 52.0], expected [-64.0, -51.8, 64.0, 51.8] (tolerance 1.6 px)
+PASS  09-flip-and-tip at flip 0.125, tip 0.1: bounding box follows Rx * Ry: measured bbox [-45.0, -78.0, 45.0, 78.0], expected [-45.3, -78.4, 45.3, 78.4] (tolerance 1.6 px)
+PASS  09-flip-and-tip: the left and right edges are the same length (a parallelogram, still no perspective): expected edge lengths 103.6 and 103.6 px
+PASS  09-flip-and-tip at flip 0.125, tip 0.0: bounding box follows Rx * Ry: measured bbox [-45.0, -64.0, 45.0, 64.0], expected [-45.3, -64.0, 45.3, 64.0] (tolerance 1.6 px)
+PASS  09-flip-and-tip at tip 0.25: edge-on from above, nothing drawn: frame is empty
+PASS  10-spin-about-corner at 0.7854 rad, pivot (-64, -64): bounding box matches slide * turn * slide: measured bbox [-155.0, -64.0, 26.0, 117.0], expected [-154.5, -64.0, 26.5, 117.0] (tolerance 1.6 px)
+PASS  10-spin-about-corner at 0.7854 rad: the pivot corner is still a corner of the picture: top of the picture at y = -64.0 (the pivot's y is -64)
+PASS  10-spin-about-corner at 1.5708 rad, pivot (-64, -64): bounding box matches slide * turn * slide: measured bbox [-192.0, -64.0, -64.0, 64.0], expected [-192.0, -64.0, -64.0, 64.0] (tolerance 1.6 px)
+PASS  10-spin-about-corner at 1.5708 rad: the pivot corner is still a corner of the picture: top of the picture at y = -64.0 (the pivot's y is -64)
+PASS  10-spin-about-corner at 0.7854 rad, pivot (0, 0): spins in place: measured bbox [-90.0, -90.0, 90.0, 90.0], expected [-90.5, -90.5, 90.5, 90.5] (tolerance 1.6 px)
+PASS  11-door pivot (-64, 0) at flip 0.0625: left edge fixed at -64, right edge at 54.3: measured bbox [-64.0, -64.0, 54.0, 64.0], expected [-64, -64, 54.3, 64] (tolerance 1.6 px)
+PASS  11-door pivot (-64, 0) at flip 0.125: left edge fixed at -64, right edge at 26.5: measured bbox [-64.0, -64.0, 27.0, 64.0], expected [-64, -64, 26.5, 64] (tolerance 1.6 px)
+PASS  11-door pivot (-64, 0) at flip 0.1875: left edge fixed at -64, right edge at -15.0: measured bbox [-64.0, -64.0, -15.0, 64.0], expected [-64, -64, -15.0, 64] (tolerance 1.6 px)
+PASS  11-door pivot (-64, 0) at flip 0.5: the card lies on the far side of the hinge: measured bbox [-192.0, -64.0, -64.0, 64.0], expected [-192, -64, -64, 64] (tolerance 1.6 px)
+PASS  11-door pivot (64, 0) at flip 0.125: right edge fixed at 64, left edge at 64 - 128 cos: measured bbox [-27.0, -64.0, 64.0, 64.0], expected [-26.5, -64, 64, 64] (tolerance 1.6 px)
+PASS  11-door at flip 0.5: the card on the far side is mirrored: corner colours TL, TR, BL, BR ['red', 'black', 'yellow', 'green']
+PASS  t04 VERTEX += vec2(100, 0): plain addition slides the card by exactly (100, 0), the same as the table: centroid [100.0, 0.0]
+PASS  t05a-size-mismatch-mat3-times-mat2.gdshader: a three-by-three table times a two-by-two table does not compile: exit 1; compiler said: SHADER_OR_SCRIPT_ERROR: / SHADER ERROR: Invalid arguments to operator '*': 'mat3, mat2'. / ERROR: Shader compilation failed.
+PASS  t05b-size-mismatch-mat3-times-vec2.gdshader: a three-by-three table times a two-number point does not compile: exit 1; compiler said: SHADER_OR_SCRIPT_ERROR: / SHADER ERROR: Invalid arguments to operator '*': 'mat3, vec2'. / ERROR: Shader compilation failed.
+PASS  [gl_compatibility] 01-table-check shows the agree colour: renderer gl_compatibility, probe [0.3686, 0.6392, 0.5686, 1.0]
+PASS  [gl_compatibility] 08-flip at 0.125: width 90, height 128: renderer gl_compatibility, measured 90 x 128
+PASS  [gl_compatibility] 11-door pivot (-64, 0) at flip 0.125: left edge fixed: measured bbox [-64.0, -64.0, 27.0, 64.0], expected [-64, -64, 26.5, 64] (tolerance 1.6 px)
+PASS  [gl_compatibility] 07-three-moves bounding box: measured bbox [-31.0, -171.0, 231.0, 91.0], expected [-31.1, -171.1, 231.1, 91.1] (tolerance 1.6 px)
+PASS  [gl_compatibility] 06 slide first then turn: centre at (0, 100): centroid [0.0, 100.0]

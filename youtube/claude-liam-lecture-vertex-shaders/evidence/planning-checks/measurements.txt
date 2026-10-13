@@ -1,0 +1,45 @@
+# measurements.txt: output of the analysis scripts, 2026-10-13, Apple M4 Pro, Godot 4.7.2 (Forward+ unless stated)
+
+## python3 -I analyze_pngs.py   (the Lab renders in png/)
+slide: plain white sprite box (256, 116, 383, 243); after `VERTEX.x += 40.0` box (296, 116, 423, 243); left edge moved 40 px, top 0, width 128 (was 128)
+slide on a node scaled 2.0: plain box (192, 52, 447, 307); after the same line (272, 52, 527, 307); left edge moved 80 px on screen (the shader said 40)
+slide on the Lab default scale 2.25: box (266, 36, 553, 323); plain would start at x = 320 - 144 = 176, so the left edge moved 90 px on screen (40 x 2.25 = 90)
+squash `VERTEX *= vec2(1.5, 0.5)`: box (224, 148, 415, 211): width 192 px (was 128), height 64 px (was 128); centre x 319.5, y 179.5 (plain centre 319.5, 179.5)
+lean `VERTEX.x += 50.0 * UV.y`: box (256, 116, 433, 243), height 128; left edge x at rows [0, 2, 31, 63, 95, 124, 127] of the shape = [256, 257, 268, 281, 293, 305, 306]; first row 256, last row 306, shift 50 px over 128 rows
+lean: the left edge fits a straight line to within 0.49 px (slope 0.391 px per row; 50/127 = 0.394)
+ripple `VERTEX.y += sin(UV.x * 8.0) * 24.0` on a four-vertex 128 px sprite: box (256, 116, 383, 267); top edge y at the left end 116, middle 128, right end 140; bottom edge 243, 255, 267
+ripple on four vertices: top edge fits a straight line within 0.49 px, bottom within 0.49 px (sin(8) x 24 = 23.7; right end moved 24 px)
+flag-pinned (06) on four vertices (Lab, a moment after start): box (256, 116, 383, 254)
+dials with amplitude = 0.0 (07): box (256, 116, 383, 243); distinct top-edge rows across the width: [116] (flat if one value)
+far slide `VERTEX.x += 200.0`: box (456, 116, 583, 243); left edge moved 200 px (the node's own rectangle stays at 256..383)
+slide in gl_compatibility: box (296, 116, 423, 243) (Forward+: (296, 116, 423, 243)); same: True
+lean in gl_compatibility: left edge x at rows [0, 2, 31, 63, 95, 124, 127] = [256, 257, 268, 281, 293, 305, 306] (Forward+: [256, 257, 268, 281, 293, 305, 306]); same: True
+plain white sprite box (256, 116, 383, 243) (expected x 256..383, y 116..243)
+
+## python3 -I analyze_equal_pictures.py   (scene frames, two objects in one frame)
+cut-along (297 vertices against 66): 0 of 288000 pixels differ; largest channel difference 0  (frame scene-cut-along-t3.00.png)
+equiv-lit-color (explicit varying against the COLOR line): 0 of 288000 pixels differ; largest channel difference 0  (frame scene-equiv-lit-color-t1.50.png)
+polygon-grid (Polygon2D grid + cells against the mesh): 0 of 288000 pixels differ; largest channel difference 0  (frame scene-polygon-grid-t1.00.png)
+
+## python3 -I analyze_densities.py   (verify11.gd frames, node scaled 3x)
+subdivide_width 3: 4 pieces, 3.1 per wave; worst gap measured 10.76 px = 44.9% of the 24 px wave height (formula 11.03 px = 46.0%)
+subdivide_width 9: 10 pieces, 7.9 per wave; worst gap measured 1.99 px = 8.3% of the 24 px wave height (formula 1.89 px = 7.9%)
+subdivide_width 31: 32 pieces, 25.1 per wave; worst gap measured 0.35 px = 1.5% of the 24 px wave height (formula 0.19 px = 0.8%)
+worst gap for p pieces per wave = 1 - cos(pi / p) of the wave height: {3: np.float64(50.0), 4: np.float64(29.3), 6: np.float64(13.4), 8: np.float64(7.6), 12: np.float64(3.4), 16: np.float64(1.9), 25: np.float64(0.8)}
+
+## python3 -I flag_motion.py   (scene pinned and travel frames)
+== unpinned, travelling (05-flag-travelling): the left end should bob by up to +-24 px
+unpinned frame t=1.00: top edge at the left end y=283, next 3 columns [283. 282. 282.]; best-fit clock 1.160 s, mean error 0.25 px
+unpinned frame t=1.20: top edge at the left end y=295, next 3 columns [294. 294. 294.]; best-fit clock 1.360 s, mean error 0.25 px  clock advanced 0.200 s (mod 2.094) while real time advanced 0.20 s
+unpinned frame t=1.40: top edge at the left end y=300, next 3 columns [300. 300. 300.]; best-fit clock 1.556 s, mean error 0.25 px  clock advanced 0.196 s (mod 2.094) while real time advanced 0.20 s
+unpinned frame t=1.60: top edge at the left end y=296, next 3 columns [297. 297. 297.]; best-fit clock 1.764 s, mean error 0.25 px  clock advanced 0.208 s (mod 2.094) while real time advanced 0.20 s
+== pinned, travelling (06-flag-pinned): the left end should stay at y = 276
+pinned   frame t=6.00: top edge at the left end y=276, next 3 columns [276. 276. 276.]; best-fit clock 1.970 s, mean error 0.27 px
+pinned   frame t=6.20: top edge at the left end y=276, next 3 columns [276. 276. 276.]; best-fit clock 0.076 s, mean error 0.23 px  clock advanced 0.200 s (mod 2.094) while real time advanced 0.20 s
+pinned   frame t=6.40: top edge at the left end y=276, next 3 columns [276. 276. 276.]; best-fit clock 0.272 s, mean error 0.27 px  clock advanced 0.196 s (mod 2.094) while real time advanced 0.20 s
+pinned   frame t=6.60: top edge at the left end y=276, next 3 columns [276. 276. 276.]; best-fit clock 0.474 s, mean error 0.26 px  clock advanced 0.202 s (mod 2.094) while real time advanced 0.20 s
+== scene travel after its switch at 58 % of the beat (05-flag-travelling, unpinned): the left end bobs again
+unpinned frame t=8.00: top edge at the left end y=293, next 3 columns [293. 294. 294.]; best-fit clock 1.842 s, mean error 0.25 px
+unpinned frame t=8.20: top edge at the left end y=280, next 3 columns [281. 281. 282.]; best-fit clock 2.042 s, mean error 0.25 px  clock advanced 0.200 s (mod 2.094) while real time advanced 0.20 s
+unpinned frame t=8.40: top edge at the left end y=266, next 3 columns [267. 267. 268.]; best-fit clock 0.150 s, mean error 0.25 px  clock advanced 0.202 s (mod 2.094) while real time advanced 0.20 s
+unpinned frame t=8.60: top edge at the left end y=256, next 3 columns [256. 256. 257.]; best-fit clock 0.350 s, mean error 0.25 px  clock advanced 0.200 s (mod 2.094) while real time advanced 0.20 s

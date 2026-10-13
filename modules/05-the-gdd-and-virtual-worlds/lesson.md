@@ -291,6 +291,26 @@ Run on 27 September 2026 with Claude Code 2.1.150 and Codex CLI 0.153.4.
 2. **A fix with the wrong reason.** Claude Code hit its account usage limit after 43 turns, before any test ran. Codex strengthened the test but said the old check had been "raycasting against the pad itself." A ray ignores areas by default: the same ray hit the GridMap floor at y = −6.0, and hit the pad only with `collide_with_areas = true`. The old check was weak, but not for that reason.
 3. **A criterion with a gap.** The pad computed its own respawn point from the player's height at entry, and criterion 4 measured against that number. The value was sensible (y = −5.91), but the criterion never said where it must be. A better one names it: a `Marker3D` child of the pad, no more than 0.2 m above its top surface. Only reading the code revealed the gap.
 
+## Practice assessment (ungraded)
+
+Answer in your own words, from the source. An ungraded practice quiz on Canvas covers the same ground; retake it freely and read the feedback.
+
+1. Where is the coin's `_on_coin_body_enter` connected, and what would an agent conclude if it read only `coin/coin.gd`?
+2. Pick a coin in `game.tscn`, whose parent sits at (−16, −6, −12), and compute its world position.
+3. Rewrite this so a stranger could test it: "The checkpoint should feel responsive and reset the player quickly."
+4. Criterion 5 writes the player's position directly. What does that prove that an input-only test cannot, and what does it fail to prove?
+5. Pick one scoping build above and write two sentences for a GDD's technical section: one verified fact, one named unverified item.
+
+Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then check the source yourself.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to turn the intended experience into acceptance criteria; reject unsupported design claims and choose the scope. Record the evidence, your decision and what would change it.
+
+## The next step
+
+Next is **Assignment 4, "Specify It, Then Build One 3D Interaction."** It opens in Module 5 and is due about Day 40, with a `godot-gdd` film; this lesson is the practice for it, and the assignment's own text sets its requirements. Module 6 then turns to shader foundations. The long reading is the companion chapter, [Chapter 5 — The GDD and Virtual Worlds](../../chapters/05-the-gdd-and-virtual-worlds.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run; these comparisons come from official documentation, checked on 27 September 2026.
@@ -305,18 +325,10 @@ Unity and Unreal were not run; these comparisons come from official documentatio
 
 A GDD is engine-agnostic, so criteria, tags, gates and scoping read the same in all three. What changes is what an agent can recover. A Godot reverse pass reads `res://coin/coin.gd` straight from a text scene; Unity makes it resolve a GUID; a mechanic built as an Unreal Blueprint is binary, so most of a recovered GDD would be `[MISSING]` or `[INFERRED]` from names. The [chapter](../../chapters/05-the-gdd-and-virtual-worlds.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in your own words, from the source. An ungraded practice quiz on Canvas covers the same ground; retake it freely and read the feedback.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/05-the-gdd-and-virtual-worlds.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/ScriptReference/Collider.OnTriggerEnter.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Where is the coin's `_on_coin_body_enter` connected, and what would an agent conclude if it read only `coin/coin.gd`?
-2. Pick a coin in `game.tscn`, whose parent sits at (−16, −6, −12), and compute its world position.
-3. Rewrite this so a stranger could test it: "The checkpoint should feel responsive and reset the player quickly."
-4. Criterion 5 writes the player's position directly. What does that prove that an input-only test cannot, and what does it fail to prove?
-5. Pick one scoping build above and write two sentences for a GDD's technical section: one verified fact, one named unverified item.
+## Doing the same thing in Unreal Engine
 
-Do not paste Claude's explanation as proof of your understanding. Ask it to question you, then check the source yourself.
-
-## The next step
-
-Next is **Assignment 4, "Specify It, Then Build One 3D Interaction."** It opens in Module 5 and is due about Day 40, with a `godot-gdd` film; this lesson is the practice for it, and the assignment's own text sets its requirements. Module 6 then turns to shader foundations. The long reading is the companion chapter, [Chapter 5 — The GDD and Virtual Worlds](../../chapters/05-the-gdd-and-virtual-worlds.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/05-the-gdd-and-virtual-worlds.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/trigger-volume-actors-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

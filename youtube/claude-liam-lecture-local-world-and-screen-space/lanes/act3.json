@@ -1,0 +1,383 @@
+{
+ "B17": {
+  "lane": "manim",
+  "class": "B17_UVIsLocalToo",
+  "visual_intent": "Act title 'Locked to the World' (serif 40) top-left. A sprite square with local numbers on its axes (-64 to 64) and a zero marker at its center; a second set of numbers '0 to 1' along its top and left edge. The zero marker slides from the center to the top-left corner while the center's numbers squeeze: '(-64,-64)' becomes '(0, 0)' and '(64, 64)' becomes '(1, 1)'. Card: 'UV: a point's address on the shape: 0 to 1 across, 0 to 1 down'. A small 'stuck to the sprite' chip.",
+  "motion_claim": "The zero slides from the sprite's center to its corner and the numbers squeeze from minus sixty-four to sixty-four down to zero to one.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "sprite with local numbers"
+   },
+   {
+    "at": 0.36,
+    "event": "zero slides to the corner, numbers squeeze"
+   },
+   {
+    "at": 0.66,
+    "event": "card and chip: stuck to the sprite"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable (local pixels against U V)",
+  "why": "U V is local space with its zero moved and its scale squeezed; the zero sliding while the numbers rescale shows that, a table does not.",
+  "sparse": true
+ },
+ "B18": {
+  "lane": "manim",
+  "class": "B18_OneLineChanges",
+  "visual_intent": "Two code lines morph. 'position = VERTEX;' transforms into 'position = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;' while the fragment line 'COLOR.rgb = texture(sky, position / tile_size).rgb;' stays grey and unchanged beneath. A chip over the changing line flips from 'local' to 'world'; a grey bracket outlines the unchanged line, with the small grey label 'texture(sky, address): reads the sky picture at that address' under it.",
+  "motion_claim": "The right side of the first line transforms into the matrix expression while the fragment line below does not change at all.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "both lines, chip 'local'"
+   },
+   {
+    "at": 0.36,
+    "event": "the first line morphs"
+   },
+   {
+    "at": 0.66,
+    "event": "chip 'world'; the fragment line unchanged"
+   }
+  ],
+  "runner_up": "LectureCodeTrace (a diff)",
+  "why": "One line becoming another shows 'one line changes' literally, and the untouched line below shows what did not.",
+  "sparse": true
+ },
+ "B19": {
+  "lane": "manim",
+  "class": "B19_TileAddress",
+  "visual_intent": "A horizontal world axis from 0 to about 1500 with tick marks at 512 and 1024. A terracotta dot travels along it; below, a plot of 'address' against world x: a sawtooth that rises from 0 to 1 and wraps back to 0 at every 512, with the dot's current address as a live readout. Label: 'tile size 512'.",
+  "motion_claim": "The dot rides along the world axis while the address ramps from zero to one and wraps back to zero at every five hundred twelve.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axis, ticks at 512 and 1024, the address plot"
+   },
+   {
+    "at": 0.4,
+    "event": "the dot travels, the address climbs to 1"
+   },
+   {
+    "at": 0.68,
+    "event": "wraps to 0 at 512 and climbs again"
+   }
+  ],
+  "runner_up": "ShaderLab (02-sky-world with a gradient)",
+  "why": "A divide and a wrap are a function reshaping a ramp; the dot on the sawtooth is that function in motion.",
+  "sparse": true
+ },
+ "B20": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "// 02-sky-world.gdshader\nuniform sampler2D sky : repeat_enable;\n\n// 06-sky-no-repeat.gdshader\nuniform sampler2D sky : repeat_disable;",
+   "codeFile": "lab-shaders/02-sky-world.gdshader · 06-sky-no-repeat.gdshader (the one line that differs)",
+   "cues": [
+    {
+     "at": 0.28,
+     "lines": [
+      2
+     ],
+     "label": "repeat_enable: the picture tiles forever"
+    },
+    {
+     "at": 0.66,
+     "lines": [
+      5
+     ],
+     "label": "repeat_disable: edge pixels smear outward"
+    }
+   ],
+   "video": "local-world-and-screen-space/repeat.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the same view, one setting changed",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: scene script capture-scenes/capture-c04.gd: full-view ColorRect with 02-sky-world.gdshader, switched to 06-sky-no-repeat.gdshader at 64 % of the beat; 10 s (CAPTURE-PLAN.md).",
+  "visual_intent": "A code card at the left with the two setting lines, each tagged with what it does (comments name the files); at the right a real Godot window filled by the star sky read by world position: first the picture tiles across the whole view (the ringed planet repeats every 512 pixels); at the switch the setting changes to repeat_disable and everything beyond the first tile smears into horizontal and vertical streaks.",
+  "motion_claim": "The picture tiles, then at the switch it collapses into streaks past the first copy.",
+  "show": [
+   {
+    "at": 0.04,
+    "event": "the view tiles"
+   },
+   {
+    "at": 0.28,
+    "event": "repeat_enable line highlighted"
+   },
+   {
+    "at": 0.64,
+    "event": "the shader switches to repeat_disable; streaks past the first tile"
+   }
+  ],
+  "runner_up": "two stills side by side",
+  "why": "The same view switching from tiling to smearing is the only picture where 'like this' can be pointed at.",
+  "sparse": false
+ },
+ "B21": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D sky : repeat_enable;\nuniform float tile_size = 512.0;\n\nvarying vec2 position;\n\nvoid vertex() {\n\tposition = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;\n}\n\nvoid fragment() {\n\tCOLOR.rgb = texture(sky, position / tile_size).rgb;\n}",
+   "codeFile": "lab-shaders/02-sky-world.gdshader",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      13
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      9
+     ]
+    }
+   ],
+   "video": "local-world-and-screen-space/sky-window.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C05: scene script capture-scenes/capture-c05.gd: one sprite at y=240, x 640 to 880 over 10 to 50 % of the beat, then at rest over the planet (the planet and most of its ring sit inside the sprite, the ring's left tip outside it); faint backdrop (alpha 0.35); 12 s (CAPTURE-PLAN.md).",
+  "visual_intent": "Code card at the left (the world-locked sky shader); at the right a real Godot window: a faint star sky and a test sprite filled with the same sky at full strength, sliding right across the ringed planet and coming to rest over it. The stars and the planet inside the sprite line up exactly with the faint copy behind it, all the way to the sprite's edge.",
+  "motion_claim": "The sprite slides over the planet and its stars never shift against the faint copy behind it.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "sprite starts to slide over the sky"
+   },
+   {
+    "at": 0.2,
+    "event": "the sky lookup line"
+   },
+   {
+    "at": 0.5,
+    "event": "sprite at rest over the planet; its picture continues the faint copy at the edge"
+   },
+   {
+    "at": 0.62,
+    "event": "position line"
+   }
+  ],
+  "runner_up": "Manim",
+  "why": "The picture of the claim is a window sliding over a fixed sky with a faint copy proving the alignment; a drawing would need the stars to be believed.",
+  "sparse": false
+ },
+ "B22": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D sky : repeat_enable;\nuniform float tile_size = 512.0;\n\nvarying vec2 position;\n\nvoid vertex() {\n\tposition = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;\n}\n\nvoid fragment() {\n\tCOLOR.rgb = texture(sky, position / tile_size).rgb;\n}",
+   "codeFile": "lab-shaders/02-sky-world.gdshader",
+   "cues": [],
+   "video": "local-world-and-screen-space/turn-stretch.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted turn and stretch",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "turned",
+     "x": 0.5,
+     "y": 0.9
+    },
+    {
+     "at": 0.26,
+     "text": "stretched",
+     "x": 0.5,
+     "y": 0.9
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06: scene script capture-scenes/capture-c06.gd: white 128 px art at (852,240), scale 2; rotation 0 to 45 degrees over 6 to 22 % of the beat, then scale (2,2) to (2.5,1.6) over 24 to 38 %; 12 s (CAPTURE-PLAN.md).",
+  "visual_intent": "A real Godot window: the faint star sky and a plain white square sprite (a window) over the ringed planet. The square turns forty-five degrees, then stretches wide and low; the planet and stars inside it never move. Readouts 'turned' and 'stretched' appear as each happens.",
+  "motion_claim": "The square's corners swing around and its shape stretches while the stars and the planet inside it stay exactly where they are.",
+  "show": [
+   {
+    "at": 0.05,
+    "event": "square over the planet"
+   },
+   {
+    "at": 0.1,
+    "event": "turns 45 degrees; readout 'turned'"
+   },
+   {
+    "at": 0.26,
+    "event": "stretches; readout 'stretched'"
+   }
+  ],
+  "runner_up": "Manim",
+  "why": "A square turning and stretching over unchanged stars is the claim; a plain square rather than the blob makes the turn visible.",
+  "sparse": false
+ },
+ "B23": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D pattern : repeat_enable;\n\nvarying vec2 position;\n\nvoid vertex() {\n\tposition = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;\n}\n\nvoid fragment() {\n\tCOLOR.rgb = texture(pattern, position * TEXTURE_PIXEL_SIZE).rgb;\n}",
+   "codeFile": "lab-shaders/07-pattern-texel-size.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      12
+     ],
+     "label": "TEXTURE_PIXEL_SIZE: 1 over the art's width and height"
+    }
+   ],
+   "video": "local-world-and-screen-space/texel-size.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the art is swapped near the end · scripted",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "128 px art",
+     "x": 0.5,
+     "y": 0.9
+    },
+    {
+     "at": 0.8,
+     "text": "64 px art",
+     "x": 0.5,
+     "y": 0.9
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C07: scene script capture-scenes/capture-c07.gd: blob sprite, art 128 px at scale 2, 07-pattern-texel-size with a checker texture; at 78 % of the beat the texture is swapped to a 64 px blob drawn at scale 4; 12.6 s (CAPTURE-PLAN.md).",
+  "visual_intent": "Code card at the left (position times texture pixel size); at the right a real Godot window: a test sprite filled with a checker pattern by world position. At the swap its art changes from 128 pixels to 64 pixels (drawn at the same size on screen) and the checks shrink to half. Readouts '128 px art' then '64 px art'.",
+  "motion_claim": "The sprite stays the same size on screen but the checks halve as the art is swapped.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "texture pixel size line; 128 px art, large checks"
+   },
+   {
+    "at": 0.78,
+    "event": "art swapped to 64 px; the checks halve"
+   }
+  ],
+  "runner_up": "Manim: two sprites with different art sizes and their tiles",
+  "why": "Swapping the art for a smaller image and watching the checks shrink is the pitfall itself, shown rather than said.",
+  "sparse": false
+ },
+ "B24": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform vec2 hole_center = vec2(640.0, 360.0);\nuniform float hole_radius = 60.0;\nvarying vec2 world_position;\n\nvoid vertex() {\n\tworld_position = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;\n}\n\nvoid fragment() {\n\tif (distance(world_position, hole_center) < hole_radius) {\n\t\tdiscard;\n\t}\n}",
+   "codeFile": "lab-shaders/08-world-hole.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      11
+     ],
+     "label": "distance(a, b): how far apart two points are"
+    },
+    {
+     "at": 0.27,
+     "lines": [
+      12
+     ],
+     "label": "discard: throw this pixel away"
+    }
+   ],
+   "video": "local-world-and-screen-space/hole.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted slide",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C08: scene script capture-scenes/capture-c08.gd: blob sprite (256 px art) at y=360 sliding x 440 to 840 over 40 to 92 % of the beat across a hole at (640,360) radius 60; a thin grey ring (3 px, #8F8A7B) drawn by the scene; 11.5 s (CAPTURE-PLAN.md).",
+  "visual_intent": "Code card at the left (the distance test and discard); at the right a real Godot window: a thin grey circle marks a hole fixed in the world; a test sprite slides across it: a bite appears at its edge, grows into a round hole inside the sprite while the two overlap, and slides out of the other side, whole again.",
+  "motion_claim": "The hole stays still while the sprite slides across it: a bite, then a round hole inside the sprite, then whole again.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "distance test line; the ring marks the hole"
+   },
+   {
+    "at": 0.4,
+    "event": "sprite enters; a bite, then a round hole in its middle"
+   },
+   {
+    "at": 0.85,
+    "event": "sprite leaves the hole whole"
+   }
+  ],
+  "runner_up": "Manim",
+  "why": "The hole is a thing in the world; a sprite cut by a circle that does not move is the effect itself.",
+  "sparse": false
+ },
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nuniform sampler2D sky : repeat_enable;\nuniform float tile_size = 512.0;\nuniform float amount : hint_range(0.0, 1.0) = 0.0;\nvarying vec2 world_position;\n\nvoid vertex() {\n\tworld_position = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;\n}\n\nvoid fragment() {\n\tvec3 stars = texture(sky, world_position / tile_size).rgb;\n\tCOLOR.rgb = mix(COLOR.rgb, stars, amount);\n}",
+   "codeFile": "lab-shaders/09-spacing-out.gdshader",
+   "cues": [
+    {
+     "at": 0.14,
+     "lines": [
+      4
+     ],
+     "label": "amount: 0 keeps the sprite, 1 shows only the sky"
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      13
+     ],
+     "label": "mix(a, b, t): blends from a to b: t of 0 gives a, 1 gives b"
+    }
+   ],
+   "video": "local-world-and-screen-space/spacing-out.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk, amount animated 0 to 1",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C09: scene script capture-scenes/capture-c09.gd: one sprite at y=240, x 560 to 1000 over 50 to 95 % of the beat; amount set to 0.0 from code first, then a tween 0 to 1 over 52 to 78 %; 12 s (CAPTURE-PLAN.md).",
+  "visual_intent": "Code card at the left (the mix amount and the sky lookup); at the right a real Godot window: the faint star sky and the test sprite walking right across the ringed planet. As it walks the sprite's teal and eyes dissolve into stars: when it passes the planet it is a sprite-shaped window onto the sky.",
+  "motion_claim": "The sprite's own color dissolves into the stars as the amount climbs, while it walks across the fixed sky.",
+  "show": [
+   {
+    "at": 0.14,
+    "event": "amount uniform; the sprite is itself"
+   },
+   {
+    "at": 0.3,
+    "event": "mix line"
+   },
+   {
+    "at": 0.52,
+    "event": "the sprite walks and the amount climbs: teal dissolves"
+   },
+   {
+    "at": 0.8,
+    "event": "over the planet it is a window onto the sky"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The payoff must be the real thing: all the earlier ideas working together on the real sprite.",
+  "sparse": false
+ }
+}

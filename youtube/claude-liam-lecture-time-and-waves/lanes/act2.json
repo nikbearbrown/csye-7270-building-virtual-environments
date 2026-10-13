@@ -1,0 +1,373 @@
+{
+ "B09": {
+  "lane": "manim",
+  "class": "B09_SineOfTime",
+  "visual_intent": "Act title 'The Wave' (serif 40) top-left. Axes: time in seconds along x (0 to 13), value from -1 to 1 up the side. A terracotta dot travels along y = sin(TIME) at the pace of the clock, tracing the curve. A bracket under the first full swing reads 'one swing = 6.28 s'. At the end a label 'TAU = 6.28 · one full turn' lands beside the bracket (glossary: the number of radians in a full turn).",
+  "motion_claim": "The dot traces the curve up to 1 and down to -1; the bracket closes around the first full swing.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axes and the dot starts tracing"
+   },
+   {
+    "at": 0.57,
+    "event": "bracket around the first full swing: 6.28 s"
+   },
+   {
+    "at": 0.89,
+    "event": "label: TAU = 6.28 · one full turn"
+   }
+  ],
+  "runner_up": "ShaderLab capture of sin(TIME) as a color",
+  "why": "A curve traced by a dot shows the range and the period at once; a color pulse would hide the negative half.",
+  "sparse": true
+ },
+ "B10": {
+  "lane": "manim",
+  "class": "B10_TauTurn",
+  "visual_intent": "The same axes. The curve squeezes horizontally to a sixth of its width as the label changes from 'sin(TIME)' to 'sin(TIME × TAU)': the bracket under the first swing shrinks from '6.28 s' to '1 s', and tick marks at 1, 2 and 3 seconds each land where a swing begins (the curve crossing zero on its way up).",
+  "motion_claim": "The curve compresses: one swing now fits in one second.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the 6.28 s curve and its bracket"
+   },
+   {
+    "at": 0.14,
+    "event": "the curve compresses; bracket 1 s; ticks at 1, 2, 3 s mark where each swing begins"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of one line",
+  "why": "The claim is a change of shape; a transform shows exactly that, and the ticks on the crests are the proof.",
+  "sparse": true
+ },
+ "B11": {
+  "lane": "manim",
+  "class": "B11_ClampedHalf",
+  "visual_intent": "The sine curve again, with the ramp strip (0 to 1, drawn in greys) under it and a terracotta marker riding the strip with the dot. While the curve is below zero the curve is drawn grey and flattened onto the zero line, and the marker waits at the dark end of the strip. Labels: 'below zero → 0' and 'a color cannot be negative'.",
+  "motion_claim": "The marker rides the strip with the dot, then waits at the dark end for half of every swing.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "curve, strip and marker moving together"
+   },
+   {
+    "at": 0.32,
+    "event": "the negative half greys out and flattens; marker waits"
+   },
+   {
+    "at": 0.71,
+    "event": "label: half of each swing"
+   }
+  ],
+  "runner_up": "capture: a raw sine shader (a large dark field)",
+  "why": "A real capture would be a big dark field, hard to read as a wait; the plot with the strip shows the clamp at a glance, and the clamp itself was measured.",
+  "sparse": true
+ },
+ "B12": {
+  "lane": "manim",
+  "class": "B12_HalveAndLift",
+  "visual_intent": "The curve shrinks to half its height, then slides up by a half until it fills 0 to 1 exactly; the strip's marker now travels the whole strip. A formula caption builds as '0.5 + 0.5 × sine', the first 0.5 lighting up with the lift and the second with the halving.",
+  "motion_claim": "Two moves in order, shrink then lift; afterwards the marker travels the whole strip.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the full-height curve and strip"
+   },
+   {
+    "at": 0.19,
+    "event": "the curve shrinks to half height"
+   },
+   {
+    "at": 0.28,
+    "event": "the curve slides up to fill 0 to 1; marker travels the whole strip"
+   }
+  ],
+  "runner_up": "LectureCodeTrace",
+  "why": "Shrink then lift is two visible transforms; code alone would hide which half does which.",
+  "sparse": true
+ },
+ "B13": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat pulse = 0.5 + 0.5 * sin(TAU * TIME);\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tvec3 cream = vec3(0.98, 0.97, 0.96);\n\tCOLOR = vec4(mix(teal, cream, pulse), 1.0);\n}",
+   "codeFile": "lab-shaders/02-pulse.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.22,
+     "lines": [
+      5,
+      6
+     ],
+     "label": "vec3: a bundle of three numbers: red, green, blue"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      7
+     ],
+     "label": "vec4: red, green, blue, alpha (1 is solid)"
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/pulse.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+   "readouts": [],
+   "rings": [],
+   "caption": "mix(a, b, t) blends from a to b: t of 0 gives a, 1 gives b",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code card at left (02-pulse.gdshader, eight lines); at right a real Godot window filled with a color that swings between teal and cream once a second. The pulse line is highlighted first, then the two color lines (label 'vec3: a bundle of three numbers: red, green, blue'), then the COLOR line (label 'vec4: red, green, blue, alpha (1 is solid)'). Caption: 'mix(a, b, t) blends from a to b: t of 0 gives a, 1 gives b'.",
+  "motion_claim": "The window swings between teal and cream while the highlight moves from the pulse line to the two colors and then to the blend.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "the pulse line highlighted"
+   },
+   {
+    "at": 0.22,
+    "event": "the two color lines highlighted; vec3 label"
+   },
+   {
+    "at": 0.62,
+    "event": "the COLOR line highlighted; vec4 label"
+   },
+   {
+    "at": 0.8,
+    "event": "the pulse keeps running"
+   }
+  ],
+  "runner_up": "manim: the plot with a marker",
+  "why": "Code and its live result side by side is the claim: one line makes it breathe. The plots before and after carry the numbers, so a ramp marker here would only repeat them.",
+  "sparse": false,
+  "capture_spec": "C13: Lab rect, lab-shaders/02-pulse.gdshader, 12 s, 30 fps, Forward+, no input."
+ },
+ "B14": {
+  "lane": "manim",
+  "class": "B14_Amplitude",
+  "visual_intent": "The plot with the ramp strip (middle line at 0.5). A slider labelled 'amplitude' moves 0.5, 0.25, 0 and back to 0.5: the curve's height changes around the middle line, and the strip's marker travels a shorter and shorter stretch around the middle, resting there at 0. A bracket from the middle to a crest is labelled 'amplitude'. Caption: 'amplitude: how far the wave swings from its middle'. A grey note: 'a half is the most that fits in 0 to 1'.",
+  "motion_claim": "The curve flattens as the slider falls and the marker parks at the middle.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "plot, strip, slider at 0.5"
+   },
+   {
+    "at": 0.44,
+    "event": "slider to 0.25 then 0: the curve flattens, the marker parks at the middle"
+   },
+   {
+    "at": 0.72,
+    "event": "note: a half is the most that fits in 0 to 1"
+   }
+  ],
+  "runner_up": "ShaderLab sweep capture",
+  "why": "The curve's height is the thing amplitude changes, and the plot shows it directly while the strip shows the effect.",
+  "sparse": true
+ },
+ "B15": {
+  "lane": "manim",
+  "class": "B15_Speed",
+  "visual_intent": "The plot. A slider labelled 'speed' moves 0.5, 1, 2: the curve compresses in time, with brackets under the first swing reading '2 s', '1 s', '0.5 s'. A caption builds: 'cycles = TIME × speed' and 'one cycle = one full swing'. Caption: 'speed: how quickly it repeats'.",
+  "motion_claim": "The curve compresses horizontally as the slider rises and the dot's pace quickens.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "plot and slider at 0.5: bracket 2 s"
+   },
+   {
+    "at": 0.22,
+    "event": "caption: cycles = TIME × speed; one cycle = one full swing"
+   },
+   {
+    "at": 0.56,
+    "event": "slider to 0.5: 2 s"
+   },
+   {
+    "at": 0.81,
+    "event": "slider to 2: 0.5 s"
+   }
+  ],
+  "runner_up": "ShaderLab sweep capture",
+  "why": "Compression along the time axis is what speed does; the brackets put the periods on the picture.",
+  "sparse": true
+ },
+ "B16": {
+  "lane": "manim",
+  "class": "B16_Offset",
+  "visual_intent": "Two curves on one plot and two ramp strips with two markers: a plain one (offset 0) and one with offset 0.25, slid left by a quarter cycle so it starts at its crest; then the second curve slides to offset 0.5, exactly mirrored: it has a crest where the first has a trough. The two markers travel the strips in opposite directions. Caption: 'offset: added to slide the wave', second line 'here: where in its cycle it starts'.",
+  "motion_claim": "The second curve slides sideways until it mirrors the first, and the markers move opposite ways.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "two identical curves and two markers"
+   },
+   {
+    "at": 0.29,
+    "event": "second curve slides a quarter cycle: it starts at its crest"
+   },
+   {
+    "at": 0.57,
+    "event": "second curve mirrors the first; markers move in opposite directions"
+   }
+  ],
+  "runner_up": "ShaderLab: two squares",
+  "why": "Sliding along the time axis is what offset does, and two markers going opposite ways prove 'exactly opposite'.",
+  "sparse": true
+ },
+ "B17": {
+  "lane": "remotion",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "code",
+   "code": "shader_type canvas_item;\n\nuniform float amplitude : hint_range(0.0, 0.5) = 0.5;\nuniform float speed = 0.5;\ninstance uniform float offset = 0.0;\n\nvoid fragment() {\n\tfloat cycles = TIME * speed + offset;\n\tfloat pulse = 0.5 + amplitude * sin(TAU * cycles);\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tvec3 cream = vec3(0.98, 0.97, 0.96);\n\tCOLOR = vec4(mix(teal, cream, pulse), 1.0);\n}",
+   "codeFile": "lab-shaders/03-dials.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      3
+     ],
+     "label": "hint_range: the editor limits it to 0 to 0.5"
+    },
+    {
+     "at": 0.16,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.29,
+     "lines": [
+      8
+     ]
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      5
+     ],
+     "label": "instance uniform: each node keeps its own value"
+    },
+    {
+     "at": 0.82,
+     "lines": [
+      6
+     ],
+     "label": "a fourth dial waits here: frequency"
+    }
+   ],
+   "video": "",
+   "videoLabel": "",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "The real 03-dials.gdshader (thirteen lines) on a cream code card: the three uniform lines, then the line that counts the cycles, then the instance uniform line again; at the end the empty line under the three uniforms is highlighted as the slot for a fourth dial. Cue labels: 'hint_range: the editor limits it to 0 to 0.5' on the amplitude line, 'instance uniform: each node keeps its own value' on the offset line and 'a fourth dial waits here: frequency' on the empty line.",
+  "motion_claim": "Line focus steps down the dials, then to the cycle count, then back to the instance uniform.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "amplitude line, hint_range label"
+   },
+   {
+    "at": 0.29,
+    "event": "cycles line"
+   },
+   {
+    "at": 0.57,
+    "event": "instance uniform line, label"
+   },
+   {
+    "at": 0.82,
+    "event": "the empty line under the three uniforms highlighted: 'a fourth dial waits here: frequency'"
+   }
+  ],
+  "runner_up": "LectureCodeTrace (it holds about ten lines and this file has thirteen)",
+  "why": "The file is real and fits ShaderLab's code layout (up to fourteen lines); paced focus is exactly 'here are the three'.",
+  "sparse": false
+ },
+ "B18": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "for i in 5:\n\tget_child(i).set_instance_shader_parameter(\"offset\", i / 5.0)",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.18,
+     "lines": [
+      1,
+      2
+     ]
+    }
+   ],
+   "video": "godot-shaders/time-and-waves/rolling-row.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · five squares share one material",
+   "readouts": [
+    {
+     "at": 0.08,
+     "text": "0",
+     "x": 0.18,
+     "y": 0.78
+    },
+    {
+     "at": 0.08,
+     "text": "0.2",
+     "x": 0.34,
+     "y": 0.78
+    },
+    {
+     "at": 0.08,
+     "text": "0.4",
+     "x": 0.5,
+     "y": 0.78
+    },
+    {
+     "at": 0.08,
+     "text": "0.6",
+     "x": 0.66,
+     "y": 0.78
+    },
+    {
+     "at": 0.08,
+     "text": "0.8",
+     "x": 0.82,
+     "y": 0.78
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "GDScript card at left (the two-line loop that sets each node's offset); at right a real render: five squares in a row, all pulsing, each a fifth of a cycle behind its neighbour, so the brightest square moves along the row like a wave. Labels under the squares: 0, 0.2, 0.4, 0.6, 0.8.",
+  "motion_claim": "The brightest square travels along the row: a wave rolls from one end to the other.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "five squares pulsing, labelled with their offsets"
+   },
+   {
+    "at": 0.18,
+    "event": "the loop lines highlighted"
+   },
+   {
+    "at": 0.56,
+    "event": "the brightest square travels along the row"
+   }
+  ],
+  "runner_up": "manim: five dots",
+  "why": "Five real squares sharing one material is the evidence for per-node offsets; the rolling wave is visible only in motion.",
+  "sparse": false,
+  "capture_spec": "C18: evidence/planning-checks/scene-project/scenes/scene_c18_rolling_row.gd. Five ColorRects (0.13 of the width) at x = 0.18, 0.34, 0.50, 0.66, 0.82, y 0.50, sharing ONE ShaderMaterial of 03-dials.gdshader (amplitude 0.5, speed 0.5); each node gets set_instance_shader_parameter('offset', i / 5.0). 12 s, 30 fps, Forward+. In the capture the bright crest moves toward the left end."
+ }
+}

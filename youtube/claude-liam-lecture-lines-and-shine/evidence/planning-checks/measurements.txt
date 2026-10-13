@@ -1,0 +1,200 @@
+# Measurements: Lines and Shine
+Run 2026-10-13 on Apple M4 Pro, Godot 4.7.2.stable.official.ed1daf0bf. Renderer Forward+ unless a line says otherwise.
+Framing: Lab window 640 x 360; test card = sprite 128 px x 2.25 = 288 x 288 px at (176, 36); band widths are given as a percent of the card width.
+
+## A. Which way UV counts, and the signed test
+PASS  UV.y counts downward in canvas_item: UV.y read as red: 0.0000 at the top row, 1.0000 at the bottom row of a ColorRect
+PASS  signed test at p = (0.40, 0.80): expected +0.602, read +0.593 from red 0.7686, green 0.6510, blue 0.5294
+PASS  signed test at p = (0.40, 0.20): expected -0.002, read +0.005 from red 0.6510, green 0.6510, blue 0.6510
+PASS  signed test at p = (0.40, -0.40): expected -0.599, read -0.603 from red 0.5294, green 0.6510, blue 0.7686
+PASS  true distance d at p = (0.40, 0.80), slope 0.5: expected 0.5388 (test 0.6024, square root of 1.25 = 1.1180), read 0.5373
+PASS  raw test |v| at p = (0.40, 0.80), slope 0.5: expected 0.6024 (test 0.6024, square root of 1.25 = 1.1180), read 0.6039
+
+## B. What the graphics card's tangent returns (bits of the float read from pixels; scratch-shaders/bits.gdshader)
+      tan(radians(a))                            a =    30: 0.57735
+      tan(radians(a))                            a =    45: 1
+      tan(radians(a))                            a =    60: 1.73205
+      tan(radians(a))                            a =    75: 3.73205
+      tan(radians(a))                            a =    89: 57.29
+      tan(radians(a))                            a =  89.9: 572.967
+      tan(radians(a))                            a =    90: -2.28773e+07
+      tan(radians(a))                            a =  90.1: -572.977
+      tan(radians(a))                            a =    91: -57.2901
+      tan(a), no conversion                      a =    30: -6.40533
+      radians(a)                                 a =    90: 1.5708
+      sqrt(1 + m*m) with m = tan(radians(a))     a =    90: 2.28773e+07
+PASS  self-test: the constant 1.0 decodes to 1.0: decoded 1.0
+PASS  tan(radians(30)): GPU 0.57735, double-precision math 0.57735
+PASS  tan(radians(45)): GPU 1.00000, double-precision math 1.00000
+PASS  tan(radians(60)): GPU 1.73205, double-precision math 1.73205
+PASS  tan(radians(75)): GPU 3.73205, double-precision math 3.73205
+PASS  tan(radians(89)): GPU 57.29004, double-precision math 57.28996
+PASS  tan(radians(89.9)): GPU 572.96692, double-precision math 572.95721
+PASS  tan(30.0) without radians() is about -6.405: GPU -6.40533 (30 radians = 4.775 turns)
+PASS  radians(90.0) is the float32 nearest pi/2: 1.5707963705
+PASS  tan(radians(89.9)) is large and positive, tan(radians(90.0)) large and negative: 89.9: 573.0; 90.0: -22877334; 90.1: -573.0
+PASS  sqrt(1 + m*m) stays finite at 90: 22877334
+
+## C. Every shown shader compiles; pictures used by the captures
+PASS  angle 30 draws a line climbing to the right: zero line passes (0.846, 0.3) and (0.154, 0.7): [0.651, 0.651, 0.651], [0.651, 0.651, 0.651] (grey); (0.154, 0.3) above-left is warm [0.8078, 0.651, 0.4902]; (0.846, 0.7) below-right is cool [0.4902, 0.651, 0.8078]
+PASS  03-no-radians compiles and draws: see png/C-03-no-radians-30.png
+
+## D. Band width against angle (thickness 0.1; true full width = 2 x 0.1 / 2 = 10 percent of the card)
+      angle    raw test (04)    true distance (05)      [percent of card width, measured along the perpendicular]
+          0      9.72 %           9.72 %
+         10      9.87 %           9.87 %
+         15      9.34 %          10.06 %
+         30      8.83 %           9.72 %
+         45      6.87 %           9.83 %
+         60      4.81 %           9.72 %
+         75      2.69 %          10.06 %
+         80      1.41 %           9.87 %
+         85      0.70 %           9.76 %
+         89      0.00 %           9.73 %
+         90      0.00 %           9.72 %
+PASS  true band is 10 percent wide at 0 degrees: 9.72 %
+PASS  true band is 10 percent wide at 10 degrees: 9.87 %
+PASS  true band is 10 percent wide at 15 degrees: 10.06 %
+PASS  true band is 10 percent wide at 30 degrees: 9.72 %
+PASS  true band is 10 percent wide at 60 degrees: 9.72 %
+PASS  true band is 10 percent wide at 75 degrees: 10.06 %
+PASS  true band is 10 percent wide at 80 degrees: 9.87 %
+PASS  true band is 10 percent wide at 85 degrees: 9.76 %
+PASS  true band is 10 percent wide at 89 degrees: 9.73 %
+PASS  true band is 10 percent wide at 90 degrees: 9.72 %
+PASS  true band at 45 degrees (corner to corner, pixel-lattice error larger): 9.83 %
+PASS  raw band thins as cos(angle) at 15 degrees: 9.34 % (10 x cos = 9.66)
+PASS  raw band thins as cos(angle) at 45 degrees: 6.87 % (10 x cos = 7.07)
+PASS  raw band thins as cos(angle) at 75 degrees: 2.69 % (10 x cos = 2.59)
+PASS  raw band is under one pixel and vanishes at 89 and 90 degrees: 0.00 % and 0.00 %
+
+      the same comparison in a 3840 x 2160 request (card 1728 px; the window itself is clamped to the screen height, the card is not)
+      raw : 45 deg 7.04 %, 75 deg 2.64 %, 85 deg 0.93 %, 89 deg 0.12 %, 90 deg 0.00 %
+      true: 45 deg 9.99 %, 75 deg 9.95 %, 85 deg 9.99 %, 89 deg 9.96 %, 90 deg 9.95 %
+PASS  at 4K size the raw band is a hairline at 89 degrees and gone at 90: 0.12 % and 0.00 %
+PASS  at 4K size the true band is 10 percent wide at every angle, including 90: 9.99, 9.95, 9.99, 9.96, 9.95
+PASS  step(d, thickness): 1 on the line, 0 away from it: centre 1.000, p = (0.6, 0.6) 1.000, p = (-0.6, -0.6) 1.000 (all on the line: 1.0 = white); p = (0.5, -0.5) 0.502, p = (-0.5, 0.5) 0.502 (off the line: 0.502 = grey = step gave 0)
+PASS  at 45 degrees the band climbs to the right (lower left to upper right): white at upper right and lower left, grey at upper left
+PASS  direction form keeps the band 10 percent wide at 91 degrees: 9.73 %
+PASS  direction form keeps the band 10 percent wide at 100 degrees: 9.87 %
+PASS  direction form keeps the band 10 percent wide at 120 degrees: 9.72 %
+
+## E. Sliding the line
+      offset slide (07): the band centre should sit at offset x 144 px (half the card) along the normal; width stays 10 percent
+      angle  0, offset -0.5: centre  -72.01 px (expected  -72.00); width  9.72 % of the card; as a fraction of the card width 0.250
+PASS  offset -0.5 moves the band 25 percent of the card at 0 degrees: centre -72.01 px vs -72.00
+      angle  0, offset +0.0: centre   -0.01 px (expected   +0.00); width  9.72 % of the card; as a fraction of the card width 0.000
+PASS  offset +0.0 moves the band 0 percent of the card at 0 degrees: centre -0.01 px vs +0.00
+      angle  0, offset +0.5: centre  +71.99 px (expected  +72.00); width  9.72 % of the card; as a fraction of the card width 0.250
+PASS  offset +0.5 moves the band 25 percent of the card at 0 degrees: centre +71.99 px vs +72.00
+      angle 35, offset -0.5: centre  -72.10 px (expected  -72.00); width 10.12 % of the card; as a fraction of the card width 0.250
+PASS  offset -0.5 moves the band 25 percent of the card at 35 degrees: centre -72.10 px vs -72.00
+      angle 35, offset +0.0: centre   +0.00 px (expected   +0.00); width 10.17 % of the card; as a fraction of the card width 0.000
+PASS  offset +0.0 moves the band 0 percent of the card at 35 degrees: centre +0.00 px vs +0.00
+      angle 35, offset +0.5: centre  +72.10 px (expected  +72.00); width 10.12 % of the card; as a fraction of the card width 0.250
+PASS  offset +0.5 moves the band 25 percent of the card at 35 degrees: centre +72.10 px vs +72.00
+      angle 70, offset -0.5: centre  -71.83 px (expected  -72.00); width  9.97 % of the card; as a fraction of the card width 0.249
+PASS  offset -0.5 moves the band 25 percent of the card at 70 degrees: centre -71.83 px vs -72.00
+      angle 70, offset +0.0: centre   +0.00 px (expected   +0.00); width 10.15 % of the card; as a fraction of the card width 0.000
+PASS  offset +0.0 moves the band 0 percent of the card at 70 degrees: centre +0.00 px vs +0.00
+      angle 70, offset +0.5: centre  +71.83 px (expected  +72.00); width  9.97 % of the card; as a fraction of the card width 0.249
+PASS  offset +0.5 moves the band 25 percent of the card at 70 degrees: centre +71.83 px vs +72.00
+      centre shift (08): shift of 0.5 along x, then along y; perpendicular movement expected x: 0.5 sin(a), y: 0.5 cos(a), times 144 px
+PASS  centre shift along x at 0 degrees: band moved -0.01 px (expected -0.00); 0.0 percent of the card
+PASS  centre shift along y at 0 degrees: band moved -72.01 px (expected -72.00); 25.0 percent of the card
+PASS  centre shift along x at 45 degrees: band moved +50.91 px (expected +50.91); 17.7 percent of the card
+PASS  centre shift along y at 45 degrees: band moved -50.91 px (expected -50.91); 17.7 percent of the card
+PASS  centre shift along x at 80 degrees: band moved +71.08 px (expected +70.91); 24.7 percent of the card
+PASS  centre shift along y at 80 degrees: band moved -12.69 px (expected -12.50); 4.4 percent of the card
+
+## F. The shine on the sprite (blob), angle 35, thickness 0.1
+      leak  offset 0: blob centre [1.0, 1.0, 1.0], empty pixel on the band line (p = (0.70, 0.49)) [1.0, 1.0, 1.0], empty corner off the band [0.851, 0.8353, 0.7922]
+      fixed offset 0: blob centre [1.0, 1.0, 1.0], empty pixel on the band line (p = (0.70, 0.49)) [0.851, 0.8353, 0.7922], empty corner off the band [0.851, 0.8353, 0.7922]
+PASS  both versions put white on the blob where the band is: [1.0, 1.0, 1.0] / [1.0, 1.0, 1.0]
+PASS  the first attempt leaks onto the empty (transparent) pixels: [1.0, 1.0, 1.0] (white, solid) where the stage color (0.851, 0.8353, 0.7922) should show
+PASS  multiplying by alpha keeps the highlight on the sprite: [0.851, 0.8353, 0.7922] equals the stage color (0.851, 0.8353, 0.7922)
+PASS  COLOR holds the sprite's own color when fragment() starts (no band: teal blob): [0.3725, 0.6392, 0.5686] = #5FA391
+PASS  default offset of -2.0 rests the band off the sprite: centre [0.3725, 0.6392, 0.5686]
+PASS  the clock version moves with TIME: 4780 pixels differ between wait 0.0 s and wait 0.8 s
+PASS  at offset -1.5 the band is off the sprite: 0 pure-white pixels
+PASS  at offset +1.5 the band is off the sprite: 0 pure-white pixels
+
+## G. The direction form against the slope form
+PASS  direction form equals the slope form pixel for pixel at 30 degrees: 0 of 230400 pixels differ
+PASS  direction form equals the slope form pixel for pixel at 60 degrees: 0 of 230400 pixels differ
+PASS  direction form equals the slope form pixel for pixel at 89 degrees: 0 of 230400 pixels differ
+PASS  direction form at exactly 90 degrees draws a centred band 10 percent wide: width 9.72 %, centre -0.01 px
+      signed maps left (0.2, 0.5) and right (0.8, 0.5): red - blue > 0 means warm (positive)
+      slope form (02)        angle    80: left warm, right cool
+      slope form (02)        angle  89.9: left warm, right cool
+      slope form (02)        angle    90: left cool, right warm
+      slope form (02)        angle  90.1: left cool, right warm
+      slope form (02)        angle    91: left cool, right warm
+      slope form (02)        angle   100: left cool, right warm
+      direction form (13)    angle    80: left warm, right cool
+      direction form (13)    angle  89.9: left warm, right cool
+      direction form (13)    angle    90: left warm, right cool
+      direction form (13)    angle  90.1: left warm, right cool
+      direction form (13)    angle    91: left warm, right cool
+      direction form (13)    angle   100: left warm, right cool
+PASS  slope form: warm and cool swap sides between 89.9 and 90: ('warm', 'cool') -> ('cool', 'warm') -> ('cool', 'warm')
+PASS  direction form: no swap from 80 to 100 degrees: ('warm', 'cool') throughout
+
+## H. A wide shape (a 640 x 360 ColorRect, 16:9)
+      asked  0 degrees: without the fix   0.0 degrees on screen, thickness about  36.0 px; with p.x *= aspect   0.0 degrees, thickness about  36.0 px
+PASS  with the aspect fix the screen angle equals the asked angle at 0 degrees: 0.0
+PASS  with the aspect fix the thickness is constant at 0 degrees: 36.0 px (expected 2 x 0.1 x 180 = 36)
+      asked 20 degrees: without the fix  11.6 degrees on screen, thickness about  37.5 px; with p.x *= aspect  20.1 degrees, thickness about  36.0 px
+PASS  with the aspect fix the screen angle equals the asked angle at 20 degrees: 20.1
+PASS  with the aspect fix the thickness is constant at 20 degrees: 36.0 px (expected 2 x 0.1 x 180 = 36)
+      asked 45 degrees: without the fix  29.2 degrees on screen, thickness about  43.9 px; with p.x *= aspect  44.7 degrees, thickness about  36.0 px
+PASS  on 16:9, an address angle of 45 shows near 29 degrees: 29.2 degrees (atan(360/640) = 29.4)
+PASS  with the aspect fix the screen angle equals the asked angle at 45 degrees: 44.7
+PASS  with the aspect fix the thickness is constant at 45 degrees: 36.0 px (expected 2 x 0.1 x 180 = 36)
+      asked 70 degrees: without the fix  56.4 degrees on screen, thickness about  56.9 px; with p.x *= aspect  69.8 degrees, thickness about  36.0 px
+PASS  with the aspect fix the screen angle equals the asked angle at 70 degrees: 69.8
+PASS  with the aspect fix the thickness is constant at 70 degrees: 36.0 px (expected 2 x 0.1 x 180 = 36)
+
+## I. The two-panel scenes the compare captures use (two_panels.gd; card 256 px at (170, 190) and (470, 190); wide 304 x 171 at (160, 180) and (480, 180))
+      radians scene rendered on forward_plus
+      angle 15: raw  9.71 % of the card, true  9.71 %
+PASS  two-panel band widths at 15 degrees match the Lab card: raw 9.71 %, true 9.71 %
+      angle 45: raw  6.63 % of the card, true  9.95 %
+PASS  two-panel band widths at 45 degrees match the Lab card: raw 6.63 %, true 9.95 %
+      angle 75: raw  2.43 % of the card, true  9.71 %
+PASS  two-panel band widths at 75 degrees match the Lab card: raw 2.43 %, true 9.71 %
+      angle 85: raw  0.79 % of the card, true 10.20 %
+PASS  two-panel band widths at 85 degrees match the Lab card: raw 0.79 %, true 10.20 %
+      flat line, shift -0.6: centre-shift panel band centre   -0.0 px, offset panel band centre  -77.0 px
+PASS  flat line: shifting the centre along x does nothing (shift -0.6): -0.01 px
+PASS  flat line: the offset slides it (offset -0.6): -77.01 px vs -76.8
+      flat line, shift +0.0: centre-shift panel band centre   -0.0 px, offset panel band centre   -0.0 px
+PASS  flat line: shifting the centre along x does nothing (shift +0.0): -0.01 px
+PASS  flat line: the offset slides it (offset +0.0): -0.01 px vs +0.0
+      flat line, shift +0.6: centre-shift panel band centre   -0.0 px, offset panel band centre  +77.0 px
+PASS  flat line: shifting the centre along x does nothing (shift +0.6): -0.01 px
+PASS  flat line: the offset slides it (offset +0.6): +76.99 px vs +76.8
+      wide panels, asked 20: left  11.6 degrees on screen (thickness  17.8 px), right with the fix  20.1 degrees ( 17.1 px)
+      wide panels, asked 45: left  29.2 degrees on screen (thickness  20.8 px), right with the fix  44.7 degrees ( 16.9 px)
+PASS  two-panel wide scene: 45 asked, about 29 shown without the fix, 45 with it: 29.2 and 44.7
+      wide panels, asked 70: left  56.4 degrees on screen (thickness  27.1 px), right with the fix  69.8 degrees ( 17.1 px)
+      seam panels at 89.9: slope form left/right warm/cool; direction form left/right warm/cool
+      seam panels at 90.0: slope form left/right cool/warm; direction form left/right warm/cool
+      seam panels at 91.0: slope form left/right cool/warm; direction form left/right warm/cool
+PASS  two-panel seam scene: slope form swaps at 90, direction form does not: {89.9: ['warm', 'cool', 'warm', 'cool'], 90.0: ['cool', 'warm', 'warm', 'cool'], 91.0: ['cool', 'warm', 'warm', 'cool']}
+
+## J. The same shaders in the Compatibility renderer (gl_compatibility)
+PASS  01-signed-test.gdshader: same pixels in forward_plus and gl_compatibility (to one level of 255): largest channel difference 0.0039; [[0.7686, 0.651, 0.5294], [0.5294, 0.651, 0.7686]] vs [[0.7725, 0.651, 0.5294], [0.5294, 0.651, 0.7686]]
+PASS  05-band-true.gdshader: same pixels in forward_plus and gl_compatibility: largest channel difference 0.0000; [[1.0, 1.0, 1.0], [0.502, 0.502, 0.502]] vs [[1.0, 1.0, 1.0], [0.502, 0.502, 0.502]]
+PASS  10-shine.gdshader: same pixels in forward_plus and gl_compatibility: largest channel difference 0.0000; [[1.0, 1.0, 1.0], [0.851, 0.8353, 0.7922]] vs [[1.0, 1.0, 1.0], [0.851, 0.8353, 0.7922]]
+PASS  09-shine-leak.gdshader: same pixels in forward_plus and gl_compatibility: largest channel difference 0.0000; [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]] vs [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
+PASS  12-direction.gdshader: same pixels in forward_plus and gl_compatibility: largest channel difference 0.0000; [[1.0, 1.0, 1.0], [0.502, 0.502, 0.502]] vs [[1.0, 1.0, 1.0], [0.502, 0.502, 0.502]]
+PASS  13-direction-signed.gdshader: same pixels in forward_plus and gl_compatibility (to one level of 255): largest channel difference 0.0039; [[0.8157, 0.651, 0.4824], [0.4824, 0.651, 0.8157]] vs [[0.8196, 0.651, 0.4824], [0.4824, 0.651, 0.8196]]
+PASS  the seam at 90 degrees is the same in both renderers: {('forward_plus', 89.9): ['warm', 'cool'], ('gl_compatibility', 89.9): ['warm', 'cool'], ('forward_plus', 90.0): ['cool', 'warm'], ('gl_compatibility', 90.0): ['cool', 'warm']}
+
+## K. The tween code shown in the film (verify1.gd: Forward+, scratch project)
+      full log: run-1-verify1.log
+PASS  the film's tween code sweeps the band across the sprite once: centre white from 0.388 s to 0.429 s after the call (expected near 0.373 to 0.427 s); offset at end 1.5; offset before any set: <null>
+PASS  a tween on a uniform never set from code fails: engine error: The tweened property "shader_parameter/offset" does not exist
+
+## Result: 0 failed checks

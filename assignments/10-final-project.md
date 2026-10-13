@@ -2,7 +2,7 @@
 
 CSYE 7270 · Fall 2026 · **100 points**
 
-Assignments follow a **10-day cadence**. Use this assignment's due date in Canvas. The syllabus's **10% daily late penalty** applies. Suggested Canvas due date: Day 100 after the first class day.
+**Planned due date: Sunday, December 20, 2026, at 11:59 pm America/New_York.** See the [Fall 2026 assignment schedule](fall-2026-assignment-schedule.md). This local date awaits posting to Canvas; Canvas remains the official deadline. The **10% daily late penalty** applies.
 
 **Required viewing:** [AI Policy for Professor Bear's Courses | Using AI Responsibly in Class](https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz).
 
@@ -12,9 +12,11 @@ This is the final project. It covers Modules 14 and 15 and draws on the whole co
 
 ## Your task
 
+**Start this project early.** Read this brief and the relevant Module 14–15 material with the October 19 GDD milestone. Choose one AI or systems option by November 3; attempt an export and specify save rules by November 13; aim for a first working systems feature, persistence and menu by November 23. By December 3, have a small complete playable loop and a clean-clone rehearsal. December 13–20 is for integration, playtesting, repairs and the two final films. These are preparation targets in the existing project log, not extra graded submissions. See the [release and preparation plan](fall-2026-assignment-schedule.md#release-and-preparation-plan).
+
 Work from the [Module 14 lesson](../modules/14-game-ai-and-systems/lesson.md) and its [labs page](../modules/14-game-ai-and-systems/labs.md), the [Module 15 lesson](../modules/15-final-projects-brief-to-export/lesson.md), and the chapters [Game AI and Systems](../chapters/14-game-ai-and-systems.md) and [Final Projects: From Brief to Export](../chapters/15-final-projects-brief-to-export.md), with their run records in [examples/14-game-ai-and-systems](../examples/14-game-ai-and-systems/) and [examples/15-final-projects-brief-to-export](../examples/15-final-projects-brief-to-export/).
 
-**The sum of the semester.** Since Assignment 2 you have built one game in one repository whose name begins **`walker-`**, tagged `a3` through `a9`. This assignment adds the last layers to that repository and is submitted as the tag **`a10`**. Do not restart. The finished build must still contain, working together, what earlier assignments added: generated art and sound, a Blender prop with collision and physics, a GDD and a 3D interaction, a shader and a material, particle effects, animation wired to player actions, and audio on buses within a frame budget. If a layer had to be removed or replaced, the README says what and why. The old final project judged scope by "using shaders, animation, UX/UI"; your tags are now that list.
+**The sum of the semester.** Since Assignment 2 you have built one game in one repository whose name begins **`walker-`**, tagged `a3` through `a9`. This assignment adds the last layers to that repository and is submitted as the tag **`a10`**. Do not restart. The finished build must still contain, working together, what earlier assignments added: generated art and sound, Blender assets from Assignment 3, a GDD and a 3D interaction with the collision or physics behavior specified in Assignment 4, a shader and a material, particle effects, animation wired to player actions, and audio on buses within a frame budget. If a layer had to be removed or replaced, the README says what and why. The old final project judged scope by "using shaders, animation, UX/UI"; your tags are now that list.
 
 **Individual work.** This is an individual project. Credit anyone who playtested or gave feedback in `SOURCES.md`.
 

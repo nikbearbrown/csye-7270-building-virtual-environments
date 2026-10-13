@@ -1,0 +1,244 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec2 uv = UV;\n\tuv.x += 0.03 * sin(TIME * 4.0 + UV.y * 24.0);\n\tCOLOR = texture(TEXTURE, uv);\n}",
+   "codeFile": "lab-shaders/02-hook-wobble.gdshader",
+   "cues": [],
+   "video": "godot-shaders/hook.mp4",
+   "videoLabel": "Godot 4.7.2 · same scene, shader switched on at 2 s · scripted",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "One Pixel, All at Once"
+  },
+  "capture_spec": "C01: Lab sprite scene (teal test sprite, scale to fit), shader lab-shaders/02-hook-wobble.gdshader assigned at t=2.0 s (--material-at 2.0), 10 s, 30 fps, Forward+, no input.",
+  "visual_intent": "Act title 'One Pixel, All at Once' (serif 40) top-left. A real Godot render in a framed window on the cream stage: the teal test sprite sits flat and still for two seconds, then a shader is switched on and it wobbles. Label: 'same scene, shader switched on'.",
+  "motion_claim": "The sprite is still, then comes alive the moment the shader switches on.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "flat sprite, window labelled"
+   },
+   {
+    "at": 0.22,
+    "event": "shader switches on; the sprite starts to wobble"
+   }
+  ],
+  "runner_up": "manim drawing of a flat versus lively sprite",
+  "why": "A real render is the honest picture of 'looks flat' versus 'looks alive'; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_WhatAndWhere",
+  "visual_intent": "Two boxes on the cream stage. Left, 'your game code · CPU' with a small teal sprite icon and the words 'what exists, where'. Right, 'the shader · GPU' with the same icon, now with a wobble drawn around it, and 'how each part looks'. One arrow, left to right.",
+  "motion_claim": "The sprite icon is placed on the left, travels along the arrow and arrives restyled on the right.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "left box + icon"
+   },
+   {
+    "at": 0.42,
+    "event": "icon travels along the arrow"
+   },
+   {
+    "at": 0.7,
+    "event": "restyled icon in the right box"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A two-box handoff is the whole claim; an icon that visibly changes on arrival says it with motion.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "manim",
+  "class": "B03_ManyWorkers",
+  "visual_intent": "A 12-by-6 grid of outline cells. Top: one dot-worker colours the cells one after another, a counter ticking. Bottom: a crowd of dots colours all 72 cells in the same instant. Labels: 'CPU: one job after another', 'GPU: the same job at once'.",
+  "motion_claim": "One worker sweeps the grid cell by cell while the whole second grid fills at once.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "single worker starts sweeping"
+   },
+   {
+    "at": 0.45,
+    "event": "crowd fills the second grid at once"
+   },
+   {
+    "at": 0.78,
+    "event": "first grid still filling"
+   }
+  ],
+  "runner_up": "isometric workers on a conveyor (show-tell)",
+  "why": "A grid filled one cell at a time versus all at once is the CPU/GPU difference, as motion.",
+  "sparse": true
+ },
+ "B04": {
+  "lane": "remotion",
+  "pattern": "LectureCodeTrace",
+  "props": {
+   "title": "The slow way: a GDScript loop",
+   "code": "var big := Image.create_empty(\n\t\t1920, 1080, false, Image.FORMAT_RGBA8)\nfor y in range(1080):\n\tfor x in range(1920):\n\t\tbig.set_pixel(x, y, Color(x / 1919.0, 0.0, 0.0))",
+   "note": "2,073,600 calls for one 1920 by 1080 picture · Godot 4.7.2",
+   "cues": [
+    0.06,
+    0.2,
+    0.34,
+    0.62
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "The real loop from evidence/planning-checks/verify.gd on a cream code card, with the call count underneath.",
+  "motion_claim": "Line focus steps down the loop as it is described; the count lands last.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "image line"
+   },
+   {
+    "at": 0.34,
+    "event": "inner loop"
+   },
+   {
+    "at": 0.62,
+    "event": "set_pixel line + count note"
+   }
+  ],
+  "runner_up": "CCPlainShell",
+  "why": "LectureCodeTrace's paced line focus matches the sentence; the shell has no per-line cue.",
+  "sparse": false
+ },
+ "B05": {
+  "lane": "manim",
+  "class": "B05_FrameBudget",
+  "visual_intent": "A horizontal time axis from 0 to 60 ms. A vertical budget line at 16.7 ms labelled 'one frame at 60 per second'. A bar grows along the axis, passes the line and stops at about 55, labelled 'the loop · about 55 ms'. Small grey credit: 'Apple M4 Pro · Godot 4.7.2 · five runs: 52 to 58 ms'.",
+  "motion_claim": "The bar grows past the budget line and keeps going.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "axis + budget line"
+   },
+   {
+    "at": 0.4,
+    "event": "bar grows"
+   },
+   {
+    "at": 0.72,
+    "event": "bar stops near 55; credit line"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "A bar crossing a line shows 'over budget'; a table only lists the numbers.",
+  "sparse": true
+ },
+ "B06": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = vec4(UV.x, 0.0, 0.0, 1.0);\n}",
+   "codeFile": "lab-shaders/01-gradient.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "godot-shaders/gradient.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "0",
+     "x": 0.03,
+     "y": 0.9
+    },
+    {
+     "at": 0.2,
+     "text": "1",
+     "x": 0.97,
+     "y": 0.9
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.62,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C02: Lab rect, lab-shaders/01-gradient.gdshader, still PNG 1920x1080 (probes: 0.0196 / 0.498 / 0.9804 at x = 0.02 / 0.5 / 0.98).",
+  "visual_intent": "Code card with the four-line shader at left; at right a real Godot window showing a black-to-red gradient with a thin 0 to 1 ramp under it.",
+  "motion_claim": "The line is highlighted, then the red ramp is traced left to right under the gradient.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "function line highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "COLOR line highlighted; ramp marker sweeps"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Code and its result side by side is the claim: one line, the whole picture.",
+  "sparse": false
+ },
+ "B07": {
+  "lane": "manim",
+  "class": "B07_HandOver",
+  "visual_intent": "'game code · CPU' box at left, 'shader · GPU' box at right. An arrow between them labelled 'hands over the job · about 0.04 ms'. Under the GPU box, in grey: 'its own time: not readable on this setup'. Small credit: 'Apple M4 Pro · Godot 4.7.2'.",
+  "motion_claim": "A tiny package travels the arrow; the GPU box fills with pixels while the CPU box stays nearly empty.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "boxes + arrow"
+   },
+   {
+    "at": 0.4,
+    "event": "package travels; GPU box fills"
+   },
+   {
+    "at": 0.75,
+    "event": "grey 'not readable' note"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable, two rows",
+  "why": "A handoff arrow with a speck of a cost label shows the idea; the grey note keeps the claim honest.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "manim",
+  "class": "B08_OnePixelThenAll",
+  "visual_intent": "A 16-by-9 pixel grid of outline cells. One cell gets a terracotta ring and a small code card beside it ('COLOR = …'). Then every cell takes its ramp color at once, left to right, the card staying put. Label: 'one pixel's rule → every pixel'.",
+  "motion_claim": "One ringed pixel, then the whole grid changes in the same instant.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "grid, one cell ringed, code card"
+   },
+   {
+    "at": 0.6,
+    "event": "all cells take their color at once"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "This is the film's central claim; only a grid shows 'one rule, every pixel' at a glance.",
+  "sparse": true
+ }
+}

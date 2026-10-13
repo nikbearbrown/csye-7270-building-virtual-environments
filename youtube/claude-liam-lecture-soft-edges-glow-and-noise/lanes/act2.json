@@ -1,0 +1,306 @@
+{
+ "B11": {
+  "lane": "manim",
+  "class": "B11_Falloff",
+  "visual_intent": "Act title 'Falloff and Highlight' (serif 40) top-left. An 11-by-11 pixel grid of outline cells with a terracotta spot on the cell left of centre. Concentric distance rings expand from the spot; each cell fills teal in proportion to 1 minus its distance, with its number written on one row: 1.0, 0.8, 0.6, 0.4, 0.2, 0.0. At right a profile: value against distance, a straight line falling from 1 to 0 at distance 1. Label 'falloff: how quickly a value fades with distance'.",
+  "motion_claim": "The rings spread from the spot and the cells behind them fill less and less, down to zero at distance one.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "grid and spot, act title"
+   },
+   {
+    "at": 0.35,
+    "event": "rings expand; cells fill with their numbers"
+   },
+   {
+    "at": 0.7,
+    "event": "profile line and the falloff label"
+   }
+  ],
+  "runner_up": "ShaderLab render of the spot",
+  "why": "Numbers falling cell by cell as the rings spread is the definition of a falloff; the render comes next as proof.",
+  "sparse": true
+ },
+ "B12": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat spot = 1.0 - distance(UV, vec2(0.35));\n\tCOLOR = vec4(0.37, 0.64, 0.57, spot);\n}",
+   "codeFile": "lab-shaders/04-spot.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      5
+     ]
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c05-spot.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "still 0.35",
+     "x": 0.68,
+     "y": 0.26
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.62,
+     "box": [
+      0.68,
+      0.276,
+      0.725,
+      0.5
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C05: the square target, lab-shaders/04-spot.gdshader, still PNG 3840 x 2160. Verified in the 256 px render: alpha 0.351 at the right edge on the spot's row (formula 0.352), 0.082 at the far corner (0.084).",
+  "visual_intent": "Code card at left (four lines); at right the real render: a teal haze thickest at the spot near the upper left and still clearly teal at the right edge and the bottom of the picture, where it ends in a hard straight cut. A terracotta ring on the right edge with the label 'still 0.35'.",
+  "motion_claim": "The haze spreads from the spot to the picture's edge, and the ring marks the cut.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "spot line highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "ring on the right edge: 'still 0.35'"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The cut at the picture's edge is only visible in the real render, and it is the whole point of the beat.",
+  "sparse": false
+ },
+ "B13": {
+  "lane": "manim",
+  "class": "B13_PowerCurves",
+  "visual_intent": "Axes 0 to 1. Three curves drawn in turn: the straight line x^1, then x^3, then x^6, each labelled at its end. A vertical guide at x = 0.7 with a dot landing on each curve: 0.7, 0.343, 0.118. Label 'pow(x, p): x raised to the power p'.",
+  "motion_claim": "Each curve sags further below the straight line, and the dots on the guide drop: 0.7, 0.343, 0.118.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axes and the straight line"
+   },
+   {
+    "at": 0.3,
+    "event": "x^3 curve; dot 0.343"
+   },
+   {
+    "at": 0.58,
+    "event": "x^6 curve; dot 0.118"
+   },
+   {
+    "at": 0.82,
+    "event": "pow label"
+   }
+  ],
+  "runner_up": "ShaderLab power sweep",
+  "why": "Curves that sag further as the power climbs, with one input landing at three outputs, show 'raise to a power' as a function.",
+  "sparse": true
+ },
+ "B14": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float power : hint_range(1.0, 8.0) = 3.0;\n\nvoid fragment() {\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tCOLOR = vec4(0.37, 0.64, 0.57, pow(spot, power));\n}",
+   "codeFile": "lab-shaders/05-spot-power.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      6
+     ],
+     "label": "clamp(x, lo, hi): keep x between lo and hi"
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c06-power-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · power swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "power 1",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.3,
+     "text": "power 3",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.62,
+     "text": "power 8",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06: the square target, lab-shaders/05-spot-power.gdshader, power 1 held 1.5 s, swept to 8 by 8.5 s, held (`--animate power:0:1,1.5:1,8.5:8`); 14 s, 30 fps, Forward+. Verified stills: alpha 0.895 / 0.722 / 0.422 at 0.1 from the spot for power 1 / 3 / 8.",
+  "visual_intent": "Code card at left (the power shader); at right a real Godot window whose teal spot shrinks from a broad haze to a pinpoint as power sweeps from 1 to 8. Labels 'power 1', 'power 3', 'power 8' as the values pass; the clamp line is highlighted with its one-line definition at the end.",
+  "motion_claim": "The spot contracts as the power climbs; the clamp line lights up last.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "power 1: haze"
+   },
+   {
+    "at": 0.3,
+    "event": "power 3: soft highlight"
+   },
+   {
+    "at": 0.62,
+    "event": "power 8: pinpoint; clamp line + definition"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A dial moving a real picture is the claim, with the numbers named as they pass.",
+  "sparse": false
+ },
+ "B15": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, vec2(0.35)), 0.0, 1.0);\n\tCOLOR = vec4(0.37, 0.64, 0.57, pow(spot, 3.0) * disc);\n}",
+   "codeFile": "lab-shaders/06-spot-in-disc.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      5
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      7
+     ]
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c07-spot-in-disc.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shader swapped at 3 s · scripted",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "0.09",
+     "x": 0.68,
+     "y": 0.26
+    },
+    {
+     "at": 0.7,
+     "text": "0",
+     "x": 0.68,
+     "y": 0.26
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.3,
+     "box": [
+      0.644,
+      0.3,
+      0.712,
+      0.46
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C07: the square target, lab-shaders/05-spot-power.gdshader (power 3) from 0 s, swapped to lab-shaders/06-spot-in-disc.gdshader at 3.0 s (`--material-at 3.0`), 8 s, 30 fps, Forward+. Verified: at the pixel (230, 89) the alpha is 0.090 before and 0.000 after (formulas 0.091 and 0).",
+  "visual_intent": "Code card at left (the spot-in-disc shader); at right a real Godot window: first the teal spot with its faint tail running past where the bubble will be, then at the swap the tail beyond the disc vanishes and the highlight is confined to the disc. A terracotta ring on the tail beyond the disc with readouts '0.09' then '0'.",
+  "motion_claim": "The tail outside the disc disappears the moment the shader is swapped.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "unmasked spot with its tail"
+   },
+   {
+    "at": 0.62,
+    "event": "swap: tail gone; ring reads 0.09 then 0"
+   }
+  ],
+  "runner_up": "manim mask product",
+  "why": "The real before and after, with the same pixel reading 0.09 then 0, is the proof that multiplying cuts.",
+  "sparse": false
+ },
+ "B16": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform vec2 spot_center = vec2(0.35);\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat disc = 1.0 - smoothstep(0.25, 0.4, d);\n\tfloat spot = clamp(1.0 - distance(UV, spot_center), 0.0, 1.0);\n\tCOLOR = vec4(0.37, 0.64, 0.57, pow(spot, 3.0) * disc);\n}",
+   "codeFile": "lab-shaders/07-spot-moves.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.34,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c08-spot-orbit.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · spot_center moved by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C08: the square target, lab-shaders/07-spot-moves.gdshader, spot_center driven by a scene script (`--scene`) along a circle of radius 0.18 around (0.5, 0.5), one turn in 6 s starting at the upper left, 9 s, 30 fps, Forward+. Verified stills: spot_center (0.35, 0.35) and (0.65, 0.4) match the formula within 0.008 on all pixels.",
+  "visual_intent": "Code card at left (the spot-moves shader); at right a real Godot window where the highlight travels once around inside the disc. A small terracotta dot marks spot_center's position on the render.",
+  "motion_claim": "The highlight circles inside the disc while the highlighted line says where it comes from.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "vec2 uniform line highlighted"
+   },
+   {
+    "at": 0.34,
+    "event": "spot line highlighted; highlight starts to travel"
+   },
+   {
+    "at": 0.7,
+    "event": "highlight on its way round"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real highlight following a dial is the claim: 'you decide where the light comes from'.",
+  "sparse": false
+ }
+}

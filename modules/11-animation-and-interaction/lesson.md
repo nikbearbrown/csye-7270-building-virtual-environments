@@ -310,6 +310,24 @@ In the recorded run (Claude Code 2.1.150 with `claude-sonnet-4-6`, then Codex CL
 
 **A green test that hides a lag.** The final test passes at both tick offsets, yet traces show two behaviors for one held key. At offset 1 the machine goes straight from `fall` to `jump`. At offset 0 it sees the landing and starts a 0.1 s fade to `ground`, so the robot rises in its ground blend and `jump` starts 12 ticks after the landing. No check forbids `ground` while rising. Whether 0.1 s is acceptable is a feel decision, still open, and yours.
 
+## Practice assessment (ungraded)
+
+Answer these in your own words, then check the source. The Canvas practice quiz for this module covers related ground in multiple choice. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer and check the source yourself.
+
+1. In the one-transition fix, name the two places the new transition had to be added, and say what happens if only the first is added. Use the diff in the example folder.
+2. Using the class reference, explain why `travel()` could use an Enabled transition while the Auto behavior never happened.
+3. A check reads `get_current_node()` within the cross-fade plus two frames after reset. Would it pass for a machine with a five-second cross-fade out of `jump`? What would you read instead?
+4. For `walker-jumpman-clawd`, write the line you would add for a distinct falling pose, and a test for it that uses key input rather than setting `velocity`.
+5. State one thing the headless test establishes and one judgment only play can supply.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test state transitions and edge cases; play the transitions and judge responsiveness. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module completes the material for Assignment 8, "Animation Wired to Player Actions." It covers Modules 10 and 11, opened with Module 10, and is due about Day 80 (Canvas dates govern); its page sets the exact task and the required `godot-walkthrough` film. This lesson adds no graded deliverable. Module 12, audio and triggers, comes next. The long reading is the companion chapter, [Chapter 11 — Animation and Interaction](../../chapters/11-animation-and-interaction.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from their official documentation, checked on 27 September 2026.
@@ -325,16 +343,10 @@ Unity and Unreal were not run for this module; the comparisons come from their o
 
 The biggest difference for an agent workflow is what the agent can read. In Godot the machine, its transitions and its expressions are text in a `.tscn` file, so a change is a diff you can read. Unity controllers are YAML text under Force Text but long and positional, and Unreal's state machines and Blend Spaces are `.uasset` files, reached through editor Python or C++. The full comparison is in [Chapter 11](../../chapters/11-animation-and-interaction.md).
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in your own words, then check the source. The Canvas practice quiz for this module covers related ground in multiple choice. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer and check the source yourself.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/11-animation-and-interaction.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/class-Transition.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. In the one-transition fix, name the two places the new transition had to be added, and say what happens if only the first is added. Use the diff in the example folder.
-2. Using the class reference, explain why `travel()` could use an Enabled transition while the Auto behavior never happened.
-3. A check reads `get_current_node()` within the cross-fade plus two frames after reset. Would it pass for a machine with a five-second cross-fade out of `jump`? What would you read instead?
-4. For `walker-jumpman-clawd`, write the line you would add for a distinct falling pose, and a test for it that uses key input rather than setting `velocity`.
-5. State one thing the headless test establishes and one judgment only play can supply.
+## Doing the same thing in Unreal Engine
 
-## The next step
-
-This module completes the material for Assignment 8, "Animation Wired to Player Actions." It covers Modules 10 and 11, opened with Module 10, and is due about Day 80 (Canvas dates govern); its page sets the exact task and the required `godot-walkthrough` film. This lesson adds no graded deliverable. Module 12, audio and triggers, comes next. The long reading is the companion chapter, [Chapter 11 — Animation and Interaction](../../chapters/11-animation-and-interaction.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/11-animation-and-interaction.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/state-machines-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

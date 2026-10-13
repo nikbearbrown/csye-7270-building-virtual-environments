@@ -1,0 +1,13 @@
+shader_type canvas_item;
+uniform float tv = 0.0;
+
+uniform float frequency = 4.0;
+uniform float speed = 0.25;
+
+void fragment() {
+	float cycles = (distance(UV, vec2(0.5)) - tv * speed) * frequency;
+	float wave = 0.5 + 0.5 * sin(TAU * cycles);
+	vec3 teal = vec3(0.37, 0.64, 0.57);
+	vec3 cream = vec3(0.98, 0.97, 0.96);
+	COLOR = vec4(mix(teal, cream, wave), 1.0);
+}

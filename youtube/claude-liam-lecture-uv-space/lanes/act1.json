@@ -1,0 +1,366 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D pic : repeat_enable;\nuniform float shift = 0.0;\nuniform float zoom = 1.0;\n\nvoid fragment() {\n\tvec2 uv = UV;\n\tuv.x += shift;\n\tuv *= zoom;\n\tCOLOR = texture(pic, uv);\n}",
+   "codeFile": "lab-shaders/01-hook-controls.gdshader",
+   "cues": [],
+   "video": "uv-space/c01-hook.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · same picture, same file · scripted values",
+   "readouts": [],
+   "rings": [],
+   "caption": "same picture, same file",
+   "durationSeconds": "__AUDIO__",
+   "title": "The Address Book"
+  },
+  "capture_spec": "C01: Lab sprite (--sprite-tex white) with --tex pic=sprite, lab-shaders/01-hook-controls.gdshader. Keyframes as fractions of the beat length L (about 11.6 s): shift = 0 until 0.17 L, then 0 to 1.0 over 0.17-0.28 L, hold; zoom = 1 until 0.28 L, then 1 to 3 over 0.28-0.42 L, hold. Render L + 1 s, 30 fps, Forward+, no input. End state (shift 1.0, zoom 3.0): nine whole copies, aligned (probes hook-tiled-fill).",
+  "visual_intent": "Act title 'The Address Book' (serif 40) top-left. A real Godot render in a framed window on the stage: the teal test sprite sits still, then slides left and wraps around, then shrinks into a three by three grid of copies. Label: 'same picture, same file'.",
+  "motion_claim": "The picture slides, then shrinks and tiles, while the label says the file never changes.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "the sprite at rest, window labelled"
+   },
+   {
+    "at": 0.19,
+    "event": "the picture slides left and wraps"
+   },
+   {
+    "at": 0.3,
+    "event": "it shrinks into a three by three grid (settled by 0.42)"
+   }
+  ],
+  "runner_up": "manim drawing of a picture moving behind a window",
+  "why": "A real render is the honest picture of 'the same picture, a different look'; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_AddressSquare",
+  "visual_intent": "A square with U labelled along the top (a drawn arrow pointing right) and V labelled down the left side (a drawn arrow pointing down), corner labels (0, 0) at the top left and (1, 1) at the bottom right, and a terracotta dot whose live (u, v) label updates as it moves. Caption (GLOSSARY wording): 'UV: a point's address on the shape: 0 to 1 across, 0 to 1 down'.",
+  "motion_claim": "The dot slides across (U grows), then down (V grows), then jumps to the top-left corner and to the bottom-right corner, its label updating each time.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "square, axes, U and V labels"
+   },
+   {
+    "at": 0.28,
+    "event": "dot slides across: U grows"
+   },
+   {
+    "at": 0.38,
+    "event": "dot slides down: V grows (settled by 0.45)"
+   },
+   {
+    "at": 0.66,
+    "event": "dot at the top left, label (0, 0)"
+   },
+   {
+    "at": 0.84,
+    "event": "dot at the bottom right, label (1, 1)"
+   }
+  ],
+  "runner_up": "ShaderLab with the address-map render",
+  "why": "A square you can point at, with a dot whose label updates, makes 'two numbers, zero to one, V down' concrete; the real render of the same idea comes next (B04).",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "manim",
+  "class": "B03_AnySize",
+  "visual_intent": "Two squares side by side, one small and one large, both labelled with the same corner values (0, 0) and (1, 1) and both carrying a dot at (0.5, 0.8) with an identical label. A grey up arrow marked 'school graph' beside the small square and a terracotta down arrow marked 'V' beside the large one. Caption: 'fraction, not pixels'.",
+  "motion_claim": "The grey up arrow appears and is replaced by the terracotta down arrow; then the large square grows beside the small one and its dot lands on the same label.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "square with the school-graph up arrow, then the V down arrow"
+   },
+   {
+    "at": 0.4,
+    "event": "the second, larger square, same corner labels"
+   },
+   {
+    "at": 0.66,
+    "event": "both dots at (0.5, 0.8), same label"
+   },
+   {
+    "at": 0.84,
+    "event": "caption: fraction, not pixels"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of three shape sizes",
+  "why": "Two squares of different size carrying identical corner labels show 'a fraction, not a pixel count' at a glance; a table would only list it.",
+  "sparse": true
+ },
+ "B04": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = vec4(UV, 0.5, 1.0);\n}",
+   "codeFile": "lab-shaders/02-address-map.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      4
+     ],
+     "label": "red = U"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      4
+     ],
+     "label": "green = V"
+    },
+    {
+     "at": 0.74,
+     "lines": [
+      4
+     ],
+     "label": "blue = half"
+    }
+   ],
+   "video": "uv-space/c02-address-map.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · Sprite2D · still",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "(0, 0)",
+     "x": 0.22,
+     "y": 0.06
+    },
+    {
+     "at": 0.3,
+     "text": "(1, 0)",
+     "x": 0.78,
+     "y": 0.06
+    },
+    {
+     "at": 0.62,
+     "text": "(0, 1)",
+     "x": 0.22,
+     "y": 0.94
+    },
+    {
+     "at": 0.64,
+     "text": "(1, 1)",
+     "x": 0.78,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: Lab sprite (--sprite-tex white), lab-shaders/02-address-map.gdshader, still PNG 3840x2160 (16:9 window, the square quad centered at 0.45 of the width). Corner colours (probes): top left (0.02, 0.02, 0.50), top right (0.98, 0.02, 0.50), bottom left (0.02, 0.98, 0.50), bottom right (0.98, 0.98, 0.50).",
+  "visual_intent": "Code card at left with the one-line address-map shader; at right a real Godot window with a centered square showing the red-green picture (red grows to the right, green grows downward, blue held at half), corner labels outside the square landing in turn: (0, 0), (1, 0), (0, 1), (1, 1).",
+  "motion_claim": "The corner labels land with the words: red grows to the right (top right), green grows downward (bottom left).",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "COLOR line highlighted; the address picture on screen"
+   },
+   {
+    "at": 0.3,
+    "event": "(0, 0) and (1, 0): red grows to the right"
+   },
+   {
+    "at": 0.62,
+    "event": "(0, 1) and (1, 1): green grows downward"
+   },
+   {
+    "at": 0.74,
+    "event": "blue held at half"
+   }
+  ],
+  "runner_up": "manim: a UV square drawn with a colour gradient",
+  "why": "The address map is Godot's own picture of UV (the Godot tutorial's first UV example); the render is the evidence, the Manim square already carried the numbers.",
+  "sparse": false
+ },
+ "B05": {
+  "lane": "manim",
+  "class": "B05_Lookup",
+  "visual_intent": "Left, a small grid of outline pixel cells labelled 'the shape' with one cell ringed in terracotta and tagged with its address (0.7, 0.5); right, the picture (a cream card with the teal test sprite) labelled 'TEXTURE: the node's own picture' (GLOSSARY wording). An arrow runs from the ringed pixel to the same relative spot on the picture, where a terracotta dot lands; a teal swatch travels back along the arrow and the ringed pixel fills with teal. Small tag on the arrow: 'texture()'.",
+  "motion_claim": "An arrow goes out from the pixel to a spot on the picture, and the color found there travels back and fills the pixel.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "pixel ringed, address tag"
+   },
+   {
+    "at": 0.3,
+    "event": "arrow reaches the picture; dot lands"
+   },
+   {
+    "at": 0.62,
+    "event": "teal swatch returns along the arrow"
+   },
+   {
+    "at": 0.8,
+    "event": "the pixel is filled teal"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A lookup is a question going out and a colour coming back; a drawn arrow and a returning swatch say exactly that, with the pixel and the picture both visible.",
+  "sparse": true
+ },
+ "B06": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV);\n}",
+   "codeFile": "lab-shaders/03-lookup.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.36,
+     "lines": [
+      4
+     ],
+     "label": "TEXTURE: the node's own picture"
+    },
+    {
+     "at": 0.64,
+     "lines": [
+      4
+     ],
+     "label": "COLOR: the color of the pixel being drawn"
+    }
+   ],
+   "video": "uv-space/c03-lookup.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · Sprite2D · scripted values",
+   "readouts": [
+    {
+     "at": 0.6,
+     "text": "shader on",
+     "x": 0.35,
+     "y": 0.95
+    },
+    {
+     "at": 0.78,
+     "text": "unchanged",
+     "x": 0.65,
+     "y": 0.95
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.78,
+     "box": [
+      0.275,
+      0.1,
+      0.725,
+      0.9
+     ]
+    }
+   ],
+   "caption": "fragment(): runs once for each pixel the shape covers; sets its color",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: Lab sprite (--sprite-tex sprite). No material until 0.58 L, then --material-at assigns lab-shaders/03-lookup.gdshader; the picture must not change. Render L + 1 s (L about 11.6 s), 30 fps, Forward+. Verified: with the shader and without it, 0 of 230,400 pixels differ, largest channel difference 0.0 (verify-identity.gd D1). Probes (fill-window): middle (0.372, 0.639, 0.569) teal, eyes (0.980, 0.977, 0.961) at (0.4, 0.44) and (0.6, 0.44), corner (0.851, 0.835, 0.792) = stage.",
+  "visual_intent": "Code card at left with the three-line lookup shader; at right a real Godot window showing the test sprite drawn plainly, with no shader. At 'Nothing is changed' the lookup shader is switched on and the picture does not change at all. A caption defines fragment (GLOSSARY wording): 'fragment(): runs once for each pixel the shape covers; sets its color'. Readout 'shader on' at the switch; then a terracotta ring settles on the sprite's square with the readout 'unchanged'.",
+  "motion_claim": "The shader switches on and nothing changes: the picture is pixel for pixel the same.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "function line: runs once for every pixel the shape covers"
+   },
+   {
+    "at": 0.36,
+    "event": "COLOR line: TEXTURE is the node's own picture; read it at the pixel's own address"
+   },
+   {
+    "at": 0.6,
+    "event": "the lookup shader switches on (readout 'shader on'); COLOR defined"
+   },
+   {
+    "at": 0.78,
+    "event": "ring on the picture: unchanged"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The line and its unchanged result side by side is the claim, and watching the shader switch on with no change is the proof; a code trace alone would not show 'comes out as it went in'.",
+  "sparse": false
+ },
+ "B07": {
+  "lane": "manim",
+  "class": "B07_Window",
+  "visual_intent": "Left, a large cream card labelled 'the picture' holding the teal test sprite and a small terracotta tick at its top-left corner; over it a terracotta-outlined rectangle labelled 'the shape'. Right, a framed panel labelled 'what you see' showing the part of the picture inside the outline. Caption: 'address moves it'.",
+  "motion_claim": "The outlined window slides right across the fixed picture while the panel's contents shift left, then it slides back.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "picture card, window outline, panel"
+   },
+   {
+    "at": 0.3,
+    "event": "window slides right; panel content shifts left"
+   },
+   {
+    "at": 0.72,
+    "event": "window slides back; caption lands"
+   }
+  ],
+  "runner_up": "ShaderLab: a real render with the quad ringed",
+  "why": "'The shape is a window' is an analogy; only a drawing can slide a window over a fixed picture and show the contents change.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "remotion",
+  "pattern": "LectureCodeTrace",
+  "props": {
+   "title": "Copy, bend, look up",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec2 uv = UV;\n\t// bend uv here\n\tCOLOR = texture(TEXTURE, uv);\n}",
+   "note": "UV is read-only in fragment() · Godot 4.7 documentation, checked in Godot 4.7.2",
+   "cues": [
+    0.04,
+    0.04,
+    0.1,
+    0.31,
+    0.42,
+    0.58,
+    0.58
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A cream code card with the real seven-line template; focus lands on the function, then the copy line, then the empty bend line, then the lookup line as each is named.",
+  "motion_claim": "Line focus steps through copy, bend, look up on the words.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "fragment: the address is read-only"
+   },
+   {
+    "at": 0.31,
+    "event": "copy the address"
+   },
+   {
+    "at": 0.42,
+    "event": "bend the copy"
+   },
+   {
+    "at": 0.58,
+    "event": "look up with the copy"
+   }
+  ],
+  "runner_up": "ClaudeCodeBeat",
+  "why": "Paced line focus lands on 'copy', 'bend', 'look up' as each is spoken; the pattern is real, compiled code.",
+  "sparse": false
+ }
+}

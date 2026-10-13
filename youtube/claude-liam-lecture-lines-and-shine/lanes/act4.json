@@ -1,0 +1,533 @@
+{
+ "B22": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\nuniform float offset = 0.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tCOLOR = vec4(vec3(0.5 + 0.5 * step(d, thickness)), 1.0);\n}",
+   "codeFile": "lab-shaders/07-slide.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      11
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c11-slide.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · angle and offset set by script",
+   "readouts": [
+    {
+     "at": 0.82,
+     "text": "offset 0.5",
+     "x": 0.5,
+     "y": 0.05
+    },
+    {
+     "at": 0.9,
+     "text": "¼ of card",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "offset: how far the line has been slid",
+   "durationSeconds": "__AUDIO__",
+   "title": "Shine"
+  },
+  "capture_spec": "C11: Lab card, 07-slide, thickness 0.1: angle 35 with offset -0.8 to 0.8 over 5 to 40 percent of the clip; angle 70 with offset -0.8 to 0.5 over 55 to 80 percent, then hold at 0.5; 8 s. Measured: offset 0.5 moves the band 0.250 of the card width at 0, 35 and 70 degrees.",
+  "visual_intent": "Act title 'Shine' (serif 40) top-left. Code card at left with the distance line highlighted; at right the white band on the grey card sliding from the upper left to the lower right at 35 degrees, then again at 70 degrees at the same speed. Final hold: readouts 'offset 0.5' and '¼ of card'.",
+  "motion_claim": "The band slides straight across the card, at the same speed at both angles.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "d line (with + offset) highlighted"
+   },
+   {
+    "at": 0.2,
+    "event": "slides at 35 degrees"
+   },
+   {
+    "at": 0.66,
+    "event": "slides at 70 degrees"
+   },
+   {
+    "at": 0.82,
+    "event": "offset 0.5: ¼ of card"
+   }
+  ],
+  "runner_up": "manim line sliding with distance labels",
+  "why": "The real band sliding at two angles, equally far for equal offsets, is the claim, and the readout is measured.",
+  "sparse": false
+ },
+ "B23": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "stack",
+   "code": "vec2 q = p - center;",
+   "codeFile": "lab-shaders/08-center-shift.gdshader (line 10)",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      1
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c12-center-vs-offset.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · flat line, both sweeps scripted",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "center: no move",
+     "x": 0.266,
+     "y": 0.94
+    },
+    {
+     "at": 0.86,
+     "text": "offset: slides",
+     "x": 0.734,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C12: custom scene two_panels.gd, cards 256 px at (170, 190) and (470, 190), angle 0 on both: left 08-center-shift with center.x -0.6 to 0.6, right 07-slide with offset -0.6 to 0.6, over 30 to 78 percent of the clip. Measured: the left band stays at 0.0 px, the right moves 77 px at 0.6.",
+  "visual_intent": "Two real Godot cards side by side, a flat white band across each. Left: the center shifted across from -0.6 to 0.6; the band does not move. Right: the offset swept the same way; the band slides up and down. Readouts under the cards: 'center: no move' and 'offset: slides'.",
+  "motion_claim": "The flat band on the left never moves while the one on the right slides.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "both sweeps start"
+   },
+   {
+    "at": 0.62,
+    "event": "center: no move"
+   },
+   {
+    "at": 0.86,
+    "event": "offset: slides"
+   }
+  ],
+  "runner_up": "manim arrows showing how far each shift moves a tilted line",
+  "why": "A flat line that ignores a sideways shift is the surprise; a real pair of cards shows it without a word of algebra.",
+  "sparse": false
+ },
+ "B24": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\nuniform float offset = -2.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tfloat band = step(d, thickness);\n\tCOLOR = mix(COLOR, vec4(1.0), band);\n}",
+   "codeFile": "lab-shaders/09-shine-leak.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      12
+     ]
+    },
+    {
+     "at": 0.36,
+     "lines": [
+      13
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c13-leak.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · first attempt · offset swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "mix(a, b, t): t = 0 gives a, t = 1 gives b · vec4(1.0) is white",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13: Lab blob sprite, 09-shine-leak, angle 35, thickness 0.1; offset -1.5 to 1.5 linearly over the whole clip (6 s). The white stripe also crosses the empty parts of the sprite's square.",
+  "visual_intent": "Code card at left (first attempt, mix on the whole color); at right a real Godot window with the teal test sprite and a white band sweeping across it. The mix line is highlighted.",
+  "motion_claim": "The white band sweeps across the sprite as the band and mix lines light up.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "band line highlighted"
+   },
+   {
+    "at": 0.36,
+    "event": "mix line highlighted"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Code and its moving result together; the leak is visible here and named in the next beat.",
+  "sparse": false
+ },
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\nuniform float offset = -2.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tfloat band = step(d, thickness);\n\tCOLOR = mix(COLOR, vec4(1.0), band);\n}",
+   "codeFile": "lab-shaders/09-shine-leak.gdshader",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      13
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c13-leak.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · first attempt · offset swept by script",
+   "readouts": [
+    {
+     "at": 0.18,
+     "text": "leaks",
+     "x": 0.31,
+     "y": 0.2
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13 again (same file, no new recording). Measured: the empty pixel on the band line reads white (1.0, 1.0, 1.0) instead of the stage color (0.851, 0.835, 0.792), in both renderers.",
+  "visual_intent": "The same capture and code as before. A readout 'leaks' lands at the upper left where the white stripe crosses the empty part of the sprite's square; the mix line stays highlighted.",
+  "motion_claim": "The stripe is visible on the empty corners of the sprite's square while the voice names the leak.",
+  "show": [
+   {
+    "at": 0.18,
+    "event": "leaks"
+   },
+   {
+    "at": 0.3,
+    "event": "mix line highlighted"
+   }
+  ],
+  "runner_up": "ShaderLab with a ring on the stripe",
+  "why": "Pointing at the stripe on the empty corner is the claim; the capture already contains the evidence.",
+  "sparse": false
+ },
+ "B26": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\nuniform float offset = -2.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tfloat band = step(d, thickness) * COLOR.a;\n\tCOLOR.rgb = mix(COLOR.rgb, vec3(1.0), band);\n}",
+   "codeFile": "lab-shaders/10-shine.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      12
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      12,
+      13
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c14-leak-vs-fixed.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · old left, fixed right · offset swept by script",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "leaks",
+     "x": 0.266,
+     "y": 0.94
+    },
+    {
+     "at": 0.7,
+     "text": "stays inside",
+     "x": 0.734,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C14: custom scene two_panels.gd, blob sprites 256 px at (170, 190) and (470, 190): left 09-shine-leak, right 10-shine, angle 35, thickness 0.1; offset -1.5 to 1.5 over 5 to 95 percent of the clip (6 s). Measured: the right panel's empty pixel on the band line equals the stage color.",
+  "visual_intent": "Two real Godot windows side by side with the teal sprite and a sweeping band: left the first attempt (the stripe spills onto the empty parts), right the fixed shader (the band stays on the sprite). Code card shows the fixed shader with the band line highlighted. Readouts: 'leaks' under the left and 'stays inside' under the right.",
+  "motion_claim": "The left stripe spills off the sprite; the right band stops at the sprite's edge.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "band line highlighted: * COLOR.a"
+   },
+   {
+    "at": 0.3,
+    "event": "leaks under the left"
+   },
+   {
+    "at": 0.7,
+    "event": "stays inside under the right"
+   }
+  ],
+  "runner_up": "ShaderLab single capture of the fixed shader",
+  "why": "Before and after on the same sweep is the clearest proof the multiplication does the job.",
+  "sparse": false
+ },
+ "B27": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat offset = mix(-1.5, 1.5, fract(TIME * 0.5));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tfloat band = step(d, thickness) * COLOR.a;\n\tCOLOR.rgb = mix(COLOR.rgb, vec3(1.0), band);\n}",
+   "codeFile": "lab-shaders/11-shine-clock.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      10
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c01-hook.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · TIME-driven · scripted clock",
+   "readouts": [
+    {
+     "at": 0.64,
+     "text": "fract: 0–1",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "TIME: seconds on one clock shared by the whole game",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.4,
+    "from": 0,
+    "to": 1,
+    "period": 2.0
+   }
+  },
+  "capture_spec": "C01 reused (11-shine-clock, 12 s loop). The ramp marker repeats with the clip's 2 s period (ShaderLab ramp needs a period; see BUILD-PROMPT).",
+  "visual_intent": "Code card at left with the offset line highlighted; at right the sprite with the glint looping every two seconds (the same capture as the opening) and a thin 0 to 1 ramp strip beneath it whose marker runs from 0 to 1 and restarts every two seconds. A readout 'fract: 0–1' lands at the ramp.",
+  "motion_claim": "The marker runs along the ramp and restarts as the glint crosses the sprite each cycle.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "offset line highlighted"
+   },
+   {
+    "at": 0.4,
+    "event": "ramp marker running"
+   },
+   {
+    "at": 0.64,
+    "event": "fract: 0–1"
+   }
+  ],
+  "runner_up": "manim sawtooth plot of fract(TIME * 0.5)",
+  "why": "The marker restarting each cycle beside the glint it drives is the claim; the real sprite is the evidence.",
+  "sparse": false
+ },
+ "B28": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "func shine():\n\tvar mat: ShaderMaterial = $Sprite.material\n\tmat.set_shader_parameter(\"offset\", -1.5)\n\tcreate_tween().tween_property(mat, \"shader_parameter/offset\", 1.5, 0.8)",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.05,
+     "lines": [
+      1
+     ]
+    },
+    {
+     "at": 0.34,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.43,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.72,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c16-tween.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted call at 1 s · no real input",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "scripted call",
+     "x": 0.5,
+     "y": 0.05
+    }
+   ],
+   "rings": [],
+   "caption": "tween: glides a value from one number to another over time",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C16: custom scene (verify1.gd T1): Sprite2D 'Sprite' with 10-shine, scene script exactly the four lines shown; the harness calls shine() at 1.0 s and again every 3 s; 12 s loop, Forward+. Verified: the band covers the blob centre 0.388 to 0.429 s after the call (expected 0.373 to 0.427); offset ends at 1.5; resting offset is the default -2.0.",
+  "visual_intent": "A four-line GDScript card at left (the function that sets the start and tweens the offset); at right the sprite at rest, then one glint crossing it each time the scripted call fires. A label 'scripted call' stays on screen.",
+  "motion_claim": "The sprite rests, the call fires, one glint crosses, and it rests again.",
+  "show": [
+   {
+    "at": 0.05,
+    "event": "func shine() highlighted"
+   },
+   {
+    "at": 0.34,
+    "event": "set start highlighted"
+   },
+   {
+    "at": 0.43,
+    "event": "tween line highlighted"
+   },
+   {
+    "at": 0.72,
+    "event": "start line highlighted again"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of the GDScript alone",
+  "why": "Cause (one function) and effect (one glint) together; the capture is a real scripted run.",
+  "sparse": false
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\nuniform float offset = -2.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tfloat band = step(d, thickness) * COLOR.a;\n\tCOLOR.rgb = mix(COLOR.rgb, vec3(1.0), band);\n}",
+   "codeFile": "lab-shaders/10-shine.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      8,
+      9
+     ]
+    },
+    {
+     "at": 0.24,
+     "lines": [
+      10
+     ]
+    },
+    {
+     "at": 0.41,
+     "lines": [
+      11
+     ]
+    },
+    {
+     "at": 0.71,
+     "lines": [
+      12
+     ]
+    },
+    {
+     "at": 0.91,
+     "lines": [
+      13
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c17-shine-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · offset swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C17: Lab blob sprite, 10-shine, angle 35, thickness 0.1; offset -1.5 to 1.5 over 10 to 90 percent of the clip (8 s). Measured: band on the blob at offset 0, off the sprite at +-1.5.",
+  "visual_intent": "The finished fourteen-line shader at left with focus stepping down it as each step is named; at right the sprite with the glint sweeping across once.",
+  "motion_claim": "Focus steps down the lines in the order the voice names the steps while the glint crosses.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "address lines"
+   },
+   {
+    "at": 0.24,
+    "event": "slope line"
+   },
+   {
+    "at": 0.41,
+    "event": "distance line (with the offset)"
+   },
+   {
+    "at": 0.71,
+    "event": "band line (times alpha)"
+   },
+   {
+    "at": 0.91,
+    "event": "mix line"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The recap needs the code and the result together; paced focus is exactly 'each line earns its place'.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "stack",
+   "code": "vec2 p = UV * 2.0 - 1.0;\np.y = -p.y;\np.x *= aspect;",
+   "codeFile": "lab-shaders/06-wide-fix.gdshader (lines 8 to 10)",
+   "cues": [
+    {
+     "at": 0.77,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c18-wide-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two 16:9 panels · angle swept by script",
+   "readouts": [
+    {
+     "at": 0.58,
+     "text": "45° shows 29°",
+     "x": 0.266,
+     "y": 0.94
+    },
+    {
+     "at": 0.8,
+     "text": "45° shows 45°",
+     "x": 0.734,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: custom scene two_panels.gd, wide panels 304 x 171 at (160, 180) and (480, 180): left 05-band-true, right 06-wide-fix (aspect 1.7778), thickness 0.1; angle 0 to 45 over 5 to 38 percent of the clip, then hold. Measured: 29.2 degrees on screen without the fix, 44.7 with it; thickness drifts 17.8, 20.8, 27.1 px at 20, 45, 70 degrees without it, constant 17.1 with it.",
+  "visual_intent": "Two real 16:9 Godot panels side by side. Left: the band at 45 degrees runs shallow, near 29 degrees on screen. Right, with the across part scaled: 45 degrees really is 45. Readouts: '45° shows 29°' under the left, '45° shows 45°' under the right. Three code lines below.",
+  "motion_claim": "The left band stays shallow as the angle reaches 45 while the right band reaches a true diagonal.",
+  "show": [
+   {
+    "at": 0.58,
+    "event": "45° shows 29°"
+   },
+   {
+    "at": 0.77,
+    "event": "p.x *= aspect highlighted"
+   },
+   {
+    "at": 0.8,
+    "event": "45° shows 45°"
+   }
+  ],
+  "runner_up": "manim rectangle with the address square stretched over it",
+  "why": "The bent angle is visible on real wide panels; a drawing of a stretched square would only describe it.",
+  "sparse": false
+ }
+}

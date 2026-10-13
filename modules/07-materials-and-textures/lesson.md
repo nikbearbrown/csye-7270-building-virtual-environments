@@ -254,6 +254,24 @@ This record is from 27 September 2026: Claude Code 2.1.150 (default model `claud
 
 **A hand-typed UID happened to work.** Claude Code typed the new material's resource UID itself; Godot's decoder is lenient, so it accepted the string and reported the canonical spelling. Strings an agent types by hand are not ones Godot generated.
 
+## Practice assessment (ungraded)
+
+Answer these in your own words, then take the Canvas practice quiz for this module. Do not paste Claude's explanation as proof of your understanding.
+
+1. All three imported ship materials report `ao_enabled=false`. Explain, using the glTF occlusion rule, why the AO in the `arm` textures was never used.
+2. Codex's change passed 100 checks and added no AO. Which assertions gave false confidence, and which single assertion would have caught it?
+3. A flat normal-map texel is sampled with `source_color`. Work out the tilt and the lighting error, and say what an agent should read to catch the mistake before rendering.
+4. You add a texture to a material by editing a `.tscn`. Which three `.import` settings do you read before committing, and why will they not have changed on their own?
+5. Why must you turn SSAO off before judging the hull's texture AO?
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to audit material settings and texture channels; judge the surface under the intended lighting. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module completes Assignment 5, "A Shader and a Material That Say Something About Your Game", which covers Modules 6 and 7 and is due about Day 50. Module 6 covered the shader half; Module 8 turns to reviewing a shader change that looks right and is not. Read the companion chapter, [Chapter 7 — Materials and Textures](../../chapters/07-materials-and-textures.md), for the full run, the transcripts and the Unity and Unreal comparison.
+
 ## If you know Unity or Unreal
 
 *Unity and Unreal were not run for this module; this comparison comes from their official documentation, checked on 27 September 2026.*
@@ -268,16 +286,10 @@ This record is from 27 September 2026: Claude Code 2.1.150 (default model `claud
 
 The biggest difference for an agent workflow is where import settings live. Godot's `.import` and Unity's `.meta` are text files an agent can read, diff and assert in a headless test; Unreal textures are `.uasset` binaries, so the audit goes through the editor's Python API. The packing differs too: a Poly Haven `arm` file cannot drop into an HDRP mask slot without repacking and inverting roughness to smoothness. The [chapter](../../chapters/07-materials-and-textures.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer these in your own words, then take the Canvas practice quiz for this module. Do not paste Claude's explanation as proof of your understanding.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/07-materials-and-textures.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/AssetMetadata.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. All three imported ship materials report `ao_enabled=false`. Explain, using the glTF occlusion rule, why the AO in the `arm` textures was never used.
-2. Codex's change passed 100 checks and added no AO. Which assertions gave false confidence, and which single assertion would have caught it?
-3. A flat normal-map texel is sampled with `source_color`. Work out the tilt and the lighting error, and say what an agent should read to catch the mistake before rendering.
-4. You add a texture to a material by editing a `.tscn`. Which three `.import` settings do you read before committing, and why will they not have changed on their own?
-5. Why must you turn SSAO off before judging the hull's texture AO?
+## Doing the same thing in Unreal Engine
 
-## The next step
-
-This module completes Assignment 5, "A Shader and a Material That Say Something About Your Game", which covers Modules 6 and 7 and is due about Day 50. Module 6 covered the shader half; Module 8 turns to reviewing a shader change that looks right and is not. Read the companion chapter, [Chapter 7 — Materials and Textures](../../chapters/07-materials-and-textures.md), for the full run, the transcripts and the Unity and Unreal comparison.
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/07-materials-and-textures.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/material-inputs-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

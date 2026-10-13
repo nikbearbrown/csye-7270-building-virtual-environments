@@ -271,6 +271,25 @@ The recorded runs (Claude Code 2.1.150 with `claude-sonnet-4-6`, Codex CLI 0.153
 
 **Equivalent, and equivalently blind.** The hysteresis test put the player 240 px away, but the chasing guard walked closer, so the band was never tested; holding the player at 260 px for 120 frames gave 0 mode changes. And with the guard in Search and the player 120 px away in plain sight, both brains stayed in Search for about 165 physics frames before going Patrol, then Chase. The spec never said what Search should do if the player reappears, and no test covered it. A player would notice in ten seconds.
 
+## Practice assessment (ungraded)
+
+Answer in your own words, then check the source:
+
+1. In `state_machine.gd` a pop does not call `enter()` on the resumed state. Name a case where that helps and one where it hurts.
+2. Your FSM guard's test reads only `mode` and positions. Why must it never read the machine's internals, and why does that help when the brain becomes a BT?
+3. An agent reports "guard reaches its target" and all four checks pass. Which numbers in the test would you read first?
+4. Both brains ignore a player who reappears during Search. Write the one-sentence spec change, and say which brain needs the smaller code change.
+
+An ungraded practice quiz covering the guard and the three labs is on this module's Canvas page. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer from the source.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test decisions, generated content and authority boundaries; judge the opponent, level and interaction through play. Record the evidence, your decision and what would change it.
+
+## The next step
+
+Do the three labs on the [labs page](labs.md): reinforcement learning, a generated level with a validator, and networking in two processes. This module, with Module 15, feeds Assignment 10, the final project. That assignment opens in Module 14 and is due about Day 100 (Canvas dates govern); its own page sets the task and the required films, and this lesson adds no graded deliverable. Module 15, from brief to export, comes next. The long reading is [Chapter 14 — Game AI and Systems](../../chapters/14-game-ai-and-systems.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from their official documentation, checked on 27 September 2026.
@@ -287,17 +306,10 @@ Unity and Unreal were not run for this module; the comparisons come from their o
 
 The biggest difference for an agent workflow is what the agent can read. In Godot the whole guard (scene, brain, tests) is text. Unity scenes and prefabs serialize as text, but every asset has a `.meta` GUID file an agent must not create by hand. In Unreal, Behavior Trees, Blackboards, StateTrees and PCG graphs are binary `.uasset` files: the agent writes C++ tasks and tests, and wiring the graph stays a human job or goes through editor automation. The [companion chapter](../../chapters/14-game-ai-and-systems.md) has the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in your own words, then check the source:
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/14-game-ai-and-systems.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/index.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. In `state_machine.gd` a pop does not call `enter()` on the resumed state. Name a case where that helps and one where it hurts.
-2. Your FSM guard's test reads only `mode` and positions. Why must it never read the machine's internals, and why does that help when the brain becomes a BT?
-3. An agent reports "guard reaches its target" and all four checks pass. Which numbers in the test would you read first?
-4. Both brains ignore a player who reappears during Search. Write the one-sentence spec change, and say which brain needs the smaller code change.
+## Doing the same thing in Unreal Engine
 
-An ungraded practice quiz covering the guard and the three labs is on this module's Canvas page. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then answer from the source.
-
-## The next step
-
-Do the three labs on the [labs page](labs.md): reinforcement learning, a generated level with a validator, and networking in two processes. This module, with Module 15, feeds Assignment 10, the final project. That assignment opens in Module 14 and is due about Day 100 (Canvas dates govern); its own page sets the task and the required films, and this lesson adds no graded deliverable. Module 15, from brief to export, comes next. The long reading is [Chapter 14 — Game AI and Systems](../../chapters/14-game-ai-and-systems.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/14-game-ai-and-systems.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/unreal-engine/basic-navigation-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

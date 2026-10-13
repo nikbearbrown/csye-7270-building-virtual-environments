@@ -1,0 +1,347 @@
+{
+ "B27": {
+  "lane": "manim",
+  "class": "B27_FragmentCannotSee",
+  "visual_intent": "Act title 'Passing Data Forward' (serif 40) top-left. A three-stage strip left to right: 'vertex()' with four terracotta corner dots, 'the card fills the shape', 'fragment()' drawn as a pixel grid. A small question mark leaves fragment() looking back for the corners and stops at a pane of glass. Caption in the GLOSSARY wording: 'fragment(): runs once for each pixel the shape covers; sets its color'.",
+  "motion_claim": "A question mark travels back from fragment toward the corners and stops at the glass.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "three stages with the act title"
+   },
+   {
+    "at": 0.35,
+    "event": "question travels back and stops at the glass"
+   },
+   {
+    "at": 0.7,
+    "event": "caption: fragment()"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A strip with a barrier is the claim 'it never sees the corners'; the motion is the question stopping at the glass.",
+  "sparse": true
+ },
+ "B28": {
+  "lane": "manim",
+  "class": "B28_Varying",
+  "visual_intent": "A quad with a number on each corner dot (0 at the left corners, 1 at the right ones). The numbers flow right into the filled quad and blend into a smooth ramp as an arrow labelled 'forward' passes from 'set in vertex()' to 'read in fragment()'. Caption in the GLOSSARY wording: 'varying: a value set at each corner, blended across the shape for fragment() to read'.",
+  "motion_claim": "The corner numbers flow into the quad and spread into a smooth ramp, in the forward direction only.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "quad with corner numbers"
+   },
+   {
+    "at": 0.32,
+    "event": "values blend across the quad; forward arrow"
+   },
+   {
+    "at": 0.7,
+    "event": "caption: varying"
+   }
+  ],
+  "runner_up": "LectureCodeTrace with the three lines",
+  "why": "A value that is set at points and spreads across a surface is a picture of blending; code alone would hide the spreading.",
+  "sparse": true
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvarying vec3 tint;\n\nvoid vertex() {\n\ttint = vec3(UV.x, UV.y, 1.0 - UV.x);\n}\n\nvoid fragment() {\n\tCOLOR = vec4(tint, 1.0);\n}",
+   "codeFile": "lab-shaders/08-corner-colors.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      10
+     ]
+    }
+   ],
+   "video": "vertex-shaders/corner-colors.png",
+   "videoLabel": "Godot 4.7.2 · Apple M4 Pro · Forward+ (Compatibility reads the same) · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.75,
+     "text": "red 0",
+     "x": 0.28,
+     "y": 0.05
+    },
+    {
+     "at": 0.75,
+     "text": "red 0.5",
+     "x": 0.5,
+     "y": 0.05
+    },
+    {
+     "at": 0.75,
+     "text": "red 1",
+     "x": 0.72,
+     "y": 0.05
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: Lab rect/sprite still: `check_shader.sh lab-shaders/08-corner-colors.gdshader --kind sprite --sprite-tex white` (default fit scale), PNG 1920 x 1080 by the harness. Probes (Forward+ and Compatibility agree): top left (0.02, 0.02, 0.98), top right (0.98, 0.02, 0.02), middle of the top edge (0.50, 0.02, 0.50), centre (0.50, 0.50, 0.50).",
+  "visual_intent": "Code card at left (varying tint, set in vertex, read in fragment); at right a real Godot window showing a square blended from blue (top left), red (top right), cyan (bottom left) and yellow (bottom right). Readouts above its top edge: 'red 0', 'red 0.5', 'red 1'.",
+  "motion_claim": "The corner colours blend; the readouts land along the top edge as the voice says one half.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "tint set in vertex"
+   },
+   {
+    "at": 0.3,
+    "event": "fragment reads it"
+   },
+   {
+    "at": 0.75,
+    "event": "readouts along the top edge"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The picture itself is the evidence of the blend; the probe values (0, 0.5, 1) make 'exact' checkable.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvarying flat vec3 tint;\n\nvoid vertex() {\n\ttint = vec3(UV.x, UV.y, 1.0 - UV.x);\n}\n\nvoid fragment() {\n\tCOLOR = vec4(tint, 1.0);\n}",
+   "codeFile": "lab-shaders/09-corner-colors-flat.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "vertex-shaders/flat-mesh.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the same colours on a mesh cut 7 by 7, smooth on the left, flat on the right",
+   "readouts": [
+    {
+     "at": 0.6,
+     "text": "smooth",
+     "x": 0.27,
+     "y": 0.92
+    },
+    {
+     "at": 0.6,
+     "text": "flat",
+     "x": 0.73,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "flat: the value is not blended",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: scene `flat-mesh` of evidence/planning-checks/scratch-project/capture_scenes.gd: two MeshInstance2D QuadMesh 300 x -300 (size.y negative, so UV.y runs down the screen and the colours sit as on the Lab sprite) cut 7 x 7 with a white texture; 08-corner-colors on the left, 09-corner-colors-flat on the right; still PNG; canvas 1280 x 720. Verified: a four-vertex sprite with flat shows ONE colour (the first vertex's) on both triangles; a QuadMesh 0 x 0 has 6 indices, i.e. two triangles.",
+  "visual_intent": "Code card at left with the one changed line `varying flat vec3 tint;` highlighted; at right two real Godot meshes cut 7 by 7: on the left the smooth four-colour blend, on the right the same colours with flat, broken into diagonal tiles, one per triangle. Labels 'smooth' and 'flat'. Caption: 'flat: the value is not blended'.",
+  "motion_claim": "The smooth blend on the left breaks into tiles on the right as the flat line is highlighted.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "the flat line highlighted"
+   },
+   {
+    "at": 0.6,
+    "event": "labels smooth and flat"
+   }
+  ],
+  "runner_up": "manim: two triangles with flat colours",
+  "why": "The tiles are the triangles: a real mesh shows them, and a drawing of two triangles could not show 'one per triangle'.",
+  "sparse": false
+ },
+ "B31": {
+  "lane": "manim",
+  "class": "B31_BuiltInVaryings",
+  "visual_intent": "Top: a 0 to 1 ramp strip with two terracotta corner dots (0 and 1), the values between them filling in, labelled 'U V: set at the corners, blended'. Below: a small tinted block times a checker picture equals a tinted checker, labelled 'color from vertex x the picture = color in fragment'. Caption: 'COLOR: the color being drawn'.",
+  "motion_claim": "The ramp fills in between its two corner values, then the tint multiplies the picture.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "ramp with two corner dots"
+   },
+   {
+    "at": 0.32,
+    "event": "values fill in between"
+   },
+   {
+    "at": 0.7,
+    "event": "tint times picture equals tinted picture"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "Two parallel facts as motion: a ramp filling in and a multiplication landing, each a still-frame failure if shown as text.",
+  "sparse": true
+ },
+ "B32": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvarying float fold;\n\nvoid vertex() {\n\tfloat phase = UV.x * 8.0 - TIME * 3.0;\n\tVERTEX.y += sin(phase) * 24.0 * UV.x;\n\tfold = cos(phase) * UV.x;\n}\n\nvoid fragment() {\n\tCOLOR.rgb *= 0.9 + 0.1 * fold;\n}",
+   "codeFile": "lab-shaders/10-flag-lit.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      3,
+      6,
+      8
+     ],
+     "label": "phase: where the wave is · fold: how the cloth slopes"
+    },
+    {
+     "at": 0.56,
+     "lines": [
+      12
+     ]
+    }
+   ],
+   "video": "vertex-shaders/lit.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock · scripted: lit version switched on at 62 % of the beat",
+   "readouts": [],
+   "rings": [],
+   "caption": "slope: how steeply a line rises: up divided by across",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C20: scene `lit` of evidence/planning-checks/scratch-project/capture_scenes.gd: the mesh flag with pole; 06-flag-pinned from the start, 10-flag-lit assigned at 0.62 of the beat; canvas 1280 x 720; record the whole beat (D).",
+  "visual_intent": "Code card at left (thirteen lines: varying fold, set in vertex, used in fragment); at right the real flag on its pole: first flat-looking, then at the 62 % mark the folds darken where the cloth slopes away. Highlight on the `phase` and `fold` lines as 'pass it as a varying' is said, with a rendered tag 'phase: where the wave is · fold: how the cloth slopes', then on the fragment line. Caption in the GLOSSARY wording: 'slope: how steeply a line rises: up divided by across'.",
+  "motion_claim": "The flag looks flat, then its folds read as folds when the lit shader goes on.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "varying and the line that sets it"
+   },
+   {
+    "at": 0.56,
+    "event": "the fragment line that uses it"
+   },
+   {
+    "at": 0.7,
+    "event": "lit flag"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The lit flag against the flat one is the payoff of passing data forward, and only a real render shows cloth.",
+  "sparse": false
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float amplitude = 24.0;\nuniform float frequency = 8.0;\nuniform float speed = 3.0;\n\nvoid vertex() {\n\tfloat phase = UV.x * frequency - TIME * speed;\n\tVERTEX.y += sin(phase) * amplitude * UV.x;\n\tCOLOR.rgb *= 0.9 + 0.1 * cos(phase) * UV.x;\n}",
+   "codeFile": "lab-shaders/11-flag-final.gdshader",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      10
+     ]
+    }
+   ],
+   "video": "vertex-shaders/flag-final.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+   "readouts": [
+    {
+     "at": 0.7,
+     "text": "same picture",
+     "x": 0.5,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C01 again (the same recording as the opening): scene `final` of evidence/planning-checks/scratch-project/capture_scenes.gd, 11-flag-final from the first frame. Verified: the explicit-varying version (10) and this one draw the same picture, 0 differing pixels (scene equiv-lit-color).",
+  "visual_intent": "Code card at left (eleven lines: the three dials, the phase, the wave line and one `COLOR.rgb *= ...` line, no varying and no fragment function) with the COLOR line highlighted; at right the same real lit flag as the opening, waving. Readout 'same picture'.",
+  "motion_claim": "The COLOR line is highlighted while the flag waves, lit exactly as before.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "COLOR line highlighted"
+   },
+   {
+    "at": 0.7,
+    "event": "readout: same picture"
+   }
+  ],
+  "runner_up": "manim: the two shaders side by side with a diff",
+  "why": "The proof is the finished flag next to eleven lines; the pixel diff (zero) is in the fact-check.",
+  "sparse": false
+ },
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvarying float stripe;\n\nvoid vertex() {\n\tstripe = sin(UV.x * TAU * 6.0);\n}\n\nvoid fragment() {\n\tCOLOR.rgb *= 0.75 + 0.25 * stripe;\n}",
+   "codeFile": "lab-shaders/12-stripes-from-vertex.gdshader",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "vertex-shaders/stripes.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two four-corner squares, same stripes, computed in two places",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "in vertex()",
+     "x": 0.27,
+     "y": 0.92
+    },
+    {
+     "at": 0.62,
+     "text": "in fragment()",
+     "x": 0.73,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21: scene `stripes` of evidence/planning-checks/scratch-project/capture_scenes.gd: two Sprite2D white squares at scale 3.0 (12-stripes-from-vertex on the left, 13-stripes-from-fragment on the right); still PNG; canvas 1280 x 720. Measured (Lab): the vertex version reads 0.749 at every probe; the fragment version reads 0.58 to 0.92.",
+  "visual_intent": "Code card at left (the stripes computed in vertex and passed as a varying) with the sine line highlighted; at right two real Godot squares on four corners: the left shows plain flat grey, the right shows six clear stripes. Labels 'in vertex()' and 'in fragment()'.",
+  "motion_claim": "The left square stays plain grey while the right one shows six stripes.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "sine line highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "labels: in vertex(), in fragment()"
+   }
+  ],
+  "runner_up": "manim: sampled sine with two end values",
+  "why": "Two real squares, one plain and one striped, are the claim; the numbers (both corners compute zero) are in the fact-check.",
+  "sparse": false
+ }
+}

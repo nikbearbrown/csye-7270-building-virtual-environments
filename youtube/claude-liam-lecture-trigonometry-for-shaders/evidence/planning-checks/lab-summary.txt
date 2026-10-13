@@ -1,0 +1,100 @@
+[0] 20-constants  (20-check-constants.gdshader --kind rect)
+     PI, TAU, E match (all three channels 1.0)            at (0.2500,0.5000)  predicted (1, 1, 1)  read (1.0, 1.0, 1.0)  PASS
+     TAU == 2 PI, radians(45) == PI/4, degrees(PI) == 180 at (0.7500,0.5000)  predicted (1, 1, 1)  read (1.0, 1.0, 1.0)  PASS
+[0] 21-trig-values  (21-check-trig-values.gdshader --kind rect --set deg=30 --set forty_five=45)
+     sin 30 deg, cos 30 deg, 0.5 * tan 45 deg             at (0.2500,0.5000)  predicted (0.5, 0.866, 0.5)  read (0.502, 0.8667, 0.502)  PASS
+     0.5 + 0.5 sin(30), 0.5 + 0.5 cos(30), turns/8        at (0.7500,0.5000)  predicted (0.006, 0.5771, 0.5968)  read (0.0078, 0.5765, 0.5961)  PASS
+[0] 27-pixel-p  (27-check-pixel-p.gdshader --kind rect --size 480x480)
+     corner (0.02, 0.02): UV echoed, outside the unit circle at (0.0200,0.0200)  predicted (0.02, 0.02, 0.0)  read (0.0196, 0.0196, 0.0)  PASS
+     middle: UV echoed 0.5, inside the unit circle        at (0.5000,0.5000)  predicted (0.5, 0.5, 1.0)  read (0.498, 0.498, 1.0)  PASS
+     corner (0.98, 0.98)                                  at (0.9800,0.9800)  predicted (0.98, 0.98, 0.0)  read (0.9765, 0.9765, 0.0)  PASS
+[0] 01-moon-fixed  (01-moon-fixed.gdshader --kind rect --size 480x480)
+     moon at 30 deg: predicted spot (right, BELOW middle) at (0.7598,0.6500)  predicted (0.5, 0.6, 0.75)  read (0.502, 0.6, 0.749)  PASS
+     the y-up mirror of that spot is empty                at (0.7598,0.3500)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     planet in the middle                                 at (0.5000,0.5000)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+[0] 22-angle-90  (22-check-orbit-angle.gdshader --kind rect --size 480x480 --set angle=1.570796)
+     moon at 90 deg: straight DOWN from the middle        at (0.5000,0.8000)  predicted (0.5, 0.6, 0.75)  read (0.502, 0.6, 0.749)  PASS
+     the y-up spot (straight up) is empty                 at (0.5000,0.2000)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+[0] 22-angle-30-compat  (22-check-orbit-angle.gdshader --kind rect --size 480x480 --set angle=0.523599 --renderer gl_compatibility)
+     moon at 30 deg, Compatibility renderer               at (0.7598,0.6500)  predicted (0.5, 0.6, 0.75)  read (0.502, 0.6, 0.749)  PASS
+     planet, Compatibility renderer                       at (0.5000,0.5000)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+     stage, Compatibility renderer                        at (0.0500,0.0500)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7922)  PASS
+[0] 02-orbit-w0.5  (02-orbit.gdshader --kind rect --size 480x480 --wait 0.5)
+[0] 03-orbit-fast-w0.5  (03-orbit-fast.gdshader --kind rect --size 480x480 --wait 0.5)
+[0] 04-aspect-1.7778-wide  (04-orbit-aspect.gdshader --kind rect --size 640x360 --wait 0.0 --set aspect=1.7778)
+[0] 05-moons-evenly-w0.3  (05-moons-evenly.gdshader --kind rect --size 480x480 --wait 0.3)
+[0] 23-meteor-a0.8-b2.0  (23-check-meteor-angles.gdshader --kind rect --size 480x480 --set a=0.8 --set b=2.0)
+     moon                                                 at (0.7090,0.7152)  predicted (0.5, 0.6, 0.75)  read (0.502, 0.6, 0.749)  PASS
+     meteor = moon + 0.2 * (cos b, sin b)                 at (0.6674,0.8061)  predicted (0.9, 0.65, 0.25)  read (0.898, 0.651, 0.251)  PASS
+     the other sign's spot is empty                       at (0.6674,0.6243)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     planet                                               at (0.5000,0.5000)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+[0] 23-meteor-a0.8-bm2.0  (23-check-meteor-angles.gdshader --kind rect --size 480x480 --set a=0.8 --set b=-2.0)
+     moon                                                 at (0.7090,0.7152)  predicted (0.5, 0.6, 0.75)  read (0.502, 0.6, 0.749)  PASS
+     meteor = moon + 0.2 * (cos b, sin b)                 at (0.6674,0.6243)  predicted (0.9, 0.65, 0.25)  read (0.898, 0.651, 0.251)  PASS
+     the other sign's spot is empty                       at (0.6674,0.8061)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     planet                                               at (0.5000,0.5000)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+[0] 06-meteor-orbit-w0.5  (06-meteor-orbit.gdshader --kind rect --size 480x480 --wait 0.5)
+[0] 07-meteor-reverse-w0.5  (07-meteor-reverse.gdshader --kind rect --size 480x480 --wait 0.5)
+[0] 12-flower-w0.3  (12-flower.gdshader --kind rect --size 480x480 --wait 0.3)
+[0] 24-atan  (24-check-atan.gdshader --kind rect --size 480x480)
+     R = t at right (3 o'clock)                           at (0.9000,0.5000)  predicted (0.4996, None, None)  read (0.498, 0.251, 0.498)  PASS
+     R = t at down (6 o'clock)                            at (0.5000,0.9000)  predicted (0.7504, None, None)  read (0.749, 0.502, 0.749)  PASS
+     R = t at up (12 o'clock)                             at (0.5000,0.1000)  predicted (0.2496, None, None)  read (0.251, 1.0, 0.251)  PASS
+     R = t at lower right (+45 deg)                       at (0.8000,0.8000)  predicted (0.625, None, None)  read (0.6235, 0.3765, 0.6235)  PASS
+     R = t at upper left (-135 deg)                       at (0.2000,0.2000)  predicted (0.125, None, None)  read (0.1255, 0.8745, 0.1255)  PASS
+     R = t at upper right (-45 deg)                       at (0.8000,0.2000)  predicted (0.3744, None, None)  read (0.3725, 0.1255, 0.3725)  PASS
+     R = t at lower left (+135 deg)                       at (0.2000,0.8000)  predicted (0.8756, None, None)  read (0.8745, 0.6275, 0.8745)  PASS
+     R = t just ABOVE the left axis (the seam)            at (0.1000,0.4975)  predicted (0.0012, None, None)  read (0.0, 0.7529, 0.0)  PASS
+     R = t just BELOW the left axis (the seam)            at (0.1000,0.5025)  predicted (0.9996, None, None)  read (1.0, 0.749, 1.0)  PASS
+     G = fract(angle/TAU + 0.25) just left of 12 o'clock  at (0.4975,0.1000)  predicted (None, 0.9988, None)  read (0.2471, 1.0, 0.2471)  PASS
+     G = fract(angle/TAU + 0.25) just right of 12 o'clock at (0.5025,0.1000)  predicted (None, 0.0004, None)  read (0.251, 0.0, 0.251)  PASS
+[0] 24-atan-odd-view-481  (24-check-atan.gdshader --kind rect --size 481x481)
+     top, exactly on the vertical axis (x = 0)            at (0.5000,0.1000)  predicted ()  read (0.251, 1.0, 0.251)  (reading)
+     bottom, exactly on the vertical axis                 at (0.5000,0.9000)  predicted ()  read (0.749, 0.502, 0.749)  (reading)
+     left, exactly on the horizontal axis (y = 0)         at (0.1000,0.5000)  predicted ()  read (0.0, 0.749, 0.0)  (reading)
+     right, exactly on the horizontal axis                at (0.9000,0.5000)  predicted ()  read (0.498, 0.251, 0.498)  (reading)
+[0] 25-atan-one-argument  (25-check-atan-one-argument.gdshader --kind rect --size 480x480)
+     (0.8, 0.8) lower right                               at (0.8000,0.8000)  predicted (0.75, None, None)  read (0.749, 0.0, 0.0)  PASS
+     (0.2, 0.2) upper left: SAME number as lower right    at (0.2000,0.2000)  predicted (0.75, None, None)  read (0.749, 0.0, 0.0)  PASS
+     (0.8, 0.2) upper right                               at (0.8000,0.2000)  predicted (0.25, None, None)  read (0.2471, 0.0, 0.0)  PASS
+     (0.2, 0.8) lower left: SAME number as upper right    at (0.2000,0.8000)  predicted (0.25, None, None)  read (0.251, 0.0, 0.0)  PASS
+[0] 08-atan-colors  (08-atan-colors.gdshader --kind rect --size 480x480)
+     mix at right (t about 0.5)                           at (0.9000,0.5000)  predicted (0.6348, 0.645, 0.4101)  read (0.6353, 0.6431, 0.4118)  PASS
+     mix at down (t about 0.75)                           at (0.5000,0.9000)  predicted (0.7677, 0.6475, 0.3299)  read (0.7686, 0.6471, 0.3294)  PASS
+     mix at up (t about 0.25)                             at (0.5000,0.1000)  predicted (0.5023, 0.6425, 0.4901)  read (0.502, 0.6431, 0.4902)  PASS
+     seam, just above the left axis: teal                 at (0.1000,0.4975)  predicted (0.37, 0.64, 0.57)  read (0.3725, 0.6392, 0.5686)  PASS
+     seam, just below the left axis: amber                at (0.1000,0.5025)  predicted (0.9, 0.65, 0.25)  read (0.898, 0.651, 0.251)  PASS
+[0] 09-atan-one-argument  (09-atan-one-argument.gdshader --kind rect --size 480x480)
+     lower right                                          at (0.8000,0.8000)  predicted (0.7675, 0.6475, 0.33)  read (0.7686, 0.6471, 0.3294)  PASS
+     upper left: same colour as lower right               at (0.2000,0.2000)  predicted (0.7675, 0.6475, 0.33)  read (0.7686, 0.6471, 0.3294)  PASS
+     upper right                                          at (0.8000,0.2000)  predicted (0.5025, 0.6425, 0.49)  read (0.502, 0.6431, 0.4902)  PASS
+     lower left: same colour as upper right               at (0.2000,0.8000)  predicted (0.5025, 0.6425, 0.49)  read (0.502, 0.6431, 0.4902)  PASS
+[0] 10-sweep-0.5  (10-sweep.gdshader --kind sprite --size 480x480 --set sweep=0.5)
+     UL: t = 0.125, sweep 0.5: shown                      at (0.3888,0.3888)  predicted (0.3725, 0.6392, 0.5686)  read (0.3725, 0.6392, 0.5686)  PASS
+     UR: t = 0.375, sweep 0.5: shown                      at (0.6133,0.3888)  predicted (0.3725, 0.6392, 0.5686)  read (0.3725, 0.6392, 0.5686)  PASS
+     LR: t = 0.625, sweep 0.5: hidden                     at (0.6133,0.6133)  predicted (0.851, 0.8353, 0.7922)  read (0.851, 0.8353, 0.7922)  PASS
+     LL: t = 0.875, sweep 0.5: hidden                     at (0.3888,0.6133)  predicted (0.851, 0.8353, 0.7922)  read (0.851, 0.8353, 0.7922)  PASS
+[0] 11-sweep-top-0.5  (11-sweep-top.gdshader --kind sprite --size 480x480 --set sweep=0.5)
+     UL: t = 0.875, sweep 0.5: hidden                     at (0.3888,0.3888)  predicted (0.851, 0.8353, 0.7922)  read (0.851, 0.8353, 0.7922)  PASS
+     UR: t = 0.125, sweep 0.5: shown                      at (0.6133,0.3888)  predicted (0.3725, 0.6392, 0.5686)  read (0.3725, 0.6392, 0.5686)  PASS
+     LR: t = 0.375, sweep 0.5: shown                      at (0.6133,0.6133)  predicted (0.3725, 0.6392, 0.5686)  read (0.3725, 0.6392, 0.5686)  PASS
+     LL: t = 0.625, sweep 0.5: hidden                     at (0.3888,0.6133)  predicted (0.851, 0.8353, 0.7922)  read (0.851, 0.8353, 0.7922)  PASS
+[0] 26-flower-static-8  (26-check-flower-static.gdshader --kind rect --size 480x480 --set petals=8)
+     angle    0.0 deg, radius 0.65: inside (edge 0.700)   at (0.8250,0.5000)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+     angle    0.0 deg, radius 0.75: outside (edge 0.700)  at (0.8750,0.5000)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     angle   22.5 deg, radius 0.45: outside (edge 0.400)  at (0.7079,0.5861)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     angle   22.5 deg, radius 0.55: outside (edge 0.400)  at (0.7541,0.6052)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     angle   45.0 deg, radius 0.65: inside (edge 0.700)   at (0.7298,0.7298)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+     angle   45.0 deg, radius 0.75: outside (edge 0.700)  at (0.7652,0.7652)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     angle  162.0 deg, radius 0.65: outside (edge 0.429)  at (0.1909,0.6004)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+     angle -162.0 deg, radius 0.65: outside (edge 0.429)  at (0.1909,0.3996)  predicted (0.85, 0.84, 0.79)  read (0.851, 0.8392, 0.7882)  PASS
+[0] 08-atan-colors-compat  (08-atan-colors.gdshader --kind rect --size 480x480 --renderer gl_compatibility)
+     mix at right (t about 0.5), Compatibility            at (0.9000,0.5000)  predicted (0.6348, 0.645, 0.4101)  read (0.6353, 0.6471, 0.4118)  PASS
+     mix at down (t about 0.75), Compatibility            at (0.5000,0.9000)  predicted (0.7677, 0.6475, 0.3299)  read (0.7686, 0.6471, 0.3294)  PASS
+     seam, just above the left axis: teal, Compatibility  at (0.1000,0.4975)  predicted (0.37, 0.64, 0.57)  read (0.3686, 0.6392, 0.5686)  PASS
+     seam, just below the left axis: amber, Compatibility at (0.1000,0.5025)  predicted (0.9, 0.65, 0.25)  read (0.902, 0.651, 0.251)  PASS
+[0] 10-sweep-0.5-compat  (10-sweep.gdshader --kind sprite --size 480x480 --set sweep=0.5 --renderer gl_compatibility)
+     UL: t = 0.125, sweep 0.5: shown, Compatibility       at (0.3888,0.3888)  predicted (0.3725, 0.6392, 0.5686)  read (0.3725, 0.6392, 0.5686)  PASS
+     UR: t = 0.375, sweep 0.5: shown, Compatibility       at (0.6133,0.3888)  predicted (0.3725, 0.6392, 0.5686)  read (0.3725, 0.6392, 0.5686)  PASS
+     LR: t = 0.625, sweep 0.5: hidden, Compatibility      at (0.6133,0.6133)  predicted (0.851, 0.8353, 0.7922)  read (0.851, 0.8353, 0.7922)  PASS
+     LL: t = 0.875, sweep 0.5: hidden, Compatibility      at (0.3888,0.6133)  predicted (0.851, 0.8353, 0.7922)  read (0.851, 0.8353, 0.7922)  PASS

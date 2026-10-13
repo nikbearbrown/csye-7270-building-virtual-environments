@@ -1,0 +1,493 @@
+{
+ "B21": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float shift : hint_range(-0.2, 0.2) = 0.0;\n\nvoid fragment() {\n\tvec2 spot = SCREEN_UV + vec2(shift, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+   "codeFile": "lab-shaders/08-shift.gdshader",
+   "cues": [
+    {
+     "at": 0.31,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "reading-the-screen/shift.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · shift swept by script",
+   "readouts": [
+    {
+     "at": 0.9,
+     "text": "shift 0.1",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Bend What Is Behind"
+  },
+  "capture_spec": "C09: scene_c09_shift.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Window 0.52 x 0.42 at (0.20, 0.12); shift 0 until u = 0.56, then 0.10 by u = 0.90. Verified: 3,640 of 3,640 sampled pixels show the meadow at x + shift (for 0.1 and for -0.05).",
+  "visual_intent": "Act title 'Bend What Is Behind' (serif 40) top-left. Code card at left (the 9-line shift shader); at right a real Godot window: one large window in a cream frame over the meadow. The shift uniform sweeps from 0 to 0.1 and the picture inside the frame slides sideways against the picture outside; the sand path breaks at the frame's edges. Label 'shift 0.1'.",
+  "motion_claim": "The picture inside the frame slides to the left while the picture outside stays put.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "spot line highlighted"
+   },
+   {
+    "at": 0.57,
+    "event": "shift uniform highlighted; the sweep begins"
+   },
+   {
+    "at": 0.9,
+    "event": "label 'shift 0.1'"
+   }
+  ],
+  "runner_up": "manim arrow on a picture",
+  "why": "A real window sliding against its surroundings shows the break at the frame's edge, which an arrow only implies.",
+  "sparse": false
+ },
+ "B22": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(SCREEN_UV.y * 60.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+   "codeFile": "lab-shaders/09-ripple-still.gdshader",
+   "cues": [
+    {
+     "at": 0.19,
+     "lines": [
+      7
+     ],
+     "label": "sin: a smooth wave between -1 and 1"
+    },
+    {
+     "at": 0.64,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "reading-the-screen/ripple-still.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · amount grown by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C10: scene_c10_ripple_still.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. Window 0.56 x 0.52 at (0.20, 0.08); amount 0 until u = 0.44, then 0.012 by u = 0.92. Verified: the tile edge in ten rows sits at 560 minus 0.01 sin(60 y) times 1280, within 0.5 px (0.6 in Compatibility; the edge is found to a whole pixel).",
+  "visual_intent": "Code card at left (the 10-line ripple shader without time); at right a real Godot window: a large window in a cream frame; as the amount grows the straight tile edges inside become a chevron of ripples and the flowers stretch sideways.",
+  "motion_claim": "Straight lines inside the frame start to ripple as the amount grows.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "sine line highlighted"
+   },
+   {
+    "at": 0.64,
+    "event": "the push line highlighted"
+   },
+   {
+    "at": 0.92,
+    "event": "ripples at full amount"
+   }
+  ],
+  "runner_up": "manim plot of sin(y) with rows shifted",
+  "why": "The real ripple is the claim; the plot would explain the function but not what a viewer will see in a game.",
+  "sparse": false
+ },
+ "B23": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(SCREEN_UV.y * 60.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+   "codeFile": "lab-shaders/10-ripple.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      7
+     ],
+     "label": "TIME: seconds on one clock shared by the whole game"
+    }
+   ],
+   "video": "reading-the-screen/ripple-time.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+   "readouts": [
+    {
+     "at": 0.6,
+     "text": "time: one clock",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C11: scene_c11_ripple_time.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick, so TIME is repeatable), Forward+, length = the beat's audio. Same window as C10, amount 0.01.",
+  "visual_intent": "Code card at left (the 10-line ripple shader with TIME); at right the same large window with the ripples now travelling, live. Label 'time: one clock'.",
+  "motion_claim": "The ripples travel through the window, in step across it.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "the sine line with TIME highlighted"
+   },
+   {
+    "at": 0.6,
+    "event": "label 'time: one clock'"
+   }
+  ],
+  "runner_up": "ShaderLab stills",
+  "why": "Travel is motion; stills cannot show it.",
+  "sparse": false
+ },
+ "B24": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(SCREEN_UV.y * 60.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tCOLOR.rgb = texture(screen_texture, spot).rgb;\n}",
+   "codeFile": "lab-shaders/10-ripple.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "reading-the-screen/amount.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · amount swept by script",
+   "readouts": [
+    {
+     "at": 0.4,
+     "text": "0.01",
+     "x": 0.5,
+     "y": 0.94
+    },
+    {
+     "at": 0.9,
+     "text": "0.06",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C12: scene_c12_amount.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. As C11; amount 0.002 rising to 0.01 by u = 0.30, held to u = 0.60, then to 0.06 by u = 0.95.",
+  "visual_intent": "Code card at left with the amount line lit; at right the travelling-ripple window while amount sweeps: calm ripples at 0.01, then the picture shears into streaks at 0.06. Readouts '0.01' then '0.06'.",
+  "motion_claim": "The ripples grow from calm to torn as the number grows.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "amount line highlighted"
+   },
+   {
+    "at": 0.4,
+    "event": "readout 0.01: ripples read as water"
+   },
+   {
+    "at": 0.9,
+    "event": "readout 0.06: the picture tears"
+   }
+  ],
+  "runner_up": "manim plot of amplitude",
+  "why": "Seeing the picture tear is the lesson; a number alone does not say how much is too much.",
+  "sparse": false
+ },
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture,\n\t\tfilter_linear_mipmap;\nuniform float blur : hint_range(0.0, 5.0) = 0.0;\n\nvoid fragment() {\n\tCOLOR.rgb = textureLod(screen_texture, SCREEN_UV, blur).rgb;\n}",
+   "codeFile": "lab-shaders/14-blur.gdshader",
+   "cues": [
+    {
+     "at": 0.21,
+     "lines": [
+      4
+     ],
+     "label": "mipmap: smaller, blurrier copies of a texture"
+    },
+    {
+     "at": 0.65,
+     "lines": [
+      8
+     ],
+     "label": "textureLod: reads one chosen level"
+    }
+   ],
+   "video": "reading-the-screen/blur.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · blur level swept by script",
+   "readouts": [
+    {
+     "at": 0.88,
+     "text": "level 4",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13: scene_c13_blur.gd, NATIVE route: a 1920 x 1080 SubViewport at scale 1, the scene built for a 1920 x 1080 canvas (--native; NOT the 4K route, see CAPTURE-PLAN.md 'Routes'), 30 fps, Forward+, length = the beat's audio. Window 0.56 x 0.56 at (0.20, 0.14); blur 0 until u = 0.58, then exactly 4.0 by u = 0.84, held. Verified: largest step between neighbouring pixels 0.377 at level 0, 0.012 at level 2, 0.008 at level 4 (1280 x 720 window, verify4 L8a); mean difference between the level-4 picture and the sharp one inside the window 0.028 on this route, 0.017 on the 4K route, 0.037 in a plain 1280 x 720 window (verify10 A).",
+  "visual_intent": "Code card at left (the 9-line blur shader; the declaration runs over two lines); at right a real Godot window: a large window in a cream frame; as the blur level rises from 0 to 4 the meadow inside turns to frosted glass while the picture outside stays sharp. Label 'level 4' once the level has reached it.",
+  "motion_claim": "The picture inside the frame blurs progressively as the level rises.",
+  "show": [
+   {
+    "at": 0.22,
+    "event": "filter_linear_mipmap highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "textureLod line highlighted; the sweep begins"
+   },
+   {
+    "at": 0.88,
+    "event": "label 'level 4'"
+   }
+  ],
+  "runner_up": "manim stack of shrinking images",
+  "why": "Frosted glass appearing is the whole claim; the stack of smaller copies is explained by the narration.",
+  "sparse": false
+ },
+ "B26": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reading-the-screen/ride-glued.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the world scrolls (scripted)",
+   "readouts": [
+    {
+     "at": 0.18,
+     "text": "UV: rides along",
+     "x": 0.23,
+     "y": 0.08
+    },
+    {
+     "at": 0.6,
+     "text": "screen UV: stays",
+     "x": 0.73,
+     "y": 0.08
+    },
+    {
+     "at": 0.18,
+     "text": "UV.y",
+     "x": 0.23,
+     "y": 0.92
+    },
+    {
+     "at": 0.6,
+     "text": "SCREEN_UV.y",
+     "x": 0.73,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C14: scene_c14_ride_glued.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps, Forward+, length = the beat's audio. WorldRoot (meadow with a 2-cell bleed + both windows) moves down 140 px between u = 0.12 and 0.52 and back by u = 0.96. Windows 0.30 x 0.46 at (0.08, 0.14) with 13-ripple-ride and at (0.58, 0.14) with 09-ripple-still; no TIME. Verified: after a 100 px move the glued window's edge offsets are unchanged in 6 of 6 rows; the ride window's changed in 6 of 6.",
+  "visual_intent": "Two windows in cream frames over a meadow that scrolls down and back. Left: ripples from the window's own address (UV.y); right: ripples from the screen address (SCREEN_UV.y). Both ripple fields are frozen. Labels 'UV: rides along' and 'screen UV: stays'; small labels 'UV.y' and 'SCREEN_UV.y' under the windows.",
+  "motion_claim": "On the left the ripples move down with the window; on the right they stay at the same screen rows while the window slides over them.",
+  "show": [
+   {
+    "at": 0.18,
+    "event": "label 'UV: rides along' on the left window"
+   },
+   {
+    "at": 0.6,
+    "event": "label 'screen UV: stays' on the right window"
+   },
+   {
+    "at": 0.88,
+    "event": "the scroll returns"
+   }
+  ],
+  "runner_up": "manim two sine plots",
+  "why": "Relative motion between a window and its ripples is the claim and needs the real thing moving; plots would not show it.",
+  "sparse": false
+ },
+ "B27": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec3 water : source_color = vec3(0.2, 0.5, 0.8);\nuniform float amount : hint_range(0.0, 0.05) = 0.01;\n\nvoid fragment() {\n\tfloat wave = sin(UV.y * 25.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * amount, 0.0);\n\tvec3 behind = texture(screen_texture, spot).rgb;\n\tCOLOR.rgb = mix(behind, water, 0.5);\n}",
+   "codeFile": "lab-shaders/11-water.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      8,
+      9
+     ]
+    },
+    {
+     "at": 0.29,
+     "lines": [
+      11
+     ]
+    },
+    {
+     "at": 0.43,
+     "lines": [
+      4
+     ],
+     "label": "source_color: shows a color picker"
+    }
+   ],
+   "video": "reading-the-screen/pool-tint.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live; colour changed by script at the end",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C15: scene_c15_pool_tint.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. Pool 0.40 x 0.40 at (0.06, 0.52) with 11-water; water = (0.2, 0.5, 0.8) until u = 0.78, then to (0.6, 0.3, 0.8) by u = 0.94. Verified: pool pixel = 0.5 x meadow + 0.5 x water (both renderers); the shader reports a colour hint (no alpha) for water.",
+  "visual_intent": "Code card at left (the 12-line water shader); at right a real Godot window: the pool, a plain rectangle in the lower left, tinted blue over the bent meadow, rippling live. Near the end the water colour changes blue to violet, as an artist would with the colour picker.",
+  "motion_claim": "The pool ripples and, at the end, its colour changes from blue to violet.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "wave and spot lines highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "mix line highlighted"
+   },
+   {
+    "at": 0.58,
+    "event": "water uniform highlighted"
+   },
+   {
+    "at": 0.84,
+    "event": "water colour changes"
+   }
+  ],
+  "runner_up": "manim blend diagram",
+  "why": "The tinted, rippling pool is the result and the colour change is the reason for the hint; both are only real in a render.",
+  "sparse": false
+ },
+ "B28": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec3 water : source_color = vec3(0.2, 0.5, 0.8);\n\nvoid fragment() {\n\tif (UV.y < 0.1 + 0.03 * sin(UV.x * 30.0 + TIME * 2.0)) {\n\t\tdiscard;\n\t}\n\tfloat wave = sin(UV.y * 25.0 + TIME * 4.0);\n\tvec2 spot = SCREEN_UV + vec2(wave * 0.01, 0.0);\n\tvec3 behind = texture(screen_texture, spot).rgb;\n\tCOLOR.rgb = mix(behind, water, 0.5);\n}",
+   "codeFile": "lab-shaders/12-pool.gdshader",
+   "cues": [
+    {
+     "at": 0.17,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      7,
+      8,
+      9
+     ]
+    },
+    {
+     "at": 0.72,
+     "lines": [
+      8
+     ],
+     "label": "discard: throws the pixel away"
+    }
+   ],
+   "video": "reading-the-screen/pool.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C01 again (see B01): reuse the same video file. Verified: the first changed row down the pool is a different UV.y at five columns (0.080 to 0.115 in Forward+) and the meadow above it is untouched.",
+  "visual_intent": "Code card at left (the 14-line pool shader); at right the same pool capture as the opening: the wavy top edge ripples, and above it the grass shows through.",
+  "motion_claim": "The top edge of the pool undulates while the grass above it stays untouched.",
+  "show": [
+   {
+    "at": 0.16,
+    "event": "the edge test highlighted"
+   },
+   {
+    "at": 0.58,
+    "event": "the whole discard block highlighted"
+   },
+   {
+    "at": 0.76,
+    "event": "the discard line highlighted"
+   }
+  ],
+  "runner_up": "ShaderLab stills",
+  "why": "A wavy edge is only an edge when it moves.",
+  "sparse": false
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reading-the-screen/pan.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the world scrolls (scripted)",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "pool scrolls too",
+     "x": 0.5,
+     "y": 0.94
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C16: scene_c16_pan.gd, 1280 x 720 canvas through the 4K SubViewport route, 30 fps (fixed tick), Forward+, length = the beat's audio. WorldRoot (meadow with a 2-cell bleed, the 12-pool pool, the player) moves down 110 px between u = 0.54 and 0.74 and back between u = 0.80 and 0.98.",
+  "visual_intent": "A real Godot window: the meadow, the finished pool and the player all scroll down together and back. The pool's ripples travel with the pool. Label 'pool scrolls too'.",
+  "motion_claim": "The whole scene pans and the pool stays glued to the ground, rippling.",
+  "show": [
+   {
+    "at": 0.54,
+    "event": "the pan starts"
+   },
+   {
+    "at": 0.62,
+    "event": "label 'pool scrolls too'"
+   },
+   {
+    "at": 0.9,
+    "event": "the pan returns"
+   }
+  ],
+  "runner_up": "ShaderLab stills",
+  "why": "A pan is motion and the pool riding the ground is the claim.",
+  "sparse": false
+ }
+}

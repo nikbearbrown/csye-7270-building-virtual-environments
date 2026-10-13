@@ -1,0 +1,345 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat offset = mix(-1.5, 1.5, fract(TIME * 0.5));\n\tfloat d = abs((p.y - m * p.x) / sqrt(1.0 + m * m) + offset);\n\tfloat band = step(d, thickness) * COLOR.a;\n\tCOLOR.rgb = mix(COLOR.rgb, vec3(1.0), band);\n}",
+   "codeFile": "lab-shaders/11-shine-clock.gdshader",
+   "cues": [],
+   "video": "lines-and-shine/c01-hook.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the finished shine · scripted clock",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "A Line as a Test"
+  },
+  "capture_spec": "C01: Lab blob sprite (teal test sprite, scale to fit), lab-shaders/11-shine-clock.gdshader (TIME-driven, angle 35, thickness 0.1 as in the file); 12 s at 30 fps, Forward+, offline fixed tick; the sweep period is 2 s so the 12 s clip loops seamlessly; no input.",
+  "visual_intent": "Act title 'A Line as a Test' (serif 40) top-left. A real Godot render in a framed window on the cream stage: the teal test sprite with a white diagonal glint that slides across it from upper left to lower right, rests for a moment off the sprite, and repeats. Label: 'the finished shine'.",
+  "motion_claim": "The white band sweeps across the sprite and stays inside its outline.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "sprite, window labelled, title on the card"
+   },
+   {
+    "at": 0.2,
+    "event": "first glint crosses the sprite"
+   },
+   {
+    "at": 0.6,
+    "event": "next glint crosses"
+   }
+  ],
+  "runner_up": "manim drawing of a stripe crossing a blob",
+  "why": "A real render is the honest picture of the goal; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_SchoolLine",
+  "visual_intent": "Axes on the cream stage with a warm-grey line y = m x + b crossing the vertical axis above the origin, a terracotta dot marking b. A right triangle (one step across, m up) rides along the line under the label 'slope m: up per step across'. Then the line slides down until it passes through the origin: the b dot lands on 0 and the label becomes 'y = m x'.",
+  "motion_claim": "The slope triangle rides along the line, then b shrinks to zero as the line settles through the middle.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axes, line, b dot"
+   },
+   {
+    "at": 0.3,
+    "event": "triangle rides along the line (slope)"
+   },
+   {
+    "at": 0.58,
+    "event": "b dot ringed: its starting height"
+   },
+   {
+    "at": 0.72,
+    "event": "line slides to the middle; b = 0"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable listing m and b",
+  "why": "A rise-over-run triangle that moves along the line is the meaning of slope; a table of two terms would only name them.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "manim",
+  "class": "B03_CenterTheAddress",
+  "visual_intent": "A square with corner labels (0, 0) at the top left and (1, 1) at the bottom right and its second axis pointing down (shader_kit uv_square). A terracotta dot sits at the top-left corner. The labels morph to -1, 0 and 1 and the dot glides to the middle; the formula 'p = UV × 2 − 1' appears under the square.",
+  "motion_claim": "The zero moves from the corner to the middle of the square.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "UV square, dot at the corner"
+   },
+   {
+    "at": 0.38,
+    "event": "labels morph, dot glides to the middle (settled by 50 %)"
+   },
+   {
+    "at": 0.68,
+    "event": "formula appears"
+   }
+  ],
+  "runner_up": "ShaderLab with the line `vec2 p = UV * 2.0 - 1.0;` over a gradient",
+  "why": "Moving the zero is a change of coordinate system; Manim shows the labels and the dot move, a gradient would not.",
+  "sparse": true
+ },
+ "B04": {
+  "lane": "manim",
+  "class": "B04_FlipUp",
+  "visual_intent": "The centered square with its vertical axis pointing down (+1 at the bottom). A terracotta dot sits in the upper right labelled (0.5, -0.5). The vertical axis flips to point up and the dot's label becomes (0.5, 0.5) while the dot stays where it is on screen; a short warm-grey line y = 0.5 x then draws, climbing to the right, under the label 'p.y = -p.y'.",
+  "motion_claim": "The vertical axis flips and the dot's second number changes sign while the dot does not move.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "square, y pointing down, dot labelled (0.5, -0.5)"
+   },
+   {
+    "at": 0.3,
+    "event": "axis flips; label becomes (0.5, 0.5) (settled by 50 %)"
+   },
+   {
+    "at": 0.6,
+    "event": "line climbs to the right"
+   }
+  ],
+  "runner_up": "ShaderLab showing the signed map upside down then upright",
+  "why": "A relabelling of the same dot on the same screen is the claim; only a drawing can hold the dot still while the numbers change.",
+  "sparse": true
+ },
+ "B05": {
+  "lane": "manim",
+  "class": "B05_TheTest",
+  "visual_intent": "Left: the equation 'y = m x'. The 'm x' term travels across the equals sign and the equation becomes 'y − m x = 0', captioned 'the test'. Right: the square with the line m = 0.5 and a terracotta dot riding along it, labelled '0'; then a second dot off the line reads +0.6.",
+  "motion_claim": "A term crosses the equals sign while a dot rides the line with the value 0 on it.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "y = m x, line and dot"
+   },
+   {
+    "at": 0.25,
+    "event": "m x crosses to the left side"
+   },
+   {
+    "at": 0.4,
+    "event": "'y − m x = 0' captioned 'the test' (settled by 50 %)"
+   },
+   {
+    "at": 0.57,
+    "event": "the dot on the line reads 0"
+   },
+   {
+    "at": 0.75,
+    "event": "a second dot off the line reads +0.6"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of the single line y - m * x",
+  "why": "An equation that rearranges itself is a Transform; the term visibly changing sides is the step the voice names.",
+  "sparse": true
+ },
+ "B06": {
+  "lane": "manim",
+  "class": "B06_ThreeDots",
+  "visual_intent": "The test square with the line m = 0.5. Three terracotta dots land at across = 0.4: on the line (label 0), above it (label +0.6) and below it (label -0.6). Warm-grey dashed vertical connectors then run from the two outer dots to the line, labelled 'straight up' and 'straight down', each 0.6 long.",
+  "motion_claim": "Dots land one at a time with their numbers; dashed verticals then measure the gap straight up and down.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "line, dot on the line: 0"
+   },
+   {
+    "at": 0.33,
+    "event": "dot above: +0.6"
+   },
+   {
+    "at": 0.43,
+    "event": "dot below: −0.6 (all three settled by 50 %)"
+   },
+   {
+    "at": 0.78,
+    "event": "dashed vertical gaps, 0.6 each"
+   }
+  ],
+  "runner_up": "ShaderLab with three probe readouts",
+  "why": "Exact arithmetic with vertical gaps drawn is the claim, and the gaps set up the distance argument later.",
+  "sparse": true
+ },
+ "B07": {
+  "lane": "manim",
+  "class": "B07_Parallel",
+  "visual_intent": "The same square: the line m = 0.5 and a warm-grey dashed parallel line through the 'above' dot. A terracotta dot slides along the parallel line while its label stays '+0.6'. Then three parallel warm-grey lines appear labelled -0.6, 0 and +0.6.",
+  "motion_claim": "The dot moves along the parallel line and its number does not change.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "line, parallel line, dot labelled +0.6"
+   },
+   {
+    "at": 0.35,
+    "event": "dot slides, label stays +0.6 (settled by 50 %)"
+   },
+   {
+    "at": 0.62,
+    "event": "three parallel lines with −0.6, 0, +0.6"
+   }
+  ],
+  "runner_up": "ShaderLab signed map with a moving probe",
+  "why": "A number that stays put while a dot moves is only visible in a drawing; the shader picture comes next.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float slope = 0.5;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat v = p.y - slope * p.x;\n\tCOLOR = vec4(0.65 + 0.2 * v, 0.65, 0.65 - 0.2 * v, 1.0);\n}",
+   "codeFile": "lab-shaders/01-signed-test.gdshader",
+   "cues": [
+    {
+     "at": 0.02,
+     "lines": [
+      1
+     ],
+     "label": "shader_type canvas_item: the first line says this shader is for 2D drawing"
+    },
+    {
+     "at": 0.1,
+     "lines": [
+      5
+     ],
+     "label": "fragment(): runs once for each pixel the shape covers; sets its color"
+    },
+    {
+     "at": 0.28,
+     "lines": [
+      6,
+      7,
+      8
+     ]
+    },
+    {
+     "at": 0.36,
+     "lines": [
+      9
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c02-signed.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · slope 0.5 · the card is a square sprite",
+   "readouts": [
+    {
+     "at": 0.42,
+     "text": "+0.6",
+     "x": 0.59,
+     "y": 0.18
+    },
+    {
+     "at": 0.88,
+     "text": "0",
+     "x": 0.59,
+     "y": 0.42
+    },
+    {
+     "at": 0.66,
+     "text": "−0.6",
+     "x": 0.59,
+     "y": 0.66
+    }
+   ],
+   "rings": [],
+   "caption": "vector: a bundle of two to four numbers (vec2, vec4) · COLOR: the color of the pixel being drawn",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: Lab card, lab-shaders/01-signed-test.gdshader, slope 0.5, still PNG (640 x 360 frame, card 288 px centred). Probes: p = (0.40, 0.80) reads +0.593, (0.40, 0.20) reads +0.005, (0.40, -0.40) reads -0.603.",
+  "visual_intent": "Code card at left (the ten-line shader) whose first two lines carry one-line labels ('shader_type canvas_item: the first line says this shader is for 2D drawing', 'fragment(): runs once for each pixel the shape covers; sets its color'); at right a real Godot window with a square card showing the signed test: warm at the upper left, cool at the lower right, a grey strip between. Three readouts land on the card at the three points from the drawing: +0.6, 0 and −0.6.",
+  "motion_claim": "Readouts land on the warm, cool and grey regions in the order the voice names them.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "shader_type line labelled"
+   },
+   {
+    "at": 0.1,
+    "event": "fragment() line labelled"
+   },
+   {
+    "at": 0.28,
+    "event": "address and test lines highlighted"
+   },
+   {
+    "at": 0.36,
+    "event": "COLOR line highlighted"
+   },
+   {
+    "at": 0.42,
+    "event": "+0.6 on the warm side"
+   },
+   {
+    "at": 0.66,
+    "event": "−0.6 on the cool side"
+   },
+   {
+    "at": 0.88,
+    "event": "0 on the grey strip"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The same three numbers from the drawing, now computed by every pixel, side by side with the code that does it.",
+  "sparse": false
+ },
+ "B09": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float slope = 0.5;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat v = p.y - slope * p.x;\n\tCOLOR = vec4(0.65 + 0.2 * v, 0.65, 0.65 - 0.2 * v, 1.0);\n}",
+   "codeFile": "lab-shaders/01-signed-test.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c03-slope-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · slope swept by script",
+   "readouts": [
+    {
+     "at": 0.06,
+     "text": "slope 0",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.67,
+     "text": "slope 1",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: Lab card, 01-signed-test, slope 0 to 1.5 linearly over the clip (6 s), Forward+; slope is 1 at 67 percent of the clip.",
+  "visual_intent": "Code card at left with the uniform line highlighted; at right a real Godot card whose warm and cool halves pivot around the middle as slope sweeps from 0 to 1.5: flat at 0, a diagonal at 1.",
+  "motion_claim": "The grey strip rotates about the centre as the slope grows.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "slope 0: flat"
+   },
+   {
+    "at": 0.67,
+    "event": "slope 1: a diagonal"
+   }
+  ],
+  "runner_up": "manim line pivoting about the origin",
+  "why": "The real picture pivoting is stronger than a drawing of it, and it is the same shader the viewer just read.",
+  "sparse": false
+ }
+}

@@ -1,6 +1,23 @@
 # CSYE 7270 — Build and review status
 
-Updated: October 6, 2026.
+Updated: October 12, 2026.
+
+## Remaining assignment pacing — October 12, 2026
+
+The [Fall 2026 assignment schedule](assignments/fall-2026-assignment-schedule.md) records the four existing live CSYE deadlines and the seven reference-course dates read from Canvas. Planned deadlines for Assignments 4–10 are October 25, November 3, November 13, November 23, December 3, December 13 and December 20, all at 11:59 pm America/New_York. They have been added to the local drafts and indexes, not posted to Canvas. Assignment 4 now explicitly refines the retained October 19 five-point GDD and covers Modules 4–5. The final brief starts October 19 with preparation targets throughout the term.
+
+Live CSYE Canvas contains an unpublished 250-point Final Portfolio Piece; the local Assignment 10 draft remains 100 points. This date-planning pass changes neither grading value. The generated package still has ten numbered assignments and blank due-date metadata; it does not recreate the live separate GDD or reconcile legacy Canvas records. The Word syllabus has not been revised in this pass. Course pages were read through the browser; no live import, editing or publication occurred.
+
+## Conducting AI preface and engine comparisons — October 12, 2026
+
+At Professor Bear's direction, the course now begins with an unnumbered **Conducting AI Through Games and Virtual Worlds** preface before Module 0. The [preface chapter](chapters/preface-conducting-ai.md), module lesson, links and six-question practice quiz establish Conducting AI as the recurring method. [Teaching foundation](teaching-foundation.md) maps delegation, evidence and human judgment across all modules.
+
+All numbered lessons now have a Conducting AI decision section and close with separate Unity and Unreal comparison pointers. Existing comparative tables and their historical documentation caveats are preserved. The preface explains Godot's direct file-and-command workflow without requiring MCP, distinguishes other engines' scripting routes, and dates vendor maturity claims to their cited evidence. The existing Why Godot film has a course-alignment note; no film or narration was rendered or regenerated.
+
+The builder includes the preface first without changing existing module identities or numbers. The generated Canvas syllabus receives a preface note; the Word syllabus itself still predates this addition. Historical completion notes below retain their original scope. No human review or book gate is signed by this revision.
+
+Verification: [source checker](pantry/reports/preface-course-checks-2026-10-12.txt) reports 64 files, 0 failures and 22 warnings (six legacy assignment warnings and sixteen lesson-length warnings after the requested closing material). [Local Canvas build](pantry/reports/preface-canvas-build-2026-10-12.txt) reports 17 modules, 40 pages, 10 assignments and 17 quizzes; package integrity passes. Checked the first-module placement, sequential positions, retained Module 0–15 identifiers, unpublished state, generated comparisons and syllabus preface note. There are now 102 ungraded quiz questions. A live Canvas import remains untested.
+
 
 ## Executive summary
 
@@ -18,6 +35,7 @@ Updated: October 6, 2026.
 - [x] Sixteen Helpful-links pages. Every external link was checked live (230 URLs; the one that blocks automated checkers was left off).
 - [x] Sixteen ungraded practice quizzes, six questions each. Three independent blind checkers answered all 96 and matched the keys. They also found the quizzes were guessable by length (the correct choice was the longest in 81 of 96 questions); the distractors were rewritten (now 17 of 96), and the checker enforces it.
 - [x] Assignments 3 to 10, each fact-checked by an independent agent against the chapters, the example records, the Godot docs and the live Walker repositories. Their errors were fixed; their design concerns are listed below.
+- [x] **Assignment 3 was rewritten on 2026-10-06** at Professor Bear's request ("a very basic … Claude, the Blender MCP, and Blender to make a very simple model … a game asset or two, let's say three simple 3D assets, preferably some that they think for their game"). It is now [`03-first-3d-assets-with-blender-mcp.md`](assignments/03-first-3d-assets-with-blender-mcp.md): three simple assets built with Claude through the Blender MCP, one hand edit, exported as `.glb` and shown in a small Godot 3D scene; same 60 / 10 / 10 / 20 grading. The heavier first version (a prop with a collider, physics layers and mutation tests) is saved in `pantry/backups/` and can become part of a later assignment.
 - [x] A Canvas package and per-page HTML pastes, built by `scripts/build_course.py` and checked by `scripts/check_course.py`. See [`canvas/README.md`](canvas/README.md).
 - [ ] **Import test in a live Canvas.** Never done; nothing here has access to one. The least certain part is quizzes inside modules.
 - [ ] Human review of every module, quiz and assignment. No student has tried any assignment.
@@ -26,7 +44,7 @@ Updated: October 6, 2026.
 ### Decisions that are Professor Bear's
 
 1. **Group project.** The syllabus says "a group project and an individual project." All ten assignments are individual. Say where the group project goes (for example, a team version of Assignment 8 or 10) and it will be written.
-2. **Assignment 10 is probably too big for about 8 to 10 days at 100 points.** It replaces a 300-point final and asks for a game-AI element with tests and an audit, persistence, a keyboard-only menu, a clean-clone rebuild, an export attempt, a GDD update, two 4K films, and every earlier layer still working. It opens with Module 14 (about Day 92) and Module 15, which teaches export and persistence, arrives the day before it is due. Options: move the final project's due date, trim the requirements, or give it more weight.
+2. **Final-project workload and grading.** The October 12 plan releases the final brief with the October 19 GDD, stages the systems feature, persistence, menu and export rehearsal through November, and reserves December 13–20 for integration and delivery. This replaces the old late-release plan. Workload still needs human review. The live unpublished final portfolio is 250 points, while local Assignment 10 is 100; reconcile before posting.
 3. **Assignments 4 to 6 and 8 are heavy too,** mostly because each needs a native-4K Brutalist film on a large toolchain (Node/Remotion, a local voice model, ffmpeg), and render time is not budgeted. The chapters' own runs hit Claude Code session limits repeatedly. Consider whether every assignment needs a film.
 4. **Push the course repository.** `chapters/` and `examples/` are not on GitHub, so every chapter and example link in the Canvas pages is dead, and Assignment 6 Part A cannot be done without a local `examples/` folder. This needs your word.
 5. **Publish Walker's `/gdd` skill,** or accept the public prompt as the permanent route. Public Walker `main` has `prompts/zelda-gdd.md` but no `gdd/` folder. Assignment 4 tells students to keep the skill out of their pushed repositories until you decide.
@@ -34,6 +52,9 @@ Updated: October 6, 2026.
 7. **Windows and Linux were never tried.** Every recorded command ran on macOS; `timeout` and the Blender path differ elsewhere.
 8. **The Brutalist `godot-*` skills** are referred to as "course-provided." Students need that checkout, and a way to keep game audio in the film (Assignment 9 was reworded to what the skill's audio policy supports).
 9. **Assignment 6 Part B** (the student's own agent seeds a flawed change, sealed until the student gives a verdict) and **Assignment 7's** upper-bound method for pricing a one-shot burst are the writers' designs; no chapter ran either.
+
+10. **Assignment 3 depends on a route nobody on this course has run, and the project is moving fast.** Chapter 3 documents the Blender MCP setup as "not run" (it needs the Blender window, and `uv` was not installed on the instructor's Mac). A check on 2026-10-06 found the project had already changed nine days after the chapter: version 2.1.1 became 2.1.9, `get_object_info`, `get_viewport_screenshot` and `export_scene` were removed (`look` was added), the add-on now starts its server automatically, and the README now leads with a one-line installer that finds the MCP clients on the machine and offers to set up each one. The assignment names both versions and tells students to use the manual steps. Before release, someone should run the route once, end to end, and either correct the assignment or pin a version. Students who cannot connect within about two hours switch to the script route and keep up to 6 of the 8 process points. The assignment is also long (about 3,700 words, most of it the shared grading text) for a "very basic" task; trim if you prefer.
+11. **Module 4 no longer has an assignment of its own.** Assignment 3 now covers Module 3 only, so the collision, layer and physics material of Module 4 is first used in Assignment 4's interaction. If you want Module 4 graded on its own, the old heavier Assignment 3 (in `pantry/backups/`) is the natural source.
 
 ### Chapter errors found while building the course (chapters were not edited)
 
@@ -43,7 +64,7 @@ Updated: October 6, 2026.
 - Chapter 8: "both review agents predicted white" — only Claude Code's review did; Codex said "the default texture sample."
 - Chapter 9: "Every state check passed on that version" — that version's own test had one FAIL.
 - Chapter 0: says Claude Code reads `AGENTS.md` when there is no `CLAUDE.md`, but only from version 2.1.277; the course's 2.1.150 did not (Chapter 1 records it). "Passed ten out of ten" reads like ten runs; it was ten checks.
-- Chapter 3: the concave-shape quotation is a misquote of the Godot page.
+- Chapter 3: the concave-shape quotation is a misquote of the Godot page. The MCP passages (about lines 44 and 233 to 236) still name the removed tools and say to "start the server"; Module 3's lesson was updated, the chapter was not.
 - Chapter 15 and others: some headless commands lack `timeout`, which the writing contract requires.
 
 ## Companion chapters — 2026-09-27

@@ -1,0 +1,38 @@
+== result events (transcript lines 187 and 263)
+{"subtype":"error_max_turns","num_turns":61,"duration_ms":1271707,"minutes":21.2}
+{"subtype":"success","num_turns":24,"duration_ms":717737,"minutes":12}
+
+== permission_denials per result, split by the refusal text the session saw
+line 187: 10 denials
+line 263: 10 denials
+refusals by kind (an error result whose text says the command needs approval, or was blocked outside the working directory):
+phase 1 (lines 1-186): 9 needed approval (the allow list) + 1 blocked (outside the working directory) = 10 denials; lines [41, 43, 45, 49, 53, 77, 121, 143, 147] + [51]
+phase 2 (lines 190-262): 9 needed approval (the allow list) + 1 blocked (outside the working directory) = 10 denials; lines [223, 226, 228, 231, 233, 237, 241, 243, 259] + [245]
+Bash calls using /Applications/Godot.app/...: 7
+line 219: compact_boundary trigger=auto pre_tokens=172390 post_tokens=10266
+
+== timeline (run-times.txt gives the start and the final stop; durations from the two result events)
+phase 1: 18:07:54 -> 18:29:05.707000  (21.2 min)
+gap (debug process hung until stopped): 18:29:05.707000 -> 18:36:55.263000  (7.8 min)
+phase 2: 18:36:55.263000 -> 18:48:53  (12.0 min)
+
+== the finished run-1 test's own log (logs/verify1-test_checkpoint_post.log)
+PASS lines: 15   FAIL lines: 0
+Failures: 0
+check() call sites in the run-1 test: 15   ('grep -c _check(' also counts the 'func _check(' definition: 16)
+run-2 test: PASS lines 16, check() call sites 16, 'grep -c _check(' = 17
+
+== the first test run (transcript line 139): the ray and the post
+  merged AABB size: (0.78, 1.8, 0.6)
+FAIL  no unexpected materials  [found ["PostMetal", "FlagCloth", ""]]
+FAIL  at least one StaticBody3D present  [found 0]
+FAIL  StaticBody3D has a ConvexPolygonShape3D
+  ray from=(-6.5, -1.84189, 3.9334)  to=(-6.5, -5.84189, 3.9334)
+PASS  downward ray hits something (post/floor is solid)
+  ray hit at y=-4.0000  (post base y=-3.8419, top y≈-2.0419)
+FAIL  ray hits above floor level (post collision is standing on floor)  [hit_y=-4.0000]
+
+== game.tscn placement edits (transcript lines 132 and 210)
+line 132: Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, -3.84189, 3.9334)
+line 210: Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, -4.0, 3.9334)
+gap between the two placements: 0.15811 m

@@ -1,0 +1,230 @@
+{
+ "B19": {
+  "lane": "manim",
+  "class": "B19_Arrows",
+  "visual_intent": "Act title 'Which Way Is the Light?' (serif 40) top-left. A lamp dot in the middle of a pixel-grid field; eight pixel dots on a ring around it; from each pixel dot a short arrow of the same length points at the lamp. Labels 'LIGHT_DIRECTION' and 'length 1'. The dot left of the lamp has its arrow pointing right, the dot above has its arrow pointing down, each ringed in turn. Caption: 'vector: a bundle of two to four numbers'.",
+  "motion_claim": "An arrow sprouts from every pixel dot and every one of them aims at the lamp.",
+  "show": [
+   {
+    "at": 0.031,
+    "event": "act title, lamp, pixel dots"
+   },
+   {
+    "at": 0.211,
+    "event": "arrows sprout from all eight"
+   },
+   {
+    "at": 0.43,
+    "event": "left dot: arrow points right"
+   },
+   {
+    "at": 0.763,
+    "event": "top dot: arrow points down"
+   }
+  ],
+  "runner_up": "ShaderLab colour wheel",
+  "why": "Arrows from many pixels converging on one lamp is the definition itself; the colour wheel would hide which way they point.",
+  "sparse": true
+ },
+ "B20": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tfloat across = LIGHT_DIRECTION.x * 0.5 + 0.5;\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * across;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/08-direction-ramp.gdshader",
+   "cues": [
+    {
+     "at": 0.195,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.61,
+     "lines": [
+      5,
+      6
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c12-direction-brightness.mp4",
+   "videoLabel": "Godot 4.7.2 · direction used as brightness · scripted",
+   "readouts": [
+    {
+     "at": 0.732,
+     "text": "full",
+     "x": 0.3,
+     "y": 0.5
+    },
+    {
+     "at": 0.878,
+     "text": "none",
+     "x": 0.7,
+     "y": 0.5
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C12: Dusk tiled floor, one warm lamp (scale 5). Default glow first; at 'Multiply the lamp by it' the floor switches to 08-direction-ramp. Scene = evidence/planning-checks/light_scene.gd with captures.json id C12; 1920 x 1080 window at scale 1, 30 fps, 15 s, Forward+. Expected: share of the lamp left at 300 px: left 1.00, right 0.00, above 0.49, below 0.50, up-left steep 0.70 (verify8 C12).",
+  "visual_intent": "Code card at left (the across line, the rgb line that multiplies by it); at right a real Godot window: the smooth glow becomes a lamp that is strongest on its left and fades to nothing on its right. Labels 'full' (left of the lamp) and 'none' (right of it).",
+  "motion_claim": "The glow slides to the left half of the lamp, fading smoothly toward the right.",
+  "show": [
+   {
+    "at": 0.195,
+    "event": "across line highlighted"
+   },
+   {
+    "at": 0.61,
+    "event": "lamp multiplied by it"
+   },
+   {
+    "at": 0.732,
+    "event": "left: full"
+   },
+   {
+    "at": 0.878,
+    "event": "right: none"
+   }
+  ],
+  "runner_up": "manim: a grey ramp strip",
+  "why": "The number used as brightness on the real lamp is the picture of 'painting a number'.",
+  "sparse": false
+ },
+ "B21": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tfloat mask = step(0.0, LIGHT_DIRECTION.x);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * mask;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/09-half-light.gdshader",
+   "cues": [
+    {
+     "at": 0.043,
+     "lines": [
+      4
+     ],
+     "label": "step(edge, x): 0 below the edge, 1 from the edge up"
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.732,
+     "lines": [
+      5,
+      6
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c13-half-light.mp4",
+   "videoLabel": "Godot 4.7.2 · ramp, then step · scripted",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C13: Dusk tiled floor, one warm lamp (scale 5). Starts on 08-direction-ramp (the previous beat's picture); at 'multiply the light by the result' the floor switches to 09-half-light. Scene = evidence/planning-checks/light_scene.gd with captures.json id C13; 1920 x 1080 window at scale 1, 30 fps, 15 s, Forward+. Expected: share of the lamp at 300 px: left 1, right 0, above 0, below 0, up-left steep 1 (verify8 C13).",
+  "visual_intent": "Code card at left (mask = step(0.0, LIGHT_DIRECTION.x), the rgb line, LIGHT); at right a real Godot window: the smooth left-to-right fade snaps into a sharp half lamp, the left half on and the right half dark, with a clean vertical edge through the lamp. The mask line carries the tag 'step(edge, x): 0 below the edge, 1 from the edge up'.",
+  "motion_claim": "The smooth fade snaps into a hard half the moment step is applied.",
+  "show": [
+   {
+    "at": 0.043,
+    "event": "mask line highlighted"
+   },
+   {
+    "at": 0.043,
+    "event": "mask line tagged: what step does"
+   },
+   {
+    "at": 0.732,
+    "event": "the right half goes dark"
+   }
+  ],
+  "runner_up": "manim: a ramp becoming a staircase",
+  "why": "Seeing the same lamp go from a fade to a hard half is the mask idea in one cut.",
+  "sparse": false
+ },
+ "B22": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tfloat mask = step(0.9, abs(LIGHT_DIRECTION.x));\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * mask;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/10-bowtie-light.gdshader",
+   "cues": [
+    {
+     "at": 0.04,
+     "lines": [
+      4
+     ],
+     "label": "abs(x): drops the minus sign: -0.3 becomes 0.3"
+    },
+    {
+     "at": 0.216,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c14-bowtie.mp4",
+   "videoLabel": "Godot 4.7.2 · half lamp, then abs · scripted",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C14: Dusk tiled floor, one warm lamp (scale 5). Starts on 09-half-light; at 'both sides count' the floor switches to 10-bowtie-light. Scene = evidence/planning-checks/light_scene.gd with captures.json id C14; 1920 x 1080 window at scale 1, 30 fps, 14 s, Forward+. Expected: share of the lamp at 300 px: left 1, right 1, above 0, below 0, up-left steep 0 (verify8 C14).",
+  "visual_intent": "Code card at left (mask = step(0.9, abs(LIGHT_DIRECTION.x)), the rgb line, LIGHT); at right a real Godot window: the half lamp becomes a bow-tie, one wedge pointing left and one pointing right, dark above and below.",
+  "motion_claim": "The half lamp splits into two opposite wedges.",
+  "show": [
+   {
+    "at": 0.04,
+    "event": "mask line highlighted"
+   },
+   {
+    "at": 0.135,
+    "event": "half lamp becomes a bow-tie"
+   },
+   {
+    "at": 0.649,
+    "event": "a wedge on each side"
+   }
+  ],
+  "runner_up": "manim: two cones",
+  "why": "Two real wedges around a real lamp, one cut after the half lamp, show what abs adds.",
+  "sparse": false
+ },
+ "B23": {
+  "lane": "manim",
+  "class": "B23_Sun",
+  "visual_intent": "Two panels. Left: a lamp with five pixel dots, each with its own arrow toward the lamp (five different directions). Right: a sun disc with the same five pixel dots, every arrow identical and pointing up toward the sun. Captions: 'point light: a different arrow per pixel', 'directional light: the same arrow everywhere'. Grey note: 'its position is always (0, 0, 0) · Godot docs'.",
+  "motion_claim": "On the left the five arrows differ; on the right they appear one after another and all match.",
+  "show": [
+   {
+    "at": 0.033,
+    "event": "two panels"
+   },
+   {
+    "at": 0.139,
+    "event": "right-hand arrows all identical"
+   },
+   {
+    "at": 0.43,
+    "event": "position note"
+   },
+   {
+    "at": 0.583,
+    "event": "masks light everything or nothing: label"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "Five different arrows beside five identical ones is the contrast itself.",
+  "sparse": true
+ }
+}

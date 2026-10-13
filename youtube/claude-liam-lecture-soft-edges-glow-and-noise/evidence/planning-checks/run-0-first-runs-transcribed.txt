@@ -1,0 +1,46 @@
+# Failed and inconclusive runs, transcribed from the terminal (2026-10-13). None of these is used as evidence; each was replaced by the run named at its end.
+# The scripts that produced them were edited in place (the fix is the replacement), so these are transcriptions, not saved logs.
+
+1. First Lab batch (run-lab-checks.sh before the zsh fix). WRONG SETUP.
+   zsh does not split an unquoted string variable, so the option list "--kind rect --size 256x256" reached the runner as ONE argument and was ignored.
+   Symptom, read from the RESULT line: "size":[640,360] and "px":[319,179] for 01-hard-disc and 02-soft-disc (a square 256 px window should give [256,256] and [127,127]).
+   Fix: the option lists are arrays ("${SQ[@]}"). Replaced by every run in lab-results.jsonl.
+
+2. First background-mode tests for glow (run by hand with a for loop over argument strings). WRONG SETUP, same cause.
+   Four runs of glow_check.gd with "--hdr2d --env --bgcanvas", "--env --bgcanvas", "... --threshold 0.9", "... --bloom 0.3 --intensity 1.0".
+   All four printed: fmt 4 (8-bit), body (1.0, 1.0, 1.0), halo at 6 px (0.851, 0.835, 0.792) = the stage: no halo.
+   The options never reached the script (one unsplit argument), so these runs say nothing about Canvas. They briefly looked like "glow does nothing even with Canvas".
+   Replaced by glow-results.jsonl G4 (environment, default background: nothing) against G5, G6 (Canvas background: a halo), run with bash-style arrays.
+
+3. First glow matrix (stage #D9D5CA, the Lab's light grey; ColorRect 256 x 256; no Canvas background; labels A to H).
+   C-hdr-env (HDR 2D on, glow enabled, default background) read exactly like B-hdr-no-env: halo at 6 px (0.694, 0.665, 0.591) = the stage in linear light.
+   Correct result (the environment does nothing in 2D without the Canvas background), but the stage was too light to judge halo size and the display conversion was missing.
+   Replaced by glow-results.jsonl on the slate stage #5F7A96 with display-referred values; the light-stage comparison is G15.
+
+4. First stage color for the glow demonstration: #57625E (87, 98, 94). It is 19 RGB from the type gate's MUTE grey (#5D584F), so GATE T would read the whole stage as text.
+   The halo numbers were fine (intensity 2: +0.051 / +0.099 / +0.083 at 6 px) but the color was dropped for #5F7A96 (79 from MUTE, 131 from ink).
+
+5. First scroll-seam check (noise_check.gd, check Z, before the TIME decoder). INCONCLUSIVE.
+   It used the engine's tick counter as a stand-in for the shader's TIME and looked for the biggest column jump in the film's own disc shader.
+   Z-scroll-plain: engine 2.15 s, expected seam at pixel 201, found 109 (ratio 1.8); engine 6.02 s, expected 102, found 194 (ratio 6.7).
+   Z-scroll-seamless: engine 6.07 s, expected 101, found 86 (ratio 1.7); engine 9.06 s, expected 24, found 86 (ratio 1.7).
+   Why it failed: the shader's TIME runs about 0.3 s behind the ticks, and the detector fastened on the disc's own soft edge (a column that is always steep), not the seam.
+   Fix: render the raw greyscale sampling and decode the shader's own TIME from a small rectangle in the same frame. Replaced by run-noise.log Z-scroll-plain and Z-scroll-seamless.
+
+6. First BG_CANVAS-less compatibility rows used a display conversion (linear to sRGB) that does not apply to the Compatibility renderer's HDR frame (its values are not linear).
+   They printed a stage of (0.619, 0.653, 0.641) instead of (0.341, 0.384, 0.369). glow_check.gd now skips the conversion for gl_compatibility; the Compatibility rows in glow-results.jsonl are the corrected ones.
+
+7. A CLEAN natural-clock run (not a failure; transcribed because later runs could not repeat it). noise_check.gd, check Z with the decoder, 2026-10-13 about 14:42, window drawn.
+   Z-scroll-plain: engine ticks 1.43 s -> shader TIME 1.13 s, seam at pixel 226 (expected from TIME: 227, ratio 5.0); engine ticks 4.44 s -> shader TIME 4.14 s, seam 149 (expected 150, ratio 7.6).
+   Z-scroll-seamless: ticks 4.47 s -> TIME 4.14 s, no outlier (ratio 1.3); ticks 7.49 s -> TIME 7.15 s, no outlier (1.4).
+   Reading: the shader TIME and the engine's ticks both advanced 3.01 s between the reads (TIME runs about 0.3 s behind the ticks); the seam sat at 1 - 0.1 * TIME (mod 1) within 1 px.
+   Used by FACTCHECK row 48 for the natural clock; the stepped-clock Z in run-noise.log repeats the seam relation without needing the window to be drawn.
+
+8. Runs where TIME stood still because the window was not drawn (2026-10-13, from about 15:14).
+   Godot skips normal draws when its window is fully covered by another window, and the shader clock only advances on a normal draw.
+   Symptoms: noise_check Z read shader_TIME_mod_16 1.57 twice, 3 s of engine ticks apart (kept as run-noise-15-14-FROZEN-TIME-inconclusive.log); three more attempts read 1.25 and 1.32 for 20 s;
+   and the Lab render 11-noise-scroll-w4.png (--wait 4.0) showed no seam because TIME had not moved (it looked identical to the w1 picture).
+   Fix: the TIME checks step the clock explicitly with RenderingServer.force_draw(false, seconds) (the same step the engine adds on a normal draw) and read TIME back from the frame;
+   the Lab batch no longer uses --wait for TIME pictures (11-noise-scroll-compile and 12-noise-no-repeat-compile are compile checks at the default wait). Y-natural-clock still tries the natural clock
+   and prints window_was_drawn so a reader can tell. Replaced by run-noise.log F, Z, Y and png/noise/noise-F-*.png.
+

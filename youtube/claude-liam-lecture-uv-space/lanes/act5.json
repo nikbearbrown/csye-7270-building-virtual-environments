@@ -1,0 +1,336 @@
+{
+ "B36": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float zoom = 1.0;\n\nvoid fragment() {\n\tvec2 uv = UV * zoom;\n\tCOLOR = texture(TEXTURE, uv);\n}",
+   "codeFile": "lab-shaders/07-scale.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.7,
+     "lines": [
+      7
+     ],
+     "label": "last row, column"
+    }
+   ],
+   "video": "uv-space/c17-smear.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · Sprite2D (checker picture) · scripted values",
+   "readouts": [
+    {
+     "at": 0.7,
+     "text": "edge pixels",
+     "x": 0.62,
+     "y": 0.95
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.7,
+     "box": [
+      0.5,
+      0.1,
+      0.725,
+      0.9
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Staying Inside the Picture"
+  },
+  "capture_spec": "C17: Lab sprite (--sprite-tex checker), lab-shaders/07-scale.gdshader. Keyframes (L about 13.3 s): zoom = 1 until 0.30 L, then 1 to 2 over 0.30-0.62 L, hold. Render L + 1 s, 30 fps, Forward+. End state probes (fill-window): (0.25, 0.25) cream, (0.6, 0.05) and (0.9, 0.05) the same teal (constant along the row), (0.9, 0.9) cream (the corner pixel).",
+  "visual_intent": "Act title 'Staying Inside the Picture' (serif 40) top-left. Code card at left with the scale shader; at right a real Godot window where a teal-and-cream checker picture shrinks toward the top left as zoom goes from 1 to 2 and its edge rows and columns stretch into stripes across the rest of the square. A terracotta ring on the stripes with the readout 'edge pixels'.",
+  "motion_claim": "The picture shrinks and its edge pixels streak across the space it leaves.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "uv = UV * zoom highlighted; the checker at full size"
+   },
+   {
+    "at": 0.34,
+    "event": "zoom grows; stripes stream out of the edges"
+   },
+   {
+    "at": 0.7,
+    "event": "the lookup keeps returning the last row and column; ring on the stripes"
+   }
+  ],
+  "runner_up": "manim: an edge row streaking",
+  "why": "The smear is an artifact on a real picture: the viewer should see the real thing before the mechanism.",
+  "sparse": false
+ },
+ "B37": {
+  "lane": "manim",
+  "class": "B37_EdgeSmear",
+  "visual_intent": "Two rows of edge pixels at the right edge of two pictures. Top row: a column of solid teal and cream edge pixels with horizontal stripes streaming outward to the right, labelled 'solid edge: stripes'. Bottom row: the same column drawn as dashed transparent cells, with nothing streaming outward, labelled 'transparent edge: nothing'. Small grey credit: 'Godot docs: a one pixel transparent border'.",
+  "motion_claim": "Stripes stream out of the solid edge; from the transparent edge nothing streams.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "the two edge columns"
+   },
+   {
+    "at": 0.3,
+    "event": "stripes stream out of the solid edge"
+   },
+   {
+    "at": 0.7,
+    "event": "nothing streams from the transparent edge; the docs tip lands"
+   }
+  ],
+  "runner_up": "ShaderLab with a transparent-border texture",
+  "why": "Edge pixels streaking outward, against transparent edge pixels streaking into nothing, is a mechanism drawing (and the docs' own tip).",
+  "sparse": true
+ },
+ "B38": {
+  "lane": "manim",
+  "class": "B38_StepFunction",
+  "visual_intent": "A plot with the horizontal axis from -1 to 2 and the vertical axis from 0 to 1: the curve of step(0, x), flat at 0 for x below 0 and flat at 1 from 0 on, with a terracotta dot travelling along it. Definition lines (GLOSSARY wording): 'mask: a number from 0 to 1 per pixel saying how much of something to show' and 'step(edge, x): 0 below the edge, 1 from the edge up'.",
+  "motion_claim": "The dot travels along the flat line at 0, jumps to 1 at the edge, and stays at 1.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "axes and the step curve"
+   },
+   {
+    "at": 0.3,
+    "event": "the dot travels and jumps to 1 at zero (settled by 0.45)"
+   },
+   {
+    "at": 0.66,
+    "event": "the mask definition lands"
+   }
+  ],
+  "runner_up": "LectureCodeTrace on the step function",
+  "why": "A plotted step with a dot jumping from 0 to 1 at the edge is what 'step' means.",
+  "sparse": true
+ },
+ "B39": {
+  "lane": "manim",
+  "class": "B39_Gate",
+  "visual_intent": "The same plot axes. The first step (turns on at 0) and the second step (turns off at 1) are drawn in two greys; they multiply into a terracotta box of height 1 between x = 0 and x = 1. Then a square picture-frame in the plane: ones inside, zeros outside, labelled 'both axes'.",
+  "motion_claim": "The two steps slide together and the product is a box between zero and one; the box then becomes a square in the plane.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "the step that turns on at 0 and the step that turns off at 1"
+   },
+   {
+    "at": 0.3,
+    "event": "they multiply into a box (settled by 0.45)"
+   },
+   {
+    "at": 0.68,
+    "event": "the box becomes a square: both axes, multiply again"
+   }
+  ],
+  "runner_up": "ShaderLab with the mask line",
+  "why": "Two steps multiplying into a one-only-between-zero-and-one gate is a function being built; a Manim plot does it with motion.",
+  "sparse": true
+ },
+ "B40": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float zoom = 1.0;\n\nvoid fragment() {\n\tvec2 uv = UV * zoom;\n\tvec2 inside = step(vec2(0.0), uv) * step(uv, vec2(1.0));\n\tCOLOR = texture(TEXTURE, uv);\n\tCOLOR.a *= inside.x * inside.y;\n}",
+   "codeFile": "lab-shaders/17-mask.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.25,
+     "lines": [
+      9
+     ],
+     "label": "inside: times one"
+    },
+    {
+     "at": 0.42,
+     "lines": [
+      9
+     ],
+     "label": "outside: times zero"
+    }
+   ],
+   "video": "uv-space/c18-mask.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · Sprite2D (checker picture) · scripted values",
+   "readouts": [
+    {
+     "at": 0.8,
+     "text": "no smear",
+     "x": 0.62,
+     "y": 0.95
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.8,
+     "box": [
+      0.5,
+      0.1,
+      0.725,
+      0.9
+     ]
+    }
+   ],
+   "caption": "alpha: how visible a pixel is: 0 invisible, 1 solid",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: Lab sprite (--sprite-tex checker), lab-shaders/17-mask.gdshader. Keyframes (L about 10.2 s): zoom = 1 until 0.40 L, then 1 to 2 over 0.40-0.66 L, hold. Render L + 1 s, 30 fps, Forward+. End state probes (fill-window): (0.25, 0.25) cream, (0.75, 0.25) and (0.9, 0.9) stage colour (0.851, 0.835, 0.792), (0.495, 0.495) cream, (0.505, 0.505) stage.",
+  "visual_intent": "Code card at left with the mask shader (ten lines); at right the real Godot window with the same checker picture as the smear beat: as zoom goes from 1 to 2 it shrinks into the top-left quarter and the space it leaves stays empty, with no stripes. A terracotta ring on the empty space with the readout 'no smear'. A caption defines alpha (GLOSSARY wording): 'alpha: how visible a pixel is: 0 invisible, 1 solid'.",
+  "motion_claim": "The picture shrinks and the space it leaves stays clean.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "COLOR.a *= inside.x * inside.y highlighted"
+   },
+   {
+    "at": 0.25,
+    "event": "inside: nothing changes"
+   },
+   {
+    "at": 0.42,
+    "event": "outside: alpha is zero; the picture shrinks cleanly"
+   },
+   {
+    "at": 0.8,
+    "event": "ring on the clean space: no smear"
+   }
+  ],
+  "runner_up": "LectureCodeTrace on the mask line",
+  "why": "The smear disappearing while the picture still shrinks is the proof the mask works.",
+  "sparse": false
+ },
+ "B41": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D pic : repeat_enable;\nuniform float shift = 0.0;\nuniform float zoom = 1.0;\n\nvoid fragment() {\n\tvec2 uv = UV;\n\tuv.x += shift;\n\tuv *= zoom;\n\tCOLOR = texture(pic, uv);\n}",
+   "codeFile": "lab-shaders/01-hook-controls.gdshader",
+   "cues": [
+    {
+     "at": 0.27,
+     "lines": [
+      9
+     ],
+     "label": "slide"
+    },
+    {
+     "at": 0.36,
+     "lines": [
+      10
+     ],
+     "label": "scale"
+    },
+    {
+     "at": 0.42,
+     "lines": [
+      11,
+      3
+     ],
+     "label": "look up"
+    }
+   ],
+   "video": "uv-space/c19-decode.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · Sprite2D + texture uniform · scripted values",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: the same shader and capture setup as C01 (lab-shaders/01-hook-controls.gdshader, --tex pic=sprite) with timing re-keyed to this beat (L about 11.9 s): shift = 0 until 0.26 L, then 0 to 1.0 over 0.26-0.34 L; zoom = 1 until 0.35 L, then 1 to 3 over 0.35-0.55 L, hold. Render L + 1 s, 30 fps, Forward+. End state: nine whole copies (probes hook-tiled-fill).",
+  "visual_intent": "Code card at left with the opening shader (twelve lines); at right the real Godot window repeating the opening render: the sprite slides left and wraps, then shrinks into a three by three grid, while the highlighted lines follow the voice.",
+  "motion_claim": "The highlighted line moves from slide to scale to lookup as the picture slides, shrinks and tiles.",
+  "show": [
+   {
+    "at": 0.27,
+    "event": "uv.x += shift: the picture slides"
+   },
+   {
+    "at": 0.36,
+    "event": "uv *= zoom: it shrinks"
+   },
+   {
+    "at": 0.42,
+    "event": "the lookup with repeat on: a three by three grid"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The opening shader's real code beside its real result: every line now has a meaning, which is the film's payoff.",
+  "sparse": false
+ },
+ "B42": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "Four usual causes",
+   "headers": [
+    "It looks like",
+    "Usual cause"
+   ],
+   "rows": [
+    [
+     "moves the wrong way",
+     "added, not subtracted"
+    ],
+    [
+     "zooms to a corner",
+     "zero is not in the middle"
+    ],
+    [
+     "smears at the edges",
+     "no repeat, no mask"
+    ],
+    [
+     "a circle is an oval",
+     "no aspect fix"
+    ]
+   ],
+   "note": "Each row was reproduced and fixed on the real shader · Godot 4.7.2",
+   "cues": [
+    0.26,
+    0.44,
+    0.68,
+    0.86
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A four-row symptom-and-cause table, one row ringed as each is named.",
+  "motion_claim": "The ring steps down the four rows with the voice.",
+  "show": [
+   {
+    "at": 0.26,
+    "event": "moves the wrong way"
+   },
+   {
+    "at": 0.44,
+    "event": "zooms to a corner"
+   },
+   {
+    "at": 0.68,
+    "event": "smears at the edges"
+   },
+   {
+    "at": 0.86,
+    "event": "circle is an oval"
+   }
+  ],
+  "runner_up": "manim: a checklist",
+  "why": "Four symptom-and-cause pairs are a lookup table, and the viewer will come back to it.",
+  "sparse": false
+ }
+}

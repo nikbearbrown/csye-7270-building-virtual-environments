@@ -1,0 +1,34 @@
+SubViewports film, evidence/planning-checks. Observations copied from the terminal on 2026-10-13, between about 15:30 and 16:30, from scratch scripts that were not saved as logs when they ran.
+They are kept because they explain why every check in this folder forces one draw per step (RenderingServer.force_draw(false)) and why recordings use --always-on-top.
+Status: OBSERVED, NOT REPRODUCIBLE ON DEMAND. The effect comes and goes with whatever happens to cover the Godot window on this Mac; I could not make it appear when I asked for it.
+The later scripted runs (logs/run-10*, run-13c) mostly show the window being drawn on every frame. Read them next to this file.
+
+1. How many of the main loop's frames are drawn (scratch script debug_draws.gd; verify10_draw_skipping.gd is its tidy successor)
+   300 steps of `await process_frame`; process frames 299 each time.
+   default placement, run after run:                 frames drawn 137, 136, 108, then 125            (frame_post_draw signals equal to frames drawn)
+   same minute, --always-on-top:                      frames drawn 299
+   same minute, --position 0,0:                       frames drawn 299
+   a second Godot window (1700 x 1000, always on top, at 0,0) started first, then the count at default placement:
+                                                      frames drawn 37 and 30 of 299 in two runs
+   the same cover window, three-phase version of the script:
+                                                      0 of 300 and 16 of 300 drawn while waiting; 300 of 300 whenever one force_draw(false) per step was added
+   later, the same recipe again (scripted in run-cover-checks.sh and by hand): 300 of 300 drawn in every phase. Not reproducible.
+
+2. Update Mode Once with regular frames only (scene c21, Once set at 8.5 s; the picture should freeze at the 8.5 s state, first teal pixel at x = 322 to 323)
+   read at 12 s without any forced draw, six runs: 31, 298, 322, 121, 176, 305   (only 322 is the frozen picture; the others show a later moment, i.e. the Once was spent late)
+   one run with a get_image() read on every frame from frame 250 on: 323, correct from frame 255
+   after one force_draw(false) at the end: 29 every time (the pending Once is spent on the 12 s state)
+   with a forced draw on every step (verify11 O1, run-11, run-11b): 322 at frame 254 (still following) and 323 from frame 255 on, every run.
+
+3. Movie Maker, 400 frames of c21, window not covered on purpose
+   default placement: first run, every image from frame 100 on identical (md5 of frames 100, 200, 300, 399 equal)
+                      second run: "240 frames at 30 FPS" (the files after 239 repeat the last drawn frame)
+                      third run:  "73 frames at 30 FPS" (72 frames differ from the one before)
+                      fourth run (run-13c, later): 400 of 400 differ
+   --always-on-top:   400 of 400 distinct frames, five runs (run-13, run-13c and three by hand)
+   --position 0,0:    400 of 400 distinct frames, two runs
+   A first 60-frame Movie Maker test at default placement also gave 60 distinct frames: a short run can be lucky.
+
+Reading. A window that is hidden behind another is, to macOS, occluded, and Godot then stops drawing it for stretches. Movie Maker writes one file per main-loop step whether or not that step was drawn,
+so the movie holds repeated frames and the recording looks frozen. This is consistent with everything above but not proven: the one test that placed a cover window on purpose worked twice and then stopped working.
+What is safe: --always-on-top (or --position 0,0) for every Movie Maker or editor recording, and one force_draw(false) per step in any script that reads pixels.

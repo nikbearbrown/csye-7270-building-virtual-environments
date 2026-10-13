@@ -1,0 +1,9 @@
+FAILED FIRST RUN of verify9.gd, 2026-10-13, transcribed from the terminal (the log was not saved at the time).
+The encoder added an offset of 100000 to value*1000, so any value below -100 wrapped. The model matrix (all values >= 0) read correctly;
+the canvas matrix's negative translations did not:
+
+M3a CANVAS_MATRIX camera (890,460)       last column read [-53.392, -100.0, 0.0, 1.0]     (true value -250, -100)
+M3b CANVAS_MATRIX camera (990,460)       last column read [-87.856, -100.0, 0.0, 1.0]     (true value -350, -100)
+M3c CANVAS_MATRIX zoom 2 on (600,400)    last column read [-35.712, -46.784, 0.0, 1.0]    (true value -560, -440)
+
+The fix (offset 8,000,000, so values from -8000 to +8777 encode) is in verify9.gd; run-12-verify9.log is the fixed run.

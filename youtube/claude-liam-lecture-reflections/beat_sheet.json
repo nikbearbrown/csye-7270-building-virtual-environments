@@ -1,0 +1,2748 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-reflections",
+    "title": "Reflections",
+    "topic": "GODOT SHADERS · THE SCREEN TEXTURE",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "engine": "kokoro",
+    "clock": "narration",
+    "palette": "claude",
+    "register": "Teardown",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "caption_policy": "sidecar",
+    "greeting_language": "Hallo",
+    "audience": "people making games in Godot, and anyone directing an AI that writes shaders for them",
+    "godot_version": "4.7.2",
+    "lecture_opening_description": "How a hidden map makes a reflection in Godot",
+    "lecture_opening_template": "lecture-title-slide-16x9",
+    "lecture_opening_title_lines": [
+      "Reflections"
+    ],
+    "bookend_exempt": [
+      "cold-open",
+      "bvdt"
+    ],
+    "bookend_exempt_reason": "lecture skill: opens on the narrated identity card then the hesitant writer; no composer cold open.",
+    "source_doc": "Godot 4.7 documentation; Godot 4.7.2 runs on Apple M4 Pro (evidence/planning-checks); see SOURCES.md",
+    "tags": [
+      "Godot",
+      "Shaders",
+      "BackBufferCopy",
+      "Screen texture",
+      "Reflection",
+      "Water",
+      "RemoteTransform2D",
+      "GDScript",
+      "Game development",
+      "Nik Bear Brown"
+    ]
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Reflections. Learn how a shader can read a hidden map of the water, and use it to give a character a reflection that shows only over water.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "routing": {
+        "about": "Film identity and payoff",
+        "runner_up": "Minimal title card",
+        "reason": "The lecture skill's approved first beat: portrait, title, narrated summary."
+      },
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, exact film title and short payoff visible immediately.",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete populated lecture opener visible for the whole narration"
+          }
+        ]
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Identity card: portrait and title; teaching motion resumes in BIDEA."
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "the question",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. Most people think a reflection means drawing the scene a second time. You do draw the character twice. But the hard part is knowing where the water is, and a shader can learn that from a map.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "types the newcomer's assumption"
+          },
+          {
+            "at": 0.62,
+            "event": "backspaces 'a second drawing of the scene' and types 'a map the shader can read'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A reflection needs\na second drawing of the scene.",
+            "triggerWords": "a second drawing of the scene",
+            "replacementWords": "a map the shader can read",
+            "fontSize": 66,
+            "charMs": 24,
+            "hesitateBetween": 6,
+            "hesitateWithin": 1,
+            "mistakeRate": 4,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-reflections",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "motion_claim": "The writer types the assumption a newcomer arrives with and corrects it into the film's real subject.",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Hesitant-writer bookend: the correction is the motion."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "terms",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Five terms. A shader is a small program the graphics card runs to decide how something is drawn. The screen texture is a picture of what has been drawn so far, which a shader can read. Draw order says which things are drawn first. A label map is a layer of flat colors, each color a label. And a reflection is a flipped, fainter copy, seen in water.",
+      "estimated_duration_s": 23.1,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "'Shader' lands"
+          },
+          {
+            "at": 0.28,
+            "event": "'Screen texture' lands"
+          },
+          {
+            "at": 0.45999999999999996,
+            "event": "'Draw order' lands"
+          },
+          {
+            "at": 0.64,
+            "event": "'Label map' lands"
+          },
+          {
+            "at": 0.82,
+            "event": "'Reflection' lands"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Shader",
+                "meaning": "a small program the graphics card runs to decide how something is drawn"
+              },
+              {
+                "term": "Screen texture",
+                "meaning": "a copy of the screen made at one moment, which a shader can read"
+              },
+              {
+                "term": "Draw order",
+                "meaning": "what is drawn first; later things cover earlier ones"
+              },
+              {
+                "term": "Label map",
+                "meaning": "a layer of flat colors, each color a label"
+              },
+              {
+                "term": "Reflection",
+                "meaning": "a flipped, fainter copy seen in water"
+              }
+            ],
+            "durationSeconds": "__AUDIO__",
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "TERMS card: prerequisites, one plain line each."
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "I · A Map Nobody Sees",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the reflection. The character walks along the shore, and its reflection follows in the water. Over the sandbar, the reflection disappears. No script decides that. A shader looks up a map the player never sees.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'A Map Nobody Sees' (serif 40) top-left. A real Godot render in a framed window on the cream stage: the teal blob walks along the shoreline from left to right and its flipped reflection follows in the water, thins out over the sandbar until it is gone, and returns on the far side. Readouts 'over water' and 'over sand'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "blob on the shore, reflection under it"
+          },
+          {
+            "at": 0.1,
+            "event": "readout 'over water'"
+          },
+          {
+            "at": 0.44,
+            "event": "readout 'over sand'; reflection thinning over the sandbar"
+          },
+          {
+            "at": 0.5,
+            "event": "reflection gone (settled by the midpoint)"
+          },
+          {
+            "at": 0.85,
+            "event": "reflection back on the far side"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tCOLOR.a *= water;\n}",
+            "codeFile": "lab-shaders/02-reflection.gdshader",
+            "cues": [],
+            "video": "reflections/hook-walk.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "over water",
+                "x": 0.5,
+                "y": 0.88
+              },
+              {
+                "at": 0.44,
+                "text": "over sand",
+                "x": 0.5,
+                "y": 0.88
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "A Map Nobody Sees"
+          }
+        },
+        "motion_claim": "The reflection follows the walker, disappears over the sandbar and comes back."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of a character and its mirror image",
+        "why": "The film's claim is that a hidden map drives a real effect; the real render of the effect is the honest hook, a drawing would only claim it.",
+        "capture_spec": "C01: capture_scenes.gd id C01 (the pond: LabelMap, BackBufferCopy in viewport mode, Ground, Player with RemoteTransform2D, Reflection with lab-shaders/02-reflection.gdshader); the Player walks x 150 to 1200 over 11.5 s; 13.5 s, 30 fps, Forward+, 4K SubViewport route, scripted walk, fresh process.",
+        "act_title_on_screen": "A Map Nobody Sees"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "I · A Map Nobody Sees",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A shader works one pixel at a time. For each pixel of the reflection, it has to decide: show this pixel, or hide it. To decide, it needs one fact. Is there water under me?",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A framed flat picture of the pond (grass band, water, sand spit, teal blob with its reflection area under it). Over the reflection area a grid of 8 by 6 cells appears (the pixel grid); a terracotta dot visits the cells one by one asking 'water?'; each cell then fills teal (show) where it lies over water and stays empty (hide) where it lies over the sand. Label 'show or hide?'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "picture and the empty pixel grid"
+          },
+          {
+            "at": 0.4,
+            "event": "dot asks 'water?' cell by cell"
+          },
+          {
+            "at": 0.74,
+            "event": "cells over water filled, cells over sand empty"
+          }
+        ],
+        "manim": {
+          "class": "B02_PixelAsks"
+        },
+        "motion_claim": "A dot visits cell after cell and each answer decides the cell: teal where yes, empty where no."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab capture with a probe overlay",
+        "why": "The question is asked per pixel and answered per pixel; a grid of cells filled one by one shows the decision itself, which a render of the result cannot."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "I · A Map Nobody Sees",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is that fact, drawn as a map. Water is red. The coast is green. Everything else is left empty. Each flat color is a label, so this picture is a label map.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real label map layer alone on the stage colour: the water region flat red, a ring of flat green around the sandbar, everything else empty. It fades in over 2.5 s. Labels land in turn: 'water' on the red, 'coast' on the green ring (with one terracotta ring around the ring), 'empty' on the bare stage.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "empty stage"
+          },
+          {
+            "at": 0.2,
+            "event": "label 'water' on the red"
+          },
+          {
+            "at": 0.34,
+            "event": "label 'coast' + ring on the green ring"
+          },
+          {
+            "at": 0.62,
+            "event": "label 'empty' on the bare stage"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/label-map-only.mp4",
+            "videoLabel": "Godot 4.7.2 · the label map alone · Forward+ · scripted fade",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "water",
+                "x": 0.25,
+                "y": 0.82
+              },
+              {
+                "at": 0.34,
+                "text": "coast",
+                "x": 0.69,
+                "y": 0.9
+              },
+              {
+                "at": 0.62,
+                "text": "empty",
+                "x": 0.3,
+                "y": 0.25
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.36,
+                "box": [
+                  0.49,
+                  0.48,
+                  0.89,
+                  0.83
+                ]
+              }
+            ],
+            "caption": "a label map: a layer of flat colors, each color a label",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The map fades in and its labels land on the red, the green and the empty part in the order the voice says them."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of the same map",
+        "why": "A label map is a real image; showing the real layer, flat colors and all, is more convincing than a drawing of it.",
+        "capture_spec": "C02: capture_scenes.gd id C02 (LabelMap node only; Ground, Player, Reflection hidden; LabelMap modulate alpha 0 to 1 over 2.5 s); 13 s, 30 fps, Forward+, scripted fade."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "I · A Map Nobody Sees",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "You could hand this map to the shader as an ordinary texture. Then, for every pixel, you must work out where it sits on the map, whatever the camera is doing. The screen is already lined up with every pixel.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two panels on the cream stage. Left, 'an ordinary texture': a pixel of the pond in the world, a camera frame sliding sideways, and a chain of arrows from the pixel through a box 'your math' to a spot on the map. Right, 'the screen': the same pixel with one straight arrow to the same spot in a screen-sized copy, no box. A small label 'texture: an image a shader can read'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "both panels, same pixel"
+          },
+          {
+            "at": 0.42,
+            "event": "camera frame slides; left chain re-routes through 'your math'"
+          },
+          {
+            "at": 0.74,
+            "event": "right arrow stays straight"
+          }
+        ],
+        "manim": {
+          "class": "B04_LinedUp"
+        },
+        "motion_claim": "The camera frame slides and the left chain stretches and re-routes through the math box; the right arrow stays straight."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "DesignPipelineClaim, show-tell isometric",
+        "why": "A flow with a moving camera and a recalculation box against a straight line is a structure with a shape; Manim can slide the camera and show only one side needing to re-route."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "I · A Map Nobody Sees",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "There is one problem. Draw the map over the game, and the player sees a red and green sea. The shader should read the map. Nobody else should.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real pond with the label map drawn on top of the Ground: a red and green sea covers the water area and the ring around the sandbar, while the blob keeps walking and its reflection still works. Readout 'player sees this'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "the pond with the map on top"
+          },
+          {
+            "at": 0.18,
+            "event": "readout 'player sees this'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/label-map-over-art.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [
+              {
+                "at": 0.18,
+                "text": "player sees this",
+                "x": 0.3,
+                "y": 0.1
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The red and green sea sits over the game while the blob keeps walking."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of the stacked layers in the wrong order",
+        "why": "A real frame of the mistake is more persuasive than a drawing of it, and the walking blob shows it is a live game.",
+        "capture_spec": "C03: capture_scenes.gd id C03 (tree order Ground, LabelMap, BackBufferCopy, Player, Reflection; shader 02); the Player walks x 300 to 620 over 10 s; 10.5 s, 30 fps, Forward+, scripted walk."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "I · A Map Nobody Sees",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "The fix is draw order. A game paints in layers, and later layers cover earlier ones. Paint the map first and the art second, and the art covers it. The player sees only the art.",
+      "estimated_duration_s": 11.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "An isometric stack on the cream stage, three flat slabs landing one after another: 'map' (red and green) first, then 'art' (the pond picture), then 'character' (the teal blob). Beside the stack a top-down thumbnail updates after each slab: after the map, red and green; after the art, only the pond (the red and green gone); after the character, the pond with the blob. Label 'later covers earlier'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "map slab lands; thumbnail red and green"
+          },
+          {
+            "at": 0.4,
+            "event": "art slab lands; thumbnail shows only the pond"
+          },
+          {
+            "at": 0.74,
+            "event": "character slab lands; blob appears in the thumbnail"
+          }
+        ],
+        "manim": {
+          "class": "B06_Layers"
+        },
+        "motion_claim": "The art slab lowers onto the map slab and the thumbnail's red and green vanish."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab capture with layers switched on one by one",
+        "why": "Covering is a spatial idea; an isometric stack with a thumbnail of what the player sees shows both the stack and the result."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "I · A Map Nobody Sees",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "A shader reads the screen texture: a copy of the screen made at one moment. Make it after the art, and the map is gone. Make it before the art, and the map is still in it.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The same slab stack. A copy frame (a camera-like rectangle) slides along the stack. Above the art slab its thumbnail shows only the pond ('no map'); slid down between the map and the art, its thumbnail shows the red and green map. Label 'copy of the screen'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "frame above the art slab; thumbnail shows the pond"
+          },
+          {
+            "at": 0.42,
+            "event": "frame slides down between map and art"
+          },
+          {
+            "at": 0.7,
+            "event": "thumbnail now shows the map; label settled"
+          }
+        ],
+        "manim": {
+          "class": "B07_CopyMoment"
+        },
+        "motion_claim": "The frame slides down the stack and its thumbnail turns from the pond into the map."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "The idea is timing; a frame that slides through the stack shows when the copy is made and what is in it."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "I · A Map Nobody Sees",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot has a node for choosing that moment: Back Buffer Copy. It makes its copy at its own place in the draw order.",
+      "estimated_duration_s": 7.8,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The slab stack with a node chip labelled 'BackBufferCopy' sliding in between the map slab and the art slab; the copy frame snaps onto the chip and its thumbnail shows the map. A one-line label from the docs: 'copies the screen for a shader to read'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "stack, chip enters"
+          },
+          {
+            "at": 0.44,
+            "event": "chip sits between map and art; frame snaps on"
+          },
+          {
+            "at": 0.7,
+            "event": "docs label settles"
+          }
+        ],
+        "manim": {
+          "class": "B08_CopyNode"
+        },
+        "motion_claim": "The chip slides between the slabs and the copy frame snaps onto it."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the BackBufferCopy docs page",
+        "why": "The node is introduced by name at the moment the stack needs it; the docs page itself appears later, where its three modes are the subject."
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "I · A Map Nobody Sees",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "And the draw order is the scene tree. The top of the Scene dock is drawn first. So the order is: map, copy node, art, character, reflection.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real frame of Godot's Scene dock for the pond scene: Pond, then LabelMap, BackBufferCopy, Ground, Player (with RemoteTransform2D under it) and Reflection, top to bottom. A readout 'drawn first' by the top row, then one terracotta ring moves down the rows as the voice names map, copy node, art, character, reflection.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Scene dock frame"
+          },
+          {
+            "at": 0.3,
+            "event": "readout 'drawn first'"
+          },
+          {
+            "at": 0.7,
+            "event": "ring on LabelMap"
+          },
+          {
+            "at": 0.76,
+            "event": "ring on BackBufferCopy"
+          },
+          {
+            "at": 0.82,
+            "event": "ring on Ground"
+          },
+          {
+            "at": 0.88,
+            "event": "ring on Player"
+          },
+          {
+            "at": 0.94,
+            "event": "ring on Reflection"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/editor-scene-dock.png",
+            "videoLabel": "Godot 4.7.2 editor · Scene dock · real frame",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "drawn first",
+                "x": 0.8,
+                "y": 0.28
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.7,
+                "box": [
+                  0.1,
+                  0.32,
+                  0.92,
+                  0.41
+                ]
+              },
+              {
+                "at": 0.76,
+                "box": [
+                  0.1,
+                  0.42,
+                  0.92,
+                  0.51
+                ]
+              },
+              {
+                "at": 0.82,
+                "box": [
+                  0.1,
+                  0.52,
+                  0.92,
+                  0.61
+                ]
+              },
+              {
+                "at": 0.88,
+                "box": [
+                  0.1,
+                  0.62,
+                  0.92,
+                  0.71
+                ]
+              },
+              {
+                "at": 0.94,
+                "box": [
+                  0.1,
+                  0.81,
+                  0.92,
+                  0.9
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring steps down the rows in the order the voice names them."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench tree mode (labelled reconstruction)",
+        "why": "SHOW-THE-THING: the Scene dock is the place where the order is set, so the real dock is the evidence; the reconstruction is the labelled fallback.",
+        "capture_spec": "E1: Godot's own editor on the scratch pond project (evidence/planning-checks/make-editor-project.sh builds it; verified by verify_scene_file.gd): one frame (Pond selected) recorded at 2560 x 1440 with the Light preset and a 2x UI by evidence/planning-checks/record-editor-frames.sh, cropped to the box (0, 60) to (440, 420). The ring boxes are measured on that crop (rows LabelMap, BackBufferCopy, Ground, Player, Reflection); a planning frame of exactly this crop is png/planning-frame-E1-scene-dock.png."
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "II · When the Screen Is Copied",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Three flat sprites: A drawn first, then B, then C on top. The window shows what a shader reads when it asks for the screen texture. A hint after the colon tells Godot to fill it with the screen.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'When the Screen Is Copied' (serif 40) top-left. Code card at left (the six-line preview shader); at right a real Godot window: three flat overlapping squares A (teal), B (blue), C (lavender), drawn in that order on the stage colour. At about a quarter of the way in a small framed window appears at top right showing a miniature of the whole screen with A, B and C in it.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "A, B, C land by their labels"
+          },
+          {
+            "at": 0.26,
+            "event": "the window appears with the miniature"
+          },
+          {
+            "at": 0.36,
+            "event": "COLOR line highlighted"
+          },
+          {
+            "at": 0.7,
+            "event": "declaration line with the hint highlighted"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tCOLOR = vec4(texture(screen_texture, UV).rgb, 1.0);\n}",
+            "codeFile": "lab-shaders/01-screen-preview.gdshader",
+            "cues": [
+              {
+                "at": 0.36,
+                "lines": [
+                  6
+                ],
+                "label": "UV: 0 to 1 across the window, so it holds the whole screen"
+              },
+              {
+                "at": 0.7,
+                "lines": [
+                  3
+                ],
+                "label": "hint: tells Godot how to treat it: fill with the screen"
+              }
+            ],
+            "video": "reflections/three-sprites-window.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted",
+            "readouts": [
+              {
+                "at": 0.06,
+                "text": "A",
+                "x": 0.14,
+                "y": 0.45
+              },
+              {
+                "at": 0.1,
+                "text": "B",
+                "x": 0.3,
+                "y": 0.6
+              },
+              {
+                "at": 0.14,
+                "text": "C",
+                "x": 0.4,
+                "y": 0.83
+              },
+              {
+                "at": 0.3,
+                "text": "screen texture",
+                "x": 0.77,
+                "y": 0.52
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "When the Screen Is Copied"
+          }
+        },
+        "motion_claim": "The window appears and shows the three squares in miniature while the code lines are highlighted."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "Code and its live result side by side is the claim: this short shader puts the screen texture in a window.",
+        "capture_spec": "C04: capture_scenes.gd id C04 (Sprite2D A, B, C, then ColorRect preview with lab-shaders/01-screen-preview.gdshader and a border panel drawn after it; no BackBufferCopy node; the window is switched on at 3.5 s); 14.5 s, 30 fps, Forward+, scripted.",
+        "act_title_on_screen": "When the Screen Is Copied"
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "II · When the Screen Is Copied",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "By default, Godot makes that copy the first time a shader asks for it, right before that shader's node is drawn. So the shader sees everything drawn before it, and nothing after.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A stack of three flat sprites A, B, C (the act's three colours) with a window-shaped 'shader' chip hovering above. As the chip drops toward the stack a copy frame appears automatically right under the chip and captures A, B and C; a thumbnail shows all three. Caption 'the first shader that reads the screen triggers the copy'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "stack and chip"
+          },
+          {
+            "at": 0.4,
+            "event": "chip drops; the copy frame appears under it"
+          },
+          {
+            "at": 0.7,
+            "event": "thumbnail shows A, B, C; caption settles"
+          }
+        ],
+        "manim": {
+          "class": "B11_FirstReader"
+        },
+        "motion_claim": "The shader chip drops toward the stack and, just before it lands, a copy frame appears under it and captures A, B and C."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the screen-reading docs page",
+        "why": "The claim is about timing in the draw order; the docs paragraph states it, but a moving stack with a frame appearing exactly when the reader arrives shows it."
+      }
+    },
+    {
+      "beat_id": "B12",
+      "act": "II · When the Screen Is Copied",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now add a Back Buffer Copy. After C, the window shows all three. Move it between B and C, and C vanishes from the window. C is still on the screen. It is only missing from the copy.",
+      "estimated_duration_s": 12.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same three squares and window. At 2.5 s a BackBufferCopy node is added after C: the window still shows A, B and C. At 5.5 s the node is moved between B and C: C vanishes from the window while C stays in the main picture. Readouts 'copy after C' then 'B copy C' (the draw order, copy node between the two); one terracotta ring on the window after the change.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "window shows A, B, C"
+          },
+          {
+            "at": 0.22,
+            "event": "readout 'copy after C'"
+          },
+          {
+            "at": 0.43,
+            "event": "readout 'B copy C'; C gone from the window"
+          },
+          {
+            "at": 0.64,
+            "event": "ring on the window"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/copy-moves-1.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the node is moved in the tree at run time)",
+            "readouts": [
+              {
+                "at": 0.22,
+                "text": "copy after C",
+                "x": 0.45,
+                "y": 0.93
+              },
+              {
+                "at": 0.43,
+                "text": "B copy C",
+                "x": 0.45,
+                "y": 0.93
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.64,
+                "box": [
+                  0.57,
+                  0.06,
+                  0.96,
+                  0.47
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "C vanishes from the window while it stays on the screen."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the preview code",
+        "why": "The result is the proof; a real window losing C while C stays visible beside it carries 'it only changes what the copy contains'.",
+        "capture_spec": "C05: capture_scenes.gd id C05 (three squares and window; BackBufferCopy in viewport mode added after C at 2.5 s, move_child to between B and C at 5.5 s); 14 s, 30 fps, Forward+, scripted tree changes."
+      }
+    },
+    {
+      "beat_id": "B13",
+      "act": "II · When the Screen Is Copied",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Between A and B, only A is left. Before A, the window is empty. The node never changes what is drawn. It only changes what the copy contains.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The same scene continued: the node starts between B and C, is moved between A and B at 1 s (only A is left in the window) and before A at 3.6 s (the window is empty), while the main picture never changes. Readouts 'A copy B' then 'before A'.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "window shows A and B"
+          },
+          {
+            "at": 0.12,
+            "event": "readout 'A copy B'; only A in the window"
+          },
+          {
+            "at": 0.37,
+            "event": "readout 'before A'; window empty"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/copy-moves-2.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the node is moved in the tree at run time)",
+            "readouts": [
+              {
+                "at": 0.12,
+                "text": "A copy B",
+                "x": 0.45,
+                "y": 0.93
+              },
+              {
+                "at": 0.37,
+                "text": "before A",
+                "x": 0.45,
+                "y": 0.93
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The window empties step by step while the main picture stays full."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the preview code",
+        "why": "Two more positions of the same node, as the same window emptying, finish the idea without a second drawing.",
+        "capture_spec": "C06: capture_scenes.gd id C06 (three squares and window; BackBufferCopy starts between B and C, move_child to between A and B at 1.0 s and to first at 3.6 s); 10.5 s, 30 fps, Forward+, scripted."
+      }
+    },
+    {
+      "beat_id": "B14",
+      "act": "II · When the Screen Is Copied",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Only the first shader that reads the screen triggers a copy. Here it sits before C, so it misses C. The second shader, after C, reuses that copy and misses C too. A new Back Buffer Copy between them refreshes it.",
+      "estimated_duration_s": 13.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The three squares with two windows on the right, one above the other. The first window sits between B and C in the tree, the second after C; with no copy node both windows miss C. At 10.5 s a BackBufferCopy is added between C and the second window: the second window now shows A, B and C, the first still does not. Readouts 'first reader', 'second reader', 'new copy'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "readout 'first reader' on the top window"
+          },
+          {
+            "at": 0.14,
+            "event": "readout 'second reader' on the lower window; both miss C"
+          },
+          {
+            "at": 0.73,
+            "event": "readout 'new copy'; the lower window gains C"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/two-readers.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (a node is added at run time)",
+            "readouts": [
+              {
+                "at": 0.1,
+                "text": "first reader",
+                "x": 0.77,
+                "y": 0.03
+              },
+              {
+                "at": 0.14,
+                "text": "second reader",
+                "x": 0.77,
+                "y": 0.5
+              },
+              {
+                "at": 0.73,
+                "text": "new copy",
+                "x": 0.77,
+                "y": 0.5
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The second window gains C the moment a copy node appears; the first window never does."
+      },
+      "lecture": {
+        "runner_up": "BrowserCapture of the Back-buffer logic paragraph",
+        "why": "Only a run shows the second window reusing the first copy and then changing at the exact moment a node appears.",
+        "capture_spec": "C07: capture_scenes.gd id C07 (tree A, B, preview 1 with border, C, preview 2 with border; BackBufferCopy added between C and preview 2 at 10.5 s); 15 s, 30 fps, Forward+, scripted. The lower window's miniature also shows the upper window (it is part of the screen by then): expected."
+      }
+    },
+    {
+      "beat_id": "B15",
+      "act": "II · When the Screen Is Copied",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Tree order is not the only lever. Z index and canvas layers change the draw order too, and the copy follows them. But a copy only serves shaders on its own canvas layer.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Three transparent sheets stacked in isometric view, labelled 'layer -1', 'layer 0', 'layer 1' (a small note 'a CanvasLayer node'). On layer -1 the map; on layer 0 the copy node, the art and the reflection (a window chip); on layer 1 a second window chip. A glowing arrow runs from the copy node to the reflection on its own sheet; an arrow toward the chip on layer 1 stops at the sheet edge with a cross. A side chip 'z index' reorders items inside one sheet.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "three sheets with their contents"
+          },
+          {
+            "at": 0.4,
+            "event": "z index chip reorders two items on layer 0"
+          },
+          {
+            "at": 0.72,
+            "event": "arrow reaches the reflection; arrow to layer 1 is crossed"
+          }
+        ],
+        "manim": {
+          "class": "B15_CanvasSheets"
+        },
+        "motion_claim": "The copy's arrow reaches the reflection on its own sheet and the arrow to the other sheet stops at the edge."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable (z index, layers, same layer)",
+        "why": "Sheets are a spatial idea and the blocked arrow is the claim; a table would only list it."
+      }
+    },
+    {
+      "beat_id": "B16",
+      "act": "II · When the Screen Is Copied",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Back Buffer Copy has three modes. Viewport copies the whole screen. Rect copies only a box. Disabled copies nothing, so Godot falls back to its automatic copy.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real Godot 4.7 BackBufferCopy class page in a browser window; the camera pushes in on the three CopyMode constants (Disabled, Rect, Viewport) with their one-line descriptions and one terracotta ring marks the list. The ring box is a placeholder: set it from the real capture.",
+        "show": [
+          {
+            "at": 0,
+            "event": "the class page"
+          },
+          {
+            "at": 0.2,
+            "event": "push-in + ring on the three copy-mode constants"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/classes/class_backbuffercopy.html#enumerations",
+            "image": "reflections/docs-backbuffercopy.png",
+            "caption": "Godot 4.7 documentation · BackBufferCopy · captured at build time",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.35,
+                "scale": 1
+              },
+              {
+                "at": 0.2,
+                "x": 0.5,
+                "y": 0.62,
+                "scale": 1.5,
+                "ring": [
+                  0.12,
+                  0.52,
+                  0.88,
+                  0.8
+                ]
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera pushes in on the three modes the voice is naming."
+      },
+      "lecture": {
+        "runner_up": "manim: three small boxes (whole screen, a box, nothing)",
+        "why": "The three modes are a documentation fact; the documentation itself is the evidence (SHOW-THE-THING)."
+      }
+    },
+    {
+      "beat_id": "B17",
+      "act": "II · When the Screen Is Copied",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "A new Back Buffer Copy starts in Rect mode. The box covers only a corner of the screen, wherever the node is. Outside it, the docs call the result undefined. Here the window reads black until the mode becomes Viewport.",
+      "estimated_duration_s": 13.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The three squares and the window, with the node in Rect mode at its defaults: the window is black except a tiny stage-coloured patch at its top-left corner (the only part copied). At 9 s the mode is switched to Viewport and the window fills with A, B and C. Readouts 'Rect mode' then 'Viewport'; one terracotta ring on the tiny patch.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "readout 'Rect mode'; window black"
+          },
+          {
+            "at": 0.3,
+            "event": "ring on the corner patch"
+          },
+          {
+            "at": 0.66,
+            "event": "readout 'Viewport'; window shows A, B, C"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/rect-trap.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · fresh process · scripted",
+            "readouts": [
+              {
+                "at": 0.12,
+                "text": "Rect mode",
+                "x": 0.575,
+                "y": 0.52
+              },
+              {
+                "at": 0.66,
+                "text": "Viewport",
+                "x": 0.575,
+                "y": 0.52
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.3,
+                "box": [
+                  0.56,
+                  0.05,
+                  0.625,
+                  0.16
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "A black window with a tiny patch fills with the three squares when the mode becomes Viewport."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the pond and the reflection",
+        "why": "The black window shows 'undefined' literally and keeps this act's cast; the pond version is verified too but shows only a missing reflection.",
+        "capture_spec": "C08: capture_scenes.gd id C08 (three squares and window; BackBufferCopy with copy_mode Rect at its default rect, node at (100,100); copy_mode set to Viewport at 9.0 s); 14.5 s planned, 30 fps, Forward+. MUST run in a fresh Godot process (the black needs an empty back buffer). 1:1 ROUTE, not the 4K route: a Rect box is measured in render pixels (run-13: on the 4K route the default box is only 34 canvas units), so capture_scene.sh renders C08 in the 1280 x 720 window itself, where the default box is the 100 px corner of the screen (run-10), and enlarges the frames 3x by whole pixels. The corner patch is 38 x 38 px in the window (0.578 to 0.608 of the frame's width, 0.078 to 0.131 of its height); the rect does not follow the node."
+      }
+    },
+    {
+      "beat_id": "B18",
+      "act": "II · When the Screen Is Copied",
+      "lane": "editor",
+      "proof_gate": "SHOW",
+      "narration_text": "In the editor, select the node and set Copy Mode to Viewport. If the map spreads over the whole screen, that is the safe choice.",
+      "estimated_duration_s": 8.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A real frame of Godot's Inspector with the BackBufferCopy node selected: the Copy Mode property reads Viewport. One terracotta ring settles on the Copy Mode row.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Inspector frame"
+          },
+          {
+            "at": 0.3,
+            "event": "ring on Copy Mode: Viewport"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/editor-inspector-copy-mode.png",
+            "videoLabel": "Godot 4.7.2 editor · Inspector · real frame",
+            "readouts": [],
+            "rings": [
+              {
+                "at": 0.3,
+                "box": [
+                  0.03,
+                  0.6,
+                  0.97,
+                  0.73
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring settles on the Copy Mode row."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench inspector mode (labelled reconstruction)",
+        "why": "SHOW-THE-THING: the Inspector is where the viewer will change it, so the real Inspector is the evidence.",
+        "capture_spec": "E2: Godot's own editor on the scratch pond project, BackBufferCopy selected, recorded with record-editor-frames.sh and cropped to the box (2140, 60) to (2560, 420) of the 2560 x 1440 frame; the ring is measured on that crop. The planning frame png/planning-frame-E2-inspector-copy-mode.png already shows 'Copy Mode: Viewport' (label and value confirmed, and the options Disabled, Rect, Viewport are in the ClassDB list of run-07)."
+      }
+    },
+    {
+      "beat_id": "B19",
+      "act": "III · Building the Reflection",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Back to the pond. A reflection is the character again: the same picture, flipped upside down, placed right under its feet. On a Sprite two D, switch on the vertical flip.",
+      "estimated_duration_s": 10.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Act title 'Building the Reflection' (serif 40) top-left. The real pond with the blob standing on the shoreline. At about 2 s a flipped copy of the blob fades in right under its feet (the copy has no shader yet); a terracotta ring marks where the feet meet the copy and a label 'Flip V' lands beside the copy.",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "blob on the shore, no copy"
+          },
+          {
+            "at": 0.18,
+            "event": "the flipped copy fades in"
+          },
+          {
+            "at": 0.3,
+            "event": "ring where feet meet the copy"
+          },
+          {
+            "at": 0.62,
+            "event": "label 'Flip V'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/flip-and-place.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "Flip V",
+                "x": 0.405,
+                "y": 0.8
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.3,
+                "box": [
+                  0.33,
+                  0.47,
+                  0.48,
+                  0.71
+                ]
+              }
+            ],
+            "caption": "Flip V: turns the picture upside down, top to bottom",
+            "durationSeconds": "__AUDIO__",
+            "title": "Building the Reflection"
+          }
+        },
+        "motion_claim": "A flipped copy fades in directly under the feet."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of a blob and its mirror image",
+        "why": "The viewer sees the real node settings' result: the same picture, flipped and placed, exactly as the Inspector would produce it.",
+        "capture_spec": "C09: capture_scenes.gd id C09 (pond; Reflection is a plain flipped copy, no material, modulate alpha 0 to 1 over 2.0 to 3.0 s; Player static at x 520); 11 s, 30 fps, Forward+, scripted.",
+        "act_title_on_screen": "Building the Reflection"
+      }
+    },
+    {
+      "beat_id": "B20",
+      "act": "III · Building the Reflection",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "To keep it in step, give the character a Remote Transform two D. It pushes the character's position to another node whenever the character moves, so the reflection can sit anywhere in the tree.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A small scene-tree diagram: 'Player' (teal blob icon) with a child chip 'RemoteTransform2D'; a separate branch 'Reflection' (a flipped blob icon); a dashed line from the chip to the Reflection node. Under the diagram, a strip of shoreline: the blob slides right along it and the flipped blob under it follows in lockstep while the dashed line pulses each time. A label from the docs: 'pushes its transform to another node'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "tree diagram: Player, RemoteTransform2D, separate Reflection branch"
+          },
+          {
+            "at": 0.38,
+            "event": "dashed line drawn from the chip to Reflection"
+          },
+          {
+            "at": 0.7,
+            "event": "blob slides; the flipped blob follows"
+          }
+        ],
+        "manim": {
+          "class": "B20_FollowsAlong"
+        },
+        "motion_claim": "The blob slides right and the flipped blob under it follows in lockstep, the dashed line pulsing."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "GodotDevWorkbench tree mode (labelled reconstruction)",
+        "why": "The claim is 'follows without being its child'; two separate branches with a moving pair show exactly that."
+      }
+    },
+    {
+      "beat_id": "B21",
+      "act": "III · Building the Reflection",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Walk the character along the shore and the reflection follows, but it knows nothing about water. Over the sandbar, it hangs in the sand. Something has to hide it there.",
+      "estimated_duration_s": 10.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real pond with the plain flipped copy following the blob along the shoreline: over the open water it looks right, but when the blob passes the sandbar the copy is drawn right over the sand. Readouts 'no map yet' then 'in the sand'; one terracotta ring on the copy over the sand.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "readout 'no map yet'; copy over water"
+          },
+          {
+            "at": 0.68,
+            "event": "ring on the copy over the sand"
+          },
+          {
+            "at": 0.7,
+            "event": "readout 'in the sand'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/copy-in-the-sand.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [
+              {
+                "at": 0.2,
+                "text": "no map yet",
+                "x": 0.5,
+                "y": 0.9
+              },
+              {
+                "at": 0.7,
+                "text": "in the sand",
+                "x": 0.5,
+                "y": 0.9
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.68,
+                "box": [
+                  0.57,
+                  0.47,
+                  0.71,
+                  0.7
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The copy slides over the sandbar and stays visible on the sand."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of the failure",
+        "why": "The failure is easiest to feel as the real mistake happening: a flipped copy sitting on dry sand.",
+        "capture_spec": "C10: capture_scenes.gd id C10 (pond; Reflection plain flipped sprite, no material; Player walks x 300 to 1000 over 10.5 s); 11.5 s, 30 fps, Forward+, scripted walk."
+      }
+    },
+    {
+      "beat_id": "B22",
+      "act": "III · Building the Reflection",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "So the shader on the reflection looks up the same spot in the screen texture, using screen U V: a pixel's address on the whole screen. That texture holds the map, so the spot holds the label.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "Two linked panels of the pond: left 'the screen' with a terracotta dot on one pixel of the reflection, right 'the copy' (the red and green map) with its twin dot at the same place; a dashed link between the dots and the tag 'screen UV: the same address in both'. The dot moves along the reflection and its twin moves with it; the colour under the twin changes the small label from 'water' to 'sand' as the dot crosses onto the sandbar. A label 'screen UV: a pixel's address on the whole screen'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "two panels, dot and twin"
+          },
+          {
+            "at": 0.4,
+            "event": "dot moves; twin follows; label 'water'"
+          },
+          {
+            "at": 0.72,
+            "event": "dot over the sandbar; label 'sand'"
+          }
+        ],
+        "manim": {
+          "class": "B22_SameAddress"
+        },
+        "motion_claim": "The dot on the reflection moves and its twin on the map moves with it; the label under the twin turns from 'water' to 'sand'."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab with the preview window",
+        "why": "The same address in two pictures is a correspondence; two linked panels with moving twin dots show it."
+      }
+    },
+    {
+      "beat_id": "B23",
+      "act": "III · Building the Reflection",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The color it finds is the label. If it is close to red, this pixel is over water, so keep it. If not, set its alpha, how visible the pixel is, to zero.",
+      "estimated_duration_s": 11.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the ten-line reflection shader); at right the real pond with the shader on the reflection: the blob walks, the reflection shows over water and is gone over the sandbar. The lines light up as the voice reads: the lookup line, the water test, the alpha line. Readouts 'keep' over water and 'alpha zero' near the sandbar.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "label lookup line"
+          },
+          {
+            "at": 0.3,
+            "event": "water test line"
+          },
+          {
+            "at": 0.38,
+            "event": "readout 'keep' over water"
+          },
+          {
+            "at": 0.64,
+            "event": "COLOR.a line"
+          },
+          {
+            "at": 0.7,
+            "event": "readout 'alpha zero' near the sandbar"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tCOLOR.a *= water;\n}",
+            "codeFile": "lab-shaders/02-reflection.gdshader",
+            "cues": [
+              {
+                "at": 0.1,
+                "lines": [
+                  7
+                ],
+                "label": "SCREEN_UV: a pixel's address on the whole screen"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  8
+                ],
+                "label": "distance: how far apart two colors are"
+              },
+              {
+                "at": 0.64,
+                "lines": [
+                  9
+                ],
+                "label": "alpha: how visible a pixel is: 0 invisible, 1 solid"
+              }
+            ],
+            "video": "reflections/reflection-walk.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+            "readouts": [
+              {
+                "at": 0.38,
+                "text": "keep",
+                "x": 0.35,
+                "y": 0.8
+              },
+              {
+                "at": 0.7,
+                "text": "alpha zero",
+                "x": 0.65,
+                "y": 0.8
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The lookup, test and alpha lines light up in turn while the reflection shows over water and vanishes over the sand."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The three lines are the whole effect; the real result next to them, and the lines lighting with the voice, is the claim.",
+        "capture_spec": "C11: capture_scenes.gd id C11 (pond; shader lab-shaders/02-reflection.gdshader; Player walks x 300 to 1000 over 11.5 s); 12.5 s, 30 fps, Forward+, scripted walk."
+      }
+    },
+    {
+      "beat_id": "B24",
+      "act": "III · Building the Reflection",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is the proof that the map is hidden. Switch the Label Map node off, and the picture does not change, except the reflection is gone. The map is invisible, and it is doing the work.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real pond with the blob walking over open water. At 4.5 s the LabelMap node is switched off: the picture does not change except that the reflection disappears. At 9.5 s it is switched on again and the reflection returns. Readouts 'Map on', 'Map off', 'Map on'.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "readout 'Map on'; reflection present"
+          },
+          {
+            "at": 0.37,
+            "event": "readout 'Map off'; reflection gone, picture otherwise identical"
+          },
+          {
+            "at": 0.76,
+            "event": "readout 'Map on'; reflection back"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/label-map-toggle.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the Label Map node is switched at run time)",
+            "readouts": [
+              {
+                "at": 0.06,
+                "text": "Map on",
+                "x": 0.12,
+                "y": 0.06
+              },
+              {
+                "at": 0.37,
+                "text": "Map off",
+                "x": 0.12,
+                "y": 0.06
+              },
+              {
+                "at": 0.76,
+                "text": "Map on",
+                "x": 0.12,
+                "y": 0.06
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The reflection vanishes and returns as the LabelMap node is switched off and on, and nothing else in the picture changes."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of two frames and what differs between them",
+        "why": "A real switch with an identical rest of the picture is the evidence; a drawing could only claim it.",
+        "capture_spec": "C12: capture_scenes.gd id C12 (pond; shader 02; Player walks x 180 to 620 over 12.5 s over open water; LabelMap.visible false from 4.5 s to 9.5 s); 13 s, 30 fps, Forward+, scripted."
+      }
+    },
+    {
+      "beat_id": "B25",
+      "act": "III · Building the Reflection",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "If the reflection never shows, check the order. Copy after the art: the shader reads the art, finds no red, and hides everything. Map over the art: the reflection works, and so does the red sea.",
+      "estimated_duration_s": 12.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real pond. State one: map, copy, art (the reflection shows). At 4 s the copy node is moved after the art: the reflection disappears and nothing else changes. At 9.5 s the LabelMap is moved over the art: a red and green sea covers the pond and the reflection is back. Readouts show the order ('map · copy · art', 'map · art · copy', 'art · map · copy') and the outcome ('reflection', 'no reflection', 'red sea').",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "order map, copy, art; reflection shows"
+          },
+          {
+            "at": 0.33,
+            "event": "order map, art, copy; no reflection"
+          },
+          {
+            "at": 0.72,
+            "event": "order art, map, copy; red sea, reflection back"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/wrong-orders.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the order is changed in the tree at run time)",
+            "readouts": [
+              {
+                "at": 0.06,
+                "text": "map · copy · art",
+                "x": 0.15,
+                "y": 0.06
+              },
+              {
+                "at": 0.33,
+                "text": "map · art · copy",
+                "x": 0.15,
+                "y": 0.06
+              },
+              {
+                "at": 0.72,
+                "text": "art · map · copy",
+                "x": 0.15,
+                "y": 0.06
+              },
+              {
+                "at": 0.06,
+                "text": "reflection",
+                "x": 0.4,
+                "y": 0.8
+              },
+              {
+                "at": 0.34,
+                "text": "no reflection",
+                "x": 0.4,
+                "y": 0.8
+              },
+              {
+                "at": 0.72,
+                "text": "red sea",
+                "x": 0.4,
+                "y": 0.8
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The reflection disappears when the copy moves after the art; a red sea covers the pond when the map moves over it."
+      },
+      "lecture": {
+        "runner_up": "manim stack with the copy frame moving",
+        "why": "Two real failures, one after the other in one scene, show what each wrong order looks like to the person debugging it.",
+        "capture_spec": "C13: capture_scenes.gd id C13 (pond; shader 02; Player walks x 300 to 560; move_child(BackBufferCopy, Ground's index) at 4.0 s; move_child(LabelMap, Ground's index) at 9.5 s); 13.5 s, 30 fps, Forward+, scripted."
+      }
+    },
+    {
+      "beat_id": "B26",
+      "act": "III · Building the Reflection",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "The art must be opaque. At ninety percent, the red and green show through faintly, and the ring around the sandbar gives it away. Cover the map completely, or the player will see it.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real pond. At 3 s the art layer's opacity eases from 100 to 90 percent: the water turns a faint periwinkle and a pale green ring shows around the sandbar, the map leaking through. At 9.5 s it returns to 100 percent and the leak is gone. Readouts 'art 100%', 'art 90%', 'art 100%'; a terracotta ring on the leaking green ring while it shows.",
+        "show": [
+          {
+            "at": 0.06,
+            "event": "readout 'art 100%'"
+          },
+          {
+            "at": 0.3,
+            "event": "readout 'art 90%'; the leak appears"
+          },
+          {
+            "at": 0.62,
+            "event": "ring on the leaking green ring"
+          },
+          {
+            "at": 0.76,
+            "event": "readout 'art 100%'; the leak is gone"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "video": "reflections/see-through-art.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the art's opacity is changed at run time)",
+            "readouts": [
+              {
+                "at": 0.06,
+                "text": "art 100%",
+                "x": 0.12,
+                "y": 0.06
+              },
+              {
+                "at": 0.3,
+                "text": "art 90%",
+                "x": 0.12,
+                "y": 0.06
+              },
+              {
+                "at": 0.76,
+                "text": "art 100%",
+                "x": 0.12,
+                "y": 0.06
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.62,
+                "box": [
+                  0.49,
+                  0.47,
+                  0.89,
+                  0.84
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "A faint purple tint and a green ring appear when the art drops to ninety percent and disappear when it returns to full."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of an overlay with alpha",
+        "why": "The leak is a visible change in a real frame, with the exact opacity labelled; the viewer sees how little transparency is enough.",
+        "capture_spec": "C14: capture_scenes.gd id C14 (pond; shader 02; Ground modulate alpha 1.0, eased to 0.9 over 3.0 to 4.0 s, back to 1.0 at 9.5 s); 13 s, 30 fps, Forward+, scripted. The stage colour shows through the art at 0.9, so the whole picture lightens a little: expected."
+      }
+    },
+    {
+      "beat_id": "B27",
+      "act": "IV · Compare With a Range",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "A moment ago, the shader asked whether the color was close to red, not equal to red. That was on purpose. Godot's documentation warns that comparing decimal numbers with equals may not come out true. Compare against a range.",
+      "estimated_duration_s": 13.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Title 'Compare With a Range' (serif 40) on the real Godot 4.7 shading-language page, scrolled to the Flow control paragraph that says to compare floating-point values against a range instead of an exact number; the camera pushes in and one terracotta ring marks the sentence. The ring box is a placeholder: set it from the real capture.",
+        "show": [
+          {
+            "at": 0,
+            "event": "the page at the Flow control section"
+          },
+          {
+            "at": 0.25,
+            "event": "push-in + ring on the warning sentence"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrowserCapture",
+          "props": {
+            "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html#flow-control",
+            "image": "reflections/docs-shading-language-compare.png",
+            "caption": "Godot 4.7 documentation · Shading language · captured at build time",
+            "frame": "browser",
+            "moves": [
+              {
+                "at": 0,
+                "x": 0.5,
+                "y": 0.35,
+                "scale": 1
+              },
+              {
+                "at": 0.25,
+                "x": 0.5,
+                "y": 0.5,
+                "scale": 1.6,
+                "ring": [
+                  0.1,
+                  0.4,
+                  0.92,
+                  0.6
+                ]
+              }
+            ],
+            "ringColor": "#A64A24",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The camera pushes in on the warning the voice is describing."
+      },
+      "lecture": {
+        "runner_up": "manim: 'a == b' with a cross over it",
+        "why": "The warning is a documentation claim; the documentation itself, in its own words, is the evidence (SHOW-THE-THING).",
+        "act_title_on_screen": "Compare With a Range"
+      }
+    },
+    {
+      "beat_id": "B28",
+      "act": "IV · Compare With a Range",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Here is what goes wrong with equals. Same pond, but the water is painted at half strength, and the shader asks for exactly point five. Nothing matches, so the reflection never shows.",
+      "estimated_duration_s": 10.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Title 'Compare With a Range'. Code card at left (the nine-line equals shader, the compare line lit as the voice says 'exactly point five'); at right the real pond whose water was painted at half strength: the blob walks and no reflection ever appears. Readouts 'water: half red' at the top and 'no reflection' below the blob.",
+        "show": [
+          {
+            "at": 0.14,
+            "event": "readout 'water: half red'"
+          },
+          {
+            "at": 0.6,
+            "event": "compare line lit"
+          },
+          {
+            "at": 0.78,
+            "event": "readout 'no reflection'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(label == vec3(0.5, 0.0, 0.0));\n\tCOLOR.a *= water;\n}",
+            "codeFile": "lab-shaders/04-compare-equal.gdshader",
+            "cues": [
+              {
+                "at": 0.6,
+                "lines": [
+                  7
+                ],
+                "label": "==: true only when every part matches exactly"
+              }
+            ],
+            "video": "reflections/equals-half-red.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk · water painted at 128",
+            "readouts": [
+              {
+                "at": 0.14,
+                "text": "water: half red",
+                "x": 0.5,
+                "y": 0.06
+              },
+              {
+                "at": 0.78,
+                "text": "no reflection",
+                "x": 0.3,
+                "y": 0.8
+              }
+            ],
+            "rings": [],
+            "caption": "equals · the map's water is painted at 128 of 255",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The blob walks and the reflection never appears while the equals line is lit."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "A non-event needs the code that causes it and a held, walking frame with a label that says what is missing.",
+        "capture_spec": "C15: capture_scenes.gd id C15 (pond with the water painted (128,0,0); shader lab-shaders/04-compare-equal.gdshader; Player walks x 250 to 700 over 10.5 s); 12 s, 30 fps, Forward+, scripted walk."
+      }
+    },
+    {
+      "beat_id": "B29",
+      "act": "IV · Compare With a Range",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Ask for a distance instead, and the same map works. How far is this color from half red? Within a tenth counts as water. The reflection is back.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the same nine lines with a distance test, the changed line lit); at right the same half-strength pond: the reflection is there as the blob walks. Readouts 'water: half red' and 'reflection back'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "readout 'water: half red'"
+          },
+          {
+            "at": 0.22,
+            "event": "distance line lit"
+          },
+          {
+            "at": 0.62,
+            "event": "readout 'reflection back'"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, vec3(0.5, 0.0, 0.0)) < 0.1);\n\tCOLOR.a *= water;\n}",
+            "codeFile": "lab-shaders/05-compare-distance.gdshader",
+            "cues": [
+              {
+                "at": 0.22,
+                "lines": [
+                  7
+                ],
+                "label": "distance: how far apart two colors are"
+              }
+            ],
+            "video": "reflections/distance-half-red.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk · water painted at 128",
+            "readouts": [
+              {
+                "at": 0.12,
+                "text": "water: half red",
+                "x": 0.5,
+                "y": 0.06
+              },
+              {
+                "at": 0.62,
+                "text": "reflection back",
+                "x": 0.3,
+                "y": 0.8
+              }
+            ],
+            "rings": [],
+            "caption": "distance within 0.1 · the map's water is painted at 128 of 255",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The reflection shows as the blob walks while the distance line is lit."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The same pond and the same walk with one line changed is the fair comparison; the contrast with the previous beat is the proof.",
+        "capture_spec": "C16: capture_scenes.gd id C16 (the same half-red pond; shader lab-shaders/05-compare-distance.gdshader; Player walks x 250 to 700 over 10 s); 10.5 s, 30 fps, Forward+, scripted walk."
+      }
+    },
+    {
+      "beat_id": "B30",
+      "act": "IV · Compare With a Range",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Why did equals fail? The screen stores each color channel in eight bits, so two hundred fifty-six steps. Half strength lands on step one hundred twenty-eight, which reads back as point five oh two. Not point five.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The series' 0 to 1 ramp strip zoomed around 0.5 so tick marks are visible at k/255, with the ticks 127 and 128 labelled 0.498 and 0.502. A terracotta marker 'asked for 0.5' sits between the two ticks, on no tick. The painted value snaps to the 128 tick and a readout shows '0.502'. A small label '256 steps per channel' and a grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+ and Compatibility read the same'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "zoomed ramp with ticks"
+          },
+          {
+            "at": 0.4,
+            "event": "marker 'asked for 0.5' lands between two ticks"
+          },
+          {
+            "at": 0.72,
+            "event": "painted value snaps to tick 128; readout 0.502"
+          }
+        ],
+        "manim": {
+          "class": "B30_EightBits"
+        },
+        "motion_claim": "The marker lands between two ticks while the painted value snaps to the 128 tick and reads 0.502."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "'Not one of the steps' is spatial; a marker sitting in the gap between two ticks shows it at a glance."
+      }
+    },
+    {
+      "beat_id": "B31",
+      "act": "IV · Compare With a Range",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "You can make equals pass by writing one hundred twenty-eight over two hundred fifty-five. It passed in Forward Plus and failed in Compatibility. The distance passed in both.",
+      "estimated_duration_s": 9.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A two-row table, one row ringed as each renderer is named.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "Forward+ row"
+          },
+          {
+            "at": 0.62,
+            "event": "Compatibility row"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "Writing 128 over 255",
+            "headers": [
+              "Renderer",
+              "equals 128/255",
+              "distance < 0.1"
+            ],
+            "rows": [
+              [
+                "Forward+",
+                "match",
+                "match"
+              ],
+              [
+                "Compatibility",
+                "no match",
+                "match"
+              ]
+            ],
+            "note": "Apple M4 Pro · Godot 4.7.2 · water painted at 128 · evidence/planning-checks (run-06)",
+            "cues": [
+              0.2,
+              0.62
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves down the rows with the voice."
+      },
+      "lecture": {
+        "runner_up": "manim",
+        "why": "Two measured results in two rows with the machine and renderer stated is exactly what the table component is for."
+      }
+    },
+    {
+      "beat_id": "B32",
+      "act": "IV · Compare With a Range",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Think of a color as a point. Red is one corner, green another. A radius of a tenth around each is wide enough to catch the painted color, and narrow enough to keep red and green apart.",
+      "estimated_duration_s": 12.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "A square colour plane (red channel across, green channel up) with the red point at the bottom right and the green point at the top left, each with a terracotta circle of radius 0.1 (labelled 'water' and 'coast'). A small dot, the pixel's colour, slides from red toward green: inside the red circle the label reads 'water', outside both 'neither', inside the green circle 'coast'. A tiny ruler shows the radius 0.1 and the distance between red and green, about 1.4.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "plane with the two points and circles"
+          },
+          {
+            "at": 0.4,
+            "event": "dot leaves the water circle: 'neither'"
+          },
+          {
+            "at": 0.74,
+            "event": "dot enters the coast circle: 'coast'"
+          }
+        ],
+        "manim": {
+          "class": "B32_ColorDistance"
+        },
+        "motion_claim": "The dot slides from red toward green and the label changes as it enters and leaves the two circles."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "LectureEvidenceTable",
+        "why": "A tolerance is a region; a dot moving through two circles shows what 'close enough' means."
+      }
+    },
+    {
+      "beat_id": "B33",
+      "act": "IV · Compare With a Range",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Better still, paint the map in pure values, zero or full. They read back the same in both renderers, and with the H D R two D setting on. Half strength does not: point five oh two normally, point two one six with it on.",
+      "estimated_duration_s": 15.3,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "A two-row table, one row ringed as each painted value is named.",
+        "show": [
+          {
+            "at": 0.2,
+            "event": "full row"
+          },
+          {
+            "at": 0.62,
+            "event": "half row"
+          }
+        ],
+        "remotion": {
+          "pattern": "LectureEvidenceTable",
+          "props": {
+            "title": "What the screen texture reads back",
+            "headers": [
+              "Painted",
+              "Default 2D",
+              "HDR 2D on (Forward+)"
+            ],
+            "rows": [
+              [
+                "full · 255",
+                "1.0",
+                "1.0"
+              ],
+              [
+                "half · 128",
+                "0.502",
+                "0.216"
+              ]
+            ],
+            "note": "Both renderers read the Default column the same · Apple M4 Pro · Godot 4.7.2 · evidence/planning-checks (run-06)",
+            "cues": [
+              0.2,
+              0.62
+            ],
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The ring moves from the full row to the half row with the voice."
+      },
+      "lecture": {
+        "runner_up": "manim ramp strip",
+        "why": "Four measured numbers in a table with the machine named; the ramp picture was used in the previous eight-bit beat."
+      }
+    },
+    {
+      "beat_id": "B34",
+      "act": "V · Polish and Limits",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Now the coast. Paint it green, read it the same way, and give it a lower alpha. The shader adds the two. The reflection is stronger in open water and fainter around the sandbar.",
+      "estimated_duration_s": 11.6,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Title 'Polish and Limits' (serif 40). Code card at left (the fourteen-line final shader; the coast constant, the coast test and the alpha sum lit in turn); at right the real pond: the reflection stands in open water at half strength, then the blob walks toward the sandbar and the reflection grows fainter across the green ring before the sand hides it. Readouts 'open water' and 'coast'.",
+        "show": [
+          {
+            "at": 0.12,
+            "event": "coast constant lit"
+          },
+          {
+            "at": 0.3,
+            "event": "coast test lit"
+          },
+          {
+            "at": 0.58,
+            "event": "alpha sum lit"
+          },
+          {
+            "at": 0.62,
+            "event": "readout 'open water'"
+          },
+          {
+            "at": 0.78,
+            "event": "readout 'coast'; reflection fainter over the ring"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec4 tint : source_color = vec4(0.2, 0.5, 1.0, 1.0);\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\nconst vec3 COAST = vec3(0.0, 1.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tfloat coast = float(distance(label, COAST) < 0.1);\n\tCOLOR.a *= water * 0.5 + coast * 0.3;\n\tCOLOR.rgb = mix(COLOR.rgb, tint.rgb, 0.5);\n}",
+            "codeFile": "lab-shaders/03-reflection-final.gdshader",
+            "cues": [
+              {
+                "at": 0.12,
+                "lines": [
+                  6
+                ],
+                "label": "COAST: the coast's label, pure green"
+              },
+              {
+                "at": 0.3,
+                "lines": [
+                  11
+                ]
+              },
+              {
+                "at": 0.58,
+                "lines": [
+                  12
+                ]
+              }
+            ],
+            "video": "reflections/coast-alpha.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk · tint neutral",
+            "readouts": [
+              {
+                "at": 0.62,
+                "text": "open water",
+                "x": 0.33,
+                "y": 0.8
+              },
+              {
+                "at": 0.78,
+                "text": "coast",
+                "x": 0.55,
+                "y": 0.88
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__",
+            "title": "Polish and Limits"
+          }
+        },
+        "motion_claim": "The reflection is stronger in open water and fainter as it crosses the ring around the sandbar."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "The faint-over-the-ring crossing is the claim and only a real moving frame shows the two strengths side by side.",
+        "capture_spec": "C17: capture_scenes.gd id C17 (pond; shader lab-shaders/03-reflection-final.gdshader with the tint uniform set to the sprite's own colour so only the alpha shows; Player static at x 420 until 7.0 s, then walks to x 900 by 12.5 s); 13 s, 30 fps, Forward+, scripted.",
+        "act_title_on_screen": "Polish and Limits"
+      }
+    },
+    {
+      "beat_id": "B35",
+      "act": "V · Polish and Limits",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "Last, a tint. Mix blends two colors by an amount. Here it is halfway toward blue. Now the reflection reads as water, not as a second character.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Code card at left (the same fourteen lines; the mix line lit, then the tint uniform); at right the real pond with the blob standing still: the reflection is teal-grey, then turns a clearer blue as the tint is switched on, off, and on again. Readouts 'no tint' and 'tint'.",
+        "show": [
+          {
+            "at": 0.03,
+            "event": "readout 'no tint'"
+          },
+          {
+            "at": 0.2,
+            "event": "readout 'tint'; reflection bluer"
+          },
+          {
+            "at": 0.22,
+            "event": "mix line lit"
+          },
+          {
+            "at": 0.34,
+            "event": "readout 'no tint'"
+          },
+          {
+            "at": 0.44,
+            "event": "readout 'tint'"
+          },
+          {
+            "at": 0.62,
+            "event": "tint uniform lit"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "side",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec4 tint : source_color = vec4(0.2, 0.5, 1.0, 1.0);\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\nconst vec3 COAST = vec3(0.0, 1.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tfloat coast = float(distance(label, COAST) < 0.1);\n\tCOLOR.a *= water * 0.5 + coast * 0.3;\n\tCOLOR.rgb = mix(COLOR.rgb, tint.rgb, 0.5);\n}",
+            "codeFile": "lab-shaders/03-reflection-final.gdshader",
+            "cues": [
+              {
+                "at": 0.22,
+                "lines": [
+                  13
+                ],
+                "label": "mix: blends from a to b: t of 0 gives a, 1 gives b"
+              },
+              {
+                "at": 0.62,
+                "lines": [
+                  4
+                ],
+                "label": "uniform: a value your game sets; same for every pixel"
+              }
+            ],
+            "video": "reflections/tint-toggle.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (the tint is switched at run time)",
+            "readouts": [
+              {
+                "at": 0.03,
+                "text": "no tint",
+                "x": 0.3,
+                "y": 0.8
+              },
+              {
+                "at": 0.2,
+                "text": "tint",
+                "x": 0.3,
+                "y": 0.8
+              },
+              {
+                "at": 0.34,
+                "text": "no tint",
+                "x": 0.3,
+                "y": 0.8
+              },
+              {
+                "at": 0.44,
+                "text": "tint",
+                "x": 0.3,
+                "y": 0.8
+              }
+            ],
+            "rings": [],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The reflection's color shifts toward blue each time the tint is switched on."
+      },
+      "lecture": {
+        "runner_up": "LectureCodeTrace alone",
+        "why": "A hue shift is only visible in a flicker between states; the real frames alternate with the line that causes it lit.",
+        "capture_spec": "C18: capture_scenes.gd id C18 (pond; shader 03; Player static at x 420; the tint uniform set to the sprite colour (no effect) or to (0.2, 0.5, 1.0): blue from 1.8 s to 3.2 s and from 4.6 s on); 10.5 s, 30 fps, Forward+, scripted."
+      }
+    },
+    {
+      "beat_id": "B36",
+      "act": "V · Polish and Limits",
+      "lane": "manim",
+      "proof_gate": "SHOW",
+      "narration_text": "Two limits. This reflects the character only, so the sky and the shore are not in it. Mirroring the whole screen is a different technique.",
+      "estimated_duration_s": 8.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "visual_intent": "The pond picture with a waterline drawn across it: sky, grass and the blob above; below it the reflection area. Under the line a flipped teal blob stays; dashed flipped outlines of the sky band and the grass band try to appear under the line and are each crossed out. A small label 'the character only'.",
+        "show": [
+          {
+            "at": 0.1,
+            "event": "pond picture with waterline and the flipped blob"
+          },
+          {
+            "at": 0.4,
+            "event": "dashed flipped sky and grass appear"
+          },
+          {
+            "at": 0.7,
+            "event": "each is crossed out; label settles"
+          }
+        ],
+        "manim": {
+          "class": "B36_NoScenery"
+        },
+        "motion_claim": "Dashed flipped outlines of the sky and the grass appear under the waterline and are crossed out; only the flipped blob stays."
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Lecture body beat: one object or scene on a cream stage, the voice carries the explanation; only underfill/clustered are waived."
+      },
+      "lecture": {
+        "runner_up": "ShaderLab capture of the mirror-the-screen technique",
+        "why": "A limit is a negative and a drawing that crosses out what is missing says it; a capture would show only what is there."
+      }
+    },
+    {
+      "beat_id": "B37",
+      "act": "V · Polish and Limits",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "narration_text": "And the reflection moves with the character. When the character jumps, the reflection rises too, where a real one would drop, and the shoreline cuts it off.",
+      "estimated_duration_s": 9.2,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "The real pond with the blob standing at the shore. It jumps 80 px up, twice. Each time the reflection also moves up (where a real one would move down) and the top part of it is cut off at the shoreline. Readouts 'jump' and a terracotta ring on the cut part.",
+        "show": [
+          {
+            "at": 0.3,
+            "event": "first jump: reflection rises and is clipped"
+          },
+          {
+            "at": 0.34,
+            "event": "ring on the cut part"
+          },
+          {
+            "at": 0.64,
+            "event": "second jump"
+          }
+        ],
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "layout": "video",
+            "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform vec4 tint : source_color = vec4(0.2, 0.5, 1.0, 1.0);\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\nconst vec3 COAST = vec3(0.0, 1.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tfloat coast = float(distance(label, COAST) < 0.1);\n\tCOLOR.a *= water * 0.5 + coast * 0.3;\n\tCOLOR.rgb = mix(COLOR.rgb, tint.rgb, 0.5);\n}",
+            "codeFile": "lab-shaders/03-reflection-final.gdshader",
+            "cues": [],
+            "video": "reflections/jump.mp4",
+            "videoLabel": "Godot 4.7.2 · Forward+ · scripted (scripted jump)",
+            "readouts": [
+              {
+                "at": 0.3,
+                "text": "jump",
+                "x": 0.5,
+                "y": 0.12
+              }
+            ],
+            "rings": [
+              {
+                "at": 0.34,
+                "box": [
+                  0.17,
+                  0.46,
+                  0.3,
+                  0.6
+                ]
+              },
+              {
+                "at": 0.66,
+                "box": [
+                  0.17,
+                  0.46,
+                  0.3,
+                  0.6
+                ]
+              }
+            ],
+            "caption": "",
+            "durationSeconds": "__AUDIO__"
+          }
+        },
+        "motion_claim": "The blob jumps up and the reflection rises with it and is cut off at the shoreline."
+      },
+      "lecture": {
+        "runner_up": "manim drawing of a mirror image dropping",
+        "why": "The honest picture of the limit is the real effect misbehaving; a drawing could only say a real one would drop.",
+        "capture_spec": "C19: capture_scenes.gd id C19 (pond; shader 03; Player static at x 300; Player.y lifted 80 px by a half sine over 3.0 to 4.0 s and again over 6.5 to 7.5 s); 10.5 s, 30 fps, Forward+, scripted."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "verdict",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let's recap with Claude. A label map is a layer of flat colors, drawn first and covered by the art. A Back Buffer Copy makes the screen texture at its own place in the draw order. The reflection is a flipped copy that follows the character and shows only where the map says water. Compare map colors with a distance, never with equals. Paint the map in pure values: zero or full. Coast and tint polish the look, and the reflection shows the character only.",
+      "estimated_duration_s": 28.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "artifact page opens"
+          },
+          {
+            "at": 0.2,
+            "event": "recap lines land in narration order"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Recap",
+            "artifactHeading": "Reflections",
+            "artifactLines": [
+              "A label map is a layer of flat colors, drawn first and covered by the art.",
+              "A Back Buffer Copy makes the screen texture at its own place in the draw order.",
+              "The reflection is a flipped copy that follows the character and shows only where the map says water.",
+              "Compare map colors with a distance, never with equals.",
+              "Paint the map in pure values: zero or full.",
+              "Coast and tint polish the look, and the reflection shows the character only."
+            ]
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Mandated ClaudeVerdictArtifact bookend."
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "your turn",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Your turn. Paste this into Claude: Give my Godot two D character a reflection that shows only over water, using a hidden label map. Draw the map first, in pure red. Then a Back Buffer Copy in viewport mode, then my opaque ground. The reflection's shader should keep only pixels within a tenth of red. Then point me to the three lines I should check. Then check two things yourself. Does the red map ever show in the running game? And does the reflection show over water and disappear over land?",
+      "estimated_duration_s": 30.9,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Composer opens: 'Your turn.'"
+          },
+          {
+            "at": 0.12,
+            "event": "the prompt types in full"
+          },
+          {
+            "at": 0.85,
+            "event": "two check lines land"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "CLAUDE · YOUR TURN",
+            "segment": "Give a Character a Reflection",
+            "command": "Give my Godot two D character a reflection that shows only over water, using a hidden label map. Draw the map first, in pure red. Then a Back Buffer Copy in viewport mode, then my opaque ground. The reflection's shader should keep only pixels within a tenth of red. Then point me to the three lines I should check.",
+            "runningText": "paste this into Claude…",
+            "output": [
+              "Check: the red map never shows in the running game.",
+              "Check: the reflection shows over water and is gone over land."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Opus 5.5",
+            "effortLabel": "High"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "outro",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Reflections. At Nik Bear Brown.",
+      "estimated_duration_s": 4.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "persona": "liam",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "title restates; handle; mascot"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Reflections",
+            "slug": "claude-liam-lecture-reflections",
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 CSYE 7270 · Fall 2026 · **100 points**
 
-Assignments follow a **10-day cadence**. Use this assignment's due date in Canvas. The syllabus's **10% daily late penalty** applies. Suggested Canvas due date: Day 60 after the first class day.
+**Planned due date: Friday, November 13, 2026, at 11:59 pm America/New_York.** See the [Fall 2026 assignment schedule](fall-2026-assignment-schedule.md). This local date awaits posting to Canvas; Canvas remains the official deadline. The **10% daily late penalty** applies.
 
 **Covers:** [Module 8 — Shader verification](../modules/08-shader-verification/lesson.md) and its chapter, [Shader Verification](../chapters/08-shader-verification.md), applied to the shader you built in Assignment 5.
 

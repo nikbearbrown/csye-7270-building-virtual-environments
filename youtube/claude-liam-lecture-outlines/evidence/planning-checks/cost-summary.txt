@@ -1,0 +1,20 @@
+stress test: 6 render targets of [8192, 8192] per frame (403 million pixels shaded per frame), vsync off, Apple M4 Pro (Apple9), forward_plus, Godot 4.7.2-stable (official); wall-clock, three rounds per run, median of the rounds per run
+G1 graphics-card timer: 2160 samples, maximum 0.0 ms  ->  unavailable on this setup
+valid runs: 4 (run-g-verify_g_cost.log, run-g-repeat-1.log, run-g-repeat-2.log, run-g-repeat-3.log); INVALID and left out: run-g-repeat-4-INVALID-window-stopped-drawing.log
+
+variant                                              reads  run 1   run 2   run 3   run 4    median   range
+plain sprite, no shader                                  1    7.50    7.46    7.52    7.75     7.51   7.46 to 7.75
+06-pixel-steps (4 + 1 reads)                             5    7.87    7.71    7.60    7.67     7.69   7.60 to 7.87
+07-eight-reads (8 + 1)                                   9   10.38   10.09   10.23   10.00    10.16   10.00 to 10.38
+08-loop (9 + 1)                                         10   10.62   10.33   10.39   10.18    10.36   10.18 to 10.62
+10-ring (16 + 1), sine and cosine per read              17   38.73   38.24   36.52   36.46    37.38   36.46 to 38.73
+ring-const (16 + 1), directions as constants            17   16.16   16.23   15.67   15.63    15.91   15.63 to 16.23
+loop-5 constant bounds (25 + 1)                         26   23.69   23.96   23.52   23.16    23.61   23.16 to 23.96
+loop-7 constant bounds (49 + 1)                         50   44.53   43.97   44.32   43.74    44.14   43.74 to 44.53
+loop-9 constant bounds (81 + 1)                         82   71.33   70.67   70.88   71.06    70.97   70.67 to 71.33
+loop-n r=1, runtime bounds (9 + 1)                      10   16.65   16.56   16.52   16.56    16.56   16.52 to 16.65
+loop-n r=2, runtime bounds (25 + 1)                     26   35.77   35.93   34.35   35.47    35.62   34.35 to 35.93
+09-guard at thickness 0 (1 read)                         1    7.52    7.73    7.58    7.49     7.55   7.49 to 7.73
+
+constant-bound loops with 26 or more reads, median of runs: time = 0.845 ms per read + 1.7 ms  (reads [26, 50, 82] -> [23.6, 44.1, 71.0])
+below about 26 reads the frame sits close to the no-shader floor (7.5 ms here, 8.3 ms in two earlier runs), so those points show little of the cost; run to run the absolute times move by a few percent with what else the Mac is doing.

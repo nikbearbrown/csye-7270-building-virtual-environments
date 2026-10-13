@@ -1,0 +1,304 @@
+{
+ "B20": {
+  "lane": "manim",
+  "class": "B20_Signature",
+  "visual_intent": "Act title 'Your Own Functions' (serif 40) top-left. The line `vec3 soften(vec3 c) {` in monospace (size 40) centered, with the body line `return 0.4 + 0.6 * c;` and a closing brace beneath it. Three drawn brackets under the first line land in order, each with a plain label: under `vec3` 'hands back', under `soften` 'name', under `(vec3 c)` 'arguments, each with a type'. Serif 32 caption: 'signature: the first line of a function'.",
+  "motion_claim": "Three brackets close in turn round the type, the name and the argument list.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "act title; the function"
+   },
+   {
+    "at": 0.4,
+    "event": "bracket: hands back"
+   },
+   {
+    "at": 0.62,
+    "event": "bracket: name"
+   },
+   {
+    "at": 0.8,
+    "event": "bracket: arguments"
+   }
+  ],
+  "runner_up": "LectureCodeTrace",
+  "why": "A signature is three parts of one line; brackets that close on each part in order are the clearest way to separate them.",
+  "sparse": true
+ },
+ "B21": {
+  "lane": "manim",
+  "class": "B21_CallAndReturn",
+  "visual_intent": "At left the call `soften(vec3(UV, 0.5))`; a small three-cell token travels along a drawn path into the argument slot `c` of a rounded box that holds `return 0.4 + 0.6 * c;`; the box pulses; a new three-cell token leaves the box and returns to the call, tagged 'vec3, as promised'. Then a four-cell token leaves the box instead and bounces off a drawn bar with a cross, with the engine's message in two short lines under it: `Expected return with an expression` / `of type 'vec3'.`",
+  "motion_claim": "A bundle goes into the function and a bundle comes back out; a bundle of the wrong size bounces.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "call and box"
+   },
+   {
+    "at": 0.26,
+    "event": "token travels into the argument"
+   },
+   {
+    "at": 0.4,
+    "event": "token returns, tagged vec3"
+   },
+   {
+    "at": 0.66,
+    "event": "wrong-size token bounces, message appears"
+   }
+  ],
+  "runner_up": "LectureCodeTrace",
+  "why": "In and out is a flow; a token entering and leaving the box makes 'hands values in, hands one value back' literal.",
+  "sparse": true
+ },
+ "B22": {
+  "lane": "terminal",
+  "pattern": "CCPlainShell",
+  "props": {
+   "title": "Godot 4.7.2 · shader compile error · printed by the engine",
+   "lines": [
+    "--Main Shader--",
+    "    2 |",
+    "    3 | void fragment() {",
+    "E   4->  COLOR = vec4(soften(vec3(UV, 0.5)), 1.0);",
+    "    5 | }",
+    "    6 |",
+    "SHADER ERROR: No matching function found for: 'soften'.",
+    "          at: (null) (:4)"
+   ],
+   "startCue": 10,
+   "lineGap": 12,
+   "fontSize": 36,
+   "windowMargin": 90,
+   "rings": [
+    {
+     "line": 6,
+     "cue": 200
+    }
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A terminal window with the engine's own log of lab-shaders/47-err-call-before-define.gdshader, word for word: the source lines around the call `COLOR = vec4(soften(vec3(UV, 0.5)), 1.0);` with that line marked, then 'No matching function found for: 'soften'.' A ring lands on the message.",
+  "motion_claim": "The log lands line by line; a ring settles on the message that does not mention order.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "log lines land"
+   },
+   {
+    "at": 0.68,
+    "event": "ring on the message"
+   }
+  ],
+  "runner_up": "Manim: two function boxes with an arrow pointing up",
+  "why": "The order rule is about what Godot SAYS; the real message (which never mentions order) is the point.",
+  "sparse": false
+ },
+ "B23": {
+  "lane": "manim",
+  "class": "B23_TheWall",
+  "visual_intent": "Two rounded boxes: right, `fragment()` containing three outlined chips `UV`, `COLOR`, `TEXTURE`; left, a box `soften()` of your own. A thick gray vertical wall stands between them. The UV chip leaves fragment, crosses toward the function, hits the wall and bounces back; a small drawn bubble near the bounce reads 'unknown identifier'. Serif 32 caption: 'built-in: a value the engine hands to a function, or collects from it'.",
+  "motion_claim": "A chip travels toward the function, strikes the wall and is thrown back.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the two boxes, the wall, the chips"
+   },
+   {
+    "at": 0.34,
+    "event": "caption: built-in"
+   },
+   {
+    "at": 0.62,
+    "event": "UV chip bounces off the wall"
+   }
+  ],
+  "runner_up": "ShaderLab with the failing file",
+  "why": "A wall between two boxes is the picture of 'cannot see'; the bounce is the event.",
+  "sparse": true
+ },
+ "B24": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvec3 soften(vec2 address) {\n\treturn 0.4 + 0.6 * vec3(address, 0.5);\n}\n\nvoid fragment() {\n\tCOLOR = vec4(soften(UV), 1.0);\n}",
+   "codeFile": "lab-shaders/10-pass-uv-in.gdshader",
+   "cues": [
+    {
+     "at": 0.15,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.34,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "godot-shader-language/pass-uv.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [],
+   "caption": "global: TIME (seconds on one clock shared by the whole game), PI, TAU, E",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code panel at left with the nine-line fixed shader: `vec3 soften(vec2 address)` and the call `soften(UV)`; at right a framed real render: the same pastel gradient as before. Caption under the render (one line, 72 characters): 'global: TIME (seconds on one clock shared by the whole game), PI, TAU, E'.",
+  "motion_claim": "The parameter line is highlighted, then the call; the same gradient sits beside them.",
+  "show": [
+   {
+    "at": 0.15,
+    "event": "parameter line highlighted"
+   },
+   {
+    "at": 0.34,
+    "event": "call line highlighted"
+   },
+   {
+    "at": 0.6,
+    "event": "caption: global built-ins"
+   }
+  ],
+  "runner_up": "manim: UV passing through the wall",
+  "why": "The fix is code; the real file next to the unchanged picture proves it works.",
+  "sparse": false,
+  "capture_spec": "C06: Lab rect, lab-shaders/10-pass-uv-in.gdshader, still PNG 1920x1080, Forward+ (identical to the 05-pastel render: 0 pixels differ)."
+ },
+ "B25": {
+  "lane": "manim",
+  "class": "B25_InOutInout",
+  "visual_intent": "Top strip: three chips with one-to-three-word captions, `in` 'a copy', `inout` 'the original', `out` 'writes back'; the active chip is ringed. Middle: the caller's variable box `a = 0.25`. Bottom: the function signature card, which changes with the active mode. IN (`float bump(float x)`): a ghost copy of 0.25 goes into the function, becomes 0.75 and returns to `b`; the box a still reads 0.25. INOUT (`void bump(inout float x)`): a double-headed drawn arrow ties the function to the box a itself, which changes to 0.75. OUT (`void make(out vec3 c)`): the function writes (0.1, 0.5, 0.9) into an empty three-cell box c in the caller.",
+  "motion_claim": "A copy changes and the original does not; then the original itself changes; then an empty box is filled.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "in: copy goes in, a stays 0.25, b = 0.75"
+   },
+   {
+    "at": 0.4,
+    "event": "inout: a becomes 0.75"
+   },
+   {
+    "at": 0.7,
+    "event": "out: c filled with (0.1, 0.5, 0.9)"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of three modes",
+  "why": "Copy versus original is a thing moving or not moving; the table would list the words but not the difference.",
+  "sparse": true
+ },
+ "B26": {
+  "lane": "remotion",
+  "pattern": "BrowserCapture",
+  "props": {
+   "url": "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shader_functions.html",
+   "image": "godot-shader-language/docs-shader-functions.png",
+   "caption": "Godot 4.7 documentation · Built-in shader functions · captured at build time",
+   "frame": "browser",
+   "moves": [
+    {
+     "at": 0,
+     "x": 0.5,
+     "y": 0.4,
+     "scale": 1
+    },
+    {
+     "at": 0.3,
+     "x": 0.4,
+     "y": 0.5,
+     "scale": 1.6
+    }
+   ],
+   "ringColor": "#A64A24",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "The real Godot 4.7 'Built-in shader functions' page in a browser window, scrolled to the 'Trigonometric functions' table: three columns 'Return Type', 'Function', 'Description / Return value' with the rows radians, degrees, sin, cos, tan. The camera pushes in on the sin row, `vec_type` / `sin(vec_type x)` / 'Sine.', and a terracotta ring marks the signature.",
+  "motion_claim": "The camera pushes in on the sin row and the ring marks the type going in and the type coming out.",
+  "show": [
+   {
+    "at": 0,
+    "event": "the docs page, trigonometric table"
+   },
+   {
+    "at": 0.3,
+    "event": "push-in and ring on the sin signature"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of sin, mix, length signatures",
+  "why": "The signature belongs to the documentation, and the documentation itself is the evidence (SHOW-THE-THING).",
+  "sparse": false
+ },
+ "B27": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvec3 get_color(int t) {\n\treturn vec3(0.37, 0.64, 0.57);\n}\nvec3 get_color(float t) {\n\treturn vec3(0.95, 0.80, 0.50);\n}\n\nvoid fragment() {\n\tvec3 left = get_color(1);\n\tvec3 right = get_color(1.0);\n\tCOLOR = vec4(UV.x < 0.5 ? left : right, 1.0);\n}",
+   "codeFile": "lab-shaders/15-overload.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3,
+      6
+     ]
+    },
+    {
+     "at": 0.4,
+     "lines": [
+      11
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      12
+     ]
+    }
+   ],
+   "video": "godot-shader-language/overload.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.42,
+     "text": "int: teal",
+     "x": 0.25,
+     "y": 0.1
+    },
+    {
+     "at": 0.66,
+     "text": "float: sand",
+     "x": 0.75,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "Code panel at left with the 14-line shader: two functions named get_color (one taking an int, one a float) and two calls, `get_color(1)` and `get_color(1.0)`; at right a framed real render: the left half teal, the right half sand. Readouts 'int: teal' on the left half and 'float: sand' on the right.",
+  "motion_claim": "The two function lines light, then each call lights as the matching half of the picture is named.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the two same-named functions"
+   },
+   {
+    "at": 0.4,
+    "event": "get_color(1) highlighted; left half teal"
+   },
+   {
+    "at": 0.62,
+    "event": "get_color(1.0) highlighted; right half sand"
+   }
+  ],
+  "runner_up": "manim: one name, two doors",
+  "why": "The result is a picture: one name, two different colors from the same-looking call, with the code that did it beside it.",
+  "sparse": false,
+  "capture_spec": "C07: Lab rect, lab-shaders/15-overload.gdshader, still PNG 1920x1080, Forward+. Probes: (0.25, 0.5) (0.3686, 0.6392, 0.5686) teal; (0.75, 0.5) (0.949, 0.8, 0.502) sand."
+ }
+}

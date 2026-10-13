@@ -1,0 +1,389 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - smoothstep(0.25, 0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+   "codeFile": "lab-shaders/02-soft-disc.gdshader",
+   "cues": [],
+   "video": "soft-edges-glow-and-noise/c01-hook.mp4",
+   "videoLabel": "Godot 4.7.2 · same circle, shader swapped at 6 s · scripted",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "hard edge",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "soft edge",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "From Cut to Ramp"
+  },
+  "capture_spec": "C01: square target (ColorRect 576 x 576 logical px centred on the 1280 x 720 canvas), lab-shaders/01-hard-disc.gdshader from 0 s, material swapped to lab-shaders/02-soft-disc.gdshader at 6.0 s (`--material-at 6.0`), 10 s, 30 fps, Forward+, stage #D9D5CA, no input. Verified: 01 draws exactly two colors in a 256 px render; 02 has 16,780 in-between pixels of 65,536.",
+  "visual_intent": "Act title 'From Cut to Ramp' (serif 40) top-left. A real Godot render in a framed window on the cream stage: a teal disc with a razor-sharp edge sits still, then at the swap the same disc keeps its size and colour but its edge fades softly into the grey stage. Labels 'hard edge' then 'soft edge'.",
+  "motion_claim": "The sharp rim melts into a fade the moment the shader is swapped, with nothing else changing.",
+  "show": [
+   {
+    "at": 0.05,
+    "event": "hard disc, label 'hard edge'"
+   },
+   {
+    "at": 0.6,
+    "event": "shader swapped: the rim fades, label 'soft edge'"
+   }
+  ],
+  "runner_up": "manim drawing of a sharp and a soft circle",
+  "why": "A real render is the honest picture of 'nothing was blurred, one function changed'; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_StepPlot",
+  "visual_intent": "Axes on the cream stage: horizontal x from 0 to 1, vertical result 0 to 1. A grey dashed vertical line at the edge 0.4, labelled 'edge'. A terracotta dot slides along the bottom at height 0 from the left; when it crosses the line it jumps up to height 1 and runs on along the top, leaving a cliff-shaped curve behind it. Beneath the axes the GLOSSARY wording: 'step(edge, x): 0 below the edge, 1 from the edge up'.",
+  "motion_claim": "The dot slides along zero, jumps to one at the line, and the curve behind it is a cliff.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axes and the line a"
+   },
+   {
+    "at": 0.3,
+    "event": "dot slides along zero"
+   },
+   {
+    "at": 0.62,
+    "event": "dot jumps to one; cliff curve drawn"
+   },
+   {
+    "at": 0.8,
+    "event": "rule label"
+   }
+  ],
+  "runner_up": "LectureCodeTrace on the docs line 'b < a ? 0.0 : 1.0'",
+  "why": "A jump from zero to one is a motion; the code line would only state it.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - step(0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+   "codeFile": "lab-shaders/01-hard-disc.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      4
+     ],
+     "label": "distance(a, b): how far apart two points are"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      5
+     ],
+     "label": "step(edge, x): 0 below the edge, 1 from the edge up"
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c02-hard-disc.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [
+    {
+     "at": 0.7,
+     "box": [
+      0.671,
+      0.404,
+      0.712,
+      0.596
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: the same square target, lab-shaders/01-hard-disc.gdshader, still PNG at 3840 x 2160, Forward+. Verified in the 256 px Lab render: the pixel at UV x 0.8965 is body (alpha 1.0), the pixel at 0.9043 is stage (alpha 0.0).",
+  "visual_intent": "Code card at left (the hard-disc shader); at right a real Godot window with the teal disc and its razor-sharp edge. A terracotta ring settles on the right-hand part of the rim. A label on each highlighted line defines distance and step (GLOSSARY wording).",
+  "motion_claim": "The distance line is highlighted, then the step line; the ring lands on the rim as 'inside / outside' is said.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "distance line + definition label"
+   },
+   {
+    "at": 0.62,
+    "event": "step line + definition label; ring on the rim"
+   }
+  ],
+  "runner_up": "manim rings of equal distance around the middle",
+  "why": "The code and its exact result side by side is the claim; the rings picture would not show the real edge.",
+  "sparse": false
+ },
+ "B04": {
+  "lane": "manim",
+  "class": "B04_Staircase",
+  "visual_intent": "A 10-by-7 block of big outline cells cut from the REAL hard-disc render (data in evidence/planning-checks/staircase-cells.txt: columns 196 to 205, rows 51 to 57): cells that are teal in the render are filled teal and labelled 1, empty ones are stage grey and labelled 0. A terracotta outline walks along the boundary one step at a time. Caption: 'no in-between values'.",
+  "motion_claim": "The outline climbs the staircase one square step at a time along the real boundary.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the block of cells from the real render"
+   },
+   {
+    "at": 0.35,
+    "event": "outline starts walking the boundary"
+   },
+   {
+    "at": 0.7,
+    "event": "caption 'no in-between values'"
+   }
+  ],
+  "runner_up": "ShaderLab zoom of the hard-disc capture",
+  "why": "Cells with real 1 and 0 values show 'each pixel is all or none' better than a blurry magnified crop.",
+  "sparse": true
+ },
+ "B05": {
+  "lane": "manim",
+  "class": "B05_TwoLines",
+  "visual_intent": "Axes: horizontal x from 0 to 0.5, vertical result 0 to 1. Two grey dashed vertical lines at a = 0.25 and b = 0.4, labelled 'a' and 'b'. A terracotta dot rides along the x axis; the curve behind it is flat at 0, S-shaped between the two lines, then flat at 1. Rule label under the plot in two lines, in the GLOSSARY wording (the two edges are the dashed lines a and b): 'smoothstep(a, b, x): a switch that eases in and out between two edges:' then '0 below a, 1 above b, a smooth S between'.",
+  "motion_claim": "The dot rides along and the curve it leaves is flat, then an S, then flat again.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axes with lines a and b"
+   },
+   {
+    "at": 0.3,
+    "event": "dot rides; flat part drawn"
+   },
+   {
+    "at": 0.6,
+    "event": "S-shaped climb between a and b"
+   },
+   {
+    "at": 0.82,
+    "event": "rule label"
+   }
+  ],
+  "runner_up": "ShaderLab ramp strip",
+  "why": "A curve that bends between two lines is a plot; the dot makes 'slow, fast, slow' visible as speed.",
+  "sparse": true
+ },
+ "B06": {
+  "lane": "manim",
+  "class": "B06_SCurveNumber",
+  "visual_intent": "The same plot in unit form: t (labelled 'how far along the band, 0 to 1') from 0 to 1, a grey dashed diagonal (the straight ramp) and the terracotta S-curve. At t = 0.1 a vertical marker with two dots: the straight ramp at 0.1 and the curve at 0.028, a bracket between them. At t = 0.5 the dots coincide at 0.5. Typeset at top right: 3t^2 - 2t^3 (real MathTex, per docs/MATH-TYPESETTING.md) and under it, in monospace and labelled as code, t * t * (3.0 - 2.0 * t).",
+  "motion_claim": "The marker lands at ten percent and the two dots split: 0.1 on the line, 0.028 on the curve.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "diagonal and S-curve"
+   },
+   {
+    "at": 0.3,
+    "event": "marker at t = 0.1, dots 0.1 and 0.028, bracket"
+   },
+   {
+    "at": 0.62,
+    "event": "marker moves to t = 0.5: dots coincide"
+   },
+   {
+    "at": 0.8,
+    "event": "typeset formula and code form"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of t, line, curve",
+  "why": "The gap between a line and a curve at one marked spot is a picture; a table lists numbers without showing the gap.",
+  "sparse": true
+ },
+ "B07": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - smoothstep(0.25, 0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+   "codeFile": "lab-shaders/02-soft-disc.gdshader",
+   "cues": [
+    {
+     "at": 0.12,
+     "lines": [
+      5
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c03-soft-disc.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "0.25",
+     "x": 0.613,
+     "y": 0.596
+    },
+    {
+     "at": 0.62,
+     "text": "0.4",
+     "x": 0.68,
+     "y": 0.596
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.62,
+     "box": [
+      0.608,
+      0.42,
+      0.689,
+      0.58
+     ]
+    }
+   ],
+   "caption": "band: the strip of pixels near the edge, between the two radii",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: the square target, lab-shaders/02-soft-disc.gdshader, still PNG 3840 x 2160. Verified in the 256 px render: body alpha 0.966 / 0.496 / 0.026 at t = 0.100 / 0.500 / 0.900 (formula 0.972 / 0.500 / 0.028); every pixel within 0.008 of the formula.",
+  "visual_intent": "Code card at left (the soft-disc shader, one line changed from the hard disc); at right the real render: the teal disc whose edge fades over a band. A terracotta ring on the band at the right side, small labels '0.25' and '0.4' at the band's two ends.",
+  "motion_claim": "The smoothstep line is highlighted and the ring settles on the fading band.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "smoothstep line highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "ring on the band; '0.25' and '0.4' labels"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "The real picture of the band, next to the one line that makes it, is the claim.",
+  "sparse": false
+ },
+ "B08": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float softness : hint_range(0.02, 0.4) = 0.15;\n\nvoid fragment() {\n\tfloat width = max(softness, 0.01);\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat body = 1.0 - smoothstep(0.4 - width, 0.4, d);\n\tCOLOR = vec4(0.37, 0.64, 0.57, body);\n}",
+   "codeFile": "lab-shaders/03-soft-width.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.34,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "soft-edges-glow-and-noise/c04-softness-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · softness swept by script",
+   "readouts": [
+    {
+     "at": 0.12,
+     "text": "crisp",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "cloud",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: the square target, lab-shaders/03-soft-width.gdshader, softness 0.02 held 1 s, swept to 0.4 by 7 s, held (`--animate softness:0:0.02,1:0.02,7:0.4`); 12 s, 30 fps, Forward+. Verified stills: softness 0.05 gives 6,448 in-between pixels, 0.15 gives 16,780, 0.4 gives 27,400; outer edge unchanged.",
+  "visual_intent": "Code card at left (the soft-width shader); at right a real Godot window whose disc starts with a crisp rim and, as softness is swept up, spreads into a cloud while the outer edge stays put. Labels 'crisp' then 'cloud'.",
+  "motion_claim": "The fade widens inward from the same outer edge as the dial climbs.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "uniform line highlighted"
+   },
+   {
+    "at": 0.34,
+    "event": "smoothstep line; sweep under way"
+   },
+   {
+    "at": 0.7,
+    "event": "label 'cloud'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A dial moving a real picture is the claim: the inner edge travels, the outer one does not.",
+  "sparse": false
+ },
+ "B09": {
+  "lane": "manim",
+  "class": "B09_BandsMeet",
+  "visual_intent": "The S-curve plot with its two lines a and b. The lines slide together; the S-curve steepens into a vertical cliff, a step, at the moment they touch. At the touch a label 'a = b: undefined (docs)' and, in grey, 'this Mac: a hard cut' with the small grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+ and Compatibility'. Then a code chip slides in beside it: max(softness, 0.01), with the label 'max(a, b): the larger of two values'.",
+  "motion_claim": "The two dashed lines slide together and the smooth curve collapses into a cliff.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "S-curve with lines a and b"
+   },
+   {
+    "at": 0.35,
+    "event": "lines slide together; curve steepens"
+   },
+   {
+    "at": 0.68,
+    "event": "cliff; label 'a = b: undefined (docs)'"
+   },
+   {
+    "at": 0.85,
+    "event": "chip: max(softness, 0.01)"
+   }
+  ],
+  "runner_up": "BrowserCapture of the docs sentence 'Results are undefined if a >= b.'",
+  "why": "The collapse of the S into a cliff is the picture of 'step is smoothstep with no band'; the docs sentence goes on the screen as the label.",
+  "sparse": true
+ },
+ "B10": {
+  "lane": "manim",
+  "class": "B10_SwappedLines",
+  "visual_intent": "The smooth-curve plot with lines a = 0.25 and b = 0.4. The two lines swap places (b now left of a) and the S-curve flips to fall from one to zero. Label 'smoothstep(0.4, 0.25, x): flipped on this Mac, undefined in the docs' with the small grey credit 'Apple M4 Pro · Godot 4.7.2 · Forward+ and Compatibility'. Then, beneath the same flipped curve, the safe form slides in: '1.0 - smoothstep(0.25, 0.4, x)'.",
+  "motion_claim": "The curve flips when the lines swap, then the safe one-minus form draws the very same curve.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "S-curve and lines"
+   },
+   {
+    "at": 0.36,
+    "event": "lines swap; curve flips"
+   },
+   {
+    "at": 0.7,
+    "event": "safe form slides in under the flipped curve"
+   }
+  ],
+  "runner_up": "ShaderLab render of the swapped shader",
+  "why": "Two curves that overlap exactly show that the safe form is the same picture; a render would hide the argument order.",
+  "sparse": true
+ }
+}

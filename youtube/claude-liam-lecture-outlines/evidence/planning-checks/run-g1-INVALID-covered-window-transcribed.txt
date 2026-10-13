@@ -1,0 +1,20 @@
+INVALID (kept on purpose). Transcribed from the output of the second full run of run_all.sh on 2026-10-13, whose log run-g-verify_g_cost.log was then overwritten by the repeat.
+While that run was going, other windows were open on the same Mac, the Godot window was covered, and from round 2 on every frame read the idle time (6.9 ms), whatever the shader.
+Only round 1 drew real frames. Medians in ms per frame, rounds 1, 2, 3:
+
+  plain sprite, no shader                         [8.19, 6.9, 6.9]
+  06-pixel-steps (4 + 1 reads)                    [8.32, 6.9, 6.9]
+  07-eight-reads (8 + 1)                          [10.1, 6.9, 6.9]
+  08-loop (9 + 1)                                 [10.29, 6.9, 6.9]
+  10-ring (16 + 1), sine and cosine per read      [35.8, 6.9, 6.9]
+  ring-const (16 + 1), directions as constants    [15.63, 15.82, 6.9]
+  loop-5 constant bounds (25 + 1)                 [23.38, 6.9, 6.9]
+  loop-7 constant bounds (49 + 1)                 [43.2, 6.9, 6.9]
+  loop-9 constant bounds (81 + 1)                 [69.05, 6.9, 6.9]
+  loop-n r=1, runtime bounds (9 + 1)              [16.66, 6.9, 6.9]
+  loop-n r=2, runtime bounds (25 + 1)             [6.9, 6.9, 6.9]
+  09-guard at thickness 0 (1 read)                [6.9, 6.9, 6.9]
+
+Reading: the round-1 numbers agree with the valid run (10.3, 23.3, 43.0, 69.5, 37.0, 15.9 ms) to within about 0.6 ms (the ring with sine and cosine to 1.2 ms), which is some independent support, but the run as a whole proves nothing.
+Fix: verify_g_cost.gd now sets WINDOW_FLAG_ALWAYS_ON_TOP and moves the window to the foreground; analyze_cost.py refuses a log in which any variant has a round below 7.0 ms next to a round above 9.0 ms.
+The repeat (run-g-verify_g_cost.log, cost-summary.txt) is valid: every spread is 2.1 ms or less.

@@ -1,0 +1,14 @@
+# 2026-10-13 15:09:34 python3 -I capture_all.py --only C02 C06 --size 480x270 --frames 6 --public-dir /private/tmp/claude-501/rts-checks/test-public   (a test of the recording script itself: two tiny captures, six frames each, then ffmpeg)
+2 captures, 480 x 270, into /private/tmp/claude-501/rts-checks/test-public
+  C02 scene_c02_window             beats B03       13.3 s  ->  window.mp4
+  C06 scene_c06_spot_oval          beats B16,B17   10.5 s  ->  spot-oval.mp4
+free disk: 108 GB
+$ /Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-reading-the-screen/evidence/planning-checks/run-checks.sh capture scene_c02_window 13.300 forward_plus --width 480 --height 270 --frames 6
+$ ffmpeg -y -loglevel error -framerate 30 -i /private/tmp/claude-501/rts-checks/capture/scene_c02_window/f%05d.png -c:v libx264 -pix_fmt yuv420p -crf 12 /private/tmp/claude-501/rts-checks/test-public/window.mp4
+  C02: 6 frames -> /private/tmp/claude-501/rts-checks/test-public/window.mp4 (0.0 MB)
+$ /Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-reading-the-screen/evidence/planning-checks/run-checks.sh capture scene_c06_spot_oval 10.500 forward_plus --width 480 --height 270 --frames 6
+$ ffmpeg -y -loglevel error -framerate 30 -i /private/tmp/claude-501/rts-checks/capture/scene_c06_spot_oval/f%05d.png -c:v libx264 -pix_fmt yuv420p -crf 12 /private/tmp/claude-501/rts-checks/test-public/spot-oval.mp4
+  C06: 6 frames -> /private/tmp/claude-501/rts-checks/test-public/spot-oval.mp4 (0.0 MB)
+done. LOOK at the 50 % and 85 % frame of each video against evidence/planning-checks/frames/ before the 4K render.
+# ffprobe window.mp4 (width,height,fps,frames): 480,270,30/1,6
+# exit 0

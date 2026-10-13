@@ -1,0 +1,361 @@
+{
+ "B28": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float look : hint_range(0.0, 0.5) = 0.1;\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV + vec2(look, 0.0));\n}",
+   "codeFile": "lab-shaders/01-look-right.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "godot-outlines/C28-slide-clip.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.71,
+     "text": "sliced flat",
+     "x": 0.2,
+     "y": 0.5
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.85,
+     "box": [
+      0.3,
+      0.144,
+      0.7,
+      0.856
+     ]
+    }
+   ],
+   "caption": "docs: fragment() runs only for pixels the node's shape covers",
+   "durationSeconds": "__AUDIO__",
+   "title": "Room to Draw"
+  },
+  "capture_spec": "C28-slide-clip: scene spec evidence/planning-checks/scenes/C28-slide-clip.json, 13.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The picture slides left as look goes 0 to 0.4; past about 0.2 the left of the sprite is cut flat by the rectangle. Verified: look 0.125 slides the sprite 16 image px left exactly; at 0.25 the left 6.4 image px are cut by the rectangle (analyze_lab A1; scratch A)",
+  "visual_intent": "Act title 'Room to Draw' (serif 40) top-left. Code card at left: the seven-line look-right shader. At right a real Godot window: the sprite slides left as the step grows, and when it reaches the left edge of its rectangle it is sliced off flat. A ring marks the whole image rectangle at the end; caption credits the docs.",
+  "motion_claim": "The sprite slides left and the left side of it is cut off flat at the edge of the rectangle.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "the code line; the sprite slides left"
+   },
+   {
+    "at": 0.71,
+    "event": "readout 'sliced flat'"
+   },
+   {
+    "at": 0.85,
+    "event": "ring round the image rectangle"
+   }
+  ],
+  "runner_up": "manim: a rectangle with a shape pushed past its edge",
+  "why": "A real sprite really sliced at its rectangle's edge is the strongest picture of 'a shader paints only inside its rectangle', and it sets up the padding trap.",
+  "sparse": false
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C29-tight.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the sprite trimmed to its shape, thickness 0 to 4",
+   "readouts": [
+    {
+     "at": 0.26,
+     "text": "no empty border",
+     "x": 0.5,
+     "y": 0.93
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.64,
+     "box": [
+      0.449,
+      0.247,
+      0.551,
+      0.325
+     ]
+    },
+    {
+     "at": 0.68,
+     "box": [
+      0.598,
+      0.41,
+      0.642,
+      0.59
+     ]
+    },
+    {
+     "at": 0.85,
+     "box": [
+      0.449,
+      0.675,
+      0.551,
+      0.753
+     ]
+    },
+    {
+     "at": 0.87,
+     "box": [
+      0.358,
+      0.41,
+      0.402,
+      0.59
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C29-tight: scene spec evidence/planning-checks/scenes/C29-tight.json, 13.3 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The sprite trimmed to its shape (77 x 77): thickness 0 to 4; nothing appears where the shape touches the edge. Verified: axis widths 0, 0, 0, 0 on the trimmed sprite at thickness 4; 808 line px against 1,296 for the padded art (analyze_padding P1)",
+  "visual_intent": "A real sprite whose image was trimmed to its round shape (no transparent border). The outline is turned up from zero to four; the line shows in the corners but is cut flat where the circle touches the top, right, bottom and left edges of the image. Four rings on those four places, readout 'no empty border'.",
+  "motion_claim": "The outline grows around the circle and is missing at the four places where it touches the edge of the image.",
+  "show": [
+   {
+    "at": 0.44,
+    "event": "the line grows"
+   },
+   {
+    "at": 0.64,
+    "event": "rings on the four missing places"
+   }
+  ],
+  "runner_up": "manim: a circle inside its square with arrows blocked",
+  "why": "The real failure, in the real shader, with the real trimmed art.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "remotion",
+  "pattern": "LectureCodeTrace",
+  "props": {
+   "title": "Add transparent padding",
+   "code": "func add_padding(texture: Texture2D, pad: int) -> ImageTexture:\n\tvar source := texture.get_image()\n\tif source.is_compressed():\n\t\tsource.decompress()\n\tsource.convert(Image.FORMAT_RGBA8)\n\tvar size := source.get_size() + Vector2i(pad, pad) * 2\n\tvar padded := Image.create_empty(size.x, size.y, false, Image.FORMAT_RGBA8)\n\tpadded.fill(Color(0, 0, 0, 0))\n\tpadded.blit_rect(source, Rect2i(Vector2i.ZERO, source.get_size()), Vector2i(pad, pad))\n\treturn ImageTexture.create_from_image(padded)",
+   "note": "GDScript · evidence/planning-checks/padding_snippet.gd (the 'extends Node' line left out) · Godot 4.7 Image reference",
+   "cues": [
+    0.03,
+    0.03,
+    0.13,
+    0.19,
+    0.26,
+    0.35,
+    0.44,
+    0.56,
+    0.56,
+    0.81
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A cream code card with the ten-line add_padding function: line focus walks through the signature and the get_image line, then the bigger transparent image (create_empty and fill), then the blit_rect copy, then the texture it returns. A caption gives the meaning of blit_rect in the film's own words: 'copy a piece of one image into another'.",
+  "motion_claim": "Focus steps down the function as the voice describes it.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "signature and get_image"
+   },
+   {
+    "at": 0.35,
+    "event": "create_empty and fill"
+   },
+   {
+    "at": 0.56,
+    "event": "blit_rect"
+   },
+   {
+    "at": 0.81,
+    "event": "return"
+   }
+  ],
+  "runner_up": "manim code card with an image diagram",
+  "why": "The function is real code that was run (padding result in the next beat); paced line focus is exactly 'here is how'.",
+  "sparse": false
+ },
+ "B31": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C31-padding.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the trimmed sprite padded by 0, 2 and 4 pixels, thickness 4",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "no padding",
+     "x": 0.19,
+     "y": 0.93
+    },
+    {
+     "at": 0.26,
+     "text": "2 px padding",
+     "x": 0.5,
+     "y": 0.93
+    },
+    {
+     "at": 0.43,
+     "text": "4 px padding",
+     "x": 0.81,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C31-padding: scene spec evidence/planning-checks/scenes/C31-padding.json, 14.3 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The trimmed sprite with 0, 2 and 4 pixels of padding (the add_padding function on screen), thickness 0 to 4. Verified: axis widths 0, 2, 4 at thickness 4 with padding 0, 2, 4; line pixels 808, 1,104, 1,296; the padded art matches the original 1,296 (analyze_padding P1); a non-centered Sprite2D moves by the padding (4, 4) (verify_a log)",
+  "visual_intent": "Three real copies of the trimmed sprite in a row at the same thickness four, padded by none, two and four pixels with the function from the previous beat: the left line is cut off, the middle cut at two pixels, the right a complete ring. Labels under each.",
+  "motion_claim": "The line grows around all three; only the one padded by four gets a full ring.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "left cut off"
+   },
+   {
+    "at": 0.26,
+    "event": "middle cut at two"
+   },
+   {
+    "at": 0.43,
+    "event": "right full ring"
+   }
+  ],
+  "runner_up": "manim: three squares with a ring growing",
+  "why": "Three real results of the same function, side by side, with the widths measured.",
+  "sparse": false
+ },
+ "B32": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-outlines/C32-sheet.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a packed two-frame sheet, frame 1 outlined at thickness 4",
+   "readouts": [
+    {
+     "at": 0.03,
+     "text": "whole sheet",
+     "x": 0.27,
+     "y": 0.93
+    },
+    {
+     "at": 0.03,
+     "text": "frame 1",
+     "x": 0.7,
+     "y": 0.93
+    },
+    {
+     "at": 0.81,
+     "text": "stray line",
+     "x": 0.55,
+     "y": 0.2
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.84,
+     "box": [
+      0.586,
+      0.318,
+      0.62,
+      0.682
+     ]
+    }
+   ],
+   "caption": "docs: with a custom shader, a Sprite2D's UV spans its whole texture",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C32-sheet: scene spec evidence/planning-checks/scenes/C32-sheet.json, 16.0 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. Left: the whole packed sheet; right: frame 1 only, outlined at thickness 4: a stray line along its left edge is frame 0's pixels. Verified: UV.x runs 0.506 to 0.996 across frame 1 (the whole sheet's space); a 4 image px (16 canvas px at x4) stray line; the same with region_enabled and with AtlasTexture frames; separate frame images follow the shown frame, outline margin 3 on every side for both (analyze_sheets C3); verify_c C1 to C4",
+  "visual_intent": "At left the whole packed sheet (a solid teal frame with two eyes beside the disc frame); at right only frame 1 on its own, outlined at thickness four: a tall stray line runs down its left edge, drawn from the solid frame next door. Ring on the stray line, readouts 'whole sheet', 'frame 1', 'stray line', a caption crediting the docs.",
+  "motion_claim": "The outline switches on and a stray line appears along the frame's left edge.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "the sheet and the single frame"
+   },
+   {
+    "at": 0.81,
+    "event": "the stray line; ring"
+   }
+  ],
+  "runner_up": "BrowserCapture of the Sprite2D docs",
+  "why": "The real stray line in the real frame, with the docs sentence as the caption; the docs page alone would not show the damage.",
+  "sparse": false
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "\tvec2 lo = REGION_RECT.xy + TEXTURE_PIXEL_SIZE * 0.5;\n\tvec2 hi = REGION_RECT.xy + REGION_RECT.zw - TEXTURE_PIXEL_SIZE * 0.5;\n\tvec2 px = TEXTURE_PIXEL_SIZE * thickness;\n\tfloat around = 0.0;\n\tfor (int y = -1; y <= 1; y++) {\n\t\tfor (int x = -1; x <= 1; x++) {\n\t\t\tvec2 spot = clamp(UV + vec2(float(x), float(y)) * px, lo, hi);\n\t\t\taround += texture(TEXTURE, spot).a;\n\t\t}",
+   "codeFile": "lab-shaders/12-sheet-safe.gdshader · lines 6 to 14",
+   "cues": [
+    {
+     "at": 0.32,
+     "lines": [
+      1,
+      2
+     ],
+     "label": "REGION_RECT: the part of the texture the sprite shows"
+    },
+    {
+     "at": 0.44,
+     "lines": [
+      8
+     ],
+     "label": "clamp(x, lo, hi): keep x between lo and hi"
+    }
+   ],
+   "video": "godot-outlines/C33-sheet-clamp.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [
+    {
+     "at": 0.44,
+     "text": "stray line",
+     "x": 0.55,
+     "y": 0.2
+    },
+    {
+     "at": 0.59,
+     "text": "gone",
+     "x": 0.55,
+     "y": 0.2
+    }
+   ],
+   "rings": [],
+   "caption": "docs: UV spans the whole texture; REGION_RECT is the visible region",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C33-sheet-clamp: scene spec evidence/planning-checks/scenes/C33-sheet-clamp.json, 13.9 s clip (stretched to the measured audio), 30 fps, 1280x720 canvas rendered at 3840x2160, Forward+, nearest filter. The same frame; as the voice says 'clamp' the reads are clamped into REGION_RECT and the stray line disappears; the disc's own ring stays. Verified: REGION_RECT = (0.5, 0, 0.5, 1) (read as 0.502, the 8-bit value of 0.5) for hframes, region_enabled, an AtlasTexture sprite and an AnimatedSprite2D atlas frame; with the clamp the stray line is 0 px and the disc's ring is intact (verify_f F1 to F4, verify_i I3)",
+  "visual_intent": "Code card at left: eight lines of the sheet-safe shader (the lo and hi corners from REGION_RECT, and the clamp around each read). At right the same two-panel sheet scene: the stray line is there, then as the clamp is named it disappears while the disc's own ring stays. Readout 'stray line' then 'gone'.",
+  "motion_claim": "The clamp line is highlighted and the stray line vanishes from the frame's edge.",
+  "show": [
+   {
+    "at": 0.32,
+    "event": "lo and hi lines"
+   },
+   {
+    "at": 0.44,
+    "event": "the clamp line; the stray line vanishes"
+   }
+  ],
+  "runner_up": "manim: arrows bent back at the frame border",
+  "why": "The real stray line really disappearing is the proof; the excerpt of real code shows what did it.",
+  "sparse": false
+ }
+}

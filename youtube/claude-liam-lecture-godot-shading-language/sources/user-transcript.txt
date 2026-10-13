@@ -1,0 +1,1127 @@
+re shaders?
+0:00
+Hello everyone. Now before diving into
+0:03
+the cool parts of shaders, we first have
+0:05
+to understand what shaders are and how
+0:08
+to write them. So to simply begin,
+0:10
+shaders are very fast programs which
+0:13
+tell goodo how to draw things on the
+0:16
+screen. They are so fast because they
+0:18
+run on the GPU which has many many cores
+0:22
+allowing the program to basically run in
+0:25
+parallel. Now because of that whenever
+0:27
+we write shaders we'll have to think a
+0:30
+bit differently than we would when
+0:32
+writing say a normal program that runs
+0:34
+on the CPU. For a normal program you
+0:37
+always have the previous steps available
+0:39
+and you can make use of those steps in
+0:42
+order to find out what happens in the
+0:43
+current step. But since on the GPU
+0:46
+everything happens in parallel we can't
+0:49
+really do that. So instead what we have
+0:52
+to do is to find a way to know ahead of
+0:54
+time what value the current say pixel or
+0:58
+vertex that we are applying the shader
+1:00
+on is going to be. Okay but keeping this
+1:03
+in mind let's actually start writing
+1:05
+some shaders. Okay. Now let's begin by
+Basic Shader Creation
+1:08
+creating a shader for our sprite 2D
+1:10
+here. To do that we have to first create
+1:12
+a material. So I'm going to go under the
+1:14
+material tab and select a shader
+1:17
+material. Now to change how this
+1:19
+material looks, we have to actually
+1:21
+apply the shader that we're going to
+1:22
+write. So let's just create a new shader
+1:25
+for that as well. And let's call this
+1:27
+shader base or whatever. Everything is
+1:29
+fine as it is. And after I open it, you
+1:32
+see that I have here two functions.
+1:35
+These functions are programmable steps
+1:37
+of the rendering pipeline. And we can
+1:39
+use them in order to say how the sprite
+1:41
+should be rendered. For example, the
+1:44
+vertex shader here or the vertex
+1:46
+function is going to be called for each
+1:48
+of the vertices of our sprite 2D and can
+1:51
+be used to change properties of these
+1:54
+vertices. So, for example, we could
+1:56
+change the position of them or even the
+1:58
+color of the vertices. On the other
+2:00
+hand, the fragment shader or the
+2:02
+fragment function is going to be called
+2:04
+for each pixel of our sprite here. All
+2:08
+right, but we wouldn't be able to do
+2:10
+much with only these functions without
+2:12
+also being aware of the shader builtins.
+Builtins
+2:15
+The shader built-ins are basically just
+2:17
+values that we have from the start and
+2:20
+give us context on the object that we're
+2:23
+working on. So for example, a very
+2:26
+useful builtin is the well vertex
+2:29
+builtin. And this vertx builtin gives us
+2:32
+the coordinates of the current vertex.
+2:34
+So if I want for example to change each
+2:38
+vertex to be 20 pixels to the right,
+2:40
+what I could do would be to simply write
+2:43
+vertex.x,
+2:45
+I'm taking the horizontal coordinate and
+2:47
+I'm making it to be equal to vertex.x
+2:50
+plus 20. And now what's interesting is
+2:54
+that despite the object remaining in the
+2:56
+same place, it's being rendered 20
+2:59
+pixels towards the right. Okay, but what
+3:01
+else can we do? Well, there is also a
+3:04
+nice builtin which is time. And that
+3:07
+builtin is going to tell us how much
+3:09
+time passed since we started the engine.
+3:12
+So, for example, if I write here time,
+3:14
+I'm adding to the xcoordinate the time
+3:17
+that passed. And as you can see, my
+3:20
+vertices continuously move as this value
+3:23
+is continuously changing. Okay, but
+3:26
+let's put it back to uh 20.0 zero. And
+3:29
+let's move on to changing how each pixel
+3:32
+is being rendered in our fragment
+3:35
+shader. To change the color of a pixel,
+3:37
+we have to use the color built in. So
+3:39
+I'm going to use color and to set it to
+3:42
+be equal to some color that we want to
+3:44
+provide. So as you know, a color has
+3:47
+three color channels, red, green, and
+3:50
+blue. And also another channel for
+3:52
+transparency. So we can choose any
+3:55
+values between zero and one in order to
+3:57
+specify how much of that channel we want
+4:00
+to apply to our color. So for example,
+4:02
+what I could do would be to write here
+4:05
+let's say 1.0 for red, 0.5 for green,
+4:08
+and 0.5 for blue and finally 1.0 for
+4:12
+transparency. And as you can see, we
+4:15
+changed every single pixel of our image
+4:18
+to have this pink color. Similarly, if
+4:21
+we were to go in 3D, we could, for
+4:24
+example, assign a material to this cube
+4:28
+here as well. And let's call it, I don't
+4:31
+know, cube.gdshader.
+4:33
+I'm going to create it. And after
+4:36
+opening it, what I could do would be to
+4:38
+also change the color of this. However,
+4:40
+since this is an 3D object and the color
+4:43
+is calculated slightly differently, what
+4:46
+we have to specify instead is the albido
+4:48
+and the alpha of our cube, which are
+4:51
+just another built-ins that we can use
+4:53
+for 3D. So, if I want, I could write
+4:56
+albido and make it equal to ve 3 of 1.0,
+5:01
+0.5, and 0.2 this time. And as you can
+5:05
+see the cube is now this yellowish
+5:09
+color. Okay. And if I want to make the
+5:11
+cube be transparent what I could do
+5:13
+would be to write alpha and make it
+5:16
+equal to 0.3 for example. Now you see
+5:20
+that I have a very glassy cube here.
+5:23
+Okay. Now what I've just shown you are
+5:25
+the essential built-ins that you're
+5:27
+going to need if you want to write any
+5:29
+shader at all. There are many other
+5:31
+built-ins that we are definitely going
+5:33
+to cover, but for now, what I would like
+5:36
+is to get back to our 2D shader. And in
+Data Types
+5:39
+here, I'm just going to zoom in so that
+5:42
+you can see better. And what I want is
+5:44
+for you to look carefully at how I added
+5:47
+these values to my color. I had to
+5:50
+specify that this group of values is a
+5:52
+vector 4. So, it turns out that shaders
+5:56
+have data types. So for example, if I
+5:59
+wanted to add a boolean which is true or
+6:02
+false, I would just have to write bull
+6:04
+and something I guess and make it equal
+6:07
+to true. And also you might notice that
+6:10
+I have to add a semicolon after every
+6:13
+line. This is just how we have to write
+6:14
+code in shaders and that's perfectly
+6:17
+fine. No, nothing to worry too much
+6:18
+about. Okay, now what else do we have?
+6:21
+Well, we have numbers. You you know
+6:23
+numbers. Numbers can be integers, can be
+6:25
+floats. And you probably also know how
+6:27
+to declare them. But for the sake of
+6:29
+completeness, if I want to make a
+6:30
+number, I have to write int number and
+6:33
+make it equal to say five. And if I want
+6:36
+to make a float, I'd have to write float
+6:40
+other number. Very high budget on the
+6:43
+creative department today. And um yeah,
+6:46
+I could be setting this to be five as
+6:49
+well.
+6:51
+Now you might notice that I have an
+6:53
+error
+6:55
+and this error is quite a pain when
+6:58
+writing shaders to be honest. But
+7:00
+shaders do not automatically cast
+7:03
+values. So if I said that here I need a
+7:06
+float here I need to specify a float and
+7:10
+five is an integer. So what I have to do
+7:12
+is to write 5.0 and now this works.
+7:16
+Another thing I can do is to just write
+7:18
+five point or if I were to have like a
+7:20
+0.1 I could just write 0.1. But this
+7:23
+point is very important. So if you're
+7:26
+wondering why you're getting that error,
+7:28
+it's because you didn't put 0. Okay. But
+7:31
+other interesting types of variables
+7:33
+that we have is just combinations of
+7:35
+these. So for example, if I wanted to
+7:37
+have two integers or two floats, I would
+7:40
+write ve two and two floats and make it
+7:45
+be veto 2 of 1.0 and 2.0. And of course,
+7:50
+if I wanted to have two integers, I
+7:52
+could write I vec 2 ins and make it
+7:56
+equal to ivec 2 of one and two. And as
+7:59
+you can see, this works perfectly fine.
+8:02
+Now this vector type goes up to four. So
+8:05
+we can have up to ve four and we can
+8:08
+also have a matrix in case we need more
+8:11
+of these vector types. So what I could
+8:13
+do for example would be to make a matt 2
+8:16
+which contains two vectors and I could
+8:19
+say that this matt 2 is matrix if I know
+8:22
+how to write and math 2 of I don't know
+8:27
+ve 2 of 1.0 2.0 and ve 2 of 3.0 and 4.0
+8:34
+and zero. And now I have a matrix that
+8:37
+basically looks like this. Maybe it's
+8:38
+easier to visualize like this. It's just
+8:41
+a table that contains 1 2 and 3 4. So
+8:45
+nothing too special. And again, just as
+8:47
+vectors, this matrix can go up to four.
+8:50
+Okay, we know how to write variables.
+8:52
+But how do we actually use these
+8:54
+variables? Well, what we could do first
+8:56
+of all for integers and floats is to
+8:59
+simply take their value. This is kind of
+9:01
+straightforward. I can just take other
+9:02
+number and put it here in the red
+9:05
+channel and maybe change it to a
+9:06
+reasonable value 0.75.
+9:09
+And you see that it changed the color of
+9:11
+my rectangle. Now if I wanted for
+9:14
+example to do the same thing for number,
+9:16
+well I'd have a small issue because
+9:19
+again I need to be very precise with the
+9:22
+type that I have. So what I have to do
+9:24
+is to just cast this to a float. So I
+9:26
+could write float and now my number is
+9:30
+going to be transformed to a float and I
+9:32
+can make it like one so that uh it's the
+9:35
+largest possible value for our green
+9:38
+channel. Okay. Now what if I wanted to
+Vectors and Swizzling
+9:40
+get some value from inside this vector?
+9:43
+Well with vectors it's a bit more
+9:45
+interesting because you see in shaders
+9:48
+vectors are generally either considered
+9:51
+to be colors or considered to be
+9:53
+positions. So there's actually two ways
+9:56
+in which we can do the same thing. And
+9:58
+to better show that, I'm just going to
+10:00
+make a new vector 4. And if I wanted to
+10:04
+refer to the first element of vector 4,
+10:07
+and if I thought of vector 4 as a
+10:08
+position, what I could do would be to
+10:10
+write V4.x,
+10:12
+for example. So I'm just going to take
+10:14
+this V4.x and put it instead of this
+10:16
+first number. And as you can see, the
+10:18
+color changed because this V4.x is equal
+10:21
+to 0.1. Okay. But if I think of V4 as a
+10:26
+color, what I can do is to save V4. R
+10:30
+because this is the first element that
+10:32
+the color has because the color has
+10:34
+RGBA. So if I wanted to make a
+10:38
+completely new vector that's exactly the
+10:41
+same as this vector, what I could do
+10:42
+would be to write ve for I don't know V4
+10:46
+new and set it to be equal to V4 and to
+10:50
+take all of the color channels or all of
+10:53
+the positions of this vector. So what I
+10:56
+could do would be to write X Y ZW to get
+11:01
+all of the positions or I could write
+11:04
+RGBA
+11:06
+to get all of the parts of the color.
+11:09
+But behind the scenes, what I did was
+11:12
+precisely to just get these values. So
+11:15
+now I could even replace this whole
+11:17
+vector 4 that's here and put it here
+11:20
+instead of the color. And as you can see
+11:22
+I have this new color here. And maybe
+11:24
+let's make this last value 1.0 so that
+11:26
+we always have this perfectly
+11:29
+non-transparent square. Actually the
+11:32
+border of this has been quite annoying.
+11:34
+So I'm just going to remove this. Okay,
+11:36
+this is this is much better. Okay, but
+11:39
+one interesting aspect of this is that
+11:42
+there is a thing called swizzling which
+11:45
+allows us to specifically select any
+11:48
+part of our vector. So for example, I
+11:51
+could only if I wanted select the first
+11:54
+element four times. So instead of RGBA,
+11:57
+I could say R R
+12:00
+and I would get like this new square. Or
+12:03
+I could like combine these however I
+12:05
+wanted. I could say RG RG and taking the
+12:09
+red and green, red and green channels.
+12:12
+Or I could even yeah swap it up to get
+12:15
+positions. So I could write X Y Z and or
+12:19
+X Y W Y why not and you see that this
+12:22
+color keeps changing with the proper
+12:24
+values that I'm sending from this vector
+12:27
+for here. Okay, but that's not even
+12:29
+everything. If I wanted for example I
+12:31
+could get just a few of these elements.
+12:33
+I could get for example a vector 2 and
+12:36
+V2 new and make it equal to V4 dot XXX.
+12:41
+Why not? I could do something like this.
+12:43
+Or I could do the same for a vector
+12:44
+three. And you you get the idea. I can
+12:46
+pick pretty much everything I want. One
+12:48
+thing to point out though is that you
+12:50
+can't really combine colors with
+12:53
+positions cuz that doesn't really make
+12:55
+sense. So if you were to write X and R,
+12:58
+for example, uh you would see that you'd
+13:00
+get an error. But yeah, I think I think
+13:02
+that's pretty pretty reasonable thing to
+Uniforms
+13:05
+expect. Okay. Now, let's up our needs
+13:07
+and let's say that we want to be able to
+13:10
+change the color directly from the
+13:12
+editor because yeah, changing these
+13:15
+values also in the RGB system is kind of
+13:18
+like unintuitive. So, we want to have
+13:20
+like an easy way to change these values.
+13:23
+Well, we can do that through a uniform.
+13:26
+So, if I wanted, I could come here at
+13:29
+the top of the shader and specify
+13:31
+uniform and give the uniform a type. And
+13:34
+since the color is a vector 4, I'm just
+13:35
+going to write ve 4. And for this
+13:39
+uniform ve 4 that's going to be named
+13:41
+color. I'm just going to give let's say
+13:44
+an initial value which could be equal to
+13:46
+vec 4 of 0
+13:50
+and 1.0. Why not? And by default I made
+13:54
+my color black. So now I can set it to
+13:57
+my built-in color. And as you can see my
+13:59
+square is black. Wonderful. Okay. But as
+14:02
+you might notice, this does not help too
+14:05
+much because the values that I'm getting
+14:07
+here are still numbers. So what I can do
+14:11
+is to give the editor a hint so that it
+14:14
+knows that I want the color here that
+14:17
+these values does not represent just a
+14:19
+number. And to do that I simply had to
+14:21
+add this colon and I have to specify
+14:25
+source color. And now the editor knows
+14:27
+that this is a color and gives me this
+14:30
+wonderful interface that lets me like
+14:32
+pick all these colors. And yeah, you
+14:35
+might have seen the pattern that if I
+14:37
+can do this for a vector 4, I can do
+14:39
+this for pretty much everything. So I
+14:41
+could create a uniform that allows me to
+14:43
+get an integer. And that integer could
+14:46
+be like number int something and make it
+14:50
+be what? Well, I want this integer to be
+14:54
+within a range. for example. So I could
+14:57
+say to the editor, hey, this integer is
+14:59
+going to hint a range that starts at
+15:03
+zero, goes to 100, and has a step of
+15:06
+one. So we increment with one unit every
+15:09
+time in this range. If I now put the
+15:12
+semicolon here, you see that whenever I
+15:14
+increment, this number goes up by one.
+15:16
+And I could make this increment be like
+15:18
+five. And after I increase, you see the
+15:20
+number goes up by five. And after I
+15:22
+reach like 100, you see that I can no
+15:25
+longer go up with this increment. The
+15:28
+same thing I can do for float numbers.
+15:31
+So float and I don't know, let's just
+15:33
+call this and two. And uh I can set a
+15:37
+range to this as well. And as you can
+15:39
+see, I have a slider for float numbers
+15:42
+because if I don't specify a step, I can
+15:45
+pretty much like pick any value. And you
+15:48
+wouldn't really be able to pick any
+15:50
+value with just arrows. So it's nice
+15:52
+that we have a slider. One other
+15:53
+interesting thing that I could do would
+15:55
+be to specify an enam. So if I wanted to
+15:58
+select from a bunch of things, I could
+16:00
+make let's say u my enam and hint
+16:03
+towards the editor that this is going to
+16:05
+be an enum. And you see that it already
+16:07
+populated with some values. But I could
+16:09
+write here peanuts or something and I
+16:12
+have this dropdown here now from which I
+16:15
+can select peanuts one or zero. And
+16:17
+these values map to the index of the
+16:19
+element in the dropdown. So zero would
+16:22
+be zero, one would be one, and peanuts
+16:24
+would be two. Now, finally, there is one
+16:26
+more thing that I didn't show you. And
+16:27
+there's actually one more data type
+16:30
+which I intentionally omitted because I
+16:32
+didn't want to make it too complicated
+16:34
+at the beginning. So we could also get
+16:38
+reference to a texture or a sample of a
+16:41
+texture. So what we can write is uniform
+16:44
+and sampler 2D. And with this sampler
+16:47
+2D, I maybe call it my text. I can
+16:52
+collect any kind of texture. So, as you
+16:54
+can see here, this allows me to select
+16:57
+different kinds of textures, for
+16:58
+example, gradients or even like noise
+17:01
+textures, which are very very useful in
+17:03
+shaders. And I can use this fast noise
+17:06
+light texture to maybe make some fire
+17:09
+effect or something. All right. Now,
+17:12
+while it might not be very obvious with
+17:14
+these parameters, we have a little
+17:16
+problem. And what's the problem? Well,
+Parameters on Multiple Instances
+17:19
+if I duplicate this uh sprite, I now
+17:23
+have two of these squares. So, what
+17:25
+happens if I go to my sprite here and
+17:28
+let's say that I change this color to
+17:30
+something else? Would you look at that?
+17:34
+This other color changes as well. So
+17:37
+then what can I do to have this unique
+17:41
+to not change this color of my new
+17:43
+object? Well, there are a few things
+17:46
+that I can do. For example, what I could
+17:48
+do would be to use the instance keyword.
+17:51
+So for example, I could write here
+17:53
+instance in front of uniform. And now
+17:56
+you can see that this uniform is going
+17:58
+to be set only for the current instance.
+18:01
+And also it's going to vanish from
+18:03
+shader parameters and it's going to
+18:05
+appear if I click again under instance
+18:07
+shader parameters. And from here I can
+18:10
+like change per instance how my shader
+18:14
+looks like. Now, another way of doing
+18:16
+this would have been to leave everything
+18:18
+as it is and to instead delete this uh
+18:22
+sprite 2D that I have here and simply
+18:25
+create a new one which takes as a
+18:28
+parameter or as a shader rather this
+18:32
+different shader. And as you can see,
+18:33
+because it's not a copy of the initial
+18:36
+one, when I change the shader and the
+18:38
+color of this, it's going to only change
+18:41
+for my singular sprite. Now another
+18:44
+keyword that we have is the varying
+18:46
+keyword which basically just allows a
+18:48
+variable to be passed from the vertex to
+18:50
+the fragment shader. So for example I
+18:52
+could write varying
+18:55
+float sum val and I could like modify
+19:00
+this sum val to be 0.7 and afterwards I
+19:03
+could take this sum val and have it be
+19:06
+used here as the value for the other
+19:08
+number. Okay. Now before finishing we
+Flow Control
+19:11
+still have to go over a few minor
+19:13
+things. So just like in any other
+19:16
+programming language you have ifs and
+19:19
+switch cases and loops and fors and
+19:21
+whatever. And it's actually quite easy
+19:24
+to write them. You can for example just
+19:26
+write an if and if something then you do
+19:30
+something and else otherwise you do
+19:34
+something else. So it's not that big of
+19:35
+a deal. However, what's interesting is
+19:37
+when we get to write a switch case and
+19:41
+if I write a switch, if you come from C,
+19:43
+this is going to be no surprise to you.
+19:45
+But what I could do would be to have in
+19:48
+this switch, let's say this number and I
+19:51
+could say that in the case this number
+19:53
+is one, I want to do something. I could
+19:56
+maybe make this other number to be equal
+19:59
+to 0.73.
+20:01
+Why not? So uh in the case this number
+20:04
+is two I could set this number to be
+20:07
+0.77
+20:10
+and in the default case in the case
+20:12
+that's not one or two so default I can
+20:15
+set this other number to be like 0.1 why
+20:19
+not now what's important to know here is
+20:21
+that if I enter a case I am going to go
+20:25
+down the other cases as well so for
+20:27
+example if I enter case one and I want
+20:30
+to set the other number to 0.73. What's
+20:33
+going to happen is that I will also
+20:35
+enter case two and the default case. So
+20:38
+if I don't intend to enter case two
+20:41
+after entering case one, what I have to
+20:43
+do is to break out of this whole switch
+20:47
+so that I don't go over these other two
+20:49
+instructions. And the same for case two
+20:51
+and it really doesn't matter for the
+20:53
+default case because yeah, by default
+20:56
+you get out of the switch statement
+20:58
+anyway. Now another quirk to be careful
+21:00
+about is the while statement. If you
+21:03
+want to make actually any kind of loop
+21:05
+if you know that the loop is going to
+21:07
+never finish good though will crash
+21:10
+because these shaders are running all
+21:12
+the time. So for example if I were to
+21:14
+write here while and add a condition
+21:18
+what would happen would be that good
+21:20
+would instantly crash. So if I said
+21:22
+while something here, I wouldn't have
+21:25
+time to like come in here in parenthesis
+21:27
+and change the value of something. So
+21:30
+what I have to do is in advance to
+21:32
+change this value and only then to add
+21:34
+the condition or otherwise as I said GDO
+21:37
+will crash. So let's say that we want to
+21:40
+make this number reach the value of
+21:41
+five. Well, let's say that this number
+21:44
+is going to equal to number + one. And
+21:48
+afterwards let's say that the condition
+21:51
+is that number is going to be less than
+21:53
+five. And as you can see nothing
+21:55
+happens. Everything is fine. However,
+21:58
+just for the sake of completeness and
+22:00
+for the sake of my pain, I'm just going
+22:02
+to crash GDO again and write while uh
+22:06
+number is less than five. Oh, would you
+22:09
+look at that? I can't write anything.
+22:13
+And uh yeah,
+22:15
+GDO is starting to crash. So yeah,
+22:18
+really really be careful about writing
+22:20
+loops. First write the exit condition
+22:23
+and afterwards only write the actual
+22:26
+condition that the shader is going to
+22:28
+check. Yeah. And talking of loops,
+22:31
+there's also fours which are actually
+22:32
+quite safer because you can specify the
+22:35
+exit condition ahead of time. So if
+22:37
+you've ever written C, this should be
+22:39
+nothing new to you. But if you haven't,
+22:42
+what you have to do is first of all to
+22:44
+initialize the variable with which
+22:46
+you're going to loop. So let's just make
+22:49
+int i for example equals to zero. So I
+22:52
+initialize this to zero. Then you add a
+22:55
+semicolon. Then you add uh a condition
+22:58
+to stop. So i is smaller than five and
+23:01
+then a semicolon. And the way you
+23:03
+increment this i. So you could increment
+23:05
+this I by two elements all the time or
+23:09
+you could
+23:11
+No, it's not safer. Apparently it breaks
+23:13
+as well.
+23:17
+Yeah, if I don't increment I in any way
+23:20
+then I is going to be forever smaller
+23:23
+than five.
+23:26
+Oh man,
+23:28
+don't do four loops. Don't do four
+23:30
+loops. Don't do anything.
+23:33
+But yeah, what would loops be if we
+23:35
+didn't have like an array type over
+23:37
+which we could loop? So if we want, you
+23:40
+could like define an array with int and
+23:43
+parenthesis and call it r. Why not? And
+23:47
+uh you just have to add here like 1 2 3
+23:50
+4 5 and then you have defined your array
+23:53
+which contains these elements and you
+23:55
+can do whatever you want with them just
+23:57
+like you did here with the vector 2. you
+24:00
+can just get r of one and it's going to
+24:04
+get the element on this position because
+24:06
+this is r of zero. Okay, but this is
+Outro
+24:09
+pretty much it. Anything that I might
+24:11
+have missed, you can probably find in
+24:13
+the docs. And if you got to this point
+24:17
+in this arguably boring video because
+24:19
+it's like just presenting the syntax of
+24:22
+all of this, I want to congratulate you
+24:24
+because this is a great first step
+24:27
+towards learning shaders and it's going
+24:30
+to get much more interesting from now
+24:32
+on. But yeah, thanks a lot to my
+24:34
+supporters. Thanks a lot for watching
+24:36
+and see you in the next one. Bye-bye.
+
+All
+
+From your sea

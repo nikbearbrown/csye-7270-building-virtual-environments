@@ -19,7 +19,7 @@
 | One module per topic, in the order Lecture, Assignment, Links | One module per week, same order, with an ungraded **Practice** quiz added between Lecture and Assignment |
 | Short wiki pages, many per module | One lecture page per module (two for Module 14), because each now teaches a hands-on task step by step |
 | "Helpful Links" pages | One **Links** page per module, with every link checked live |
-| Assignments of 5 to 300 points, irregular | Ten assignments of 100 points, one every 10 days, each graded 60 / 10 / 10 / 20 |
+| Assignments of 5 to 300 points, irregular | Ten numbered 100-point drafts plus the retained live 5-point GDD milestone. See the Fall 2026 schedule; live final grading still needs reconciliation. |
 | Quizzes and attendance checks | Per-module ungraded practice assessments; attendance is not in the revised syllabus |
 | Course Materials page (Springer textbooks for Unity) | Module 0 "Start Here": course map, AI policy, grading, explainers, toolchain |
 
@@ -47,10 +47,10 @@ Modules 2 and 3 of the new course (prompting game art; Blender MCP) have no old 
 
 | Old item (points) | Fate |
 |---|---|
-| Create a Game Design Document (5); Professional Game Design Documentation Using AI-Assisted Writing (15) | **Assignment 4** |
+| Create a Game Design Document (5); Professional Game Design Documentation Using AI-Assisted Writing (15) | The **5-point GDD remains active, due October 19**, as confirmed in live Fall 2026 Canvas. **Assignment 4** refines it and implements one interaction; the old 15-point document is not a separate new assignment. |
 | Pitch Your Game Like It Matters (10) | Not carried as its own assignment. The pitch skills are touched by Assignment 4's design brief and Assignment 10's films. Say if it should return. |
 | Assignment 2 – Learning Unity (100) | **Assignments 1 and 2** |
-| Assignment 3 – Unreal Engine Blueprints (100) | Retired. Its Godot counterpart, a prop with collision and physics behavior in a scene, is part of **Assignment 3**. |
+| Assignment 3 – Unreal Engine Blueprints (100) | Retired. Its Godot counterpart, collision and physics behavior in a scene, is part of **Assignment 4**'s interaction; **Assignment 3** is a gentle first Blender assignment. |
 | Assignment 4 – Shaders (100): generative textures, storyboards, character design, deconstruct a PBR shader | Generative art moved to **Assignment 2**; the shader work is **Assignments 5 and 6** |
 | Assignment 5 – Particle Effects (100) | **Assignment 7** |
 | Assignment 6 – Animation (100) | **Assignment 8** |

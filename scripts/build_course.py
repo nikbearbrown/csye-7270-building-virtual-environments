@@ -34,7 +34,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 REPO = "https://github.com/nikbearbrown/csye-7270-building-virtual-environments"
 COURSE_TITLE = "CSYE 7270 Virtual Environments and Real-Time 3D - Fall 2026 (Godot, Walker, Claude Code)"
 COURSE_CODE = "CSYE7270.FALL2026.GODOT"
-BUILD_DATE = "2026-10-06"
+BUILD_DATE = "2026-10-12"
 SYLLABUS_DOCX = "CSYE_7270_Virtual_Environments_and_Real-Time_3D.docx"
 OUT_PASTE = os.path.join(ROOT, "canvas", "paste")
 OUT_PKG = os.path.join(ROOT, "canvas", "package")
@@ -46,6 +46,7 @@ IMSCC_NAME = "csye7270-fall-2026-godot-walker.imscc"
 
 # (number, folder, title, week)
 MODULES = [
+    ("preface", "preface-conducting-ai", "Conducting AI Through Games and Virtual Worlds", None),
     (0, "00-start-here", "Start Here", None),
     (1, "01-walker-and-godot", "Walker and Godot", 1),
     (2, "02-prompting-game-art", "Prompting Game Art", 2),
@@ -83,8 +84,8 @@ START_HERE_PAGES = [
 ASSIGNMENTS = {
     1: ("assignments/01-extend-walker-jumpman.md", 1),
     2: ("assignments/02-generate-art-sound-music-for-your-game.md", 2),
-    3: ("assignments/03-blender-prop-into-godot.md", 3),
-    4: ("assignments/04-specify-and-build-a-3d-interaction.md", 5),
+    3: ("assignments/03-first-3d-assets-with-blender-mcp.md", 3),
+    4: ("assignments/04-specify-and-build-a-3d-interaction.md", 4),
     5: ("assignments/05-shader-and-material.md", 6),
     6: ("assignments/06-audit-a-shader-change.md", 8),
     7: ("assignments/07-particle-effects.md", 9),
@@ -95,7 +96,7 @@ ASSIGNMENTS = {
 
 # An assignment that covers two modules is listed again in the second one, so a student sees it
 # in every module whose material it uses. (Canvas allows one assignment in several modules.)
-ALSO_LISTED_IN = {3: 4, 5: 7, 8: 11, 9: 13, 10: 15}
+ALSO_LISTED_IN = {4: 5, 5: 7, 8: 11, 9: 13, 10: 15}
 
 # --------------------------------------------------------------------------------------
 
@@ -494,6 +495,7 @@ def syllabus_html():
         return "<thead>" + rows[0] + "</thead><tbody>" + rest
 
     html = re.sub(r"<thead>(.*?)</thead>\s*<tbody>", lambda m: fix_thead(m), html, flags=re.S)
+    html = ('<p><strong>Course preface:</strong> Begin with Conducting AI Through Games and Virtual Worlds before Module 0. The preface establishes human direction, independent checks, playtesting and the direct Godot workflow. Modules 0–15 retain their numbers and weekly schedule.</p>\n' + html)
     html = style_html(html)
     return f'<div style="line-height: 1.6; overflow-wrap: anywhere;">\n{html}</div>\n'
 
@@ -604,7 +606,7 @@ class Builder:
 
     # -- modules --
     def build(self):
-        for num, folder, title, week in MODULES:
+        for position, (num, folder, title, week) in enumerate(MODULES, 1):
             d = f"modules/{folder}"
             items = []
 
@@ -639,8 +641,8 @@ class Builder:
             if lk:
                 items.append(("ContextModuleSubHeader", "Links", None))
                 items.append(lk)
-            mtitle = f"Module {num} — {title}" + (f" (Week {week})" if week else "")
-            self.modules.append({"ident": gid(f"module:{num}"), "title": mtitle, "items": items, "pos": num + 1})
+            mtitle = (f"Preface — {title}" if num == "preface" else f"Module {num} — {title}") + (f" (Week {week})" if week else "")
+            self.modules.append({"ident": gid(f"module:{num}"), "title": mtitle, "items": items, "pos": position})
         self.write_course_level()
 
     def write_course_level(self):

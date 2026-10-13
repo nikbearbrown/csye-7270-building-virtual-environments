@@ -1,0 +1,408 @@
+{
+ "B31": {
+  "lane": "manim",
+  "class": "B31_FourCorners",
+  "visual_intent": "Act title 'Wobble the Result' (serif 40) top-left. A rectangle (the sprite) with four terracotta corner dots and the definition 'vertex: a corner point of a shape'. 'vertex' flashes on each dot in turn; the top-right and bottom-right dots slide down and the rectangle leans into a parallelogram with straight edges. A faint dashed curve tries to bend the top edge but the edge stays straight. Caption 'four corners, straight edges'.",
+  "motion_claim": "Two corners slide and the whole shape leans; the edge between them stays a straight line.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "rectangle with four corner dots"
+   },
+   {
+    "at": 0.35,
+    "event": "corners flash in turn"
+   },
+   {
+    "at": 0.62,
+    "event": "two corners slide, the shape leans"
+   },
+   {
+    "at": 0.85,
+    "event": "dashed curve rejected, edge straight"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "Four dots, two of which slide while the edges stay straight, is the limit as motion.",
+  "sparse": true
+ },
+ "B32": {
+  "lane": "manim",
+  "class": "B32_CutIntoGrid",
+  "visual_intent": "A rectangle with four corner dots; cut lines appear in steps of 0, 1, 7, 15 and 31 cuts each way, the grid getting finer and a corner counter reading 4, 9, 81, 289 and 1,089 while the dots multiply and shrink. Labels 'Subdivide Width' and 'Subdivide Depth' beside the last two steps; caption 'Quad Mesh, drawn by Mesh Instance 2D'; the definition 'mesh: the set of vertices and triangles that make a shape'.",
+  "motion_claim": "The grid gets finer in steps and the corner counter climbs to 1,089.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "plain rectangle, 4 corners"
+   },
+   {
+    "at": 0.3,
+    "event": "1 and 7 cuts: 9 and 81 corners"
+   },
+   {
+    "at": 0.58,
+    "event": "15 cuts: 289 corners; labels"
+   },
+   {
+    "at": 0.84,
+    "event": "31 cuts: 1,089 corners"
+   }
+  ],
+  "runner_up": "editor frame of the QuadMesh Inspector",
+  "why": "The cutting is the idea and the counter is its measure; the Inspector frame only shows where the numbers live.",
+  "sparse": true
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "subviewports/c17-plain-vs-grid.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · offline render",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "4 corners",
+     "x": 0.26,
+     "y": 0.93
+    },
+    {
+     "at": 0.2,
+     "text": "1,089 corners",
+     "x": 0.74,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C17 (scene c17): one transparent 512 px viewport with a card (teal frame 20 px, cream inside) and the gradient blob; two MeshInstance2D, QuadMesh 480 x -480, subdivide 0 at (330, 360) and 31 at (950, 360), both with 08-wobble (amplitude 16, frequency 10, speed 3) and the Linear filter; 17 s, Forward+. Verified (run-7c): plain quad second differences of the top edge in {-1, 0, 1} (straight); grid edge within 0.23 to 0.26 px (rms) of 120 + sin(UV.x * 10 + TIME * 3) * 16 (the shape depends on TIME).",
+  "visual_intent": "Two real meshes side by side showing one picture (a cream card with a teal frame and the gradient blob), both under the same wobble shader. Left, a plain quad: the card only leans, its edges straight. Right, the 31 x 31 grid: its edges ripple as a wave. Readouts '4 corners' and '1,089 corners'.",
+  "motion_claim": "The left card tilts with straight edges while the right card ripples.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "two meshes wobbling"
+   },
+   {
+    "at": 0.2,
+    "event": "corner counts"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "Straight edges against a wave on the same picture is the claim; a live render makes the difference undeniable.",
+  "sparse": false
+ },
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\nrender_mode blend_premul_alpha;\n\nuniform float amplitude = 16.0;\nuniform float frequency = 10.0;\nuniform float speed = 3.0;\n\nvoid vertex() {\n\tVERTEX.y += sin(UV.x * frequency + TIME * speed) * amplitude;\n}\n\nvoid fragment() {\n\tCOLOR = texture(TEXTURE, UV);\n}",
+   "codeFile": "lab-shaders/08-wobble.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      8,
+      9,
+      10
+     ],
+     "label": "runs once for each vertex; places the corners"
+    },
+    {
+     "at": 0.3,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      9
+     ],
+     "label": "sin: a smooth back and forth between -1 and 1"
+    }
+   ],
+   "video": "subviewports/c18-wobble.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · offline render",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18 (scene c18): the C17 picture on one MeshInstance2D, QuadMesh 512 x -512, 31 x 31, with 08-wobble; 17 s, Forward+. Verified (run-7c): top edge within 0.2 to 0.33 px (rms) of 104 + sin(UV.x * 10 + TIME * 3) * 16 (the shape depends on TIME).",
+  "visual_intent": "Code card with the fourteen-line wobble shader at left; at right the 31 x 31 mesh carrying the card and the blob, rippling continuously. The vertex function and the VERTEX.y line are highlighted in turn.",
+  "motion_claim": "The card ripples continuously while the highlighted line is the one that does it.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "vertex function highlighted"
+   },
+   {
+    "at": 0.3,
+    "event": "the VERTEX.y line"
+   },
+   {
+    "at": 0.62,
+    "event": "sin defined on the line"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The live ripple beside its one line is the claim; nothing else shows that one line is enough.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "subviewports/c19-upside-down.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the height changes at 9.5 s",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "height 512",
+     "x": 0.5,
+     "y": 0.93
+    },
+    {
+     "at": 0.74,
+     "text": "height -512",
+     "x": 0.5,
+     "y": 0.07
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19 (scene c19): the C17 picture on a QuadMesh with size (512, 512) until 9.5 s, then (512, -512), pass-through shader; 16 s, Forward+. Verified (run-4 M1, M4, M6, both renderers; run-7c): with (512, 512) the picture's top-left marker lands at the screen's bottom-left; with a negative height it lands at the top-left; the mesh's own layout puts UV (0, 0) on the vertex with y = +1 (up in 3D, down in 2D).",
+  "visual_intent": "One real mesh showing the card and the blob: first upside down (the eyes below the centre), then at the moment the height goes negative the picture is upright (eyes above). Readouts 'height 512' and 'height -512'.",
+  "motion_claim": "The face flips from upside down to upright when the height goes negative.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "upside down"
+   },
+   {
+    "at": 0.1,
+    "event": "height 512"
+   },
+   {
+    "at": 0.74,
+    "event": "height -512: upright"
+   }
+  ],
+  "runner_up": "manim vertex arrows",
+  "why": "The flip is the claim; the picture turning right way up is what a viewer will want to see.",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "manim",
+  "class": "B36_WholeChain",
+  "visual_intent": "A left-to-right chain on the cream stage: a dashed square holding the blob and card icons, then a tag 'inner shader', then the picture card, then a tag 'outer fragment: stripes', then a tag 'outer vertex: bend', then a screen frame with a wobbling frame on it. A token (the blob thumbnail) changes at each stage: plain, gradient, striped, striped and bent.",
+  "motion_claim": "The token passes each stage and changes its look: plain, gradient, striped, bent.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "the chain drawn"
+   },
+   {
+    "at": 0.28,
+    "event": "token plain, then gradient"
+   },
+   {
+    "at": 0.6,
+    "event": "gradient, then striped"
+   },
+   {
+    "at": 0.82,
+    "event": "striped, then bent"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A token that changes at every stage is the order of work, and the film's whole story, as motion.",
+  "sparse": true
+ },
+ "B37": {
+  "lane": "manim",
+  "class": "B37_StageToStage",
+  "visual_intent": "Three picture frames in a row: 'viewport' (the blob with an inner shader) leads to a picture, shown inside a second 'viewport' by a sprite with a fade shader, which leads to a second picture, shown on the screen by a sprite with a stripes shader. Three tags 'inner', 'middle' and 'outer'. A token flows along and picks up each shader's look.",
+  "motion_claim": "The token passes three shaders in a row, each time through a picture.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "three frames and three tags"
+   },
+   {
+    "at": 0.35,
+    "event": "token through the inner shader"
+   },
+   {
+    "at": 0.6,
+    "event": "token through the middle shader"
+   },
+   {
+    "at": 0.82,
+    "event": "token through the outer shader"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "A token passing three stations is the generalisation of the chain; the run in evidence proves it works.",
+  "sparse": true
+ },
+ "B38": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "sub.render_target_update_mode = SubViewport.UPDATE_ONCE",
+   "codeFile": "scene script (GDScript)",
+   "cues": [
+    {
+     "at": 0.58,
+     "lines": [
+      1
+     ],
+     "label": "Once: draw one time, then keep the picture"
+    }
+   ],
+   "video": "subviewports/c21-update-mode.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the right viewport is set to Once at 8.5 s",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "default",
+     "x": 0.278,
+     "y": 0.92
+    },
+    {
+     "at": 0.66,
+     "text": "Update Mode: Once",
+     "x": 0.722,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C21 (scene c21): two opaque 512 px viewports, a 269 px blob in each moving as (256 + 150 sin 0.9 t, 256 + 90 cos 0.7 t); displays at x = 100 and 668; viewport 1 gets `render_target_update_mode = UPDATE_ONCE` at 8.5 s (on \"set Update Mode to Once\"); 18 s, Forward+. Verified (run-7c, run-11 O1, recorded through Movie Maker in run-13): at 12 s the left picture's first teal pixel is at x = 29 (formula 28); the right is at 323, frozen at its 8.5 s position (formula 322).",
+  "visual_intent": "Code card with one line at left; at right two real displays of two identical viewports whose sprite wanders about in a Lissajous path. Both follow it until the right one is set to Once; from then on the right picture freezes while the left keeps moving. Readouts 'default' and 'Update Mode: Once'.",
+  "motion_claim": "The right picture freezes while the left one keeps following the wandering sprite.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "default label; both follow"
+   },
+   {
+    "at": 0.58,
+    "event": "Once: the right picture freezes"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "One frozen picture beside one live picture is the claim; the pair makes a non-event visible.",
+  "sparse": false
+ },
+ "B39": {
+  "lane": "manim",
+  "class": "B39_ClickBounces",
+  "visual_intent": "A screen frame with the display showing the picture of a small SubViewport square that holds a button icon. A cursor arrow (a drawn shape) clicks on the picture; the click ring bounces off the picture's edge and the button icon stays unlit. Then a wrapper frame labelled 'SubViewportContainer' appears around the square; the cursor clicks again, a dotted line carries the click through the container into the square and the button icon lights teal.",
+  "motion_claim": "The click bounces off a standalone viewport, then passes through the container and lights the button.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "screen, picture, button icon"
+   },
+   {
+    "at": 0.3,
+    "event": "click bounces; the button stays unlit"
+   },
+   {
+    "at": 0.6,
+    "event": "SubViewportContainer wraps the square"
+   },
+   {
+    "at": 0.82,
+    "event": "click passes in; the button lights"
+   }
+  ],
+  "runner_up": "ShaderLab",
+  "why": "A click that bounces, then passes, is the limit and its fix as motion.",
+  "sparse": true
+ },
+ "B40": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "subviewports/c20-four-places.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted: the blob turns, the 3D plane sways",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "sprite",
+     "x": 0.14,
+     "y": 0.93
+    },
+    {
+     "at": 0.42,
+     "text": "interface panel",
+     "x": 0.37,
+     "y": 0.93
+    },
+    {
+     "at": 0.58,
+     "text": "3D plane",
+     "x": 0.62,
+     "y": 0.93
+    },
+    {
+     "at": 0.74,
+     "text": "shader sampler",
+     "x": 0.86,
+     "y": 0.93
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C20 (scene c20): one 280 px opaque viewport (cream card, gradient blob turning at 0.7 rad/s) shown by a Sprite2D at (40, 220), a TextureRect in a PanelContainer at (332, 212), a flat QuadMesh with an unshaded StandardMaterial3D in a 280 px transparent 3D viewport shown as a Sprite2D at (640, 220), and a ColorRect at (940, 220) whose shader reads the picture through `uniform sampler2D picture`; 16 s, Forward+. Verified (run-7c) at 0 s: gold is below the centre in all four panels (red 0.773 below, 0.533 above in the flat ones; 0.792 / 0.510 in the 3D plane).",
+  "visual_intent": "Four real panels in a row showing one live picture (a cream card with the turning gradient blob): a Sprite2D, a panel in the interface (a TextureRect inside a teal-bordered panel), a flat plane in a 3D scene (swaying about its vertical axis, rendered by its own 3D viewport), and a plain rectangle whose own shader reads the picture through a sampler uniform. Readouts name each place as the voice does.",
+  "motion_claim": "The same turning blob appears in all four places at once; the 3D plane sways.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "sprite named"
+   },
+   {
+    "at": 0.42,
+    "event": "interface panel named"
+   },
+   {
+    "at": 0.58,
+    "event": "3D plane named"
+   },
+   {
+    "at": 0.74,
+    "event": "shader sampler named"
+   }
+  ],
+  "runner_up": "manim: four icons receiving one picture",
+  "why": "One picture alive in four places at once is the claim; a drawing could not show that they all really work.",
+  "sparse": false
+ }
+}

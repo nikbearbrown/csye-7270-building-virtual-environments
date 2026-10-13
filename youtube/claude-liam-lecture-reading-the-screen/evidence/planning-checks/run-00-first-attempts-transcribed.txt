@@ -1,0 +1,43 @@
+These are the first attempts that did not give the answer, transcribed from the terminal on 2026-10-13 (Apple M4 Pro, Godot 4.7.2, Forward+ unless stated).
+They were not saved as logs at the time. Each is labelled: WRONG EXPECTATION (the engine disagreed with the plan, and the plan changed), INCONCLUSIVE (the probe could not
+answer), BAD REFERENCE (my own measurement was wrong, fixed and re-run) or TOOLING (a script or shell slip). The saved logs run-01 to run-21 are the corrected runs.
+
+== 1. WRONG EXPECTATION: a reader on a higher layer would read a stale copy (13:57, verify2 M4 and M5, first run)
+Plan: the docs say subsequent nodes that use hint_screen_texture "will not have the screen copied for them", so a full-screen filter on layer 1 should reuse the copy
+a pool on layer 0 made, and so ERASE the pool and the player (they are drawn after the pool's copy). The film's Act IV was going to open on that bug.
+Measured (the miniature lens, second reader on layer 1, nothing between): the lens showed the first reader's output and the block drawn after it.
+  RESULT {"id":"M4-second-reader-on-a-higher-layer-still-stale","lens":{"A_window_inverted_world":[0.451,0.2588,0.549],"X_red":[0.8784,0.251,0.1843],"Y_blue":[0.1843,0.4353,0.8784], ...}}
+  RESULT {"id":"M5-full-screen-identity-reader-after-another-reader", "X_before":[0.8784,0.251,0.1843],"X_after":[0.8784,0.251,0.1843], "A_before":[0.451,0.2588,0.549],"A_after":[0.451,0.2588,0.549], "Y_before":[0.1843,0.4353,0.8784],"Y_after":[0.1843,0.4353,0.8784]}
+The id strings say "still-stale" and "erased" because that was the expectation; the numbers say the copy was fresh. A follow-up (verify2b P1 to P5) found the real rule:
+two readers in one canvas layer share one copy; a new CanvasLayer takes its own. The film's Act IV was rebuilt around that (B30, B32 to B34).
+
+== 2. BAD REFERENCE: ripple edge rows (14:03, verify4 L2, first run)
+The scan started inside tile column 6 (x 480 to 560), so the first colour change it met was the tile edge at x = 560, but I had predicted from x = 640.
+  {"diff":-80.3,"edge_x_measured":547,"edge_x_predicted":627.3,...} {"diff":-79.6,"edge_x_measured":557,"edge_x_predicted":636.6,...}   (all ten rows: -79.6 to -80.5)
+Fixed the reference to 560 - 0.01 sin(60 v) * 1280: the ten rows then agree within 0.5 px (run-09).
+
+== 3. INCONCLUSIVE: ride against glued, rows 310 and 350 (14:03, verify4 L6, first run)
+  {"edge_offset_px_after":-801,"edge_offset_px_before":-801,"row":310} {"edge_offset_px_after":-801,"edge_offset_px_before":-801,"row":350}
+-801 means no edge was found in the 120 px scanned (the row crossed the sand path or a flower). Rows 190, 230, 270 were fine but I changed to rows 180 to 280, all clean (run-09).
+
+== 4. INCONCLUSIVE: filter nearest against linear, magnified (14:03, verify4 L7b, first run)
+  {"id":"L7b-filter-when-magnified","rows":[{"distinct_colours_in_a_160px_row_at_50x_zoom":1,"hint":"no filter hint"},{"...":1,"hint":"filter_nearest"},{"...":1,"hint":"filter_linear"}]}
+One colour everywhere: the probe row (y = 360 at the screen centre) runs inside the flat sand path. Re-aimed at screen (0.5, 0.25), a tile edge in the grass: 35, 2 and 35 colours (run-09).
+
+== 5. TOOLING: the Shader Lab batch (14:23, run-lab-checks.sh, first run)
+Probes came back empty: `P="--probe 0.5,0.5"` was passed as one argument (zsh does not split an unquoted variable). The jsonl was also not valid JSON: zsh `echo` turned the
+backslash-n inside a string into a real newline. Fixed with an argument array and printf; re-run after the final shader edits (lab-results.jsonl).
+
+== 6. TOOLING: scripts that did not parse (13:59 to 14:42)
+verify3.gd: "Cannot infer the type of "x" variable" (untyped loop variable in an extent() helper); verify7.gd twice: the same message for `var ang := TAU * u + PI` with an untyped `u`.
+Fixed with typed loop variables (`for s: int in ...`, `for u: float in ...`). No engine finding.
+
+== 7. WRONG PLACE: the editor's Full Rect (14:50, editor-labels, first run)
+The plugin searched every PopupMenu in the editor for "Full Rect" and "Anchor" and found nothing. The Inspector's Anchors Preset is an OptionButton inside the property widget, not a
+popup in the base control. Walking the widget (EditorPropertyAnchorsPreset) printed: Custom, "", Full Rect, "", Top Left, Top Right, ... (editor-labels-run.log).
+(The "NOTE popups containing ..." lines in the final log are still empty for that reason; the WIDGET lines hold the answer.)
+
+== 8. NOT A FAILURE, A FINDING: set_anchors_preset alone (13:57, verify2 M7, first run)
+  RESULT {"colorrect_full_rect_size":[0.0,0.0],"colorrect_without_layout_size":[0.0,0.0],"full_rect_position":[0.0,0.0],"id":"M7-full-rect","viewport_size":[1280,720]}
+set_anchors_preset(PRESET_FULL_RECT) keeps the rectangle's current size by rewriting its offsets; set_anchors_and_offsets_preset(...) (or the editor's Layout menu) fits the
+parent. The captures use the second form; the film names only the editor setting.

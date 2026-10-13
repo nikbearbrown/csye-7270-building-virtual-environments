@@ -2,11 +2,11 @@
 
 ## Executive summary
 
-**What this is.** The chapter map of the CSYE 7270 companion book after the course moved from Unity and Unreal to Godot, the Walker framework, and a coding CLI (Claude Code or Codex). There are sixteen chapters: one per module of the revised Fall 2026 syllabus, plus Chapter 0 for the command-line toolchain.
+**What this is.** The chapter map of the CSYE 7270 companion book after the course moved from Unity and Unreal to Godot, the Walker framework, and a coding CLI (Claude Code or Codex). There are seventeen chapter texts: an unnumbered Conducting AI preface, Chapter 0 for the command-line toolchain, and Chapters 1–15 for the teaching weeks. The preface was added at Professor Bear's direction on October 12, 2026; existing chapter numbers remain unchanged.
 
 **Why read it.** It shows where each old Canvas module went. It tells you which public Walker project each chapter works in, and what you will actually do in each hands-on section.
 
-**What the chapters have in common.** Every chapter is hands-on. You give a coding agent one bounded change to a real Walker Godot project, run Godot headless to check the result yourself, and then play it. Each chapter's worked example was really run on 27 September 2026, with Claude Code, Codex or both. The record of each run, including what the agents got wrong, is in [`../examples/`](../examples/). Every chapter ends with **Doing the same thing in Unity** and **Doing the same thing in Unreal Engine** (similarities, then differences). Those two sections come from each vendor's documentation; neither engine was run.
+**What the chapters have in common.** The preface establishes the course's human/AI relationship through a decision exercise. Every numbered chapter is hands-on. You give a coding agent one bounded change to a real Walker Godot project, run Godot headless to check the result yourself, and then play it. Each numbered chapter's worked example was really run on 27 September 2026, with Claude Code, Codex or both. The record of each run, including what the agents got wrong, is in [`../examples/`](../examples/). Every chapter ends with **Doing the same thing in Unity** and **Doing the same thing in Unreal Engine** (similarities, then differences). Those two sections come from each vendor's documentation; neither engine was run.
 
 **What they are not.** These are review drafts. No AI+1 book gate is signed, visual and audio judgments are marked as human checks, and Professor Bear has not yet reviewed the text.
 
@@ -16,6 +16,7 @@
 
 | Ch | Chapter | Syllabus week | Old `.imscc` material it replaces | Hands-on |
 |---|---|---|---|---|
+| Preface | [Conducting AI Through Games and Virtual Worlds](preface-conducting-ai.md) | Before setup | New course-wide framing | Write a brief, distinguish technical checks from experience, and defend a human decision |
 | 0 | [The Toolchain: Claude Code, Codex, Walker, and Godot at the Command Line](00-the-toolchain.md) | 1 (setup) | "Learning Unity" / "Unreal Engine" onboarding; the Claude Code handout | Add a score to `walker-pong`, twice, once with each agent, then find out why both misread the regression test |
 | 1 | [Walker and Godot](01-walker-and-godot.md) | 1 | How to Learn Unity 3D; Unity C#; Unreal Engine; Assignment 2 – Learning Unity | Trace one input to its visible result, then change one number and predict the tests |
 | 2 | [Prompting Game Art (and Sound) Against the Engine](02-prompting-game-art.md) | 2 | Mini-Assignments 1 and 3 (generative art and audio); Animation Assets | Turn one generated image into a checked Godot asset, then wire sound to real events |

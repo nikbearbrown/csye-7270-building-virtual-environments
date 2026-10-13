@@ -1,0 +1,119 @@
+
+== 1. floor and fract as colours: every pixel of the 360x360 render against the formula
+02-cells-floor-sq: max difference 0.50 of 255, pixels off by more than 1.5: 0 of 129600
+03-cells-fract-sq: max difference 0.49 of 255, pixels off by more than 1.5: 0 of 129600
+cell colours (col,row): (0,0) (np.int64(64), np.int64(64), np.int64(140)); (3,0) (np.int64(255), np.int64(64), np.int64(140)); (0,3) (np.int64(64), np.int64(255), np.int64(140)); (3,3) (np.int64(255), np.int64(255), np.int64(140)); (2,1) (np.int64(191), np.int64(128), np.int64(140))
+distinct colours in the floor render: 16 (16 cells = 16 colours)
+fract render: all sixteen 90 px tiles are pixel-identical copies of the first: True
+
+== 2. tile: texture(TEXTURE, fract(UV * 3.0)) on the test sprite (288 px square at the Lab's fit scale)
+pixels (of 9216 per tile) that differ from tile (0,0): {(0, 0): 0, (0, 1): 9, (0, 2): 9, (1, 0): 11, (1, 1): 21, (1, 2): 20, (2, 0): 5, (2, 1): 14, (2, 2): 14}
+non-stage pixels per tile (the same blob nine times): [2592, 2601, 2600, 2602, 2612, 2610, 2587, 2596, 2595]
+
+== 3. pixelate: where does the picture end up? (centroid of the blob, in picture pixels, against the original blob)
+original blob: centre (320.50, 180.50), 77 x 77 px, 4637 pixels
+n =  8 (blocks 16 px)  corner  floor(UV*n)/n           shift x +7.50, y +7.50  (blob 80 x 80)
+n =  8 (blocks 16 px)  middle  (floor(UV*n)+0.5)/n    shift x -0.50, y -0.50  (blob 64 x 64)
+n =  8 (blocks 16 px)  round   floor(UV*n+0.5)/n      shift x -0.50, y -0.50  (blob 80 x 80)
+n = 16 (blocks  8 px)  corner  floor(UV*n)/n           shift x +3.50, y +3.50  (blob 72 x 72)
+n = 16 (blocks  8 px)  middle  (floor(UV*n)+0.5)/n    shift x -0.50, y -0.50  (blob 80 x 80)
+n = 16 (blocks  8 px)  round   floor(UV*n+0.5)/n      shift x -0.50, y -0.50  (blob 72 x 72)
+n = 32 (blocks  4 px)  corner  floor(UV*n)/n           shift x +1.50, y +1.50  (blob 76 x 76)
+n = 32 (blocks  4 px)  middle  (floor(UV*n)+0.5)/n    shift x -0.50, y -0.50  (blob 80 x 80)
+n = 32 (blocks  4 px)  round   floor(UV*n+0.5)/n      shift x -0.50, y -0.50  (blob 76 x 76)
+
+== 4. pixelate: block sizes along the middle row and column of the gradient picture (n = 16 on 128 px)
+05-corner-n16-gradient-1x
+   across: 16 blocks, all 8 px
+   down:   16 blocks, all 8 px
+06-center-n16-gradient-1x
+   across: 16 blocks, all 8 px
+   down:   16 blocks, all 8 px
+07-round-n16-gradient-1x
+   across: 17 blocks: first 4, then 8 inside, last 4 (sum 128)
+   down:   17 blocks: first 4, then 8 inside, last 4 (sum 128)
+08-block8-gradient-1x
+   across: 16 blocks, all 8 px
+   down:   16 blocks, all 8 px
+08-block6-gradient-1x
+   across: 22 blocks: first 6, then 6 inside, last 2 (sum 128)
+   down:   22 blocks: first 6, then 6 inside, last 2 (sum 128)
+
+which picture pixel does the first / last block show? (gradient red channel = x / 127)
+05-corner-n16-gradient-1x: first block shows picture pixel 0 (the corner is 0), last block shows picture pixel 120 (the corner is 127; 7 short)
+06-center-n16-gradient-1x: first block shows picture pixel 4 (the corner is 0), last block shows picture pixel 124 (the corner is 127; 3 short)
+07-round-n16-gradient-1x: first block shows picture pixel 0 (the corner is 0), last block shows picture pixel 127 (the corner is 127; 0 short)
+
+== 5. pixelate: other checks
+block = 8 (picture pixels) against blocks = 16 (middle lookup), gradient: pixels that differ: 0
+block = 1 against the untouched picture, sprite: pixels that differ: 0
+05-pixelate-corner n16 sprite: Forward+ against Compatibility, pixels that differ: 0
+05-pixelate-corner n16 gradient: Forward+ against Compatibility, pixels that differ: 0
+06-pixelate-center n16 sprite: Forward+ against Compatibility, pixels that differ: 0
+06-pixelate-center n16 gradient: Forward+ against Compatibility, pixels that differ: 0
+07-pixelate-round n16 sprite: Forward+ against Compatibility, pixels that differ: 0
+07-pixelate-round n16 gradient: Forward+ against Compatibility, pixels that differ: 0
+08-pixelate-block block=8, sprite at fit scale: Forward+ against Compatibility, pixels that differ: 0
+block  1: 3 distinct colours, blob 23512 px
+block  2: 3 distinct colours, blob 23589 px
+block  4: 3 distinct colours, blob 23004 px
+block  8: 3 distinct colours, blob 24624 px
+block 16: 2 distinct colours, blob 20736 px
+block 32: 2 distinct colours, blob 20736 px
+block 8 at the fit scale (the sprite is drawn 2.25 times larger): run lengths along the middle row of the 288 px sprite: [54, 180, 54]
+
+== 6. checkerboard: all 64 cells of the 360x360 render against mod(column + row, 2)
+cells matching the formula: 64 of 64 (mismatches 0)
+whole image: pixels that are neither teal nor cream: 0
+four cells (0,0) (1,0) (0,1) (1,1): ['teal', 'cream', 'cream', 'teal']
+diagonal neighbours share a colour, edge neighbours differ: True
+
+== 7. stripes: the 360x360 render against fract((UV.x + UV.y) * count) and step(width, .)
+10-stripes-sq: count 4, width 0.5: pixels differing from the formula 680 of 129600 (all within one pixel of a stripe edge: yes); gold share 0.500 (width says 0.5)
+10-stripes-w25-sq: count 4, width 0.25: pixels differing from the formula 360 of 129600 (all within one pixel of a stripe edge: yes); gold share 0.253 (width says 0.25)
+10-stripes-w75-sq: count 4, width 0.75: pixels differing from the formula 360 of 129600 (all within one pixel of a stripe edge: yes); gold share 0.753 (width says 0.75)
+10-stripes-c8-sq: count 8, width 0.5: pixels differing from the formula 680 of 129600 (all within one pixel of a stripe edge: yes); gold share 0.506 (width says 0.5)
+count = 4: along the top row 4 gold stripes end in cream (and 5 start, the last one a sliver at the far corner)
+stripe edges follow lines of constant x + y: pixel (x, y) and (x + 7, y - 7) agree: True
+moving stripes, speed 0.5, two renders about one second apart (waited_s 0.300 and 1.306 in lab-results.jsonl): share of pixels whose colour swapped: 0.966
+expected for a shift of 0.503 of a period at width 0.5: swapped share about near 1.0 (half a period swaps gold and cream)
+
+== 7b. moving stripes: which TIME does each render show? (best fit of fract((x + y) * 4 - TIME * 0.5) to the pixels)
+11-stripes-moving-t0 (asked to wait 0.0 s): best-fit TIME = 0.090 s (mod 2 s, the period of the pattern), pixels still differing 0.00%
+11-stripes-moving-t1 (asked to wait 0.3 s): best-fit TIME = 0.380 s (mod 2 s, the period of the pattern), pixels still differing 1.00%
+11-stripes-moving-t3 (asked to wait 0.6 s): best-fit TIME = 0.690 s (mod 2 s, the period of the pattern), pixels still differing 0.00%
+11-stripes-moving-t2 (asked to wait 1.3 s): best-fit TIME = 1.425 s (mod 2 s, the period of the pattern), pixels still differing 0.00%
+TIME differences between renders (mod 2 s): t1 - t0 = 0.290, t3 - t1 = 0.310, t2 - t1 = 1.045
+The pattern moves toward larger x + y as TIME grows (the fit above uses a minus sign on TIME, so a positive TIME step reproduces the render).
+
+== 8. dots: coverage against radius (8 x 8 cells, 360x360 render; teal = inside the circle)
+radius 0.20:  12.4% of the picture is dot (geometry says  12.6%)
+radius 0.35:  38.4% of the picture is dot (geometry says  38.5%)
+radius 0.50:  78.9% of the picture is dot (geometry says  78.5%)
+radius 0.60:  95.1% of the picture is dot (geometry says  95.1%)
+radius 0.70: 100.0% of the picture is dot (geometry says 100.0%)
+radius 0.72: 100.0% of the picture is dot (geometry says 100.0%)
+radius 0.50: the dot in cell (3,3) spans x from 135 to 179 (the cell spans 135 to 179): touches both neighbours
+radius 0.72: any cream pixel left? False | radius 0.70: cream pixels left: 0
+half the diagonal of a unit cell: 0.7071
+
+== 9. dots on a wide rectangle (640x360): the trap and the fix
+cells = 8 across and 8 down: each cell is 80.0 x 45.0 px; measured dot width x height in four cells: [(56, 31), (56, 31), (56, 31), (56, 31)]; ratio 1.81
+cells = (16, 9): each cell is 40.0 x 40.0 px; measured dot width x height in four cells: [(28, 28), (28, 28), (28, 28), (28, 28)]; ratio 1.00
+12-dots-wide: Forward+ against Compatibility, pixels that differ: 0
+09-checker: Forward+ against Compatibility, pixels that differ: 0
+
+== 10. halftone (dots coloured from the picture at each cell's middle), 16 cells on the 128 px gradient picture
+dot width x height x pixels in cells (col,row): {(0, 0): (6, 6, 32), (15, 0): (6, 6, 32), (0, 15): (6, 6, 32), (15, 15): (6, 6, 32), (7, 7): (6, 6, 32), (3, 12): (6, 6, 32)}
+every cell's dot is the same size (edges and corners whole): True
+dot colour at the cell middle equals the picture pixel at the cell middle (8i+4, 8j+4): cells that disagree: 0 of 256
+sprite halftone at 16 cells: distinct non-stage colours: [(np.int64(95), np.int64(163), np.int64(145)), (np.int64(250), np.int64(249), np.int64(245))]
+sprite halftone at the fit scale: colours present (stage, teal, cream, plus edge pixels): 3
+
+== 11. smooth filter against nearest filter, middle-of-the-cell lookup (256x256 sampler texture, 16 blocks)
+distinct colours: smooth 7 nearest 3 | pixels that differ: 1536 of 65536
+
+== 12. halftone on a picture that reaches the edges (checker texture, 128 px, 8 cells): whole dots against the rounded variant
+14-halftone-checker-c8-1x: 64 dots, areas min 124, median 124, max 124; dots smaller than 80% of the median: 0
+15-halftone-rounded-checker-c8-1x: 81 dots, areas min 31, median 124, max 124; dots smaller than 80% of the median: 32
+expected: the floored version has 8 x 8 = 64 whole dots; the rounded version has 9 x 9 = 81 blobs, 32 of them cut by the picture's edge

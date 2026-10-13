@@ -1,0 +1,4 @@
+# 2026-10-13, Apple M4 Pro, Godot 4.7.2, Forward+: does a sampler2D uniform with NO repeat hint repeat? (answer: no, it clamps)
+$ check_shader.sh lab-try/default-repeat.gdshader --size 1280x720 --kind rect --tex sky=gradient --probe 0.2346,0.1391 --probe 0.6256,0.1391
+RESULT {"engine":"4.7.2-stable (official)","kind":"rect","ok":true,"png":"","probes":[{"at":[0.2346,0.1391],"px":[300,100],"rgba":[0.5882,0.1961,0.0,1.0]},{"at":[0.6256,0.1391],"px":[800,100],"rgba":[1.0,0.1961,0.0,1.0]}],"renderer":"forward_plus","size":[1280,720],"uniforms":["sky:24","tile_size:3"],"waited_s":0.3}
+# pixel (300,100) reads 0.5882 (first tile); pixel (800,100) reads 1.0 = the last texel stretched: clamped, not repeated

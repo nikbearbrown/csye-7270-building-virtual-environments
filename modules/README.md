@@ -2,11 +2,11 @@
 
 ## Executive summary
 
-**What this is.** The sixteen Canvas modules of the rebuilt course: a setup module (0) and one module per week (1–15). Each module has a lecture page that teaches the week's machinery and walks through a hands-on task with Claude Code on a real Walker project, a Helpful-links page, and an ungraded practice assessment. Module 14 has a second lecture page for its three labs.
+**What this is.** The seventeen Canvas modules of the rebuilt course: the unnumbered Conducting AI preface, a setup module (0) and one module per week (1–15). The preface establishes human direction and judgment before installation. Each numbered module has a lecture page that teaches the week's machinery and walks through a hands-on task with Claude Code on a real Walker project, a Helpful-links page, and an ungraded practice assessment. Module 14 has a second lecture page for its three labs.
 
 **Why read it.** It is the index to the whole course content, in the same order Canvas shows it, so you can see what a student sees each week and open any source file.
 
-**How it was made.** The lessons are condensed from the companion chapters in [`../chapters/`](../chapters/README.md), whose hands-on examples were really run on 2026-09-27 and are recorded in [`../examples/`](../examples/). The structure follows the old Spring 2026 Canvas course (Lecture, Assignment, Links per module); [`../canvas/OLD-TO-NEW.md`](../canvas/OLD-TO-NEW.md) maps every old item to its successor. The file formats are in [`../pantry/course-build-spec.md`](../pantry/course-build-spec.md), and `python3 scripts/check_course.py` checks them.
+**How it was made.** The lessons are condensed from the companion chapters in [`../chapters/`](../chapters/README.md), whose numbered-chapter hands-on examples were really run on 2026-09-27 and are recorded in [`../examples/`](../examples/). The structure follows the old Spring 2026 Canvas course (Lecture, Assignment, Links per module); [`../canvas/OLD-TO-NEW.md`](../canvas/OLD-TO-NEW.md) maps every old item to its successor. The file formats are in [`../pantry/course-build-spec.md`](../pantry/course-build-spec.md), and `python3 scripts/check_course.py` checks them.
 
 **What it is not.** These are review drafts. No human has reviewed them, no AI+1 gate is signed, and nothing has been imported into Canvas.
 
@@ -16,11 +16,12 @@
 
 | Mod | Week | Lecture | Links | Practice | Assignment (due) |
 |---|---|---|---|---|---|
+| Preface | before setup | [Conducting AI Through Games and Virtual Worlds](preface-conducting-ai/lesson.md) | [links](preface-conducting-ai/links.md) | [quiz](preface-conducting-ai/assessment.json) | — |
 | 0 | before 1 | [Start Here: the toolchain](00-start-here/lesson.md) · [course map](00-start-here/course-map.md) | [links](00-start-here/links.md) | [quiz](00-start-here/assessment.json) | — |
 | 1 | 1 | [Walker and Godot](01-walker-and-godot/lesson.md) | [links](01-walker-and-godot/links.md) | [quiz](01-walker-and-godot/assessment.json) | [A1 Extend Walker Jumpman](../assignments/01-extend-walker-jumpman.md) (Day 10) |
 | 2 | 2 | [Prompting game art](02-prompting-game-art/lesson.md) | [links](02-prompting-game-art/links.md) | [quiz](02-prompting-game-art/assessment.json) | [A2 Generate Art, Sound, and Music](../assignments/02-generate-art-sound-music-for-your-game.md) (Day 20) |
-| 3 | 3 | [Blender MCP to Godot](03-blender-mcp-to-godot/lesson.md) | [links](03-blender-mcp-to-godot/links.md) | [quiz](03-blender-mcp-to-godot/assessment.json) | [A3](../assignments/03-blender-prop-into-godot.md) (Day 30, with Module 4) |
-| 4 | 4 | [Scenes, collision and physics](04-scenes-collision-and-physics/lesson.md) | [links](04-scenes-collision-and-physics/links.md) | [quiz](04-scenes-collision-and-physics/assessment.json) | A3 |
+| 3 | 3 | [Blender MCP to Godot](03-blender-mcp-to-godot/lesson.md) | [links](03-blender-mcp-to-godot/links.md) | [quiz](03-blender-mcp-to-godot/assessment.json) | [A3](../assignments/03-first-3d-assets-with-blender-mcp.md) (Day 30) |
+| 4 | 4 | [Scenes, collision and physics](04-scenes-collision-and-physics/lesson.md) | [links](04-scenes-collision-and-physics/links.md) | [quiz](04-scenes-collision-and-physics/assessment.json) | — (used in A4) |
 | 5 | 5 | [The GDD and virtual worlds](05-the-gdd-and-virtual-worlds/lesson.md) | [links](05-the-gdd-and-virtual-worlds/links.md) | [quiz](05-the-gdd-and-virtual-worlds/assessment.json) | [A4](../assignments/04-specify-and-build-a-3d-interaction.md) (Day 40) |
 | 6 | 6 | [Shader foundations](06-shader-foundations/lesson.md) | [links](06-shader-foundations/links.md) | [quiz](06-shader-foundations/assessment.json) | [A5](../assignments/05-shader-and-material.md) (Day 50, with Module 7) |
 | 7 | 7 | [Materials and textures](07-materials-and-textures/lesson.md) | [links](07-materials-and-textures/links.md) | [quiz](07-materials-and-textures/assessment.json) | A5 |
@@ -32,6 +33,8 @@
 | 13 | 13 | [Profiling and optimization](13-profiling-and-optimization/lesson.md) | [links](13-profiling-and-optimization/links.md) | [quiz](13-profiling-and-optimization/assessment.json) | A9 |
 | 14 | 14 | [Game AI and systems](14-game-ai-and-systems/lesson.md) · [labs](14-game-ai-and-systems/labs.md) | [links](14-game-ai-and-systems/links.md) | [quiz](14-game-ai-and-systems/assessment.json) | [A10](../assignments/10-final-project.md) (Day 100, with Module 15) |
 | 15 | 15 | [Final projects: from brief to export](15-final-projects-brief-to-export/lesson.md) | [links](15-final-projects-brief-to-export/links.md) | [quiz](15-final-projects-brief-to-export/assessment.json) | A10 |
+
+Every module closes with separate **Doing the same thing in Unity** and **Doing the same thing in Unreal Engine** sections, including comparison pointers. Conducting AI continues through each numbered lesson in a short decision-and-evidence section; see [the teaching foundation](../teaching-foundation.md).
 
 ## What is in each module folder
 

@@ -1,0 +1,360 @@
+{
+ "B24": {
+  "lane": "manim",
+  "class": "B24_AimArrow",
+  "visual_intent": "Act title 'A Lighthouse' (serif 40) top-left. A unit circle drawn in screen orientation (the vertical axis points DOWN, labelled 'y points down'); an arrow from the centre to the circle at angle a, labelled '(cos a, sin a)'; its horizontal and vertical grey projections shown as segments whose lengths change as the arrow turns clockwise through a quarter turn; the angle drawn as a small arc.",
+  "motion_claim": "The arrow turns clockwise around the circle while its two projections lengthen and shorten.",
+  "show": [
+   {
+    "at": 0.038,
+    "event": "act title and unit circle"
+   },
+   {
+    "at": 0.355,
+    "event": "arrow and its cos and sin projections"
+   },
+   {
+    "at": 0.71,
+    "event": "the arrow turns clockwise"
+   }
+  ],
+  "runner_up": "plot of sine and cosine curves",
+  "why": "The unit arrow turning is the object the next beats rotate; the projections show where cos and sin come from.",
+  "sparse": true
+ },
+ "B25": {
+  "lane": "manim",
+  "class": "B25_Agree",
+  "visual_intent": "Two arrows from one point: a grey 'pixel arrow' fixed at 25 degrees clockwise from right, and an ink 'aim' arrow with a terracotta tip dot that sweeps from -40 to 90 degrees. A two-line caption 'dot(a, b): multiply the matching parts and add them; with a unit direction, how far a point lies along it'. A live number 'dot = 0.97' beside a horizontal bar from -1 to 1 with a marker and a tick at 0.95. The sector between the two arrows lights up, labelled 'kept', whenever the number passes the tick.",
+  "motion_claim": "The aim arrow sweeps and the live number rises to one as the arrows line up, crossing the 0.95 tick.",
+  "show": [
+   {
+    "at": 0.031,
+    "event": "two arrows and the bar"
+   },
+   {
+    "at": 0.211,
+    "event": "sweep: the number rises and falls"
+   },
+   {
+    "at": 0.763,
+    "event": "the 0.95 tick: 'kept'"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of three dot values",
+  "why": "A live number that peaks when two arrows agree is the dot product; a table of three values would be static.",
+  "sparse": true
+ },
+ "B26": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid light() {\n\tvec2 aim = vec2(cos(TIME), sin(TIME));\n\tfloat agree = dot(-LIGHT_DIRECTION.xy, aim);\n\tfloat beam = step(0.95, agree);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * beam;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/11-lighthouse.gdshader",
+   "cues": [
+    {
+     "at": 0.04,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.405,
+     "lines": [
+      5
+     ],
+     "label": "dot(a, b): multiply the matching parts and add them"
+    },
+    {
+     "at": 0.676,
+     "lines": [
+      4
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c15-lighthouse.mp4",
+   "videoLabel": "Godot 4.7.2 · live clock · clockwise on screen",
+   "readouts": [
+    {
+     "at": 0.676,
+     "text": "clockwise",
+     "x": 0.83,
+     "y": 0.07
+    }
+   ],
+   "rings": [],
+   "caption": "TIME: seconds on one clock shared by the whole game",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C15: Dusk tiled floor, one warm lamp (scale 7: reach 896 px) at the centre, blob at lower right. 11-lighthouse is on the floor from 0.5 s and runs on TIME; the beam turns clockwise from the +x axis at one radian per second. Scene = evidence/planning-checks/light_scene.gd with captures.json id C15; 1920 x 1080 window at scale 1, 30 fps, 14 s, Forward+. Expected: wedge span on a 300 px ring = 36 degrees (expected 36.4 for a 0.95 cutoff); the wedge centre equals TIME in radians, clockwise from +x (verify5 T, verify8 C15).",
+  "visual_intent": "Code card at left (aim from cos and sin of TIME, agree = dot(-LIGHT_DIRECTION.xy, aim), the step, the rgb line, LIGHT); at right a real Godot window: a hard-edged beam turning clockwise round the lamp with the blob beside it. Caption: 'TIME: seconds on one clock shared by the whole game'. The dot line carries the tag 'dot(a, b): multiply the matching parts and add them'.",
+  "motion_claim": "The wedge turns round the lamp, clockwise, while the code lines light up in turn.",
+  "show": [
+   {
+    "at": 0.04,
+    "event": "aim line highlighted; the beam turns"
+   },
+   {
+    "at": 0.405,
+    "event": "the minus sign highlighted"
+   },
+   {
+    "at": 0.676,
+    "event": "clockwise: y points down"
+   }
+  ],
+  "runner_up": "manim: a wedge turning on a circle",
+  "why": "This is the film's first payoff, and the real beam beside the real code is the proof.",
+  "sparse": false
+ },
+ "B27": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float cutoff : hint_range(0.5, 0.99) = 0.95;\n\nvoid light() {\n\tvec2 aim = vec2(cos(TIME), sin(TIME));\n\tfloat agree = dot(-LIGHT_DIRECTION.xy, aim);\n\tfloat beam = step(cutoff, agree);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * beam;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/12-lighthouse-width.gdshader",
+   "cues": [
+    {
+     "at": 0.032,
+     "lines": [
+      3
+     ]
+    },
+    {
+     "at": 0.571,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c16-cutoff.mp4",
+   "videoLabel": "Godot 4.7.2 · cutoff swept by script · scripted",
+   "readouts": [
+    {
+     "at": 0.032,
+     "text": "cutoff 0.95",
+     "x": 0.17,
+     "y": 0.9
+    },
+    {
+     "at": 0.782,
+     "text": "cutoff 0.7",
+     "x": 0.17,
+     "y": 0.94
+    },
+    {
+     "at": 0.97,
+     "text": "cutoff 0.99",
+     "x": 0.17,
+     "y": 0.98
+    }
+   ],
+   "rings": [],
+   "caption": "uniform: a value your game sets from outside; every pixel sees the same one",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C16: Dusk tiled floor, one warm lamp (scale 7), blob. 12-lighthouse-width on the floor; the cutoff uniform holds 0.95, eases down to 0.7 at 'Lower the cutoff', then up to 0.99 at 'Raise it'. Scene = evidence/planning-checks/light_scene.gd with captures.json id C16; 1920 x 1080 window at scale 1, 30 fps, 11 s, Forward+. Expected: wedge span on a 300 px ring: 17, 37, 52, 74, 92 degrees for cutoff 0.99, 0.95, 0.9, 0.8, 0.7 (expected 16.2, 36.4, 51.7, 73.7, 91.1) (verify8 C16).",
+  "visual_intent": "Code card at left (the uniform line at the top, the step line using it); at right a real Godot window: the beam turning round the lamp gets wider as the cutoff is lowered and narrower as it is raised. Readouts 'cutoff 0.95', 'cutoff 0.7', 'cutoff 0.99'. Caption: 'uniform: a value your game sets from outside; every pixel sees the same one'.",
+  "motion_claim": "The beam widens and then narrows as the dial moves.",
+  "show": [
+   {
+    "at": 0.032,
+    "event": "uniform line highlighted"
+   },
+   {
+    "at": 0.571,
+    "event": "lower: the beam widens"
+   },
+   {
+    "at": 0.786,
+    "event": "raise: the beam narrows"
+   }
+  ],
+  "runner_up": "manim: a dial next to a wedge",
+  "why": "A dial moving while a real beam widens shows exactly what a uniform is for.",
+  "sparse": false
+ },
+ "B28": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float cutoff : hint_range(0.5, 0.99) = 0.9;\n\nvoid light() {\n\tvec2 aim = vec2(cos(TIME), sin(TIME));\n\tfloat agree = dot(-LIGHT_DIRECTION.xy, aim);\n\tfloat beam = smoothstep(cutoff, 0.99, agree);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * beam;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/13-lighthouse-soft.gdshader",
+   "cues": [
+    {
+     "at": 0.032,
+     "lines": [
+      8
+     ],
+     "label": "smoothstep(a, b, x): a smooth ramp from a to b"
+    },
+    {
+     "at": 0.57,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c17-soft-edge.mp4",
+   "videoLabel": "Godot 4.7.2 · step, then smoothstep · scripted",
+   "readouts": [
+    {
+     "at": 0.021,
+     "text": "step",
+     "x": 0.17,
+     "y": 0.07
+    },
+    {
+     "at": 0.57,
+     "text": "smooth step",
+     "x": 0.83,
+     "y": 0.07
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C17: Dusk tiled floor, one warm lamp (scale 7), blob. The beam starts on 11-lighthouse (hard edge); at 'the edge of the beam goes soft' the floor switches to 13-lighthouse-soft. Both run on TIME, so the beam keeps its angle across the switch. Scene = evidence/planning-checks/light_scene.gd with captures.json id C17; 1920 x 1080 window at scale 1, 30 fps, 11 s, Forward+. Expected: hard: lit out to +-18.2 degrees, nothing beyond; soft: smoothstep 0.9 to 0.99 fades between 8 and 26 degrees (verify7 D masks 1.0, 1.0, 0.98, 0.8, 0.61, 0.44, 0.02, 0.0 at 0, 5, 10, 15, 18, 20, 25, 30 degrees).",
+  "visual_intent": "Code card at left (the smoothstep line); at right a real Godot window: a hard-edged beam turns, then at 'goes soft' its edge feathers while it keeps turning at the same angle. Labels 'step' then 'smooth step'; the code line carries the tag 'smoothstep(a, b, x): a smooth ramp from a to b'.",
+  "motion_claim": "The beam's sharp edge feathers while the beam keeps turning.",
+  "show": [
+   {
+    "at": 0.032,
+    "event": "smoothstep line highlighted"
+   },
+   {
+    "at": 0.57,
+    "event": "the edge goes soft"
+   },
+   {
+    "at": 0.75,
+    "event": "same lamp, same beam"
+   }
+  ],
+  "runner_up": "manim: a step curve and a smoothstep curve",
+  "why": "The same beam before and after is the clearest picture of a soft edge.",
+  "sparse": false
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float cutoff : hint_range(0.5, 0.99) = 0.9;\n\nvoid light() {\n\tvec2 aim = vec2(cos(TIME), sin(TIME));\n\tfloat agree = dot(-LIGHT_DIRECTION.xy, aim);\n\tfloat beam = smoothstep(cutoff, 0.99, agree);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * beam;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/13-lighthouse-soft.gdshader",
+   "cues": [
+    {
+     "at": 0.026,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.412,
+     "lines": [
+      9,
+      10
+     ]
+    }
+   ],
+   "video": "godot-shaders/ls-c18-two-lamps.mp4",
+   "videoLabel": "Godot 4.7.2 · a second lamp added · scripted",
+   "readouts": [
+    {
+     "at": 0.026,
+     "text": "lamp 1",
+     "x": 0.2,
+     "y": 0.7
+    },
+    {
+     "at": 0.093,
+     "text": "lamp 2",
+     "x": 0.62,
+     "y": 0.7
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C18: Dusk tiled floor, no blob. One warm lamp (scale 5) at (560, 540) with 13-lighthouse-soft on the floor; a second, cool lamp (colour 0.6, 0.85, 1.0, scale 5) at (1360, 540) appears at 'second lamp'. Scene = evidence/planning-checks/light_scene.gd with captures.json id C18; 1920 x 1080 window at scale 1, 30 fps, 13 s, Forward+. Expected: strongest added colour on a 150 px ring: warm lamp (0.565, 0.533, 0.329), cool lamp (0.369, 0.506, 0.482) (verify8 C18); beams are parallel because both lamps aim at the same TIME angle.",
+  "visual_intent": "Code card at left (the soft lighthouse, unchanged); at right a real Godot window: one warm lamp with its beam, then a second cool lamp appears and a second beam starts from it, each in its own color. Labels 'lamp 1', 'lamp 2'.",
+  "motion_claim": "A second beam, in the second lamp's color, starts from the second lamp the moment it appears.",
+  "show": [
+   {
+    "at": 0.026,
+    "event": "one lamp, one beam"
+   },
+   {
+    "at": 0.093,
+    "event": "second lamp: second beam"
+   },
+   {
+    "at": 0.412,
+    "event": "each beam in its lamp's color"
+   }
+  ],
+  "runner_up": "manim: two lamps and one function",
+  "why": "Two real beams in two colors from one unchanged code card prove the function runs again for each lamp.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-shaders/ls-c19-reach.mp4",
+   "videoLabel": "Godot 4.7.2 · lamp scale changed · scripted",
+   "readouts": [
+    {
+     "at": 0.053,
+     "text": "lamp reach",
+     "x": 0.5,
+     "y": 0.2
+    },
+    {
+     "at": 0.286,
+     "text": "no light() here",
+     "x": 0.88,
+     "y": 0.5
+    },
+    {
+     "at": 0.786,
+     "text": "scale",
+     "x": 0.17,
+     "y": 0.07
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: Dusk tiled floor. One warm lamp (scale 2.5: reach 320 px) with 13-lighthouse-soft; a thin grey square outlines the lamp's texture; from 'scale the lamp' the lamp's scale eases from 2.5 up to 7 and the outline grows with it. Scene = evidence/planning-checks/light_scene.gd with captures.json id C19; 1920 x 1080 window at scale 1, 30 fps, 11 s, Forward+. Expected: with alpha forced to one the lit square ends exactly at the texture's half-width: added red 0.565 at 300 and 315 px, 0.0 at 325 and 340 px for half-width 320 (verify8 C19).",
+  "visual_intent": "A real Godot window, result only: the turning beam stops at a thin grey square marking the lamp's texture; outside the square nothing is lit. At 'scale the lamp' the square and the beam grow together. Labels 'lamp reach', 'no light() here', 'scale'.",
+  "motion_claim": "The beam is cut off at the square; when the lamp is scaled up the square and the beam grow together.",
+  "show": [
+   {
+    "at": 0.053,
+    "event": "the beam stops at the lamp's square"
+   },
+   {
+    "at": 0.286,
+    "event": "outside: no light() runs"
+   },
+   {
+    "at": 0.786,
+    "event": "scale the lamp: the beam lengthens"
+   }
+  ],
+  "runner_up": "manim: a square with a wedge",
+  "why": "A real beam clipped by a real square, then growing with the lamp, is the whole caution.",
+  "sparse": false
+ }
+}

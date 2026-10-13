@@ -2,23 +2,25 @@
 
 CSYE 7270 · Fall 2026 · **100 points**
 
-Assignments follow a **10-day cadence**. Use this assignment's due date in Canvas. The syllabus's **10% daily late penalty** applies. Suggested Canvas due date: Day 40 after the first class day.
+**Planned due date: Sunday, October 25, 2026, at 11:59 pm America/New_York.** See the [Fall 2026 assignment schedule](fall-2026-assignment-schedule.md). This local date awaits posting to Canvas; Canvas remains the official deadline. The **10% daily late penalty** applies.
 
-**Covers:** [Module 5 — The GDD and virtual worlds](../modules/05-the-gdd-and-virtual-worlds/lesson.md).
+**Covers:** [Module 4 — Scenes, collision and physics](../modules/04-scenes-collision-and-physics/lesson.md) and [Module 5 — The GDD and virtual worlds](../modules/05-the-gdd-and-virtual-worlds/lesson.md).
 
 **Required viewing:** [AI Policy for Professor Bear's Courses | Using AI Responsibly in Class](https://youtu.be/8Ut0Cdl6vMw?si=9w3aEpt1ZyAR4Kiz).
 
 ## Executive summary
 
-You write a game design document (GDD) for your own game, with Walker's `/gdd` skill or its public fallback prompt, and audit what the agent wrote. It keeps proposed, implemented, tested, and human-reviewed claims apart, and scopes mobile, networked and XR versions without building them. Then you write at least four measurable acceptance criteria for **one** 3D interaction, commit them before any code changes, have Claude Code build it, and prove each criterion with a test you run. You hand in the repository tagged `a4` with its `design/` folder, a test report, an honest log, and one `godot-gdd` film. Grading is 60 points for the work and its explanation, 10 for the log, 10 for matching versions, and 20 relative. A passing test shows the build meets your criteria as written, not that they were the right criteria or that a player notices or enjoys the interaction.
+You refine the game design document (GDD) submitted on October 19 for your own game, with Walker's `/gdd` skill or its public fallback prompt, and audit what the agent wrote. It keeps proposed, implemented, tested, and human-reviewed claims apart, and scopes mobile, networked and XR versions without building them. Then you write at least four measurable acceptance criteria for **one** 3D interaction, commit them before any code changes, have Claude Code build it, and prove each criterion with a test you run. You hand in the repository tagged `a4` with its `design/` folder, a test report, an honest log, and one `godot-gdd` film. Grading is 60 points for the work and its explanation, 10 for the log, 10 for matching versions, and 20 relative. A passing test shows the build meets your criteria as written, not that they were the right criteria or that a player notices or enjoys the interaction.
 
 ## Your task
+
+**Build on the October 19 GDD milestone.** Keep that five-point submission as a dated baseline. Extend and audit it against the requirements below; do not start a second design document. The GDD portion of this rubric evaluates the refinements, traceability and evidence supporting this interaction, not a second submission of unchanged prose. Make this brief and Modules 4–5 available by October 15 so preparation overlaps with the existing asset and GDD work.
 
 Describe your game precisely enough that a stranger could build and test it. Then specify, build and prove one small 3D interaction from it.
 
 **The cumulative game.** From Assignment 2 on, you build one game: the one you chose in Assignment 2, in a repository whose name begins **`walker-`**. Assignments 3–10 each add one layer to that same repository and are submitted as a git tag on it (`a4` here), so the final project is the sum of the semester rather than a restart. The one allowed change of game had to happen before this assignment; if you made it, the tags continue on the new repository and your submission note says so. This is an individual assignment.
 
-**One 3D interaction** is one thing the player does in 3D space, through ordinary input, that changes the game's state measurably: a checkpoint pad, a pressure plate that opens a gate, a crate pushed onto a target. Your Assignment 3 prop may be part of it. **If your game is 2D,** build it in your Assignment 3 3D scene; if nothing there is player-controlled, the smallest controllable body that makes it playable is in scope.
+**One 3D interaction** is one thing the player does in 3D space, through ordinary input, that changes the game's state measurably: a checkpoint pad, a pressure plate that opens a gate, a crate pushed onto a target. Your Assignment 3 assets may be part of it. **If your game is 2D,** build it in your Assignment 3 3D scene; if nothing there is player-controlled, the smallest controllable body that makes it playable is in scope.
 
 **Tools and cost.** Claude Code assistance is expected; use your Northeastern access. Nothing paid is needed or earns credit.
 
@@ -91,7 +93,7 @@ End the file with what it leaves to people: whether a player sees and understand
 
 The [Module 5 lesson](../modules/05-the-gdd-and-virtual-worlds/lesson.md) and [Chapter 5](../chapters/05-the-gdd-and-virtual-worlds.md), which recovered a GDD from [walker-3d-platformer](https://github.com/nikbearbrown/walker-3d-platformer) (upstream MIT license), audited it, and built a checkpoint pad against six criteria ([record](../examples/05-the-gdd-and-virtual-worlds/)). [walker-jumpman-clawd's design folder](https://github.com/nikbearbrown/walker-jumpman-clawd/tree/main/design) is a recovered GDD with unsigned gates and the error the chapter describes.
 
-### Step A — Write the GDD
+### Step A — Refine the existing GDD
 
 **With `/gdd`.** Install only the `gdd` folder, as the chapter does. Here `../walker` is a Walker copy that contains `gdd/`:
 

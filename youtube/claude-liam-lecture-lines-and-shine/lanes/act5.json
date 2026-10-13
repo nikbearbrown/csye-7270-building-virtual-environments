@@ -1,0 +1,242 @@
+{
+ "B31": {
+  "lane": "manim",
+  "class": "B31_UnitStep",
+  "visual_intent": "Act title 'The Angle-Safe Way' (serif 40) top-left. A grey arrow of length one from the origin at 35 degrees; its across part is drawn along the horizontal axis labelled 'cosine: across' and its up part labelled 'sine: up' (for a step of length one). The arrow turns from 0 to 60 degrees and the two legs grow and shrink.",
+  "motion_claim": "The arrow turns and its two legs trade length.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "title, axes, the unit arrow at 35 degrees"
+   },
+   {
+    "at": 0.25,
+    "event": "arrow turns from 0 to 60: the step of length one"
+   },
+   {
+    "at": 0.44,
+    "event": "settled at 35 degrees (the 50 % frame)"
+   },
+   {
+    "at": 0.68,
+    "event": "'cosine: across' on the horizontal leg"
+   },
+   {
+    "at": 0.88,
+    "event": "'sine: up' on the vertical leg"
+   }
+  ],
+  "runner_up": "ShaderLab with sine and cosine readouts",
+  "why": "Two legs that trade length as the arrow turns is the meaning of cosine and sine; Manim shows it.",
+  "sparse": true
+ },
+ "B32": {
+  "lane": "manim",
+  "class": "B32_NormalAndDot",
+  "visual_intent": "The warm-grey line at 35 degrees with its unit arrow along it; a second arrow turned a quarter turn, labelled 'the normal'. A terracotta dot P drops a warm-grey dashed line onto the normal's axis, labelled 'dot(p, n)' with a signed number; P then moves to the other side of the line and the number turns negative. Under it: 'dot: across × across + up × up'.",
+  "motion_claim": "The point crosses the line and its dot value changes sign while its distance changes smoothly.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "line and its unit arrow"
+   },
+   {
+    "at": 0.2,
+    "event": "the arrow turns a quarter turn: 'the normal'"
+   },
+   {
+    "at": 0.42,
+    "event": "label 'dot: across × across + up × up' (settled by 50 %)"
+   },
+   {
+    "at": 0.7,
+    "event": "P drops onto the normal's axis: dot(p, n)"
+   },
+   {
+    "at": 0.88,
+    "event": "P crosses the line; the number turns negative"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of the dot line",
+  "why": "A point projecting onto the normal is the meaning of dot here; a line of code would not show the projection.",
+  "sparse": true
+ },
+ "B33": {
+  "lane": "manim",
+  "class": "B33_SameThing",
+  "visual_intent": "An equation chain, one line at a time, each line rewriting the one above: '(y − m x) ÷ sqrt(1 + m²)' → '(y − m x) × cosine' → 'y × cosine − x × sine' → 'p · n'. Beside it the earlier triangle (1, m, sqrt(1 + m²)) with cosine = 1 ÷ sqrt(1 + m²) marked on it.",
+  "motion_claim": "Each line of the chain rewrites itself into the next, ending on p dot n.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "first line and the triangle"
+   },
+   {
+    "at": 0.3,
+    "event": "divide becomes × cosine"
+   },
+   {
+    "at": 0.42,
+    "event": "second line settled (the 50 % frame)"
+   },
+   {
+    "at": 0.65,
+    "event": "y × cosine − x × sine"
+   },
+   {
+    "at": 0.8,
+    "event": "ends on p · n"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of the two forms",
+  "why": "An equation that transforms into the other form is the claim; a table of two formulas would not show why they match.",
+  "sparse": true
+ },
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\nuniform float thickness = 0.1;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat a = radians(angle);\n\tvec2 n = vec2(-sin(a), cos(a));\n\tfloat d = abs(dot(p, n));\n\tCOLOR = vec4(vec3(0.5 + 0.5 * step(d, thickness)), 1.0);\n}",
+   "codeFile": "lab-shaders/12-direction.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      9,
+      10
+     ]
+    },
+    {
+     "at": 0.38,
+     "lines": [
+      11
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c19-direction-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · slope form left, direction form right · angle swept by script",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "slope form",
+     "x": 0.266,
+     "y": 0.94
+    },
+    {
+     "at": 0.1,
+     "text": "direction form",
+     "x": 0.734,
+     "y": 0.94
+    },
+    {
+     "at": 0.8,
+     "text": "identical",
+     "x": 0.5,
+     "y": 0.05
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C19: custom scene two_panels.gd, cards 256 px at (170, 190) and (470, 190): left 05-band-true, right 12-direction, thickness 0.1; angle 0 to 89 linearly over 5 to 95 percent of the clip (6 s). Measured: 0 of 230,400 pixels differ at 30, 60 and 89 degrees.",
+  "visual_intent": "Code card at left (the thirteen-line direction shader); at right two real Godot cards side by side with the slope version on the left and the direction version on the right, the same angle sweeping through 30, 60 and 89 degrees: the two white bands are identical. Labels 'slope form' and 'direction form' under them and 'identical' at the end.",
+  "motion_claim": "Both bands turn together and stay identical.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "angle and normal lines highlighted"
+   },
+   {
+    "at": 0.38,
+    "event": "distance line highlighted"
+   },
+   {
+    "at": 0.8,
+    "event": "identical"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "Two bands that never differ are the proof of 'pixel for pixel'; a single picture could not show it.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 35.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat a = radians(angle);\n\tvec2 n = vec2(-sin(a), cos(a));\n\tfloat v = dot(p, n);\n\tCOLOR = vec4(0.65 + 0.2 * v, 0.65, 0.65 - 0.2 * v, 1.0);\n}",
+   "codeFile": "lab-shaders/13-direction-signed.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      10
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c20-seam-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · slope form left, direction form right · angle held at three values",
+   "readouts": [
+    {
+     "at": 0.06,
+     "text": "89.9°",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.36,
+     "text": "90°",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.7,
+     "text": "91°",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.36,
+     "text": "swaps",
+     "x": 0.266,
+     "y": 0.06
+    },
+    {
+     "at": 0.42,
+     "text": "steady",
+     "x": 0.734,
+     "y": 0.06
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C20: custom scene two_panels.gd, cards 256 px: left 02-angle-line, right 13-direction-signed; angle held at 89.9 (0 to 33 percent of the clip), 90.0 (33 to 67), 91.0 (67 to 100); 6 s. Measured: left swaps between 89.9 and 90 in both renderers; right never swaps from 80 to 100 degrees.",
+  "visual_intent": "Two real Godot cards side by side on the stage, held at 89.9, 90 and 91 degrees. Left (slope form): the warm and cool halves trade sides at 90. Right (direction form): they never move. Angle labels at the centre.",
+  "motion_claim": "The left halves swap at ninety while the right halves stay put.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "89.9°"
+   },
+   {
+    "at": 0.36,
+    "event": "90°: left swaps"
+   },
+   {
+    "at": 0.42,
+    "event": "right steady"
+   },
+   {
+    "at": 0.7,
+    "event": "91°"
+   }
+  ],
+  "runner_up": "ShaderLab single capture of the direction form",
+  "why": "Side by side, the same angles: the swap on one side and its absence on the other is the claim.",
+  "sparse": false
+ }
+}

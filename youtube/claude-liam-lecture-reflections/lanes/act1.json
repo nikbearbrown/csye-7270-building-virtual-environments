@@ -1,0 +1,388 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform sampler2D screen_texture : hint_screen_texture;\nconst vec3 WATER = vec3(1.0, 0.0, 0.0);\n\nvoid fragment() {\n\tvec3 label = texture(screen_texture, SCREEN_UV).rgb;\n\tfloat water = float(distance(label, WATER) < 0.1);\n\tCOLOR.a *= water;\n}",
+   "codeFile": "lab-shaders/02-reflection.gdshader",
+   "cues": [],
+   "video": "reflections/hook-walk.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "over water",
+     "x": 0.5,
+     "y": 0.88
+    },
+    {
+     "at": 0.44,
+     "text": "over sand",
+     "x": 0.5,
+     "y": 0.88
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "A Map Nobody Sees"
+  },
+  "capture_spec": "C01: capture_scenes.gd id C01 (the pond: LabelMap, BackBufferCopy in viewport mode, Ground, Player with RemoteTransform2D, Reflection with lab-shaders/02-reflection.gdshader); the Player walks x 150 to 1200 over 11.5 s; 13.5 s, 30 fps, Forward+, 4K SubViewport route, scripted walk, fresh process.",
+  "visual_intent": "Act title 'A Map Nobody Sees' (serif 40) top-left. A real Godot render in a framed window on the cream stage: the teal blob walks along the shoreline from left to right and its flipped reflection follows in the water, thins out over the sandbar until it is gone, and returns on the far side. Readouts 'over water' and 'over sand'.",
+  "motion_claim": "The reflection follows the walker, disappears over the sandbar and comes back.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "blob on the shore, reflection under it"
+   },
+   {
+    "at": 0.1,
+    "event": "readout 'over water'"
+   },
+   {
+    "at": 0.44,
+    "event": "readout 'over sand'; reflection thinning over the sandbar"
+   },
+   {
+    "at": 0.5,
+    "event": "reflection gone (settled by the midpoint)"
+   },
+   {
+    "at": 0.85,
+    "event": "reflection back on the far side"
+   }
+  ],
+  "runner_up": "manim drawing of a character and its mirror image",
+  "why": "The film's claim is that a hidden map drives a real effect; the real render of the effect is the honest hook, a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_PixelAsks",
+  "visual_intent": "A framed flat picture of the pond (grass band, water, sand spit, teal blob with its reflection area under it). Over the reflection area a grid of 8 by 6 cells appears (the pixel grid); a terracotta dot visits the cells one by one asking 'water?'; each cell then fills teal (show) where it lies over water and stays empty (hide) where it lies over the sand. Label 'show or hide?'.",
+  "motion_claim": "A dot visits cell after cell and each answer decides the cell: teal where yes, empty where no.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "picture and the empty pixel grid"
+   },
+   {
+    "at": 0.4,
+    "event": "dot asks 'water?' cell by cell"
+   },
+   {
+    "at": 0.74,
+    "event": "cells over water filled, cells over sand empty"
+   }
+  ],
+  "runner_up": "ShaderLab capture with a probe overlay",
+  "why": "The question is asked per pixel and answered per pixel; a grid of cells filled one by one shows the decision itself, which a render of the result cannot.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reflections/label-map-only.mp4",
+   "videoLabel": "Godot 4.7.2 · the label map alone · Forward+ · scripted fade",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "water",
+     "x": 0.25,
+     "y": 0.82
+    },
+    {
+     "at": 0.34,
+     "text": "coast",
+     "x": 0.69,
+     "y": 0.9
+    },
+    {
+     "at": 0.62,
+     "text": "empty",
+     "x": 0.3,
+     "y": 0.25
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.36,
+     "box": [
+      0.49,
+      0.48,
+      0.89,
+      0.83
+     ]
+    }
+   ],
+   "caption": "a label map: a layer of flat colors, each color a label",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: capture_scenes.gd id C02 (LabelMap node only; Ground, Player, Reflection hidden; LabelMap modulate alpha 0 to 1 over 2.5 s); 13 s, 30 fps, Forward+, scripted fade.",
+  "visual_intent": "The real label map layer alone on the stage colour: the water region flat red, a ring of flat green around the sandbar, everything else empty. It fades in over 2.5 s. Labels land in turn: 'water' on the red, 'coast' on the green ring (with one terracotta ring around the ring), 'empty' on the bare stage.",
+  "motion_claim": "The map fades in and its labels land on the red, the green and the empty part in the order the voice says them.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "empty stage"
+   },
+   {
+    "at": 0.2,
+    "event": "label 'water' on the red"
+   },
+   {
+    "at": 0.34,
+    "event": "label 'coast' + ring on the green ring"
+   },
+   {
+    "at": 0.62,
+    "event": "label 'empty' on the bare stage"
+   }
+  ],
+  "runner_up": "manim drawing of the same map",
+  "why": "A label map is a real image; showing the real layer, flat colors and all, is more convincing than a drawing of it.",
+  "sparse": false
+ },
+ "B04": {
+  "lane": "manim",
+  "class": "B04_LinedUp",
+  "visual_intent": "Two panels on the cream stage. Left, 'an ordinary texture': a pixel of the pond in the world, a camera frame sliding sideways, and a chain of arrows from the pixel through a box 'your math' to a spot on the map. Right, 'the screen': the same pixel with one straight arrow to the same spot in a screen-sized copy, no box. A small label 'texture: an image a shader can read'.",
+  "motion_claim": "The camera frame slides and the left chain stretches and re-routes through the math box; the right arrow stays straight.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "both panels, same pixel"
+   },
+   {
+    "at": 0.42,
+    "event": "camera frame slides; left chain re-routes through 'your math'"
+   },
+   {
+    "at": 0.74,
+    "event": "right arrow stays straight"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "A flow with a moving camera and a recalculation box against a straight line is a structure with a shape; Manim can slide the camera and show only one side needing to re-route.",
+  "sparse": true
+ },
+ "B05": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reflections/label-map-over-art.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted walk",
+   "readouts": [
+    {
+     "at": 0.18,
+     "text": "player sees this",
+     "x": 0.3,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: capture_scenes.gd id C03 (tree order Ground, LabelMap, BackBufferCopy, Player, Reflection; shader 02); the Player walks x 300 to 620 over 10 s; 10.5 s, 30 fps, Forward+, scripted walk.",
+  "visual_intent": "The real pond with the label map drawn on top of the Ground: a red and green sea covers the water area and the ring around the sandbar, while the blob keeps walking and its reflection still works. Readout 'player sees this'.",
+  "motion_claim": "The red and green sea sits over the game while the blob keeps walking.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "the pond with the map on top"
+   },
+   {
+    "at": 0.18,
+    "event": "readout 'player sees this'"
+   }
+  ],
+  "runner_up": "manim drawing of the stacked layers in the wrong order",
+  "why": "A real frame of the mistake is more persuasive than a drawing of it, and the walking blob shows it is a live game.",
+  "sparse": false
+ },
+ "B06": {
+  "lane": "manim",
+  "class": "B06_Layers",
+  "visual_intent": "An isometric stack on the cream stage, three flat slabs landing one after another: 'map' (red and green) first, then 'art' (the pond picture), then 'character' (the teal blob). Beside the stack a top-down thumbnail updates after each slab: after the map, red and green; after the art, only the pond (the red and green gone); after the character, the pond with the blob. Label 'later covers earlier'.",
+  "motion_claim": "The art slab lowers onto the map slab and the thumbnail's red and green vanish.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "map slab lands; thumbnail red and green"
+   },
+   {
+    "at": 0.4,
+    "event": "art slab lands; thumbnail shows only the pond"
+   },
+   {
+    "at": 0.74,
+    "event": "character slab lands; blob appears in the thumbnail"
+   }
+  ],
+  "runner_up": "ShaderLab capture with layers switched on one by one",
+  "why": "Covering is a spatial idea; an isometric stack with a thumbnail of what the player sees shows both the stack and the result.",
+  "sparse": true
+ },
+ "B07": {
+  "lane": "manim",
+  "class": "B07_CopyMoment",
+  "visual_intent": "The same slab stack. A copy frame (a camera-like rectangle) slides along the stack. Above the art slab its thumbnail shows only the pond ('no map'); slid down between the map and the art, its thumbnail shows the red and green map. Label 'copy of the screen'.",
+  "motion_claim": "The frame slides down the stack and its thumbnail turns from the pond into the map.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "frame above the art slab; thumbnail shows the pond"
+   },
+   {
+    "at": 0.42,
+    "event": "frame slides down between map and art"
+   },
+   {
+    "at": 0.7,
+    "event": "thumbnail now shows the map; label settled"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "The idea is timing; a frame that slides through the stack shows when the copy is made and what is in it.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "manim",
+  "class": "B08_CopyNode",
+  "visual_intent": "The slab stack with a node chip labelled 'BackBufferCopy' sliding in between the map slab and the art slab; the copy frame snaps onto the chip and its thumbnail shows the map. A one-line label from the docs: 'copies the screen for a shader to read'.",
+  "motion_claim": "The chip slides between the slabs and the copy frame snaps onto it.",
+  "show": [
+   {
+    "at": 0.12,
+    "event": "stack, chip enters"
+   },
+   {
+    "at": 0.44,
+    "event": "chip sits between map and art; frame snaps on"
+   },
+   {
+    "at": 0.7,
+    "event": "docs label settles"
+   }
+  ],
+  "runner_up": "BrowserCapture of the BackBufferCopy docs page",
+  "why": "The node is introduced by name at the moment the stack needs it; the docs page itself appears later, where its three modes are the subject.",
+  "sparse": true
+ },
+ "B09": {
+  "lane": "editor",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "reflections/editor-scene-dock.png",
+   "videoLabel": "Godot 4.7.2 editor · Scene dock · real frame",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "drawn first",
+     "x": 0.8,
+     "y": 0.28
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.7,
+     "box": [
+      0.1,
+      0.32,
+      0.92,
+      0.41
+     ]
+    },
+    {
+     "at": 0.76,
+     "box": [
+      0.1,
+      0.42,
+      0.92,
+      0.51
+     ]
+    },
+    {
+     "at": 0.82,
+     "box": [
+      0.1,
+      0.52,
+      0.92,
+      0.61
+     ]
+    },
+    {
+     "at": 0.88,
+     "box": [
+      0.1,
+      0.62,
+      0.92,
+      0.71
+     ]
+    },
+    {
+     "at": 0.94,
+     "box": [
+      0.1,
+      0.81,
+      0.92,
+      0.9
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "E1: Godot's own editor on the scratch pond project (evidence/planning-checks/make-editor-project.sh builds it; verified by verify_scene_file.gd): one frame (Pond selected) recorded at 2560 x 1440 with the Light preset and a 2x UI by evidence/planning-checks/record-editor-frames.sh, cropped to the box (0, 60) to (440, 420). The ring boxes are measured on that crop (rows LabelMap, BackBufferCopy, Ground, Player, Reflection); a planning frame of exactly this crop is png/planning-frame-E1-scene-dock.png.",
+  "visual_intent": "A real frame of Godot's Scene dock for the pond scene: Pond, then LabelMap, BackBufferCopy, Ground, Player (with RemoteTransform2D under it) and Reflection, top to bottom. A readout 'drawn first' by the top row, then one terracotta ring moves down the rows as the voice names map, copy node, art, character, reflection.",
+  "motion_claim": "The ring steps down the rows in the order the voice names them.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "Scene dock frame"
+   },
+   {
+    "at": 0.3,
+    "event": "readout 'drawn first'"
+   },
+   {
+    "at": 0.7,
+    "event": "ring on LabelMap"
+   },
+   {
+    "at": 0.76,
+    "event": "ring on BackBufferCopy"
+   },
+   {
+    "at": 0.82,
+    "event": "ring on Ground"
+   },
+   {
+    "at": 0.88,
+    "event": "ring on Player"
+   },
+   {
+    "at": 0.94,
+    "event": "ring on Reflection"
+   }
+  ],
+  "runner_up": "GodotDevWorkbench tree mode (labelled reconstruction)",
+  "why": "SHOW-THE-THING: the Scene dock is the place where the order is set, so the real dock is the evidence; the reconstruction is the labelled fallback.",
+  "sparse": false
+ }
+}

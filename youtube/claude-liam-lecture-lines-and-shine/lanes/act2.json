@@ -1,0 +1,236 @@
+{
+ "B10": {
+  "lane": "manim",
+  "class": "B10_TangentIsSlope",
+  "visual_intent": "Act title 'Slope from an Angle' (serif 40) top-left. Axes, a warm-grey line through the origin and a pale grey filled wedge for its angle. At across = 1 a warm-grey dashed vertical runs from the axis up to the line, ending in a terracotta dot; its height is a live number. The angle grows from 0 to 60 degrees and the height reads 0, 0.58, 1.0 and 1.73. Labels: 'angle', 'one step across', 'tangent of the angle = the slope'.",
+  "motion_claim": "The line turns and the height at one step across grows with live numbers.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "title, axes, line at 0"
+   },
+   {
+    "at": 0.32,
+    "event": "angle grows; height 0.58 at 30, 1.0 at 45 (settled by 50 %)"
+   },
+   {
+    "at": 0.65,
+    "event": "label 'tangent = slope' settles at 60 degrees: 1.73"
+   }
+  ],
+  "runner_up": "ShaderLab with tangent readouts",
+  "why": "A height that grows as the angle turns is a mechanism; Manim can show the two numbers move together.",
+  "sparse": true
+ },
+ "B11": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 30.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat v = p.y - m * p.x;\n\tCOLOR = vec4(0.65 + 0.2 * v, 0.65, 0.65 - 0.2 * v, 1.0);\n}",
+   "codeFile": "lab-shaders/02-angle-line.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c04-angle-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · angle swept by script",
+   "readouts": [
+    {
+     "at": 0.04,
+     "text": "0°: m = 0",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.75,
+     "text": "45°: m = 1",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "radians: a full turn is about 6.28",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: Lab card, 02-angle-line, angle 0 to 60 linearly over the clip (6 s); angle is 45 at 75 percent. GPU slopes: 0.57735 (30), 1.0 (45), 1.73205 (60).",
+  "visual_intent": "Code card at left with the slope line highlighted; at right a real Godot card whose grey strip turns, climbing to the right, as the angle sweeps from 0 to 60 degrees. Readouts: '0°: m = 0' at the start and '45°: m = 1' as it passes 45.",
+  "motion_claim": "The strip turns and the readouts give the slope at 0 and 45 degrees.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "slope line highlighted"
+   },
+   {
+    "at": 0.75,
+    "event": "45°: m = 1"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The line turning with the angle uniform is the claim the code makes; the readouts tie the picture to the number.",
+  "sparse": false
+ },
+ "B12": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "stack",
+   "code": "float m = tan(radians(angle));\nfloat m = tan(angle);",
+   "codeFile": "lab-shaders/02-angle-line.gdshader and 03-no-radians.gdshader (line 8 of each)",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      2
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c05-radians-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · two cards, same angle, one missing radians()",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "m = 0.58",
+     "x": 0.266,
+     "y": 0.94
+    },
+    {
+     "at": 0.34,
+     "text": "m = −6.4",
+     "x": 0.734,
+     "y": 0.94
+    }
+   ],
+   "rings": [
+    {
+     "at": 0.6,
+     "box": [
+      0.534,
+      0.17,
+      0.934,
+      0.89
+     ]
+    }
+   ],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C05: custom scene two_panels.gd (cards 256 px at (170, 190) and (470, 190)): left 02-angle-line, right 03-no-radians; angle 0 to 30 over the first 4 s, then hold 2 s (6 s). GPU slope at 30 without radians(): -6.40533.",
+  "visual_intent": "Two real Godot cards side by side on the stage, the same angle sweeping to 30 degrees. Left: the grey strip climbs gently to the right (m = 0.58). Right: the strip is steep and leans the other way (m = -6.4). Below, the two code lines that differ; a terracotta ring settles on the right card.",
+  "motion_claim": "Both lines start together; the right one jumps steep and backwards while the left turns smoothly.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "m = 0.58 under the left card"
+   },
+   {
+    "at": 0.34,
+    "event": "m = -6.4 under the right card"
+   },
+   {
+    "at": 0.6,
+    "event": "ring on the right card"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of the two lines",
+  "why": "The wrong picture next to the right one is the whole lesson; the code differs by one word, the picture by everything.",
+  "sparse": false
+ },
+ "B13": {
+  "lane": "manim",
+  "class": "B13_TanExplodes",
+  "visual_intent": "A plot (shader_kit plot) of tan(angle) against the angle from 0 to 90 degrees, y axis clipped at 10. A terracotta dot rides the curve from 0 degrees; numbers land at 45 (1), 75 (3.7) and 89 (57); the dot leaves the top of the plot as the curve shoots up and a label reads 'no limit'. A small grey line at the left turns with the angle.",
+  "motion_claim": "The dot rides the curve and then shoots off the top of the plot as the angle nears ninety.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "axes and the start of the curve"
+   },
+   {
+    "at": 0.22,
+    "event": "45 → 1"
+   },
+   {
+    "at": 0.38,
+    "event": "75 → 3.7"
+   },
+   {
+    "at": 0.43,
+    "event": "89 → 57 (all three settled by 50 %)"
+   },
+   {
+    "at": 0.65,
+    "event": "the dot leaves the top of the plot: 'no limit'"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of angle and slope",
+  "why": "A curve that leaves the frame is the claim; a table lists the numbers but cannot run off its own edge.",
+  "sparse": true
+ },
+ "B14": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle = 30.0;\n\nvoid fragment() {\n\tvec2 p = UV * 2.0 - 1.0;\n\tp.y = -p.y;\n\tfloat m = tan(radians(angle));\n\tfloat v = p.y - m * p.x;\n\tCOLOR = vec4(0.65 + 0.2 * v, 0.65, 0.65 - 0.2 * v, 1.0);\n}",
+   "codeFile": "lab-shaders/02-angle-line.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "lines-and-shine/c06-seam.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · Apple M4 Pro · angle held at three values",
+   "readouts": [
+    {
+     "at": 0.05,
+     "text": "89.9°: +573",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.38,
+     "text": "90°: −23 million",
+     "x": 0.5,
+     "y": 0.95
+    },
+    {
+     "at": 0.72,
+     "text": "91°: −57",
+     "x": 0.5,
+     "y": 0.95
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06: Lab card, 02-angle-line, angle held at 89.9 (0 to 33 percent of the clip), 90.0 (33 to 67), 91.0 (67 to 100); 6 s. GPU tan: +572.967, -22877334, -57.2901.",
+  "visual_intent": "Code card at left; at right a real Godot card held at 89.9, then 90, then 91 degrees. The warm and cool halves meet at a vertical edge each time (the grey strip has shrunk to nothing), but at 90 they trade sides and stay traded at 91. Readouts: '89.9°: +573', '90°: −23 million', '91°: −57'.",
+  "motion_claim": "Warm and cool swap sides between 89.9 and 90 degrees.",
+  "show": [
+   {
+    "at": 0.05,
+    "event": "89.9°: +573, warm on the left"
+   },
+   {
+    "at": 0.38,
+    "event": "90°: −23 million, the halves have swapped"
+   },
+   {
+    "at": 0.72,
+    "event": "91°: −57, still swapped"
+   }
+  ],
+  "runner_up": "manim two-line diagram of tan jumping from plus to minus",
+  "why": "The swap is a real event on the real shader; held values make it undeniable and the readouts carry the numbers.",
+  "sparse": false
+ }
+}

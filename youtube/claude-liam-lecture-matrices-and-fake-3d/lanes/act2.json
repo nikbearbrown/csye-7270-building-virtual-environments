@@ -1,0 +1,368 @@
+{
+ "B11": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float grow : hint_range(0.1, 2.0) = 1.0;\n\nvoid vertex() {\n\tmat2 scale_table = mat2(vec2(grow, 0.0), vec2(0.0, grow));\n\tVERTEX = scale_table * VERTEX;\n}",
+   "codeFile": "lab-shaders/02-grow.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      5
+     ],
+     "label": "vertex(): runs once for each corner"
+    },
+    {
+     "at": 0.26,
+     "lines": [
+      7
+     ]
+    },
+    {
+     "at": 0.64,
+     "lines": [
+      6,
+      7
+     ]
+    }
+   ],
+   "video": "godot-shaders/matrices-grow.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep of grow",
+   "readouts": [
+    {
+     "at": 0.34,
+     "text": "origin",
+     "x": 0.52,
+     "y": 0.58
+    },
+    {
+     "at": 0.76,
+     "text": "grow 1.5",
+     "x": 0.5,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "VERTEX: a corner's position, in pixels from the node's origin",
+   "durationSeconds": "__AUDIO__",
+   "title": "Three Moves"
+  },
+  "capture_spec": "C03: 02-grow.gdshader on the card; card texture drawn at 1024 px (U = 8 times the 128 px card; a clean cream card, warm grey border, teal arrow pointing right, small teal square top left), node scale k/8 with k = 2.0 in a 1280x720 logical canvas, every pixel-valued uniform multiplied by U; a small grey cross at the node's origin drawn by the scene; 4K SubViewport route, Forward+, 30 fps, offline fixed tick, no input; 18 s. grow keyframes: 1.0 at 0.00 to 0.58, 1.5 at 0.72 (ease in-out), 1.5 to the end. At the 50 % mark: the card at its original size. At 85 %: the card grown by half. Verified at node scale 1.0: 128 px becomes 192 px at grow 1.5 (geometry-summary.txt).",
+  "visual_intent": "Act title 'Three Moves' (serif 40) top-left. Code card at left with the real eight-line shader; at right a framed Godot window with the card, a small grey cross at its origin, a readout 'origin' next to the cross, and the line 'VERTEX: a corner's position, in pixels from the node's origin' as the caption. The card grows when the scale line is highlighted.",
+  "motion_claim": "Focus lands on vertex(), then on VERTEX, then on the scale table, and the card grows.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "void vertex() line"
+   },
+   {
+    "at": 0.26,
+    "event": "VERTEX line; caption defines VERTEX"
+   },
+   {
+    "at": 0.34,
+    "event": "readout 'origin'"
+   },
+   {
+    "at": 0.64,
+    "event": "scale table line; the card grows"
+   },
+   {
+    "at": 0.74,
+    "event": "readout 'grow 1.5'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real card that really grows under a real vertex() is the first proof that the table from the previous act works on a shape.",
+  "sparse": false
+ },
+ "B12": {
+  "lane": "manim",
+  "class": "B12_TurnIsATable",
+  "visual_intent": "The screen-direction grid with a grey circle of radius one. The across arrow (solid) and the down arrow (dashed) swing together clockwise from the start position to 45 degrees; the across tip is labelled 'cos, sin' with its live numbers 0.71, 0.71 and the down tip 'minus sin, cos' (-0.71, 0.71). At the right the table cos -sin over sin cos with its four live entries (0.71 -0.71 over 0.71 0.71), first column outlined solid and second dashed. A small label under the circle: 'across and down on a circle of radius one'.",
+  "motion_claim": "The two arrows swing together clockwise round the circle while the table's four entries change with them.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "circle, two arrows at rest, table at the angle 0"
+   },
+   {
+    "at": 0.2,
+    "event": "arrows swing clockwise to 45 degrees; entries update"
+   },
+   {
+    "at": 0.4,
+    "event": "tip labels settled"
+   },
+   {
+    "at": 0.62,
+    "event": "arrows swing on to 90 degrees; the table reads 0 -1 / 1 0"
+   },
+   {
+    "at": 0.84,
+    "event": "label 'across and down on a circle'"
+   }
+  ],
+  "runner_up": "plot of cosine and sine",
+  "why": "Rotation is two arrows turning together, and the table is where they land; one picture shows both, with the numbers updating live.",
+  "sparse": true
+ },
+ "B13": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float angle : hint_range(0.0, 6.2832) = 0.0;\n\nvoid vertex() {\n\tvec2 across = vec2(cos(angle), sin(angle));\n\tvec2 down = vec2(-sin(angle), cos(angle));\n\tVERTEX = mat2(across, down) * VERTEX;\n}",
+   "codeFile": "lab-shaders/03-turn.gdshader",
+   "cues": [
+    {
+     "at": 0.08,
+     "lines": [
+      3
+     ],
+     "label": "radians: Godot's angle unit"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      8
+     ]
+    }
+   ],
+   "video": "godot-shaders/matrices-turn.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep of angle",
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "TAU: full turn",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.76,
+     "text": "angle 0.79",
+     "x": 0.5,
+     "y": 0.92
+    },
+    {
+     "at": 0.8,
+     "text": "clockwise",
+     "x": 0.78,
+     "y": 0.5
+    }
+   ],
+   "rings": [],
+   "caption": "TAU: one full turn, about 6.283 radians",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: 03-turn.gdshader on the card; card texture drawn at 1024 px (U = 8 times the 128 px card; a clean cream card, warm grey border, teal arrow pointing right, small teal square top left), node scale k/8 with k = 2.0 in a 1280x720 logical canvas, every pixel-valued uniform multiplied by U; a small grey cross at the node's origin drawn by the scene; 4K SubViewport route, Forward+, 30 fps, offline fixed tick, no input; 15 s. angle keyframes: 0.0 at 0.00 to 0.58, 0.7854 at 0.72 (ease in-out), 0.7854 to the end. At the 50 % mark: the card upright. At 85 %: the card turned 45 degrees clockwise (arrow pointing down and to the right). Verified: bbox of a turned 128 px square matches the corner maths; pixel-identical to Node2D.rotation (verify1 R1).",
+  "visual_intent": "Code card at left with the real nine-line shader; at right a framed Godot window with the card and its origin cross. The caption defines TAU; the card turns clockwise by an eighth of tau (45 degrees) while the readouts 'TAU: full turn', 'angle 0.79' and 'clockwise' land.",
+  "motion_claim": "The card turns clockwise as the angle sweeps up to an eighth of tau.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "angle uniform line"
+   },
+   {
+    "at": 0.3,
+    "event": "readout 'TAU: full turn'"
+   },
+   {
+    "at": 0.62,
+    "event": "VERTEX = mat2(across, down) * VERTEX line; the card turns"
+   },
+   {
+    "at": 0.74,
+    "event": "readouts 'angle 0.79' and 'clockwise'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real turn in the engine, the same direction Godot's own rotation uses; the readouts name the three things the voice says.",
+  "sparse": false
+ },
+ "B14": {
+  "lane": "manim",
+  "class": "B14_OriginNeverMoves",
+  "visual_intent": "The screen-direction grid with the origin pinned by a terracotta dot and a small pin drawn from lines. Three different two-by-two tables act in turn (a scale, a turn, a squash): the grid stretches, spins and squashes, but the origin dot never leaves its spot. At the end the whole grid tries to slide right (a dashed arrow) and snaps back; label '0, 0 stays 0, 0'.",
+  "motion_claim": "The grid stretches, spins and squashes around a dot that never moves; a slide is attempted and snaps back.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "grid, pinned origin dot"
+   },
+   {
+    "at": 0.2,
+    "event": "scale warp; dot stays"
+   },
+   {
+    "at": 0.3,
+    "event": "turn warp; dot stays"
+   },
+   {
+    "at": 0.4,
+    "event": "squash warp; dot stays"
+   },
+   {
+    "at": 0.62,
+    "event": "slide attempt: dashed arrow; grid snaps back"
+   },
+   {
+    "at": 0.84,
+    "event": "label '0, 0 stays 0, 0'"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "'Cannot slide' is a limit; a pinned dot that survives three different warps shows the limit better than the sentence.",
+  "sparse": true
+ },
+ "B15": {
+  "lane": "manim",
+  "class": "B15_ThirdNumberIsOne",
+  "visual_intent": "A bracketed three-by-three table (1 0 100 / 0 1 0 / 0 0 1) with its last column outlined and labelled 'slide'; beside it a bracketed column (30 / 20 / 1) with its last slot ringed, labelled 'point, plus a one'; an equals sign and a result column. The ring walks down: the top row gives 1 x 30 + 0 x 20 + 100 x 1 = 130 (the 100 pairs with the one); the middle row gives 20; the bottom row gives 0 + 0 + 1 = 1, so the result column reads (130 / 20 / 1).",
+  "motion_claim": "The ring walks down the rows: the slide in the last column is multiplied by the one, and the one survives in the last slot.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "table, point with its one, result slots"
+   },
+   {
+    "at": 0.22,
+    "event": "ring on the top row; 100 pairs with the one"
+   },
+   {
+    "at": 0.4,
+    "event": "130 lands; settled"
+   },
+   {
+    "at": 0.62,
+    "event": "middle row: 20"
+   },
+   {
+    "at": 0.78,
+    "event": "bottom row: the one survives"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "The trick is arithmetic: showing the 100 meet the one in the top row, and the bottom row keep the one, is the explanation.",
+  "sparse": true
+ },
+ "B16": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform vec2 slide = vec2(100.0, 0.0);\n\nvoid vertex() {\n\tvec3 across = vec3(1.0, 0.0, 0.0);\n\tvec3 down = vec3(0.0, 1.0, 0.0);\n\tvec3 offset = vec3(slide, 1.0);\n\tVERTEX = (mat3(across, down, offset) * vec3(VERTEX, 1.0)).xy;\n}",
+   "codeFile": "lab-shaders/04-slide.gdshader",
+   "cues": [
+    {
+     "at": 0.1,
+     "lines": [
+      9
+     ]
+    },
+    {
+     "at": 0.6,
+     "lines": [
+      8
+     ],
+     "label": "offset: a distance added to slide something"
+    }
+   ],
+   "video": "godot-shaders/matrices-slide.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep of slide",
+   "readouts": [
+    {
+     "at": 0.78,
+     "text": "slide 100 px",
+     "x": 0.5,
+     "y": 0.92
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C05: 04-slide.gdshader on the card; card texture drawn at 1024 px (U = 8 times the 128 px card; a clean cream card, warm grey border, teal arrow pointing right, small teal square top left), node scale k/8 with k = 2.0 in a 1280x720 logical canvas, every pixel-valued uniform multiplied by U; a small grey cross at the node's origin drawn by the scene; 4K SubViewport route, Forward+, 30 fps, offline fixed tick, no input; 15 s. slide keyframes (x, y): (0, 0) from 0.00 to 0.58, (100, 0) at 0.74 (ease in-out, pass (100 x U, 0)), then hold. At the 50 % mark: the card at the origin. At 85 %: the card one hundred card-pixels to the right. Verified: centre moves by exactly (100, 0) (geometry-summary.txt).",
+  "visual_intent": "Code card at left with the real ten-line shader; at right a framed Godot window with the card and its origin cross. When the offset line is highlighted the card slides one hundred pixels to the right; a readout 'slide 100 px' lands.",
+  "motion_claim": "The card slides to the right when the offset line is highlighted.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "VERTEX = (mat3(...) * vec3(VERTEX, 1.0)).xy line"
+   },
+   {
+    "at": 0.6,
+    "event": "offset line; the card slides right"
+   },
+   {
+    "at": 0.78,
+    "event": "readout 'slide 100 px'"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A real slide in the engine with the third number visible in the code.",
+  "sparse": false
+ },
+ "B17": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "Three moves, three tables",
+   "headers": [
+    "Move",
+    "Where its numbers go"
+   ],
+   "rows": [
+    [
+     "scale",
+     "on the diagonal"
+    ],
+    [
+     "turn",
+     "cosine and sine, first two columns"
+    ],
+    [
+     "slide",
+     "the offset (a distance), last column"
+    ],
+    [
+     "all three",
+     "keep straight edges straight"
+    ]
+   ],
+   "note": "Godot 4.7.2 · each table checked against the pixels of a 128 px square",
+   "cues": [
+    0.08,
+    0.22,
+    0.36,
+    0.62
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A four-row table: scale, turn and slide, each with where its numbers go, and a last row 'all three: keep straight edges straight'; one row is ringed as each is named.",
+  "motion_claim": "The ring steps down the rows with the voice.",
+  "show": [
+   {
+    "at": 0.08,
+    "event": "scale row"
+   },
+   {
+    "at": 0.22,
+    "event": "turn row"
+   },
+   {
+    "at": 0.36,
+    "event": "slide row"
+   },
+   {
+    "at": 0.62,
+    "event": "all three row"
+   }
+  ],
+  "runner_up": "manim",
+  "why": "A summary of three parallel facts, with a fourth that holds for all of them, is exactly what the table component is for.",
+  "sparse": false
+ }
+}

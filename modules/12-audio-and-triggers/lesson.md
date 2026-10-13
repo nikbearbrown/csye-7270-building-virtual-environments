@@ -219,6 +219,23 @@ In the recorded run, Claude Code 2.1.150 (default model `claude-sonnet-4-6`) and
 
 **A flaky trigger check and a pause check that could not fail.** `hitsound_plays_on_perfect` failed once in ten runs because a 60 ms click can start and finish inside one burst between two frames, and the pause check could pass because the click had already ended. Codex read `playing` immediately after `emit()` and moved the pause test to the long song player. One check, `space_hit_starts_hitsound`, still reads `playing` two frames after a key press and was not changed.
 
+## Practice assessment (ungraded)
+
+Answer in your own words, then check the source. The Canvas practice quiz for this module covers related ground in multiple choice. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then check the source yourself.
+
+1. Explain, with the numbers, why a 200 ms tone shows on the bus meter headless while a 60 ms click usually does not.
+2. Why does a capture on the SFX bus still hear the click when SFX is muted? Where would you put a capture to test the mute?
+3. Where would you put a UI click that must keep playing while the game is paused, and which property makes it work?
+4. Set `HitSound.max_polyphony` to 1 and describe a capture-based check that detects the difference when three `note_hit` signals arrive 20 ms apart.
+
+## Conducting AI in this module
+
+Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test triggers, routing and signal levels; listen to the actual mix and judge timing and feeling. Record the evidence, your decision and what would change it.
+
+## The next step
+
+This module opens Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford." It finishes with Module 13, profiling and optimization, and is due about Day 90 (Canvas dates govern); its page sets the exact task and the required `godot-gamedev` film. This lesson adds no graded deliverable. The long reading is the companion chapter, [Chapter 12 — Audio and Triggers](../../chapters/12-audio-and-triggers.md).
+
 ## If you know Unity or Unreal
 
 Unity and Unreal were not run for this module; the comparisons come from their official documentation, checked on 27 September 2026.
@@ -234,15 +251,10 @@ Unity and Unreal were not run for this module; the comparisons come from their o
 
 Both engines offer sample-accurate scheduling that Godot 4.7.2 lacks, so a metronome there can be scheduled ahead on the audio clock instead of being rounded to a mix block. For an agent workflow the difference is readability: in Godot the whole change (bus layout, routing, player, trigger, generator and test) is text, and every mistake in the record was found by reading it. Unity references are GUIDs, and Unreal's routing is binary. Whether either engine's mixer can be captured in batch mode was not checked. See [Chapter 12](../../chapters/12-audio-and-triggers.md) for the full comparison.
 
-## Practice assessment (ungraded)
+## Doing the same thing in Unity
 
-Answer in your own words, then check the source. The Canvas practice quiz for this module covers related ground in multiple choice. Do not paste Claude's explanation as proof of your understanding; ask it to question you, then check the source yourself.
+**Similarities and differences:** use the Unity column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/12-audio-and-triggers.md#doing-the-same-thing-in-unity) for the reasoning and [official reference](https://docs.unity3d.com/Manual/AudioOverview.html) for implementation details. These are documentation-based pointers; this module did not run Unity.
 
-1. Explain, with the numbers, why a 200 ms tone shows on the bus meter headless while a 60 ms click usually does not.
-2. Why does a capture on the SFX bus still hear the click when SFX is muted? Where would you put a capture to test the mute?
-3. Where would you put a UI click that must keep playing while the game is paused, and which property makes it work?
-4. Set `HitSound.max_polyphony` to 1 and describe a capture-based check that detects the difference when three `note_hit` signals arrive 20 ms apart.
+## Doing the same thing in Unreal Engine
 
-## The next step
-
-This module opens Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford." It finishes with Module 13, profiling and optimization, and is due about Day 90 (Canvas dates govern); its page sets the exact task and the required `godot-gamedev` film. This lesson adds no graded deliverable. The long reading is the companion chapter, [Chapter 12 — Audio and Triggers](../../chapters/12-audio-and-triggers.md).
+**Similarities and differences:** use the Unreal Engine column above to translate this task while keeping the intended behavior and human check. Read the [companion comparison](../../chapters/12-audio-and-triggers.md#doing-the-same-thing-in-unreal-engine) for the reasoning and [official reference](https://dev.epicgames.com/documentation/en-us/unreal-engine/sound-classes-in-unreal-engine) for implementation details. These are documentation-based pointers; this module did not run Unreal Engine.

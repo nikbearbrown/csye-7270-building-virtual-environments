@@ -10,6 +10,10 @@
 
 ---
 
+## Preface addition — October 12, 2026
+
+Professor Bear requested an unnumbered Conducting AI preface before Chapter 0, with games as the concrete example of technical production joined to human judgment. Its source is `chapters/preface-conducting-ai.md`. It uses a conceptual decision exercise rather than the numbered chapters' implementation-and-run skeleton, so it does not claim a new agent or engine session. It includes Why Godot and ends with Unity and Unreal comparison pointers. The existing sixteen numbered chapters retain their identifiers and technical scope. Every module must close with those two engine sections; the direct Godot workflow does not require MCP, and no engine is described as universally requiring MCP.
+
 ## 1. Chapter list (one chapter per syllabus module)
 
 The revised Word syllabus (`CSYE_7270_Virtual_Environments_and_Real-Time_3D.docx`) says each module maps one-to-one to a chapter. The sequence below follows it. Chapter 0 is the Week 1 toolchain setup the syllabus mentions ("setup and access checks are covered in Week 1").

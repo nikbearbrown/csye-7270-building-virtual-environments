@@ -1,0 +1,21 @@
+Two earlier VALID runs of the wall-clock stress test (verify_g_cost.gd), transcribed from this session's output because their logs were overwritten by later runs.
+Median ms per frame by round (three rounds), 6 render targets of 8192 x 8192 (403 million pixels) per frame, vsync off, Apple M4 Pro, Godot 4.7.2, Forward+.
+Run A: the first full run, before the window was kept on top (nothing covered it). Run B: the repeat after verify_g_cost.gd began keeping its window on top.
+The live logs now on disk are run-g-verify_g_cost.log and run-g-repeat-*.log; cost-summary.txt is computed from those. These two runs read about 2 percent lower on the longer loops
+(the Mac was less busy), which is why the film quotes whole milliseconds and the words "about".
+
+variant                                              reads   run A                      run B
+plain sprite, no shader                                  1   [9.05, 9.01, 7.9]          [8.27, 8.28, 8.34]
+06-pixel-steps (4 + 1 reads)                             5   [8.36, 8.91, 7.95]         [7.81, 8.04, 8.33]
+07-eight-reads (8 + 1)                                   9   [10.09, 10.56, 10.19]      [9.97, 10.17, 10.22]
+08-loop (9 + 1)                                         10   [10.4, 10.8, 10.5]         [10.16, 10.32, 10.4]
+10-ring (16 + 1), sine and cosine per read              17   [35.51, 39.81, 37.81]      [35.38, 36.95, 37.39]
+ring-const (16 + 1), directions as constants            17   [15.65, 16.48, 16.14]      [15.46, 16.14, 15.89]
+loop-5 constant bounds (25 + 1)                         26   [23.17, 24.11, 23.52]      [23.21, 23.51, 23.29]
+loop-7 constant bounds (49 + 1)                         50   [42.85, 44.37, 42.57]      [42.84, 42.96, 43.11]
+loop-9 constant bounds (81 + 1)                         82   [68.92, 69.63, 69.17]      [69.27, 69.52, 69.5]
+loop-n r=1, runtime bounds (9 + 1)                      10   [17.13, 16.96, 16.5]       [16.7, 16.68, 16.75]
+loop-n r=2, runtime bounds (25 + 1)                     26   [35.86, 35.08, 34.35]      [34.63, 34.58, 34.65]
+09-guard at thickness 0 (1 read)                         1   [8.76, 7.84, 7.78]         [8.11, 8.3, 8.32]
+
+Medians of the rounds: 10 reads 10.5 and 10.32; 26 reads 23.52 and 23.29; 50 reads 42.85 and 42.96; 82 reads 69.17 and 69.5; ring with sine and cosine 37.81 and 36.95; ring with constants 16.14 and 15.89.

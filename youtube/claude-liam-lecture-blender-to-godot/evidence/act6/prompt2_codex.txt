@@ -1,0 +1,21 @@
+The previous agent run (Claude Code) stopped at the turn limit, resumed, and
+ended without running its own test. Finish it as one bounded revision. Start by reading
+godot/props/checkpoint_post.glb.import and git show HEAD --stat.
+
+1. Using Godot's "Node type customization" documentation, find the one import
+   setting that stopped the -convcolonly suffix from working, and fix only that.
+   Remove the _subresources physics block the previous run added, and give the collision mesh
+   data its plain name again, so we can see whether the suffix alone does the job.
+   Delete godot/tests/debug_tree.gd, godot/tests/debug_options.gd and
+   tools/blender/inspect_glb.py, with their .uid files.
+2. Make the floor check honest: read the post's transform from game.tscn instead
+   of a constant, cast the downward ray with the post's own StaticBody3D
+   excluded, and require the floor to be within 2 cm of the post's base.
+3. Read the capsule height from player/player.tscn instead of a constant.
+4. Replace the "collision X_max <= 0.35" check with one that measures how much
+   of the pennant's length lies inside the collider, and fails if any does. Then
+   change the collider in the Blender script so that check passes while the base
+   and the pole stay fully covered.
+5. Rebuild with Blender headless, reimport, and run
+   godot --headless --path godot --script res://tests/test_checkpoint_post.gd --fixed-fps 60
+   Report the real output and git diff --stat. Do not commit.
