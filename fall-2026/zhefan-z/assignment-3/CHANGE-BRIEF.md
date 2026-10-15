@@ -72,3 +72,10 @@ Low-poly shapes suit the pixel-art character and keep each asset far below the c
 
 ## Out of scope
 Textures, sculpting, rigging, animation (the chest does not open), collision, the torch or campfire next to the chest, and placing the assets into the 2D game.
+
+## Revision 2026-10-14 (after building; the original above is unchanged)
+- **Chest:** the body/lid split came out 0.376 + 0.224 m instead of 0.35 + 0.25 m, because an 8-sided lid as deep as the body (lid 0.448 m, body 0.450 m) rises about half its depth, 0.224 m; a 0.25 m rise would need a 0.50 m deep lid, and the bands and lock would then push the chest past 0.5 m deep. The total height is still 0.600 m.
+- **Chest gold:** metallic 0.3, roughness 0.5. Fully metallic gold read dark olive with a single light. Wood: metallic 0, roughness 0.8.
+- **Rock:** roughness 0.9 (Claude Code's proposal, approved). Known limitation: a 0.066 m gap at the floor between the two base stones, accepted after my look.
+- **Crystal:** emission strength 0.5, roughness 0.3. My hand edit rotated one short cone to Z = 20°; that cone was then lengthened ×1.2125 along its own axis to keep the 0.35 m width.
+- All three assets matched the size, origin, rotation, scale and triangle predictions above; see TEST-REPORT.md.
