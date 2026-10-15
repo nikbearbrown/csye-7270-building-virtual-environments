@@ -1,0 +1,50 @@
+# 2026-10-13 16:30:51 EDT  MCP connection check from a Claude Code session with the blender MCP tools loaded
+# Before the first call: one Blender 5.2.2 LTS process (PID 42766) listening on 127.0.0.1:9876 (lsof);
+# Bao had clicked "Connect to MCP server" in the add-on panel. Registration unchanged from 02-mcp-add.log.
+
+$ mcp__blender__get_addon_status
+{
+  "up_to_date": true,
+  "protocol_version": 13,
+  "expected_protocol_version": 13,
+  "addon_version": [1, 8],
+  "capabilities": ["bpy_api_lookup", "describe_node_type", "drain_human_activity", "execute_code",
+                   "get_addon_info", "get_object_info", "get_scene_info", "get_telemetry_consent",
+                   "get_viewport_screenshot", "get_world_state_snapshot", "list_scene_items",
+                   "pick_viewport_object", "set_telemetry_consent"],
+  "blender_version": "5.2.2 LTS",
+  "premium_generators": [],
+  "libraries": {"polyhaven": "off", "sketchfab": "off", "polypizza": "off"},
+  "generators": {"tripo": "off (Premium only)", "hunyuan3d": "off", "hyper3d": "off"},
+  "source": "native",
+  "warning": null,
+  "telemetry_consent": false,
+  "update_command": "uvx mcp-for-blender install-addon",
+  "after_install": "If the addon file was updated: in Blender, Preferences → Add-ons → disable/enable 'Interface: Blender MCP', or restart Blender, then Start MCP Server."
+}
+result: connected on the first call, no error. Telemetry consent false; every library and generator off.
+
+# 2026-10-13 16:30:53 EDT
+$ mcp__blender__get_scene_info fields=[location, size, rotation, scale, materials, details, settings]
+Scene 'Scene' | 3 mesh | active LowerCrate | selected LowerCrate, UpperCrate, OilBarrel | mode OBJECT
+/Users/yxlh/Documents/csye 7270/walker-lanternfall-bao-x/blender/a3/supply_stack.blend | engine BLENDER_EEVEE | frames 1-250 (now 1) at 24 fps | 1920x1080 | camera none | HDRI none | unit scale 1.0
+
+Showing 3 of 3 (name | type | location | rotation | scale | size | details | materials):
+LowerCrate | mesh | at (0.0, 0.0, 0.25) | rot (0, 0, 0) | scale (1.0, 1.0, 1.0) | size 1.2x0.8x0.5 | 6 faces | mat MarketTimber
+UpperCrate | mesh | at (-0.22, 0.05, 0.75) | rot (0, 0, 0) | scale (1.0, 1.0, 1.0) | size 0.72x0.68x0.5 | 6 faces | mat MarketTimber
+OilBarrel | mesh | at (0.32, 0.0, 0.55) | rot (0, 0, 0) | scale (1.0, 1.0, 1.0) | size 0.44x0.44x1.1 | 14 faces | mat CrateBrass
+result: no error.
+
+# 2026-10-13 16:31 EDT  read-only execute_blender_code inventory of the live file vs a separate headless
+# Blender reading the saved blender/a3/supply_stack.blend: bpy.data.is_dirty True live / False saved;
+# the same 3 objects, 3 meshes, 2 materials; identical location, rotation, scale, dimensions,
+# vertex hashes and Principled BSDF values. The unsaved change is not in object/mesh/material data.
+
+# 2026-10-13 16:32 EDT  read-only execute_blender_code context probe
+__file__ in globals: False None
+__name__: None
+context.area: None  window: Window  screen: Screen("Layout")
+gltf exporter op available: True
+mcp addon enabled: ['blender_mcp']
+consequence: code sent through the MCP has no __file__, so saved build steps locate the repository
+from __file__ when run headless and from the open .blend's path when run through the MCP.

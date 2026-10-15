@@ -1,0 +1,136 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="PackedScene" path="res://a3/lantern_gate.tscn" id="1_gate"]
+[ext_resource type="Script" path="res://a3/lantern_gate_room.gd" id="2_room"]
+[ext_resource type="PackedScene" path="res://a3/supply_stack.glb" id="3_stack"]
+[ext_resource type="PackedScene" path="res://a3/oil_shrine.glb" id="4_shrine"]
+
+[sub_resource type="Environment" id="Environment_market"]
+background_mode = 1
+background_color = Color(0.035, 0.045, 0.09, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.18, 0.22, 0.38, 1)
+ambient_light_energy = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="StandardMaterial3D" id="Material_floor"]
+albedo_color = Color(0.08, 0.10, 0.18, 1)
+roughness = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape_floor"]
+size = Vector3(8, 0.2, 8)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_standin"]
+radius = 0.25
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="Material_standin"]
+albedo_color = Color(1, 0.47, 0.08, 1)
+emission_enabled = true
+emission = Color(0.35, 0.06, 0.01, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape_standin"]
+radius = 0.25
+height = 1.2
+
+[node name="LanternGateRoom" type="Node3D"]
+script = ExtResource("2_room")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_market")
+
+[node name="Moon" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -28, 0)
+light_color = Color(0.55, 0.65, 1, 1)
+light_energy = 1.2
+
+[node name="LanternLight" type="OmniLight3D" parent="."]
+position = Vector3(-2, 2.15, 0)
+light_color = Color(1, 0.34, 0.08, 1)
+light_energy = 5.0
+omni_range = 4.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(5.8, 3.8, 7.6)
+current = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+position = Vector3(0, -0.1, 0)
+mesh = SubResource("BoxMesh_floor")
+material_override = SubResource("Material_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+position = Vector3(0, -0.1, 0)
+shape = SubResource("BoxShape_floor")
+
+[node name="LanternGate" parent="." instance=ExtResource("1_gate")]
+position = Vector3(-2, 0, 0)
+
+[node name="GateLabel" type="Label3D" parent="."]
+position = Vector3(-2, 3.25, 0)
+text = "LANTERN GATE\n6 PRIMITIVES · 88 TRIANGLES"
+font_size = 30
+outline_size = 8
+billboard = 1
+
+[node name="SupplyStack" parent="." instance=ExtResource("3_stack")]
+
+[node name="StackLabel" type="Label3D" parent="."]
+position = Vector3(-0.15, 1.70, -0.15)
+text = "SUPPLY STACK\n3 PRIMITIVES · 68 TRIANGLES"
+font_size = 24
+outline_size = 7
+billboard = 1
+
+[node name="OilShrine" parent="." instance=ExtResource("4_shrine")]
+position = Vector3(2, 0, 0)
+
+[node name="ShrineLight" type="OmniLight3D" parent="OilShrine"]
+position = Vector3(0, 1.25, 0)
+light_color = Color(1, 0.25, 0.04, 1)
+light_energy = 3.0
+omni_range = 2.5
+
+[node name="ShrineLabel" type="Label3D" parent="."]
+position = Vector3(2.25, 2.05, -0.15)
+text = "LAMP-OIL SHRINE\n3 PRIMITIVES · 60 TRIANGLES"
+font_size = 24
+outline_size = 7
+billboard = 1
+
+[node name="StandIn" type="CharacterBody3D" parent="."]
+position = Vector3(-3.5, 0.6, 1.5)
+collision_layer = 2
+collision_mask = 5
+
+[node name="Mesh" type="MeshInstance3D" parent="StandIn"]
+mesh = SubResource("CapsuleMesh_standin")
+material_override = SubResource("Material_standin")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StandIn"]
+shape = SubResource("CapsuleShape_standin")
+
+[node name="Label" type="Label3D" parent="StandIn"]
+position = Vector3(0, 1.0, 0)
+text = "COURIER STAND-IN\nWASD / ARROWS · F3 COLLIDERS · ESC RETURN"
+font_size = 26
+outline_size = 6
+billboard = 1
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="CameraHelp" type="Label" parent="Hud"]
+offset_left = 8.0
+offset_top = 6.0
+offset_right = 632.0
+offset_bottom = 24.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 10
+text = "CAMERA  Q / E orbit  ·  R / F tilt  ·  Z / X zoom  ·  right-drag orbit  ·  wheel zoom"

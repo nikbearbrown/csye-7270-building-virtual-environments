@@ -1,0 +1,43 @@
+# 2026-10-13 15:32:32 EDT
+$ uvx mcp-for-blender@2.1.9 --version
+2026-10-13 15:32:32,584 - BlenderMCPServer - WARNING - Ignoring unrecognized command-line arguments: ['--version']
+2026-10-13 15:32:32,601 - BlenderMCPServer - INFO - BlenderMCP server starting up
+2026-10-13 15:32:32,601 - BlenderMCPServer - INFO - Could not find a Blender addons folder. If Blender is installed, set BLENDERMCP_ADDONS_DIR, or install addon.py manually from the repo.
+2026-10-13 15:32:32,603 - BlenderMCPServer - ERROR - Failed to connect to Blender: [Errno 61] Connection refused
+2026-10-13 15:32:32,603 - BlenderMCPServer - ERROR - Failed to connect to Blender
+2026-10-13 15:32:32,603 - BlenderMCPServer - ERROR - Failed to connect to Blender: [Errno 61] Connection refused
+2026-10-13 15:32:32,603 - BlenderMCPServer - ERROR - Failed to connect to Blender
+2026-10-13 15:32:32,603 - BlenderMCPServer - WARNING - Could not connect to Blender on startup: Could not connect to Blender. Make sure the Blender addon is running.
+2026-10-13 15:32:32,603 - BlenderMCPServer - WARNING - Make sure the Blender addon is running before using Blender resources or tools
+2026-10-13 15:32:32,608 - BlenderMCPServer - ERROR - Failed to connect to Blender: [Errno 61] Connection refused
+2026-10-13 15:32:32,608 - BlenderMCPServer - ERROR - Failed to connect to Blender
+2026-10-13 15:32:32,608 - BlenderMCPServer - INFO - BlenderMCP server shut down
+exit=0
+
+$ uvx mcp-for-blender@2.1.9 addon-paths
+No Blender addons directories found.
+exit=1
+
+# 2026-10-13 15:33:01 EDT  Blender never opened, so its user config folder does not exist yet. Ask Blender itself for its user add-ons path (create=True):
+$ blender -b --factory-startup --python-expr "import bpy; print('ADDONS=' + bpy.utils.user_resource('SCRIPTS', path='addons', create=True))"
+ADDONS=/Users/yxlh/Library/Application Support/Blender/5.2/scripts/addons
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+Blender quit
+exit=
+(exit status not captured above: zsh has no PIPESTATUS; Blender printed 'Blender quit')
+
+# 2026-10-13 15:33:09 EDT
+$ uvx mcp-for-blender@2.1.9 addon-paths
+/Users/yxlh/Library/Application Support/Blender/5.2/scripts/addons (exists)
+exit=0
+
+$ uvx mcp-for-blender@2.1.9 install-addon
+Installed MCP for Blender addon to /Users/yxlh/Library/Application Support/Blender/5.2/scripts/addons/blender_mcp.py. In Blender: Preferences → Add-ons → disable then enable 'Interface: MCP for Blender', or restart Blender, then click Start MCP Server.
+exit=0
+
+total 536
+drwxr-xr-x@ 3 yxlh  staff      96 Oct 13 15:33 .
+drwxr-xr-x@ 3 yxlh  staff      96 Oct 13 15:33 ..
+-rw-r--r--@ 1 yxlh  staff  270889 Oct 13 15:32 blender_mcp.py
+eb0facf69781a30e69792532087d8d41c6a14fcd323353250abe7988ee297fa5  /Users/yxlh/Library/Application Support/Blender/5.2/scripts/addons/blender_mcp.py
+eb0facf69781a30e69792532087d8d41c6a14fcd323353250abe7988ee297fa5  /Users/yxlh/.cache/uv/archive-v0/scmkhABymMsJHcnY/lib/python3.12/site-packages/blender_mcp/bundled/addon.py
