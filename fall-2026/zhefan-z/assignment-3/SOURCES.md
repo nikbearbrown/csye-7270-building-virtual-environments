@@ -24,7 +24,7 @@ My Assignment 2 project, walker-magic-zhefan, copied from branch `zhefan-z/assig
 ## Human and AI contributions
 - **Blender code:** written and run by Claude Code through the MCP; I approved each plan, asked for the rock revision and the gold change, made the hand edit on the crystal, and judged each asset in the viewport.
 - **Godot scene and check:** written by Claude Code; I checked the scene myself in the editor and with F6, and asked for the background, floor and billboard fixes.
-- **Film:** [fill after the film: what Brutalist and AI narration produced, and what I wrote, checked or changed]
+- **Film:** made with Brutalist godot-gamedev + walker (commit 29ba0e8, with the local change noted above) and local Kokoro narration (voice am_onyx, "Liam"); no paid media. Claude Code wrote the script, beat sheet, cards, capture and render; Claude in my claude.ai chat reviewed the script against my documents and suggested wording fixes; I approved the beat sheet and the fixes, provided my screenshots, and watched and listened to the final film.
 - **Documents:** drafted by Claude (claude.ai chat) and Claude Code from the session records; the decisions, observations and my own statements (marked as translated from Chinese) are mine.
 
 No collaborators.

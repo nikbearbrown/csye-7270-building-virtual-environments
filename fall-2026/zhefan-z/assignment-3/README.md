@@ -39,4 +39,8 @@ Open `walker-magic-zhefan/` in Godot 4.7.2, then open `res://showcase3d/prop_roo
 See TEST-REPORT.md. In short: the rock has a 0.066 m gap at the floor between its base stones; the chest lid is an 8-sided prism; the build scripts were not re-run on their own; the crystal was exported headlessly from its saved `.blend`; the prop room is not connected to the 2D game yet.
 
 ## Film
-[final film link, filename and SHA-256 — added after rendering]
+- **Final film:** [csye7270-a3-zhefan-z-walker-magic-3d-assets.mp4](https://drive.google.com/file/d/1QBK1eDibqnIOKHVK9bmj2RE82UffqI7_/view?usp=drive_link) on Google Drive (anyone with the link can view) — "Cold Stone, Warm Gold: Three 3D Props for a Cave Mage", 5:42, 3840×2160, 30 fps.
+- **Master (not in Git):** `walker-magic-zhefan/youtube/claude-liam-walker-magic-3d-assets-gamedev/exports/landscape/claude-liam-walker-magic-3d-assets-gamedev.mp4`, 34,357,326 bytes.
+- **SHA-256:** `5d3d8a1ed0708f3763ba398f4f99d1c619e91b93a4bd169a5140ac4afcadc7f7`. The Drive copy is the same file, renamed only, so its SHA-256 is the same.
+- **Source revision shown in the film:** `8d8895c`.
+- **Film records** (script, beat sheet, evidence ledgers, capture logs, QC report): `walker-magic-zhefan/youtube/claude-liam-walker-magic-3d-assets-gamedev/`.
