@@ -57,3 +57,4 @@ My Assignment 2 log is in `../assignment-2/FRICTIONAL.md`.
 | 2026-10-15 | Add the Assignment 3 brief, Blender assets, and build scripts |
 | 2026-10-15 | Add the Godot scene with the assets, the check script, the test report, README, and Blender notes; correct the latch-fix record |
 | 2026-10-15 | Add the Assignment 3 explainer film's beat sheet, script, evidence and QC records; add the film entry to README |
+| 2026-10-15 | Add the explainer film's YouTube link to README (final Assignment 3 submission commit) |
