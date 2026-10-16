@@ -218,3 +218,42 @@ for o in (body, lid):
         w = o.matrix_world @ v.co; lo = Vector(map(min, lo, w)); hi = Vector(map(max, hi, w))
 print("bounds min", tuple(round(c,4) for c in lo), "max", tuple(round(c,4) for c in hi), "size", tuple(round(c,4) for c in hi-lo))
 print("TOTAL tris", tot, "actions", [a.name for a in bpy.data.actions])
+
+# --- 2026-10-15: after my hand edit (my latch and handle moves were done by hand in the Blender window, not by code) ---
+
+# ======================================================================
+# Call 3 of 3 (script route, headless, run by Claude Code at my request)
+# ======================================================================
+import bpy, bmesh, os
+# ---- crate_cube: delete the duplicate latch left behind by my Shift+D (2026-10-15) ----
+# After my hand fix, two identical latches sat on top of each other on the left side (7 shapes).
+# This removes one of every pair of identical loose parts in CrateCube_Body; nothing else changes.
+# Run headless on the saved file: blender -b crate_cube.blend --python-exit-code 1 --python <this>
+body = bpy.data.objects["CrateCube_Body"]
+bm = bmesh.new(); bm.from_mesh(body.data)
+seen, islands = set(), []
+for v in bm.verts:
+    if v in seen: continue
+    stack, comp = [v], []
+    while stack:
+        x = stack.pop()
+        if x in seen: continue
+        seen.add(x); comp.append(x); stack += [e.other_vert(x) for e in x.link_edges]
+    islands.append(comp)
+keys, remove = set(), []
+for comp in islands:
+    key = tuple(sorted((round(v.co.x, 5), round(v.co.y, 5), round(v.co.z, 5)) for v in comp))
+    if key in keys: remove += comp
+    else: keys.add(key)
+print("parts before", len(islands), "duplicate verts removed", len(remove))
+bmesh.ops.delete(bm, geom=remove, context='VERTS')
+bm.to_mesh(body.data); bm.free(); body.data.update()
+print("parts after", len(keys))
+
+OUT = os.path.dirname(bpy.data.filepath)
+bpy.ops.wm.save_mainfile()
+for o in bpy.data.objects: o.select_set(o.name in ("CrateCube_Body", "CrateCube_Lid"))
+bpy.ops.export_scene.gltf(filepath=os.path.join(OUT, "crate_cube.glb"), export_format='GLB',
+    use_selection=True, export_apply=True, export_yup=True,
+    export_animations=True, export_animation_mode='ACTIONS')
+print("saved and exported")

@@ -127,3 +127,58 @@ bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, "chair.blend"), check_exi
 bpy.ops.export_scene.gltf(filepath=os.path.join(OUT, "chair.glb"), export_format='GLB', use_selection=True, export_apply=True, export_yup=True)
 dg = bpy.context.evaluated_depsgraph_get(); m = ch.evaluated_get(dg).to_mesh(); m.calc_loop_triangles()
 print(ch.name, tuple(round(d,3) for d in ch.dimensions), "tris", len(m.loop_triangles), "loc", tuple(ch.location), "rot", tuple(ch.rotation_euler), "scale", tuple(ch.scale))
+
+# --- 2026-10-15 revision v2: cut to 6 shapes (script route) ---
+
+# ======================================================================
+# Call 5 of 5 (script route, not the MCP; the MCP connection had dropped): run headless by
+# Claude Code with  blender -b --factory-startup --python-exit-code 1 --python <this section>
+# ======================================================================
+import bpy, bmesh, os
+from mathutils import Vector
+# ---- chair v2 (2026-10-15): cut from 9 boxes to the course limit of 6 ----
+# Same size, colour and origin as v1 (0.44 x 0.42 x 0.90 m, seat 0.45 m, origin at the bottom centre).
+# Removed the two stretchers; the two backrest slats (z 0.62 and 0.82, 0.07 high) became one
+# backrest board spanning both (z 0.585 to 0.855). Shapes: seat, 4 legs, backrest = 6.
+OUT = r".\design\item_resource\chair"
+
+for o in list(bpy.data.objects): bpy.data.objects.remove(o)
+for coll in (bpy.data.meshes, bpy.data.materials, bpy.data.actions, bpy.data.cameras, bpy.data.lights):
+    for b in list(coll): coll.remove(b)
+for c in list(bpy.data.collections): bpy.data.collections.remove(c)
+sc = bpy.context.scene; sc.unit_settings.system = 'METRIC'; sc.unit_settings.scale_length = 1.0
+col = bpy.data.collections.new("Chair"); sc.collection.children.link(col)
+
+mat = bpy.data.materials.new("TestChair_Matte"); mat.use_nodes = True
+bsdf = next(n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+bsdf.inputs["Base Color"].default_value = (0.08, 0.085, 0.1, 1)
+bsdf.inputs["Roughness"].default_value = 0.85
+bsdf.inputs["Metallic"].default_value = 0.0
+
+def box_bm(bm, size, center):
+    r = bmesh.ops.create_cube(bm, size=1.0)
+    for v in r["verts"]:
+        v.co = Vector((v.co.x*size[0], v.co.y*size[1], v.co.z*size[2])) + Vector(center)
+
+seat_h, seat_w, seat_d, seat_t = 0.45, 0.44, 0.42, 0.04
+leg = 0.035
+bm = bmesh.new()
+box_bm(bm, (seat_w, seat_d, seat_t), (0, 0, seat_h - seat_t/2))                  # 1 seat
+for sx in (-1, 1):
+    for sy in (-1, 1):                                                            # 2-5 legs
+        x = sx*(seat_w/2 - leg/2); y = sy*(seat_d/2 - leg/2)
+        h = seat_h - seat_t if sy < 0 else 0.90                                   # back legs run up into the backrest
+        box_bm(bm, (leg, leg, h), (x, y, h/2))
+box_bm(bm, (seat_w - 2*leg, 0.02, 0.27), (0, seat_d/2 - leg/2, 0.72))             # 6 backrest board
+me = bpy.data.meshes.new("Chair"); bm.to_mesh(me); bm.free(); me.materials.append(mat)
+ch = bpy.data.objects.new("Chair", me); col.objects.link(ch)
+
+bpy.ops.object.select_all(action='DESELECT'); ch.select_set(True); bpy.context.view_layer.objects.active = ch
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, "chair.blend"), check_existing=False)
+bpy.ops.export_scene.gltf(filepath=os.path.join(OUT, "chair.glb"), export_format='GLB',
+    use_selection=True, export_apply=True, export_yup=True)
+dg = bpy.context.evaluated_depsgraph_get(); m = ch.evaluated_get(dg).to_mesh(); m.calc_loop_triangles()
+bb = [ch.matrix_world @ Vector(c) for c in ch.bound_box]
+lo = Vector(map(min, *bb)); hi = Vector(map(max, *bb))
+print("CHAIR bounds", tuple(round(c, 4) for c in lo), tuple(round(c, 4) for c in hi), "tris", len(m.loop_triangles))
