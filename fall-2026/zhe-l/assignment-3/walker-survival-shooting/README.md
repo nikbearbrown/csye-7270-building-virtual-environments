@@ -44,4 +44,11 @@ What it checks: each asset's size, lowest point, node scales, triangles, and the
 - Turn the MCP add-on off in Blender's preferences when it is not in use: its port has no authentication.
 
 ## Explainer film
-To be added: film link, file name, SHA-256.
+- **Title:** Walker Survival Shooting: First Props in Blender (Brutalist `godot-gamedev`, walker mode; narrated by Liam, local Kokoro `am_onyx`)
+- **File:** `claude-liam-walker-survival-shooting-a3-gamedev.mp4` · 3840 × 2160 · 30 fps · 7:20
+- **SHA-256:** `84c0d77631bbb73c9f4c3ee07969f70d9846d52b2573bbe6173d110606f24f60`
+- **Media link:** not uploaded yet (the MP4 itself is not in GitHub)
+- **Source revision shown in the film:** `b370626`
+- **Film source and evidence:** `youtube/claude-liam-walker-survival-shooting-a3-gamedev/` (beat sheet, script and prompts, component/evidence ledger, fact check, capture method, checks)
+- **What the film shows:** my translated prompts with Claude's MCP `look` captures, my own Blender screenshot of the hand edit, native 4K Godot renders of `base.tscn` (including the crates' own open / close animations), and the headless numbers beside the brief. There is no gameplay to show.
+- **Correction:** the check prints 55 PASS lines; this TEST-REPORT and my FRICTIONAL entry say "56 PASS" because the final `ALL PASS` summary line was counted too (see the film's `FACTCHECK.md`).

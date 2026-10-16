@@ -38,6 +38,16 @@ My Assignment 2 log is in `../assignment-2/FRICTIONAL.md`.
 - **What I understand now / still do not understand:**
 - **Evidence and next step:** `walker-survival-shooting/TEST-REPORT.md`, `walker-survival-shooting/BLENDER-NOTES.md`, `walker-survival-shooting/godot/tests/a3_asset_check.gd`, `walker-survival-shooting/test-logs/` (v1 failing run, v2, v3). Next: the explainer film from this pushed revision.
 
+### 2026-10-15 (night) — The Assignment 3 explainer film
+
+- **Date and what I was working on:** 2026-10-15, after the second Assignment 3 push (`b370626`). Making the required Brutalist `godot-gamedev` walker film from that pushed revision.
+- **I tried / expected:** Have Claude Code follow the course's `godot-gamedev` skill in walker mode on an isolated export of `b370626`, using only real material: my own Blender screenshot, Claude's MCP `look` captures from my Blender sessions, my prompts from SOURCES (translated), and native Godot renders of my scene; narration by Liam (local Kokoro `am_onyx`).
+- **What happened:** Re-running the check on a fresh export gave the same PASS/FAIL lines as my submitted log, but there are 55 PASS lines, not 56: my TEST-REPORT and my entry above also counted the final `ALL PASS` summary line. The film uses 55. `./art doctor` stopped on a guard that finds an ElevenLabs reference in the toolkit's own example films; the dependencies themselves checked out one by one. The type checker failed five beats (lowercase-only heading text measured as too small, one long log line, and dark furniture lines in the Godot renders read as overlapping text); the content was changed, not the checker, and one render crop then no longer showed the desk, so that narration line was changed too. One narration line overclaimed (the overwritten test chair as "identical") and was corrected to "the same size". The first 4K export failed on the Windows path-length limit and was re-run to a shorter folder.
+- **What I did:** Decided the film's title, the greeting, the one next step (a character model to settle the scale, then the first gameplay in the game, then a design for the tablet's interaction), that the film says 55, that my screenshot's title bar (it shows a local path) is cropped, and that a short build-script excerpt is shown. I asked Claude to skip its own frame check of the final export; I check the final film myself.
+- **What Claude or another person contributed:** Claude Code (Claude Opus 5.5) exported the isolated copies, re-ran the import and the check, wrote the capture script and recorded the native 4K renders (including the crates' own open / close animations), built the figures, wrote the beat sheet, the narration and the film documents from my submitted files, generated the narration, rendered and exported the film, and added an optional label to one toolkit scene component so non-GDD excerpts are not labeled "GDD".
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `walker-survival-shooting/youtube/claude-liam-walker-survival-shooting-a3-gamedev/` (beat sheet, script, evidence ledger, `FACTCHECK.md` with the corrections, capture method, QC records); film file name and SHA-256 in `walker-survival-shooting/README.md`. Next: a character model to check the assets' scale against a person.
+
 ---
 
 ## GitHub pushes
@@ -46,3 +56,4 @@ My Assignment 2 log is in `../assignment-2/FRICTIONAL.md`.
 |---|---|
 | 2026-10-15 | Add the Assignment 3 brief, Blender assets, and build scripts |
 | 2026-10-15 | Add the Godot scene with the assets, the check script, the test report, README, and Blender notes; correct the latch-fix record |
+| 2026-10-15 | Add the Assignment 3 explainer film's beat sheet, script, evidence and QC records; add the film entry to README |
