@@ -82,14 +82,14 @@ Full size: [compare/rfinal_front_compare.jpg](compare/rfinal_front_compare.jpg)
 
 **Grok Bot's assessment:** Slightly close overall, about 4 out of 10 for likeness: side 6/10, rear three-quarter 3/10, front 2/10. Someone who knows cars would recognise what it is going for, but would never take it for the car in the photos. The numbers (wheelbase, track) are right; the feel is not there yet.
 
-**Human review:** Pending.
+**Human review (Professor Bear):** Professor Bear basically agrees with Grok Bot's scores and judgements: about 4 out of 10 overall, side 6/10, rear three-quarter 3/10, front 2/10. This time the AI's self-assessment matched the human's, unlike the SEIS Bot face. Next: iterative, human-directed fixes, where Professor Bear picks specific problems (the front face, the tail and haunches, the floating heat shield) and gives step-by-step instructions for each round.
 
 ## Built by
 
 - **Builder:** Grok Bot, an autonomous desktop assistant agent with its own Linux computer. Version: not exposed by the app.
 - **Method:** Model generated entirely by Blender Python scripts written and run headless by Grok Bot, with iterative render-vs-reference comparison rounds.
 - **Tools:** Blender 4.2.3 LTS (Cycles, CPU). Python with Pillow and NumPy for the profile tracing, overlays and comparison images; Intel Open Image Denoise in Cycles. Films are made with the brutalist.art toolkit and narrated by Liam (Kokoro voice).
-- **Human review:** Professor Bear (verdict pending).
+- **Human review:** Professor Bear: agrees with Grok Bot's scores (about 4/10; side 6, rear 3, front 2). Iterative human-directed fixes are next.
 - **Build date:** October 2026. 8 render-vs-reference comparison rounds from matched cameras (PROGRESS.md), with a milestone save per round.
 
 ## Film
