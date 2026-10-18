@@ -1,0 +1,77 @@
+SEIS AI LAB ROBOT — BLENDER DESIGN STUDIES
+October 17, 2026
+
+LEAD DESIGN: seis_robot_compact_v001.blend
+The boxier version follows Bear's preferred body reference: large rectangular
+head, compact torso, exposed joints, larger hands, short legs, and broad feet.
+
+COMPARISON: seis_robot_slim_v001.blend
+The slimmer version retains the longer limbs of the earlier white mascot.
+
+Both have raised black eyes, a thin black waveform on a white face, a red 6
+on the chest, and white/gray/black construction with red accents. The red 6
+is actual mesh geometry. These are editable 3D models, built from primitives;
+the reference drawing's distressed ink texture has not been reproduced.
+
+Start with renders/compact-three-quarter.png or review.html.
+Portable models are in exports/ as self-contained GLB files.
+Source references are in references/; source drawings were left unchanged.
+
+POSING
+Select SEIS_Compact_Rig (or SEIS_Slim_Rig) and enter Pose Mode. Enable viewport
+overlays to see the bones. This is a simple 17-bone FK skeleton. Each rigid
+part follows one bone with full weight. Head, torso, arms, wrists, hips, knees,
+and feet can be posed. Fingers are rigid parts of each hand, not individually
+rigged. There is no IK/control rig, walk cycle, or finished animation yet.
+
+MOUTH
+Select SEIS_Compact_Waveform_Mouth, then Object Data Properties > Shape Keys.
+Speaking = 1 shows the black waveform; Speaking = 0 hides it inside the face.
+Use these as discrete states. Emphasis = 0 is the normal waveform; 0–1 adds
+amplitude while speaking. Both controls survive GLB export and Godot import.
+There is no green, glow, screen, mouth opening, or lip geometry.
+The current model opens in a speaking state so the design is visible.
+renders/compact-silent.png shows the completely blank lower face.
+No sound is attached. Desmond remains the preference for future voice work.
+An audio-driven waveform animation can be built from the final voice track.
+
+SCALE AND CONTENTS
+Compact: 1.6815 m tall including antenna; 51,536 evaluated triangles.
+Slim: 2.0765 m tall including antenna; 51,984 evaluated triangles.
+Each: 135 meshes, 7 materials, no texture dependencies, 17 bones, one root.
+Metric units, origin on the floor between the feet. Blender +Z is up, -Y is
+forward; the GLB uses Y up and the face points +Z.
+EXPORT holds original model meshes and the skeleton. PRESENTATION holds
+camera, lights, and floor; none of these are in the portable export.
+The design-study budget is 60,000 triangles per robot. Both pass.
+No gameplay collision shapes or LODs are included in these branding models.
+
+VERIFICATION
+Built using installed Blender 5.1.2. Walker's guide names 5.2 LTS as its target;
+this machine has 5.1.2, the version its scripts were previously tested on.
+Exporter: Khronos glTF Blender I/O v5.1.20.
+Walker's validator: both pass with zero errors and zero warnings.
+Export/reimport: mesh, triangle, bone counts and bounds match for both.
+Actual Godot 4.7.2 import: both pass; correct size, one 17-bone skeleton,
+135 meshes, and accessible Speaking/Emphasis morphs and forearm pose control.
+Front, side, back, top, three-quarter, silent, bent-pose, and wireframe PNGs
+are included for each model. Bent-pose review confirms rigid articulation;
+these first design studies still need Bear's aesthetic review.
+
+Full validator JSON, exact exported object list, per-object triangle counts,
+and engine results: reports/verification.json. Raw logs are alongside it.
+
+WORKFLOW
+Used Walker/BLENDER.md and its validator/export-check machinery. No live
+Blender MCP connection was available; production ran through headless Blender.
+No paid generation services were used.
+scripts/build_robot.py rebuilds either study in a fresh background Blender.
+scripts/render_robot.py renders an existing study without saving changes.
+scripts/export_and_roundtrip.py is a project-local Walker adaptation: all
+geometry modifiers are applied before rigging; export_apply=False preserves
+the mouth shape keys. Export is selected exclusively from EXPORT.
+verification/godot contains the isolated engine-import check project.
+
+Keep edited Blender sessions in a new version (v002 etc.) before rebuilding
+v001. Do not use build_robot.py inside an unrelated open Blender scene: it
+is intended for a fresh background process and resets its in-memory scene.

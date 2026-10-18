@@ -1,0 +1,272 @@
+# Original mechanical body, using the supplied references for proportions.
+displaywhite=material('Display_White',rgb('#FFFFFF'),0,1)
+displaygold=material('Display_Gold',rgb('#C8A978'),0,1)
+for mat,col in [(displaywhite,'#FFFFFF'),(displaygold,'#C8A978')]:
+    bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Emission Color'].default_value=(*rgb(col),1);bs.inputs['Emission Strength'].default_value=.6
+
+# Front is -Y. Named parts remain separate and rigid-weighted.
+def meshpart(name,verts,faces,mat,bone,bevel=.006):
+    me=bpy.data.meshes.new(name);me.from_pydata(verts,[],faces);me.update()
+    o=bpy.data.objects.new(name,me);export.objects.link(o)
+    return finish(o,name,mat,bone,bevel)
+
+def plate(name,outline,y,depth,mat,bone,bevel=.006):
+    # outline: x,z in perimeter order
+    n=len(outline);verts=[(x,y,z) for x,z in outline]+[(x,y+depth,z) for x,z in outline]
+    faces=[tuple(reversed(range(n))),tuple(range(n,2*n))]
+    faces += [(i,(i+1)%n,(i+1)%n+n,i+n) for i in range(n)]
+    return meshpart(name,verts,faces,mat,bone,bevel)
+
+def loft(name,xc,sections,mat,bone,bevel=.009):
+    # Chamfered rectangular sections: (z,width,depth,y-center)
+    verts=[]
+    for z,w,d,y in sections:
+        c=min(w,d)*.18
+        for x,yy in [(-w/2+c,-d/2),(w/2-c,-d/2),(w/2,-d/2+c),(w/2,d/2-c),
+                     (w/2-c,d/2),(-w/2+c,d/2),(-w/2,d/2-c),(-w/2,-d/2+c)]:
+            verts.append((xc+x,y+yy,z))
+    faces=[tuple(reversed(range(8))),tuple(range(len(verts)-8,len(verts)))]
+    for j in range(len(sections)-1):
+        for i in range(8):faces.append((j*8+i,j*8+(i+1)%8,(j+1)*8+(i+1)%8,(j+1)*8+i))
+    return meshpart(name,verts,faces,mat,bone,bevel)
+
+def text_mesh(name,text,loc,size,mat,bone):
+    cu=bpy.data.curves.new(name,'FONT');cu.body=text;cu.align_x='CENTER';cu.size=size
+    cu.extrude=0 if name.startswith('Wrist_') else .001;cu.bevel_depth=0 if name.startswith('Wrist_') else .00035;cu.resolution_u=3;cu.bevel_resolution=1
+    cu.font=bpy.data.fonts.load('<seis-ai-lab>/07-fonts/Lato/Lato-Bold.ttf')
+    o=bpy.data.objects.new(name,cu);export.objects.link(o);o.rotation_euler.x=math.pi/2
+    active(o);bpy.ops.object.convert(target='MESH');o=bpy.context.object
+    bpy.ops.object.transform_apply(location=False,rotation=True,scale=True)
+    zmin=min(p.co.z for p in o.data.vertices);zmax=max(p.co.z for p in o.data.vertices)
+    o.location=(loc[0],loc[1],loc[2]-(zmin+zmax)/2)
+    return finish(o,name,mat,bone)
+
+tz=1.69;hips=1.24;neckbottom=1.985;necktop=hz-hh/2
+loft('Torso_Core',0,[(1.38,.32,.25,.02),(1.55,.40,.28,.01),(1.91,.66,.34,0),(1.98,.49,.27,0)],dark,'spine_01')
+# White chest field and sculpted outer plates, red numeral as the focal point.
+plate('Chest_White_Field',[(-.29,1.91),(.29,1.91),(.26,1.66),(.13,1.51),(-.13,1.51),(-.26,1.66)],-.198,.055,white,'spine_01')
+text_mesh('Chest_Six_Lato','6',(0,-.199,1.734),.37,red,'spine_01')
+for sign,side in [(1,'l'),(-1,'r')]:
+    poly=[(.19,1.95),(.35,1.92),(.31,1.72),(.225,1.65),(.25,1.85)]
+    plate('Chest_Gold_Trim_'+side,[(sign*x,z) for x,z in poly],-.207,.032,gold,'spine_01',.004)
+    plate('Chest_Red_Inset_'+side,[(sign*x,z) for x,z in [(.27,1.875),(.324,1.882),(.292,1.746),(.25,1.710)]],-.214,.014,red,'spine_01',.003)
+# Small measuring ticks, restricted to side/bottom of chest to protect six.
+for i in range(7):
+    x=(i-3)*.035
+    box('Chest_Calibration_'+str(i),(x,-.199,1.56),(.002,.002,.012 if i%3 else .020),gray,'spine_01',0)
+loft('Abdomen',0,[(1.29,.32,.25,.02),(1.43,.29,.24,.02),(1.53,.38,.28,.01)],gray,'spine_01')
+for i in range(3):
+    box('Abdominal_Flexure_'+str(i),(0,-.133,1.34+i*.045),(.25,.012,.012),dark,'spine_01',.004)
+# Back has service hatches and ventilation, not exhaust weapons.
+box('Back_Service_Panel',(0,.176,1.76),(.40,.065,.35),white,'spine_01',.024)
+for i in range(5):
+    box('Back_Vent_'+str(i),(0,.212,1.68+i*.036),(.27,.008,.011),dark,'spine_01',.003)
+for x in [-.25,.25]:
+    box('Back_Red_Rail_'+str(x),(x,.177,1.80),(.043,.045,.26),red,'spine_01',.010)
+rod('Neck_Shaft',(0,0,neckbottom),(0,0,necktop+.012),.052,steel,'neck_01')
+for i in range(3):
+    z=neckbottom+.012+i*.025;rod('Neck_Ring_'+str(i),(0,0,z),(0,0,z+.010),.07,dark,'neck_01')
+loft('Pelvis',0,[(1.13,.40,.25,.02),(1.27,.47,.29,.02),(1.34,.35,.26,.02)],dark,'pelvis')
+plate('Pelvis_Front',[(-.14,1.29),(.14,1.29),(.105,1.17),(0,1.13),(-.105,1.17)],-.15,.03,white,'pelvis')
+box('Utility_Belt',(0,0,1.32),(.43,.29,.043),gray,'pelvis',.012)
+for sign in [-1,1]:
+    for j in range(2):
+        x=sign*(.15+j*.055)
+        box('Tag_Pocket_'+str(sign)+'_'+str(j),(x,-.16,1.31),(.043,.038,.10),dark,'pelvis',.005)
+        box('Blank_Tag_'+str(sign)+'_'+str(j),(x,-.183,1.33),(.031,.006,.062),steel,'pelvis',.002)
+        box('Tag_Red_Boundary_'+str(sign)+'_'+str(j),(x,-.188,1.306),(.027,.003,.004),red,'pelvis',.001)
+
+bonepts={}
+finger_hinges=[]
+for side,sign in [('l',1),('r',-1)]:
+    sh=Vector((sign*.445,0,1.915));el=Vector((sign*.61,-.015,1.615));wr=Vector((sign*.65,-.04,1.255))
+    hip=Vector((sign*.17,.02,1.19));kn=Vector((sign*.225,0,.805));ank=Vector((sign*.26,.025,.235))
+    bonepts[side]=(sh,el,wr,hip,kn,ank)
+    joint('Shoulder_'+side,sh,.105,'upperarm_'+side)
+    # Broad shoulder caps contrast with narrow upper arms.
+    loft('Shoulder_Shell_'+side,sign*.46,[(1.83,.22,.27,0),(1.97,.32,.36,0),(2.025,.21,.28,0)],white,'upperarm_'+side,.018)
+    plate('Shoulder_Red_'+side,[(sign*x,z) for x,z in [(.34,1.97),(.58,1.97),(.57,1.88),(.42,1.85)]],-.184,.02,red,'upperarm_'+side)
+    rod('Upperarm_Core_'+side,sh,el,.044,steel,'upperarm_'+side)
+    rod('Upperarm_Panel_'+side,sh.lerp(el,.30),sh.lerp(el,.78),.071,gray,'upperarm_'+side,8)
+    joint('Elbow_'+side,el,.067,'forearm_'+side)
+    joint('Hip_'+side,hip,.085,'thigh_'+side)
+    rod('Thigh_Core_'+side,hip,kn,.059,steel,'thigh_'+side)
+    loft('Thigh_Armor_'+side,sign*.20,[(.86,.18,.22,.01),(1.10,.23,.25,.02),(1.16,.18,.21,.02)],gray,'thigh_'+side)
+    plate('Thigh_Red_Stripe_'+side,[(sign*(.20+x),z) for x,z in [(-.075,1.10),(-.043,1.10),(.04,.91),(.009,.91)]],-.112,.014,red,'thigh_'+side,.003)
+    joint('Knee_'+side,kn,.082,'shin_'+side)
+    # Flared lower legs/grounded broad boots are the main reference cue.
+    loft('Shin_Outer_'+side,sign*.255,[(.23,.32,.33,.025),(.40,.385,.39,.025),(.69,.29,.28,.015),(.75,.20,.23,.015)],white,'shin_'+side,.015)
+    plate('Shin_Inset_'+side,[(sign*(.255+x),z) for x,z in [(-.12,.66),(.075,.70),(.15,.39),(.09,.30),(-.13,.33)]],-.181,.03,dark,'shin_'+side,.010)
+    plate('Shin_Red_Wedge_'+side,[(sign*(.255+x),z) for x,z in [(-.096,.57),(.012,.62),(.103,.45),(.010,.505),(-.06,.48)]],-.191,.016,red,'shin_'+side,.004)
+    plate('Shin_Gold_Edge_'+side,[(sign*(.255+x),z) for x,z in [(.097,.69),(.125,.665),(.193,.405),(.166,.31),(.139,.33),(.166,.405)]],-.175,.045,gold,'shin_'+side,.004)
+    rod('Rear_Shin_Piston_'+side,(sign*.255,.16,.30),(sign*.225,.15,.70),.026,steel,'shin_'+side)
+    box('Rear_Calf_Red_'+side,(sign*.255,.223,.43),(.14,.025,.18),red,'shin_'+side,.012)
+    joint('Ankle_'+side,ank,.053,'foot_'+side)
+    loft('Foot_'+side,sign*.26,[(.045,.40,.56,-.09),(.115,.40,.56,-.09),(.225,.29,.35,-.015)],white,'foot_'+side,.018)
+    box('Sole_'+side,(sign*.26,-.09,.029),(.414,.575,.052),rubber,'foot_'+side,.010)
+    box('Toe_Bumper_'+side,(sign*.26,-.367,.095),(.30,.024,.070),gray,'foot_'+side,.008)
+    box('Toe_Gold_Edge_'+side,(sign*.26,-.37,.053),(.30,.015,.018),gold,'foot_'+side,.004)
+    for j in range(4):
+        box('Sole_Tread_'+side+str(j),(sign*.26,-.29+j*.13,.015),(.43,.025,.019),dark,'foot_'+side,.003)
+    if side=='l':
+        rod('Forearm_Core_l',el,wr,.040,steel,'forearm_l')
+        loft('Forearm_Work_Shell_l',.64,[(1.29,.17,.19,-.035),(1.43,.20,.21,-.03),(1.55,.13,.16,-.02)],white,'forearm_l')
+        box('Forearm_Red_Panel_l',(.64,-.145,1.41),(.09,.015,.17),red,'forearm_l',.013)
+        joint('Wrist_l',wr,.039,'hand_l')
+        pc=wr+Vector((0,-.005,-.080))
+        box('Palm_l',pc,(.14,.083,.14),white,'hand_l',.012)
+        for j,dx in enumerate([-.047,-.016,.016,.047]):
+            a=pc+Vector((dx,-.003,-.075))
+            sphere('Knuckle_l'+str(j),a,(.026,.03,.028),dark,'hand_l')
+            box('Finger_l'+str(j),a+Vector((0,-.012,-.04)),(.026,.035,.064),steel,'hand_l',.004)
+            box('Finger_Pad_l'+str(j),a+Vector((0,-.032,-.047)),(.024,.015,.035),rubber,'hand_l',.003)
+        rod('Thumb_l',pc+Vector((-.08,0,.015)),pc+Vector((-.105,-.03,-.065)),.022,white,'hand_l',12)
+    else:
+        # Instrument forearm: flat screen, six perimeter spools, narrow solid jack.
+        rod('Tool_Core',el,wr,.055,steel,'forearm_r')
+        loft('Tool_Housing',-.64,[(1.265,.19,.21,-.04),(1.38,.23,.23,-.03),(1.55,.21,.22,-.02)],white,'forearm_r')
+        box('Tool_Screen_Bezel',(-.64,-.158,1.425),(.183,.034,.245),gray,'forearm_r',.012)
+        box('Tool_Screen',(-.64,-.178,1.425),(.158,.008,.220),black,'forearm_r',.008)
+        # Wrist playbook: brief digital task text, using Lato, scrolling inside the screen.
+        text_mesh('Wrist_Header','AGENTS / 06',(-.64,-.1825,1.512),.016,displaygold,'forearm_r')
+        box('Wrist_Header_Rule',(-.64,-.185,1.492),(.13,.002,.002),gray,'forearm_r',0)
+        for j,label in enumerate(['PLAN','CONNECT','CHECK','LISTEN','REVIEW']):
+            text_mesh('Wrist_Status_'+str(j),label,(-.64,-.1825,1.355+j*.027),.018,displaywhite,'forearm_r')
+        # six physical spool caps around the elbow, axis vertical.
+        rod('Six_Spool_Drum',(-.61,-.015,1.555),(-.61,-.015,1.625),.115,dark,'forearm_r',32)
+        for j in range(6):
+            angle=2*math.pi*j/6
+            pt=Vector((-.61+.114*math.cos(angle),-.015+.114*math.sin(angle),1.59))
+            end=pt+Vector((.026*math.cos(angle),.026*math.sin(angle),0))
+            rod('Spool_Cap_'+str(j+1),pt,end,.023,gold,'forearm_r',16)
+            rod('Spool_Port_'+str(j+1),end,end+(end-pt).normalized()*.002,.008,black,'forearm_r',12)
+        # wrist iris: six separate mechanical leaves around a solid connector.
+        rod('Iris_Collar',(-.65,-.04,1.26),(-.65,-.04,1.20),.085,gray,'forearm_r',32)
+        for j in range(6):
+            a=2*math.pi*j/6
+            rod('Iris_Leaf_'+str(j),(-.65+.050*math.cos(a),-.04+.050*math.sin(a),1.198),
+                (-.65+.067*math.cos(a+.20),-.04+.067*math.sin(a+.20),1.198),.012,steel,'forearm_r',8)
+        # Fold-away hand stays physically present around the connector.
+        for sign2 in [-1,1]:
+            bx=-.65+sign2*.055
+            box('Split_Palm_'+str(sign2),(bx,-.04,1.205),(.072,.11,.11),white,'tool_palm_'+str(sign2),.009)
+        for j in range(4):
+            x=-.65+(j-1.5)*.035;hinge=Vector((x,.025,1.175))
+            finger_hinges.append(hinge)
+            sphere('Tool_Finger_Knuckle_'+str(j),hinge,(.029,.03,.03),steel,'tool_finger_'+str(j))
+            box('Tool_Finger_'+str(j),hinge+Vector((0,0,-.075)),(.027,.04,.135),white,'tool_finger_'+str(j),.007)
+            box('Tool_Finger_Grip_'+str(j),hinge+Vector((0,-.023,-.085)),(.022,.009,.065),dark,'tool_finger_'+str(j),.002)
+        # Audio-style plug: no hollow barrel, muzzle, weapon or beam.
+        rod('Jack_Sleeve_TRUST',(-.65,-.04,1.19),(-.65,-.04,1.12),.034,steel,'tool_connector',24)
+        rod('Jack_Insulator_1',(-.65,-.04,1.12),(-.65,-.04,1.107),.035,black,'tool_connector',24)
+        rod('Jack_Ring_LISTEN',(-.65,-.04,1.107),(-.65,-.04,1.04),.032,facewhite,'tool_connector',24)
+        rod('Jack_Insulator_2',(-.65,-.04,1.04),(-.65,-.04,1.027),.033,black,'tool_connector',24)
+        rod('Jack_Tip_TELL',(-.65,-.04,1.027),(-.65,-.04,.98),.030,lightgold,'tool_connector',24)
+        sphere('Jack_Rounded_Solid_Tip',(-.65,-.04,.978),(.060,.060,.045),lightgold,'tool_connector')
+
+# Single rigid-part FK rig, including visible tool deployment.
+arm=bpy.data.armatures.new(PREFIX+'_Rig');rig=bpy.data.objects.new(PREFIX+'_Rig',arm);export.objects.link(rig)
+rig.show_in_front=True
+active(rig);bpy.ops.object.mode_set(mode='EDIT')
+def bone(name,a,b,parent=None):
+    e=arm.edit_bones.new(name);e.head=a;e.tail=b;e.use_deform=True
+    if parent:e.parent=arm.edit_bones[parent]
+    return e
+bone('root',(0,0,0),(0,0,.1))
+bone('pelvis',(0,0,hips),(0,0,1.40),'root')
+bone('spine_01',(0,0,1.40),(0,0,neckbottom),'pelvis')
+bone('neck_01',(0,0,neckbottom),(0,0,necktop),'spine_01')
+bone('head',(0,0,necktop),(0,0,hz+.15),'neck_01')
+for side,(sh,el,wr,hip,kn,ank) in bonepts.items():
+    bone('upperarm_'+side,sh,el,'spine_01');bone('forearm_'+side,el,wr,'upperarm_'+side)
+    bone('hand_'+side,wr,wr+Vector((0,0,-.10)),'forearm_'+side)
+    bone('thigh_'+side,hip,kn,'pelvis');bone('shin_'+side,kn,ank,'thigh_'+side)
+    bone('foot_'+side,ank,ank+Vector((0,-.13,0)),'shin_'+side)
+bone('tool_connector',(-.65,-.04,1.20),(-.65,-.04,1.00),'forearm_r')
+for sign2 in [-1,1]:
+    bx=-.65+sign2*.055
+    bone('tool_palm_'+str(sign2),(bx,-.04,1.26),(bx,-.04,1.15),'forearm_r')
+for j,p in enumerate(finger_hinges):bone('tool_finger_'+str(j),p,p+Vector((0,0,-.15)),'forearm_r')
+bpy.ops.object.mode_set(mode='OBJECT')
+for o in parts:
+    g=o.vertex_groups.new(name=bone_for[o.name]);g.add(list(range(len(o.data.vertices))),1,'REPLACE')
+    m=o.modifiers.new('Rigid_Mechanical_Skin','ARMATURE');m.object=rig;o.parent=rig
+for b in rig.pose.bones:b.rotation_mode='XYZ'
+rig['tool_deployed']=1.0
+rig.id_properties_ui('tool_deployed').update(min=0,max=1,description='0: hand, connector retracted. 1: folded fingers, split palm, exposed solid plug. Visual prototype only.')
+def driver(pb,path,index,expr):
+    d=pb.driver_add(path,index).driver;d.expression=expr
+    v=d.variables.new();v.name='deploy';v.type='SINGLE_PROP';v.targets[0].id=rig;v.targets[0].data_path='["tool_deployed"]'
+# bone local Y points down; negative local Y retracts connector into forearm.
+driver(rig.pose.bones['tool_connector'],'location',1,'-0.24*(1-min(max((deploy-0.65)/0.35,0),1))')
+for sign2 in [-1,1]:
+    driver(rig.pose.bones['tool_palm_'+str(sign2)],'location',0,str(sign2*.04)+'*min(max((deploy-0.45)/0.25,0),1)')
+for j in range(4):
+    driver(rig.pose.bones['tool_finger_'+str(j)],'rotation_euler',0,f'2.70*min(max((deploy-{j*.08})/0.50,0),1)')
+# Digital readout can rotate for the wearer in the wrist-reading pose.
+rig['screen_orient']=0.0
+rig.id_properties_ui('screen_orient').update(min=0,max=1,description='0: upright while arm hangs. 1: turn readout toward wearer with raised wrist.')
+def screen_driver(o,path,index,expr):
+    d=o.driver_add(path,index).driver;d.expression=expr
+    v=d.variables.new();v.name='flip';v.type='SINGLE_PROP';v.targets[0].id=rig;v.targets[0].data_path='["screen_orient"]'
+for j in range(5):
+    o=bpy.data.objects[PREFIX+'_Wrist_Status_'+str(j)]
+    baseline=o.location.z-(1.355+j*.027)
+    z=f'({1.344+baseline} + (({j*.027} + (frame-1)*0.0008) % 0.135))'
+    screen_driver(o,'location',2,f'{z}*(1-flip)+(2*1.425-{z})*flip')
+    screen_driver(o,'rotation_euler',1,'3.141592653589793*flip')
+o=bpy.data.objects[PREFIX+'_Wrist_Header'];z=o.location.z
+screen_driver(o,'location',2,f'{z}*(1-flip)+(2*1.425-{z})*flip')
+screen_driver(o,'rotation_euler',1,'3.141592653589793*flip')
+o=bpy.data.objects[PREFIX+'_Wrist_Header_Rule'];z=o.location.z
+screen_driver(o,'location',2,f'{z}*(1-flip)+(2*1.425-{z})*flip')
+scene.frame_start=1;scene.frame_end=120;scene.render.fps=24
+rig['notes']='Editable instrument concept. No autonomous behavior or speech/audio driver. Tool_deployed controls visible mechanical states.'
+rig['rig_type']='Single-root rigid-part FK; every mesh vertex has one bone.'
+mouth['voice_preference']='Desmond. No audio generated in this revision.'
+speech.value=1
+
+# Neutral studio, isolated from exportable model.
+floor_mat=material('Studio_Floor',(.036,.042,.050),.05,.63)
+bpy.ops.mesh.primitive_plane_add(size=200,location=(0,0,-.001))
+floor=bpy.context.object;floor.name='Studio_Floor'
+for c in list(floor.users_collection):c.objects.unlink(floor)
+present.objects.link(floor);floor.data.materials.append(floor_mat)
+world=bpy.data.worlds.new('Studio_World');scene.world=world;world.use_nodes=True
+world.node_tree.nodes['Background'].inputs['Color'].default_value=(.12,.14,.17,1)
+world.node_tree.nodes['Background'].inputs['Strength'].default_value=.4
+def aim(o,target):o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
+def light(name,loc,power,size):
+    d=bpy.data.lights.new(name,'AREA');d.energy=power;d.shape='DISK';d.size=size
+    o=bpy.data.objects.new(name,d);present.objects.link(o);o.location=loc;aim(o,(0,0,1.4))
+light('Key',(-3,-4,5),850,4);light('Fill',(3,-2,3),600,3);light('Rim',(1,3,4),1100,3)
+cd=bpy.data.cameras.new('Review_Camera');cam=bpy.data.objects.new('Review_Camera',cd);present.objects.link(cam);scene.camera=cam
+cd.type='ORTHO';cd.ortho_scale=3.48
+cam.location=(3.8,-6,3.0);aim(cam,(0,0,1.40))
+scene.render.engine='CYCLES';scene.cycles.samples=32;scene.cycles.use_denoising=True
+scene.render.resolution_x=1400;scene.render.resolution_y=1600;scene.render.resolution_percentage=100
+scene.render.image_settings.file_format='PNG';scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast';scene.view_settings.exposure=-.5
+scene['asset_spec']='SEIS engineer v002. White/black/gray with NU red and restrained gold accents. Lato 6. Original box head, bent/broken antenna. Instrument arm is a solid connector, not a weapon.'
+scene['source_reference']='references/manifest.json; user arm notes, direct user head and color requirements override conflicting prose.'
+scene['limitations']='Visual/FK prototype. No audio sync, functional agents, simulated cables, or programmed iris logic.'
+bpy.context.view_layer.update()
+for area in bpy.context.screen.areas:
+    if area.type=='VIEW_3D':
+        area.spaces.active.region_3d.view_perspective='CAMERA'
+        area.spaces.active.shading.type='MATERIAL'
+        area.spaces.active.overlay.show_overlays=False
+active(rig)
+bpy.context.preferences.filepaths.save_version=0
+scene.render.filepath=str(ROOT/'renders/engineer-three-quarter.png')
+bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'seis_robot_engineer_v002.blend'))
+dg=bpy.context.evaluated_depsgraph_get();lo=Vector((1e9,)*3);hi=Vector((-1e9,)*3);tris=0
+for o in parts:
+    ev=o.evaluated_get(dg);me=ev.to_mesh();tris+=sum(len(p.vertices)-2 for p in me.polygons)
+    for pt in ev.bound_box:
+        w=ev.matrix_world@Vector(pt);lo=Vector(map(min,lo,w));hi=Vector(map(max,hi,w))
+    ev.to_mesh_clear()
+report={'asset':'seis_robot_engineer_v002','blender':bpy.app.version_string,'meshes':len(parts),'triangles':tris,'bones':len(arm.bones),'size_m':list(hi-lo),'unweighted_vertices':sum(1 for o in parts for v in o.data.vertices if not v.groups),'font':'Lato-Bold.ttf','six_mesh':'SEIS_Engineer_Chest_Six_Lato','mouth_morph_targets':['Speaking','Emphasis'],'tool_control':'SEIS_Engineer_Rig[tool_deployed]','spool_count':6,'build_method':'Local Blender Python; no MCP connection available','scope':'Body and tool-arm prototype, not functional autonomy'}
+(ROOT/'reports/asset-manifest.json').write_text(json.dumps(report,indent=2)+'\n')
+print('ASSET_REPORT',json.dumps(report))
+if opt.render:bpy.ops.render.render(write_still=True)
+

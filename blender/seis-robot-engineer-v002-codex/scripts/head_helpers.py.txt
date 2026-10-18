@@ -1,0 +1,197 @@
+"""Build the two SEIS mascot studies in a fresh Blender process.
+
+Run with Blender --background --factory-startup --python-exit-code 1
+--python build_robot.py -- --variant compact|slim [--render].
+EXPORT contains original meshes and one rigid-part FK skeleton.
+No downloaded meshes, procedural texture dependencies, or paid services.
+"""
+import argparse
+import json
+import math
+from pathlib import Path
+import sys
+import bpy
+from mathutils import Vector
+
+ROOT = Path(__file__).resolve().parents[1]
+args = argparse.ArgumentParser()
+args.add_argument('--variant', choices=['compact', 'slim'], required=True)
+args.add_argument('--render', action='store_true')
+opt = args.parse_args(sys.argv[sys.argv.index('--') + 1:])
+v = opt.variant
+PREFIX = 'SEIS_Engineer'
+SPECS = {
+    'slim': dict(head=1.52, head_size=(.78,.58,.62), torso=.95,
+                 torso_size=(.40,.30,.42), shoulder=(.25,0,1.065),
+                 elbow=(.34,-.015,.86), wrist=(.365,-.035,.68),
+                 hip=(.125,0,.69), knee=(.145,-.01,.40), ankle=(.16,0,.105),
+                 foot=(.18,.27,.11), palm=.085, limb=.025),
+    'compact': dict(head=1.16, head_size=(.82,.60,.55), torso=.735,
+                    torso_size=(.36,.29,.34), shoulder=(.235,0,.86),
+                    elbow=(.31,-.01,.66), wrist=(.36,-.045,.48),
+                    hip=(.12,0,.50), knee=(.145,-.015,.325), ankle=(.17,.015,.145),
+                    foot=(.23,.30,.18), palm=.105, limb=.033)
+}
+s = SPECS[v]
+
+# Only discard the factory scene in this dedicated, background build process.
+bpy.ops.wm.read_factory_settings(use_empty=True)
+scene = bpy.context.scene
+scene.unit_settings.system = 'METRIC'
+scene.unit_settings.scale_length = 1.0
+export = bpy.data.collections.new('EXPORT')
+present = bpy.data.collections.new('PRESENTATION')
+work = bpy.data.collections.new('WORK')
+for c in (export,present,work): scene.collection.children.link(c)
+
+def material(name, rgba, metallic=0.0, rough=.4):
+    m=bpy.data.materials.new('MAT_SEIS_'+name)
+    m.diffuse_color=(*rgba,1)
+    m.use_nodes=True
+    bs=m.node_tree.nodes.get('Principled BSDF')
+    bs.inputs['Base Color'].default_value=(*rgba,1)
+    bs.inputs['Metallic'].default_value=metallic
+    bs.inputs['Roughness'].default_value=rough
+    return m
+
+def rgb(hexcode):
+    q=[int(hexcode[i:i+2],16)/255 for i in (1,3,5)]
+    return tuple(v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in q)
+white=material('White_Shell',rgb('#F6F6F4'),.15,.32)
+facewhite=material('White_Face',rgb('#FFFFFF'),.03,.48)
+dark=material('Cool_Black',rgb('#1E2028'),.45,.32)
+steel=material('Gray_500',rgb('#9B9C9E'),.72,.29)
+black=material('Black_Ink',rgb('#000000'),0,.95)
+red=material('NU_Red_C8102E',rgb('#C8102E'),.25,.32)
+rubber=material('Black_Soles',rgb('#17191F'),0,.75)
+gold=material('NU_Bold_Gold_A4804A',rgb('#A4804A'),.78,.27)
+lightgold=material('NU_Light_Gold_C8A978',rgb('#C8A978'),.65,.29)
+gray=material('Gray_700',rgb('#49494D'),.35,.38)
+parts=[]
+bone_for={}
+
+def active(o):
+    bpy.ops.object.select_all(action='DESELECT')
+    o.select_set(True)
+    bpy.context.view_layer.objects.active=o
+
+def finish(o,name,mat,bone,bevel=0):
+    o.name=PREFIX+'_'+name
+    for c in list(o.users_collection): c.objects.unlink(o)
+    export.objects.link(o)
+    active(o)
+    bpy.ops.object.transform_apply(location=False,rotation=True,scale=True)
+    if bevel:
+        mod=o.modifiers.new('Manufactured_Edge','BEVEL')
+        mod.width=bevel; mod.segments=3
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    o.data.name=o.name
+    o.data.materials.append(mat)
+    o['asset_id']='seis_robot_'+v+'_v002'
+    o['part_id']=name
+    o['export_role']='rigid_part'
+    if not o.data.uv_layers:
+        uv=o.data.uv_layers.new(name='UVMap')
+        for poly in o.data.polygons:
+            axis=max(range(3),key=lambda k:abs(poly.normal[k]))
+            dims=[k for k in range(3) if k!=axis]
+            for li in poly.loop_indices:
+                co=o.data.vertices[o.data.loops[li].vertex_index].co
+                uv.data[li].uv=(co[dims[0]],co[dims[1]])
+    tri=o.modifiers.new('Final_Triangles','TRIANGULATE')
+    bpy.ops.object.modifier_apply(modifier=tri.name)
+    parts.append(o); bone_for[o.name]=bone
+    return o
+
+def box(name,loc,dims,mat,bone,bevel=.01):
+    bpy.ops.mesh.primitive_cube_add(size=1,location=loc)
+    o=bpy.context.object; o.dimensions=dims
+    return finish(o,name,mat,bone,bevel)
+
+def sphere(name,loc,dims,mat,bone):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=20,ring_count=12,radius=1,location=loc)
+    o=bpy.context.object; o.scale=tuple(q/2 for q in dims)
+    o=finish(o,name,mat,bone)
+    for p in o.data.polygons:p.use_smooth=True
+    return o
+
+def rod(name,a,b,r,mat,bone,vertices=16):
+    a,b=Vector(a),Vector(b); delta=b-a
+    bpy.ops.mesh.primitive_cylinder_add(vertices=vertices,radius=r,depth=delta.length,
+                                      end_fill_type='NGON',location=(a+b)/2)
+    o=bpy.context.object
+    o.rotation_euler=delta.to_track_quat('Z','Y').to_euler()
+    o=finish(o,name,mat,bone,.0015)
+    for p in o.data.polygons:p.use_smooth=True
+    return o
+
+def joint(name,loc,r,bone,axis='X'):
+    p=Vector(loc); d=Vector((r*.72,0,0) if axis=='X' else (0,r*.72,0))
+    rod(name+'_Hub',p-d,p+d,r,dark,bone,24)
+    # Two end caps make the joint legible from either side.
+    for k,side in enumerate((-1,1)):
+        q=p+d*side
+        n=d.normalized()*side
+        rod(name+'_Rim_'+str(k),q,q+n*.009,r*.75,steel,bone,24)
+        rod(name+'_Bolt_'+str(k),q+n*.01,q+n*.013,r*.38,red,bone,20)
+
+# Oversized cuboid head with a white uninterrupted face, raised oval eyes.
+hz=2.34; hw,hd,hh=(.82,.60,.55)
+box('Head_Shell',(0,0,hz),(hw,hd,hh),white,'head',.025)
+box('Face_Plate',(0,-hd/2-.002,hz),(hw-.045,.009,hh-.045),facewhite,'head',.017)
+front=-hd/2-.011
+for side,x in [('l',.175),('r',-.175)]:
+    sphere('Eye_'+side,(x,front-.002,hz+.095),(.073,.012,.122),black,'head')
+    rod('Temple_'+side,(math.copysign(hw/2-.005,x),0,hz-.015),
+        (math.copysign(hw/2+.022,x),0,hz-.015),.085,dark,'head',24)
+    rod('TempleCap_'+side,(math.copysign(hw/2+.024,x),0,hz-.015),
+        (math.copysign(hw/2+.029,x),0,hz-.015),.059,steel,'head',24)
+box('Head_Underside',(0,.015,hz-hh/2+.002),(hw*.62,hd*.67,.025),dark,'head',.008)
+for ix,x in enumerate((-.28,.28)):
+    for iz,z in enumerate((hz-hh*.37,hz+hh*.37)):
+        rod('Face_Fastener_'+str(ix)+str(iz),(x,front+.004,z),
+            (x,front-.002,z),.006,steel,'head',12)
+
+top=hz+hh/2
+rod('Antenna_Base',(-.235,.02,top-.006),(-.235,.02,top+.022),.035,dark,'head')
+rod('Antenna_Mast',(-.235,.02,top+.02),(-.315,.02,top+.218),.008,steel,'head',12)
+rod('Antenna_Broken_Bend',(-.315,.02,top+.218),(-.405,.015,top+.195),.007,steel,'head',12)
+sphere('Antenna_Red_Tip',(-.405,.015,top+.195),(.030,.030,.030),red,'head')
+rod('Antenna_Short_Broken_Stub',(-.18,.04,top+.018),(-.15,.04,top+.11),.006,steel,'head',12)
+rod('Antenna_Exposed_Core',(-.15,.04,top+.11),(-.145,.041,top+.12),.002,red,'head',8)
+
+# Black waveform, separate mesh with portable morph targets. Basis lies inside
+# the white shell; Speaking=1 moves the fine trace onto the face. No screen.
+verts=[]; faces=[]; amps=[]
+N=97; R=6; width=.43; mouthz=hz-.106
+for i in range(N):
+    t=i/(N-1); x=(t-.5)*width
+    env=math.sin(math.pi*t)**2
+    amp=.024*env*(math.sin(t*math.pi*20)+.48*math.sin(t*math.pi*38+.8))
+    amps.append(amp)
+    for j in range(R):
+        angle=2*math.pi*j/R
+        verts.append((x,front+.035+.0022*math.cos(angle),mouthz+.0022*math.sin(angle)))
+    if i:
+        for j in range(R):
+            a=(i-1)*R+j;b=(i-1)*R+(j+1)%R;c=i*R+(j+1)%R;d=i*R+j
+            faces.extend([(a,b,c),(a,c,d)])
+faces.extend([tuple(reversed(range(R))),tuple((N-1)*R+j for j in range(R))])
+me=bpy.data.meshes.new(PREFIX+'_Waveform_Mouth')
+me.from_pydata(verts,[],faces);me.update()
+mouth=bpy.data.objects.new(PREFIX+'_Waveform_Mouth',me)
+export.objects.link(mouth)
+mouth=finish(mouth,'Waveform_Mouth',black,'head')
+basis=mouth.shape_key_add(name='Basis')
+speech=mouth.shape_key_add(name='Speaking')
+emphasis=mouth.shape_key_add(name='Emphasis')
+for i in range(N):
+    for j in range(R):
+        k=i*R+j
+        speech.data[k].co.y-=.040
+        speech.data[k].co.z+=amps[i]
+        emphasis.data[k].co.z+=amps[i]*.65
+speech.value=1
+emphasis.value=0
+mouth['instructions']='Speaking: 0 = silent/hidden, 1 = visible black waveform. Emphasis: 0 to 1 increases amplitude. No audio attached.'
+
