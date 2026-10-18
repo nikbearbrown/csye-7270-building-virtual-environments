@@ -151,7 +151,9 @@ Full size: [compare/v4final_Shoulder34.png](compare/v4final_Shoulder34.png)
 ## Film
 
 <!-- FILM_URL: paste the companion film link on the next line, replacing "coming soon" (also set FILM_URL at the top of the script in index.html). -->
-**Companion film: coming soon.**
+**Companion film:** [Download the 1080p film (MP4, 3:33, 30.6 MB)](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/seis-bot-grok/film/seis-bot-grok-film-1080p.mp4) · [Subtitles (SRT)](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/seis-bot-grok/film/seis-bot-grok-film.srt)
+
+Narrated by Liam. It covers the build from v1 to v4 side by side with the references, then Grok Bot's assessment and Professor Bear's notes on why a human needs to stay in the loop.
 
 A build-breakdown film narrated by Liam: how SEIS Bot was built from v1 to v4, side by side with the references, ending on Grok Bot's assessment and the human review.
 
