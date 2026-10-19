@@ -33,7 +33,7 @@ def principled(name, base, metallic, rough, emission=None, estrength=0.0,
     return m
 
 mat_armor  = principled("Armor",   (0.10, 0.16, 0.17), 1.0, 0.38)
-mat_armor_lt = principled("ArmorLight", (0.17, 0.25, 0.26), 0.9, 0.42)
+mat_armor_lt = principled("ArmorLight", (0.20, 0.30, 0.31), 0.9, 0.40)
 mat_silver = principled("Silver",  (0.72, 0.75, 0.78), 1.0, 0.28)
 mat_red    = principled("RedGlow", (0.02, 0.00, 0.00), 0.0, 0.50,
                         emission=(1.0, 0.0, 0.0), estrength=1.2, spec=0.0)
@@ -186,6 +186,36 @@ for side, sgn in (("R", 1), ("L", -1)):
                    s=(0.035, 0.025, 0.075)),
               chest_piv, (sgn * 1.25 * chest_r(0.05), 0.02, 0.05))
 
+# ---- pectoral plates: thin curved shells hugging the tapered chest ----
+# two segments per side, each tilted to the cone's lean (0.24 rad) and the
+# local surface tangent (yaw from the ellipsoid cross-section normal), thin
+# profile, sunk so they read as armor ON the chest rather than slabs
+for side, sgn in (("R", 1), ("L", -1)):
+    for seg, (px, py, yaw) in enumerate(((0.095, 0.253, -0.236),
+                                         (0.179, 0.221, -0.464))):
+        at_parent(box((0, 0, 0), (0.092, 0.020, 0.150), mat_armor_lt,
+                      f"PecPlate_{side}_{seg}", rot=(0.24, 0, sgn * yaw),
+                      bevel=0.006),
+                  chest_piv, (sgn * px, py, 0.055))
+    # brass piping along the pectoral plates' lower edge
+    at_parent(box((0, 0, 0), (0.150, 0.014, 0.014), mat_brass,
+                  f"PecTrim_{side}", rot=(0.24, 0, sgn * -0.30)),
+              chest_piv, (sgn * 0.135, chest_r(-0.02) + 0.010, -0.02))
+
+# ---- rib arcs wrapping the chest flanks ----
+# full torus with elliptical x-scale matching the cone: buried in the cone
+# front/back, proud on the flanks -> reads as wrap-around ribs
+for i, zl in enumerate((0.10, 0.02, -0.06)):
+    rib = torus((0, 0, 0), chest_r(zl), 0.016, mat_armor, f"RibArc_{i}",
+                major=40, minor=12)
+    rib.scale = (1.28, 1.0, 1.0)
+    at_parent(rib, chest_piv, (0, 0, zl))
+
+# ---- deep red inner-body panels in the waist side gaps ----
+for side, sgn in (("R", 1), ("L", -1)):
+    ball((sgn * 0.22, 0.04, 0.86), 1.0, mat_inner, f"WaistRed_{side}",
+         s=(0.060, 0.120, 0.095))
+
 # ---------------------------------------------------------------- neck (segmented rings over red core)
 limb((0, 0.17, 1.28), (0, 0.20, 1.44), 0.060, 0.055, mat_inner, "NeckCore")
 for i, z in enumerate((1.305, 1.350, 1.395)):
@@ -201,19 +231,34 @@ at_parent(ball((0, 0, 0), 1.0, mat_armor, "Helmet", s=(0.155, 0.175, 0.205)),
 # silver faceplate (slightly smaller, pushed forward -> dark rim shows)
 at_parent(ball((0, 0, 0), 1.0, mat_silver, "Faceplate", s=(0.132, 0.152, 0.178)),
           head_piv, (0, 0.045, -0.012))
-# pale crown stripe
-at_parent(box((0, 0, 0), (0.055, 0.200, 0.020), mat_silver, "CrownStripe"),
-          head_piv, (0, 0.012, 0.188))
-# slanted angular red lenses: thin dark socket flush on the faceplate with a
-# slimmer red lens set into it; inner corner dropped toward the nose
-# (no brow band — not in the reference)
+# crown ridge seams: 5 thin strips running front-to-back, each in 3 short
+# segments following the helmet curvature (zc/rx computed from the helmet
+# ellipsoid (0.155, 0.175, 0.205)), half-embedded so they read as raised
+# seams, not debris sitting on the head
+_crown_segs = (
+    # (yc, rx) pairs; zc derived per xi from surface + 0.003
+    (0.080, -0.541), (0.0, 0.0), (-0.080, 0.541),
+)
+def _cz(xi, yc):
+    s = (1 - (xi / 0.155) ** 2 - (yc / 0.175) ** 2) ** 0.5
+    return 0.205 * s + 0.003
+_crown_rx_adj = {0.0: 0.0, 0.025: 0.008, 0.05: 0.031}  # steeper tangent at wider xi
+for xi in (-0.05, -0.025, 0.0, 0.025, 0.05):
+    for j, (yc, rx) in enumerate(_crown_segs):
+        rxj = rx - math.copysign(_crown_rx_adj[abs(xi)], yc) if yc else rx
+        at_parent(box((0, 0, 0), (0.010, 0.060, 0.012), mat_armor_lt,
+                      f"CrownRidge_{xi}_{j}", rot=(rxj, 0, 0), bevel=0.002),
+                  head_piv, (xi, yc, _cz(xi, yc)))
+# slanted angular red lenses: dark socket sunk FLUSH with the faceplate
+# (front face ~at the surface), slim red lens only slightly proud — eyes
+# read as slits IN the face, not boxes ON it. Inner corner dropped toward nose
 for side, sgn in (("R", 1), ("L", -1)):
     at_parent(box((0, 0, 0), (0.076, 0.012, 0.034), mat_dark,
                   f"EyeSocket_{side}", rot=(0, sgn * -0.45, 0), bevel=0.004),
-              head_piv, (sgn * 0.060, 0.176, 0.016))
+              head_piv, (sgn * 0.060, 0.171, 0.016))
     at_parent(box((0, 0, 0), (0.060, 0.014, 0.022), mat_red,
                   f"EyeLens_{side}", rot=(0, sgn * -0.45, 0), bevel=0.004),
-              head_piv, (sgn * 0.060, 0.181, 0.016))
+              head_piv, (sgn * 0.060, 0.176, 0.016))
 # circular ear discs
 for side, sgn in (("R", 1), ("L", -1)):
     bpy.ops.mesh.primitive_cylinder_add(radius=0.042, depth=0.028,
@@ -230,28 +275,53 @@ for side, sgn in (("R", 1), ("L", -1)):
     hub.name = f"EarHub_{side}"
     M(hub, mat_brass)
     at_parent(hub, head_piv, (sgn * 0.150, 0.008, 0.008))
-# angular cheek/jaw lines (subtle)
+# large sweeping ear shells: armor hoods behind/above the ear discs
 for side, sgn in (("R", 1), ("L", -1)):
-    at_parent(box((0, 0, 0), (0.010, 0.010, 0.085), mat_dark,
-                  f"CheekLine_{side}", rot=(0.1, 0, sgn * -0.28)),
-              head_piv, (sgn * 0.095, 0.150, -0.070))
-# chin block
-at_parent(box((0, 0, 0), (0.055, 0.030, 0.035), mat_dark, "ChinBlock"),
-          head_piv, (0, 0.162, -0.128))
+    at_parent(ball((0, 0, 0), 1.0, mat_armor, f"EarShell_{side}",
+                   s=(0.042, 0.115, 0.135)),
+              head_piv, (sgn * 0.158, -0.075, 0.045), rot=(0.15, 0, sgn * -0.10))
+# brow ridge: two short thin segments hugging the faceplate curvature
+# (integrated brow, not a floating bar) — thin, tilted to the local surface
+# tangent, back half buried in the faceplate. Slight V angle like the ref.
+# (Head round: if this still floats, delete it — clean forehead wins.)
+for side, sgn in (("R", 1), ("L", -1)):
+    at_parent(box((0, 0, 0), (0.075, 0.012, 0.016), mat_armor,
+                  f"BrowRidge_{side}", rot=(-0.38, 0, sgn * 0.12), bevel=0.003),
+              head_piv, (sgn * 0.036, 0.174, 0.058))
+# slim nose ridge between the eyes
+at_parent(box((0, 0, 0), (0.022, 0.014, 0.055), mat_silver, "NoseBridge",
+              bevel=0.005),
+          head_piv, (0, 0.199, -0.005))
+# angular cheek accents swept into the jaw (short, hug the face — no fangs)
+for side, sgn in (("R", 1), ("L", -1)):
+    at_parent(box((0, 0, 0), (0.012, 0.014, 0.034), mat_dark,
+                  f"CheekLine_{side}", rot=(0.35, 0, sgn * -0.30)),
+              head_piv, (sgn * 0.082, 0.158, -0.045))
+# tapered chin block sunk into the jaw (mouth grille removed: it floated —
+# clean tapered jaw reads better than a detached comb)
+at_parent(box((0, 0, 0), (0.045, 0.028, 0.032), mat_dark, "ChinBlock",
+              bevel=0.006),
+          head_piv, (0, 0.150, -0.130))
 
 # ---------------------------------------------------------------- pauldrons (big layered shells sweeping down)
 for side, sgn in (("R", 1), ("L", -1)):
     sx = sgn
     ball((sx * 0.40, 0.10, 1.26), 0.120, mat_inner, f"ShoulderJoint_{side}")
-    # main shell
-    ball((sx * 0.44, 0.10, 1.30), 1.0, mat_armor, f"PauldronMain_{side}",
+    # main shell (brighter steel-teal)
+    ball((sx * 0.44, 0.10, 1.30), 1.0, mat_armor_lt, f"PauldronMain_{side}",
          s=(0.200, 0.215, 0.170))
     # lower lame sweeping down-forward
-    ball((sx * 0.47, 0.16, 1.16), 1.0, mat_armor, f"PauldronLame_{side}",
+    ball((sx * 0.47, 0.16, 1.16), 1.0, mat_armor_lt, f"PauldronLame_{side}",
          s=(0.160, 0.180, 0.120))
+    # second lower blade: larger, flatter shell sweeping down over the arm
+    ball((sx * 0.485, 0.22, 1.045), 1.0, mat_armor, f"PauldronBlade_{side}",
+         s=(0.170, 0.190, 0.085))
     # brass rim on the shell edge
     torus((sx * 0.47, 0.13, 1.20), 0.150, 0.014, mat_brass,
           f"PauldronRim_{side}", rot=(0, math.pi / 2 - 0.25, 0))
+    # brass rim along the lower blade edge
+    torus((sx * 0.485, 0.19, 1.075), 0.155, 0.012, mat_brass,
+          f"PauldronRim2_{side}", rot=(0, math.pi / 2 - 0.30, 0))
 
 # ---------------------------------------------------------------- arms
 def build_arm(side, sgn, thinker):
@@ -271,6 +341,10 @@ def build_arm(side, sgn, thinker):
     # red oval panel on outer upper arm
     ball((sx * 0.505, 0.20, 1.06), 1.0, mat_red, f"ArmGlow_{side}",
          s=(0.028, 0.060, 0.085))
+    # red glow panel on the outer forearm
+    _mid = (V(el) + V(wr)) / 2
+    ball((sx * (abs(_mid.x) + 0.100), _mid.y, _mid.z), 1.0, mat_red,
+         f"ForearmGlow_{side}", s=(0.030, 0.055, 0.080))
     # smooth dark-red joint rings (no joint balls -> no torn-paper rims)
     joint_ring(el, V(wr) - V(el), 0.100, 0.030, mat_inner, f"ElbowRing_{side}")
     # forearm (tapered) + wrist
@@ -439,9 +513,14 @@ def render(cam, fname):
     bpy.ops.render.render(write_still=True)
     print("rendered", fname)
 
-render(cam_hero, "hero.png")
-render(cam_front, "front.png")
-render(cam_head, "head.png")
+# RENDER_ONLY=hero|front|head renders just one view (faster iteration)
+only = os.environ.get("RENDER_ONLY", "")
+if only in ("", "hero"):
+    render(cam_hero, "hero.png")
+if only in ("", "front"):
+    render(cam_front, "front.png")
+if only in ("", "head"):
+    render(cam_head, "head.png")
 
 # ---------------------------------------------------------------- save + export
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, "robot.blend"))
