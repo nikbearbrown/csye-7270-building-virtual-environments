@@ -2,7 +2,7 @@
 
 A code-built Blender recreation of Bear's AI-generated "Thinker" robot: teal-gunmetal armor, silver faceplate with red glowing eyes, the numeral **6** on the sternum, red shin panels, seated in the Thinker pose on a stone pedestal.
 
-`meshes 130 · triangles 57,060 · materials 9 · dimensions 1.28 × 1.10 × 1.76 m · Blender 4.5.3 LTS`
+`meshes 166 · triangles 67,512 · materials 9 · dimensions 1.31 × 1.10 × 1.76 m · Blender 4.5.3 LTS`
 
 ## Views
 
@@ -66,8 +66,8 @@ Companion film: coming soon <!-- FILM_URL -->
 
 | File | Size | Purpose | Download |
 |------|------|---------|----------|
-| `thinker-bot.blend` | 4.2 MB | Full scene: materials, lights, comparison cameras (Blender 4.2+) | [download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/thinker-bot-muse/thinker-bot.blend) |
-| `thinker-bot.glb` | 1.4 MB | glTF export for engines and web viewers — flat colours only, no textures | [download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/thinker-bot-muse/thinker-bot.glb) |
+| `thinker-bot.blend` | 4.9 MB | Full scene: materials, lights, comparison cameras (Blender 4.2+) | [download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/thinker-bot-muse/thinker-bot.blend) |
+| `thinker-bot.glb` | 1.7 MB | glTF export for engines and web viewers — flat colours only, no textures | [download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/thinker-bot-muse/thinker-bot.glb) |
 
 ## How to import into Blender
 
@@ -84,7 +84,7 @@ Interactive viewer (works offline after download):
 ## Built by
 
 - **Builder:** Muse (Meta, Muse Spark)
-- **Method:** scripted hard-surface modeling through Blender's `bpy` Python API (`scripts/build_robot.py`); 6 comparison rounds of render-vs-reference iteration against the 12 supplied reference images (5 build iterations + 1 defect-fix round)
+- **Method:** scripted hard-surface modeling through Blender's `bpy` Python API (`scripts/build_robot.py`); 8 comparison rounds of render-vs-reference iteration (5 build iterations + 1 defect-fix round against the first 12 references, then 2 improvement rounds against a second set of 6 references + video supplied 2026-10-19)
 - **Tools:** Blender 4.5.3 LTS (headless), Python
 - **Build date:** 2026-10-18
 - **Human review:** by Professor Bear (pending)
