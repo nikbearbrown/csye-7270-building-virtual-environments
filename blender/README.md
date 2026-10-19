@@ -24,7 +24,7 @@ To download a single file, use the links in a model's README, or open the file o
 
 ## Inside each subfolder
 
-- **`README.md`**: a readable page with every view, the reference comparisons, the film link, downloads, import instructions, stats and limitations.
+- **`README.md`**: a readable page with every view, the reference comparisons, downloads, import instructions, stats and limitations.
 - **`index.html`**: a self-contained viewer (images embedded) with view buttons, a thumbnail strip and the comparison grid. It works offline after download.
 - **`.blend`**: the full Blender scene, with the model, materials, lights and comparison cameras.
 - **`.glb`**: a portable export for game engines and web viewers. It carries flat colours only, so procedural wear and panel lines show up in Blender and the renders but not in the GLB.
@@ -37,7 +37,7 @@ To download a single file, use the links in a model's README, or open the file o
 
 - **Stats:** 1,179 meshes, about 1.48 million triangles, a 50-bone FK rig with finger bones, and 2.21 m tall.
 - **Poses:** standing and seated (Thinker), both included in the GLB.
-- **Known gaps:** a human review by Professor Bear judged the face badly off, despite Grok Bot rating it "fairly close" against a feature checklist. That gap is the subject of the companion film on why a human needs to stay in the loop. The shoulder armour still reads as a round dome rather than the reference's long sculpted plates.
+- **Known gaps:** a human review by Professor Bear judged the face badly off, despite Grok Bot rating it "fairly close" against a feature checklist. That gap is why a human needs to stay in the loop. The shoulder armour still reads as a round dome rather than the reference's long sculpted plates.
 
 ## jaguar-xkss-1957-grok/ (Grok Bot)
 

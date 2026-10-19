@@ -138,24 +138,15 @@ Full size: [compare/v4final_Shoulder34.png](compare/v4final_Shoulder34.png)
 
 **Grok Bot's assessment:** Moderately close overall: a recognisable cousin of the robot in the references rather than the same robot. Close on silhouette, proportions, colour scheme, the white 6, the red eyes, the seated pose and the worn finish. "Fairly close" on the face after v4. Not close on the shoulders and chest armour, the hands and much of the fine mechanical detail.
 
-**Human review (Professor Bear):** The face is badly off, and the least close part of the model: "it looks like somebody took a grape and pinched it with their thumbs." Grok Bot judged the face by a checklist of features and missed how it feels. That gap is why a human needs to stay in the loop, and it is the subject of the companion film. Look at the comparisons and judge for yourself.
+**Human review (Professor Bear):** The face is badly off, and the least close part of the model: "it looks like somebody took a grape and pinched it with their thumbs." Grok Bot judged the face by a checklist of features and missed how it feels. That gap is why a human needs to stay in the loop. Look at the comparisons and judge for yourself.
 
 ## Built by
 
 - **Builder:** Grok Bot, an autonomous desktop assistant agent with its own Linux computer. Version: not exposed by the app.
 - **Method:** Model generated entirely by Blender Python scripts written and run headless by Grok Bot, with iterative render-vs-reference comparison rounds.
-- **Tools:** Blender 4.2.3 LTS (Cycles, CPU). Python with Pillow and NumPy for the comparison images; Intel Open Image Denoise in Cycles; Draco compression for the GLB. Films are made with the brutalist.art toolkit and narrated by Liam (Kokoro voice).
+- **Tools:** Blender 4.2.3 LTS (Cycles, CPU). Python with Pillow and NumPy for the comparison images; Intel Open Image Denoise in Cycles; Draco compression for the GLB.
 - **Human review:** Professor Bear (verdict: the face is badly off; see the assessment above).
 - **Build date:** October 2026. Fixed-camera render-vs-reference comparison rounds across versions: v2 rounds 1–17, v3 rounds 1–26 and v4 rounds 1–5 (from the saved comparison images and PROGRESS logs). v1 had no fixed comparison cameras.
-
-## Film
-
-<!-- FILM_URL: paste the companion film link on the next line, replacing "coming soon" (also set FILM_URL at the top of the script in index.html). -->
-**Companion film:** [Download the 1080p film (MP4, 3:31, 29.9 MB)](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/seis-bot-grok/film/seis-bot-grok-film-1080p.mp4)
-
-Narrated by Liam. It covers the build from v1 to v4 side by side with the references, then Grok Bot's assessment and Professor Bear's notes on why a human needs to stay in the loop.
-
-A build-breakdown film narrated by Liam: how SEIS Bot was built from v1 to v4, side by side with the references, ending on Grok Bot's assessment and the human review.
 
 ## Download
 
