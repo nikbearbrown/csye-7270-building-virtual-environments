@@ -2,16 +2,16 @@
 
 ## Dimensions
 
-- Bounding box: 1.28 m (x) × 1.10 m (y) × 1.76 m (z), seated Thinker pose on stone pedestal
+- Bounding box: 1.31 m (x) × 1.10 m (y) × 1.76 m (z), seated Thinker pose on stone pedestal
 - Units: meters, real-world scale (figure ~1.0 m seated height on ~0.5 m pedestal)
 
 ## Counts (from `audit_model.py` on the final `.blend`, Blender 4.5.3 LTS)
 
-- Mesh objects: 130
-- Triangles: 57,060
+- Mesh objects: 166
+- Triangles: 67,512
 - Materials: 9 — Armor, ArmorLight, Brass, Dark, InnerRed, RedGlow, Silver, Stone, White
-- Objects total: 143 · Lights: 4 · Cameras: 3
-- Files: `thinker-bot.blend` 4.2 MB (well under the 100 MB limit), `thinker-bot.glb` 1.4 MB, flat colours only (no image textures — all color comes from Principled BSDF nodes)
+- Objects total: 179 · Lights: 4 · Cameras: 3
+- Files: `thinker-bot.blend` 4.9 MB (well under the 100 MB limit), `thinker-bot.glb` 1.7 MB, flat colours only (no image textures — all color comes from Principled BSDF nodes)
 
 ## Method
 
@@ -26,7 +26,9 @@
 
 - **Rounds 1–5 (initial build):** proportions, pose, and materials iterated against the references. Fixes along the way: head bow reduced so the silver faceplate reads; eyes moved out of the faceplate mesh (they were buried and invisible from the front); arms bulked up; face fill light added; front camera reframed to include the feet. Verdict after round 5: silhouette, pose, and palette read as the character, but review found six concrete defects (below).
 - **Round 6 (defect fix):** (1) the sternum glyph rendered as "9" — rotation corrected and verified in a zoomed crop, it now reads "6"; (2) a dark brow bar above the eyes (not in the reference) removed, and round pink eye discs replaced with slanted angular red lenses; (3) boxy rectangular torso replaced with a tapered, beveled chest; (4) jagged white zigzag artifacts at the elbows/knees replaced with smooth dark-red torus joint rings; (5) right hand repositioned so the fingers visibly touch the chin; (6) glow panels deepened from pink-white to saturated red (pure-red emission, specular removed, glare re-tuned). All six verified in the final render pixels.
-- **Final verdict (harsh):** a faithful stylized interpretation — same character, pose, and material language — not a replica. Sculpted surface detail and the workshop environment are beyond code-built primitives.
+- **Round 7 (v2, against a second reference set):** head rework (crown ridges, sweeping ear shells, brow ridge, mouth grille, tapered jaw), torso plating (curved pectoral plates with brass piping, rib arcs, red inner-body panels in the waist gaps), second pauldron blade layer with brass rims, forearm glow panels, brighter steel-teal plates. Verdict: body and palette clearly closer; the head regressed in close-up (floating brow plank, debris-like crown ridges, protruding eye sockets, floating grille, cheek spike, flat pec slabs).
+- **Round 8 (v2 head fix):** brow rebuilt as thin segments hugging the faceplate; crown ridges reduced to 5 tangent-matched half-embedded strips; eye sockets sunk flush so the eyes read as slits in the face; cheek spike removed; mouth grille removed (it could not sit flush) in favor of a clean tapered jaw; pec plates segmented and tilted to the chest's taper. All verified in the render pixels.
+- **Final verdict (harsh):** a faithful stylized interpretation — same character, pose, and material language, with visibly more character detail than v1 — not a replica. Sculpted surface detail and the workshop environment are beyond code-built primitives.
 
 ## Known limitations
 
