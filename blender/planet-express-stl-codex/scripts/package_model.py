@@ -35,7 +35,7 @@ for round_,f in [('round-1','hull-fit'),('round-2','assembly')]:
  dest=P/'compare'/round_;dest.mkdir(exist_ok=True);Image.open(R/'compare'/round_/f'{f}.png').convert('RGB').save(dest/f'{f}.jpg',quality=86)
 stat='70 visible meshes · 694,382 triangles · 7 materials · 91.39 × 243.94 × 70.97 mm (X/Y/Z) · Blender 4.2.0 · Codex'
 built=f'Builder: Codex, for Nik Bear Brown. Original mesh geometry: GOODesign / GOODesignLabs. Method: scripted STL assembly and material assignment through the Blender MCP add-on socket bridge, with added antenna and mesh lettering; 3 documented comparison rounds. Tools: Blender 4.2.0, MCP add-on bl_info 1.7 / protocol 11, Python {platform.python_version()}, Pillow {Image.__version__}. Build date: 2026-10-20 (America/New_York). Human review: Professor Bear — pending.'
-limits='This is a static flight assembly of the supplied kit, with approximate fitting of several parts. Its long fins, deep panel grooves, cockpit and multi-nozzle engine differ visibly from the smoother reference ship. The vents and portholes protrude more, and some trim and canopy seams remain imperfect. It is recognizable as Planet Express, but is not an exact match to the reference. Twelve accessory meshes, including unused landing and stand parts, remain hidden in the native scene and are excluded from the GLB. No mechanism rig, animation, collision mesh, LOD or print-fit certification is included. Human review: Professor Bear — pending.'
+limits='This is a static flight assembly of the supplied kit, with approximate fitting of several parts. The creator confirms that the engraved panel lines are intentional kit details. Its long fins, cockpit and multi-nozzle engine still differ visibly from the smoother reference ship. The physical kit is designed for folding stairs, an opening hangar and a rotating turret; these motions have not been implemented or validated in this digital assembly. The vents and portholes protrude more, and some trim and canopy seams remain imperfect. It is recognizable as Planet Express, but is not an exact match to the reference. Twelve accessory meshes, including unused landing and stand parts, remain hidden in the native scene and are excluded from the GLB. No mechanism rig, animation, collision mesh, LOD or print-fit certification is included. Human review: Professor Bear — pending.'
 export='The GLB contains 7 flat PBR materials and no image textures. Panel grooves, emblems and lettering are mesh geometry and survive export. Cameras, studio lights, world and render settings are excluded. GLB units are meters; the native scene displays millimeters. The master transform supports rigid placement only.'
 source_text='Original kit: GOODesign / GOODesignLabs, Planet Express Ship – FUTURAMA. Reference images supplied by Nik Bear Brown. This is an assembly study of that kit, not original geometry authored entirely by Codex or an official Futurama asset.'
 def data(path):
@@ -72,6 +72,27 @@ The user supplied 26 GOODesign STL files containing 737,487 triangles and 12 ref
 This is a flight presentation. Printed accessories were not all installed. Twelve unused accessory meshes remain in a hidden native collection and are excluded from export. Native numerical coordinates are millimeters, X lateral, Y length and Z up. The audited visible bounds are 91.3865 × 243.9405 × 70.9728 mm. This is the assembled result, not an assertion of fictional full-size ship dimensions or exact physical kit fit.
 
 The creator's listing and portions of the linked assembly video helped interpret the kit. The video was not followed in its entirety. The user images guided palette and visual review. Their appearance differs from the supplied kit, especially in the paneling, fin proportions and engine.
+
+## Creator assembly notes supplied after the first build
+
+Nik Bear Brown subsequently supplied the creator's written assembly guidance, associated with the same [assembly video](https://youtu.be/Jqm8zHlQoqY). The following is a summary of that source, not a report that these mechanical fits have now been verified in Blender.
+
+The engraved panel lines are deliberate additions by the kit designer. They should be retained when assembling this kit; their difference from the smoother reference images is not itself an assembly error. The intended physical mechanisms are folding front boarding stairs, an opening/closing hangar and a rotating top turret. The delivered Blender/GLB remains static.
+
+| Component | Creator's assembly guidance | Digital assembly implication |
+|---|---|---|
+| Turret | Glue only around the attachment edges so the turret remains free to rotate. | Preserve a separate turret and establish its pivot before adding rotation controls. Current motion is unverified. |
+| Front stairs | Align the pegs and holes before insertion. | Verify hinge alignment against the source meshes before creating a folding animation. |
+| Light green hangar outer wall | Check the direction of the parting line shown in the video. | Part orientation needs to be checked by its seam rather than silhouette alone. |
+| Side stabilizer rings and wings | Test-fit their alignment before permanent gluing. | Check keyed fit and orientation of each paired ring/wing; visual overlap alone does not prove correct assembly. |
+| Tail logo | Match the circle and triangle marks engraved on the base. | Use source registration marks to check logo orientation. |
+| Landing gear covers | R/L letters identify sides and face inward when inserted. | Use those marks when installing the currently hidden landing accessories. |
+
+The creator lists silver for windows, landing gear and engine details; leaf green for wings and canopy frame; peak green for the body and stair frame; red for the center line; dark gray for booster, stairs, cannon and cargo frame; and white for the logo frame. The current materials instead follow the supplied turquoise/ivory reference images. Neither palette is evidence that a part is correctly fitted.
+
+Creator-reported completed dimensions are **90 × 254 × 83 mm (X/Y/Z)**, interpreting the pasted `Y m254m` as 254 mm. The largest print part is listed as **51 × 48 × 90 mm**, with an estimated **14 hours** of printing and **146 g** of plastic. These are creator-provided figures, not measurements or print estimates from this Blender scene.
+
+Our measured visible flight assembly remains **91.39 × 243.94 × 70.97 mm**. The difference from the creator's full assembly is unresolved: configuration and part placement both need checking. It would be misleading to force a global scale to match one dimension or assume omitted landing gear explains every discrepancy. No geometry, fitting, animation or new comparison round was completed as part of this documentation update.
 
 ## Construction
 

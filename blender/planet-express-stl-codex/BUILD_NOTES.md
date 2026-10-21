@@ -10,6 +10,27 @@ This is a flight presentation. Printed accessories were not all installed. Twelv
 
 The creator's listing and portions of the linked assembly video helped interpret the kit. The video was not followed in its entirety. The user images guided palette and visual review. Their appearance differs from the supplied kit, especially in the paneling, fin proportions and engine.
 
+## Creator assembly notes supplied after the first build
+
+Nik Bear Brown subsequently supplied the creator's written assembly guidance, associated with the same [assembly video](https://youtu.be/Jqm8zHlQoqY). The following is a summary of that source, not a report that these mechanical fits have now been verified in Blender.
+
+The engraved panel lines are deliberate additions by the kit designer. They should be retained when assembling this kit; their difference from the smoother reference images is not itself an assembly error. The intended physical mechanisms are folding front boarding stairs, an opening/closing hangar and a rotating top turret. The delivered Blender/GLB remains static.
+
+| Component | Creator's assembly guidance | Digital assembly implication |
+|---|---|---|
+| Turret | Glue only around the attachment edges so the turret remains free to rotate. | Preserve a separate turret and establish its pivot before adding rotation controls. Current motion is unverified. |
+| Front stairs | Align the pegs and holes before insertion. | Verify hinge alignment against the source meshes before creating a folding animation. |
+| Light green hangar outer wall | Check the direction of the parting line shown in the video. | Part orientation needs to be checked by its seam rather than silhouette alone. |
+| Side stabilizer rings and wings | Test-fit their alignment before permanent gluing. | Check keyed fit and orientation of each paired ring/wing; visual overlap alone does not prove correct assembly. |
+| Tail logo | Match the circle and triangle marks engraved on the base. | Use source registration marks to check logo orientation. |
+| Landing gear covers | R/L letters identify sides and face inward when inserted. | Use those marks when installing the currently hidden landing accessories. |
+
+The creator lists silver for windows, landing gear and engine details; leaf green for wings and canopy frame; peak green for the body and stair frame; red for the center line; dark gray for booster, stairs, cannon and cargo frame; and white for the logo frame. The current materials instead follow the supplied turquoise/ivory reference images. Neither palette is evidence that a part is correctly fitted.
+
+Creator-reported completed dimensions are **90 × 254 × 83 mm (X/Y/Z)**, interpreting the pasted `Y m254m` as 254 mm. The largest print part is listed as **51 × 48 × 90 mm**, with an estimated **14 hours** of printing and **146 g** of plastic. These are creator-provided figures, not measurements or print estimates from this Blender scene.
+
+Our measured visible flight assembly remains **91.39 × 243.94 × 70.97 mm**. The difference from the creator's full assembly is unresolved: configuration and part placement both need checking. It would be misleading to force a global scale to match one dimension or assume omitted landing gear explains every discrepancy. No geometry, fitting, animation or new comparison round was completed as part of this documentation update.
+
 ## Construction
 
 Blender 4.2.0 ran in a GUI session with the archived MCP for Blender add-on (bl_info 1.7, protocol 11). The Codex tool registry did not expose a Blender tool; `mcp_client.py` used the same localhost:9876 socket protocol as its MCP relay and sent `execute_code` requests. This was a socket bridge to the add-on, not a registered Codex Blender tool.
@@ -54,7 +75,7 @@ Assembly video: https://www.youtube.com/watch?v=Jqm8zHlQoqY
 
 ## Remaining limitations
 
-This is a static flight assembly of the supplied kit, with approximate fitting of several parts. Its long fins, deep panel grooves, cockpit and multi-nozzle engine differ visibly from the smoother reference ship. The vents and portholes protrude more, and some trim and canopy seams remain imperfect. It is recognizable as Planet Express, but is not an exact match to the reference. Twelve accessory meshes, including unused landing and stand parts, remain hidden in the native scene and are excluded from the GLB. No mechanism rig, animation, collision mesh, LOD or print-fit certification is included. Human review: Professor Bear — pending.
+This is a static flight assembly of the supplied kit, with approximate fitting of several parts. The creator confirms that the engraved panel lines are intentional kit details. Its long fins, cockpit and multi-nozzle engine still differ visibly from the smoother reference ship. The physical kit is designed for folding stairs, an opening hangar and a rotating turret; these motions have not been implemented or validated in this digital assembly. The vents and portholes protrude more, and some trim and canopy seams remain imperfect. It is recognizable as Planet Express, but is not an exact match to the reference. Twelve accessory meshes, including unused landing and stand parts, remain hidden in the native scene and are excluded from the GLB. No mechanism rig, animation, collision mesh, LOD or print-fit certification is included. Human review: Professor Bear — pending.
 
 Companion film: coming soon
 <!-- FILM_URL -->
