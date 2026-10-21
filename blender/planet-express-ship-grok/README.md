@@ -263,4 +263,6 @@ The hull is one lofted quad mesh of superellipse cross-sections driven by profil
 - **No panel lines:** the hull is a single smooth surface.
 - **STL source:** the STL kit is Professor Bear's data with no stated licence, so it was used for measurement only and is not included here.
 
+**Film:** the [`film/`](film/) folder has a Brutalist beat sheet ([`beat_sheet.md`](film/beat_sheet.md), machine file `beat_sheet.json`) for a film that shows the model, then how a person would build it by hand in Blender; the film itself is not in the repo.
+
 See [BUILD_NOTES.md](BUILD_NOTES.md) for the full technical record.
