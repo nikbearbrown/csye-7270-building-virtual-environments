@@ -83,3 +83,5 @@ To download a single file, use the links in a model's README, or open the file o
   - The side profile tracks the kit, but the kit's fin sweeps much farther back and its stripe is a deeper red.
   - The front three-quarter is let down by a blunter nose and a slightly blimp-like hull.
 - **Reference photos:** five photos of a physical Planet Express model kit, used for comparison only.
+
+| <img src="ai-skunkworks-robot-skunk-codex/renders/hero.png" width="140" alt="AI Skunkworks robot skunk"> | [`ai-skunkworks-robot-skunk-codex/`](ai-skunkworks-robot-skunk-codex/) | Codex | First robot-skunk interpretation from two line drawings: swept crest, mechanical face, oversized gauntlets, backpack and curved tail. Three comparison rounds; unrigged, inferred materials and depth; human review pending. | [README](ai-skunkworks-robot-skunk-codex/README.md) · [offline viewer](ai-skunkworks-robot-skunk-codex/index.html) |
