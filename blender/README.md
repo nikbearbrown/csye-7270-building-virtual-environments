@@ -64,7 +64,7 @@ To download a single file, use the links in a model's README, or open the file o
 - **Build method:** a scripted, lofted superellipse hull with every detail placed on its surface. Rounds 1 to 14 were traced from Professor Bear's 12 toy photos; in round 15 the hull proportions were measured from his STL kit (used as reference only; the STL files are not included because no licence was stated).
 - **Scores:** Professor Bear gave round 12 "pretty good, maybe 6/10, could use another round". Grok Bot rates round 15 at about 5.5/10 (side 6, front 5, rear 4, top 5.5).
 - **Known gaps:** the upper hull reads lower than in the side photos, the engine bell sticks out too far, the details are simplified primitives, and the lighting is computer-clean rather than soft toy plastic.
-- **Film:** [`film/`](planet-express-ship-grok/film/) has a Brutalist beat sheet (`beat_sheet.json` plus `beat_sheet.md`) for a "how to build it by hand" film; no video in the repo.
+- **Film:** [`film/`](planet-express-ship-grok/film/) has the source for a build-lesson film and a walkthrough film (brutalist.art `blender-build` and `blender-walkthrough`); no video in the repo.
 
 ## enterprise-futurama-toy-grok/ (Grok Bot)
 
@@ -72,7 +72,7 @@ To download a single file, use the links in a model's README, or open the file o
 - **Build method:** one parametric Blender Python script: lathed saucer, dome, hull and nacelles, lofted neck and pylons, and portholes, rivets and stripe panels placed on the surfaces. The style follows a Grok Bot concept image approved by Professor Bear; the layout starts from his blueprints and was then re-measured off the concept to make it compact and toy-like.
 - **Grok Bot's self-assessment** (about 6 out of 10 against the concept): hero three-quarter 6, side, top and front 5. All the concept's parts are there in the right colours, but the saucer is too thin and flat-topped, the secondary hull is too small, and the finish is computer-clean.
 - **Human review:** Professor Bear approved the concept; his verdict on the model is pending.
-- **Film:** [`film/`](enterprise-futurama-toy-grok/film/) has a Brutalist beat sheet (`beat_sheet.json` plus `beat_sheet.md`) for a "how to build it by hand" film; no video in the repo.
+- **Film:** [`film/`](enterprise-futurama-toy-grok/film/) has the source for a build-lesson film and a walkthrough film (brutalist.art `blender-build` and `blender-walkthrough`); no video in the repo.
 
 ## planet-express-ship-muse/ (Muse)
 
