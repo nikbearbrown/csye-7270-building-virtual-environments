@@ -97,7 +97,7 @@ Companion film: coming soon
 
 | File | Size | Purpose | Download |
 |---|---:|---|---|
-| enterprise-ncc-1701.blend | 10.21 MiB | Full editable scene, cameras, lights and materials | [Download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/enterprise-ncc-1701-codex/enterprise-ncc-1701.blend) |
+| enterprise-ncc-1701.blend | 9.66 MiB | Full editable scene, cameras, lights and materials | [Download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/enterprise-ncc-1701-codex/enterprise-ncc-1701.blend) |
 | enterprise-ncc-1701.glb | 3.79 MiB | Model with flat PBR colors and modeled details; no image textures | [Download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/enterprise-ncc-1701-codex/enterprise-ncc-1701.glb) |
 | index.html | 0.64 MiB | Self-contained offline image review viewer | [Download](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/raw/main/blender/enterprise-ncc-1701-codex/index.html) |
 

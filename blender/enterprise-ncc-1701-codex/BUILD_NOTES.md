@@ -14,7 +14,7 @@ Blender 4.2.0 ran in an isolated GUI session. `scripts/start_mcp.py` loaded the 
 
 `build_enterprise.py` makes a contoured revolved saucer, sloped bridge decks, a swept neck, a variable-radius engineering hull loft, diagonal support pylons, longitudinal nacelle shells, hemispherical collectors, copper dish, vents, grilles, segmented hangar doors, windows and registry meshes. Text was converted to mesh and conformed to the saucer surface. Small details and seams are mesh geometry. Pylons overlap the hull shell at their roots; separate components are not boolean-unioned into a single printable solid. Mesh normals were recalculated before export.
 
-The scene includes seven orthographic cameras, four area lights, a world, named components, and a master empty for rigid ship motion. No animation, bones, collision shapes or LODs exist. Render engine: Cycles, 48 samples, denoising, AgX. Final renders are 1,600 px wide; aspect ratios vary by view.
+The scene includes seven orthographic cameras, four area lights, a world, named components, and a master empty for rigid ship motion. A final `finish_scene.py` pass removed empty collections and unused data and saved an uncluttered material-preview opening view; geometry was unchanged. No animation, bones, collision shapes or LODs exist. Render engine: Cycles, 48 samples, denoising, AgX. Final renders are 1,600 px wide; aspect ratios vary by view.
 
 ## Auditable comparison rounds
 
