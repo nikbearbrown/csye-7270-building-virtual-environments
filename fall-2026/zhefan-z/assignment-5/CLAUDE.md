@@ -5,7 +5,7 @@ Paths below are relative to that folder. `res://` = `walker-magic-zhefan/`.
 
 ## Project context
 
-**Engine.** Godot 4.7.2-stable (official build `ed1daf0bf`): `logs/test_wolf_60fps.log:1`, binary path in
+**Engine.** Godot 4.7.2-stable (official build `ed1daf0bf`): `logs/baseline-before/test_wolf_60fps.log:1`, binary path in
 `scripts/run-test.sh:5`. The project declares feature `"4.7"` (`walker-magic-zhefan/project.godot:15`).
 
 **Renderer.** Not set: the `[rendering]` section (`project.godot:39–43`) has only the 2D texture filter
@@ -20,8 +20,8 @@ no `hdr_2d` key. Physics tick rate is not set, so the default 60 per second appl
 **How the shaded object is drawn.** The player's `Sprite2D` child (`features/player/player.tscn:15–18`):
 `centered = false`, `offset = (-31, -67)`, no material today. Its texture is swapped per state by
 `_set_state()` (`features/player/player.gd:130–133`) from the `TEXTURES` table (`player.gd:17–26`);
-`fail()` sets the texture directly (`player.gd:178`). The existing blink toggles `sprite.visible` every
-physics tick while invulnerable (`player.gd:81`, `BLINK_PERIOD` at `features/player/tuning.gd:19`).
+`fail()` sets the texture directly (`player.gd:178`). The existing blink sets `sprite.visible` every
+physics tick while invulnerable, toggling it every `BLINK_PERIOD` = 0.1 s (`player.gd:81`, `BLINK_PERIOD` at `features/player/tuning.gd:19`).
 
 **Game state that drives the effect.** Owned by `features/player/player.gd` (class `Player`):
 - `invulnerable`, seconds left (`player.gd:37`); set to `Tuning.INVULNERABLE_TIME` = 1.0 when a hit
@@ -52,12 +52,27 @@ bash scripts/run-test.sh test_flow.gd 60
 bash scripts/run-test.sh test_audio.gd 60
 bash scripts/run-test.sh test_sound_triggers.gd 60
 bash scripts/run-test.sh test_a3_assets.gd 60
+# new tests for this change run at 30, 60 and 144:
+# bash scripts/run-test.sh <new_test>.gd 30   (then 60, 144)
 ```
 
 Baseline before this change, at 60 fps, all passing (`logs/baseline-before/*.log`): a3_assets 22,
 audio 13, cast 11, flow 14, player 11, sound_triggers 11, wolf 13 checks, 0 failures.
 `tests/capture_scene.gd` is not a run-test.sh test: it needs a real window and an output folder
 argument (`walker-magic-zhefan/tests/capture_scene.gd:2–4`).
+
+## Headless facts
+
+From the assignment text; to be confirmed on this machine in Step 2, then this block is updated.
+
+- A headless run uses a dummy renderer: it draws nothing, so no test here can judge colour or look.
+- `get_shader_uniform_list()` reports declared uniforms headlessly; a shader that fails to parse returns an
+  empty list. Defaults are not reported, so tests read them from the shader source text.
+- `set_shader_parameter()` with a name the shader does not declare raises no error, and reading it back
+  returns the stored value; only the uniform-list assertion catches a renamed uniform.
+- Exit code 0 does not mean no errors: `scripts/run-test.sh:10` fails on `SHADER ERROR` / `SCRIPT ERROR`.
+  Texture import detection only runs when a real editor draws the texture, so `git status` after the first
+  editor session.
 
 ## Current change
 
@@ -66,7 +81,8 @@ argument (`walker-magic-zhefan/tests/capture_scene.gd:2–4`).
 ## Ownership
 
 Files in `walker-magic-zhefan/shaders/` are hand-written by the human and are never edited by an agent.
-This includes `shaders/hurt_tint.gdshader` and `shaders/rock_frost.gdshader` (`CHANGE-BRIEF.md:30,125`):
+This includes `shaders/hurt_tint.gdshader`, `shaders/rock_frost.gdshader` (`CHANGE-BRIEF.md:30,125`), the
+hint-experiment shader, and `shaders/standard_generated.gdshader` (written by the editor's convert action):
 an agent may read them, report problems and suggest changes, but never creates, edits, moves or deletes them.
 
 ## Out of scope
@@ -86,9 +102,9 @@ an agent may read them, report problems and suggest changes, but never creates, 
 
 - **Renderer at run time.** Forward+ is the engine default, not a value in `project.godot`; the headless
   tests use a dummy renderer (`tests/capture_scene.gd:2`), so no log here shows the renderer.
-- **Two rock materials.** `rock.glb` has two materials, `Rock_Main` and `Rock_Top`. The brief describes a
-  single dry material via Use External and one surface override for the frosted rock
-  (`CHANGE-BRIEF.md:121`); which surfaces get which material is not stated.
+- **Two rock materials: resolved.** `rock.glb` has `Rock_Main` and `Rock_Top`. Only `Rock_Main` gets the shader
+  material; `Rock_Top` keeps its imported material (CHANGE-BRIEF revision 2026-10-23). The surface index of
+  `Rock_Main` is still to be confirmed in the editor.
 - **Not created yet:** `walker-magic-zhefan/shaders/`, `assets/materials/` (`mat_rock_dry.tres`,
   `mat_rock_frosted.tres`), `showcase3d/material_compare.tscn`, `assets/textures/hint/`, the tint driver
   script, and the new test files. Their names come from `CHANGE-BRIEF.md`; the driver's path and wiring

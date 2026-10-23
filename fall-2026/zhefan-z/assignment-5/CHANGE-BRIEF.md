@@ -210,4 +210,6 @@ Both reference `shaders/rock_frost.gdshader` and bind the same three textures. T
 
 ## Revisions
 
-(None yet.)
+### 2026-10-23 — which rock surface gets the shader
+
+Found while reviewing the CLAUDE.md draft: `rock.glb` has two materials, `Rock_Main` and `Rock_Top`, which section 4 did not account for. Decision: only `Rock_Main` gets the shader material. In the importer, `Rock_Main` uses Use External pointing to `assets/materials/mat_rock_dry.tres`; `Rock_Top` keeps its imported Assignment 3 material. In `showcase3d/material_compare.tscn` the second rock overrides only the `Rock_Main` surface with `mat_rock_frosted.tres`. The two-tone look from Assignment 3 stays.
