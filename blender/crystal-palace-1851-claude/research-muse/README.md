@@ -29,24 +29,19 @@ recorded per file, and known noise is listed honestly at the bottom.
 | Set | Count | Downloaded? |
 |---|---|---|
 | Seed article images (Wikipedia, “The Crystal Palace”) | 30 records, 29 files | yes — `images/seed/` (one title is a duplicate-SHA alias of another) |
-| Articles linked from the seed page (depth 1) | 396 pages scanned | see ⚠ below |
-| Unique image files found on those 396 pages | 7,003 found | metadata fetch interrupted — see ⚠ |
-| Image files from relevant linked pages | 35 files on disk | yes — `images/linked/` (from the first scrape pass) |
-| Wikimedia Commons files in the palace/exhibition category tree | 2,688 files, 73 categories | plans/drawings/engravings only — `images/commons/` (60 files) |
+| Articles linked from the seed page (depth 1) | 396 pages | inventoried + relevant downloads |
+| Image uses on those 396 pages | 10,017 uses (7,003 unique files) | inventoried in `data/images_depth1_all.csv` |
+| Image files from relevant linked pages | 630 files | yes — `images/linked/` |
+| Wikimedia Commons files in the palace/exhibition category tree | 2,732 files, 73 categories | plans/drawings/engravings only — `images/commons/` (59 files) |
 | Internet Archive texts (“crystal palace”) | 51 items | inventoried; Downes OCR text in `sources/` |
-| **Total image files in `images/`** | **123 files** | **197 MB** |
+| **Total image files in `images/`** | **718 files** | **1.1 GB** |
 
-> ⚠ **Depth-1 inventory — interrupted, stated plainly.** The scan of
-> all 396 linked pages completed and found 7,003 unique image files,
-> but while fetching those files' metadata, en.wikipedia.org became
-> unreachable from this machine (every other Wikimedia host kept
-> working; the outage lasted the rest of the session). So
-> `data/images_depth1_all.csv` is **empty in this commit** rather than
-> faked, and `images/linked/` holds the relevant-page downloads from
-> the earlier pass. Re-running `scripts/scrape_crystal_palace.py`
-> when en.wikipedia.org is reachable completes this set — the script
-> is batch-failure tolerant and resumes over the files already here.
-> `data/failures.json` records the failed calls.
+> **Depth-1 note.** Four imageinfo batches (of ~140) were lost to
+> network drops / over-long title lists and are recorded in
+> `data/failures.json`; every other file of the 7,003 has full
+> metadata below. First push of this folder (2026-10-23) predated
+> the depth-1 completion; the completed inventory landed in a
+> follow-up commit the same night.
 
 Relevant = the page is about the palace, the exhibition, its people,
 its site, its materials or its sibling buildings (Paxton, Chatsworth,

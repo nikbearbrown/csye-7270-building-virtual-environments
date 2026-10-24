@@ -16,15 +16,14 @@ its source page, file page, direct URL, licence and artist in
 
 ## Depth-1 Wikipedia pages
 
-- All 396 articles linked from the seed page were visited and the
-  images on them counted (7,003 unique files). The per-file metadata
-  inventory (`data/images_depth1_all.csv`) is **empty in this commit**:
-  en.wikipedia.org became unreachable mid-fetch — see the ⚠ note in
-  `README.md`; re-running the scraper completes it. Images were
-  downloaded (`images/linked/`) only from pages classified as
-  architecturally/historically relevant to the palace (see
-  `is_relevant()` in the scraper and the `relevant` flag in
-  `data/pages.json`).
+- All 396 articles linked from the seed page were visited and every
+  image on them inventoried (`data/images_depth1_all.csv` — 10,017
+  image uses, 7,003 unique files, each with file page and direct URL;
+  four metadata batches lost to network drops are logged in
+  `data/failures.json`). Images were downloaded (`images/linked/`,
+  630 files) only from pages classified as architecturally/
+  historically relevant to the palace (see `is_relevant()` in the
+  scraper and the `relevant` flag in `data/pages.json`).
 
 ## Wikimedia Commons
 
