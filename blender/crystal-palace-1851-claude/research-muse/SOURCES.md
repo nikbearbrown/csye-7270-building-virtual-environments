@@ -1,78 +1,417 @@
-# Sources
+# Sources scraped
 
-Everything in this folder traces to one of the sources below. The
-scraper (`scripts/scrape_crystal_palace.py`) records, for every image,
-its source page, file page, direct URL, licence and artist in
-`data/*.csv` — check there before re-using any file.
+Seed: https://en.wikipedia.org/wiki/The_Crystal_Palace
 
-## Primary seed
+## Main article (1)
 
-- **Wikipedia — “The Crystal Palace”**
-  https://en.wikipedia.org/wiki/The_Crystal_Palace
-  Seed for the whole scrape: its images were all downloaded
-  (`images/seed/`), its outgoing article links define the depth-1 set
-  (`data/pages.json`), and its plain text is saved at
-  `sources/seed_article.txt` (CC BY-SA, Wikipedia contributors).
+- [The Crystal Palace](https://en.wikipedia.org/wiki/The_Crystal_Palace) — 32 images found
 
-## Depth-1 Wikipedia pages
+## Commons category (1)
 
-- All 396 articles linked from the seed page were visited and every
-  image on them inventoried (`data/images_depth1_all.csv` — 10,017
-  image uses, 7,003 unique files, each with file page and direct URL;
-  four metadata batches lost to network drops are logged in
-  `data/failures.json`). Images were downloaded (`images/linked/`,
-  630 files) only from pages classified as architecturally/
-  historically relevant to the palace (see `is_relevant()` in the
-  scraper and the `relevant` flag in `data/pages.json`).
+- [Category:Crystal Palace (building)](https://commons.wikimedia.org/wiki/Category:Crystal_Palace_(building)) — 16 images found
 
-## Wikimedia Commons
+## Commons subcategories (5)
 
-- Category tree rooted at Category:Crystal Palace and the building /
-  exhibition subcategories (Crystal Palace in Hyde Park; Crystal
-  Palace in art; Great Exhibition; Crystal Palace Park; Crystal
-  Palace Dinosaurs; …), pruned of neighbourhood geography
-  (streets, pubs, stations). Every file inventoried in
-  `data/images_commons_all.csv`; plans, sections, elevations,
-  diagrams, drawings, plates and engravings downloaded to
-  `images/commons/`.
-- Start browsing: https://commons.wikimedia.org/wiki/Category:Crystal_Palace
+- [Category:Crystal Palace Museum](https://commons.wikimedia.org/wiki/Category:Crystal_Palace_Museum) — 10 images found
+- [Category:Crystal Palace in Hyde Park](https://commons.wikimedia.org/wiki/Category:Crystal_Palace_in_Hyde_Park) — 15 images found
+- [Category:Crystal Palace in Sydenham](https://commons.wikimedia.org/wiki/Category:Crystal_Palace_in_Sydenham) — 87 images found
+- [Category:Crystal Palace in art](https://commons.wikimedia.org/wiki/Category:Crystal_Palace_in_art) — 2 images found
+- [Category:Crystal Palace pubs](https://commons.wikimedia.org/wiki/Category:Crystal_Palace_pubs) — 4 images found
 
-## The working drawings (primary blueprint source)
+## Depth-1 linked Wikipedia articles (395)
 
-- Charles Downes, *The Building Erected in Hyde Park for the Great
-  Exhibition of the Works of Industry of All Nations, 1851*
-  (London: John Weale, 1852). 28 large plates — plans, elevations,
-  sections and details — “laid down to a large scale from the working
-  drawings of the contractors, Messrs. Fox, Henderson, and Co.”
-- McGill University Library scan, Internet Archive:
-  https://archive.org/details/McGillLibrary-rbsc_building-erected-hyde-park_folioNA6750L6D71852-21979
-  - Full metadata saved: `data/internet_archive_downes1852_metadata.json`
-  - OCR text saved: `sources/downes_1852_ocr.txt`
-  - PDF (371 MB): https://archive.org/download/McGillLibrary-rbsc_building-erected-hyde-park_folioNA6750L6D71852-21979/rbsc_building-erected-hyde-park_folioNA6750L6D71852.pdf
-  - Per-page JP2 zip (110 MB): https://archive.org/download/McGillLibrary-rbsc_building-erected-hyde-park_folioNA6750L6D71852-21979/rbsc_building-erected-hyde-park_folioNA6750L6D71852_jp2.zip
-  - Linked, not committed to git (file-size). Plates VI and XV are the
-    two plates the model in this folder was dimension-checked against.
-
-## Further primary / institutional sources (indexed, not scraped)
-
-Inventoried in `data/internet_archive_items.json` (≈50 Internet
-Archive texts matching “crystal palace”), plus:
-
-- **V&A Museum** — Paxton's original blotting-paper sketch and the
-  submitted perspective drawing (object D.29-1905):
-  https://collections.vam.ac.uk/item/O18166/original-sketch-of-the-great-exhibition-building-architectural-rendering-paxton-joseph-sir/
-- **Encyclopædia Britannica** — “Crystal Palace” entry (headline
-  dimensions cross-checked against Wikipedia in `ARCHITECTURE.md`):
-  https://www.britannica.com/topic/Crystal-Palace-building-London
-- **Historic England / RIBA / London Metropolitan Archives** hold
-  further photographs and drawings; their catalogues are the next
-  places to look for Sydenham-era material. Not scraped here
-  (catalogue images are not openly licensed for redistribution).
-
-## Licence note
-
-Most 1851–1936 imagery here is public domain. Modern photographs
-(Sydenham site today, the dinosaurs, the park) carry individual
-Creative Commons licences — the per-file licence, artist and credit
-are in the CSVs. The scrape itself (code) was written by Muse for
-this course repo; the data files are indexes of the sources above.
+- [1865 International Exhibition](https://en.wikipedia.org/wiki/1865_International_Exhibition) — 6 images found
+- [1895 African Exhibition](https://en.wikipedia.org/wiki/1895_African_Exhibition) — 4 images found
+- [1909 Crystal Palace Scout Rally](https://en.wikipedia.org/wiki/1909_Crystal_Palace_Scout_Rally) — 1 images found
+- [2012 Summer Olympics opening ceremony](https://en.wikipedia.org/wiki/2012_Summer_Olympics_opening_ceremony) — 26 images found
+- [Aberdeen Pavilion](https://en.wikipedia.org/wiki/Aberdeen_Pavilion) — 10 images found
+- [Abraham-Louis Breguet](https://en.wikipedia.org/wiki/Abraham-Louis_Breguet) — 9 images found
+- [Adam Hart-Davis](https://en.wikipedia.org/wiki/Adam_Hart-Davis) — 2 images found
+- [Alexandra Palace](https://en.wikipedia.org/wiki/Alexandra_Palace) — 26 images found
+- [Alhambra](https://en.wikipedia.org/wiki/Alhambra) — 53 images found
+- [Amphitheatre](https://en.wikipedia.org/wiki/Amphitheatre) — 8 images found
+- [Anaglyph 3D](https://en.wikipedia.org/wiki/Anaglyph_3D) — 28 images found
+- [Ancient Greek art](https://en.wikipedia.org/wiki/Ancient_Greek_art) — 103 images found
+- [Anerley](https://en.wikipedia.org/wiki/Anerley) — 19 images found
+- [Angarrack viaduct](https://en.wikipedia.org/wiki/Angarrack_viaduct) — 2 images found
+- [Anglia Ruskin University](https://en.wikipedia.org/wiki/Anglia_Ruskin_University) — 23 images found
+- [Art of ancient Egypt](https://en.wikipedia.org/wiki/Art_of_ancient_Egypt) — 270 images found
+- [Arthur Wellesley, 1st Duke of Wellington](https://en.wikipedia.org/wiki/Arthur_Wellesley%2C_1st_Duke_of_Wellington) — 46 images found
+- [Atmospheric railway](https://en.wikipedia.org/wiki/Atmospheric_railway) — 13 images found
+- [Augustus Pugin](https://en.wikipedia.org/wiki/Augustus_Pugin) — 18 images found
+- [Auto show](https://en.wikipedia.org/wiki/Auto_show) — 19 images found
+- [Avon Bridge](https://en.wikipedia.org/wiki/Avon_Bridge) — 2 images found
+- [BBC News](https://en.wikipedia.org/wiki/BBC_News) — 16 images found
+- [BL 18-inch Mk I naval gun](https://en.wikipedia.org/wiki/BL_18-inch_Mk_I_naval_gun) — 7 images found
+- [Balanced rudder](https://en.wikipedia.org/wiki/Balanced_rudder) — 7 images found
+- [Balloon flange girder](https://en.wikipedia.org/wiki/Balloon_flange_girder) — 8 images found
+- [Bandy](https://en.wikipedia.org/wiki/Bandy) — 42 images found
+- [Bank of England](https://en.wikipedia.org/wiki/Bank_of_England) — 64 images found
+- [Bath Spa railway station](https://en.wikipedia.org/wiki/Bath_Spa_railway_station) — 49 images found
+- [Battersea Park](https://en.wikipedia.org/wiki/Battersea_Park) — 15 images found
+- [Baulk road](https://en.wikipedia.org/wiki/Baulk_road) — 6 images found
+- [Beaux-Arts architecture](https://en.wikipedia.org/wiki/Beaux-Arts_architecture) — 142 images found
+- [Benjamin Waterhouse Hawkins](https://en.wikipedia.org/wiki/Benjamin_Waterhouse_Hawkins) — 13 images found
+- [Bethlem Royal Hospital](https://en.wikipedia.org/wiki/Bethlem_Royal_Hospital) — 30 images found
+- [Birkenhead Park](https://en.wikipedia.org/wiki/Birkenhead_Park) — 10 images found
+- [Bishop's Bridge](https://en.wikipedia.org/wiki/Bishop%27s_Bridge) — 2 images found
+- [Blotting paper](https://en.wikipedia.org/wiki/Blotting_paper) — 9 images found
+- [Bob Marley](https://en.wikipedia.org/wiki/Bob_Marley) — 25 images found
+- [Boris Johnson](https://en.wikipedia.org/wiki/Boris_Johnson) — 79 images found
+- [Box Tunnel](https://en.wikipedia.org/wiki/Box_Tunnel) — 6 images found
+- [Bradbury and Evans](https://en.wikipedia.org/wiki/Bradbury_and_Evans) — 3 images found
+- [Bradford-on-Avon railway station](https://en.wikipedia.org/wiki/Bradford-on-Avon_railway_station) — 8 images found
+- [Brentford Dock](https://en.wikipedia.org/wiki/Brentford_Dock) — 6 images found
+- [Brentford branch line](https://en.wikipedia.org/wiki/Brentford_branch_line) — 57 images found
+- [Bridgend railway station](https://en.wikipedia.org/wiki/Bridgend_railway_station) — 21 images found
+- [Bridgwater railway station](https://en.wikipedia.org/wiki/Bridgwater_railway_station) — 114 images found
+- [Bristol Harbour](https://en.wikipedia.org/wiki/Bristol_Harbour) — 35 images found
+- [Bristol Temple Meads railway station](https://en.wikipedia.org/wiki/Bristol_Temple_Meads_railway_station) — 236 images found
+- [Bristol and Exeter Railway](https://en.wikipedia.org/wiki/Bristol_and_Exeter_Railway) — 46 images found
+- [Bristol and Gloucester Railway](https://en.wikipedia.org/wiki/Bristol_and_Gloucester_Railway) — 143 images found
+- [Bristol and South Wales Union Railway](https://en.wikipedia.org/wiki/Bristol_and_South_Wales_Union_Railway) — 50 images found
+- [Bristol–Exeter line](https://en.wikipedia.org/wiki/Bristol%E2%80%93Exeter_line) — 75 images found
+- [British Standard Whitworth](https://en.wikipedia.org/wiki/British_Standard_Whitworth) — 3 images found
+- [Brocks Fireworks](https://en.wikipedia.org/wiki/Brocks_Fireworks) — 1 images found
+- [Brunel (opera project)](https://en.wikipedia.org/wiki/Brunel_%28opera_project%29) — 0 images found
+- [Brunel Awards](https://en.wikipedia.org/wiki/Brunel_Awards) — 13 images found
+- [Brunel Manor](https://en.wikipedia.org/wiki/Brunel_Manor) — 3 images found
+- [Brunel Museum](https://en.wikipedia.org/wiki/Brunel_Museum) — 10 images found
+- [Brunel University of London](https://en.wikipedia.org/wiki/Brunel_University_of_London) — 17 images found
+- [Canadian Parliament Buildings](https://en.wikipedia.org/wiki/Canadian_Parliament_Buildings) — 12 images found
+- [Carnon viaduct](https://en.wikipedia.org/wiki/Carnon_viaduct) — 4 images found
+- [Cast iron](https://en.wikipedia.org/wiki/Cast_iron) — 23 images found
+- [Cat show](https://en.wikipedia.org/wiki/Cat_show) — 12 images found
+- [Chance Brothers](https://en.wikipedia.org/wiki/Chance_Brothers) — 12 images found
+- [Chance’s Glassworks](https://en.wikipedia.org/wiki/Chance%E2%80%99s_Glassworks) — 0 images found
+- [Charfield railway station](https://en.wikipedia.org/wiki/Charfield_railway_station) — 137 images found
+- [Charlbury railway station](https://en.wikipedia.org/wiki/Charlbury_railway_station) — 7 images found
+- [Charles Barry](https://en.wikipedia.org/wiki/Charles_Barry) — 19 images found
+- [Charles Blondin](https://en.wikipedia.org/wiki/Charles_Blondin) — 10 images found
+- [Charles Darwin](https://en.wikipedia.org/wiki/Charles_Darwin) — 38 images found
+- [Charles Dickens](https://en.wikipedia.org/wiki/Charles_Dickens) — 56 images found
+- [Charles Dickens Jr.](https://en.wikipedia.org/wiki/Charles_Dickens_Jr.) — 5 images found
+- [Charles Fox (engineer, born 1810)](https://en.wikipedia.org/wiki/Charles_Fox_%28engineer%2C_born_1810%29) — 7 images found
+- [Charles Sibthorp](https://en.wikipedia.org/wiki/Charles_Sibthorp) — 5 images found
+- [Charles Spurgeon](https://en.wikipedia.org/wiki/Charles_Spurgeon) — 26 images found
+- [Chatsworth House](https://en.wikipedia.org/wiki/Chatsworth_House) — 45 images found
+- [Cheltenham and Great Western Union Railway](https://en.wikipedia.org/wiki/Cheltenham_and_Great_Western_Union_Railway) — 47 images found
+- [Chepstow Railway Bridge](https://en.wikipedia.org/wiki/Chepstow_Railway_Bridge) — 7 images found
+- [Chippenham railway station](https://en.wikipedia.org/wiki/Chippenham_railway_station) — 9 images found
+- [Christopher Dresser](https://en.wikipedia.org/wiki/Christopher_Dresser) — 15 images found
+- [Cirencester Town railway station](https://en.wikipedia.org/wiki/Cirencester_Town_railway_station) — 3 images found
+- [Clifton Suspension Bridge](https://en.wikipedia.org/wiki/Clifton_Suspension_Bridge) — 29 images found
+- [Cloakroom](https://en.wikipedia.org/wiki/Cloakroom) — 7 images found
+- [Cockett railway station](https://en.wikipedia.org/wiki/Cockett_railway_station) — 216 images found
+- [Colonial and Indian Exhibition (1905)](https://en.wikipedia.org/wiki/Colonial_and_Indian_Exhibition_%281905%29) — 1 images found
+- [Conservatory of Flowers](https://en.wikipedia.org/wiki/Conservatory_of_Flowers) — 22 images found
+- [Consumer Price Index](https://en.wikipedia.org/wiki/Consumer_Price_Index) — 0 images found
+- [Cornwall Railway](https://en.wikipedia.org/wiki/Cornwall_Railway) — 17 images found
+- [Cornwall Railway viaducts](https://en.wikipedia.org/wiki/Cornwall_Railway_viaducts) — 17 images found
+- [Coronation of George V and Mary](https://en.wikipedia.org/wiki/Coronation_of_George_V_and_Mary) — 62 images found
+- [Counties of England](https://en.wikipedia.org/wiki/Counties_of_England) — 18 images found
+- [Crane (machine)](https://en.wikipedia.org/wiki/Crane_%28machine%29) — 67 images found
+- [Crediton railway station](https://en.wikipedia.org/wiki/Crediton_railway_station) — 8 images found
+- [Crew's Hole, Bristol](https://en.wikipedia.org/wiki/Crew%27s_Hole%2C_Bristol) — 5 images found
+- [Crystal Palace (High Level) railway station](https://en.wikipedia.org/wiki/Crystal_Palace_%28High_Level%29_railway_station) — 9 images found
+- [Crystal Palace (Montreal)](https://en.wikipedia.org/wiki/Crystal_Palace_%28Montreal%29) — 4 images found
+- [Crystal Palace (Porto)](https://en.wikipedia.org/wiki/Crystal_Palace_%28Porto%29) — 2 images found
+- [Crystal Palace Bowl](https://en.wikipedia.org/wiki/Crystal_Palace_Bowl) — 3 images found
+- [Crystal Palace Concerts](https://en.wikipedia.org/wiki/Crystal_Palace_Concerts) — 0 images found
+- [Crystal Palace Dinosaurs](https://en.wikipedia.org/wiki/Crystal_Palace_Dinosaurs) — 23 images found
+- [Crystal Palace F.C.](https://en.wikipedia.org/wiki/Crystal_Palace_F.C.) — 70 images found
+- [Crystal Palace National Sports Centre](https://en.wikipedia.org/wiki/Crystal_Palace_National_Sports_Centre) — 19 images found
+- [Crystal Palace Park](https://en.wikipedia.org/wiki/Crystal_Palace_Park) — 22 images found
+- [Crystal Palace School](https://en.wikipedia.org/wiki/Crystal_Palace_School) — 7 images found
+- [Crystal Palace and Anerley (ward)](https://en.wikipedia.org/wiki/Crystal_Palace_and_Anerley_%28ward%29) — 0 images found
+- [Crystal Palace circuit](https://en.wikipedia.org/wiki/Crystal_Palace_circuit) — 0 images found
+- [Crystal Palace pneumatic railway](https://en.wikipedia.org/wiki/Crystal_Palace_pneumatic_railway) — 1 images found
+- [Crystal Palace railway station](https://en.wikipedia.org/wiki/Crystal_Palace_railway_station) — 22 images found
+- [Crystal Palace transmitting station](https://en.wikipedia.org/wiki/Crystal_Palace_transmitting_station) — 10 images found
+- [Crystal Palace, London](https://en.wikipedia.org/wiki/Crystal_Palace%2C_London) — 52 images found
+- [Culham railway station](https://en.wikipedia.org/wiki/Culham_railway_station) — 8 images found
+- [Cumberland Basin (Bristol)](https://en.wikipedia.org/wiki/Cumberland_Basin_%28Bristol%29) — 7 images found
+- [Curtain wall (architecture)](https://en.wikipedia.org/wiki/Curtain_wall_%28architecture%29) — 11 images found
+- [Daguerreotype](https://en.wikipedia.org/wiki/Daguerreotype) — 37 images found
+- [Daisy Ashford](https://en.wikipedia.org/wiki/Daisy_Ashford) — 7 images found
+- [Dartmouth and Torbay Railway](https://en.wikipedia.org/wiki/Dartmouth_and_Torbay_Railway) — 5 images found
+- [Didcot Railway Centre](https://en.wikipedia.org/wiki/Didcot_Railway_Centre) — 176 images found
+- [Disused railway stations on the Bristol to Exeter Line](https://en.wikipedia.org/wiki/Disused_railway_stations_on_the_Bristol_to_Exeter_Line) — 84 images found
+- [Dog show](https://en.wikipedia.org/wiki/Dog_show) — 7 images found
+- [Doi (identifier)](https://en.wikipedia.org/wiki/Doi_%28identifier%29) — 0 images found
+- [Dominion](https://en.wikipedia.org/wiki/Dominion) — 25 images found
+- [Douglas William Jerrold](https://en.wikipedia.org/wiki/Douglas_William_Jerrold) — 9 images found
+- [Duchy of Brunswick](https://en.wikipedia.org/wiki/Duchy_of_Brunswick) — 36 images found
+- [East Somerset Railway](https://en.wikipedia.org/wiki/East_Somerset_Railway) — 36 images found
+- [Edward Middleton Barry](https://en.wikipedia.org/wiki/Edward_Middleton_Barry) — 5 images found
+- [Edward Milner](https://en.wikipedia.org/wiki/Edward_Milner) — 2 images found
+- [Elton John](https://en.wikipedia.org/wiki/Elton_John) — 50 images found
+- [Emma Darwin](https://en.wikipedia.org/wiki/Emma_Darwin) — 6 images found
+- [Encyclopædia Britannica Eleventh Edition](https://en.wikipedia.org/wiki/Encyclop%C3%A6dia_Britannica_Eleventh_Edition) — 0 images found
+- [Engineered wood](https://en.wikipedia.org/wiki/Engineered_wood) — 9 images found
+- [English Heritage Archive](https://en.wikipedia.org/wiki/English_Heritage_Archive) — 0 images found
+- [Eric Clapton](https://en.wikipedia.org/wiki/Eric_Clapton) — 34 images found
+- [Essie Ackland](https://en.wikipedia.org/wiki/Essie_Ackland) — 5 images found
+- [Eurasian sparrowhawk](https://en.wikipedia.org/wiki/Eurasian_sparrowhawk) — 24 images found
+- [Exeter St Davids railway station](https://en.wikipedia.org/wiki/Exeter_St_Davids_railway_station) — 43 images found
+- [Exeter St Thomas railway station](https://en.wikipedia.org/wiki/Exeter_St_Thomas_railway_station) — 30 images found
+- [Exhibition of the Industry of All Nations](https://en.wikipedia.org/wiki/Exhibition_of_the_Industry_of_All_Nations) — 5 images found
+- [Festival of Empire](https://en.wikipedia.org/wiki/Festival_of_Empire) — 17 images found
+- [Fire engine](https://en.wikipedia.org/wiki/Fire_engine) — 38 images found
+- [First World War](https://en.wikipedia.org/wiki/First_World_War) — 0 images found
+- [Flush toilet](https://en.wikipedia.org/wiki/Flush_toilet) — 29 images found
+- [Flying arch](https://en.wikipedia.org/wiki/Flying_arch) — 1 images found
+- [Frederick Law Olmsted](https://en.wikipedia.org/wiki/Frederick_Law_Olmsted) — 17 images found
+- [French Second Republic](https://en.wikipedia.org/wiki/French_Second_Republic) — 15 images found
+- [Fyodor Dostoevsky](https://en.wikipedia.org/wiki/Fyodor_Dostoevsky) — 34 images found
+- [Galleria at Erieview](https://en.wikipedia.org/wiki/Galleria_at_Erieview) — 4 images found
+- [Garden Palace](https://en.wikipedia.org/wiki/Garden_Palace) — 16 images found
+- [Gardens by the Bay](https://en.wikipedia.org/wiki/Gardens_by_the_Bay) — 16 images found
+- [Gatehampton Railway Bridge](https://en.wikipedia.org/wiki/Gatehampton_Railway_Bridge) — 3 images found
+- [Geographic coordinate system](https://en.wikipedia.org/wiki/Geographic_coordinate_system) — 7 images found
+- [George Jennings](https://en.wikipedia.org/wiki/George_Jennings) — 5 images found
+- [Geraldine Mary Harmsworth Park](https://en.wikipedia.org/wiki/Geraldine_Mary_Harmsworth_Park) — 6 images found
+- [Girl Guide and Girl Scout](https://en.wikipedia.org/wiki/Girl_Guide_and_Girl_Scout) — 4 images found
+- [Giuseppe Garibaldi](https://en.wikipedia.org/wiki/Giuseppe_Garibaldi) — 39 images found
+- [Glaspalast (Munich)](https://en.wikipedia.org/wiki/Glaspalast_%28Munich%29) — 10 images found
+- [Great Britons](https://en.wikipedia.org/wiki/Great_Britons) — 10 images found
+- [Great Exhibition](https://en.wikipedia.org/wiki/Great_Exhibition) — 16 images found
+- [Great Western Main Line](https://en.wikipedia.org/wiki/Great_Western_Main_Line) — 203 images found
+- [Great Western Railway](https://en.wikipedia.org/wiki/Great_Western_Railway) — 38 images found
+- [Great Western Steamship Company](https://en.wikipedia.org/wiki/Great_Western_Steamship_Company) — 3 images found
+- [Greater London Council](https://en.wikipedia.org/wiki/Greater_London_Council) — 15 images found
+- [Gross Domestic Product deflator](https://en.wikipedia.org/wiki/Gross_Domestic_Product_deflator) — 0 images found
+- [HMS President (shore establishment)](https://en.wikipedia.org/wiki/HMS_President_%28shore_establishment%29) — 9 images found
+- [Handel Festival 1857](https://en.wikipedia.org/wiki/Handel_Festival_1857) — 2 images found
+- [HarperCollins](https://en.wikipedia.org/wiki/HarperCollins) — 12 images found
+- [Harrison Weir](https://en.wikipedia.org/wiki/Harrison_Weir) — 7 images found
+- [Henry Cole (inventor)](https://en.wikipedia.org/wiki/Henry_Cole_%28inventor%29) — 9 images found
+- [Henry Courtney Selous](https://en.wikipedia.org/wiki/Henry_Courtney_Selous) — 5 images found
+- [Henry Marc Brunel](https://en.wikipedia.org/wiki/Henry_Marc_Brunel) — 4 images found
+- [Henry Wyndham Phillips](https://en.wikipedia.org/wiki/Henry_Wyndham_Phillips) — 4 images found
+- [Henry-Russell Hitchcock](https://en.wikipedia.org/wiki/Henry-Russell_Hitchcock) — 1 images found
+- [Hilton London Paddington](https://en.wikipedia.org/wiki/Hilton_London_Paddington) — 7 images found
+- [Historic Environment Scotland](https://en.wikipedia.org/wiki/Historic_Environment_Scotland) — 6 images found
+- [Hugh Chisholm](https://en.wikipedia.org/wiki/Hugh_Chisholm) — 3 images found
+- [Hungerford Bridge and Golden Jubilee Bridges](https://en.wikipedia.org/wiki/Hungerford_Bridge_and_Golden_Jubilee_Bridges) — 12 images found
+- [Hyde Park, London](https://en.wikipedia.org/wiki/Hyde_Park%2C_London) — 27 images found
+- [Hypotenuse](https://en.wikipedia.org/wiki/Hypotenuse) — 5 images found
+- [ISBN (identifier)](https://en.wikipedia.org/wiki/ISBN_%28identifier%29) — 0 images found
+- [ISSN (identifier)](https://en.wikipedia.org/wiki/ISSN_%28identifier%29) — 0 images found
+- [Ian Ritchie (architect)](https://en.wikipedia.org/wiki/Ian_Ritchie_%28architect%29) — 10 images found
+- [Iguanodon](https://en.wikipedia.org/wiki/Iguanodon) — 52 images found
+- [Imperial War Museum](https://en.wikipedia.org/wiki/Imperial_War_Museum) — 38 images found
+- [Industrial Revolution](https://en.wikipedia.org/wiki/Industrial_Revolution) — 53 images found
+- [Infomart](https://en.wikipedia.org/wiki/Infomart) — 3 images found
+- [Institution of Civil Engineers](https://en.wikipedia.org/wiki/Institution_of_Civil_Engineers) — 11 images found
+- [Isambard Kingdom Brunel](https://en.wikipedia.org/wiki/Isambard_Kingdom_Brunel) — 50 images found
+- [Isambard Kingdom Brunel Standing Before the Launching Chains of the Great Eastern](https://en.wikipedia.org/wiki/Isambard_Kingdom_Brunel_Standing_Before_the_Launching_Chains_of_the_Great_Eastern) — 10 images found
+- [Isle of Dogs](https://en.wikipedia.org/wiki/Isle_of_Dogs) — 23 images found
+- [JSTOR (identifier)](https://en.wikipedia.org/wiki/JSTOR_%28identifier%29) — 0 images found
+- [John Davidson (poet)](https://en.wikipedia.org/wiki/John_Davidson_%28poet%29) — 11 images found
+- [John Logie Baird](https://en.wikipedia.org/wiki/John_Logie_Baird) — 17 images found
+- [Joseph Bonomi the Younger](https://en.wikipedia.org/wiki/Joseph_Bonomi_the_Younger) — 5 images found
+- [Joseph Paxton](https://en.wikipedia.org/wiki/Joseph_Paxton) — 17 images found
+- [Kensal Green Cemetery](https://en.wikipedia.org/wiki/Kensal_Green_Cemetery) — 26 images found
+- [Kent](https://en.wikipedia.org/wiki/Kent) — 41 images found
+- [Kew Gardens](https://en.wikipedia.org/wiki/Kew_Gardens) — 50 images found
+- [Kingdom of Hanover](https://en.wikipedia.org/wiki/Kingdom_of_Hanover) — 25 images found
+- [Koh-i-Noor](https://en.wikipedia.org/wiki/Koh-i-Noor) — 14 images found
+- [Landore Viaduct](https://en.wikipedia.org/wiki/Landore_Viaduct) — 4 images found
+- [Leo Schuster](https://en.wikipedia.org/wiki/Leo_Schuster) — 2 images found
+- [Life (magazine)](https://en.wikipedia.org/wiki/Life_%28magazine%29) — 8 images found
+- [Lindsey House](https://en.wikipedia.org/wiki/Lindsey_House) — 6 images found
+- [Linnean Society of London](https://en.wikipedia.org/wiki/Linnean_Society_of_London) — 16 images found
+- [Liskeard railway station](https://en.wikipedia.org/wiki/Liskeard_railway_station) — 36 images found
+- [List of English Heritage blue plaques in the Royal Borough of Kensington and Chelsea](https://en.wikipedia.org/wiki/List_of_English_Heritage_blue_plaques_in_the_Royal_Borough_of_Kensington_and_Chelsea) — 202 images found
+- [List of Historic Mechanical Engineering Landmarks](https://en.wikipedia.org/wiki/List_of_Historic_Mechanical_Engineering_Landmarks) — 205 images found
+- [List of demolished buildings and structures in London](https://en.wikipedia.org/wiki/List_of_demolished_buildings_and_structures_in_London) — 147 images found
+- [List of destroyed heritage](https://en.wikipedia.org/wiki/List_of_destroyed_heritage) — 36 images found
+- [List of fellows of the Royal Society A, B, C](https://en.wikipedia.org/wiki/List_of_fellows_of_the_Royal_Society_A%2C_B%2C_C) — 0 images found
+- [List of public art in Bristol](https://en.wikipedia.org/wiki/List_of_public_art_in_Bristol) — 146 images found
+- [List of public art in Paddington](https://en.wikipedia.org/wiki/List_of_public_art_in_Paddington) — 64 images found
+- [Listed building](https://en.wikipedia.org/wiki/Listed_building) — 25 images found
+- [Llynvi and Ogmore Railway](https://en.wikipedia.org/wiki/Llynvi_and_Ogmore_Railway) — 55 images found
+- [London Borough of Bromley](https://en.wikipedia.org/wiki/London_Borough_of_Bromley) — 34 images found
+- [London Development Agency](https://en.wikipedia.org/wiki/London_Development_Agency) — 2 images found
+- [London Paddington station](https://en.wikipedia.org/wiki/London_Paddington_station) — 99 images found
+- [London, Brighton and South Coast Railway](https://en.wikipedia.org/wiki/London%2C_Brighton_and_South_Coast_Railway) — 24 images found
+- [London, Chatham and Dover Railway](https://en.wikipedia.org/wiki/London%2C_Chatham_and_Dover_Railway) — 91 images found
+- [Lord Mayor of London](https://en.wikipedia.org/wiki/Lord_Mayor_of_London) — 29 images found
+- [Lord's Day Observance Society](https://en.wikipedia.org/wiki/Lord%27s_Day_Observance_Society) — 0 images found
+- [Loughor Viaduct](https://en.wikipedia.org/wiki/Loughor_Viaduct) — 4 images found
+- [Luftwaffe](https://en.wikipedia.org/wiki/Luftwaffe) — 30 images found
+- [Lycée Henri-IV](https://en.wikipedia.org/wiki/Lyc%C3%A9e_Henri-IV) — 9 images found
+- [Magic Kingdom](https://en.wikipedia.org/wiki/Magic_Kingdom) — 23 images found
+- [Maidenhead Railway Bridge](https://en.wikipedia.org/wiki/Maidenhead_Railway_Bridge) — 5 images found
+- [Malmaison Hotel, Reading](https://en.wikipedia.org/wiki/Malmaison_Hotel%2C_Reading) — 5 images found
+- [Manchester University Press](https://en.wikipedia.org/wiki/Manchester_University_Press) — 6 images found
+- [Manufacture nationale de Sèvres](https://en.wikipedia.org/wiki/Manufacture_nationale_de_S%C3%A8vres) — 34 images found
+- [Marc Isambard Brunel](https://en.wikipedia.org/wiki/Marc_Isambard_Brunel) — 13 images found
+- [Matthew Digby Wyatt](https://en.wikipedia.org/wiki/Matthew_Digby_Wyatt) — 3 images found
+- [MeasuringWorth](https://en.wikipedia.org/wiki/MeasuringWorth) — 2 images found
+- [Mechanical television](https://en.wikipedia.org/wiki/Mechanical_television) — 15 images found
+- [Metropolitan Borough of Camberwell](https://en.wikipedia.org/wiki/Metropolitan_Borough_of_Camberwell) — 7 images found
+- [Midland Railway](https://en.wikipedia.org/wiki/Midland_Railway) — 21 images found
+- [Millbay](https://en.wikipedia.org/wiki/Millbay) — 9 images found
+- [Modular building](https://en.wikipedia.org/wiki/Modular_building) — 16 images found
+- [Mortimer railway station](https://en.wikipedia.org/wiki/Mortimer_railway_station) — 5 images found
+- [Mosaic](https://en.wikipedia.org/wiki/Mosaic) — 88 images found
+- [Moulsford Railway Bridge](https://en.wikipedia.org/wiki/Moulsford_Railway_Bridge) — 3 images found
+- [Mozaffar ad-Din Shah Qajar](https://en.wikipedia.org/wiki/Mozaffar_ad-Din_Shah_Qajar) — 7 images found
+- [NR Brunel](https://en.wikipedia.org/wiki/NR_Brunel) — 3 images found
+- [Natural History Museum, London](https://en.wikipedia.org/wiki/Natural_History_Museum%2C_London) — 29 images found
+- [Navvy](https://en.wikipedia.org/wiki/Navvy) — 5 images found
+- [Negretti and Zambra](https://en.wikipedia.org/wiki/Negretti_and_Zambra) — 8 images found
+- [New York Crystal Palace](https://en.wikipedia.org/wiki/New_York_Crystal_Palace) — 6 images found
+- [Nikolay Chernyshevsky](https://en.wikipedia.org/wiki/Nikolay_Chernyshevsky) — 6 images found
+- [Notes from Underground](https://en.wikipedia.org/wiki/Notes_from_Underground) — 3 images found
+- [OCLC (identifier)](https://en.wikipedia.org/wiki/OCLC_%28identifier%29) — 0 images found
+- [Old World sparrow](https://en.wikipedia.org/wiki/Old_World_sparrow) — 22 images found
+- [Organ (music)](https://en.wikipedia.org/wiki/Organ_%28music%29) — 41 images found
+- [Owen Jones (architect)](https://en.wikipedia.org/wiki/Owen_Jones_%28architect%29) — 12 images found
+- [Oxford University Press](https://en.wikipedia.org/wiki/Oxford_University_Press) — 13 images found
+- [Oxford, Worcester and Wolverhampton Railway](https://en.wikipedia.org/wiki/Oxford%2C_Worcester_and_Wolverhampton_Railway) — 124 images found
+- [Pageant of Labour](https://en.wikipedia.org/wiki/Pageant_of_Labour) — 0 images found
+- [Palacio de Cristal del Retiro](https://en.wikipedia.org/wiki/Palacio_de_Cristal_del_Retiro) — 10 images found
+- [Paleis voor Volksvlijt](https://en.wikipedia.org/wiki/Paleis_voor_Volksvlijt) — 5 images found
+- [Palm House, Kew Gardens](https://en.wikipedia.org/wiki/Palm_House%2C_Kew_Gardens) — 5 images found
+- [Parliament of the United Kingdom](https://en.wikipedia.org/wiki/Parliament_of_the_United_Kingdom) — 28 images found
+- [Penge Common](https://en.wikipedia.org/wiki/Penge_Common) — 1 images found
+- [Penge Urban District](https://en.wikipedia.org/wiki/Penge_Urban_District) — 2 images found
+- [Penge West railway station](https://en.wikipedia.org/wiki/Penge_West_railway_station) — 74 images found
+- [Penny](https://en.wikipedia.org/wiki/Penny) — 12 images found
+- [Perth, Scotland](https://en.wikipedia.org/wiki/Perth%2C_Scotland) — 34 images found
+- [Philip Henry Delamotte](https://en.wikipedia.org/wiki/Philip_Henry_Delamotte) — 6 images found
+- [Photocrom](https://en.wikipedia.org/wiki/Photocrom) — 0 images found
+- [Photogravure](https://en.wikipedia.org/wiki/Photogravure) — 12 images found
+- [Pink Floyd](https://en.wikipedia.org/wiki/Pink_Floyd) — 26 images found
+- [Plate glass](https://en.wikipedia.org/wiki/Plate_glass) — 4 images found
+- [Pompeii](https://en.wikipedia.org/wiki/Pompeii) — 57 images found
+- [Prefabricated](https://en.wikipedia.org/wiki/Prefabricated) — 0 images found
+- [Production line](https://en.wikipedia.org/wiki/Production_line) — 3 images found
+- [Public toilet](https://en.wikipedia.org/wiki/Public_toilet) — 58 images found
+- [Punch (magazine)](https://en.wikipedia.org/wiki/Punch_%28magazine%29) — 15 images found
+- [Queen Victoria](https://en.wikipedia.org/wiki/Queen_Victoria) — 44 images found
+- [Radio Times](https://en.wikipedia.org/wiki/Radio_Times) — 20 images found
+- [Raffaele Monti (artist)](https://en.wikipedia.org/wiki/Raffaele_Monti_%28artist%29) — 9 images found
+- [Rain gutter](https://en.wikipedia.org/wiki/Rain_gutter) — 20 images found
+- [Rain, Steam and Speed – The Great Western Railway](https://en.wikipedia.org/wiki/Rain%2C_Steam_and_Speed_%E2%80%93_The_Great_Western_Railway) — 8 images found
+- [Regent's Park](https://en.wikipedia.org/wiki/Regent%27s_Park) — 21 images found
+- [Renaissance art](https://en.wikipedia.org/wiki/Renaissance_art) — 19 images found
+- [Renkioi Hospital](https://en.wikipedia.org/wiki/Renkioi_Hospital) — 2 images found
+- [Rhode Island College](https://en.wikipedia.org/wiki/Rhode_Island_College) — 18 images found
+- [Richard Owen](https://en.wikipedia.org/wiki/Richard_Owen) — 19 images found
+- [Richard Turner (iron-founder)](https://en.wikipedia.org/wiki/Richard_Turner_%28iron-founder%29) — 4 images found
+- [River Thames](https://en.wikipedia.org/wiki/River_Thames) — 123 images found
+- [Robert Baden-Powell, 1st Baron Baden-Powell](https://en.wikipedia.org/wiki/Robert_Baden-Powell%2C_1st_Baron_Baden-Powell) — 56 images found
+- [Robert Pearson Brereton](https://en.wikipedia.org/wiki/Robert_Pearson_Brereton) — 1 images found
+- [Robert Stephenson](https://en.wikipedia.org/wiki/Robert_Stephenson) — 19 images found
+- [Robert Windsor-Clive, 1st Earl of Plymouth](https://en.wikipedia.org/wiki/Robert_Windsor-Clive%2C_1st_Earl_of_Plymouth) — 7 images found
+- [Roberto Gargiani](https://en.wikipedia.org/wiki/Roberto_Gargiani) — 1 images found
+- [Roman art](https://en.wikipedia.org/wiki/Roman_art) — 46 images found
+- [Royal Air force](https://en.wikipedia.org/wiki/Royal_Air_force) — 0 images found
+- [Royal Albert Bridge](https://en.wikipedia.org/wiki/Royal_Albert_Bridge) — 13 images found
+- [Royal Naval Air Service](https://en.wikipedia.org/wiki/Royal_Naval_Air_Service) — 27 images found
+- [Royal Naval Division](https://en.wikipedia.org/wiki/Royal_Naval_Division) — 0 images found
+- [Royal Naval Volunteer Reserve](https://en.wikipedia.org/wiki/Royal_Naval_Volunteer_Reserve) — 0 images found
+- [Rundbogenstil](https://en.wikipedia.org/wiki/Rundbogenstil) — 50 images found
+- [Russell Potter](https://en.wikipedia.org/wiki/Russell_Potter) — 5 images found
+- [SS Archimedes](https://en.wikipedia.org/wiki/SS_Archimedes) — 10 images found
+- [SS Great Britain](https://en.wikipedia.org/wiki/SS_Great_Britain) — 29 images found
+- [SS Great Eastern](https://en.wikipedia.org/wiki/SS_Great_Eastern) — 27 images found
+- [SS Great Western](https://en.wikipedia.org/wiki/SS_Great_Western) — 9 images found
+- [Saint-Gobain](https://en.wikipedia.org/wiki/Saint-Gobain) — 12 images found
+- [Salisbury railway station](https://en.wikipedia.org/wiki/Salisbury_railway_station) — 12 images found
+- [Samuel Laing (science writer)](https://en.wikipedia.org/wiki/Samuel_Laing_%28science_writer%29) — 6 images found
+- [San Francisco](https://en.wikipedia.org/wiki/San_Francisco) — 108 images found
+- [Sanitary engineering](https://en.wikipedia.org/wiki/Sanitary_engineering) — 11 images found
+- [Sapperton Railway Tunnel](https://en.wikipedia.org/wiki/Sapperton_Railway_Tunnel) — 3 images found
+- [Sarah Guppy](https://en.wikipedia.org/wiki/Sarah_Guppy) — 4 images found
+- [Scene from A Midsummer Night's Dream](https://en.wikipedia.org/wiki/Scene_from_A_Midsummer_Night%27s_Dream) — 1 images found
+- [Science Museum, London](https://en.wikipedia.org/wiki/Science_Museum%2C_London) — 17 images found
+- [Scouting](https://en.wikipedia.org/wiki/Scouting) — 25 images found
+- [Second World War](https://en.wikipedia.org/wiki/Second_World_War) — 0 images found
+- [Shakespeare Tercentenary of 1916](https://en.wikipedia.org/wiki/Shakespeare_Tercentenary_of_1916) — 2 images found
+- [Shareholder](https://en.wikipedia.org/wiki/Shareholder) — 5 images found
+- [Shear legs](https://en.wikipedia.org/wiki/Shear_legs) — 3 images found
+- [Sherlock Holmes](https://en.wikipedia.org/wiki/Sherlock_Holmes) — 44 images found
+- [Sir Joseph Paxton](https://en.wikipedia.org/wiki/Sir_Joseph_Paxton) — 0 images found
+- [Smethwick](https://en.wikipedia.org/wiki/Smethwick) — 25 images found
+- [Sonning Cutting](https://en.wikipedia.org/wiki/Sonning_Cutting) — 4 images found
+- [Sophia Kingdom](https://en.wikipedia.org/wiki/Sophia_Kingdom) — 0 images found
+- [South Devon Banks](https://en.wikipedia.org/wiki/South_Devon_Banks) — 2 images found
+- [South Devon Railway Company](https://en.wikipedia.org/wiki/South_Devon_Railway_Company) — 6 images found
+- [South Devon Railway engine houses](https://en.wikipedia.org/wiki/South_Devon_Railway_engine_houses) — 18 images found
+- [South Devon Railway sea wall](https://en.wikipedia.org/wiki/South_Devon_Railway_sea_wall) — 8 images found
+- [South Devon and Tavistock Railway](https://en.wikipedia.org/wiki/South_Devon_and_Tavistock_Railway) — 67 images found
+- [South Kensington](https://en.wikipedia.org/wiki/South_Kensington) — 22 images found
+- [South London](https://en.wikipedia.org/wiki/South_London) — 19 images found
+- [South Wales Mineral Railway](https://en.wikipedia.org/wiki/South_Wales_Mineral_Railway) — 34 images found
+- [South Wales Railway](https://en.wikipedia.org/wiki/South_Wales_Railway) — 219 images found
+- [St Germans railway station](https://en.wikipedia.org/wiki/St_Germans_railway_station) — 8 images found
+- [St Paul's Cathedral](https://en.wikipedia.org/wiki/St_Paul%27s_Cathedral) — 58 images found
+- [St Pinnock](https://en.wikipedia.org/wiki/St_Pinnock) — 12 images found
+- [Statue of Albert, Prince Consort, North Inch](https://en.wikipedia.org/wiki/Statue_of_Albert%2C_Prince_Consort%2C_North_Inch) — 6 images found
+- [Statue of Isambard Kingdom Brunel, Victoria Embankment](https://en.wikipedia.org/wiki/Statue_of_Isambard_Kingdom_Brunel%2C_Victoria_Embankment) — 13 images found
+- [Stephen's Green Shopping Centre](https://en.wikipedia.org/wiki/Stephen%27s_Green_Shopping_Centre) — 3 images found
+- [Stereoscope](https://en.wikipedia.org/wiki/Stereoscope) — 18 images found
+- [Stereoscopy](https://en.wikipedia.org/wiki/Stereoscopy) — 28 images found
+- [Steventon railway station](https://en.wikipedia.org/wiki/Steventon_railway_station) — 1 images found
+- [Stock Exchange, Antwerp](https://en.wikipedia.org/wiki/Stock_Exchange%2C_Antwerp) — 9 images found
+- [Stroud railway station](https://en.wikipedia.org/wiki/Stroud_railway_station) — 7 images found
+- [Surrey](https://en.wikipedia.org/wiki/Surrey) — 42 images found
+- [Sydenham Hill](https://en.wikipedia.org/wiki/Sydenham_Hill) — 36 images found
+- [Sydney International Exhibition](https://en.wikipedia.org/wiki/Sydney_International_Exhibition) — 10 images found
+- [Taff Vale Railway](https://en.wikipedia.org/wiki/Taff_Vale_Railway) — 282 images found
+- [Terrace garden](https://en.wikipedia.org/wiki/Terrace_garden) — 3 images found
+- [Thames Tunnel](https://en.wikipedia.org/wiki/Thames_Tunnel) — 18 images found
+- [The Baker Street Irregulars](https://en.wikipedia.org/wiki/The_Baker_Street_Irregulars) — 4 images found
+- [The Beach Boys](https://en.wikipedia.org/wiki/The_Beach_Boys) — 37 images found
+- [The Cambria Daily Leader](https://en.wikipedia.org/wiki/The_Cambria_Daily_Leader) — 0 images found
+- [The Leader (English newspaper)](https://en.wikipedia.org/wiki/The_Leader_%28English_newspaper%29) — 3 images found
+- [The Opening of the Great Exhibition by Queen Victoria](https://en.wikipedia.org/wiki/The_Opening_of_the_Great_Exhibition_by_Queen_Victoria) — 2 images found
+- [The Railway Station](https://en.wikipedia.org/wiki/The_Railway_Station) — 3 images found
+- [The Royal Commissioners for the Exhibition of 1851](https://en.wikipedia.org/wiki/The_Royal_Commissioners_for_the_Exhibition_of_1851) — 2 images found
+- [The Times](https://en.wikipedia.org/wiki/The_Times) — 25 images found
+- [The Young Visiters](https://en.wikipedia.org/wiki/The_Young_Visiters) — 2 images found
+- [Theodolite](https://en.wikipedia.org/wiki/Theodolite) — 16 images found
+- [Thomas Leverton Donaldson](https://en.wikipedia.org/wiki/Thomas_Leverton_Donaldson) — 4 images found
+- [Thos. W. Ward](https://en.wikipedia.org/wiki/Thos._W._Ward) — 8 images found
+- [Three Bridges, London](https://en.wikipedia.org/wiki/Three_Bridges%2C_London) — 3 images found
+- [Time (magazine)](https://en.wikipedia.org/wiki/Time_%28magazine%29) — 12 images found
+- [Tokyo Disneyland](https://en.wikipedia.org/wiki/Tokyo_Disneyland) — 26 images found
+- [Transept](https://en.wikipedia.org/wiki/Transept) — 5 images found
+- [Two pound coin](https://en.wikipedia.org/wiki/Two_pound_coin) — 7 images found
+- [Underfall Yard](https://en.wikipedia.org/wiki/Underfall_Yard) — 11 images found
+- [Universidade da Coruña](https://en.wikipedia.org/wiki/Universidade_da_Coru%C3%B1a) — 0 images found
+- [University of British Columbia Press](https://en.wikipedia.org/wiki/University_of_British_Columbia_Press) — 8 images found
+- [University of Caen Normandy](https://en.wikipedia.org/wiki/University_of_Caen_Normandy) — 17 images found
+- [University of Groningen](https://en.wikipedia.org/wiki/University_of_Groningen) — 36 images found
+- [University of Minnesota Press](https://en.wikipedia.org/wiki/University_of_Minnesota_Press) — 7 images found
+- [Usk Railway Bridge](https://en.wikipedia.org/wiki/Usk_Railway_Bridge) — 5 images found
+- [Vale of Neath Railway](https://en.wikipedia.org/wiki/Vale_of_Neath_Railway) — 93 images found
+- [Victoria Park, Tower Hamlets](https://en.wikipedia.org/wiki/Victoria_Park%2C_Tower_Hamlets) — 15 images found
+- [Victoria amazonica](https://en.wikipedia.org/wiki/Victoria_amazonica) — 20 images found
+- [Victoria and Albert Museum](https://en.wikipedia.org/wiki/Victoria_and_Albert_Museum) — 102 images found
+- [Victorian architecture](https://en.wikipedia.org/wiki/Victorian_architecture) — 104 images found
+- [Water tower](https://en.wikipedia.org/wiki/Water_tower) — 47 images found
+- [Wayback Machine](https://en.wikipedia.org/wiki/Wayback_Machine) — 10 images found
+- [Wellington Bank, Somerset](https://en.wikipedia.org/wiki/Wellington_Bank%2C_Somerset) — 6 images found
+- [West Cornwall Railway](https://en.wikipedia.org/wiki/West_Cornwall_Railway) — 10 images found
+- [West Somerset Railway](https://en.wikipedia.org/wiki/West_Somerset_Railway) — 44 images found
+- [Westport Canal](https://en.wikipedia.org/wiki/Westport_Canal) — 23 images found
+- [Wharncliffe Viaduct](https://en.wikipedia.org/wiki/Wharncliffe_Viaduct) — 7 images found
+- [What Is to Be Done? (novel)](https://en.wikipedia.org/wiki/What_Is_to_Be_Done%3F_%28novel%29) — 4 images found
+- [Wikimedia Commons](https://en.wikipedia.org/wiki/Wikimedia_Commons) — 20 images found
+- [William Cavendish, 6th Duke of Devonshire](https://en.wikipedia.org/wiki/William_Cavendish%2C_6th_Duke_of_Devonshire) — 6 images found
+- [William Cubitt](https://en.wikipedia.org/wiki/William_Cubitt) — 3 images found
+- [Wilts, Somerset and Weymouth Railway](https://en.wikipedia.org/wiki/Wilts%2C_Somerset_and_Weymouth_Railway) — 95 images found
+- [Windsor Railway Bridge](https://en.wikipedia.org/wiki/Windsor_Railway_Bridge) — 3 images found
+- [Winston Churchill](https://en.wikipedia.org/wiki/Winston_Churchill) — 67 images found
+- [Winter Notes on Summer Impressions](https://en.wikipedia.org/wiki/Winter_Notes_on_Summer_Impressions) — 1 images found
+- [World Fair](https://en.wikipedia.org/wiki/World_Fair) — 0 images found
+- [World's fair](https://en.wikipedia.org/wiki/World%27s_fair) — 72 images found
+- [Wormwood Scrubs](https://en.wikipedia.org/wiki/Wormwood_Scrubs) — 5 images found
+- [Yale University Press](https://en.wikipedia.org/wiki/Yale_University_Press) — 11 images found
+- [Yatton railway station](https://en.wikipedia.org/wiki/Yatton_railway_station) — 11 images found
