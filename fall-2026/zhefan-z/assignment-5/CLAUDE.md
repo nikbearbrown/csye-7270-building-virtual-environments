@@ -63,16 +63,18 @@ argument (`walker-magic-zhefan/tests/capture_scene.gd:2–4`).
 
 ## Headless facts
 
-From the assignment text; to be confirmed on this machine in Step 2, then this block is updated.
+Confirmed on this machine (Godot 4.7.2, 2026-10-23) unless marked.
 
-- A headless run uses a dummy renderer: it draws nothing, so no test here can judge colour or look.
-- `get_shader_uniform_list()` reports declared uniforms headlessly; a shader that fails to parse returns an
-  empty list. Defaults are not reported, so tests read them from the shader source text.
-- `set_shader_parameter()` with a name the shader does not declare raises no error, and reading it back
-  returns the stored value; only the uniform-list assertion catches a renamed uniform.
-- Exit code 0 does not mean no errors: `scripts/run-test.sh:10` fails on `SHADER ERROR` / `SCRIPT ERROR`.
-  Texture import detection only runs when a real editor draws the texture, so `git status` after the first
-  editor session.
+- `get_shader_uniform_list()` works headless only after the main loop starts (in a SceneTree `_init()`:
+  `Parameter "shader" is null`). A parse failure gives an empty list (`logs/mutation-1-semicolon_60fps.log`).
+- A uniform renamed in the shader only raises no error: the driver's `set_shader_parameter("intensity")`
+  is stored and read back, so 15 checks still passed; only the uniform-list and source-default checks
+  failed (`logs/mutation-2-rename_60fps.log`). Defaults are not reported; tests read the source text.
+- `--fixed-fps` is not in `OS.get_cmdline_args()`; `tests/test_hurt_tint.gd` reads fps from frame deltas.
+- `invulnerable` changes only on physics ticks; across a pause, summed frame time drifts (CHANGE-BRIEF R7 revision).
+- Not observed here, from the assignment text: the dummy renderer draws nothing; import detection runs only
+  in a real editor, so run `git status` after the first editor session. `scripts/run-test.sh:10` fails on
+  `SHADER ERROR` / `SCRIPT ERROR` because exit 0 does not mean no errors.
 
 ## Current change
 
