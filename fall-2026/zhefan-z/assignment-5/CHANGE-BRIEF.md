@@ -213,3 +213,11 @@ Both reference `shaders/rock_frost.gdshader` and bind the same three textures. T
 ### 2026-10-23 — which rock surface gets the shader
 
 Found while reviewing the CLAUDE.md draft: `rock.glb` has two materials, `Rock_Main` and `Rock_Top`, which section 4 did not account for. Decision: only `Rock_Main` gets the shader material. In the importer, `Rock_Main` uses Use External pointing to `assets/materials/mat_rock_dry.tres`; `Rock_Top` keeps its imported Assignment 3 material. In `showcase3d/material_compare.tscn` the second rock overrides only the `Rock_Main` surface with `mat_rock_frosted.tres`. The two-tone look from Assignment 3 stays.
+
+### 2026-10-23 — R7: measure the paused window in physics ticks
+
+Observed: in `tests/test_hurt_tint.gd`, with a 31-frame pause inside the window, the sum of unpaused frame deltas from the first tinted frame to the first zero frame was 1.0000 s at 30 fps, 0.9833 s at 60 fps and 0.9653 s at 144 fps. The 144 fps value is outside R4's one-physics-step tolerance (`logs/test_hurt_tint_144fps.log`). The value held through the pause and resumed afterwards at all three rates, as R7 requires.
+
+Explanation, not yet confirmed: `invulnerable` only changes on physics ticks (60 per second), and a pause shifts which frames those ticks fall on, so summed frame time is the wrong clock for a window with a pause in it. R4 keeps its frame-time measure for an uninterrupted window.
+
+Revision: R7's duration part is measured in unpaused physics ticks. From the first tinted frame to the first zero frame, the player's `_physics_process` runs 60 times, minus at most the one tick that ran in the hit's own frame: 59 or 60. The summed frame time stays in the test output as an observation, not an assertion. No other rule or tolerance changes.
