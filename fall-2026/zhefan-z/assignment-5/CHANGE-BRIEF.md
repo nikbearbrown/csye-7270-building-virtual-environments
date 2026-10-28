@@ -221,3 +221,9 @@ Observed: in `tests/test_hurt_tint.gd`, with a 31-frame pause inside the window,
 Explanation, not yet confirmed: `invulnerable` only changes on physics ticks (60 per second), and a pause shifts which frames those ticks fall on, so summed frame time is the wrong clock for a window with a pause in it. R4 keeps its frame-time measure for an uninterrupted window.
 
 Revision: R7's duration part is measured in unpaused physics ticks. From the first tinted frame to the first zero frame, the player's `_physics_process` runs 60 times, minus at most the one tick that ran in the hit's own frame: 59 or 60. The summed frame time stays in the test output as an observation, not an assertion. No other rule or tolerance changes.
+
+### 2026-10-27 — the rock material lives in a scene override, not behind Use External
+
+Found while planning the materials: `tests/test_a3_assets.gd:106–107` loads `rock.glb` directly and expects `Rock_Main` to be the Assignment 3 `StandardMaterial3D`. Use External in `rock.glb.import` changes the material everywhere the `.glb` is loaded, so it would break that earlier suite, which must keep its baseline counts and may not be edited.
+
+Revision: `rock.glb`, `rock.glb.import` and `showcase3d/prop_room.tscn` stay exactly as in Assignment 3. Both rocks in `showcase3d/material_compare.tscn` carry the material as a scene-level `surface_material_override/0` (surface 0 is `Rock_Main`, confirmed headlessly from `mesh.surface_get_name()`): the first rock `mat_rock_dry.tres`, the second `mat_rock_frosted.tres`. `Rock_Top` (surface 1) keeps its imported material on both. A reimport does not touch an override stored in a scene file, which is the property Use External exists to protect. Section 4's object and scene paragraph is superseded by this; its textures, uniforms and two-material table are unchanged.
