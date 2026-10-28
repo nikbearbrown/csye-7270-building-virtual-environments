@@ -1,0 +1,88 @@
+Read CLAUDE.md first. CHANGE-BRIEF.md (section 3, section 4 and the
+revision "2026-10-23 — which rock surface gets the shader") is the
+contract. The three shaders in walker-magic-zhefan/shaders/ are
+hand-written by me and are not yours to edit: do not edit any .gdshader
+file. Do not edit existing tests, rock.glb, or any texture source file.
+
+First propose the smallest plan for the items below, then wait for my
+approval before editing. After I approve, implement, show the diff, and
+stop. Do not commit.
+
+1. Hint experiment (CHANGE-BRIEF section 3).
+   - A GDScript tool, tools/write_hint_png.gd (extends SceneTree), that
+     writes assets/textures/hint/greys_3x1.png: a 3x1 image, texels
+     grey 64, 128, 192, opaque. Run it headless once.
+   - Its .import: lossless (compress/mode=0), mipmaps/generate=false,
+     compress/normal_map=2, detect_3d/compress_to=0, set explicitly.
+   - Two ShaderMaterial .tres files in assets/materials/ using
+     res://shaders/hint_experiment.gdshader, both binding greys_3x1.png
+     to source_color_tex and raw_data_tex; one with
+     use_source_color = true, one with false.
+   - A scene showcase3d/hint_experiment.tscn: two QuadMesh quads side by
+     side facing a Camera3D, one material each; a WorldEnvironment with
+     tonemap Linear, exposure 1.0, glow, fog and adjustments off, all
+     written explicitly.
+2. Rock materials (CHANGE-BRIEF section 4 and its revision).
+   - assets/materials/mat_rock_dry.tres and mat_rock_frosted.tres, both
+     using res://shaders/rock_frost.gdshader, binding rock_01_diff_1k,
+     rock_01_nor_gl_1k and rock_01_rough_1k, with the uniform values in
+     the brief's table. Never bind rock_01_nor_dx_1k.
+   - In assets/models/rock.glb.import, the Rock_Main material uses Use
+     External pointing to mat_rock_dry.tres; Rock_Top keeps its imported
+     material. Reimport and show, headlessly, which material each surface
+     of the Rock instance in prop_room.tscn now has.
+   - A scene showcase3d/material_compare.tscn: two rock instances side by
+     side under a copy of the prop room's Sun and Environment; the second
+     overrides only the Rock_Main surface with mat_rock_frosted.tres. Say
+     which surface index Rock_Main is and how you confirmed it.
+3. Normal-map check. Create tests/normal_map_check.gd containing exactly
+   the code between the markers below, and a script
+   tests/calibrate_normal_check.gd (extends SceneTree) that loads
+   rock_01_nor_gl_1k.png and rock_01_nor_dx_1k.png with
+   Image.load_from_file and prints curl_ratio for each under
+   directx = false and directx = true, stride 4. Run it and show the
+   output.
+
+---- begin normal_map_check.gd ----
+# ~0: slope field of a real surface in this convention.
+# ~1: no surface behind it.
+# ~2: real surface, other green convention.
+static func curl_ratio(source: Image, directx := false, stride := 4) -> float:
+	var img := source.duplicate() as Image
+	if img.is_compressed():
+		img.decompress()
+	var s: float = -1.0 if directx else 1.0
+	var curl_sq := 0.0
+	var terms_sq := 0.0
+	for v in range(1, img.get_height() - 1, stride):
+		for u in range(1, img.get_width() - 1, stride):
+			var t1 := (_dh_du(img, u, v + 1) - _dh_du(img, u, v - 1)) * 0.5
+			var t2 := (_dh_dv(img, u + 1, v, s) - _dh_dv(img, u - 1, v, s)) * 0.5
+			curl_sq += (t1 - t2) * (t1 - t2)
+			terms_sq += t1 * t1 + t2 * t2
+	return curl_sq / maxf(terms_sq, 1e-12)
+
+
+static func _normal(img: Image, u: int, v: int) -> Vector3:
+	var c := img.get_pixel(u, v)
+	return Vector3(c.r, c.g, c.b) * 2.0 - Vector3.ONE
+
+
+static func _dh_du(img: Image, u: int, v: int) -> float:
+	var n := _normal(img, u, v)
+	return -n.x / maxf(n.z, 0.05)
+
+
+static func _dh_dv(img: Image, u: int, v: int, s: float) -> float:
+	var n := _normal(img, u, v)
+	return s * n.y / maxf(n.z, 0.05)
+---- end normal_map_check.gd ----
+
+Rules:
+- Run Godot only through ./scripts/run-test.sh or
+  godot --headless --path walker-magic-zhefan (with --import or
+  --script); never add --rendering-driver.
+- After the changes, run the seven existing tests and test_hurt_tint.gd
+  at 60 through ./scripts/run-test.sh and show the summary lines.
+- Say what you could not confirm headlessly.
+- Do not commit.
