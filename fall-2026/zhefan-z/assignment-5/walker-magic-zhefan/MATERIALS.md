@@ -2,6 +2,8 @@
 
 Audit of 2026-10-28, covering CHANGE-BRIEF.md section 3 (the hint experiment), section 4 and its revisions (the frosted rock). Paths are relative to `walker-magic-zhefan/` (`res://`). Every value below is pinned by `tests/test_materials.gd`, which runs with `./scripts/run-test.sh test_materials.gd 60` from `fall-2026/zhefan-z/assignment-5/`. Nothing here was checked on screen: the headless run uses a dummy renderer.
 
+**Human review, 2026-10-28 (Zhefan Zhang, with claude.ai).** Checked every integer against its source: `compress/mode` 0–4, `compress/normal_map` 0/1/2 and `detect_3d/compress_to` 0/1/2 as listed under "Meaning of the integers"; `Image.Format` 4 = `FORMAT_RGB8`, 17 = `FORMAT_DXT1`, 21 = `FORMAT_RGTC_RG`; `Environment` `tonemap_mode` 0 = Linear, `background_mode` 1 = Color, ambient source 0 = Background. Every imported format in the sampler table was read with `get_image().get_format()` by `tests/test_materials.gd` (32 checks / 0 failures, also after deleting `.godot`: `logs/test_materials_fresh-cache_60fps.log`); removing `source_color` from `rock_frost.gdshader:16` fails it (`logs/mutation-3-source-color_60fps.log`). The one figure nobody measured, the light's direction, is now marked as computed. Attribution is corrected below.
+
 ## Materials
 
 | Material | Shader | Uniform values it sets | Textures it binds |
@@ -65,7 +67,7 @@ The thresholds come from `logs/calibrate_normal_check_60fps.log:7–8, 13–14`:
 
 | Scene | Setting | Value | Evidence |
 |---|---|---|---|
-| `material_compare.tscn` | Light | One `DirectionalLight3D` "Sun". Energy 1.0 and colour white (defaults), shadows on. It comes from above (45° elevation) at the camera's left (the light's +Z axis is (−0.35, 0.71, 0.61)) | `material_compare.tscn:16–18` |
+| `material_compare.tscn` | Light | One `DirectionalLight3D` "Sun". Energy 1.0 and colour white (defaults), shadows on. Its direction is computed from the transform, not observed: from above and to the camera's left (the light's +Z axis read as (−0.35, 0.71, 0.61)) | `material_compare.tscn:16–18` |
 | | Background | `background_mode = 1` (Color), `#0F1119` | `:7–9` |
 | | Ambient light | source 0, Background (default), so ambient light is the dark background colour | not written; read back by the test |
 | | Tonemap | `tonemap_mode` 0 = Linear, `tonemap_exposure` 1.0 (defaults) | not written; read back by the test |
@@ -103,7 +105,7 @@ The thresholds come from `logs/calibrate_normal_check_60fps.log:7–8, 13–14`:
 7. **Materials referenced without a UID.**
    - **Evidence:** `material_compare.tscn:4–5`, `hint_experiment.tscn:3–4`, and line 1 of each `.tres`.
    - The four `.tres` files have no `uid=` in their header, and both scenes reference them without `uid=`. Godot writes one on its own saves, so the first editor save may rewrite these lines.
-8. **CLAUDE.md is out of date in five places** (it's your file, so I left it unchanged):
+8. **CLAUDE.md is out of date in five places** (it's your file, so I left it unchanged). *Fixed in the human review commit.*
    - `CLAUDE.md:34–38` describes the prop room as the place for the textured shader. After revision 2026-10-27 the shader is only in `material_compare.tscn`.
    - `CLAUDE.md:97` says `rock.glb.import` may change. Revision 2026-10-27 keeps it as in Assignment 3.
    - `CLAUDE.md:108–109` says the surface index of `Rock_Main` is still to be confirmed. It is surface 0, confirmed headlessly (revision 2026-10-27; test `compare-scene-rock:*`).
@@ -123,10 +125,11 @@ From CHANGE-BRIEF.md only:
   - It corrected the first 128 result in section 3: 187, which came from 0.74836 instead of 0.75038.
 - **Translations:** passages marked *(translated from my Chinese)* are the author's own explanations, translated.
   - In the parts audited here, that is section 3's explanation of why the `source_color` quad shows the file's values unchanged.
-- **`shaders/rock_frost.gdshader`:** "Hand-written by me" (section 4).
+- **`shaders/rock_frost.gdshader`:** section 4 says "Hand-written by me". *Corrected in review:* typed by me; the syntax examples and the idea of widening the frost threshold beyond 0–1 came from claude.ai chat; the formula, the band width 0.1, the ice roughness 0.15 and the endpoint check are mine (commit "Rock frost shader (typed by me)").
 - **Textures:** Poly Haven "Rock 01", https://polyhaven.com/a/rock_01, author Rob Tuytel, CC0, 1K PNG. Downloaded 2026-10-22 from `dl.polyhaven.org`, unmodified.
 
-Not recorded in CHANGE-BRIEF.md, so not attributed here:
-- who wrote `shaders/hint_experiment.gdshader`;
-- who wrote the four `.tres` materials, the two scenes, `tools/write_hint_png.gd` and `greys_3x1.png`;
-- who wrote `tests/normal_map_check.gd`, this file and `tests/test_materials.gd`.
+*Added in review* (not recorded in CHANGE-BRIEF.md; from the commit history):
+- `shaders/hint_experiment.gdshader`: typed by me, with syntax examples from claude.ai chat.
+- The four `.tres` materials, `showcase3d/hint_experiment.tscn`, `showcase3d/material_compare.tscn`, `tools/write_hint_png.gd` and `greys_3x1.png` (written by that script): Claude Code (Opus 5.5), `prompt-3.txt`, reviewed by me.
+- `tests/normal_map_check.gd`: the assignment's code, copied unchanged by Claude Code (`prompt-3.txt`).
+- This file and `tests/test_materials.gd`: Claude Code (Opus 5.5), `prompt-4.txt`; this review by me with claude.ai.

@@ -31,13 +31,11 @@ physics tick while invulnerable, toggling it every `BLINK_PERIOD` = 0.1 s (`play
 - `fail()` sets `is_failing` and stops `_physics_process` without clearing `invulnerable`
   (`player.gd:170–180`); the final hit sets it to 1.0 first (`player.gd:155`, `player.gd:162–163`).
 
-**3D object for the textured shader.** `res://assets/models/rock.glb`, instanced as node `Rock` at
-x = −1.2 in `showcase3d/prop_room.tscn:46–47`. Its material today comes from the `.glb` itself: two glTF
-materials, `Rock_Main` and `Rock_Top` (read from the file's glTF JSON chunk), imported with
-`materials/extract=0` and `_subresources={}` (`assets/models/rock.glb.import:39–42`), so no external
-material is set yet. Lighting: `DirectionalLight3D` "Sun" with shadows (`prop_room.tscn:28–30`) and an
-`Environment` with a solid background colour (`prop_room.tscn:16–18`, `:25–26`). The planned textures are
-present in `walker-magic-zhefan/assets/textures/rock_01/` (diff, nor_gl, nor_dx, rough, 1K PNG).
+**3D object for the textured shader.** `res://assets/models/rock.glb` (two surfaces: 0 `Rock_Main`, 1
+`Rock_Top`). The shader material is only in `showcase3d/material_compare.tscn`, as
+`surface_material_override/0` on both rocks (dry and frosted); `rock.glb`, `rock.glb.import` and
+`prop_room.tscn` stay as in Assignment 3 (CHANGE-BRIEF revision 2026-10-27). Lighting copied from
+`prop_room.tscn:16–18, 28–30`. Materials and import settings: `walker-magic-zhefan/MATERIALS.md`.
 
 **Tests.** Every test runs through `scripts/run-test.sh <test-file.gd> <fps>`, from this folder in Git Bash
 (`scripts/run-test.sh:2–3`). It runs Godot headless with `--fixed-fps <fps>` under a 120 s timeout, writes
@@ -94,8 +92,8 @@ an agent may read them, report problems and suggest changes, but never creates, 
   state and never writes it; a retrigger is not added, because it would need a game-logic change.
 - Everything else in the 2D game: the wolf (including its own `features/wolf/flash.gdshader`), the level,
   audio, the HUD and the camera. Only the player's sprite gets a new material.
-- In 3D, only the rock: `rock.glb` is never changed (only `rock.glb.import`), and the crystal, the chest,
-  the floor and the prop room's light and environment stay as they are.
+- In 3D: `rock.glb`, `rock.glb.import` and `prop_room.tscn` are never changed; the textured shader lives
+  only in `material_compare.tscn` and `hint_experiment.tscn`.
 - Existing tests and their expectations are not edited, weakened or deleted; new checks go in new files.
 - `project.godot` settings, including the renderer, are not changed.
 - No file outside `fall-2026/zhefan-z/assignment-5/`.
@@ -104,15 +102,6 @@ an agent may read them, report problems and suggest changes, but never creates, 
 
 - **Renderer at run time.** Forward+ is the engine default, not a value in `project.godot`; the headless
   tests use a dummy renderer (`tests/capture_scene.gd:2`), so no log here shows the renderer.
-- **Two rock materials: resolved.** `rock.glb` has `Rock_Main` and `Rock_Top`. Only `Rock_Main` gets the shader
-  material; `Rock_Top` keeps its imported material (CHANGE-BRIEF revision 2026-10-23). The surface index of
-  `Rock_Main` is still to be confirmed in the editor.
-- **Not created yet:** `walker-magic-zhefan/shaders/`, `assets/materials/` (`mat_rock_dry.tres`,
-  `mat_rock_frosted.tres`), `showcase3d/material_compare.tscn`, `assets/textures/hint/`, the tint driver
-  script, and the new test files. Their names come from `CHANGE-BRIEF.md`; the driver's path and wiring
-  are still open (`CHANGE-BRIEF.md:35`).
-- **Texture imports.** The `rock_01` PNGs have no `.import` files yet, so none of the import settings in
-  `CHANGE-BRIEF.md:131–138` are applied, and the format of the 16-bit roughness file is unknown.
-- **Other frame rates.** Only 60 fps baseline logs exist; behaviour at 30 and 144 fps has not been run.
+- **On screen.** Every look (tint, frost, hint quads, normal-map lighting) is a human check in the editor.
 - **Physics rate.** 60 per second is the engine default for an unset key, not read from a file.
 - No `AGENTS.md` or `README.md` exists at this folder's root.
