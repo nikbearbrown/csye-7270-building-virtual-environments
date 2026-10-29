@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://content/level_1/waystone.gd" id="1_waystone"]
+[ext_resource type="Texture2D" path="res://content/level_1/art/ENV-WAYSTONE.png" id="2_dark"]
+
+[sub_resource type="Gradient" id="Gradient_halo"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(0.6, 0.88, 1, 0.95, 0.6, 0.88, 1, 0.65, 0.6, 0.88, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_halo"]
+gradient = SubResource("Gradient_halo")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_stone"]
+size = Vector2(70, 110)
+
+[node name="Waystone" type="Area2D"]
+collision_layer = 16
+collision_mask = 2
+monitorable = false
+script = ExtResource("1_waystone")
+
+[node name="Halo" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -58)
+scale = Vector2(1.35, 1.2)
+texture = SubResource("GradientTexture2D_halo")
+
+[node name="Art" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_dark")
+centered = false
+offset = Vector2(-106, -235)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -55)
+shape = SubResource("RectangleShape2D_stone")
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(120, 0)

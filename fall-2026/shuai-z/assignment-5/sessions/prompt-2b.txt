@@ -1,0 +1,72 @@
+Read CLAUDE.md first. The specification in CHANGE-BRIEF.md is the
+contract for this change; the Headless facts in CLAUDE.md describe what
+a test on this machine can observe. This change is in game/, the 2D
+game; nothing in godot/ changes. The shader
+game/shaders/invulnerable_tint.gdshader is hand-written by me and is
+not yours to edit: do not edit any .gdshader file. If you believe it is
+wrong or cannot meet the spec, say so and stop.
+
+In an earlier session you proposed a plan. sessions/plan-2.md is that
+plan, unchanged. I approve its steps 1 to 5, with the changes below.
+Implement the approved steps in order, one at a time. After each step,
+show its diff before you start the next: git diff for a changed file,
+git diff --no-index /dev/null <file> for a new one. Do nothing that the
+plan and these changes do not name. If a step cannot be done as
+approved, stop and say why; do not change the plan yourself. If an
+assertion fails because the game does not do what the spec says, do
+not weaken the assertion: stop and report it, with the evidence.
+
+Changes to the plan:
+1. A13, the reload. A reload frees the old scene first, so never have
+   two Mains in the tree at once. Do what game/tests/checks.gd does at
+   lines 1320-1323: queue_free the running Main, wait one frame, then
+   start a new one the way the test started the first. Record the old
+   material's tint_amount at that moment; it must be above 0. Then
+   check that the new Hearts' material is a different object, and that
+   its tint_amount is 0.0 before its first frame and on that frame.
+2. A6, the first frame. Check the first frame of every window,
+   including the one at time scale 0.5 and the one after the respawn:
+   at least 70/72. Require exactly 71/72, within 1e-6, only for the
+   hits at time scale 1.0, at 60 and 144 fps.
+3. The two hud.gd mutations are approved. Do them after step 5's runs
+   pass:
+   - Before the first mutation, show git diff -- game/ui/hud.gd.
+   - Mutation 1, a driver that counts frames: run the new test at 30
+     and at 144. Each run must exit 1, with A9 among the failures.
+   - Mutation 2, a driver with PROCESS_MODE_ALWAYS and its own
+     real-time clock: run the new test at 60. It must exit 1, with A12
+     among the failures.
+   - Restore hud.gd after each mutation. After the last restore, show
+     git diff -- game/ui/hud.gd again; it must match the first exactly.
+   - Then run the new test at 30, 60 and 144 once more, so that the
+     logs in logs/ come from the approved code.
+4. As you proposed: the material is resource_local_to_scene, and the
+   .tres stores no tint_color or tint_strength.
+5. The capture tool is not part of this session.
+
+Rules:
+- Do not edit the existing tests or change their expectations.
+- The test asserts the shader's uniform names and types with
+  get_shader_uniform_list(), and reads defaults from the shader source
+  text, because a headless engine does not report them.
+- The test drives the state through the real game loop and real input,
+  not by calling the update function directly, and checks the retrigger
+  rule.
+- Sample the uniform from a node with a high process_priority, so it
+  reads after every other _process() in the frame.
+- Run every test with scripts/run-test.sh <game|godot> <test-file>
+  <fps>: the existing ones at 60 (game checks.tscn and godot
+  check_props.gd), and the new one at 30, 60 and 144. Show the real
+  output, including any SHADER ERROR lines.
+- Say exactly what your test proves and what it cannot prove in a
+  headless run, and list the human checks needed to judge the look.
+- Do not commit.
+
+End with a report:
+- the files each step created or changed;
+- the real result of every run: exit status, PASS and FAIL counts, and
+  any SHADER ERROR or SCRIPT ERROR lines;
+- git diff --stat for game/content/rudy/rudy.gd, game/app/main.gd,
+  game/tests/checks.gd, game/shaders/, godot/ and scripts/run-test.sh,
+  all of which must be empty;
+- what the test proves, what it cannot prove, and the human checks.

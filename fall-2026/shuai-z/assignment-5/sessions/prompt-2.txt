@@ -1,0 +1,39 @@
+Read CLAUDE.md first. The specification in CHANGE-BRIEF.md is the
+contract for this change; the Headless facts in CLAUDE.md describe what
+a test on this machine can observe. This folder holds two Godot
+projects, and this change is in game/, the 2D game; nothing in godot/
+changes. The shader game/shaders/invulnerable_tint.gdshader is
+hand-written by me and is not yours to edit: do not edit any .gdshader
+file. If you believe it is wrong or cannot meet the spec, say so and
+stop.
+
+This session is for the plan only. Propose the smallest plan that meets
+the spec: the code that gives Hud/Hearts a ShaderMaterial using my
+shader, the code that sets each driven uniform from game state (the
+spec says which uniforms only the material sets), and a new headless
+test in game/tests/. Number the steps and name the files each one
+creates or changes. Say which spec rule each test assertion covers, and
+which rules only a human can check.
+
+Give the whole plan in your final message, then stop. Do not create or
+edit any file, and do not run Godot or the tests. I will read the plan
+and write a second prompt for the steps I approve; in that session you
+will implement one approved step at a time and show its diff.
+
+These rules hold for the plan and for that session:
+- Do not edit the existing tests or change their expectations.
+- The test asserts the shader's uniform names and types with
+  get_shader_uniform_list(), and reads defaults from the shader source
+  text, because a headless engine does not report them.
+- The test drives the state through the real game loop and real input,
+  not by calling the update function directly, and checks the retrigger
+  rule.
+- Sample the uniform from a node with a high process_priority, so it
+  reads after every other _process() in the frame.
+- Run every test with scripts/run-test.sh <game|godot> <test-file>
+  <fps>: the existing ones at 60 (game checks.tscn and godot
+  check_props.gd), and the new one at 30, 60 and 144. Show the real
+  output, including any SHADER ERROR lines.
+- Say exactly what your test proves and what it cannot prove in a
+  headless run, and list the human checks needed to judge the look.
+- Do not commit.
