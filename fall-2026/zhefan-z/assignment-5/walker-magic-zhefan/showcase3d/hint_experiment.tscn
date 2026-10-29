@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/mat_hint_source_color.tres" id="1_src"]
+[ext_resource type="Material" path="res://assets/materials/mat_hint_raw_data.tres" id="2_raw"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_hint"]
+size = Vector2(1, 1)
+
+[sub_resource type="Environment" id="Environment_hint"]
+tonemap_mode = 0
+tonemap_exposure = 1.0
+glow_enabled = false
+fog_enabled = false
+adjustment_enabled = false
+
+[node name="HintExperiment" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_hint")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+current = true
+
+[node name="QuadSourceColor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, 0)
+mesh = SubResource("QuadMesh_hint")
+surface_material_override/0 = ExtResource("1_src")
+
+[node name="QuadRawData" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, 0)
+mesh = SubResource("QuadMesh_hint")
+surface_material_override/0 = ExtResource("2_raw")

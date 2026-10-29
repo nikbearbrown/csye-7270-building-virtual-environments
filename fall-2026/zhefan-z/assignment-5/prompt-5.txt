@@ -1,0 +1,57 @@
+Read CLAUDE.md first. Do not edit any .gdshader, .tres material, existing
+scene, existing test or .import file. New files go only in
+walker-magic-zhefan/tests/capture/. Do not commit.
+
+Write three capture scenes for real windowed runs. I will open each in
+the Godot editor, run it with F6, and press a debug key. Each capture
+reads the rendered frame in-engine, as the assignment requires:
+
+    driver.set_process(false)            # when a driver exists
+    mat.set_shader_parameter(param, value)
+    await RenderingServer.frame_post_draw
+    get_viewport().get_texture().get_image().save_png(path)
+
+Save PNGs and a JSON file of sampled pixels to the folder
+fall-2026/zhefan-z/assignment-5/captures/ (outside the Godot project,
+via ProjectSettings.globalize_path("res://") + "/../captures"), and also
+print every sampled pixel as one JSON line. Runtime changes stay in
+memory; never save a resource.
+
+1. tests/capture/capture_hurt_tint.tscn: instances res://game/main.tscn.
+   On F9, with the player idle at the start and visible, disable the
+   HurtTint driver, then for intensity 0.0, 0.5 and 1.0 (tint_color at
+   its default red) capture the frame and sample the viewport pixels
+   under the sprite's texture pixels (27, 18) and (24, 7) of
+   mage_idle.png. Compute the viewport position from the sprite's
+   canvas transform, its offset and the pixel centre, and print the
+   viewport coordinates you used. Then set tint_color to
+   Color(0.5, 0.5, 0.5, 1.0) and intensity to 2.0 from code, capture
+   and sample the same two pixels (this checks whether hint_range
+   clamps a value set from code; with pure red every t >= 1 gives the
+   same pixels). Restore the defaults and re-enable the driver.
+   File names: hurt_tint_i0.0.png, hurt_tint_i0.5.png,
+   hurt_tint_i1.0.png, hurt_tint_grey_i2.0.png, hurt_tint_pixels.json.
+2. tests/capture/capture_hint.tscn: instances
+   res://showcase3d/hint_experiment.tscn. On F9 capture the frame and
+   sample the centre of each of the three bands on each quad (band
+   centres at u = 1/6, 1/2, 5/6, v = 1/2; screen positions from
+   Camera3D.unproject_position). Files: hint_quads.png,
+   hint_pixels.json.
+3. tests/capture/capture_rock_sweep.tscn: instances
+   res://showcase3d/material_compare.tscn.
+   - F9: capture the scene as it is: rock_compare_default.png.
+   - F10: on mat_rock_frosted only, for each non-texture uniform, capture
+     at its minimum, default and maximum (colours: black, default,
+     white), one PNG each named rock_sweep_<uniform>_<min|default|max>.png,
+     restoring the default after each uniform.
+   - F11: set normal_scale to 0.0 on mat_rock_dry only, capture
+     rock_one_material_changed.png, restore.
+   - F12: capture rock_compare_after_shader_edit.png (I will edit one
+     line of the shader by hand before pressing it).
+   Print the file name of each capture.
+
+Each scene prints its key bindings on start. Run each script once
+headlessly only to show it parses (godot --headless --path
+walker-magic-zhefan --import, then load each scene with a --script that
+instantiates it and quits); a headless run cannot capture. Show the
+files you created and stop.

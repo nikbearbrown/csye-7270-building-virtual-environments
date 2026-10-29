@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" uid="uid://b7acwswegheaj" path="res://assets/models/rock.glb" id="1_rock"]
+[ext_resource type="Material" path="res://assets/materials/mat_rock_dry.tres" id="2_dry"]
+[ext_resource type="Material" path="res://assets/materials/mat_rock_frosted.tres" id="3_frosted"]
+
+[sub_resource type="Environment" id="Environment_cave"]
+background_mode = 1
+background_color = Color(0.0588235, 0.0666667, 0.0980392, 1)
+
+[node name="MaterialCompare" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cave")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0.353553, -0.353553, 0, 0.707107, 0.707107, 0.5, -0.612372, 0.612372, 0, 3, 0)
+shadow_enabled = true
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.982872, 0.184314, 0, -0.184314, 0.982872, 0, 0.8, 3)
+current = true
+fov = 45.0
+
+[node name="RockDry" parent="." instance=ExtResource("1_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, 0)
+
+[node name="Rock" parent="RockDry" index="0"]
+surface_material_override/0 = ExtResource("2_dry")
+
+[node name="RockFrosted" parent="." instance=ExtResource("1_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0)
+
+[node name="Rock" parent="RockFrosted" index="0"]
+surface_material_override/0 = ExtResource("3_frosted")
