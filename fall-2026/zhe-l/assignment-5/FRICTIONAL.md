@@ -23,3 +23,4 @@ My Assignment 3 log is in `../assignment-3/FRICTIONAL.md`.
 | Date | Commit note |
 |---|---|
 | 2026-10-29 | Start Assignment 5: the Godot project as the A5 starting point (character body / brain and tablet logic), `scripts/run-test.sh`, and the 60 fps baseline (a3_asset_check: 55 PASS) |
+| 2026-10-29 | Add the A5 change brief (the screen-glow shader specification, my hand-computed pixel predictions, failure cases and short answers), committed before any shader |
