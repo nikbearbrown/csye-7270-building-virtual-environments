@@ -33,4 +33,9 @@ Zhefan Zhang (zhefan-z), CSYE 7270 Fall 2026. Game: *walker-magic*, a 2D side-sc
 
 ## Film
 
-(Link, filename and SHA-256 added after the final render.)
+*A Red Flash, a Frosted Rock: Two Shaders for a Cave Mage*, 8:37.6, 3840×2160, 30 fps, narrated by Liam (AI).
+
+- Link: https://drive.google.com/file/d/1kcRLbb-tBHbCoba332OigrF90URMO3-A/view?usp=sharing
+- File: `claude-liam-walker-magic-shaders-gamedev.mp4`
+- SHA-256: `412bff788d24c1513bcac7bc8a6797dab11f50b53302883e1e94275b76f1d69a`
+- Game source shown: `40c42f5`. Film records (script, fact check, sources, checks, QC): `walker-magic-zhefan/youtube/claude-liam-walker-magic-shaders-gamedev/`. The MP4 is not in git.

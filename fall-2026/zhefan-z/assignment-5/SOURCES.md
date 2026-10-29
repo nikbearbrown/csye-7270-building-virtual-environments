@@ -20,6 +20,7 @@ Earlier assets and their sources are listed in `walker-magic-zhefan/SOURCES.md` 
 
 - **Godot Engine 4.7.2-stable** (official build `ed1daf0bf`), Forward+ on Vulkan 1.4.312 (editor output).
 - **Claude Code** desktop app, model **Opus 5.5**, through my Northeastern Claude Enterprise seat, manual permission mode. Prompts: `prompt-1.txt` to `prompt-5.txt`. One failed CLI attempt: `session-1-failed-run2.jsonl`. Nothing paid.
+- **Film:** Brutalist toolkit at `E:\7270\brutalist.art`, commit `29ba0e8`, skill `godot-gamedev` with the walker modifier, run by Claude Code (Opus 5.5) from `prompt-6-film.txt`; narration voice Liam (AI). Its records are in `walker-magic-zhefan/youtube/claude-liam-walker-magic-shaders-gamedev/` (SCRIPT, FACTCHECK, SOURCES, CHECKS-REPORT, `_qc/REPORT.md`). The film's proposed next step and its English translations of my Chinese shader comments are the agent's, labelled in the film.
 - **claude.ai** (chat, Opus 5.5): planning, commands, arithmetic and reference checks, drafting documents from my answers, translating my Chinese answers. It also supplied syntax examples and the widened-threshold idea used in `rock_frost.gdshader` and syntax examples for `hint_experiment.gdshader`, and the `.gitattributes` LF rules.
 
 ## What AI contributed and what I did

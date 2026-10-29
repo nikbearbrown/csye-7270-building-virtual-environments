@@ -1,0 +1,15 @@
+Assignment: Assignment 5 - Shaders, Materials, and the Godot Shading Language
+Student: Zhefan Zhang (zhefan-z)
+Project name: walker-magic (folder `walker-magic-zhefan`)
+GitHub repository URL: https://github.com/nikbearbrown/csye-7270-building-virtual-environments — branch `zhefan-z/assignment-5`, folder `fall-2026/zhefan-z/assignment-5`
+Git tag and submitted commit SHA: no tag, per the instructor (2026-10-09); the submitted commit SHA is in the Canvas note, because a commit cannot contain its own SHA
+Game-source revision shown in the film: 40c42f5 (later commits add only documents and film records; game source unchanged)
+Godot version, renderer, and operating system: Godot 4.7.2-stable (official build ed1daf0bf), Forward+ on Vulkan 1.4.312, Windows
+Game state the shader from code communicates: the post-hit invulnerability window (`Player.invulnerable`, 1.0 s). `hurt_tint.gdshader` mixes the mage's sprite toward red by `intensity = invulnerable / 1.0`, on the blink frames, and the driver forces 0 on fail or clear
+3D object and scene given the textured shader: `assets/models/rock.glb` (surface 0, `Rock_Main`) in `showcase3d/material_compare.tscn`, with `mat_rock_dry.tres` and `mat_rock_frosted.tres` from one shader, `rock_frost.gdshader`
+Texture sources and licences (or model, version, and terms): Poly Haven "Rock 01" by Rob Tuytel, CC0, 1K PNG, unmodified, OpenGL normal map (`assets/textures/rock_01/ATTRIBUTION.md`); `greys_3x1.png` written by code (`tools/write_hint_png.gd`)
+Final film URL and filename: https://drive.google.com/file/d/1kcRLbb-tBHbCoba332OigrF90URMO3-A/view?usp=sharing — claude-liam-walker-magic-shaders-gamedev.mp4
+Final film SHA-256: 412bff788d24c1513bcac7bc8a6797dab11f50b53302883e1e94275b76f1d69a
+Summary of my work: I wrote the specification (CHANGE-BRIEF, three dated revisions) with every decision and hand computation, typed the three shaders, answered the language questions, and did every human check: in-engine captures of the hurt tint at 0.0/0.5/1.0 (matching my predictions, the two x.5 channels within ±1) and of a grey tint at 2.0 showing that hint_range does not clamp a value set from code; the hint experiment (64/128/192 and 137/188/225, as predicted); the interface sweep; one shader with two materials; play testing; and the editor conversion of a StandardMaterial3D. Claude Code wrote the driver, the tests (17/0 at 30, 60 and 144 fps; 32/0 for materials, also after a fresh import), the materials, scenes, audit and capture tools; all three mutations fail their tests. Details: TEST-REPORT.md, FRICTIONAL.md.
+Known limitations: the textured shader is only in the 3D showcase scenes (the A3 prop room is unchanged, since Use External would have broken an earlier test); the ice roughness is a constant; the roughness map imports as DXT1 (no blocking seen); two explanations are untested (GPU rounding of x.5 channels, frame-time drift across a pause). See README.md.
+Changed games since Assignment 2 (yes/no; if yes, FRICTIONAL.md entry): no
