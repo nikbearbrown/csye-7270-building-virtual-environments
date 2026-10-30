@@ -20,7 +20,7 @@
 - `godot/characters/human/humanoid/humanoid.gd` (class `Humanoid`, line 4) owns `_tablet_hold` (line 43), of type `enum TabletHold { NONE, ONE_HAND, TWO_HAND }` (lines 13–17).
 - It is changed only in `_apply_tablet_press()` (lines 158–163), using the table in `_next_tablet_hold()` (lines 167–175). Read with `get_tablet_hold()` (lines 152–153). Announced by `signal tablet_hold_changed(old_hold, new_hold)` (line 25, emitted at line 163).
 - "Arrived at the hand slot" = `_tablet_move_progress` (line 47) reaching `TABLET_MOVE_DONE` (line 19); `_tablet_shown_hold` (line 45) is the slot being moved to. Both are presentation variables (comment on line 44).
-- The key press comes from the player brain: `PlayerController._read_tablet_press()` with `tablet_long_press_seconds` = 0.4 (`godot/characters/human/player/player_controller.gd` lines 24 and 127–136), passed in `CharacterIntent.tablet_press` (`godot/characters/character_intent.gd` line 27). The `tablet` input action is bound to Tab (`godot/project.godot` lines 62–66).
+- The key press comes from the player brain: `PlayerController._read_tablet_press()` with `tablet_long_press_seconds` = 0.4 (`godot/characters/human/player/player_controller.gd` lines 24 and 127–137), passed in `CharacterIntent.tablet_press` (`godot/characters/character_intent.gd` line 27). The `tablet` input action is bound to Tab (`godot/project.godot` lines 62–66).
 - No driver script for `pad_light_data` exists yet (no `.gd` file under `godot/` mentions `pad_light_data`).
 
 ### The 3D object for the textured shader and where its material comes from
@@ -39,6 +39,14 @@
 
   Expected: 55 `PASS` lines and `== ALL PASS: 0 failure(s) ==` (`logs/a3_asset_check_60fps.log`), exit 0 (`godot/tests/a3_asset_check.gd` line 133). This result must not change (`CHANGE-BRIEF.md` line 61).
 - The screen-glow test the brief asks for must be run at 30, 60 and 144 fps (`CHANGE-BRIEF.md` lines 63–71), i.e. `./scripts/run-test.sh <screen test>.gd 30`, then `60`, then `144`. Its file name is not decided yet (see Unconfirmed).
+
+### Headless facts (observed on this machine, 2026-10-29, Godot 4.7.2 `--headless`)
+- Nothing is rendered headless, so no pixel can be read: the screen colour is a human check with captures (`CHANGE-BRIEF.md` lines 63–71).
+- `Shader.get_shader_uniform_list()` works headless: it returns `cold_white` as a Color and `pad_light_data` as a float with a range hint (`0.0,1.0`).
+- Uniform defaults are **not** reported headless: `RenderingServer.shader_get_parameter_default()` returned `null` for both uniforms. Read defaults from the shader source text.
+- `ShaderMaterial.get_shader_parameter()` returns the value stored in the material, and a value set with `set_shader_parameter()` reads back. A name the shader does not declare also reads back, so only the uniform list proves the name contract.
+- Local To Scene works when `humanoid.tscn` is instanced twice: the two `Screen` materials are different objects, and setting `pad_light_data` on one leaves the other at 0.0.
+- `--fixed-fps` pins each frame's `delta`; physics runs at the default 60 ticks per second (no `physics_ticks_per_second` in `godot/project.godot`). The tablet move measured 0.367 / 0.350 / 0.354 s at 30 / 60 / 144 fps for `tablet_move_seconds` = 0.35.
 
 ## Current change
 
@@ -67,6 +75,6 @@
 - Which `godot_console` / `godot` binary is on `PATH` on the machine that runs the tests is not recorded; set `GODOT` if neither is found.
 - The brief says the `Screen` quad is 1 mm in front of the model's screen; the scene only shows z = 0.012 relative to `TabletDevice` (`tablet_device.tscn` line 29), so the 1 mm gap was not checked against the model.
 - The default tonemap / exposure values the pixel predictions rely on come from a headless check recorded in `CHANGE-BRIEF.md` (line 85), not from a file I could read.
-- The doc comment in `godot/items/tablet/tablet_device.gd` lines 21–22 still says every tablet shares one material; the scene now has Local To Scene ticked (`tablet_device.tscn` line 11). Whether that comment should be updated is the human's call.
+- The doc comment in `godot/items/tablet/tablet_device.gd` lines 21–22 still says every tablet shares one material; the scene now has Local To Scene ticked (`tablet_device.tscn` line 11). The comment is out of date and will be updated together with the driver.
 - `godot/base.tscn` has only one character; the two-body independence test needs a second humanoid that does not exist in any scene yet.
 - The crate wear look, textures, uniforms and the external material file names are listed in the brief as "to be added" (`CHANGE-BRIEF.md` lines 112–120).
