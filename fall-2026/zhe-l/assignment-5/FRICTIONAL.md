@@ -24,3 +24,4 @@ My Assignment 3 log is in `../assignment-3/FRICTIONAL.md`.
 |---|---|
 | 2026-10-29 | Start Assignment 5: the Godot project as the A5 starting point (character body / brain and tablet logic), `scripts/run-test.sh`, and the 60 fps baseline (a3_asset_check: 55 PASS) |
 | 2026-10-29 | Add the A5 change brief (the screen-glow shader specification, my hand-computed pixel predictions, failure cases and short answers), committed before any shader |
+| 2026-10-29 | Add my hand-written screen-glow shader `godot/shaders/pad_base_light.gdshader`, committed on its own (this row is in the next commit, so the shader commit contains only the shader) |
