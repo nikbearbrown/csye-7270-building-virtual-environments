@@ -33,15 +33,13 @@
   0 when the thrower is silenced (`entities/enemy.gd:1200`). The same class with
   `lasting` 0 draws the slug burst and a boss's last rite (`entities/enemy.gd:1443`,
   `entities/boss.gd:347`); those are not fires.
-- Textured-shader object: the base crate, prop `"crate"` (`world/base_map.gd:90`),
-  from `res://art/kit/base_crate.glb` (`world/base_map.gd:57`). Its current material:
-  `TerraceDressing.kit_mesh()` moves each glb surface's baked albedo/normal textures
-  into a `ShaderMaterial` on `world/kit_piece.gdshader` (`world/terrace_dressing.gd:38`,
-  `world/terrace_dressing.gd:933-955`); `BaseMap._place_kit()` then overrides it with
-  `world/base_kit_see_through.gdshader` (`world/base_map.gd:58`,
-  `world/base_map.gd:1744-1766`), shared per room while `_share_materials` is set
-  (`world/base_map.gd:519`, `world/base_map.gd:829-831`). The judging fixture
-  `res://tests/material_review.tscn` is planned, not yet made (`CHANGE-BRIEF.md`, "Material plan").
+- Textured-shader objects: the two hall `crate_stack` props at layout x=98.0
+  and x=101.5 (`world/base_map.gd`, CARGO_PANEL and the hall prop table).
+  `BaseMap._place_kit()` assigns `cargo_panel_mild.tres` and
+  `cargo_panel_weathered.tres` to surface 0; the clasps retain their kit material.
+  Both materials share `shaders/cargo_panel.gdshader` and the three cargo textures.
+  The judging fixture `res://tests/material_review.tscn` exists and supplies
+  separate review and raking lights. `MATERIALS.md` records its UV and lighting limits.
 - Tests: always through the wrapper, which runs `--headless --path . --script
   res://tests/<file> --fixed-fps <fps>`, logs to `logs/<name>_<fps>fps.log`, and
   fails on a non-zero exit or any `SHADER ERROR` / `SCRIPT ERROR` line
@@ -108,9 +106,10 @@ Measured on this machine by `tests/a5_probe_headless.gd` at 30, 60 and 144 fps
 
 ## Unconfirmed
 
-- `AGENTS.md` does not exist, so there is no `@AGENTS.md` line. `shaders/` does not exist yet.
-- Whether the `crate` model's UVs suit the planned textures, and where crates stand in
-  the base, are not checked yet.
+- `AGENTS.md` does not exist, so there is no `@AGENTS.md` line. `shaders/` now contains
+  the fire, cargo, hint-experiment and generated comparison programs.
+- The selected `crate_stack` surfaces have UVs and tangents; the base placement,
+  BoxMesh UV magnification and texture response are recorded in `MATERIALS.md`.
 - Whether shader `TIME` follows `Engine.time_scale` is a prediction in the brief (R5),
   not yet measured.
 - The working tree has many uncommitted edits (`git status`), so line numbers in this
