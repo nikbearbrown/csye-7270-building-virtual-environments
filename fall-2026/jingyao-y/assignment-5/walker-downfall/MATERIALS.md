@@ -39,12 +39,12 @@ Import settings are read from each texture's `.import` `[params]` with ConfigFil
 
 | Shader | Sampler | Hints as written | Bound texture (per material) | compress/mode | compress/normal_map | mipmaps/generate | Other import settings that matter |
 |---|---|---|---|---|---|---|---|
-| cargo_panel | `albedo_tex` | `source_color, filter_linear_mipmap, repeat_enable` (`shaders/cargo_panel.gdshader:3`) | A, B: `rusty_metal_sheet_diff_1k.png` | 0 (Lossless) | 2 (Disable) | true | invert_y false, detect_3d/compress_to 0 |
-| cargo_panel | `roughness_tex` | `filter_linear_mipmap, repeat_enable` (`:4`) | A, B: `rusty_metal_sheet_rough_1k.png` | 0 (Lossless) | 2 (Disable) | true | invert_y false, compress_to 0 |
-| cargo_panel | `normal_tex` | `hint_normal, filter_linear_mipmap, repeat_enable` (`:5`) | A, B: `rusty_metal_sheet_nor_gl_1k.png` | 2 (VRAM Compressed) | 1 (Enable) | true | invert_y false, compress_to 0; loads as RGTC_RG (BC5) |
+| cargo_panel | `albedo_tex` | `source_color, filter_linear_mipmap, repeat_enable` (`shaders/cargo_panel.gdshader:3`) | A, B: `rusty_metal_sheet_diff_1k.png` | 0 (Lossless) | 2 (Disabled) | true | invert_y false, detect_3d/compress_to 0 |
+| cargo_panel | `roughness_tex` | `filter_linear_mipmap, repeat_enable` (`:4`) | A, B: `rusty_metal_sheet_rough_1k.png` | 0 (Lossless) | 2 (Disabled) | true | invert_y false, compress_to 0 |
+| cargo_panel | `normal_tex` | `hint_normal, filter_linear_mipmap, repeat_enable` (`:5`) | A, B: `rusty_metal_sheet_nor_gl_1k.png` | 2 (VRAM Compressed) | 1 (Enable) | true | invert_y false, compress_to 0; loads as `get_format()` 21 = `FORMAT_RGTC_RG` (BC5) |
 | cargo_panel | `normal_tex` (fixture only) | as above | normal_map_check: `nor_dx_1k.png` / `nor_dx_1k_inverty.png` | 2 / 2 | 1 / 1 | true / true | invert_y false / **true** |
-| hint_experiment | `tex_color` | `source_color, filter_nearest, repeat_disable` (`shaders/hint_experiment.gdshader:4`) | both: `greys_3x1.png` | 0 (Lossless) | 2 (Disable) | false | fix_alpha_border false, compress_to 0 |
-| hint_experiment | `tex_raw` | `filter_nearest, repeat_disable` (`:5`) | both: `greys_3x1.png` | 0 (Lossless) | 2 (Disable) | false | as above |
+| hint_experiment | `tex_color` | `source_color, filter_nearest, repeat_disable` (`shaders/hint_experiment.gdshader:4`) | both: `greys_3x1.png` | 0 (Lossless) | 2 (Disabled) | false | fix_alpha_border false, compress_to 0 |
+| hint_experiment | `tex_raw` | `filter_nearest, repeat_disable` (`:5`) | both: `greys_3x1.png` | 0 (Lossless) | 2 (Disabled) | false | as above |
 
 Non-sampler uniforms, from the source text (defaults are not reported headlessly,
 `CLAUDE.md` "Headless facts"):
@@ -73,6 +73,15 @@ Source texels (decoded with `Image.load_from_file`): `greys_3x1.png` = 64, 128, 
 | `tests/hint_experiment.tscn` | Linear (0) / 1.0 | black | ambient disabled / reflected disabled | all off (`:6-20`) | none; shader is `render_mode unshaded` |
 | Base hall, in play (A/B on crate stacks) | **ACES (3)** / 1.0, white 8.0 | Color(0.02, 0.025, 0.03) | Color(0.62, 0.66, 0.72) × 0.8 | SSAO (r 1.4, i 2.2), SSIL 0.8, glow 0.55 soft-light, fog 0.004, adjustment contrast 1.06 / saturation 1.08 (`game/game_manager.gd:6536-6562`) | sun DirectionalLight3D rotation_degrees (-50, -30, 0), energy `BASE_SUN` 0.15, white, shadows on (`game/game_manager.gd:6494-6497`, `:6528`, `:6621-6623`); hall ceiling OmniLights from `LAMP` Color(0.32, 0.3, 0.24) → light colour (1, 0.94, 0.75), energy 1.92, range 18.7, specular 0.25, nearest 6 cast shadows (`world/base_map.gd:487`, `:589`, `:602-611`); outline pass visible |
 
+Enum values in this file were looked up, not assumed: the Environment and Image
+constants from the engine (`tests/a5_review_lookup.gd`, `logs/a5_review_lookup_60fps.log`:
+tonemap 0 Linear / 3 ACES / 4 AgX; background 1 Color; ambient 1 Disabled / 2 Color;
+reflected 1 Disabled), and the import options from the Godot 4.7.2 source,
+`editor/import/resource_importer_texture.cpp:232,241,260`: `compress/mode`
+"Lossless,Lossy,VRAM Compressed,VRAM Uncompressed,Basis Universal",
+`compress/normal_map` "Detect,Enable,Disabled", `detect_3d/compress_to`
+"Disabled,VRAM Compressed,Basis Universal" (values count from 0).
+
 ## Findings
 
 1. **B's roughness is almost all clamped to 1.0.** The rough map's mean R is 0.820;
@@ -81,7 +90,8 @@ Source texels (decoded with `Image.load_from_file`): `greys_3x1.png` = 64, 128, 
    test line `INFO rough source mean R 0.820; texels clamped at 1.0 under roughness_scale 1.35: 91.7%`).
    B therefore shows almost no roughness variation from the texture; the brief's
    "增大后高光变宽、变弱" (`CHANGE-BRIEF.md`, uniform table) saturates well before 1.35.
-   A (0.65) keeps the map's variation (mean ≈ 0.53).
+   A (0.65) keeps the map's variation (mean 0.820 × 0.65 = 0.533, computed, not measured;
+   no texel reaches 1.0 because 0.65 × 1.0 < 1).
 2. **Environment reflections are off in both fixtures.** `reflected_light_source = 1`
    (`tests/material_review.tscn:12`, `tests/normal_map_check.tscn:16`). Roughness can
    only show through the Sun's (or RakingLight's) direct specular highlight. The brief
@@ -113,10 +123,12 @@ Source texels (decoded with `Image.load_from_file`): `greys_3x1.png` = 64, 128, 
    differ visibly mainly through `tint_color` and `roughness_scale`, and per finding 1
    B's roughness is mostly the constant 1.0.
 7. **Diffuse and roughness maps are uncompressed in VRAM** (`compress/mode=0`, `.import:18`
-   for both). This follows the brief's plan (`CHANGE-BRIEF.md:241-242`), but it costs
-   about 4–5× the VRAM of a VRAM-compressed import. The 16-bit sources (5.5 MB and
-   1.8 MB) load as 8 bits per channel (`textures/cargo_panel/ATTRIBUTION.md:33`), so the
-   extra source precision is not used.
+   for both). This follows the brief's plan (`CHANGE-BRIEF.md:241-242`). Measured image
+   data with mipmaps (`get_image().get_data().size()`, `logs/a5_review_lookup_60fps.log`):
+   diffuse 4,194,303 bytes (RGB8), roughness 1,398,101 bytes (L8), each normal map
+   1,398,128 bytes (RGTC_RG). The 16-bit sources (5.5 MB and 1.8 MB) load as 8 bits per
+   channel (`get_format()` 4 = `FORMAT_RGB8`, 0 = `FORMAT_L8`, same log), so the extra
+   source precision is not used.
 8. **Each hint material binds a texture it never reads.** Both bind `greys_3x1.png` to
    `tex_color` and `tex_raw` (`tests/hint_experiment.tscn:24-25`, `:30-31`), but the
    shader reads only one of them, chosen by `use_source_color`
