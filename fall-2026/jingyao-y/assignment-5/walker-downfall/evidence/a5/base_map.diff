@@ -1,0 +1,28 @@
+diff --git a/world/base_map.gd b/world/base_map.gd
+index f26e5d0d..18b9d2d3 100644
+--- a/world/base_map.gd
++++ b/world/base_map.gd
+@@ -57,6 +57,12 @@ const PLAYER_Y := 0.7
+ const KIT := "res://art/kit/base_%s.glb"
+ const KIT_SEE_THROUGH := preload("res://world/base_kit_see_through.gdshader")
+ const DECK_SHADER := preload("res://world/base_deck.gdshader")
++## A5 (CHANGE-BRIEF.md, Material plan): the cargo bay's two crate stacks wear the
++## cargo_panel materials on their boxes (surface 0; the clasps keep the kit look),
++## A on the one at layout x 98, B on the one at 101.5. The planned "crate" never stands: the
++## hall's layout clears both (PROP_CLEAR).
++const CARGO_PANEL := {98.0: preload("res://materials/cargo_panel_mild.tres"),
++	101.5: preload("res://materials/cargo_panel_weathered.tres")}
+ ## Stand-in deck plate until Sol's R1 (tools/blender/base/make_deck_tile.py).
+ const DECK_TILE := preload("res://art/kit/textures/base_deck_tile.png")
+ ## Sol's L logo: the rook tower in the triangle (art/rhodes/batch2_v1).
+@@ -1007,7 +1013,9 @@ func _build_model_room(root: Node3D, room: Dictionary) -> void:
+ 			lz -= LAMP_PITCH
+ 		lx += LAMP_PITCH
+ 	for d in DECOR.get(room.id, []):
+-		_place_kit(root, d[0], Vector3(EAST * float(d[1]), float(d[4]), float(d[2])), deg_to_rad(float(d[3])))
++		var piece := _place_kit(root, d[0], Vector3(EAST * float(d[1]), float(d[4]), float(d[2])), deg_to_rad(float(d[3])))
++		if room.id == "hall" and d[0] == "crate_stack" and CARGO_PANEL.has(float(d[1])):
++			piece.set_surface_override_material(0, CARGO_PANEL[float(d[1])])
+ 		var foot: Array = d[5]
+ 		if not foot.is_empty():
+ 			var grown := prop_scale(str(d[0]))
