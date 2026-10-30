@@ -1,0 +1,20 @@
+--- original/burning_bottle_fire.gdshader
++++ renamed-uniform/burning_bottle_fire.gdshader
+@@ -1,7 +1,7 @@
+ shader_type spatial;
+ render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled, fog_disabled;
+ 
+-uniform float fire_remaining : hint_range(0.0, 1.0, 0.01) = 1.0;
++uniform float fire_remaining_mutated : hint_range(0.0, 1.0, 0.01) = 1.0;
+ uniform vec4 hot_color : source_color = vec4(1.0, 1.0, 0.0, 1.0);
+ uniform vec4 ember_color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
+ uniform float intensity : hint_range(0.0, 1.0, 0.01) = 0.6;
+@@ -14,6 +14,6 @@
+ 	float shape = clamp(1.0 - dot(p, p), 0.0, 1.0);
+ 	float flicker = 1.0 + flicker_amount * sin(11.0 * TIME);
+ 
+-	ALBEDO = mix(ember_color.rgb, hot_color.rgb, fire_remaining) * intensity;
+-	ALPHA = clamp(shape * clamp(fire_remaining, 0.0, 1.0) * flicker, 0.0, 1.0);
++	ALBEDO = mix(ember_color.rgb, hot_color.rgb, fire_remaining_mutated) * intensity;
++	ALPHA = clamp(shape * clamp(fire_remaining_mutated, 0.0, 1.0) * flicker, 0.0, 1.0);
+ }

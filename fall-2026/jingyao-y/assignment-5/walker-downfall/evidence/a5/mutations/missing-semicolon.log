@@ -1,0 +1,121 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS the fire shader loads
+--Main Shader--
+   16 | 
+   17 |  ALBEDO = mix(ember_color.rgb, hot_color.rgb, fire_remaining) * intensity
+E  18->  ALPHA = clamp(shape * clamp(fire_remaining, 0.0, 1.0) * flicker, 0.0, 1.0);
+   19 | }
+   20 | 
+SHADER ERROR: Expected a ';'.
+   at: (null) (:18)
+   GDScript backtrace (most recent call first):
+       [0] _shader_interface (res://tests/test_fire_shader.gd:215)
+       [1] run (res://tests/test_fire_shader.gd:170)
+ERROR: Shader compilation failed.
+   at: shader_set_code (servers/rendering/dummy/storage/material_storage.cpp:192)
+   GDScript backtrace (most recent call first):
+       [0] _shader_interface (res://tests/test_fire_shader.gd:215)
+       [1] run (res://tests/test_fire_shader.gd:170)
+   seen: []
+FAIL the uniform list has exactly the five uniforms of the brief
+FAIL uniform fire_remaining exists
+FAIL uniform hot_color exists
+FAIL uniform ember_color exists
+FAIL uniform intensity exists
+FAIL uniform flicker_amount exists
+   DEFAULTS { "fire_remaining": "1.0", "hot_color": "vec4(1.0,1.0,0.0,1.0)", "ember_color": "vec4(1.0,0.0,0.0,1.0)", "intensity": "0.6", "flicker_amount": "0.08" }
+PASS source defaults: fire_remaining 1.0, hot (1,1,0,1), ember (1,0,0,1), intensity 0.6, flicker 0.08
+FAIL the colour line is in the source word for word
+PASS ALPHA multiplies clamp(fire_remaining, 0.0, 1.0), so 0.0 gives alpha 0 (source only)
+FIRE SHADER: 240 frames per 240 physics steps -> 60 fps; physics_ticks_per_second=60, time_scale=1.00
+   after start: modal='' simulation_active=true region=city
+PASS the field is running after start_contract (no modal)
+PASS a throwing spot with a clear line
+PASS the thrower throws by itself (chase, wind-up, throw)
+PASS its bottle lands and leaves a fire with a Flame
+PASS R1: the driver cached the initial lasting 3.0 before any countdown
+PASS R1: fire_remaining is 1.0 on the physics step the fire appears
+PASS R1: …and on the first frame it is drawn (1.0 within one frame period, 1/60 s)
+   R1 @60fps: first frame value 1.000000
+PASS the flame is its own ShaderMaterial on the shared shader, a 2r × 1.6r quad 0.04 above the ground, no shadow
+PASS the Decal scorch is still there beside it
+PASS R3 @1.0: every physics step fire_remaining == clamp(lasting / initial, 0, 1)
+PASS R3 @1.0: …and every frame
+PASS R3 @1.0: it never rises
+PASS R3 @1.0: 0.5 at 1.5 game seconds (±1e-5 + one step / initial)
+PASS R2: the last physics sample before the free reads 0.0
+PASS R2: hazard and Flame are gone afterwards
+PASS R3: it lasts 181 physics steps (first step with lasting <= 0)
+PASS R3: …3.016667 game seconds of physics delta
+PASS R3: seen by the _process observer for 3.016667 s ± one frame (1/60 s)
+   R3 @60fps: steps 181, game s 3.016667, observed 3.016667 s over 181 frames
+PASS the flame faced the camera every frame
+PASS two throwers 60 steps apart both throw
+   R4: fires born 60 physics steps apart (1.0000 s); A thrower started at step 527
+PASS R4: a new bottle makes a new hazard, not a restart of the old one
+PASS R4: the new fire starts at 1.0
+PASS R7: at one step A = (3 − its age)/3 and B = (3 − 0.5)/3 = 5/6, each on its own clock
+PASS R7: with the 1.0 s gap that is 0.5 and 5/6
+PASS R4: the old fire was not reset or extended: initial 3.0 and a curve that never rose
+PASS R7: two material instances (ids -9223371010441463286, -9223371002791052785) on one Shader
+PASS R7/F1: writing A's material leaves B's alone
+   R7: frames 716–716 show the test's own 0.123 on A and are left out of A's per-frame check
+PASS …and the driver puts A back to its own state next step
+PASS R4 A: every physics step fire_remaining == clamp(lasting / initial, 0, 1)
+PASS R4 A: …and every frame
+PASS R4 A: it never rises
+PASS R4 A: 0.5 at 1.5 game seconds (±1e-5 + one step / initial)
+PASS R4 B: every physics step fire_remaining == clamp(lasting / initial, 0, 1)
+PASS R4 B: …and every frame
+PASS R4 B: it never rises
+PASS R4 B: 0.5 at 1.5 game seconds (±1e-5 + one step / initial)
+PASS R4: A goes out first, each after its own 181 steps
+PASS R4: both end at 0.0
+PASS R5: a fire to pause
+   after Esc: modal='pause' simulation_active=false
+PASS R5: Esc (injected key) opens the pause menu and stops the field
+PASS R5: 30 physics steps in the pause menu: lasting and fire_remaining do not move
+PASS R5: Esc again closes it
+PASS R5: …and the fire counts on from where it stood
+   after E: modal='inventory' looting=true simulation_active=true
+PASS R5: E (injected key) by the box opens its window
+PASS R5: with a box's window open the field runs and the fire burns down
+PASS …Esc closes the window
+PASS R5 pause: every physics step fire_remaining == clamp(lasting / initial, 0, 1)
+PASS R5 pause: …and every frame
+PASS R5 pause: it never rises
+PASS R5 pause: 0.5 at 1.5 game seconds (±1e-5 + one step / initial)
+PASS R5: paused steps are not game time: still 181 counting steps and 3.016667 game s
+PASS R5: ends at 0.0
+PASS time_scale 0.5: a fire
+   time_scale 0.5: steps 361, game s 3.008333, wall 6.0167 s (361 frames)
+PASS R5 time_scale 0.5: 361 physics steps to the first lasting <= 0
+PASS R5 time_scale 0.5: about 3.0 game seconds (3.0 ≤ t < 3.0 + one scaled step)
+PASS R5 time_scale 0.5: 6.017 wall seconds ± one frame
+PASS time_scale 0.5: every physics step fire_remaining == clamp(lasting / initial, 0, 1)
+PASS time_scale 0.5: …and every frame
+PASS time_scale 0.5: it never rises
+PASS time_scale 0.5: 0.5 at 1.5 game seconds (±1e-5 + one step / initial)
+PASS time_scale 0.5: ends at 0.0
+PASS time_scale 2.0: a fire
+   time_scale 2.0: steps 91, game s 3.033333, wall 1.5167 s (91 frames)
+PASS R5 time_scale 2.0: 91 physics steps to the first lasting <= 0
+PASS R5 time_scale 2.0: about 3.0 game seconds (3.0 ≤ t < 3.0 + one scaled step)
+PASS R5 time_scale 2.0: 1.517 wall seconds ± one frame
+PASS time_scale 2.0: every physics step fire_remaining == clamp(lasting / initial, 0, 1)
+PASS time_scale 2.0: …and every frame
+PASS time_scale 2.0: it never rises
+PASS time_scale 2.0: 0.5 at 1.5 game seconds (±1e-5 + one step / initial)
+PASS time_scale 2.0: ends at 0.0
+PASS F2: 高能源石虫's fused blast has no Flame, keeps its Warning
+PASS F2: a fuse > 0, lasting 0 hazard (a last rite's parameters) has no Flame
+PASS F2: a silenced thrower's bottle leaves no fire at all
+PASS R6: a fire before the floor changes
+   R6: changed floor 1 -> 2 (supply) at fire_remaining 0.6944
+PASS R6: the floor changed through the real route (advance)
+PASS R6: hazard and Flame are gone with the floor, no fade-out, no 0.0 sample
+PASS R6: it was cut short near 0.7
+PASS R6: a throwing spot on the new floor
+PASS R6: the next fire caches its own 3.0 and starts at 1.0
+FIRE SHADER RESULT @60fps: 89 checks, 7 failures
