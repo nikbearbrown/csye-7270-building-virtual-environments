@@ -1,4 +1,4 @@
-"""Attach completed GitHub-clone results without changing runtime sources."""
+"""Attach clone results and the requested media-free package policy."""
 from pathlib import Path
 import hashlib
 import json
@@ -36,8 +36,10 @@ for base in (ROOT,TARGET):
     content=report.read_text(encoding="utf-8").split("\n## Fresh GitHub checkout\n")[0]+text
     report.write_text(content,encoding="utf-8")
     (base/"a5/final-documents/TEST-REPORT.md").write_text(content,encoding="utf-8")
+for name in ("SUBMISSION.md","tools/a5/package_canvas.py"):
+    shutil.copy2(ROOT/name,TARGET/name)
 paths=[p.relative_to(COURSE).as_posix() for p in destination.rglob("*") if p.is_file()]
-paths += [PREFIX+"TEST-REPORT.md",PREFIX+"a5/final-documents/TEST-REPORT.md"]
+paths += [PREFIX+n for n in ("TEST-REPORT.md","a5/final-documents/TEST-REPORT.md","SUBMISSION.md","tools/a5/package_canvas.py")]
 manifest_path=TARGET/"evidence/a5/delivery-manifest.json"
 manifest=json.loads(manifest_path.read_text(encoding="utf-8"))
 rows={r["path"]:r for r in manifest["files"]}
@@ -51,10 +53,11 @@ paths.append(PREFIX+"evidence/a5/delivery-manifest.json")
 spec=OUT/"release-metadata.paths"
 spec.write_bytes(b"\0".join(p.encode("utf-8") for p in paths)+b"\0")
 subprocess.run(["git","add","--force","--pathspec-from-file="+str(spec),"--pathspec-file-nul"],cwd=COURSE,check=True)
-subprocess.run(["git","commit","-m","Record fresh GitHub clone import and A5 regression verification"],cwd=COURSE,check=True)
+subprocess.run(["git","commit","-m","Record fresh-clone verification and package without exported media"],cwd=COURSE,check=True)
 release=subprocess.check_output(["git","rev-parse","HEAD"],cwd=COURSE,text=True).strip()
 changed=subprocess.check_output(["git","diff","--name-only",receipt["tested_commit"],release],cwd=COURSE,text=True).splitlines()
-assert all(p.startswith(PREFIX+"evidence/a5/fresh-clone/") or p in (PREFIX+"TEST-REPORT.md",PREFIX+"a5/final-documents/TEST-REPORT.md",PREFIX+"evidence/a5/delivery-manifest.json") for p in changed),changed
+allowed=("TEST-REPORT.md","a5/final-documents/TEST-REPORT.md","SUBMISSION.md","tools/a5/package_canvas.py","evidence/a5/delivery-manifest.json")
+assert all(p.startswith(PREFIX+"evidence/a5/fresh-clone/") or p in [PREFIX+n for n in allowed] for p in changed),changed
 subprocess.run(["git","tag","-a","a5","-m","Assignment 5: verified shader and material submission"],cwd=COURSE,check=True)
 receipt["release_commit"]=release
 receipt["release_tag"]="a5"

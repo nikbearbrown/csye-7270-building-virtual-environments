@@ -1,5 +1,6 @@
 """Verify the published A5 project in a new GitHub checkout and empty Godot cache."""
 from pathlib import Path
+import argparse
 import hashlib
 import json
 import os
@@ -14,12 +15,20 @@ PREFIX="fall-2026/jingyao-y/assignment-5/walker-downfall"
 REMOTE="https://github.com/nikbearbrown/csye-7270-building-virtual-environments.git"
 OUT=ROOT.parent/"evidence/a5-release-verification"
 OUT.mkdir(parents=True,exist_ok=True)
-CLONE=ROOT.parent/"build"/("a5-github-fresh-"+time.strftime("%Y%m%d-%H%M%S"))
-assert not CLONE.exists()
+parser=argparse.ArgumentParser()
+parser.add_argument("--existing",type=Path)
+args=parser.parse_args()
+CLONE=args.existing or ROOT.parent/"build"/("a5-github-fresh-"+time.strftime("%Y%m%d-%H%M%S"))
 command=["git","clone","--depth","1","--filter=blob:none","--single-branch","--branch","Jingyao_Y","--no-checkout",REMOTE,str(CLONE)]
-subprocess.run(command,check=True)
-subprocess.run(["git","sparse-checkout","set",PREFIX],cwd=CLONE,check=True)
-subprocess.run(["git","checkout"],cwd=CLONE,check=True)
+if args.existing:
+    assert (CLONE/".git").is_dir() and not (CLONE/PREFIX/".godot").exists()
+    subprocess.run(["git","fetch","origin","Jingyao_Y"],cwd=CLONE,check=True)
+    subprocess.run(["git","checkout","--detach","FETCH_HEAD"],cwd=CLONE,check=True)
+else:
+    assert not CLONE.exists()
+    subprocess.run(command,check=True)
+    subprocess.run(["git","sparse-checkout","set",PREFIX],cwd=CLONE,check=True)
+    subprocess.run(["git","checkout"],cwd=CLONE,check=True)
 commit=subprocess.check_output(["git","rev-parse","HEAD"],cwd=CLONE,text=True).strip()
 project=CLONE/PREFIX
 assert not (project/".godot").exists()

@@ -20,11 +20,12 @@ parallel performance failure and its isolated passing repeat are both retained.
 See TEST-REPORT for the limits of these results.
 
 The landscape film is Downfall: Fire, Texture and Shader Evidence. Its 4K master
-is included in the Canvas package's film/ folder. Film source records, source/result
+is retained locally. Exported film, recordings and audio are excluded from the
+course upload and Canvas ZIP at my request. Film source records, source/result
 pairs, provenance and verification receipts accompany the project. Rendered video,
 audio and intermediate media stay outside GitHub under the course media rule.
 
 The Canvas ZIP contains this submission note, the complete walker-downfall project,
-the film, and final fresh-clone verification receipts. The verification identifies
-the tested GitHub commit and confirms its runtime source hashes; evidence/report
+final fresh-clone verification receipts, and film verification paperwork. The verification identifies
+the tested GitHub commit and confirms its runtime source hashes; evidence/report and packaging
 updates after that tested commit do not alter the game or test code.

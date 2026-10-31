@@ -1,4 +1,4 @@
-"""Package the verified course project and film with ZIP64 and a checked index."""
+"""Package the verified course project without exported video or audio."""
 from pathlib import Path
 import hashlib
 import json
@@ -31,8 +31,7 @@ files=[p for p in COURSE.rglob("*") if p.is_file() and not any(part in (".git","
 with zipfile.ZipFile(TARGET,"w",compression=zipfile.ZIP_DEFLATED,compresslevel=3,allowZip64=True) as archive:
     for path in files:archive.write(path,"walker-downfall/"+path.relative_to(COURSE).as_posix())
     archive.write(COURSE/"SUBMISSION.md","SUBMISSION.md")
-    archive.write(MASTER,"film/"+MASTER.name)
-    archive.write(VERIFIED,"film/"+VERIFIED.name)
+    archive.write(VERIFIED,"verification/film-master/"+VERIFIED.name)
     verification=ROOT.parent/"evidence/a5-release-verification"
     if verification.exists():
         for path in verification.rglob("*"):
@@ -41,6 +40,6 @@ with zipfile.ZipFile(TARGET) as archive:
     bad=archive.testzip();assert bad is None,bad
     assert "walker-downfall/project.godot" in archive.namelist()
     count=len(archive.infolist())
-summary={"zip":TARGET.name,"bytes":TARGET.stat().st_size,"sha256":digest(TARGET),"entries":count,"crc_check":"PASS","film_sha256":media_hash}
+summary={"zip":TARGET.name,"bytes":TARGET.stat().st_size,"sha256":digest(TARGET),"entries":count,"crc_check":"PASS","local_film_sha256":media_hash,"exported_media_included":False}
 (OUTPUT/"zip-verification.json").write_text(json.dumps(summary,indent=2)+"\n",encoding="utf-8")
 print(json.dumps(summary,indent=2))
