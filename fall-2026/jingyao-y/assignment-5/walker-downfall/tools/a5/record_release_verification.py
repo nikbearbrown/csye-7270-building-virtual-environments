@@ -26,8 +26,9 @@ text=("\n## Fresh GitHub checkout\n\n"
       "test_loading_screen and test_item_icons failing as in the baseline. Fire passed 89/89 "
       "at 30/60/144 fps, materials passed 120/120, and normal_map_check exited 0. "
       "The wall-time market suite ran after the parallel pool and passed. Protected sources "
-      "stayed unchanged. Git fsck passed. The clone used local Git objects as a transfer "
-      "reference, then dissociated; no alternates remain. This does not reuse Godot's import cache. "
+      "stayed unchanged. Git fsck passed. The successful clone downloaded its objects from "
+      "GitHub without a local reference or alternates. The first local-reference attempt failed "
+      "before checkout and is retained separately. No Godot import cache was reused. "
       "The final release adds these receipts and report text; its runtime hashes match the tested commit. "
       "Evidence: evidence/a5/fresh-clone/.\n")
 for base in (ROOT,TARGET):

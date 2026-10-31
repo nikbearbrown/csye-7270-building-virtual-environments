@@ -16,7 +16,7 @@ OUT=ROOT.parent/"evidence/a5-release-verification"
 OUT.mkdir(parents=True,exist_ok=True)
 CLONE=ROOT.parent/"build"/("a5-github-fresh-"+time.strftime("%Y%m%d-%H%M%S"))
 assert not CLONE.exists()
-command=["git","clone","--depth","1","--single-branch","--branch","Jingyao_Y","--no-checkout","--reference-if-able",str(COURSE),"--dissociate",REMOTE,str(CLONE)]
+command=["git","clone","--depth","1","--filter=blob:none","--single-branch","--branch","Jingyao_Y","--no-checkout",REMOTE,str(CLONE)]
 subprocess.run(command,check=True)
 subprocess.run(["git","sparse-checkout","set",PREFIX],cwd=CLONE,check=True)
 subprocess.run(["git","checkout"],cwd=CLONE,check=True)
@@ -33,7 +33,7 @@ for row in manifest["files"]:
     if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=row["sha256"]:mismatches.append(row["path"])
 assert not mismatches,mismatches
 runtime={p.relative_to(project).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in project.rglob("*") if p.is_file() and not any(x in (".godot","evidence","logs","a5","youtube","tools") for x in p.relative_to(project).parts) and p.suffix.lower() in (".gd",".gdshader",".tscn",".tres",".godot",".png",".glb",".gltf",".import",".uid",".wav",".ogg",".ttf")}
-receipt={"remote":REMOTE,"branch":"Jingyao_Y","tested_commit":commit,"clone":str(CLONE),"project":str(project),"clone_command":command,"git_objects":"Local reference used during clone; dissociated, no alternates remain. GitHub supplies the branch and checkout commit.","godot_cache_initially_absent":True,"manifest_file_count":len(manifest["files"]),"manifest_mismatches":mismatches,"runtime_source_hashes":runtime,"status":"RUNNING"}
+receipt={"remote":REMOTE,"branch":"Jingyao_Y","tested_commit":commit,"clone":str(CLONE),"project":str(project),"clone_command":command,"git_objects":"Downloaded from GitHub with a blob-filtered sparse checkout; no local object reference or alternates.","godot_cache_initially_absent":True,"manifest_file_count":len(manifest["files"]),"manifest_mismatches":mismatches,"runtime_source_hashes":runtime,"status":"RUNNING"}
 (OUT/"release-verification.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
 env=dict(os.environ,PYTHONUTF8="1",GODOT=str(ROOT.parent/"Godot_v4.7.2-stable_win64_console.exe"))
 subprocess.run([sys.executable,str(project/"tools/a5/import_audit.py"),str(project),"--out","evidence/a5/fresh-clone/import"],env=env,check=True)
