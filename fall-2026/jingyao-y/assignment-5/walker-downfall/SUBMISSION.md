@@ -29,3 +29,5 @@ The Canvas ZIP contains this submission note, the complete walker-downfall proje
 final fresh-clone verification receipts, and film verification paperwork. The verification identifies
 the tested GitHub commit and confirms its runtime source hashes; evidence/report and packaging
 updates after that tested commit do not alter the game or test code.
+
+The final fresh GitHub checkout passes 72/73 original suites, with only the previously observed test_item_icons failure. test_combat and test_loading_screen pass in this run; no fix for those earlier failures is claimed. The A5 fire, material and curl checks all pass.

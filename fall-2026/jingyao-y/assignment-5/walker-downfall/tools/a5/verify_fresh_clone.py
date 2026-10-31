@@ -51,8 +51,8 @@ assert imported["cache_was_absent"] and imported["exit_code"]==0 and not importe
 subprocess.run([sys.executable,str(project/"tools/a5/run_regression.py"),"--jobs","4","--out","evidence/a5/fresh-clone/regression"],env=env,check=True)
 tests=json.loads((project/"evidence/a5/fresh-clone/regression/summary.json").read_text(encoding="utf-8"))
 expected={"test_combat","test_loading_screen","test_item_icons"}
-assert tests["baseline_suite_count"]==73 and tests["baseline_passed"]==70,tests["baseline_failures"]
-assert set(tests["baseline_failures"])==expected
+assert tests["baseline_suite_count"]==73 and tests["baseline_passed"]>=70,tests["baseline_failures"]
+assert set(tests["baseline_failures"]).issubset(expected)
 assert tests["protected_sources_unchanged"]
 a5=[r for r in tests["runs"] if r["category"]=="a5"]
 assert len(a5)==5 and all(r["passed"] for r in a5)
@@ -60,6 +60,6 @@ for r in a5:
     if r["suite"]=="test_fire_shader":assert r["pass_lines"]==89
     if r["suite"]=="test_materials":assert r["pass_lines"]==120
 shutil.copytree(project/"evidence/a5/fresh-clone",OUT/"fresh-clone",dirs_exist_ok=True)
-receipt.update(status="PASS",baseline_passed=70,baseline_total=73,baseline_failures=sorted(expected),a5_runs=a5,import_seconds=imported["seconds"],import_changed=imported["changed"])
+receipt.update(status="PASS",baseline_passed=tests["baseline_passed"],baseline_total=73,baseline_failures=tests["baseline_failures"],a5_runs=a5,import_seconds=imported["seconds"],import_changed=imported["changed"])
 (OUT/"release-verification.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
 print(json.dumps({k:v for k,v in receipt.items() if k not in ("runtime_source_hashes","a5_runs")},indent=2),flush=True)

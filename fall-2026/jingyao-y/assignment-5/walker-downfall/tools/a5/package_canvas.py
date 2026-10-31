@@ -35,10 +35,12 @@ with zipfile.ZipFile(TARGET,"w",compression=zipfile.ZIP_DEFLATED,compresslevel=3
     verification=ROOT.parent/"evidence/a5-release-verification"
     if verification.exists():
         for path in verification.rglob("*"):
-            if path.is_file():archive.write(path,"verification/"+path.relative_to(verification).as_posix())
+            if path.is_file() and not any(part.startswith("failed-import-cache") for part in path.relative_to(verification).parts):
+                archive.write(path,"verification/"+path.relative_to(verification).as_posix())
 with zipfile.ZipFile(TARGET) as archive:
     bad=archive.testzip();assert bad is None,bad
     assert "walker-downfall/project.godot" in archive.namelist()
+    assert not any(Path(name).suffix.lower() in (".mp4",".mp3",".avi",".mov",".webm") for name in archive.namelist())
     count=len(archive.infolist())
 summary={"zip":TARGET.name,"bytes":TARGET.stat().st_size,"sha256":digest(TARGET),"entries":count,"crc_check":"PASS","local_film_sha256":media_hash,"exported_media_included":False}
 (OUTPUT/"zip-verification.json").write_text(json.dumps(summary,indent=2)+"\n",encoding="utf-8")

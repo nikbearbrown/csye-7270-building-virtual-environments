@@ -18,5 +18,7 @@ TEST_TIMEOUT=1200 ./scripts/run-test.sh test_fire_shader.gd 144
 
 The wrapper is unchanged. The capture scripts require a real renderer and must run without --headless. Calibration uses 1280×720 because the predicted pixel coordinates depend on it.
 
-The resolved baseline result is 70/73, including an isolated performance repeat; three pre-existing suites still fail. See the report before interpreting an exit code as an A5 regression. Evidence is under evidence/a5/. Film/audio and regenerable .godot caches stay outside GitHub. SUBMISSION.md identifies the final package and course location.
+The resolved baseline result is 70/73, including an isolated performance repeat; three pre-existing suites failed in that run. The fresh-checkout result is recorded separately in TEST-REPORT. See the report before interpreting an exit code as an A5 regression. Evidence is under evidence/a5/. Film/audio and regenerable .godot caches stay outside GitHub. SUBMISSION.md identifies the final package and course location.
 
+
+The final fresh GitHub checkout passes 72/73 original suites, with only the previously observed test_item_icons failure. test_combat and test_loading_screen pass in this run; no fix for those earlier failures is claimed. The A5 fire, material and curl checks all pass.
