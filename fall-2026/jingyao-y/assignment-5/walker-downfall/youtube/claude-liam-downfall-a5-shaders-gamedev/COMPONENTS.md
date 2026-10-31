@@ -1,0 +1,25 @@
+# A5 components
+
+- B00: ClaudeComposerAsk — Composer opens on the A5 demonstration prompt
+- B01: BrutalistHesitantWriter — The writer changes gameplay to appearance
+- B02: GodotDevWorkbench — Read source lines 1-6, then follow their consequence in the next beat
+- B03: Real engine evidence — The real city and the controlled r=1 flame
+- B04: GodotDevWorkbench — Read source lines 17-18, then follow their consequence in the next beat
+- B05: Real engine evidence — r=1, 0.5, 0 and 2 appear in order with their measured center samples
+- B06: GodotDevWorkbench — Read source lines 40-43, then follow their consequence in the next beat
+- B07: Real engine evidence — Bottle flight, repeated fires and their unchanged ground Decals
+- B08: GodotDevWorkbench — Read source lines 4-9, then follow their consequence in the next beat
+- B09: Real engine evidence — The six real hint-experiment samples and the upper/lower gray panels
+- B10: GodotDevWorkbench — Read source lines 3-5, then follow their consequence in the next beat
+- B11: Real engine evidence — GL, raw DX and Y-corrected DX under review and raking light
+- B12: GodotDevWorkbench — Read source lines 16-21, then follow their consequence in the next beat
+- B13: Real engine evidence — Minimum, default and maximum settings across the four cargo controls
+- B14: GodotDevWorkbench — Read source lines 10-17, then follow their consequence in the next beat
+- B15: Real engine evidence — Baseline → common shader edit → restored → A-only parameter edit → actual base
+- B16: GodotDevWorkbench — Read source lines 41-47, then follow their consequence in the next beat
+- B17: Real engine evidence — The generated shader's actual BoxMesh rendering
+- B18: ExecutedData — Rows appear as each frame-rate lifetime is explained
+- B19: ExecutedData — The four measured time increments appear in narration order
+- B20: ClaudeVerdictArtifact — The verdict separates measured results and limitations
+- B21: ClaudeComposerAsk — The viewer's bounded experiment is typed and read aloud
+- B22: ClaudeTitleOutro — Exact title, regular mascot and stock jingle

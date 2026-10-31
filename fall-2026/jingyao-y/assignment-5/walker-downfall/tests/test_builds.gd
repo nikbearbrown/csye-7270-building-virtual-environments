@@ -1,0 +1,646 @@
+extends SceneTree
+
+## The relic system and stat model of 局内构筑与数值策划案_v1_0.md, against real
+## game state: the catalog (every relic a real 集成战略 collectible), formulas,
+## offer rules, sources and rerolls, each relic effect, and the special
+## equipment that carries the attack effects.
+
+var game: GameManager
+var p: Player
+var failures := 0
+var checks := 0
+var origin := Vector3(0, 0.7, -22)
+const ARENA := Vector3(0, 0.7, -22)
+## Her ungeared sheet (复利数值改造清单 A, I): CombatStats.BASE × her own multipliers.
+var ATK := 0.0
+var ARTS := 0.0
+var HP := 0.0
+var DEF := 0.0
+var RES := 0.0
+
+func _initialize() -> void: call_deferred("run")
+func step(n: int = 1) -> void:
+	for i in range(n):
+		await physics_frame
+		await process_frame
+func check(label: String, passed: bool, seen: Variant = null) -> void:
+	checks += 1
+	if not passed and seen != null: print("   seen: ", seen)
+	if not passed: failures += 1
+	print(("PASS " if passed else "FAIL ") + label)
+
+## A still enemy with chosen defences and lots of life.
+func dummy(offset: Vector3, elite: bool = false, defense: float = 0.0, res: float = 0.0, life: float = 100000.0, type: String = "") -> Enemy:
+	var enemy := game._spawn_enemy(origin + offset, elite, false, type if not type.is_empty() else ("elite" if elite else "thug"))
+	enemy.set_physics_process(false)
+	enemy.max_health = life
+	enemy.health = life
+	enemy.defense = defense
+	enemy.res = res
+	return enemy
+
+func swing(enemy: Enemy, stage: int = 0) -> float:
+	p._attack_cooldown = 0
+	p.hitstop_remaining = 0
+	p.dash_remaining = 0
+	p.combo_step = stage
+	p.combo_idle = 0
+	var before := enemy.health
+	p.attack(enemy)
+	return before - enemy.health
+
+## Special equipment with only its fixed effects (no random affix, no power).
+func wear(id: String) -> Item:
+	var item := SpecialGear.create(id, 0, RandomNumberGenerator.new())
+	item.power = 0
+	item.modifiers = item.modifiers.filter(func(m): return m.trigger != ItemModifier.Trigger.NONE)
+	item.prefixes = [] # named prefixes would skew the numbers
+	p.equip(item)
+	return item
+
+## A plain weapon: the sword wave is hers (精英化案 §8.1), so it needs no affix
+## (the old one is 剑气强化 +25% now, which would skew the relic numbers).
+func wave_weapon() -> void:
+	var item := Item.create("测试剑气刃", Item.Category.WEAPON, 2, 1, 0.0)
+	p.equip(item)
+
+func use(ids: Array) -> void:
+	game.builds.assign(ids)
+	p._recompute_stats()
+
+## The arena: the nearest spot to `near` with open ground and no prop over the
+## dummies' spread (-3..7 each way): a sandbag wall's collider between two
+## dummies blocks a sweep (用户 2026-10-20 had the sandbags enlarged).
+func _clear_origin(near: Vector3) -> Vector3:
+	var map := game.world_map
+	for ring in range(0, 80, 2):
+		for k in range(maxi(1, ring * 2)):
+			var c := Vector2(near.x, near.z) + Vector2.from_angle(TAU * k / maxf(1.0, ring * 2.0)) * float(ring)
+			var ok := true
+			for x in range(-3, 8):
+				for z in range(-3, 8):
+					var q := c + Vector2(x, z)
+					if not map._is_open(q.x, q.y, 0.0) or map.in_prop(q, 0.8):
+						ok = false
+						break
+				if not ok: break
+			if ok: return Vector3(c.x, near.y, c.y)
+	return near
+
+func reset_arena() -> void:
+	game._clear_field()
+	await step(2)
+	origin = _clear_origin(ARENA)
+	game.inventory.items.clear()
+	game.safe_bag.items.clear()
+	use([])
+	p.reset_stats()
+	p.teleport(origin)
+	p.combat_timer = 0
+	game.run_gold = 0
+	game.pressure = 0
+	game.floor_number = 1
+	game.route_kind = "patrol"
+
+func run() -> void:
+	game = GameManager.new()
+	game.save_enabled = false
+	game.fixed_map_seed = 1729
+	root.add_child(game)
+	# A vault on every floor here: the vault checks need one (密室与陷阱修订案 §2.1).
+	game.world_map.force_vault = 1
+	await step(4)
+	await game.start_contract("city")
+	p = game.player
+	game.set_process(false)
+	p.set_physics_process(false)
+	p._sprite.set_process(false)
+	await reset_arena()
+	var id := Operators.LAPPLAND
+	ATK = CombatStats.BASE.atk
+	ARTS = CombatStats.BASE.arts
+	HP = CombatStats.BASE.hp * Operators.stat_mult(id, "hp")
+	DEF = CombatStats.BASE.def * Operators.stat_mult(id, "def")
+	RES = CombatStats.BASE.res + Operators.stat_mult(id, "res")
+	_catalog()
+	_formulas()
+	_offers()
+	await _sources()
+	await _attack()
+	await _wave()
+	await _tempo()
+	await _defense()
+	await _life()
+	await _misc()
+	await _special()
+	print("BUILDS RESULT: %d checks, %d failures" % [checks, failures])
+	game.queue_free()
+	await process_frame
+	quit(1 if failures else 0)
+
+func _catalog() -> void:
+	var all := RelicCatalog.all()
+	var ids := {}
+	var complete := true
+	var valid_keys := true
+	for relic in all:
+		ids[relic.id] = true
+		complete = complete and relic.name == relic.source_name and not str(relic.original).is_empty() and not str(relic.effect).is_empty()
+		for key in relic.stats: valid_keys = valid_keys and CombatStats.KEYS.has(key)
+	check("96 relics, unique, each named after its 集成战略 collectible with its original effect", all.size() == 96 and ids.size() == 96 and complete, all.size())
+	check("every stat key is part of the sheet", valid_keys)
+	var research := FileAccess.get_file_as_string("res://局内构筑调研_集成战略藏品.md")
+	var missing := all.filter(func(r): return not r.name.replace("\"", "") in research.replace("\"", ""))
+	check("every relic appears in the PRTS research table", missing.is_empty(), missing.map(func(r): return r.name))
+	var invented := ["blade_edge", "counter", "unsealed", "ore_heart", "moon_blades", "gaul_coin", "veteran_edge"]
+	check("no invented relics remain", invented.all(func(x): return not ids.has(x)))
+	check("no set or school system remains", not "SCHOOLS" in RelicCatalog.new().get_script().source_code and not RelicCatalog.new().get_script().source_code.contains("func tier("))
+	check("no relic deals damage of its own (that is special equipment)", not ids.has("藤蔓炮手") and not ids.has("尖刺之手") and not ids.has("老者面"))
+
+func _formulas() -> void:
+	check("physical: ATK × K / (K + DEF), half at DEF = K", is_equal_approx(CombatStats.physical(600, 600, 600), 300) and is_equal_approx(CombatStats.physical(600, 100, 600), 600 * 600 / 700.0))
+	check("armour never stops a hit, and K grows with the enemies' curve (§19)", is_equal_approx(CombatStats.physical(600, 5400, 600), 60) and is_equal_approx(Scaling.physical_k(11), 600 * Scaling.floor_growth(11))
+		and is_equal_approx(CombatStats.physical_k, Scaling.physical_k(game.floor_number)), CombatStats.physical_k)
+	check("arts: scaled by resistance", is_equal_approx(CombatStats.arts(500, 30), 350))
+	check("resistance is capped at 80", is_equal_approx(CombatStats.arts(500, 120), 100))
+	check("true damage ignores both", is_equal_approx(CombatStats.mitigate(500, "true", 999, 99), 500))
+	check("Lappland's base sheet: 150 / 150, life 600 and DEF 50 × hers, RES 10 + 15", p.operator_id == Operators.LAPPLAND and is_equal_approx(p.max_hp, HP) and is_equal_approx(HP, 600) and is_equal_approx(p.attack_power(), ATK) and is_equal_approx(p.arts_power(), ARTS)
+		and is_equal_approx(p.defense_value(), DEF) and is_equal_approx(p.resistance(), RES) and is_equal_approx(RES, 25) and is_equal_approx(p.current_aspd(), 100) and p.crit_rate() == 0.0)
+	var blade := Item.create("测试战刃", Item.Category.WEAPON, 2, 1, 2.5)
+	blade.modifiers = [ItemModifier.stat_mod(ItemModifier.Stat.ATK_PCT, 0.08), ItemModifier.stat_mod(ItemModifier.Stat.CRIT_RATE, 0.05)]
+	p.equip(blade)
+	check("weapon power and affixes feed ATK and crit", is_equal_approx(p.attack_power(), (ATK + 2.5 * CombatStats.WEAPON_MAIN_PER_POWER) * 1.08) and is_equal_approx(p.crit_rate(), 0.05))
+	p.unequip(Item.Category.WEAPON)
+	use(["皇帝的恩宠", "贵族刺剑"])
+	check("relic percentages add in one layer: ATK × (1 + 0.15 + 0.25)", is_equal_approx(p.attack_power(), ATK * 1.4))
+	use([])
+
+func _offers() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 77
+	var distinct := true
+	var never_owned := true
+	var wave_seen := {"mine": 0, "snow": 0}
+	var high := {"device": 0, "vault": 0}
+	for i in range(400):
+		for region in ["mine", "snow"]:
+			var offers := RelicCatalog.roll_offers(region, ["皇帝的恩宠"], "device", rng)
+			var kinds := offers.map(func(x): return x.kind)
+			distinct = distinct and offers.size() == 3 and kinds[0] != kinds[1] and kinds[1] != kinds[2] and kinds[0] != kinds[2]
+			never_owned = never_owned and not offers.any(func(x): return x.id == "皇帝的恩宠")
+			wave_seen[region] += offers.filter(func(x): return x.kind == "wave").size()
+		for source in high:
+			high[source] += RelicCatalog.roll_offers("city", [], source, rng).filter(func(x): return x.rarity == 2).size()
+	check("a choice spans three different kinds of relic", distinct)
+	check("owned relics are never offered again", never_owned)
+	check("the snow offers wave relics far more than the mine does", wave_seen.snow > wave_seen.mine * 1.5, wave_seen)
+	check("vault offers lean to high rarity compared with the device", high.vault > high.device * 1.5, high)
+	use(["罗德岛战术电台"])
+	check("罗德岛战术电台 adds a fourth option", game._roll_relics("device").size() == 4)
+	use([])
+	check("otherwise three", game._roll_relics("device").size() == 3)
+
+func _sources() -> void:
+	p.teleport(game.world_map.buff_device_node.global_position)
+	game._interact()
+	var first: Array = game.build_offers.map(func(x): return x.id)
+	game.close_modal()
+	game._interact()
+	check("device offer opens with three and does not reroll on reopen", game.modal == "build" and first.size() == 3 and first == game.build_offers.map(func(x): return x.id))
+	game.run_gold = 10
+	check("reroll costs 3 赤金 from the pack and changes the offer", game.reroll_offers() and game.run_gold == 7 and game.reroll_count == 1)
+	check("the next reroll costs 6", game.reroll_cost() == 6 and game.reroll_offers() and game.run_gold == 1)
+	check("no reroll without the 赤金", not game.reroll_offers() and game.run_gold == 1)
+	var pick: String = game.build_offers[0].id
+	check("device pick succeeds once", game.choose_build(pick) and not game.is_buff_available() and game.builds == [pick])
+	await reset_arena()
+	use(["锈蚀的铁锤"])
+	game.reroll_count = 0
+	check("锈蚀的铁锤 no longer touches the reroll (it halves 坎诺特's prices)", game.reroll_cost() == 3 and game._trader_discount(16) == 8 and game._trader_discount(3) == 2)
+	use([])
+	# Drop rates (用户 2026-10-13: boss必掉一个，精英5%，普通敌人0.8%), sampled.
+	var normal := dummy(Vector3(4, 0, 6), false, 0, 0, 1)
+	var elite := dummy(Vector3(5, 0, 6), true, 0, 0, 1)
+	game.rng.seed = 7
+	var hits := {"normal": 0, "elite": 0}
+	for i in range(20000):
+		if game.rolls_relic_cache(normal): hits.normal += 1
+		if game.rolls_relic_cache(elite): hits.elite += 1
+	check("an ordinary enemy drops a cache about 0.8% of the time", absf(hits.normal / 20000.0 - 0.008) < 0.002, hits)
+	check("an elite about 5%", absf(hits.elite / 20000.0 - 0.05) < 0.006, hits)
+	normal.queue_free()
+	elite.queue_free()
+	await step()
+	var boss := dummy(Vector3(2, 0, 2), true, 0, 0, 1)
+	boss.boss = true
+	boss.take_hit(10, "true")
+	await step()
+	var caches := get_nodes_in_group("relic_caches")
+	check("a boss always drops one combat cache", caches.size() == 1 and (caches[0] as RelicCache).source == "cache")
+	var cache := caches[0] as RelicCache
+	p.teleport(cache.global_position)
+	game._interact()
+	var cache_ids: Array = game.build_offers.map(func(x): return x.id)
+	check("a cache opens its own offer", game.modal == "build" and game.offer_source == "cache" and cache_ids.size() == 3)
+	game.close_modal()
+	game._interact()
+	check("closing and reopening a cache keeps its offer", game.build_offers.map(func(x): return x.id) == cache_ids)
+	check("choosing from a cache claims it", game.choose_build(cache_ids[1]) and game.builds.has(cache_ids[1]))
+	await step()
+	check("a claimed cache is gone", get_nodes_in_group("relic_caches").is_empty())
+	game.force_vault_guard = 1
+	game._open_vault()
+	game.force_vault_guard = -1
+	await step()
+	var vault: RelicCache = get_nodes_in_group("relic_caches").filter(func(n): return n.source == "vault")[0]
+	p.teleport(vault.global_position)
+	game._interact()
+	check("the vault relic is sealed while guardians live", vault.sealed and game.modal.is_empty())
+	for guardian in game._vault_guardians.duplicate(): guardian.take_hit(1e7, "true")
+	await step()
+	check("killing the guardians unseals it", not vault.sealed)
+	game._interact()
+	check("the vault offers its own choice", game.modal == "build" and game.offer_source == "vault")
+	game.close_modal()
+	game.settle(true)
+	check("settlement clears relics and their state", game.builds.is_empty() and p.shield == 0.0 and p.fx.is_empty())
+	await game.start_contract("city")
+	game.set_process(false)
+	p.set_physics_process(false)
+	await reset_arena()
+
+func _attack() -> void:
+	var e := dummy(Vector3(0, 0, 2))
+	use(["锈蚀刀片"])
+	check("锈蚀刀片: physical damage +10%", is_equal_approx(swing(e), ATK * 1.1))
+	e.defense = 300
+	use(["残破合影"])
+	check("残破合影: ignores 25% of defence", is_equal_approx(swing(e), CombatStats.physical(ATK, 300 * 0.75)))
+	use(["撕扯之手", "迷迭香之拥"])
+	check("defence ignore stacks and caps at 100%", is_equal_approx(swing(e), ATK))
+	e.defense = 0
+	use(["溃决之手"])
+	e.health = e.max_health * 0.5
+	check("溃决之手: +25% into an enemy at half life", is_equal_approx(swing(e), ATK * 1.25))
+	e.health = e.max_health * 0.2 + ATK * 0.5 # just above 20%: one hit takes it under
+	swing(e)
+	check("溃决之手: an ordinary enemy under 20% is executed", e._dead)
+	var boss := dummy(Vector3(1, 0, 2), true)
+	boss.health = boss.max_health * 0.1
+	use(["扼喉之手"])
+	swing(boss)
+	check("扼喉之手 never executes an elite", not boss._dead)
+	boss.queue_free()
+	await step()
+	var lone := dummy(Vector3(0, 0, 2))
+	use(["荣耀绶带"])
+	check("荣耀绶带: +60% with one enemy near", is_equal_approx(swing(lone), ATK * 1.6))
+	var crowd := dummy(Vector3(0.5, 0, 3))
+	check("but not with two", is_equal_approx(swing(lone), ATK))
+	crowd.queue_free()
+	await step()
+	use(["绿叶菜罐头"])
+	p._on_wave_released()
+	check("绿叶菜罐头: +60% ATK for a second after a wave", is_equal_approx(p.attack_power(), ATK * 1.6))
+	p._tick_relic_timers(1.1)
+	check("and only for that second", is_equal_approx(p.attack_power(), ATK))
+	use(["\"噤声\""])
+	p.since_wave = 60.0
+	check("\"噤声\": +60% after 60 s without a wave", is_equal_approx(p.attack_power(), ATK * 1.6))
+	p._on_wave_released()
+	check("and back to nothing after a wave", is_equal_approx(p.attack_power(), ATK))
+	use(["轰鸣之手"])
+	for i in range(12): swing(lone)
+	check("轰鸣之手: +8% per hit up to +80%", p.hit_stacks == 10 and is_equal_approx(p.attack_power(), ATK * 1.8))
+	p._tick_relic_timers(3.1)
+	check("and gone after 3 s without a hit", is_equal_approx(p.attack_power(), ATK))
+	use(["古乔治营养原浆"])
+	check("古乔治营养原浆: +30% at full life", is_equal_approx(p.attack_power(), ATK * 1.3))
+	p.hp = p.max_hp * 0.5
+	check("+15% at half life", is_equal_approx(p.attack_power(), ATK * 1.15))
+	p.hp = p.max_hp
+	use(["赏善郎"])
+	p._on_block()
+	check("赏善郎: a block arms the next hit at ×2", is_equal_approx(swing(lone), ATK * 2) and is_equal_approx(swing(lone), ATK))
+	use(["《光耀卡西米尔》"])
+	p._on_evade()
+	check("《光耀卡西米尔》: +70% ATK for 6 s after an evade", is_equal_approx(p.attack_power(), ATK * 1.7))
+	p._tick_relic_timers(6.1)
+	p._on_evade()
+	check("and no new trigger for 6 s after it ends", is_equal_approx(p.attack_power(), ATK))
+	p._tick_relic_timers(6.0)
+	p._on_evade()
+	check("then a dodge starts it again", is_equal_approx(p.attack_power(), ATK * 1.7))
+	p._tick_relic_timers(12.1)
+	use(["《拳经三问》"])
+	p.wave_count = 0
+	for i in range(3): p._on_wave_released()
+	check("《拳经三问》: +4% per wave released this contract", is_equal_approx(p.attack_power(), ATK * 1.12))
+	use(["折戟-破釜沉舟"])
+	check("折戟-破釜沉舟: ATK +30%, 攻速 +20, DEF −40%", is_equal_approx(p.attack_power(), ATK * 1.3) and is_equal_approx(p.current_aspd(), 120) and is_equal_approx(p.defense_value(), DEF * 0.6))
+	use(["死仇时代的恨意", "开裂的束缚带"])
+	check("死仇时代的恨意 and 开裂的束缚带 add up on enemy attack (+20% −7%)", is_equal_approx(game.enemy_attack_multiplier(), 1.13))
+	check("死仇时代的恨意: her side is damage +25%, not ATK", is_equal_approx(p.damage_bonus, 1.25) and is_equal_approx(p.attack_power(), ATK))
+	use([])
+	var plain := game._spawn_enemy(origin + Vector3(6, 0, 6), false, false, "thug")
+	use(["\"黑夜呢喃\""])
+	var thinner := game._spawn_enemy(origin + Vector3(7, 0, 6), false, false, "thug")
+	check("\"黑夜呢喃\": enemies spawn with 6% less life", is_equal_approx(thinner.max_health, plain.max_health * 0.94))
+	var before := plain.max_health
+	game._rescale_enemy_life(0.0, -0.1)
+	check("and enemies already standing shrink when it is taken", is_equal_approx(plain.max_health, before * 0.9))
+	use([])
+	var first := game._spawn_enemy(origin + Vector3(6, 0, -6), false, false, "thug")
+	var start := game.start_floor
+	game.start_floor = game.floor_number - 9
+	var tenth := game._spawn_enemy(origin + Vector3(7, 0, -6), false, false, "thug")
+	game.start_floor = start
+	var n_first := Scaling.contract_floors(game.floor_number, start)
+	check("合同深入系数: ten floors into a contract, life ×1.045^9 and attack ×1.018^9 over the first",
+		is_equal_approx(tenth.max_health / first.max_health, pow(1.045, 10 - n_first)) and is_equal_approx(tenth.atk / first.atk, pow(1.018, 10 - n_first)) and is_equal_approx(tenth.defense, first.defense), tenth.max_health / first.max_health)
+	check("counted from the contract's own first floor and capped at 30", Scaling.contract_floors(21, 21) == 1 and Scaling.contract_floors(30, 21) == 10 and Scaling.contract_floors(90, 1) == 30)
+	await reset_arena()
+
+func _wave() -> void:
+	wave_weapon()
+	use(["显圣吊坠", "银餐叉"])
+	check("显圣吊坠 + 银餐叉: wave damage +40%", is_equal_approx(p.wave_multiplier(), 1.4))
+	use(["制式防暴用具"])
+	check("制式防暴用具: arts damage +12% on waves", is_equal_approx(p.wave_bonus_against(dummy(Vector3(5, 0, 5))), 1.12))
+	use(["断杖-苦难巫咒"])
+	check("断杖-苦难巫咒: arts damage +70%, life −40%", is_equal_approx(p.max_hp, HP * 0.6) and is_equal_approx(float(p.stats.arts_dmg_pct), 0.7))
+	use(["断杖-苦难巫咒", "急救药箱", "\"断剑\""])
+	check("the price multiplies on its own: +35% life ×0.6 ×0.7", is_equal_approx(p.max_hp, HP * 1.35 * 0.6 * 0.7), p.max_hp)
+	use(["古高卢银币"])
+	p.clear_charge()
+	p.reset_floor_state()
+	check("古高卢银币: one charge when a segment starts", p.sword_charge == 1)
+	use(["《第二经济改革法》"])
+	p.clear_charge()
+	p.reset_floor_state()
+	check("《第二经济改革法》: the wave is full when a segment starts", p.sword_charge == 3)
+	use(["香草沙士汽水"])
+	p.clear_charge()
+	p._tick_relics_in_field(6.05)
+	check("香草沙士汽水: one charge every 6 s", p.sword_charge == 1)
+	use(["折戟-浴血"])
+	p.clear_charge()
+	var e := dummy(Vector3(0, 0, 2))
+	swing(e, 2)
+	check("折戟-浴血: the third stage charges twice", p.sword_charge == 2)
+	use(["积攒之手"])
+	p.clear_charge()
+	p.stamina = 50
+	dummy(Vector3(1, 0, 2), false, 0, 0, 1).take_hit(10, "true")
+	check("积攒之手: a kill gives a charge and 10 stamina", p.sword_charge == 1 and is_equal_approx(p.stamina, 60))
+	await reset_arena()
+
+func _tempo() -> void:
+	use(["冰结的躯壳"])
+	p.take_damage(10, "true")
+	check("冰结的躯壳: +30 攻速 for 5 s after taking damage", is_equal_approx(p.current_aspd(), 130))
+	use(["疗养体验卡"])
+	p.hurt_timer = 0
+	p.combat_timer = 6.0
+	var e := dummy(Vector3(0, 0, 2))
+	swing(e)
+	check("疗养体验卡: +25 攻速 for 10 s after re-engaging", is_equal_approx(p.current_aspd(), 125))
+	p.engage_timer = 0
+	use(["鸣脊兽"])
+	p.since_wave = 40.0
+	check("鸣脊兽: +40 攻速 after 40 s without a wave", is_equal_approx(p.current_aspd(), 140))
+	p.since_wave = 0
+	use(["老磨盘"])
+	for i in range(12): p.take_damage(1, "true")
+	p.hurt_timer = 0
+	check("老磨盘: +4 per hit taken, at most 10", is_equal_approx(p.current_aspd(), 140))
+	use(["紧急活性剂"])
+	p.hp = p.max_hp * 0.3
+	check("紧急活性剂: +60 攻速 at 30% life", is_equal_approx(p.current_aspd(), 160))
+	use(["国王的新枪"])
+	p.hp = p.max_hp * 0.2
+	check("国王的新枪: +50 攻速 below 25% life", is_equal_approx(p.current_aspd(), 150))
+	use(["魔王的旗帜"])
+	p.hp = p.max_hp
+	check("魔王的旗帜: +30 攻速 at full life", is_equal_approx(p.current_aspd(), 130))
+	use(["钝爪-振奋"])
+	p.hitstop_remaining = 0
+	p._dash_cooldown = 0
+	p.stamina = 100
+	p._start_dash(Vector3.RIGHT)
+	check("钝爪-振奋: dash cooldown halved", is_equal_approx(p._dash_cooldown, Player.DASH_COOLDOWN * 0.5))
+	p.dash_remaining = 0
+	p.invulnerable = false
+	use(["投币玩具"])
+	game.run_gold = 20
+	check("投币玩具: +1 攻速 per 10 赤金 carried", is_equal_approx(p.current_aspd(), 102))
+	game.run_gold = 120
+	check("capped at +10", is_equal_approx(p.current_aspd(), 110))
+	use(["骑士戒律·新编", "金酒之杯"])
+	check("骑士戒律·新编 + 金酒之杯: +3 and +5 per 10 赤金, capped at +30 and +50", is_equal_approx(p.current_aspd(), 180))
+	game.run_gold = 0
+	use(["\"永夜的窥视\""])
+	var hp := p.hp
+	p._tick_relics_in_field(1.0)
+	check("\"永夜的窥视\": ATK +25%, 攻速 +25, loses 0.6% life a second", is_equal_approx(p.attack_power(), ATK * 1.25) and is_equal_approx(p.current_aspd(), 125) and is_equal_approx(p.hp, hp - p.max_hp * 0.006))
+	await reset_arena()
+
+func _defense() -> void:
+	use(["异铁小圆盾"])
+	check("异铁小圆盾: DEF +25%", is_equal_approx(p.defense_value(), DEF * 1.25))
+	use(["设计师量尺", "\"法术杀手\""])
+	check("设计师量尺 / \"法术杀手\": 15% physical and arts evasion", is_equal_approx(p.evasion(), 0.15) and is_equal_approx(p.arts_evasion(), 0.15))
+	use(["皇族金胸针", "药枚"])
+	p.reset_floor_state()
+	check("皇族金胸针 + 药枚: three blocks at the start of a segment", p.blocks_left == 3)
+	for i in range(3): p.take_damage(500, "true")
+	check("each block stops a whole hit", p.hp == p.max_hp and p.blocks_left == 0)
+	p.take_damage(500, "true")
+	check("then damage lands", is_equal_approx(p.hp, p.max_hp - 500))
+	p.hp = p.max_hp
+	use(["活木甲"])
+	p.reset_floor_state()
+	check("活木甲: a 50% life barrier each segment", is_equal_approx(p.shield, HP * 0.5))
+	p.shield = 0
+	use(["墙眼"])
+	var archer := dummy(Vector3(4, 0, 0), false, 0, 0, 100000, "crossbow")
+	p.take_damage(1000, "phys", archer)
+	check("墙眼: ranged hits deal half", is_equal_approx(p.hp, p.max_hp - CombatStats.physical(1000, DEF) * 0.5), p.max_hp - p.hp)
+	p.hp = p.max_hp
+	use(["古堡的子嗣"])
+	p.segment_time = 100.0
+	check("古堡的子嗣: DEF +120% and RES +30 after 100 s in a segment", is_equal_approx(p.defense_value(), DEF * 2.2) and is_equal_approx(p.resistance(), RES + 30))
+	p.segment_time = 0
+	use(["魔王的床榻"])
+	check("魔王的床榻: at full life DEF +20%, RES +10", is_equal_approx(p.defense_value(), DEF * 1.2) and is_equal_approx(p.resistance(), RES + 10))
+	use(["霜牡的肩甲"])
+	dummy(Vector3(1, 0, 0))
+	dummy(Vector3(-1, 0, 0))
+	p._tick_relics_in_field(0.1)
+	check("霜牡的肩甲: two enemies close trigger ATK and DEF +40% for 30 s", p.guard_timer > 0 and is_equal_approx(p.attack_power(), ATK * 1.4) and is_equal_approx(p.defense_value(), DEF * 1.4))
+	use(["雪牝的护手"])
+	dummy(Vector3(0, 0, 1))
+	p._tick_relics_in_field(0.1)
+	check("雪牝的护手: three enemies close trigger 攻速 +80 and 30% evasion", p.dance_timer > 0 and is_equal_approx(p.current_aspd(), 180) and is_equal_approx(p.evasion(), 0.3))
+	use(["雪牝的护手", "女皇之愿", "舞者手链", "设计师量尺"])
+	check("and the usual 60% cap still holds", is_equal_approx(p.evasion(), CombatStats.EVASION_CAP))
+	await reset_arena()
+
+func _life() -> void:
+	use(["难闻的止血剂", "急救药箱", "未知仪器"])
+	check("life relics add up: +105%", is_equal_approx(p.max_hp, HP * 2.05))
+	use(["活玫瑰"])
+	p.hp = 100
+	p.heal(100)
+	check("活玫瑰: healing +20%", is_equal_approx(p.hp, 220))
+	use(["演出用香水", "《坎德之花》"])
+	check("演出用香水 + 《坎德之花》: 0.1% of max life of her own plus 15 + 18 flat a second", is_equal_approx(p.regen_rate(), HP * 0.001 + 15 + 18), p.regen_rate())
+	game.floor_number = 11
+	check("the flat part takes the tier's coefficient, her own 0.1% does not", is_equal_approx(p.regen_rate(), HP * 0.001 + (15 + 18) * Scaling.tier_coef(11)) and Scaling.tier_coef(11) > 1.3, p.regen_rate())
+	game.floor_number = 1
+	use(["演出用香水", "苍白花冠"])
+	check("苍白花冠: +30% on the relics' regeneration, not on her own 0.1%", is_equal_approx(p.regen_rate(), HP * 0.001 + 15 * 1.3), p.regen_rate())
+	use(["\"萤灯映牍\""])
+	p.hp = 100
+	dummy(Vector3(3, 0, 3), false, 0, 0, 1).take_hit(10, "true")
+	check("\"萤灯映牍\": a kill heals 240 × the tier's coefficient", is_equal_approx(p.hp, 100 + 240 * Scaling.tier_coef(game.floor_number)), p.hp)
+	use(["\"忠义\""])
+	for x in [-1, 0, 1]: dummy(Vector3(x, 0, 1.5))
+	p._tick_relics_in_field(1.0)
+	check("\"忠义\": 150 a second with three enemies close", is_equal_approx(p.hp, 340 + 150 * Scaling.tier_coef(game.floor_number)), p.hp)
+	use(["复还之手", "\"时光之末\""])
+	p.hp = 300
+	p.take_damage(5000, "true")
+	check("复还之手: the first lethal hit of a segment refills life", is_equal_approx(p.hp, p.max_hp))
+	p.invuln_timer = 0
+	p.hp = 300
+	p.take_damage(5000, "true")
+	check("\"时光之末\": the next one leaves 1 life, once a contract", is_equal_approx(p.hp, 1.0))
+	p.invuln_timer = 0
+	p.reset_floor_state()
+	p.hp = 300
+	p.take_damage(5000, "true")
+	check("复还之手 is not back on the next floor of the same route map", p.hp < 0)
+	p.hp = 300
+	game.floor_number = 11
+	p.reset_floor_state()
+	p.take_damage(5000, "true")
+	check("but is on the next route map", is_equal_approx(p.hp, p.max_hp))
+	p.invuln_timer = 0
+	p.hp = 300
+	p.take_damage(5000, "true")
+	check("and \"时光之末\" is spent", p.hp < 0)
+	game.floor_number = 1
+	p.hp = p.max_hp  # or the game settles the contract as a death
+	use(["米诺斯颂诗", "Friston.P"])
+	dummy(Vector3(-3, 0, -3), true, 0, 0, 1).take_hit(10, "true")
+	check("米诺斯颂诗 / Friston.P: an elite kill adds 3% life and 5 攻速", is_equal_approx(p.max_hp, HP * 1.03) and is_equal_approx(p.current_aspd(), 105))
+	await reset_arena()
+
+func _misc() -> void:
+	use(["\"剑锤\""])
+	check("\"剑锤\": ATK, DEF and life +10%, damage taken +5% (flasks untouched)", is_equal_approx(p.attack_power(), ATK * 1.1) and is_equal_approx(p.defense_value(), DEF * 1.1)
+		and is_equal_approx(p.max_hp, HP * 1.1) and is_equal_approx(float(p.stats.taken_pct), 0.05) and is_equal_approx(p.potion_heal_multiplier, 1.0))
+	use(["统帅肖像"])
+	check("统帅肖像: +10% normally", is_equal_approx(p.attack_power(), ATK * 1.1))
+	game.route_kind = "deep"
+	p._recompute_stats()
+	check("and +30% on the deep route", is_equal_approx(p.attack_power(), ATK * 1.3) and is_equal_approx(p.max_hp, HP * 1.3))
+	game.route_kind = "patrol"
+	use(["登天斧"])
+	check("登天斧: +60% on the floor it is taken", is_equal_approx(p.attack_power(), ATK * 1.6))
+	game.floor_number = 4
+	p._recompute_stats()
+	check("+50% three floors on (−10% every two)", is_equal_approx(p.attack_power(), ATK * 1.5) and is_equal_approx(p.max_hp, HP * 1.5))
+	game.relic_floors["登天斧"] = 21
+	game.floor_number = 21
+	p._recompute_stats()
+	check("taken on floor 21, it starts at +60% (it fades from where it was taken)", is_equal_approx(p.attack_power(), ATK * 1.6))
+	game.floor_number = 40
+	p._recompute_stats()
+	check("and is gone twelve floors on", is_equal_approx(p.attack_power(), ATK))
+	game.relic_floors.clear()
+	game.floor_number = 1
+	use(["圆石祭坛"])
+	seed(7)
+	for i in range(40): p.reset_floor_state()
+	check("圆石祭坛: stacks on new segments, at most 10", p.altar_stacks == 10 and is_equal_approx(p.attack_power(), ATK * 1.5))
+	use(["友谊之证"])
+	game.add_gold(10)
+	check("友谊之证: 赤金 +30%", game.run_gold == 13)
+	await reset_arena()
+
+func _special() -> void:
+	var a := dummy(Vector3(0, 0, 2))
+	var b := dummy(Vector3(1.2, 0, 2.4))
+	wear("lord_blade")
+	swing(a)
+	check("领主宽刃 sweeps a neighbour for half", is_equal_approx(b.max_health - b.health, ATK * 0.5))
+	wear("crystal_edge")
+	var e := dummy(Vector3(-1, 0, 2), false, 0, 0)
+	check("源石结晶刃 adds 18% arts ATK to each hit", is_equal_approx(swing(e), ATK + ARTS * 0.18))
+	wear("twin_fang")
+	p.sword_charge = 3
+	var before := game.get_children().filter(func(n): return n is SwordWave).size()
+	swing(e)
+	check("双生狼牙 fires three waves", game.get_children().filter(func(n): return n is SwordWave).size() - before == 3)
+	for wave in game.get_children().filter(func(n): return n is SwordWave): wave.queue_free()
+	wear("ember_fang")
+	var target := dummy(Vector3(3, 0, 0))
+	p.on_wave_hit(target, 100, null)
+	# 余烬 is a 灼烧 now (属性伤害与地区装备策划案 v1.1 §15.3).
+	check("余烬之牙 sets a 4 s 灼烧", target.elements.dots.has("burnout") and is_equal_approx(float(target.elements.dots.burnout.left), 4.0))
+	var life := target.health
+	target._tick_statuses(0.51)
+	check("burn ticks arts damage every half second", target.health < life)
+	wear("moon_edge")
+	seed(3)
+	p.equipped[Item.Category.WEAPON].modifiers.append(ItemModifier.stat_mod(ItemModifier.Stat.CRIT_RATE, 1.0))
+	p._recompute_stats()
+	var waves_before := game.get_children().filter(func(n): return n is SwordWave).size()
+	var fired := false
+	for i in range(20):
+		p.sword_charge = 0
+		swing(e)
+		if game.get_children().filter(func(n): return n is SwordWave).size() > waves_before:
+			fired = true
+			break
+	check("月下刃: crits sometimes loose a free wave", fired)
+	p.unequip(Item.Category.WEAPON)
+	await reset_arena()
+	wear("shadow_bracer")
+	p._dash_cooldown = 0
+	p.stamina = 100
+	var crossed := dummy(Vector3(1.4, 0, 0))
+	p._start_dash(Vector3.RIGHT)
+	check("残影护腕 cuts what the dash passes", is_equal_approx(crossed.max_health - crossed.health, ATK * 1.2))
+	p.dash_remaining = 0
+	p.invulnerable = false
+	p.teleport(origin)
+	wear("spike_plate")
+	var attacker := dummy(Vector3(1, 0, 0))
+	p.take_damage(800, "phys", attacker)
+	check("尖刺重铠 answers an attacker with 80% of DEF", is_equal_approx(attacker.max_health - attacker.health, DEF * 0.8))
+	wear("bash_shield")
+	p.shield = 100
+	p.take_damage(800, "phys")
+	var hit := dummy(Vector3(0, 0, 2))
+	check("反击塔盾 adds 150% DEF to the next hit after a shield soak", is_equal_approx(swing(hit), ATK + DEF * 1.5))
+	await reset_arena()
+	wear("vein_core")
+	var near := dummy(Vector3(2, 0, 0))
+	seed(11)
+	var burst := false
+	for i in range(30):
+		dummy(Vector3(2.5, 0, 0.5), false, 0, 0, 1).take_hit(10, "true")
+		if near.health < near.max_health:
+			burst = true
+			break
+	check("共振矿芯 bursts for 100% arts ATK", burst and is_equal_approx(near.max_health - near.health, ARTS))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 4
+	var rolled := 0
+	for i in range(600):
+		if not FieldCatalog.roll_item("snow", 2, rng, 0.0).special.is_empty(): rolled += 1
+	check("special gear drops at about 5%% (%d / 600)" % rolled, rolled > 10 and rolled < 60)
+	await reset_arena()

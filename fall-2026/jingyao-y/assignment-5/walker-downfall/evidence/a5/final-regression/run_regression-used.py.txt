@@ -1,0 +1,84 @@
+"""Run the A5 baseline suites through the unchanged course wrapper."""
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import argparse
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import time
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--jobs", type=int, default=4)
+    parser.add_argument("--out", default="evidence/a5/final-regression")
+    parser.add_argument("--only", nargs="*")
+    args = parser.parse_args()
+    output = ROOT / args.out
+    output.mkdir(parents=True, exist_ok=True)
+    baseline = (ROOT / "logs/baseline/summary.txt").read_text(encoding="utf-8")
+    suites = re.findall(r"^(test_\w+)\s+exit", baseline, re.M)
+    assert len(suites) == 73
+    tasks = [(name, 60, "baseline") for name in suites]
+    tasks += [("test_fire_shader", fps, "a5") for fps in (30, 60, 144)]
+    tasks += [("test_materials", 60, "a5"), ("normal_map_check", 60, "a5")]
+    if args.only:
+        tasks = [task for task in tasks if task[0] in args.only]
+    shutil.copy2(ROOT / "logs/baseline/summary.txt", output / "baseline-before.txt")
+    protected = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
+                 for folder in ("tests", "entities", "game", "world", "shaders")
+                 for p in (ROOT / folder).rglob("*") if p.is_file() and p.suffix in (".gd", ".gdshader", ".tscn")}
+    env = dict(os.environ)
+    env["GODOT"] = env.get("GODOT", "D:/CSYE 7370/Godot_v4.7.2-stable_win64_console.exe")
+    env["TEST_TIMEOUT"] = "1200"
+    env["PYTHONIOENCODING"] = "utf-8"
+    bash = env.get("A5_BASH", "D:/Git/bin/bash.exe")
+
+    def run(task):
+        name, fps, category = task
+        target = output / f"{name}_{fps}fps.log"
+        started = time.monotonic()
+        with target.open("wb") as log:
+            try:
+                result = subprocess.run([bash, "./scripts/run-test.sh", name + ".gd", str(fps)],
+                                        cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=1250)
+                code = result.returncode
+            except subprocess.TimeoutExpired:
+                code = 124
+        content = target.read_text(encoding="utf-8", errors="replace")
+        failures = [line for line in content.splitlines() if line.startswith("FAIL ")]
+        errors = [line for line in content.splitlines() if re.search(r"SHADER ERROR|SCRIPT ERROR", line)]
+        row = {"suite": name, "fps": fps, "category": category, "exit_code": code,
+               "seconds": round(time.monotonic() - started, 2), "passed": code == 0 and not failures and not errors,
+               "pass_lines": len(re.findall(r"^PASS\b", content, re.M)),
+               "failure_lines": failures, "shader_script_errors": errors,
+               "result_lines": [line for line in content.splitlines() if re.search(r"RESULT|FAILURES|checks passed|checks /", line)][-4:],
+               "log": str(target.relative_to(ROOT))}
+        print(json.dumps({k: v for k, v in row.items() if k not in ("result_lines", "log")}), flush=True)
+        return row
+
+    results = []
+    with ThreadPoolExecutor(max_workers=args.jobs) as pool:
+        futures = [pool.submit(run, task) for task in tasks]
+        for future in as_completed(futures):
+            results.append(future.result())
+            (output / "progress.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
+    results.sort(key=lambda r: (r["category"], r["suite"], r["fps"]))
+    unchanged = all(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() == h for p, h in protected.items())
+    old = [r for r in results if r["category"] == "baseline"]
+    report = {"command": "./scripts/run-test.sh <suite>.gd <fps>", "physics_hz": 60,
+              "baseline_suite_count": len(old), "baseline_passed": sum(r["passed"] for r in old),
+              "baseline_failures": [r["suite"] for r in old if not r["passed"]],
+              "protected_sources_unchanged": unchanged, "protected_source_hashes": protected, "runs": results}
+    (output / "summary.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print("COMPLETE " + json.dumps({k: v for k, v in report.items() if k not in ("runs", "protected_source_hashes")}), flush=True)
+    return 0 if unchanged else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

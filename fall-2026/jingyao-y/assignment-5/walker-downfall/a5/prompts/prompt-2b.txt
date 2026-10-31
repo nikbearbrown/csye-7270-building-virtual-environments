@@ -1,0 +1,31 @@
+Read CLAUDE.md first. This is invocation 2 of 2 for prompt-2. You proposed
+a plan in invocation 1 (sessions/session-2a.jsonl). I approve steps 1, 2
+and 3 of that plan, with these decisions:
+
+- R3 was revised before implementation: read the last entry under
+  "Revisions" in CHANGE-BRIEF.md. A standard fire lasts until the first
+  physics step where lasting <= 0: 181 steps = 3.016667 game seconds at
+  60 Hz physics, the same at 30, 60 and 144 fps, tolerance one render
+  frame period. time_scale 0.5 / 2 give 361 / 91 steps.
+- "Existing tests" means the 73 headless suites in logs/baseline/summary.txt.
+  Run them at 60; the five slow ones with TEST_TIMEOUT=1200. Do not run the
+  visual suites. Three baseline suites already fail (see that file); do
+  not fix them, just compare.
+- R6 floor change through game._advance_floor is fine.
+- If headless key injection does not reach the game, say so with the real
+  output and stop; do not replace the input with a direct call.
+
+The rules from invocation 1 still hold, in particular:
+- Do not edit any .gdshader file, scripts/run-test.sh, or any existing test.
+- The test drives the state through the real game loop and real input,
+  never by calling the driver's update function directly.
+- Sample the uniform from a node with a high process_priority.
+- Uniform names/types from get_shader_uniform_list(); defaults from the
+  shader source text.
+- Run every test with ./scripts/run-test.sh and show the real output,
+  including any SHADER ERROR lines. The new test at 30, 60 and 144.
+- Say exactly what the test proves and cannot prove headlessly, and list
+  the human checks.
+- Do not commit.
+
+Implement step 1, show its diff; then step 2, show its diff; then step 3.

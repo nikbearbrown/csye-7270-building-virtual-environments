@@ -1,0 +1,759 @@
+class_name InventoryPanel
+extends Control
+
+## 干员 · 背包 (界面策划案 v1.1 #2, 用户 2026-10-06): one centred, wide and short
+## window in three flat columns, after Grim Dawn / Diablo —
+##   operator, paper doll and the skill | pack, safe bag, 赤金 | attributes.
+## Hovering an item floats its tooltip beside it, with the worn item of the same
+## slot alongside. Drag between cells, the safe bag and the slots; dragging out
+## of the window asks before dropping. Right click equips / unequips / drinks,
+## Ctrl+click moves between pack and safe bag, Delete drops, Alt shows affix
+## ranges. No 战力, no value-at-stake line, no key hints (用户 2026-10-05/06).
+
+const CELL := 40
+const INSURED := Color("4fd1c5")
+const WINDOW := Rect2(80, 125, 1120, 470)
+
+var game: GameManager
+var panel: PanelContainer
+var body: HBoxContainer
+var selected: Item
+var selected_container: ItemContainer
+var hovered: Item
+var hovered_container: ItemContainer
+var _hover_rect := Rect2()
+var _float: HBoxContainer
+var _actions: HBoxContainer
+var _detail := false
+var _drag_item: Item
+var _drag_from: ItemContainer
+var _drag_from_equip := false
+var _last_pointer := Vector2.ZERO
+var _pointer_known := false
+## The open box's grid (its search magnifier animates), and what it showed at the last rebuild.
+var _loot_grid: GridView
+var _loot_seen := -1
+## The latest notice (a refused equip, a full pack …) over the window: the
+## HUD's toasts lie under it (用户 2026-10-13).
+var _notice: Label
+var _notice_seen := 0
+var _notice_left := 0.0
+static var _portrait: Texture2D
+
+func _ready() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	panel = PanelContainer.new()
+	panel.position = WINDOW.position
+	panel.size = WINDOW.size
+	panel.add_theme_stylebox_override("panel", Terminal.panel_style("plate"))
+	add_child(panel)
+	var outer := VBoxContainer.new()
+	outer.add_theme_constant_override("separation", 0)
+	panel.add_child(outer)
+	outer.add_child(_title_bar())
+	body = HBoxContainer.new()
+	body.add_theme_constant_override("separation", 0)
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	outer.add_child(body)
+	Terminal.frame(panel, AK.HOLO, 52.0)
+	_float = HBoxContainer.new()
+	_float.add_theme_constant_override("separation", 6)
+	_float.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_float.z_index = 20
+	_float.visible = false
+	add_child(_float)
+	_notice = AK.label("", 13, AK.FG)
+	_notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_notice.add_theme_stylebox_override("normal", AK.box(Color(0, 0, 0, 0.85), AK.SP, 1, 8))
+	_notice.visible = false
+	_notice.z_index = 30
+	add_child(_notice)
+
+func _title_bar() -> Control:
+	var bar := PanelContainer.new()
+	bar.add_theme_stylebox_override("panel", AK.box(Color(0, 0, 0, 0.35), Color.TRANSPARENT, 0, 0))
+	bar.custom_minimum_size.y = 52
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	bar.add_child(row)
+	var spacer := Control.new()
+	spacer.custom_minimum_size.x = 6
+	row.add_child(spacer)
+	var titles := VBoxContainer.new()
+	titles.add_theme_constant_override("separation", -2)
+	titles.add_child(AK.label("EQUIPMENT · INVENTORY", 10, AK.MUTE, AK.en()))
+	titles.add_child(AK.label("装备 · 背包", 20, AK.FG))
+	row.add_child(titles)
+	var fill := Control.new()
+	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(fill)
+	var close := AK.button("✕", "ghost", 16)
+	close.custom_minimum_size = Vector2(52, 52)
+	close.pressed.connect(game_close)
+	row.add_child(close)
+	return bar
+
+func game_close() -> void:
+	if is_instance_valid(game): game.close_modal()
+
+func open() -> void:
+	selected = null
+	hovered = null
+	_notice_seen = game.notice_serial
+	_notice.visible = false
+	var fresh := not visible
+	show()
+	_rebuild()
+	if fresh: Terminal.reveal(panel)
+
+func _process(delta: float) -> void:
+	if not visible: return
+	if game.notice_serial != _notice_seen:
+		_notice_seen = game.notice_serial
+		_notice.text = game.last_notice
+		_notice.reset_size()
+		_notice.position = Vector2(panel.position.x + (panel.size.x - _notice.size.x) * 0.5, panel.position.y - _notice.size.y - 8)
+		_notice.visible = true
+		_notice_left = GameManager.TOAST_SECONDS
+	elif _notice.visible:
+		_notice_left -= delta
+		if _notice_left <= 0.0: _notice.visible = false
+	if is_instance_valid(game.looting):
+		# A found item lands in the box's grid: show it.
+		var seen := game.looting.storage.items.size() * 1000 + int(game.looting.search_state().get("found", 0))
+		if seen != _loot_seen: _rebuild()
+		elif is_instance_valid(_loot_grid): _loot_grid.queue_redraw()
+	var detail := Input.is_key_pressed(KEY_ALT)
+	if detail != _detail:
+		_detail = detail
+		_refresh_tooltip()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouse:
+		_last_pointer = event.position
+		_pointer_known = true
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not visible or not event.pressed or event.echo: return
+	# 旋转物品 (T) turns the item under the pointer a quarter, where it lies (用户 2026-10-24).
+	if event.is_action_pressed("rotate_item") and hovered != null and hovered_container != null:
+		if hovered_container.rotate_in_place(hovered): _rebuild()
+		get_viewport().set_input_as_handled()
+		return
+	if event.keycode in [KEY_DELETE, KEY_X] and selected != null and selected_container != null:
+		ask_drop(selected, selected_container)
+		get_viewport().set_input_as_handled()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_VISIBILITY_CHANGED and not visible:
+		if is_instance_valid(_float): _float.visible = false
+	if what == NOTIFICATION_DRAG_END and _drag_item != null:
+		var item := _drag_item
+		var from := _drag_from
+		var from_equip := _drag_from_equip
+		_drag_item = null
+		if not get_viewport().gui_is_drag_successful() and visible and not panel.get_global_rect().has_point(_last_pointer):
+			# Over the hotbar it is a binding, never a drop (用户 2026-10-24).
+			var slot := game.hotbar_drop_slot()
+			if slot >= -1:
+				game.bind_to_hotbar(item, slot)
+				_rebuild()
+				return
+			if from_equip:
+				if game.unequip_to_pack(item): ask_drop(item, game.inventory)
+			elif from != null: ask_drop(item, from)
+
+func _rebuild() -> void:
+	for child in body.get_children():
+		body.remove_child(child)
+		child.queue_free()
+	body.add_child(_operator_column())
+	body.add_child(_divider())
+	body.add_child(_pack_column())
+	body.add_child(_divider())
+	# A box open beside the pack takes the attributes' place.
+	if is_instance_valid(game.looting): body.add_child(_loot_column())
+	else: body.add_child(_stats_column())
+	_fit_window()
+	_refresh_tooltip()
+
+## Flat and centred (用户 2026-10-06): 1120×470 for the starting pack, wider
+## and taller only as far as a larger pack needs (icons stay 1:1 at 40 px).
+func _fit_window() -> void:
+	var w := 400.0 + 1 + maxf(400.0, game.inventory.width * CELL + 24) + 1 + 318
+	var h := 52.0 + 50 + game.inventory.height * CELL + 36 + game.safe_bag.height * CELL + 16
+	var size := Vector2(maxf(WINDOW.size.x, w), maxf(WINDOW.size.y, h))
+	panel.size = size
+	panel.position = ((Vector2(1280, 720) - size) * 0.5).floor()
+
+func _divider() -> ColorRect:
+	var line := ColorRect.new()
+	line.color = AK.LINE
+	line.custom_minimum_size.x = 1
+	return line
+
+# --- Left: operator, paper doll, skill -------------------------------------------------
+
+func _operator_column() -> Control:
+	# The 8-slot doll (PaperDoll, Grim Dawn's layout); her name and rank along the foot.
+	var column := VBoxContainer.new()
+	column.custom_minimum_size.x = 400
+	var doll := Control.new()
+	doll.custom_minimum_size = PaperDoll.SIZE + Vector2(8, 0)
+	doll.clip_contents = true
+	column.add_child(doll)
+	PaperDoll.decorate(game, doll, Vector2(4, 0))
+	_portrait = OperatorScreen.standing(game.player.operator_id)
+	for slot_category in PaperDoll.SPOTS:
+		var r: Rect2 = PaperDoll.SPOTS[slot_category]
+		var slot := EquipSlot.new()
+		slot.panel = self
+		slot.category = slot_category
+		slot.item = PaperDoll.worn(game, slot_category)
+		slot.position = r.position + Vector2(4, 0)
+		slot.custom_minimum_size = r.size
+		slot.size = r.size
+		slot.tooltip_text = "" if slot.item != null else Item.slot_name(slot_category)
+		doll.add_child(slot)
+	var p: OperatorProgress = game.progress()
+	var foot := HBoxContainer.new()
+	foot.position = Vector2(12, PaperDoll.FOOT.position.y)
+	foot.add_theme_constant_override("separation", 8)
+	foot.add_child(AK.label(Operators.display_name(game.player.operator_id), 14, AK.FG))
+	foot.add_child(AK.label("%s · Lv %d" % [Progression.ELITE_NAMES[p.elite], p.level], 12, AK.MUTE, AK.en()))
+	var points := p.attribute_points + p.skill_points
+	# The operator window is its own panel (C, 界面美术与布局策划案 v2 §4.2).
+	var train := AK.button("干员 C" + (" · %d" % points if points > 0 else ""), "yellow" if points > 0 else "plain", 11)
+	train.set_meta("label", "干员")
+	train.pressed.connect(func(): game.toggle_panel("training"))
+	foot.add_child(train)
+	doll.add_child(foot)
+	return column
+
+# --- Middle: pack, safe bag, 赤金 ---------------------------------------------------------
+
+func _pack_column() -> Control:
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top"]: margin.add_theme_constant_override("margin_" + side, 12)
+	margin.custom_minimum_size.x = maxf(400.0, game.inventory.width * CELL + 24)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
+	margin.add_child(column)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 4)
+	column.add_child(head)
+	head.add_child(AK.section("背包", "%d / %d" % [game.inventory.occupied_cells(), game.inventory.cell_count()]))
+	var fill := Control.new()
+	fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(fill)
+	for i in range(GameManager.PICKUP_FILTER_NAMES.size()):
+		var b := AK.button(GameManager.PICKUP_FILTER_NAMES[i], "blue" if game.pickup_filter == i else "ghost", 11)
+		var index := i
+		b.pressed.connect(func():
+			while game.pickup_filter != index: game.cycle_pickup_filter()
+			_rebuild())
+		head.add_child(b)
+	var sort := AK.button("整理", "plain", 11)
+	sort.pressed.connect(func(): game.sort_pack(); _rebuild())
+	head.add_child(sort)
+	column.add_child(_grid(game.inventory))
+	var lower := HBoxContainer.new()
+	lower.add_theme_constant_override("separation", 14)
+	column.add_child(lower)
+	var safe_box := VBoxContainer.new()
+	safe_box.add_child(AK.section("安全袋"))
+	safe_box.add_child(_grid(game.safe_bag))
+	lower.add_child(safe_box)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lower.add_child(spacer)
+	var money := VBoxContainer.new()
+	money.alignment = BoxContainer.ALIGNMENT_END
+	money.add_child(AK.label("赤金 %d" % game.gold_bars(), 16, AK.SP))
+	_actions = HBoxContainer.new()
+	_actions.add_theme_constant_override("separation", 4)
+	money.add_child(_actions)
+	lower.add_child(money)
+	_fill_actions()
+	return margin
+
+## Select-then-act still works for keyboards and the old click flow.
+func _fill_actions() -> void:
+	if selected == null or not game.carried_items().has(selected): return
+	if selected_container != null:
+		if selected.is_equippable():
+			var equip := AK.button("装备", "blue", 12)
+			equip.pressed.connect(func(): game.equip_from(selected, selected_container); selected = null; _rebuild())
+			_actions.add_child(equip)
+		if selected.is_potion():
+			var drink := AK.button("饮用", "blue", 12)
+			drink.pressed.connect(func(): game.drink(selected); selected = null; _rebuild())
+			_actions.add_child(drink)
+		if FeatureCatalog.is_supply(selected) and not game.in_base:
+			var use := AK.button("使用", "blue", 12)
+			use.pressed.connect(func(): game.use_supply(selected); selected = null; _rebuild())
+			_actions.add_child(use)
+		if game.usable_special(selected):
+			var guide := AK.button("使用", "blue", 12)
+			guide.disabled = not game.guide_refusal().is_empty()
+			guide.pressed.connect(func(): game.use_guide(); selected = null; _rebuild())
+			_actions.add_child(guide)
+		var move := AK.button("移到安全袋" if selected_container == game.inventory else "移回背包", "plain", 12)
+		move.pressed.connect(func(): game.quick_move(selected, selected_container); selected = null; _rebuild())
+		_actions.add_child(move)
+		var drop := AK.button("丢到地面", "plain", 12)
+		drop.pressed.connect(func(): ask_drop(selected, selected_container))
+		_actions.add_child(drop)
+	else:
+		var off := AK.button("卸下", "plain", 12)
+		off.pressed.connect(func(): game.unequip_to_pack(selected); selected = null; _rebuild())
+		_actions.add_child(off)
+
+func _grid(container: ItemContainer) -> GridView:
+	var grid := GridView.new()
+	grid.panel = self
+	grid.container = container
+	grid.custom_minimum_size = Vector2(container.width * CELL, container.height * CELL)
+	for item in container.items:
+		var tile := ItemTile.new()
+		tile.panel = self
+		tile.item = item
+		tile.container = container
+		tile.position = Vector2(item.grid_x * CELL, item.grid_y * CELL)
+		tile.size = Vector2(item.width * CELL - 1, item.height * CELL - 1)
+		grid.add_child(tile)
+	return grid
+
+# --- Right, while a box is open: its grid and its search --------------------------------
+
+func _loot_column() -> Control:
+	var box := game.looting
+	var state := box.search_state()
+	_loot_seen = box.storage.items.size() * 1000 + int(state.get("found", 0))
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top"]: margin.add_theme_constant_override("margin_" + side, 14)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
+	margin.add_child(column)
+	var head := HBoxContainer.new()
+	column.add_child(head)
+	# No count of what is left, no bar (塔科夫): items turn up in place, one by one.
+	head.add_child(AK.section(box.title()))
+	_loot_grid = _grid(box.storage)
+	_loot_grid.box = box
+	column.add_child(_loot_grid)
+	var take := AK.button("全部拿取", "yellow", 12)
+	take.disabled = box.storage.items.is_empty()
+	take.pressed.connect(func(): game.take_all(box); _rebuild())
+	column.add_child(take)
+	return margin
+
+# --- Right: attributes ------------------------------------------------------------------
+
+func _stats_column() -> Control:
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top"]: margin.add_theme_constant_override("margin_" + side, 14)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	margin.add_child(column)
+	var p := game.player
+	var preview := hovered if hovered != null and hovered.is_equippable() and game.player.equipped.get(hovered.category) != hovered else null
+	var after: Dictionary = p.preview_equip(preview).after if preview != null else p.snapshot()
+	var now: Dictionary = p.snapshot()
+	var groups := [["基础", [["生命", "hp"], ["攻击", "atk"], ["法术攻击", "arts"], ["防御", "def"], ["法术抗性", "res"]]],
+		["战斗", [["攻击速度", "aspd"], ["暴击率", "crit"], ["暴击伤害", "crit_dmg"]]],
+		["其他", [["移动速度", "move"]]]]
+	for group in groups:
+		column.add_child(AK.section(group[0]))
+		for entry in group[1]:
+			var key: String = entry[1]
+			var row := HBoxContainer.new()
+			row.add_child(AK.label(entry[0], 12, AK.MUTE))
+			var fill := Control.new()
+			fill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			row.add_child(fill)
+			var value := AK.label(ItemTooltip._value(key, now[key]) if key != "hp" else "%d / %d" % [roundi(maxf(p.hp, 0)), roundi(p.max_hp)], 14, AK.FG, AK.en())
+			row.add_child(value)
+			var delta := float(after[key]) - float(now[key])
+			if not is_zero_approx(delta) and not (ItemTooltip._value(key, absf(delta)) in ["0", "0%", "0.0"]):
+				row.add_child(AK.label(" %s%s" % ["+" if delta > 0 else "−", ItemTooltip._value(key, absf(delta))], 12, Color("9fe04a") if delta > 0 else AK.RED, AK.en()))
+			column.add_child(row)
+	column.add_child(_resist_row(p))
+	var regen := HBoxContainer.new()
+	regen.add_child(AK.label("生命回复", 12, AK.MUTE))
+	var gap := Control.new()
+	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	regen.add_child(gap)
+	regen.add_child(AK.label("%d / 秒" % roundi(p.regen_rate()), 14, AK.FG, AK.en()))
+	column.add_child(regen)
+	return margin
+
+## Her five elemental resistances after the floor's 压制 (属性伤害与地区装备
+## 策划案 v1.1 §13): "灼 32 · 寒 −5 …", each in its element's colour, red when
+## below zero; hovering one shows gear and 压制.
+static func _resist_row(p: Player) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	if p.elements == null: return row
+	var penalty := Elements.penalty(p.game.floor_number) if is_instance_valid(p.game) and not p.game.in_base else 0.0
+	for kind in ["burn", "cold", "corr", "nerve", "bleed"]:
+		var value := roundi(clampf(p.elements.res_gear(kind) - penalty, Elements.RES_MIN, Elements.RES_CAP_MAX))
+		var cell := HBoxContainer.new()
+		cell.add_theme_constant_override("separation", 2)
+		cell.add_child(AK.label(Elements.BADGES[kind], 12, Elements.COLORS[kind]))
+		cell.add_child(AK.label(("−%d" % -value) if value < 0 else str(value), 13, AK.RED if value < 0 else AK.FG, AK.en()))
+		cell.tooltip_text = "%d · %d" % [roundi(p.elements.res_gear(kind)), -roundi(penalty)]
+		cell.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_child(cell)
+	return row
+
+# --- Floating tooltip ---------------------------------------------------------------------
+
+func hover(item: Item, container: ItemContainer, rect: Rect2 = Rect2()) -> void:
+	hovered = item
+	hovered_container = container
+	_hover_rect = rect
+	_refresh_tooltip()
+
+func unhover(item: Item) -> void:
+	if hovered == item:
+		hovered = null
+		_refresh_tooltip()
+
+func select(item: Item, container: ItemContainer) -> void:
+	selected = item
+	selected_container = container
+	_rebuild()
+
+func _shown() -> Item:
+	return hovered if hovered != null else selected
+
+func _refresh_tooltip() -> void:
+	if not is_instance_valid(_float): return
+	for child in _float.get_children():
+		_float.remove_child(child)
+		child.queue_free()
+	var item := _shown()
+	if item == null:
+		_float.visible = false
+		return
+	_float.add_child(_tip_card(ItemTooltip.text(game, item, _detail, false)))
+	var worn: Item = game.player.equipped.get(item.category) if item.is_equippable() else null
+	if worn != null and worn != item: _float.add_child(_tip_card("[color=#101010][bgcolor=#e9e9e9] 已装备 [/bgcolor][/color]\n" + ItemTooltip.text(game, worn, _detail, false)))
+	_float.visible = true
+	_float.reset_size()
+	var anchor := _hover_rect if _hover_rect.size != Vector2.ZERO else Rect2(_last_pointer, Vector2.ZERO)
+	var size := _float.get_combined_minimum_size()
+	var at := Vector2(anchor.end.x + 10, anchor.position.y)
+	if at.x + size.x > 1272: at.x = anchor.position.x - size.x - 10
+	at.y = clampf(at.y, 8, 712 - size.y)
+	at.x = clampf(at.x, 8, 1272 - size.x)
+	_float.position = at
+
+func _tip_card(bbcode: String) -> PanelContainer:
+	var card := PanelContainer.new()
+	card.add_theme_stylebox_override("panel", AK.box(Color("0b0d0f"), AK.LINE_2, 1, 10))
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var text := RichTextLabel.new()
+	text.bbcode_enabled = true
+	text.fit_content = true
+	text.scroll_active = false
+	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text.custom_minimum_size.x = 270
+	text.add_theme_font_override("normal_font", AK.cn())
+	text.add_theme_font_size_override("normal_font_size", 13)
+	text.text = bbcode
+	card.add_child(text)
+	return card
+
+# --- Actions shared by tiles, slots and keys --------------------------------------
+
+## Drops `item` on the ground at once (用户 2026-10-24: 不再询问是否丢弃物品).
+func ask_drop(item: Item, from: ItemContainer) -> void:
+	if item == null: return
+	game.drop_item(item, from)
+	selected = null
+	hovered = null
+	_rebuild()
+
+func right_click(item: Item, container: ItemContainer) -> void:
+	if container == null: game.unequip_to_pack(item)
+	elif item.is_potion(): game.drink(item)
+	elif FeatureCatalog.is_supply(item): game.use_supply(item)
+	elif game.usable_special(item): game.use_guide()
+	elif item.effect == "raw_ore": game.seal_with_sealer(item)
+	elif item.is_equippable(): game.equip_from(item, container)
+	selected = null
+	hovered = null
+	_rebuild()
+
+func ctrl_click(item: Item, container: ItemContainer) -> void:
+	# Out of an open box: straight into the pack.
+	if is_instance_valid(game.looting) and container == game.looting.storage: game.transfer_item(item, container, game.inventory)
+	elif container != null: game.quick_move(item, container)
+	selected = null
+	_rebuild()
+
+func begin_drag(item: Item, from: ItemContainer, from_equip: bool) -> void:
+	_drag_item = item
+	_drag_from = from
+	_drag_from_equip = from_equip
+	hovered = null
+	_refresh_tooltip()
+
+func drop_on_grid(data: Dictionary, container: ItemContainer, cell: Vector2i) -> void:
+	var from: ItemContainer = data.get("from")
+	if not game.move_item(data.item, from, container, cell.x, cell.y):
+		game.notice("放不下：位置被占用或超出边界。")
+	_drag_item = null
+	selected = null
+	_rebuild()
+
+func drop_on_slot(data: Dictionary, category: int) -> void:
+	var item: Item = data.item
+	var from: ItemContainer = data.get("from")
+	if from != null and PaperDoll.fits(item, category): game.equip_from(item, from)
+	_drag_item = null
+	selected = null
+	_rebuild()
+
+
+## One grid (pack or safe bag): empty cells, the tiles on top, and the drop
+## preview — green where the dragged item fits, red where it does not.
+class GridView extends Control:
+	var panel: InventoryPanel
+	var container: ItemContainer
+	## The box being searched, when this is its grid.
+	var box: LootContainer
+	var _preview := Rect2i()
+	var _preview_ok := false
+
+	func _draw() -> void:
+		var c := InventoryPanel.CELL
+		draw_rect(Rect2(Vector2.ZERO, Vector2(container.width * c, container.height * c)), Color(0, 0, 0, 0.55))
+		for x in range(container.width + 1): draw_line(Vector2(x * c, 0), Vector2(x * c, container.height * c), Color(1, 1, 1, 0.07))
+		for y in range(container.height + 1): draw_line(Vector2(0, y * c), Vector2(container.width * c, y * c), Color(1, 1, 1, 0.07))
+		if is_instance_valid(box):
+			_draw_outlines(box.pending_rects())
+			_draw_search(box.search_cell())
+		if _preview.size != Vector2i.ZERO:
+			draw_rect(Rect2(_preview.position * c, _preview.size * c), Color(0.3, 0.9, 0.45, 0.28) if _preview_ok else Color(0.95, 0.3, 0.25, 0.3))
+
+	## What is still to be found, as the outline of the cells each item takes
+	## (用户 2026-10-17): its size shows, not what it is. Dim, the way 塔科夫
+	## shows an unsearched slot: a darker well with a faint grey edge.
+	func _draw_outlines(rects: Array[Rect2i]) -> void:
+		var c := float(InventoryPanel.CELL)
+		var edge := Color(0.62, 0.64, 0.6, 0.22)
+		var hatch := Color(0.62, 0.64, 0.6, 0.1)
+		for rect in rects:
+			# On the grid lines themselves, so neighbouring outlines join.
+			var area := Rect2(Vector2(rect.position) * c, Vector2(rect.size) * c)
+			draw_rect(area, Color(0, 0, 0, 0.35))
+			# Diagonal hatching, "/" every 7 px, clipped to the outline.
+			var o := area.position
+			var w := area.size.x
+			var h := area.size.y
+			var d := 7.0
+			while d < w + h:
+				var a := o + (Vector2(d, 0.0) if d <= w else Vector2(w, d - w))
+				var b := o + (Vector2(0.0, d) if d <= h else Vector2(d - h, h))
+				draw_line(a, b, hatch, 1.0, true)
+				d += 7.0
+			draw_rect(area, edge, false, 1.0)
+
+	## 塔科夫's search mark: a magnifier circling over the top-left cell of the
+	## next item's outline.
+	func _draw_search(cell: Vector2i) -> void:
+		if cell.x < 0: return
+		var c := float(InventoryPanel.CELL)
+		var origin := Vector2(cell) * c
+		draw_rect(Rect2(origin + Vector2.ONE, Vector2(c - 1, c - 1)), Color(1, 1, 1, 0.08))
+		var t := Time.get_ticks_msec() / 1000.0 * TAU * 0.9
+		var lens := origin + Vector2(c * 0.45, c * 0.45) + Vector2(cos(t), sin(t)) * 4.0
+		draw_line(lens + Vector2(5.0, 5.0), lens + Vector2(10.0, 10.0), AK.FG, 3.0)
+		draw_arc(lens, 7.0, 0.0, TAU, 20, AK.FG, 2.0, true)
+
+	func _local(at: Vector2) -> Vector2:
+		if panel._pointer_known: return panel._last_pointer - global_position
+		return at
+
+	func _cell_for(at: Vector2, data: Dictionary) -> Vector2i:
+		at = _local(at)
+		var grab: Vector2 = data.get("grab", Vector2.ZERO)
+		return Vector2i(roundi((at.x - grab.x) / InventoryPanel.CELL), roundi((at.y - grab.y) / InventoryPanel.CELL))
+
+	func _can_drop_data(at: Vector2, data: Variant) -> bool:
+		if not data is Dictionary or not data.has("item"): return false
+		var item: Item = data.item
+		var cell := _cell_for(at, data)
+		_preview = Rect2i(cell, Vector2i(item.width, item.height))
+		_preview_ok = container.can_place(item, cell.x, cell.y)
+		queue_redraw()
+		return _preview_ok
+
+	func _drop_data(at: Vector2, data: Variant) -> void:
+		var cell := _cell_for(at, data)
+		_preview = Rect2i()
+		panel.drop_on_grid(data, container, cell)
+
+	func _notification(what: int) -> void:
+		if what in [NOTIFICATION_MOUSE_EXIT, NOTIFICATION_DRAG_END]:
+			_preview = Rect2i()
+			queue_redraw()
+
+
+## An item on a grid, in the depot style (界面策划案 §2.4): the rarity glows up
+## from the bottom with a 3 px bar, the count sits in a black box. A Button, so
+## keyboard and the select-then-act flow still work.
+class ItemTile extends Button:
+	var panel: InventoryPanel
+	var item: Item
+	var container: ItemContainer
+
+	func _ready() -> void:
+		focus_mode = Control.FOCUS_NONE
+		text = "" if ItemIcons.texture_for(item) != null else item.item_name.left(2 if item.width < 2 else item.width * 2 + 1)
+		add_theme_font_override("font", AK.cn())
+		add_theme_font_size_override("font_size", 12)
+		ItemTile.style_for(self, item)
+		pressed.connect(func():
+			if Input.is_key_pressed(KEY_CTRL): panel.ctrl_click(item, container)
+			else: panel.select(item, container))
+		mouse_entered.connect(func(): panel.hover(item, container, get_global_rect()))
+		mouse_exited.connect(func(): panel.unhover(item))
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			panel.right_click(item, container)
+			accept_event()
+
+	func _get_drag_data(at: Vector2) -> Variant:
+		var preview := ItemTile.drag_preview(item, size)
+		preview.text = text
+		preview.modulate.a = 0.8
+		set_drag_preview(preview)
+		panel.begin_drag(item, container, false)
+		return {"item": item, "from": container, "grab": at}
+
+	func _draw() -> void:
+		ItemTile.draw_glow(self, item)
+		ItemIcons.draw(self, item, Rect2(Vector2.ZERO, size))
+		ItemTile.draw_badges(self, item, container == panel.game.safe_bag)
+
+	static func drag_preview(shown: Item, tile_size: Vector2) -> Button:
+		var preview := Button.new()
+		preview.size = tile_size
+		ItemTile.style_for(preview, shown)
+		var texture := ItemIcons.texture_for(shown)
+		if texture != null:
+			var image := TextureRect.new()
+			image.texture = texture
+			image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			image.position = ((tile_size - texture.get_size()) * 0.5).floor()
+			image.size = texture.get_size()
+			if shown.rotated:
+				image.pivot_offset = image.size * 0.5
+				image.rotation = PI * 0.5
+			preview.add_child(image)
+		else:
+			preview.text = shown.item_name.left(2)
+		return preview
+
+	static func tier_color(shown: Item) -> Color:
+		if shown.is_potion(): return AK.GREEN
+		return shown.rarity_color()
+
+	static func style_for(button: Button, shown: Item) -> void:
+		for state in ["normal", "hover", "pressed"]:
+			var style := StyleBoxFlat.new()
+			style.bg_color = Color("242b30") if state == "normal" else Color("2d363c")
+			if shown.insured:
+				style.border_color = InventoryPanel.INSURED
+				style.set_border_width_all(1)
+			elif state == "hover":
+				style.border_color = Color.WHITE
+				style.set_border_width_all(1)
+			button.add_theme_stylebox_override(state, style)
+		button.add_theme_color_override("font_color", AK.FG)
+
+	static func draw_glow(control: Control, shown: Item) -> void:
+		var c := tier_color(shown)
+		var s := control.size
+		var steps := 8
+		for i in range(steps):
+			var t := float(i) / steps
+			control.draw_rect(Rect2(0, s.y * (0.4 + 0.6 * t), s.x, s.y * 0.6 / steps + 1), Color(c.r, c.g, c.b, 0.06 + 0.32 * t))
+		control.draw_rect(Rect2(0, s.y - 3, s.x, 3), c)
+
+	## Badges (§5.3): shield = insured, lock = in the safe bag, diamond =
+	## regional exclusive; stack counts in a black box, bottom right.
+	static func draw_badges(control: Control, shown: Item, in_safe: bool) -> void:
+		var s := control.size
+		if shown.insured:
+			control.draw_colored_polygon(PackedVector2Array([Vector2(3, 3), Vector2(13, 3), Vector2(13, 9), Vector2(8, 14), Vector2(3, 9)]), InventoryPanel.INSURED)
+		if in_safe:
+			control.draw_rect(Rect2(3, s.y - 13, 9, 7), AK.GREEN)
+			control.draw_arc(Vector2(7.5, s.y - 13), 3.0, PI, TAU, 8, AK.GREEN, 1.5)
+		if shown.is_stackable():
+			var label := str(shown.quantity)
+			var font := AK.en()
+			var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+			control.draw_rect(Rect2(s.x - w - 6, s.y - 18, w + 6, 14), Color.BLACK)
+			control.draw_string(font, Vector2(s.x - w - 3, s.y - 7), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color.WHITE)
+		if not shown.exclusive_region.is_empty():
+			var c := Vector2(s.x - 8, 8)
+			control.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(5, 0), c + Vector2(0, 5), c + Vector2(-5, 0)]), AK.ORI)
+
+
+## An equipment slot on the paper doll: shows the worn item, accepts drops of its
+## category, drags out to unequip, right click unequips.
+class EquipSlot extends Button:
+	var panel: InventoryPanel
+	var category: int
+	var item: Item
+
+	func _ready() -> void:
+		focus_mode = Control.FOCUS_NONE
+		text = "" if item == null or ItemIcons.texture_for(item) != null else item.item_name.left(4)
+		add_theme_font_override("font", AK.cn())
+		add_theme_font_size_override("font_size", 12)
+		for state in ["normal", "hover", "pressed"]:
+			var style := StyleBoxFlat.new()
+			style.bg_color = Color("1d2327") if item == null else Color("242b30")
+			if state == "hover":
+				style.border_color = Color.WHITE
+				style.set_border_width_all(1)
+			add_theme_stylebox_override(state, style)
+		if item != null:
+			mouse_entered.connect(func(): panel.hover(item, null, get_global_rect()))
+			mouse_exited.connect(func(): panel.unhover(item))
+			pressed.connect(func(): panel.select(item, null))
+
+	func _gui_input(event: InputEvent) -> void:
+		if item != null and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			panel.right_click(item, null)
+			accept_event()
+
+	func _draw() -> void:
+		if item == null:
+			PaperDoll.draw_silhouette(self, category, size)
+			return
+		ItemTile.draw_glow(self, item)
+		PaperDoll.draw_item(self, item, category, size)
+		ItemTile.draw_badges(self, item, false)
+
+	func _get_drag_data(_at: Vector2) -> Variant:
+		if item == null: return null
+		var preview := ItemTile.drag_preview(item, Vector2(item.width * InventoryPanel.CELL - 1, item.height * InventoryPanel.CELL - 1))
+		set_drag_preview(preview)
+		panel.begin_drag(item, null, true)
+		return {"item": item, "from": null, "grab": Vector2(InventoryPanel.CELL, InventoryPanel.CELL) * 0.5}
+
+	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
+		return data is Dictionary and data.has("item") and PaperDoll.fits(data.item, category) and data.get("from") != null
+
+	func _drop_data(_at: Vector2, data: Variant) -> void:
+		panel.drop_on_slot(data, category)

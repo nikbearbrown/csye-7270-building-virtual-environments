@@ -1,0 +1,130 @@
+@tool
+extends SceneTree
+
+const OUTPUT := "res://shaders/standard_generated.gdshader"
+const EVIDENCE := "res://evidence/a5/step4/"
+var picker: EditorResourcePicker
+
+func _initialize() -> void:
+	call_deferred("run")
+
+func step(count: int = 4) -> void:
+	for i in range(count):
+		await process_frame
+
+func menu_for_resource() -> PopupMenu:
+	for child in picker.get_children():
+		if child is Button:
+			for connection in child.get_signal_connection_list("pressed"):
+				if "_update_menu" in str(connection.callable):
+					child.emit_signal("pressed")
+	for child in picker.get_children():
+		if child is PopupMenu:
+			return child
+	return null
+
+func fail(message: String) -> void:
+	push_error(message)
+	quit(1)
+
+func run() -> void:
+	if not Engine.is_editor_hint():
+		fail("Run with --editor; the editor's conversion plugin is required")
+		return
+	if FileAccess.file_exists(OUTPUT):
+		fail("Output already exists; refusing to overwrite")
+		return
+	await step(60)
+	var temporary_scene := Node3D.new()
+	temporary_scene.name = "UnsavedStandardMaterialFixture"
+	root.add_child(temporary_scene)
+	var mesh := MeshInstance3D.new()
+	mesh.mesh = BoxMesh.new()
+	temporary_scene.add_child(mesh)
+	var original := StandardMaterial3D.new()
+	original.albedo_texture = load("res://textures/cargo_panel/rusty_metal_sheet_diff_1k.png")
+	original.roughness_texture = load("res://textures/cargo_panel/rusty_metal_sheet_rough_1k.png")
+	original.normal_enabled = true
+	original.normal_texture = load("res://textures/cargo_panel/rusty_metal_sheet_nor_gl_1k.png")
+	if original.albedo_texture == null or original.roughness_texture == null or original.normal_texture == null:
+		fail("A required imported texture failed to load")
+		return
+	mesh.material_override = original
+	picker = EditorResourcePicker.new()
+	picker.base_type = "Material"
+	EditorInterface.get_base_control().add_child(picker)
+	picker.edited_resource = original
+	picker.resource_changed.connect(func(resource: Resource): mesh.material_override = resource)
+	await step()
+	var menu := menu_for_resource()
+	if menu == null:
+		fail("Editor resource menu not found")
+		return
+	var unique_id := -1
+	for i in range(menu.item_count):
+		print("RESOURCE_MENU ", menu.get_item_id(i), " ", menu.get_item_text(i))
+		if menu.get_item_text(i) in ["Make Unique", "唯一化"]:
+			unique_id = menu.get_item_id(i)
+	if unique_id < 0:
+		fail("Make Unique action not found")
+		return
+	menu.emit_signal("id_pressed", unique_id)
+	menu.hide()
+	await step()
+	var unique := picker.edited_resource as StandardMaterial3D
+	if unique == null or unique == original:
+		fail("Make Unique did not produce a separate StandardMaterial3D")
+		return
+	menu = menu_for_resource()
+	var convert_id := -1
+	for i in range(menu.item_count):
+		if "ShaderMaterial" in menu.get_item_text(i):
+			convert_id = menu.get_item_id(i)
+	if convert_id < 0:
+		fail("The editor has no ShaderMaterial conversion for this material")
+		return
+	menu.emit_signal("id_pressed", convert_id)
+	menu.hide()
+	await step()
+	var converted := picker.edited_resource as ShaderMaterial
+	if converted == null or converted.shader == null:
+		fail("Native editor conversion did not return a shader")
+		return
+	var shader := converted.shader
+	if shader.code.is_empty():
+		fail("Native conversion returned empty source")
+		return
+	var uniforms := shader.get_shader_uniform_list()
+	if uniforms.is_empty():
+		fail("Generated shader has no parsed uniforms")
+		return
+	var saved := ResourceSaver.save(shader, OUTPUT)
+	if saved != OK:
+		fail("ResourceSaver failed: " + str(saved))
+		return
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(EVIDENCE))
+	var record := {
+		"engine": Engine.get_version_info().string,
+		"editor_hint": Engine.is_editor_hint(),
+		"renderer": RenderingServer.get_current_rendering_method(),
+		"method": "EditorResourcePicker native Make Unique and Convert to ShaderMaterial actions, then ResourceSaver.save on returned Shader",
+		"output": OUTPUT,
+		"temporary_scene_saved": false,
+		"make_unique_verified": unique != original,
+		"albedo_texture": unique.albedo_texture.resource_path,
+		"roughness_texture": unique.roughness_texture.resource_path,
+		"normal_texture": unique.normal_texture.resource_path,
+		"normal_enabled": unique.normal_enabled,
+		"albedo_color": str(unique.albedo_color),
+		"normal_scale": unique.normal_scale,
+		"uniforms": uniforms,
+		"shader_sha256": FileAccess.get_sha256(OUTPUT),
+	}
+	var file := FileAccess.open(EVIDENCE + "generation.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(record, "\t"))
+	file.close()
+	print("STANDARD_SHADER_EXPORTED ", OUTPUT, " sha256=", record.shader_sha256)
+	picker.queue_free()
+	temporary_scene.queue_free()
+	await step()
+	quit()

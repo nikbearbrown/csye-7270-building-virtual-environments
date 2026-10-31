@@ -157,6 +157,15 @@ reflected 1 Disabled), and the import options from the Godot 4.7.2 source,
 
 ## Attribution
 
+Final verification, 2026-10-30: the three stale guidance entries in finding 11
+were corrected in a separate course commit, aa4d5cb. The Poly Haven asset page
+also explicitly lists Amal Kumar and links the CC0 license, so the name and
+license URL noted in finding 12 have now been verified against the publisher:
+https://polyhaven.com/a/rusty_metal_sheet and https://polyhaven.com/license.
+The rendered GL/DX comparisons, parameter sweep and actual base captures are
+recorded in TEST-REPORT.md. They resolve the rendering checks left open by this
+headless audit; the subtle normal map and roughness clipping remain limitations.
+
 From `CHANGE-BRIEF.md` (Material plan), as checked by the student:
 
 - Source: [Poly Haven — Rusty Metal Sheet](https://polyhaven.com/a/rusty_metal_sheet).

@@ -8,8 +8,8 @@
 - Renderer: Forward+. `project.godot` names no `rendering_method`, so the default
   applies; it sets the Windows driver to D3D12 (`project.godot:27`). Confirmed
   at run time as `forward_plus` / `d3d12` (`CHANGE-BRIEF.md:27-31`; headless:
-  `logs/a5_probe_headless_60fps.log`). `README.md:3` still says "GL Compatibility"
-  from Assignment 2; that is out of date. The visual suites force
+  `logs/a5_probe_headless_60fps.log`). README now documents Forward+.
+  The older visual suites force
   `gl_compatibility` (`tests/run_all.ps1:70`); they are not used for A5.
 - Main scene: `res://game/main.tscn` (`project.godot:15`), one `PixelDisplay` node
   (`game/main.tscn:5-6`) that renders the 3D world in a `SubViewport` and creates
@@ -22,9 +22,9 @@
   (`entities/ground_hazard.gd:1-2`, `extends Node3D`), made in code by
   `GameManager.spawn_hazard()` (`game/game_manager.gd:794-805`), called when the
   bottle lands with `fuse` 0 and `lasting = fire_time` (`entities/molotov.gd:66-67`).
-  Today the fire is only a `Decal` with code-made circle textures
-  (`entities/ground_hazard.gd:31-39`, `entities/ground_hazard.gd:52-60`). The new
-  flame mesh is added beside the Decal (`CHANGE-BRIEF.md`, "The shader").
+  The fire keeps its `Decal` with code-made circle textures and adds a `FireFlame`
+  mesh when `fuse <= 0` and `lasting > 0`. FireFlame uses a separate ShaderMaterial
+  per fire, reads lasting after the hazard's physics update, and faces the camera.
 - Game state: `fuse` and `lasting` on `GroundHazard` (`entities/ground_hazard.gd:14-15`),
   counted down by physics `delta` in `_physics_process()` only while
   `game.simulation_active()` is true (`entities/ground_hazard.gd:62-78`,
@@ -81,10 +81,11 @@ Measured on this machine by `tests/a5_probe_headless.gd` at 30, 60 and 144 fps
 
 ## Ownership
 
-- Files in `shaders/` (`res://shaders/`) are hand-written by the human and are never
-  edited by an agent: create, edit, reformat or "fix" none of them. That includes the
-  planned `burning_bottle_fire.gdshader` and `cargo_panel.gdshader`, and the
-  hint-experiment shader. If one looks wrong, say so and stop.
+- The earlier prompts reserved shader edits for the student. The current explicit
+  user instructions authorized Codex to write the three custom shaders, perform
+  mutations/restoration and complete A5 through scripts. Preserve the exact brief
+  color statement and current interfaces; follow the user's current authorization
+  for subsequent edits. SOURCES.md records the actual assistance.
 - `scripts/run-test.sh` is not edited by an agent either.
 
 ## Out of scope
@@ -110,7 +111,8 @@ Measured on this machine by `tests/a5_probe_headless.gd` at 30, 60 and 144 fps
   the fire, cargo, hint-experiment and generated comparison programs.
 - The selected `crate_stack` surfaces have UVs and tangents; the base placement,
   BoxMesh UV magnification and texture response are recorded in `MATERIALS.md`.
-- Whether shader `TIME` follows `Engine.time_scale` is a prediction in the brief (R5),
-  not yet measured.
+- Shader TIME was measured with the real renderer: 120 fixed-60-fps frames advance
+  TIME by 2/1/4/0 seconds at time_scale 1/0.5/2/0. See TEST-REPORT.md and
+  evidence/a5/use-it/measurement.json. The menu's simulation_active pause is separate.
 - The working tree has many uncommitted edits (`git status`), so line numbers in this
   file can drift; recheck them before citing.

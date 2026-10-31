@@ -1,0 +1,582 @@
+class_name FieldMenu
+extends Control
+
+var game: GameManager
+var body: VBoxContainer
+## Absolute 1280×720 layouts (EventScreens, base stations) go here instead of body.
+var stage: Control
+## What the current stage screen has selected (an index, an Item, a type …).
+var pick: Variant = null
+var camp_tab := 0
+## Settlement's page: 结算 or 仓库 (EventScreens.SETTLE_TABS).
+var settle_tab := 0
+var region_pick := ""
+## The contract card picked at the dispatch desk (局内节奏与目标策划案 §6 B1).
+var contract_pick := 0
+var stash_tab := 0
+## The facility picked on the 基建总控台's list.
+var build_pick := "hub"
+var pause_page := 1
+var pause_confirm := false
+## The binding waiting for a key on the 按键设置 page (function index × 2 +
+## 0 primary / 1 secondary), or -1.
+var hotbar_capture := -1
+## The frame a key was taken for a binding; that press does nothing else.
+var hotbar_capture_frame := -1
+var settings_tab := 0
+## The C window's page: 概览 / 属性 / 技能 (OperatorScreen).
+var operator_tab := 0
+## 整备台's page: 换装 / 改造 (LoadoutScreens).
+var workbench_tab := 0
+## Where Esc / ‹ goes from this page when it is a sub-page (else the menu closes).
+var back_to := Callable()
+var _shade: ColorRect
+var _margin: MarginContainer
+const INK := AK.FG
+const GOLD := AK.SP
+
+func _ready() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_shade = ColorRect.new()
+	_shade.color = Color(0.063, 0.063, 0.063, 0.97)
+	_shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_shade)
+	var margin := MarginContainer.new()
+	_margin = margin
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right"]: margin.add_theme_constant_override("margin_" + side, 44)
+	for side in ["top", "bottom"]: margin.add_theme_constant_override("margin_" + side, 24)
+	add_child(margin)
+	var scroll := ScrollContainer.new()
+	margin.add_child(scroll)
+	body = VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 14)
+	scroll.add_child(body)
+	stage = Control.new()
+	stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(stage)
+	hide()
+
+var _screen := ""
+
+## A new stage screen starts with nothing picked; redraws of the same keep it.
+func _enter(screen: String, default: Variant) -> void:
+	if _screen != screen: pick = default
+	_screen = screen
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_VISIBILITY_CHANGED and not visible:
+		_screen = ""
+		_revealed = ""
+		back_to = Callable()
+
+## The screen last opened with the scan reveal (Terminal.reveal); a rebuild of
+## the same screen (a click, a tab) redraws without it.
+var _revealed := ""
+## True while the screen being built is new: titles type in, the curtain lifts.
+var reveal_pending := false
+
+## Starts an absolute-layout screen over a shade of `alpha`.
+func stage_begin(alpha: float = 0.97) -> Control:
+	for child in body.get_children():
+		body.remove_child(child)
+		child.queue_free()
+	for child in stage.get_children():
+		stage.remove_child(child)
+		child.queue_free()
+	_margin.hide()
+	stage.show()
+	_shade.color.a = alpha
+	var key := "%s:%s" % [_screen, _station]
+	reveal_pending = not visible or key != _revealed
+	_revealed = key
+	if reveal_pending: _reveal_after_build.call_deferred(_station)
+	show()
+	return stage
+
+func _reveal_after_build(station: String) -> void:
+	reveal_pending = false
+	if visible and stage.visible: Terminal.reveal(stage, Terminal.dept_color(station) if _screen == "station" else AK.HOLO)
+
+func clear(title: String, subtitle: String) -> void:
+	for child in body.get_children():
+		body.remove_child(child)
+		child.queue_free()
+	for child in stage.get_children():
+		stage.remove_child(child)
+		child.queue_free()
+	stage.hide()
+	_margin.show()
+	_shade.color.a = 0.97
+	pick = null
+	_screen = ""
+	show()
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 14)
+	body.add_child(head)
+	var plate := ColorRect.new()
+	plate.color = AK.PAPER
+	plate.custom_minimum_size = Vector2(6, 52)
+	head.add_child(plate)
+	var titles := VBoxContainer.new()
+	titles.add_theme_constant_override("separation", -2)
+	head.add_child(titles)
+	titles.add_child(AK.label("RHODES ISLAND · PRTS", 11, AK.MUTE, AK.en()))
+	titles.add_child(AK.label(title, 28, AK.FG))
+	if not subtitle.is_empty():
+		var sub := AK.label(subtitle, 15, AK.MUTE)
+		sub.size_flags_vertical = Control.SIZE_SHRINK_END
+		head.add_child(sub)
+	var line := ColorRect.new()
+	line.color = AK.LINE
+	line.custom_minimum_size.y = 1
+	body.add_child(line)
+
+func text(parent: Node, value: String, font_size: int = 16, color: Color = INK) -> Label:
+	var label := Label.new()
+	label.text = value
+	label.add_theme_font_override("font", AK.cn())
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	parent.add_child(label)
+	return label
+
+func button(parent: Node, title: String, callback: Callable, disabled: bool = false) -> Button:
+	var control := Button.new()
+	control.focus_mode = Control.FOCUS_NONE
+	control.text = title
+	control.custom_minimum_size.y = 36
+	control.disabled = disabled
+	control.add_theme_font_override("font", AK.cn())
+	control.add_theme_font_size_override("font_size", 14)
+	AK.style_button(control, "blue" if title in PRIMARY else "plain")
+	control.pressed.connect(callback)
+	parent.add_child(control)
+	return control
+
+## Buttons that move the game on are blue (AK confirm); everything else grey.
+const PRIMARY := ["出发", "继续", "撤离", "返回罗德岛", "接下合同 →", "开始唤醒"]
+
+## Station kinds opened from the walkable base (see BaseMap / GameManager.open_station).
+const STATIONS := {
+	"contracts": ["调度台 / 外勤合同", "选择地区接下合同 · 每 3 区段固定撤离"],
+	"insurance": ["后勤柜台 / 出战准备", "带入装备可投保"],
+	"loadout": ["整备台 / 装备", "装备、卸下或存回仓库"],
+	"stash": ["仓管台 / 仓库", "从个人仓库带入下一份合同"],
+	"outbound": ["出库区 / 订单与交付", "交付个人仓库或背包里的物品：按订单或直接换龙门币"],
+	"report": ["医疗前台 / 回收报告与治疗", "上一份合同的回收明细，以及重伤治疗"],
+	"pharmacy": ["药房窗口 / 配药", "下一份合同带哪些药：标准急救剂免费，其余每瓶收费，结算后恢复为 3 瓶标准急救剂"],
+	"store": ["可露希尔的商店", "药剂 · 收购赤金"],
+}
+var _station := ""
+## The stash list's search text (装备与背包界面调研 §5.13); kept while the menu redraws.
+var stash_query := ""
+
+## A facility's own construction site (基建设施修订案 v1.1 §八.2): its page alone.
+func show_build_site(facility: String) -> void:
+	if not visible: Terminal.wipe_open(self)
+	pick = null
+	back_to = Callable()
+	_station = "build_site"
+	_screen = "station"
+	BaseScreens.construction(self, BaseCatalog.facility_name(facility), facility)
+
+## Everything on one page; kept for tools and tests that want the overview.
+func show_base() -> void:
+	_station = ""
+	clear("罗德岛 / 外勤合同", "龙门币 %s" % Economy.format(game.gold))
+	_contracts_section()
+	_loadout_section()
+	_stash_section()
+	_report_section()
+
+func show_station(kind: String) -> void:
+	if not visible: Terminal.wipe_open(self)
+	if _station != kind: pick = null
+	back_to = Callable()
+	_station = kind
+	_screen = "station"
+	match kind:
+		"contracts": BaseScreens.contracts(self); return
+		"stash": BaseScreens.stash(self); return
+		"construction": BaseScreens.construction(self); return
+		"outbound": BaseScreens.outbound(self); return
+		"pharmacy": BaseScreens.medical(self, 0); return
+		"report": BaseScreens.medical(self, 1); return
+		"insurance", "loadout": BaseScreens.departure(self, "", kind); return
+		"store": BaseScreens.store(self); return
+		"exchange": ExchangeScreen.build(self); return
+		"personnel": BaseScreens.personnel(self); return
+		"workshop": ExchangeScreen.workshop(self); return
+		"research": ResearchScreen.build(self); return
+		"sand_table": SandTableScreen.build(self); return
+		"farm": ProvisionScreens.farm(self); return
+		"canteen": ProvisionScreens.canteen(self); return
+		"lift": ProvisionScreens.lift(self); return
+	var info: Array = STATIONS.get(kind, ["罗德岛", ""])
+	clear(info[0], "%s    ·    龙门币 %s" % [info[1], Economy.format(game.gold)])
+	match kind:
+		"contracts": _contracts_section()
+		"insurance", "loadout": _loadout_section()
+		"stash": _stash_section()
+		"outbound": _outbound_section()
+		"report":
+			_medical_summary()
+			_report_section(true)
+		"pharmacy": _pharmacy_section()
+		"store": _store_section()
+	button(body, "返回", game.close_modal)
+
+func _refresh() -> void:
+	if _station.is_empty(): show_base()
+	else: show_station(_station)
+
+# --- One-key packing (交易所交易包修订案 §3.4) ------------------------------------------
+
+var quick_pack_panel: Control = null
+
+## Where the key works: the warehouse console and its shelves. Not the
+## workshop: its 打包 page has the same form on the right (用户 2026-10-23).
+func quick_pack_here() -> bool:
+	return visible and _station == "stash"
+
+func open_quick_pack() -> void:
+	if not quick_pack_here(): return
+	close_quick_pack()
+	quick_pack_panel = ExchangeScreen.quick_pack(self, BaseScreens.hovered)
+	add_child(quick_pack_panel)
+
+## Closes the window; true when there was one (Esc).
+func close_quick_pack() -> bool:
+	if not is_instance_valid(quick_pack_panel): return false
+	quick_pack_panel.queue_free()
+	quick_pack_panel = null
+	_refresh()
+	return true
+
+func _contracts_section() -> void:
+	var cards := HBoxContainer.new()
+	cards.add_theme_constant_override("separation", 18)
+	body.add_child(cards)
+	for region in FieldCatalog.REGIONS:
+		var data: Dictionary = FieldCatalog.REGIONS[region]
+		var panel := PanelContainer.new()
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var style := StyleBoxFlat.new()
+		style.bg_color = AK.PLATE_2
+		style.border_color = data.color
+		style.border_width_top = 3
+		style.content_margin_left = 16
+		style.content_margin_right = 16
+		style.content_margin_top = 14
+		style.content_margin_bottom = 14
+		panel.add_theme_stylebox_override("panel", style)
+		cards.add_child(panel)
+		var box := VBoxContainer.new()
+		box.add_theme_constant_override("separation", 10)
+		panel.add_child(box)
+		text(box, data.name, 20, GOLD)
+		text(box, data.brief)
+		text(box, data.loot)
+		text(box, "专属 / " + data.exclusive, 14)
+		text(box, "藏品 / " + data.build, 14)
+		var orders := game.base.orders.pointing_at(region)
+		if orders > 0: text(box, "订单 %d" % orders, 14, GOLD)
+		button(box, "接下合同 →", func(): game.request_contract(region))
+		for depth in game.base.unlocked_camps(region):
+			button(box, "从%s出发" % game.camp_label(depth), func(): game.request_contract(region, depth))
+
+func _loadout_section() -> void:
+	text(body, "出战准备 / 投保", 18)
+	for item in game.carried_items():
+		var row := HBoxContainer.new()
+		body.add_child(row)
+		var tag := "已装备" if game.player.equipped.values().has(item) else "背包"
+		text(row, "%s · %s %s" % [tag, item.display_name(), "[已投保]" if item.insured else ""], 15).tooltip_text = item.details()
+		if item.is_equippable():
+			button(row, "投保 %s 龙门币" % Economy.format(game.insurance_price(item)), func(): game.insure(item); _refresh(), item.insured or game.gold < game.insurance_price(item))
+			if game.inventory.items.has(item):
+				button(row, "装备", func(): game.equip_from(item, game.inventory); game.save_base(); _refresh())
+		button(row, "存回仓库", func(): game.store_item(item); _refresh())
+	if game.carried_items().any(func(x): return not x.is_equippable()):
+		button(body, "背包与安全袋的材料全部存回仓库", func(): game.store_all_materials(); _refresh())
+
+func _stash_section() -> void:
+	var base: BaseState = game.base
+	text(body, "个人仓库 %d/%d  ·  单格堆叠 ×%d" % [base.shelf_count(), base.capacity(), base.stack_mult()], 18)
+	_expansion_section()
+	var search := LineEdit.new()
+	search.placeholder_text = "搜索仓库（名称或词缀，如“攻击力”“稀有”）"
+	search.text = stash_query
+	search.custom_minimum_size.x = 420
+	search.text_submitted.connect(func(value: String): stash_query = value; _refresh())
+	var bar := HBoxContainer.new()
+	body.add_child(bar)
+	bar.add_child(search)
+	button(bar, "搜索", func(): stash_query = search.text; _refresh())
+	if not stash_query.is_empty(): button(bar, "清除", func(): stash_query = ""; _refresh())
+	if game.carried_items().any(func(x): return not x.is_equippable()):
+		button(bar, "背包材料全部存回", func(): game.store_all_materials(); _refresh())
+	for category in range(Item.Category.size()):
+		var shown := game.stash.filter(func(x): return x.category == category and _matches(x))
+		if shown.is_empty(): continue
+		text(body, "%s（%d）" % [BaseCatalog.CATEGORY_NAMES[category], shown.size()], 16, GOLD)
+		for item: Item in shown:
+			var row := HBoxContainer.new()
+			body.add_child(row)
+			var name := AK.item_name(item, 15)
+			name.mouse_filter = Control.MOUSE_FILTER_PASS
+			name.tooltip_text = item.details()
+			row.add_child(name)
+			button(row, "带入", func(): game.bring_item(item); _refresh())
+
+func _matches(item: Item) -> bool:
+	if stash_query.strip_edges().is_empty(): return true
+	var haystack := item.display_name() + " " + item.details()
+	for word in stash_query.split(" ", false):
+		if not word in haystack: return false
+	return true
+
+## Every base upgrade in one list (用户 2026-10-21: 基建升级项整合到同一页面):
+## the facility levels, then the master console, the drone, the expansions and
+## the camp upgrade. The 基建 page (BaseScreens.construction) draws the same.
+func _expansion_section() -> void:
+	var base: BaseState = game.base
+	var levels := HBoxContainer.new()
+	body.add_child(levels)
+	for id in BaseCatalog.FACILITY_ORDER:
+		var level := base.facility_level(id)
+		var step := BaseCatalog.facility_step(id, level + 1)
+		if step.is_empty():
+			button(levels, "%s Lv%d（已满级）" % [BaseCatalog.facility_name(id), level], func(): pass, true)
+			continue
+		var refusal := game.facility_refusal(id)
+		button(levels, "%s Lv%d → Lv%d  %s + %s%s" % [BaseCatalog.facility_name(id), level, level + 1, Economy.format(step.price), BaseCatalog.cost_text(step.materials), "" if refusal.is_empty() else "（%s）" % refusal],
+			func(): game.upgrade_facility(id); _refresh(), not refusal.is_empty())
+	var upgrades := HBoxContainer.new()
+	body.add_child(upgrades)
+	for kind in ["pack", "safe"]:
+		var level := base.pack_level if kind == "pack" else base.safe_level
+		var sizes: Array = BaseCatalog.PACK_SIZES if kind == "pack" else BaseCatalog.SAFE_SIZES
+		var prices: Array = BaseCatalog.PACK_PRICES if kind == "pack" else BaseCatalog.SAFE_PRICES
+		var title := "背包" if kind == "pack" else "安全袋"
+		var now: Vector2i = sizes[level]
+		if level + 1 >= sizes.size():
+			button(upgrades, "%s %d×%d（已满配）" % [title, now.x, now.y], func(): pass, true)
+			continue
+		var next: Vector2i = sizes[level + 1]
+		var refusal := game.upgrade_refusal(kind)
+		var label := "%s扩容 %d×%d → %d×%d  %d + %s" % [title, now.x, now.y, next.x, next.y, int(prices[level + 1]), BaseCatalog.cost_text(game.upgrade_cost(kind))] + ("" if refusal.is_empty() else "（%s）" % refusal)
+		button(upgrades, label, func():
+			if kind == "pack": game.buy_pack_upgrade()
+			else: game.buy_safe_upgrade()
+			_refresh(), not refusal.is_empty())
+	var camp_refusal := game.camp_upgrade_refusal()
+	button(body, "营地升级 %s + %s%s" % [Economy.format(BaseCatalog.CAMP_UPGRADE_PRICE), BaseCatalog.cost_text(BaseCatalog.CAMP_UPGRADE_MATERIALS), "" if camp_refusal.is_empty() else "（%s）" % camp_refusal],
+		func(): game.buy_camp_upgrade(); _refresh(), not camp_refusal.is_empty())
+
+## 干员养成 (精英化与加点策划案 §10): at the base everything; in the field only
+## the points (`in_field`).
+func show_training(in_field: bool = false) -> void:
+	_station = ""
+	_enter("training", null)
+	OperatorScreen.show(self, in_field)
+
+## The card before leaving (§5.3), shown only when there is something to look at.
+func show_departure(region: String) -> void:
+	_station = ""
+	_enter("departure", null)
+	BaseScreens.departure(self, region)
+
+## Orders (§3.8; no plain delivery, 用户 2026-10-25: 只能在可露希尔处卖). Only the warehouse and the pack or safe
+## bag can supply items; equipped gear cannot.
+func _outbound_section() -> void:
+	var orders: OrderBoard = game.base.orders
+	var deliverable := game.deliverable_items()
+	for i in range(orders.slots.size()):
+		var order = orders.slots[i]
+		var box := VBoxContainer.new()
+		body.add_child(box)
+		if order == null:
+			text(box, "订单栏 %d / 空，下次结算后补上" % (i + 1), 16, Color("99aab8"))
+			continue
+		var t: Dictionary = BaseCatalog.ORDERS[order.id]
+		var reward := ("龙门币 %s" % Economy.format(int(t.gold))) if t.has("gold") else ("龙门币为交付价 ×%.1f" % float(t.mult))
+		var count := int(t.count)
+		if order.state == "done":
+			text(box, "订单栏 %d / 已完成  ·  %s" % [i + 1, BaseCatalog.order_text(order.id)], 16, Color("8fd18f"))
+			continue
+		text(box, "订单栏 %d / %s  ·  %d/%d  ·  %s" % [i + 1, BaseCatalog.order_text(order.id), orders.delivered_count(i), count, reward], 18, GOLD)
+		var fits := deliverable.filter(func(x): return orders.matches(i, x))
+		if fits.is_empty(): text(box, "个人仓库和背包里没有符合的物品。", 14, Color("99aab8"))
+		for item: Item in fits:
+			var row := HBoxContainer.new()
+			box.add_child(row)
+			text(row, "%s%s  ·  %s" % [item.display_name(), item.stack_suffix(), "个人仓库" if game.stash.has(item) else "背包"], 15).tooltip_text = item.details()
+			button(row, "交付" if not item.is_stackable() else "交付 ×%d" % orders.takes(i, item), func(): game.deliver_to_order(i, item); _refresh())
+		if game.base.reroll_available: button(box, "免费刷新这张订单", func(): game.reroll_order(i); _refresh())
+		button(box, "放弃这张订单", func(): game.abandon_order(i); _refresh())
+
+## The injury, with its treatment (§4.2, §4.4).
+func _medical_summary() -> void:
+	var base: BaseState = game.base
+	var report: Dictionary = base.medical_report
+	if bool(report.get("injured", false)): text(body, "上一份合同 / 撤退，%s负伤" % Operators.display_name(str(report.get("operator", base.operator))), 16)
+	# Each injured operator keeps hers until treated (博士主角叙事修订案 §5).
+	for id in base.injured_operators():
+		text(body, "%s  ·  重伤  ·  生命上限 −%d%%" % [Operators.display_name(id), roundi(BaseCatalog.INJURY_HP_PENALTY * 100)], 15, AK.RED)
+		button(body, "治疗重伤（%s 龙门币）" % Economy.format(game.injury_price(id)), func(): game.treat_injury(id); _refresh(), game.gold < game.injury_price(id))
+	# 萨米林地部族's 冰原苔 (势力特供策划案 §二): everyone cured, free.
+	if not base.injured_operators().is_empty() and game.material_count(GameManager.SPECIAL_MOSS) > 0:
+		button(body, "萨米冰原苔 ×%d：全部痊愈" % game.material_count(GameManager.SPECIAL_MOSS), func(): game.moss_cure(); _refresh(), not game.moss_refusal().is_empty())
+	body.add_child(HSeparator.new())
+
+## Flasks for the next contract (药剂进背包): each one bought goes straight into
+## the pack, stacking by kind. Three 标准急救剂 are issued free per contract.
+func _pharmacy_section() -> void:
+	var base: BaseState = game.base
+	var carried := game.carried_potions()
+	var counts := {}
+	for item in carried: counts[item.potion_type] = int(counts.get(item.potion_type, 0)) + item.quantity
+	text(body, "背包药剂  " + ("  ".join(BaseCatalog.POTIONS.keys().filter(func(t): return counts.has(t)).map(func(t): return "%s ×%d" % [BaseCatalog.POTIONS[t].name, counts[t]])) if not carried.is_empty() else "无"), 18, GOLD)
+	text(body, "免费急救剂 %d" % base.free_potions, 15)
+	var row := HBoxContainer.new()
+	body.add_child(row)
+	for type in BaseCatalog.POTIONS:
+		var price := game.potion_price(type)
+		var label := "%s %s" % [BaseCatalog.POTIONS[type].name, ("（商店 Lv%d）" % int(BaseCatalog.POTIONS[type].store)) if price < 0 else ("免费" if price == 0 else "%s 龙门币" % Economy.format(price))]
+		button(row, label, func(): game.buy_potion(type); _refresh(), price < 0 or game.gold < price)
+
+func _report_section(always: bool = false) -> void:
+	if game.settlement.is_empty():
+		if always: text(body, "暂无回收记录。", 15)
+		return
+	text(body, "上一份合同 / 回收明细", 18, GOLD)
+	for entry in game.settlement:
+		text(body, "%s  ·  %s" % [entry.name, entry.reason], 14)
+
+const OFFER_TITLES := {"device": "强化装置", "cache": "战斗缴获", "vault": "密室藏品"}
+
+## The relic choice (局内构筑与数值策划案 §8.5): one card per offer with its
+## rarity, its effect here and its 集成战略 original. Owned relics sit underneath.
+func show_builds() -> void:
+	_enter("builds", -1)
+	EventScreens.builds(self)
+
+## The relics owned this contract, one line each.
+func build_summary(parent: Node) -> void:
+	parent.add_child(HSeparator.new())
+	text(parent, "本次藏品 / %d 件" % game.builds.size(), 18, GOLD)
+	if game.builds.is_empty():
+		text(parent, "还没有藏品。强化装置、战斗缴获和密室都会给出藏品选择。", 14, Color("99aab8"))
+		return
+	for id in game.builds:
+		var relic := RelicCatalog.get_relic(id)
+		if relic.is_empty(): continue
+		text(parent, "%s / %s" % [relic.name, relic.effect], 13, RelicCatalog.RARITY_COLORS[relic.rarity])
+
+## Lappland's sheet as it stands, in 明日方舟's terms.
+func stat_lines(parent: Node) -> void:
+	var p := game.player
+	text(parent, "生命 %d / %d%s   攻击力 %d   法术攻击力 %d   防御 %d   法抗 %d" % [roundi(p.hp), roundi(p.max_hp),
+		("  护盾 %d" % roundi(p.shield)) if p.shield > 0 else "", roundi(p.attack_power()), roundi(p.arts_power()), roundi(p.defense_value()), roundi(p.resistance())], 15)
+	text(parent, "攻速 %d（间隔 %.2f 秒）   暴击 %d%% × %d%%   吸血 %d%%   闪避 %d%%   生命回复 %d/秒" % [roundi(p.current_aspd()), p.current_cooldown(),
+		roundi(p.crit_rate() * 100), roundi(p.crit_damage() * 100), roundi(p.lifesteal() * 100), roundi(p.evasion() * 100), roundi(p.regen_rate())], 15)
+
+## The Rhodes squad (保全系统修订案 §2): one service — insure one piece of gear, or
+## send one home to staging — priced in 赤金 by this squad's multiplier.
+var squad_service := "insure"
+
+func show_squad() -> void:
+	_enter("squad", null)
+	EventScreens.squad(self)
+
+## 坎诺特 (坎诺特商店策划案 §2–3): eight slots priced in 赤金, a paid refresh, and
+## what he will buy.
+var trader_tab := "buy"
+
+## A faction's post in the field (势力与交易所策划案 §12).
+func show_post() -> void:
+	_enter("post", null)
+	ExchangeScreen.post(self)
+
+func show_trader() -> void:
+	_enter("trader", null)
+	EventScreens.trader(self)
+
+## A camp (撤离与营地修订案 §3): 可露希尔's flasks, the 寄存 for materials, selling
+## 赤金, and the way out — extraction, or on to the next floor.
+func show_camp() -> void:
+	_station = ""
+	_enter("camp", null)
+	EventScreens.camp(self)
+
+## 企鹅专递 from a camp (势力特供策划案 §二).
+func show_parcel() -> void:
+	_enter("parcel", [])
+	EventScreens.parcel(self)
+
+## 可露希尔 at the base: the same counter as in the camps (用户：不区分).
+func _store_section() -> void:
+	text(body, "赤金 %d" % game.gold_available(), 18, GOLD)
+	_closure_shop()
+
+func _closure_shop() -> void:
+	text(body, "可露希尔的商店", 18, GOLD)
+	var row := HBoxContainer.new()
+	body.add_child(row)
+	for type in BaseCatalog.POTIONS:
+		var price := game.closure_potion_price(type)
+		button(row, "%s %s" % [BaseCatalog.POTIONS[type].name, "（商店 Lv%d）" % int(BaseCatalog.POTIONS[type].store) if price < 0 else "%d 赤金" % price],
+			func(): game.closure_buy_potion(type); _refresh_closure(), price < 0 or game.gold_available() < price)
+	var sell := HBoxContainer.new()
+	body.add_child(sell)
+	var have := game.gold_available()
+	for n in [1, 10, have]:
+		if n <= 0: continue
+		button(sell, "卖出赤金 ×%d → %s 龙门币" % [n, Economy.format(n * Economy.closure_bar_price())], func(): game.sell_gold_bars(n); _refresh_closure(), have < n)
+
+func _refresh_closure() -> void:
+	if game.in_camp: show_camp()
+	elif _station == "store": BaseScreens.store(self)
+	else: _refresh()
+
+## 火堆 (地图特色策划案 §5.3): which of the pack's fuels to burn.
+func show_fuel() -> void:
+	_enter("fuel", null)
+	EventScreens.fuel(self)
+
+func show_routes(index: int) -> void:
+	var first := _screen != "routes"
+	_enter("routes", index)
+	EventScreens.routes(self, index)
+	if first and is_instance_valid(game.tutorial_spotlight): game.tutorial_spotlight.screen_opened("route_map")
+
+## 不期而遇's card (肉鸽路线图策划案 v0.2 §5).
+func show_event() -> void:
+	_enter("event", null)
+	EventScreens.event_card(self)
+
+## Esc / the II button (界面策划案 #12).
+func show_pause() -> void:
+	_station = ""
+	pause_page = 1
+	pause_confirm = false
+	_enter("pause", null)
+	BaseScreens.pause(self)
+
+
+func show_settlement() -> void:
+	_station = ""
+	EventScreens.settlement(self)
+
+## The current tab: paper, as AK marks the selected page (still not clickable).
+func _tab(control: Button, current: bool) -> void:
+	if not current: return
+	AK.style_button(control, "paper")
+	control.add_theme_stylebox_override("disabled", control.get_theme_stylebox("normal"))
+	control.add_theme_color_override("font_disabled_color", AK.INK)
