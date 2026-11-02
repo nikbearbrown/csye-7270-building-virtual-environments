@@ -260,3 +260,12 @@ Which quad shows the file's values unchanged, and why: **the quad with `source_c
 10. **Import settings left on Detect, rewritten by the editor the first time it draws the texture.** For example Displacement changed to another compression, which changes the mask values. Check: the test reads the three keys in the `.import` with `ConfigFile`; run `git status` after first opening the editor to see whether any `.import` was rewritten.
 11. **Texture coordinates outside 0–1 without repeat on the sampler.** Most crate faces would show the texture stretched into stripes. Check: the test reads the shader source; both crate samplers must have `repeat_enable`.
 12. **A normal map in the wrong convention (DX used as GL).** Check: `curl_ratio` near 2 under the wrong convention.
+
+### 2026-11-01 revision — the rust roughness and the minimum transition width (before writing `fragment()`)
+
+The material plan above says "`ROUGHNESS` likewise", but the parameter table only has the paint's roughness and does not say where the rust's roughness comes from. Two **named constants** are added (`const`, written in `crate_wear.gdshader`; not uniforms, so the parameter table is unchanged and still has 5 entries):
+
+| Constant | Value | What it does | Why it is a constant |
+|---|---|---|---|
+| `RUST_ROUGHNESS` | 0.79 | The rust's roughness: `ROUGHNESS` takes a value between `paint_roughness` and this by the wear w | My option A: fastest, no extra parameter. 0.79 is the mean of Metal041C's own Roughness map (200.9 / 255, measured with a script on 2026-11-01) |
+| Minimum transition width (name chosen by me when writing the shader) | 0.001 | `wear_softness` and this, whichever is larger, is used in `smoothstep` | `wear_softness` defaults to 0, and then the lower and upper edges of `smoothstep` are equal, which GLSL leaves undefined; 0.001 is too small to see, so the effect is still a hard edge. It is a structural constant and is never tuned |
