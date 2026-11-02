@@ -148,3 +148,115 @@ The rest of the material plan (what the wear looks like, the lighting it is judg
 
 <!-- Append here; do not change version 1 above -->
 - **2026-11-01 — Where "0.35 s" starts counting (found while writing the test; version 1 did not say):** Version 1 only says "from the state becoming `ONE_HAND` / `TWO_HAND` to the screen lighting, 0.35 s of game time", without saying which moment the timer starts at. Actual behaviour: the state changes in some physics frame, and the tablet **starts moving in that same physics frame** (`_update_tablet_visual()` in `humanoid.gd` runs after the state change, in the same frame); it takes 21 physics frames (60 per second, 21 × 1/60 = 0.35 s) to reach the hand, and the screen lights on the physics frame it arrives. So the timing rule is made explicit: **count from the physics frame in which the state changes, including that frame, up to the physics frame in which the screen lights**, i.e. (lit physics frame number − change physics frame number + 1) × game time per physics frame (1/60 s × `Engine.time_scale`), which equals 0.35 s ± one frame period. Counting instead "from the frame after the state change is seen" drops one frame and gives 0.333 s, which is outside the tolerance at 144 fps; that is only a different way of measuring, the game behaviour is unchanged. The test `tests/screen_glow_check.gd` times this way in `_lit_delay()`; measured at 30 / 60 / 144 fps: 0.3667 / 0.3500 / 0.3500 s (at 30 fps each rendered frame runs two physics frames, so the sample can read the change one physics frame late). The rule itself (0.35 s, a tolerance of one frame period, lit only on arrival) is unchanged.
+
+### 2026-11-01 revision — Part 3: the material plan for the crate wear shader
+
+> Completes "the rest of the material plan" that Part 3 of version 1 left for later. Written before the crate shader. All values decided by me on 2026-11-01.
+
+**The objects and the surface to replace:** `crate_long` and `crate_cube` in `godot/base.tscn` (already chosen in version 1). Each `.glb` has two materials: the shell `Crate_OliveDrab` (olive drab; the lid uses it too) and the hardware `Crate_Hardware` (handles, latches). **Only the shell is replaced**; the hardware keeps the material it has in the `.glb`.
+
+**What the wear looks like:** the outside of the crate is olive-drab paint; where it is worn, the paint has come off and shows **dark red rust** underneath, with silver metal scratches in the rust (what the Metal041C texture itself looks like).
+
+**Texturing without UVs (found while checking the models on 2026-11-01):** `crate_long.glb` has no UVs at all; in `crate_cube.glb` the body has UVs but the lid does not. The source models are not changed (version 1), so the shader computes its own texture coordinates: in `vertex()`, depending on which axis the normal points along, it takes the other two components of the object-space position `VERTEX` as the UV (normal along X uses `zy`, along Y uses `xz`, along Z uses `xy`), then multiplies by `texture_scale`. All 336 normals of the two models point exactly along X / Y / Z (confirmed on 2026-11-01 by reading the `.glb` files with a script), so each face is projected from one direction only and no three-way blending is needed. Object space rather than world space, so the texture moves with the crate. Because UVs computed this way have no matching tangents, **the crate materials do not use a normal map**.
+
+**The lighting I judge under:** the existing lighting in `godot/base.tscn`: 3 ceiling `OmniLight3D`s (`ceiling_light_1/2/3`), the `WorldEnvironment` ambient light colour (0.45, 0.5, 0.6) at energy 0.35, the default Linear tonemap, exposure 1.0 (version 1, line 85).
+
+**The shader:** `godot/shaders/crate_wear.gdshader`, `shader_type spatial;`, no `render_mode unshaded` (it is lit by the scene). Hand-written by me.
+
+#### Textures
+
+All from one set: **Metal041C from ambientCG** (1K-PNG).
+
+| Item | Content |
+|---|---|
+| Source URL | https://ambientcg.com/view?id=Metal041C (download: `https://ambientcg.com/get?file=Metal041C_1K-PNG.zip`) |
+| Author / role | ambientCG is created and run by Lennart Demes (Münster, Germany; the site's imprint page https://docs.ambientcg.com/legal/); the asset page gives the technique as Procedural (generated procedurally, not a photo scan) |
+| Licence | Creative Commons CC0 1.0 Universal (https://docs.ambientcg.com/license/); no credit required. The course requires provenance, so it is recorded in `ATTRIBUTION.md` next to the textures |
+| Date checked | 2026-11-01 |
+| Normal-map convention | The game uses only `NormalGL` (Godot uses the OpenGL convention); `NormalDX` is used only to calibrate the normal-map check |
+| Not AI-generated | No model or prompt involved |
+
+The files go in `godot/assets/shader/metal041c/`, keeping ambientCG's original file names.
+
+| Texture | Used for | What its numbers mean | Sampled as | `compress/mode` | `compress/normal_map` | `mipmaps/generate` |
+|---|---|---|---|---|---|---|
+| `Metal041C_1K-PNG_Color.png` (RGB 8-bit) | Crate shader: the colour of the rust that shows where the paint has come off; Step 4 albedo | Colour, stored as sRGB | **Colour**, with `source_color` | 2 (VRAM Compressed) | 2 (Disabled) | true |
+| `Metal041C_1K-PNG_Displacement.png` (greyscale 16-bit) | Crate shader: the wear mask | Surface height, 0 = lowest, 1 = highest; 8-bit after import | **Data**, without `source_color` | 0 (Lossless) | 2 (Disabled) | true |
+| `Metal041C_1K-PNG_Roughness.png` (greyscale 8-bit) | Only in the Step 4 StandardMaterial3D | Roughness, 0 = smooth, 1 = rough | Data | 2 (VRAM Compressed) | 2 (Disabled) | true |
+| `Metal041C_1K-PNG_NormalGL.png` (RGB 16-bit) | Step 4 normal map; the normal-map check | Tangent-space normals, OpenGL convention (green = up) | Data (`hint_normal`) | 2 (VRAM Compressed) | 1 (Enable) | true |
+| `Metal041C_1K-PNG_NormalDX.png` (RGB 16-bit) | Only to calibrate the normal-map check; not used in the game | Tangent-space normals, DirectX convention (green flipped) | Not sampled by any material | 2 (VRAM Compressed) | 1 (Enable) | true |
+
+Why Displacement is the mask rather than Roughness or Metalness (four maps compared on 2026-11-01): Roughness is almost all bright (107–227, standard deviation 19); Metalness is almost only pure black and pure white (87% of the pixels are 0); Displacement rolls continuously like clouds (0–252, standard deviation 53), so dragging the wear amount grows the worn area smoothly.
+
+#### Parameters (uniforms)
+
+The names are final when I write the shader; the table below is the plan.
+
+| Group (`group_uniforms`) | Name | Type | Hint | Range | Default | What changes on screen across the range |
+|---|---|---|---|---|---|---|
+| — | `rust_albedo` | `sampler2D` | `source_color, filter_linear_mipmap, repeat_enable` | — | Both materials bind `Metal041C_1K-PNG_Color.png` | — |
+| — | `wear_mask` | `sampler2D` | `filter_linear_mipmap, repeat_enable` (no `source_color`) | — | Both materials bind `Metal041C_1K-PNG_Displacement.png` | — |
+| `paint` | `paint_color` | `vec4` | `source_color` | Colour | `vec4(0.260, 0.283, 0.190, 1.0)`: the model's current olive drab. The `.glb` stores the linear value (0.055, 0.065, 0.030); with `source_color` the default must be written as sRGB, which converts to RGB (66, 72, 48) | The paint colour where there is no wear |
+| `paint` | `paint_roughness` | `float` | `hint_range(0.0, 1.0)` | 0–1 | 0.85 (the same as the model now) | Paint from glossy (0) to matte (1) |
+| `wear` | `wear_amount` | `float` | `hint_range(0.0, 1.0)` | 0–1 | 0.1 (neither much nor little, about 10% rust) | 0 = all paint, 1 = all rust; in between the mask decides where rust shows first. Mask statistics: 0.1 → about 10%, 0.2 → about 23%, 0.3 → about 42%, 0.5 → about 75% |
+| `wear` | `wear_softness` | `float` | `hint_range(0.0, 0.2)` | 0–0.2 (the mask values are mostly 0–0.6; a wider transition looks like dirt, not chipped paint) | 0.0 (a hard edge: it should feel like paint flaking off) | The boundary between paint and rust goes from a hard edge (0) to a gradual transition |
+| `mapping` | `texture_scale` | `float` | `hint_range(0.1, 10.0)` | 0.1–10 (repeats per metre) | 2.0 (medium rust patches: about 12–16 cm, 2 texture repeats across the long crate's front) | How many times the texture repeats per metre: larger means smaller, denser rust patches |
+
+5 non-texture parameters in 3 groups (the assignment requires at least 4 and at least 2 groups).
+
+**The wear calculation (in words; the code is decided by me when I write the shader):** read the mask value, compare it with `wear_amount`, use `wear_softness` for the width of the transition, and get this pixel's wear w (0 = paint, 1 = rust); `ALBEDO` takes a value between `paint_color` and the rust colour by w, and `ROUGHNESS` likewise. **Rust shows in the low places first**: where the mask (height) is below the threshold becomes rust; the larger `wear_amount`, the higher the threshold, and the rust spreads from low to high. Reason: low places move less and rust more easily.
+
+#### The two materials
+
+Both `ShaderMaterial`s use `crate_wear.gdshader`, saved as `.tres` in `godot/assets/furniture/materials/`, and are pointed to from **Use External** on `Crate_OliveDrab` in each `.glb`'s advanced import settings, so a reimport keeps them.
+
+| Material | Used on | `wear_amount` | `paint_roughness` | Other parameters |
+|---|---|---|---|---|
+| `crate_long_wear.tres` | `crate_long` | 0.2 (heavy, about 23% rust) | 0.95 (more matte) | Defaults (`texture_scale` the same on both crates) |
+| `crate_cube_wear.tres` | `crate_cube` | 0.1 (light, about 10% rust) | 0.85 (the default) | Defaults |
+
+Two values differ: `wear_amount` and `paint_roughness`; the textures are the same, and so is `texture_scale` (both crates are the same sheet metal). Why the long crate is more worn: it is bigger, so dragging it chips the paint more and it rusts more. Why its paint is rougher: it is dragged more, so the paint is worn more matte.
+
+#### Evidence split
+
+| Rule | Proved by | How |
+|---|---|---|
+| The shader parses; parameter names and types are right | Headless test | `get_shader_uniform_list()`; no `SHADER ERROR` in the log |
+| The colour texture has `source_color` and the mask does not | Headless test | Read each sampler's hints from the shader source; the mutation that deletes `source_color` must fail (exit 1) |
+| Both materials use the same shader, with different values and the right textures | Headless test | Load both `.tres` and compare shader path, parameter values and texture paths |
+| The materials sit behind Use External | Headless test | Read `_subresources` in both `.glb.import` files with `ConfigFile` |
+| The import settings are the planned values | Headless test | Read each texture's `.import` with `ConfigFile`; run again after deleting `.godot/` and reimporting |
+| The normal map has a real surface behind it and the right convention | Headless test | `curl_ratio` in `tests/normal_map_check.gd`, for GL and DX, each under both conventions |
+
+---
+
+### 2026-11-01 revision — Part 2: the hint experiment's plan and predictions
+
+**Files:**
+- The script that writes the texture: `godot/tools/make_hint_greys.gd` (written by Claude, committed by me). It writes a 3×1 PNG, `godot/experiments/hint/hint_greys_3x1.png`, whose three pixels are the greys 64, 128 and 192 in that order (R = G = B).
+- Import settings: `compress/mode` = 0 (Lossless), `mipmaps/generate` = false, `compress/normal_map` = 2 (Disabled).
+- The shader: `godot/shaders/hint_experiment.gdshader`, `shader_type spatial;`, `render_mode unshaded;`, with two samplers both bound to this PNG: one `source_color, filter_nearest`, the other only `filter_nearest`; a `bool` parameter decides which sampler `ALBEDO` uses. Hand-written by me.
+- Two materials (the `bool` true and false) on two `QuadMesh`es facing the camera. Scene: `godot/experiments/hint/hint_experiment.tscn`; its `WorldEnvironment` sets the Linear tonemap and exposure 1.0, with glow, fog and adjustments off.
+- Renderer: Forward+ (version 1).
+
+**Predictions (computed by me by hand):** displayed value = `encode(sampled value)` × 255, rounded; `encode(x) = 12.92x` (x ≤ 0.0031308), otherwise `1.055·x^(1/2.4) − 0.055`.
+
+| Band (value in the file) | Quad with `source_color` | Quad without `source_color` |
+|---|---|---|
+| 64 | 64 | 137 |
+| 128 | 128 | 188 |
+| 192 | 192 | 225 |
+
+Which quad shows the file's values unchanged, and why: **the quad with `source_color`** shows 64, 128, 192 unchanged. `source_color` makes the GPU decode sRGB → linear first, and the engine encodes linear → sRGB again before display; the two conversions are inverses of each other and cancel out. The quad without `source_color` is clearly brighter: the sRGB numbers in the file are wrongly taken as linear brightness and get one more sRGB encode, giving 137, 188, 225 (for example 64/255 = 0.251, `encode(0.251)` = 0.538, × 255 ≈ 137).
+
+---
+
+### 2026-11-01 revision — new failure cases for Part 3
+
+(Version 1's case 4, "a data texture sampled as colour", still applies.)
+
+8. **The colour texture without `source_color`.** The rust colour would be taken as linear values and show too bright and washed out. Check: the material test reads the hint from the shader source; the mutation that deletes `source_color` must exit 1.
+9. **The material not behind Use External, or a wrong Use External path.** After a reimport (for example after deleting `.godot/`) the crates fall back to the `.glb`'s original plain material. Check: the test reads `_subresources` in the `.glb.import`; run the test again after clearing the cache and reimporting.
+10. **Import settings left on Detect, rewritten by the editor the first time it draws the texture.** For example Displacement changed to another compression, which changes the mask values. Check: the test reads the three keys in the `.import` with `ConfigFile`; run `git status` after first opening the editor to see whether any `.import` was rewritten.
+11. **Texture coordinates outside 0–1 without repeat on the sampler.** Most crate faces would show the texture stretched into stripes. Check: the test reads the shader source; both crate samplers must have `repeat_enable`.
+12. **A normal map in the wrong convention (DX used as GL).** Check: `curl_ratio` near 2 under the wrong convention.
