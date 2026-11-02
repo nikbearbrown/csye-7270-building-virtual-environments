@@ -1,0 +1,65 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+--Main Shader--
+    4 | uniform float pad_light_level:hint_range(0.0, 1.0) = 0.0;
+    5 | void fragment(){
+E   6->  ALBEDO = mix(vec3(0.0), cold_white.rgb, pad_light_data);
+    7 | }
+SHADER ERROR: Unknown identifier in expression: 'pad_light_data'.
+   at: (null) (:6)
+   GDScript backtrace (most recent call first):
+       [0] _check_shader (res://tests/screen_glow_check.gd:111)
+       [1] _run (res://tests/screen_glow_check.gd:91)
+       [2] _initialize (res://tests/screen_glow_check.gd:83)
+ERROR: Shader compilation failed.
+   at: shader_set_code (servers/rendering/dummy/storage/material_storage.cpp:192)
+   GDScript backtrace (most recent call first):
+       [0] _check_shader (res://tests/screen_glow_check.gd:111)
+       [1] _run (res://tests/screen_glow_check.gd:91)
+       [2] _initialize (res://tests/screen_glow_check.gd:83)
+  FAIL  uniform cold_white exists and is a colour (source_color)
+  FAIL  uniform pad_light_data exists and is a float
+  FAIL  pad_light_data has hint_range(0.0, 1.0)
+  PASS  source: cold_white has source_color and default vec4(0.902, 0.969, 0.969, 1.0)
+  FAIL  source: pad_light_data default is 0.0
+--Main Shader--
+    4 | uniform float pad_light_level:hint_range(0.0, 1.0) = 0.0;
+    5 | void fragment(){
+E   6->  ALBEDO = mix(vec3(0.0), cold_white.rgb, pad_light_data);
+    7 | }
+SHADER ERROR: Unknown identifier in expression: 'pad_light_data'.
+   at: (null) (:6)
+   GDScript backtrace (most recent call first):
+       [0] _build_scene (res://tests/screen_glow_check.gd:132)
+       [1] _run (res://tests/screen_glow_check.gd:92)
+       [2] _initialize (res://tests/screen_glow_check.gd:83)
+ERROR: Shader compilation failed.
+   at: shader_set_code (servers/rendering/dummy/storage/material_storage.cpp:192)
+   GDScript backtrace (most recent call first):
+       [0] _build_scene (res://tests/screen_glow_check.gd:132)
+       [1] _run (res://tests/screen_glow_check.gd:92)
+       [2] _initialize (res://tests/screen_glow_check.gd:83)
+  PASS  player Screen uses a ShaderMaterial with pad_base_light.gdshader
+  PASS  Screen material has Local To Scene
+  PASS  the two bodies' screen materials are different objects
+  (fps 60, frame period 0.0167 s, physics 60 ticks/s)
+  PASS  4  NONE at start: screen 0.0
+  PASS  5  short press: NONE -> ONE_HAND
+  PASS  5  screen still 0.0 on the frame the state changed
+     lit 0.3500 s after the state change (frame-based: 0.3333 s)
+  PASS  5  lit 0.35 s +- one frame after the state change
+  PASS  12 lit value equals light_strength_percentage (0.39)
+  PASS  6  long press: ONE_HAND -> TWO_HAND
+  PASS  6  short press: TWO_HAND -> ONE_HAND
+  PASS  6  never 0.0 on any frame across ONE_HAND <-> TWO_HAND
+  PASS  7  short press: ONE_HAND -> NONE
+  PASS  7  0.0 on the same frame the state becomes NONE
+  PASS  8  out and back: ends in NONE
+  PASS  8  put away before reaching the hand: never lit
+  PASS  9  taken out again mid-way
+     lit 0.3500 s after the second take-out
+  PASS  9  restart: lit 0.35 s +- one frame after the last take-out
+     time_scale 0.5: lit 0.3500 s scaled game time = 0.7000 s real time
+  PASS  11 time_scale 0.5: 0.35 s of scaled game time
+  PASS  10 the second body's screen stayed 0.0 on every frame (546 frames)
+== FAILED: 4 failure(s) ==
