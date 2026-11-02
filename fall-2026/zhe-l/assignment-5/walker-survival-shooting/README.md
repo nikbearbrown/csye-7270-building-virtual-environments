@@ -52,8 +52,8 @@ Expected results (2026-11-01): 55 / 24 / 24 / 24 / 2 / 169 PASS, exit code 0 for
 - The game has no pause yet, and no playable combat or extraction yet.
 
 ## Explainer film
-- **Title:** to be added
-- **File / SHA-256:** to be added
-- **Media link:** to be added (the MP4 is not in GitHub)
-- **Game-source revision shown in the film:** to be added
-- **Film sources and evidence:** to be added
+- **Title:** claude-liam-walker-survival-shooting-a5-gamedev (narrated by Liam, local Kokoro `am_onyx`; 7 min 14 s, 1920x1080, 30 fps)
+- **Media link:** https://youtu.be/3qE4PxIRn4c (the MP4 is not in GitHub)
+- **File / SHA-256:** `claude-liam-walker-survival-shooting-a5-gamedev-1080p.mp4`, `5327a5fc86c596e10cbcb97e4e6224c633b869a12ccc9d028fea9c62301c8209`
+- **Game-source revision shown in the film:** `2d558bba` (the later commits change no game file the film shows: they add tests, logs, documents, the annotated `standard_generated.gdshader` that the game does not use, and the film's records)
+- **Film sources and evidence:** `youtube/claude-liam-walker-survival-shooting-a5-gamedev/`: beat sheet, narration script and prompts (`PROMPTS.md`), shot list, fact check (every claim with its source), capture record and capture scripts with their logs (`capture/`), evidence ledger (`gamedev-evidence.json`), type and visual QC reports, build steps and the film's own scripts. Media (clips, narration audio, figures) are not uploaded. Local paths in these records are replaced by placeholders such as `<film-work>` and `<working-folder>`.
