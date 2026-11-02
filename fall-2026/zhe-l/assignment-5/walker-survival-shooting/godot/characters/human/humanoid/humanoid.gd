@@ -41,10 +41,11 @@ signal tablet_hold_changed(old_hold: TabletHold, new_hold: TabletHold)
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")  # Gravity from the project settings (default 9.8)
 var _facing_yaw := 0.0  # Character facing (radians, around Y). This is "state"; Visual only displays it (rule 5)
 var _tablet_hold := TabletHold.NONE  # The current tablet state. Changed only through _apply_tablet_press() (rule 4)
-# The next three only describe "where the tablet visual has moved to": presentation, not game state (rule 5)
+# The next few only describe "where the tablet visual has moved to": presentation, not game state (rule 5)
 var _tablet_shown_hold := TabletHold.NONE  # Which state's slot the tablet is moving to (or has reached)
 var _tablet_move_from := Transform3D.IDENTITY  # The start of this move: the tablet's position and rotation when the move began
 var _tablet_move_progress := TABLET_MOVE_DONE  # How far this move has gone: TABLET_MOVE_START = just started, TABLET_MOVE_DONE = arrived
+var _tablet_screen_lit := false #Tracks whether the screen is in the lit state
 
 # ============================================================
 # Node references (@onready): child nodes used in the scene
@@ -128,6 +129,18 @@ func _update_tablet_visual(delta: float) -> void:
 	var target := _get_tablet_slot(_tablet_shown_hold).transform
 	# The tablet and the slots are all children of Visual, the same frame of reference, so interpolate directly between the two transforms (position and rotation together)
 	_tablet.transform = _tablet_move_from.interpolate_with(target, eased)
+	_update_tablet_screen()
+
+##Checks the current state (not held, one hand, two hands) and sends it to the tablet, so the tablet lights up or not
+##Called once every physics frame by _update_tablet_visual().
+##Reads _tablet_hold only, never changes it (rule 5)
+func _update_tablet_screen() -> void:
+	if _tablet_hold == TabletHold.NONE:
+		_tablet_screen_lit = false
+	elif _tablet_move_progress == TABLET_MOVE_DONE:
+		_tablet_screen_lit = true
+	_tablet.set_screen_lit(_tablet_screen_lit)
+
 
 
 ## Lookup: tablet state → which slot the tablet belongs in. Calculation only, changes nothing. Called by _update_tablet_visual().
