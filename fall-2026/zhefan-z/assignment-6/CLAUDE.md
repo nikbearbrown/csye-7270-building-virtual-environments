@@ -1,46 +1,43 @@
-# CLAUDE.md — walker-magic-zhefan, Assignment 5
+# CLAUDE.md — walker-magic-zhefan, Assignment 6
 
-Treat `fall-2026/zhefan-z/assignment-5/` as the repository root; do not read or change anything outside it.
-Paths below are relative to that folder. `res://` = `walker-magic-zhefan/`.
+Treat `fall-2026/zhefan-z/assignment-6/` as the repository root; do not read or change anything outside it.
+Paths below are relative to that folder. `res://` = `walker-magic-zhefan/`. No `AGENTS.md` or `README.md` exists here.
 
 ## Project context
 
 **Engine.** Godot 4.7.2-stable (official build `ed1daf0bf`): `logs/baseline-before/test_wolf_60fps.log:1`, binary path in
 `scripts/run-test.sh:5`. The project declares feature `"4.7"` (`walker-magic-zhefan/project.godot:15`).
 
-**Renderer.** Not set: the `[rendering]` section (`project.godot:39–43`) has only the 2D texture filter
-and pixel snapping, no `rendering_method`, so the engine default applies; `CHANGE-BRIEF.md:195` records
-that as Forward+. 2D: 640×360 viewport, `stretch/mode="viewport"`, integer scaling (`project.godot:23–29`);
-no `hdr_2d` key. Physics tick rate is not set, so the default 60 per second applies (`CHANGE-BRIEF.md:26`).
+**Renderer.** Not set: `[rendering]` (`project.godot:39–43`) has no `rendering_method`; `CHANGE-BRIEF.md:7` records
+Forward+. 2D, 640×360 viewport, window 1280×720, stretch `viewport`, integer scale (`project.godot:23–29`).
 
-**Main scene.** `res://game/main.tscn` (`project.godot:14`). The player is instanced there as `Player`
-(`game/main.tscn:90–91`); `UI` and `SessionInput` run while paused (`process_mode = 3`,
-`game/main.tscn:97,117`); pause is toggled by `toggle_pause()` (`game/main.gd:53–61`).
+**Node types** (`CHANGE-BRIEF.md`). Effect A: `effects/fireball_impact.tscn`, root `Node2D` `FireballImpact` that frees
+itself after 0.9 s (`:38`), children `Flash` (the existing `burst.tscn`, a `Sprite2D`), `Sparks` and `Smoke`, both
+`GPUParticles2D` (`:34, :42`). Effect B: `effects/fireball_trail.tscn`, one `GPUParticles2D`, a child of the fireball
+(`:95`). `walker-magic-zhefan/effects/` and `assets/textures/fx/` (`spark.png`, `smoke.png`, `:52, :58`) do not exist yet.
 
-**How the shaded object is drawn.** The player's `Sprite2D` child (`features/player/player.tscn:15–18`):
-`centered = false`, `offset = (-31, -67)`, no material today. Its texture is swapped per state by
-`_set_state()` (`features/player/player.gd:130–133`) from the `TEXTURES` table (`player.gd:17–26`);
-`fail()` sets the texture directly (`player.gd:178`). The existing blink sets `sprite.visible` every
-physics tick while invulnerable, toggling it every `BLINK_PERIOD` = 0.1 s (`player.gd:81`, `BLINK_PERIOD` at `features/player/tuning.gd:19`).
+**Who owns each event or condition.**
+- `Fireball` (`features/fireball/fireball.gd:1–2`, an `Area2D`) declares no signals. `_ready()` connects the built-in
+  `body_entered` (`:20`) to `_on_body_entered()`, which calls `take_damage` on a body that has it, then `explode()` (`:30–33`).
+- Effect A event: `explode()` (`fireball.gd:37–45`): `_spent` guard (`:38–40`), instances `BURST` (`:9`) at
+  `global_position` into `get_parent()` (`:41–43`), then `queue_free()` (`:45`). `burst.tscn` is a `Sprite2D` with
+  `fx_burst.png` (`burst.tscn:6–8`); `burst.gd` frees it after `DURATION` = 0.15 s on a pausable timer (`burst.gd:4, 8`).
+- Effect B condition: from `_ready()` (`fireball.gd:16`) until `explode()` or the timeout, where `_physics_process`
+  frees it after `LIFETIME` = 2.0 s with no burst (`fireball.gd:7, 23–27`). `SPEED` = 260 (`:6`).
+- `Player.cast()` adds each fireball to the player's parent, `Main`, and emits `cast_fired(origin, direction)`
+  (`features/player/player.gd:9, 101–112`); casts are `Tuning.CAST_COOLDOWN` = 0.35 s apart (`features/player/tuning.gd:13`).
+- Pause: `Main.toggle_pause()` sets `tree.paused` (`game/main.gd:53–61`). `fireball.tscn` and `Main` set no
+  `process_mode`, so fireballs pause; only `UI` and `SessionInput` run while paused (`game/main.tscn:97, 117`).
 
-**Game state that drives the effect.** Owned by `features/player/player.gd` (class `Player`):
-- `invulnerable`, seconds left (`player.gd:37`); set to `Tuning.INVULNERABLE_TIME` = 1.0 when a hit
-  lands (`player.gd:155`, `tuning.gd:16`); counted down with physics `delta` (`player.gd:80`).
-- Hits are ignored while `invulnerable > 0.0`, failing or cleared (`player.gd:152`).
-- `win()` clears it to 0.0 and sets `is_cleared` (`player.gd:137–146`).
-- `fail()` sets `is_failing` and stops `_physics_process` without clearing `invulnerable`
-  (`player.gd:170–180`); the final hit sets it to 1.0 first (`player.gd:155`, `player.gd:162–163`).
+**Scenes.** `res://game/main.tscn` is the main scene (`project.godot:14`); fireballs and impacts are children of `Main`
+(`main.tscn:27`). Camera fixed at (320, 180) (`main.tscn:93–94`); background `CanvasLayer` at layer −10 (`:30–35`);
+pit `Level/PitDark` (`:51–57`); walls at x −8 and 1288 (`:78–88`). `res://features/fireball/fireball.tscn`: `Area2D`
+root, `Sprite2D` (offset (−6, 0)), `CollisionShape2D` with a `CircleShape2D` of radius 4 (`fireball.tscn:6–17`).
 
-**3D object for the textured shader.** `res://assets/models/rock.glb` (two surfaces: 0 `Rock_Main`, 1
-`Rock_Top`). The shader material is only in `showcase3d/material_compare.tscn`, as
-`surface_material_override/0` on both rocks (dry and frosted); `rock.glb`, `rock.glb.import` and
-`prop_room.tscn` stay as in Assignment 3 (CHANGE-BRIEF revision 2026-10-27). Lighting copied from
-`prop_room.tscn:16–18, 28–30`. Materials and import settings: `walker-magic-zhefan/MATERIALS.md`.
-
-**Tests.** Every test runs through `scripts/run-test.sh <test-file.gd> <fps>`, from this folder in Git Bash
-(`scripts/run-test.sh:2–3`). It runs Godot headless with `--fixed-fps <fps>` under a 120 s timeout, writes
-(and overwrites) `logs/<test>_<fps>fps.log`, and fails on a non-zero exit or any `SHADER ERROR` /
-`SCRIPT ERROR` line (`scripts/run-test.sh:7–11`).
+**Tests.** Every test runs through `scripts/run-test.sh <test-file.gd> <fps|realtime> [timeout-seconds]`, from this
+folder in Git Bash (`scripts/run-test.sh:2–3`). A number runs Godot headless with `--fixed-fps <fps>`; `realtime`
+passes no `--fixed-fps` (`:7–11`); timeout defaults to 120 s (`:13`). It overwrites `logs/<test>_<fps>fps.log` or
+`logs/<test>_realtime.log` (`:12`) and fails on a non-zero exit or any `SHADER ERROR` / `SCRIPT ERROR` line (`:14–16`).
 
 ```bash
 bash scripts/run-test.sh test_player.gd 60
@@ -50,14 +47,14 @@ bash scripts/run-test.sh test_flow.gd 60
 bash scripts/run-test.sh test_audio.gd 60
 bash scripts/run-test.sh test_sound_triggers.gd 60
 bash scripts/run-test.sh test_a3_assets.gd 60
-# new tests for this change run at 30, 60 and 144:
-# bash scripts/run-test.sh <new_test>.gd 30   (then 60, 144)
+bash scripts/run-test.sh test_materials.gd 60
+bash scripts/run-test.sh test_hurt_tint.gd 30   # also 60 and 144
+bash scripts/run-test.sh <test>.gd realtime 180  # realtime mode; third argument = timeout in seconds
 ```
 
-Baseline before this change, at 60 fps, all passing (`logs/baseline-before/*.log`): a3_assets 22,
-audio 13, cast 11, flow 14, player 11, sound_triggers 11, wolf 13 checks, 0 failures.
-`tests/capture_scene.gd` is not a run-test.sh test: it needs a real window and an output folder
-argument (`walker-magic-zhefan/tests/capture_scene.gd:2–4`).
+Baseline before this change (`logs/baseline-before/*.log`, commit `1cebbd8`), all 0 failures: a3_assets 22, audio 13,
+cast 11, flow 14, player 11, sound_triggers 11, wolf 13, materials 32 at 60 fps; hurt_tint 17 at 30, 60 and 144.
+Not tests: `tests/capture_scene.gd` needs a real window (`:2–4`); `calibrate_normal_check.gd:3`, `inspect_rock_surfaces.gd:4` only print.
 
 ## Headless facts
 
@@ -75,33 +72,48 @@ Confirmed on this machine (Godot 4.7.2, 2026-10-23) unless marked.
   `SHADER ERROR` / `SCRIPT ERROR` because exit 0 does not mean no errors.
 
 ## Current change
-
 @CHANGE-BRIEF.md
 
 ## Ownership
 
-Files in `walker-magic-zhefan/shaders/` are hand-written by the human and are never edited by an agent.
-This includes `shaders/hurt_tint.gdshader`, `shaders/rock_frost.gdshader` (`CHANGE-BRIEF.md:30,125`), the
-hint-experiment shader, and `shaders/standard_generated.gdshader` (written by the editor's convert action):
-an agent may read them, report problems and suggest changes, but never creates, edits, moves or deletes them.
+- Files in `walker-magic-zhefan/shaders/` are hand-written by the human and are never edited by an agent (`CHANGE-BRIEF.md:125`):
+  an agent may read them, report problems and suggest changes, but never creates, edits, moves, deletes or commits them.
+- Effect settings (every value in the brief's Settings tables) live in scene files in `walker-magic-zhefan/effects/`,
+  not in code. Scripts may instance, move, stop and free an effect; they never set its particle or material values.
+
+## Godot 4 names
+
+Use Godot 4 class and property names for 4.7.2, never Godot 3 names. From the Godot 4 API, not checked on this binary:
+- `GPUParticles2D` (not `Particles2D`); `ParticleProcessMaterial` (not `ParticlesMaterial`) in `process_material`;
+  `CanvasItemMaterial`, `blend_mode = BLEND_MODE_ADD`; `GradientTexture1D` (not `GradientTexture`) for `color_ramp`;
+  `CurveTexture` for `scale_curve`. Emission shapes: `EMISSION_SHAPE_POINT`, `EMISSION_SHAPE_SPHERE` + `emission_sphere_radius`.
+- Ranges are `_min` / `_max` pairs: `initial_velocity_*`, `damping_*`, `scale_*`, `hue_variation_*`, `turbulence_influence_*`
+  (Godot 3 had single `initial_velocity`, `scale`, ...). `direction` and `gravity` are `Vector3`: (1, 0) is `Vector3(1, 0, 0)`.
+- Unsure, confirm first: `use_fixed_seed` / `seed` (`CHANGE-BRIEF.md:143` says 4.7 has them); whether 2D needs
+  `particle_flag_disable_z`; how a `Curve` goes above 1 for the smoke's 1 → 2 scale (`:56`). When unsure, say so.
+
+## Commits
+
+Commit only a commit the human asks for; its message says who wrote the content, e.g. "(agent draft, unedited)" or
+"(mine, committed by Claude Code at my request)". No `Co-Authored-By` trailer, no push, nothing under `shaders/`.
 
 ## Out of scope
 
-- Game logic stays as it is: player movement, collision, input, the state machine, `take_damage`,
-  `fail`, `win`, every value in `tuning.gd`, and the existing blink. The tint driver only reads `Player`
-  state and never writes it; a retrigger is not added, because it would need a game-logic change.
-- Everything else in the 2D game: the wolf (including its own `features/wolf/flash.gdshader`), the level,
-  audio, the HUD and the camera. Only the player's sprite gets a new material.
-- In 3D: `rock.glb`, `rock.glb.import` and `prop_room.tscn` are never changed; the textured shader lives
-  only in `material_compare.tscn` and `hint_experiment.tscn`.
-- Existing tests and their expectations are not edited, weakened or deleted; new checks go in new files.
-- `project.godot` settings, including the renderer, are not changed.
-- No file outside `fall-2026/zhefan-z/assignment-5/`.
+- Game logic: collision, movement, input, the player and wolf state machines, damage, every value in `tuning.gd`, every
+  timing in `fireball.gd` (`CHANGE-BRIEF.md:125`). The only gameplay-script change is in `fireball.gd`: which scene
+  `explode()` instances, and stopping and detaching the trail (`CHANGE-BRIEF.md:63, 111`).
+- `burst.tscn` and `burst.gd` stay as they are; the burst becomes the impact's `Flash` child (`CHANGE-BRIEF.md:63`).
+  Presentation code reads game state and never writes it. Existing tests are not edited, weakened or deleted.
+- A5 shaders, A3 prop room and 3D showcase, wolf, level, audio, HUD, camera, `project.godot`; nothing outside this folder.
 
 ## Unconfirmed
 
-- **Renderer at run time.** Forward+ is the engine default, not a value in `project.godot`; the headless
-  tests use a dummy renderer (`tests/capture_scene.gd:2`), so no log here shows the renderer.
-- **On screen.** Every look (tint, frost, hint quads, normal-map lighting) is a human check in the editor.
-- **Physics rate.** 60 per second is the engine default for an unset key, not read from a file.
-- No `AGENTS.md` or `README.md` exists at this folder's root.
+- **Renderer at run time.** Forward+ is the engine default and the brief's statement, not a value in `project.godot`.
+- **Existing test vs. the wiring.** `tests/test_cast.gd:55–56` counts `Main` children named `Burst*` and expects one on
+  a ground hit (`:115–118`). With the burst under `FireballImpact` as `Flash` (`CHANGE-BRIEF.md:63`) that check would
+  likely fail, yet existing tests stay unchanged (`:125`). Not run; the human decides.
+- **GPU particles headless.** Predicted to run no GPU particle process (`CHANGE-BRIEF.md:173`); not observed. Whether a
+  hidden emitter keeps simulating is open (`CHANGE-BRIEF.md:120`). Physics rate: unset, so the 60/s engine default.
+- The `logs/mutation-*.log` files in Headless facts are Assignment 5's, not in this `logs/`; test headers still say to
+  run from `fall-2026/zhefan-z/assignment-5/` (e.g. `tests/test_hurt_tint.gd:4`).
+- On screen: every look (timing, contrast, scale, `visibility_rect` at the walls) is a human check in the running game.
