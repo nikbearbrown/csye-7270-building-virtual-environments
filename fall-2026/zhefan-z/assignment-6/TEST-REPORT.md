@@ -20,7 +20,7 @@ Human checks are mine, in my words *(translated from my Chinese)*. A headless ru
 | State, Effect A | `test_fireball_impact.gd`, fixed-fps headless at 30 / 60 / 144: 14 checks / 0 failures each. Real mouse casts through the real game loop; aliveness by instance. A1 one impact per hit on ground, wall and wolf; A2 none on scene load, on a cast, or on a 2.0 s timeout; A3 at the fireball's last position (0.01 px); **A4 two impacts inside one lifetime both alive (overlap), at most 3 alive in steady casting**; A5 the impact survives the fireball and the wolf being freed; A6 each instance lives 0.9 s rounded up to the next frame | `logs/test_fireball_impact_*fps.log`, `f5743f5` |
 | State, Effect B | `test_fireball_trail.gd`, fixed-fps headless at 30 / 60 / 144: 20 checks / 0 failures each. B5 no trail before a cast or on scene load; B1 trail emitting on the fireball's first frame; B2 on a ground hit, a leftward wall hit and the 2.0 s timeout the trail moves to `Main` at the fireball's position and rotation, stops emitting and is freed 0.3 s later; B3 real Esc mid-flight freezes it and it resumes; B2 + B3 a pause right after an impact holds the fading trail; B4 hidden: `emitting` stays true and the node keeps processing | `logs/test_fireball_trail_*fps.log`, `e174c96` |
 | Not covered | the `_spent` guard (no fireball touched two bodies in one frame across 17 fireballs); B4 sets `visible` from the test, because no game mechanism hides a fireball | same logs |
-| Trail direction | windowed probe on the RTX 5060: `direction` follows the emitter's rotation (a fast copy moved −26.5 px in x at rotation 0 and at π, in its own frame); gravity stays world space (+5.94 / −5.94 in y). The brief's "in world space" was wrong (revision 2026-11-06) | `tests/probe_trail_direction.gd`, `e174c96` |
+| Trail direction | windowed probe on the RTX 5060: `direction` follows the emitter's rotation (a fast copy moved −26.5 px in x at rotation 0 and at π, in its own frame); gravity stays world space (−5.94 in y at rotation 0, +5.94 at π, in the emitter's own frame). The brief's "in world space" was wrong (revision 2026-11-06) | `tests/probe_trail_direction.gd`, `e174c96` |
 
 ## Frame strips (fixture captures) and tuning
 
@@ -84,8 +84,8 @@ Effect A is under the predicted 0.1 ms; Effect B is about at it, and case 3 carr
 | initial velocity from its minimum and maximum | 139: `mix(initial_linear_velocity_min, initial_linear_velocity_max, rand)`, turned into a velocity at 264 |
 | gravity changes velocity | 311 `force = gravity;` and 324 `USERDATA1.xyz += force * DELTA;` |
 | colour over life sampled | 161 `texture(color_ramp, vec2(lifetime))`, called at 347 with the life fraction, written to `COLOR` at 352 |
-| scale over life applied | 160 (`scale_curve` sampled) and 369–371 (multiplied into the transform) |
-| a line tied to my brief | 139: Sparks' initial velocity 90 / 160 px/s; also 331, damping (Sparks 40–60) |
+| scale over life applied | 160 (`scale_curve` sampled), multiplied into the transform at 364–366 on a particle's first frame and 369–371 after |
+| a line tied to my brief | 139: Sparks' initial velocity 90 / 160 px/s; also damping (Sparks 40–60), drawn at 131 and applied at 330 `v -= physics_params.damping * DELTA;` |
 
 **Which of my brief's settings live in this shader, and which belong to the draw step?** *(mine, translated from my Chinese)* Put simply, "process" calculates the data and "draw" paints the image. Process decides each particle's motion and life logic, computing its position, deformation and colour at every moment; draw takes those results together with the texture and the blend mode and actually stamps them onto the screen for the player.
 

@@ -26,7 +26,7 @@ What I tried, what happened, what I checked and changed, and who did what. Organ
 
 **11. My first look at Effect B ran at the wrong rate.** I watched the trail preview windowed without `--fixed-fps`; it stops its carrier by frame count, so the fireball flew only about 0.28 s at my display's rate. My observations stood, but I noted it (TUNING).
 
-**12. "World space" in my brief was wrong.** A windowed probe on the RTX 5060 showed the trail's direction follows the fireball's rotation and gravity stays in world space: the look I wanted, described wrongly (revision 2026-11-06, `e174c96`).
+**12. "World space" in my brief was wrong.** A windowed probe on the RTX 5060 showed the trail's direction follows the fireball's rotation and gravity stays in world space: the look I wanted, described wrongly (probe `e174c96`; brief revision `7957614`).
 
 **13. Effect B r1 closed the gaps only partly.** I wanted a thicker trail; the scale curve went 1 → 0 to 2 → 0. The head now joins up, but 1–3 px gaps remain further back, because each dot shrinks with age. The 8.7 px dot spacing equals one 1/30 s step at 260 px/s; the agent guessed `GPUParticles2D`'s default fixed 30 fps, not confirmed (TUNING, `cc1f2f2`).
 
