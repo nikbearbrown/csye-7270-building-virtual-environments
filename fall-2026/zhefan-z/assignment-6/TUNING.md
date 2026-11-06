@@ -39,3 +39,9 @@ Claude's comparison of r1 with its prediction: frame 10 matched and more: pixels
 My verdict (running game, main scene, 1280×720): the moment of impact is brighter. Kept.
 
 Strips: `captures/fireball_impact/r0/`, `captures/fireball_impact/r1/`. Commits: `35a1f70` (change), this entry with the r1 strip.
+
+## 2026-11-06 — Effect B, r0: first look, before Claude read anything
+
+What I saw (preview `previews/fireball_trail_preview.tscn`, windowed, 1280×720): the trail is longer than the fireball; it flickers; after the fireball stops, the rest of the trail fades away slowly where it is.
+
+Effect scene at this point: `8484040`.

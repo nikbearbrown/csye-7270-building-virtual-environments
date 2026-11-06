@@ -1,0 +1,35 @@
+Read CLAUDE.md first. CHANGE-BRIEF.md is the contract. Do not change the
+effects' settings and do not edit any .gdshader file. Do not push.
+
+Part 1 — commit my notes. I saved TUNING.md (Effect B r0, my first look)
+and captured the r0 strip of Effect B in captures/fireball_trail/r0/
+(frames 10, 12, 20, 30, 40, 45, 50). Commit them with prompt-3a.txt and
+prompt-5b.txt as "Effect B first look and r0 strip (mine, committed by
+Claude Code at my request)".
+
+Part 2 — Step 3 for Effect B: propose the smallest plan first and wait
+for my approval. The plan covers the code that gives each fireball its
+trail (fireball.tscn or fireball.gd), how the trail is detached, stopped
+and freed when the fireball explodes or times out (rule B2), and a new
+state test in walker-magic-zhefan/tests/. Say which brief rule each
+assertion covers (B1-B5) and which only a human can check. Rules:
+- Presentation code may read game state; it never writes it. Do not
+  change collision, movement, input, the state machine, Effect A's
+  wiring or the existing tests.
+- The test drives the condition through the real game loop and real
+  input (real mouse casts, as in test_fireball_impact.gd), never by
+  calling the start or stop function directly.
+- It asserts that the trail starts when a fireball appears and stops
+  when it ends (by impact and by the 2.0 s timeout), and what it does
+  while the tree is paused (real Esc) and while the node is hidden, as
+  the brief says. Aliveness by instance, not emitting.
+- Also find out, in the test or a probe, whether the trail's direction
+  (-1, 0) follows the fireball's rotation (a leftward cast), since the
+  brief says "world space" and you doubted it; report what you find.
+- Run every test with ./scripts/run-test.sh: the existing ones as
+  CLAUDE.md says, and the new one at 30, 60 and 144. Show the real
+  output and say which mode you used.
+- Say exactly what the test proves and what it cannot prove headlessly.
+After I approve, implement, run everything, and if all pass commit the
+wiring, the test and its logs as "Effect B wired and state test (agent,
+approved by me)". Then stop.
