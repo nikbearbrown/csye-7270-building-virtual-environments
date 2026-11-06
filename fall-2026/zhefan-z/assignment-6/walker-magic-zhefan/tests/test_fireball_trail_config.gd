@@ -21,7 +21,7 @@ const PROCESS := {"emission_shape": ParticleProcessMaterial.EMISSION_SHAPE_SPHER
 	"gravity": Vector3(0, -30, 0), "turbulence_enabled": true, "turbulence_noise_strength": 1.0,
 	"turbulence_noise_scale": 2.0, "turbulence_influence_min": 0.1, "turbulence_influence_max": 0.2,
 	"scale_min": 1.0, "scale_max": 1.5}
-const SCALE_CURVE := [[0.0, 1.0], [1.0, 0.0]]
+const SCALE_CURVE := [[0.0, 2.0], [0.5, 1.0], [1.0, 0.0]]   # r1 (TUNING.md): 2 -> 0, linear; was 1 -> 0
 ## Same as Sparks (brief): stops before the last; the last is the same colour at alpha 0.
 const RAMP := [Color(1, 0.95, 0.7, 1), Color(1, 0.55, 0.15, 1), Color(0.6, 0.1, 0.05, 1)]
 
