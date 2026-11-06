@@ -190,3 +190,9 @@ Found by the agent while building Effect A, checked by me against its report:
 - **`particle_flag_disable_z = true` on every emitter**, added to the settings. In 4.7.2 it defaults to false, and `GPUParticles2D` only sets it itself for a material with default gravity; without it, a 180° spread is a 3D cone instead of a flat circle.
 - The Smoke scale curve sets `max_value = 2.0`, because a `Curve` clamps its points to 1 by default.
 - Because `emitting` turns false as soon as a one-shot has emitted all its particles, rule A6 and failure F2 are checked by instance presence, not by `emitting`.
+
+### 2026-11-05 — Effect A r1 kept: the smoke fades in
+
+After my verdict on r1 (`TUNING.md`), the Smoke colour ramp in the Settings table is now: offsets `(0, 0.125, 1)`, grey (0.45, 0.42, 0.40) at alpha 0 → 0.55 → 0, so the puff fades in over its first 0.1 s instead of starting at full opacity on top of the sparks. Everything else in Effect A is unchanged. `effects/fireball_impact.tscn` and `tests/test_fireball_impact_config.gd` match this (`35a1f70`).
+
+Learned from the r1 comparison, for every later strip prediction: frame n of a Movie Maker strip shows the effect about (n − 9)/30 s after a trigger at frame 10, not (n − 10)/30 s.

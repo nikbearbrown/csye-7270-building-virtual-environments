@@ -1,0 +1,35 @@
+Read CLAUDE.md first. Do not edit any .gdshader file. Do not push.
+
+Part 1 — commit my notes. I saved TUNING.md (entry r1, my verdict: kept)
+and CHANGE-BRIEF.md (revision "Effect A r1 kept"). Commit them with
+prompt-4b.txt, prompt-5.txt and the r1 strip (6 PNGs in
+captures/fireball_impact/r1/) as "Effect A r1 kept after play; TUNING and
+brief revision (mine, committed by Claude Code at my request)".
+
+Part 2 — build Effect B. Its intent and settings are in CHANGE-BRIEF.md
+(Effect B, plus the revisions: particle_flag_disable_z on every emitter,
+aliveness by instance, frame n shows about (n - 9)/30 s).
+- Check every class and property you will set against this binary with
+  ClassDB first, including the turbulence properties, the sphere emission
+  shape and visibility_rect, and report found or missing.
+- Build it as walker-magic-zhefan/effects/fireball_trail.tscn using Godot 4
+  names for the version CLAUDE.md pins, configured in the scene file, not
+  in code. It reuses assets/textures/fx/spark.png.
+- Add a configuration test,
+  walker-magic-zhefan/tests/test_fireball_trail_config.gd, that reads back
+  every setting the brief names from the loaded resources, using the
+  brief's values; the turbulence settings and the sphere emission shape
+  (the features Effect A doesn't use) must be among them.
+- Add a preview scene,
+  walker-magic-zhefan/previews/fireball_trail_preview.tscn, at in-game
+  camera scale over the real cave background and ground: an emitter
+  carried across the frame at the fireball's speed (260 px/s) from frame
+  10, which stops emitting and stays where it is at frame 40 (the
+  condition ends, as at an impact). use_fixed_seed on for the preview's
+  instance only.
+Run the configuration test with ./scripts/run-test.sh at 60 and show the
+real output. Then commit everything you created with its log as
+"Effect B scene, config test, preview (agent, unedited)", give me the
+Movie Maker capture command for captures/fireball_trail/r0/
+(--fixed-fps 30, --quit-after 60) and the command to run the preview
+windowed at 1280x720, and stop. Do not wire the effect into gameplay.
