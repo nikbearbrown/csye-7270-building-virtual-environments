@@ -7,6 +7,7 @@ const SPEED := 260.0
 const LIFETIME := 2.0
 const DAMAGE := 1
 const BURST := preload("res://features/fireball/burst.tscn")
+const IMPACT := preload("res://effects/fireball_impact.tscn")   # A6 Effect A; frees itself after 0.9 s
 
 var direction := Vector2.RIGHT
 var _age := 0.0
@@ -41,5 +42,8 @@ func explode() -> void:
 	var burst := BURST.instantiate()
 	burst.global_position = global_position
 	get_parent().add_child(burst)
+	var impact := IMPACT.instantiate()   # one new instance per impact, so impacts overlap (CHANGE-BRIEF A4)
+	impact.global_position = global_position
+	get_parent().add_child(impact)
 	set_deferred("monitoring", false)
 	queue_free()
