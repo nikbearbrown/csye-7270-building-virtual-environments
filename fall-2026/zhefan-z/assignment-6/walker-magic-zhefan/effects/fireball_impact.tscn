@@ -1,0 +1,101 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://effects/fireball_impact.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://co66unc1jkixs" path="res://assets/textures/fx/spark.png" id="2_spark"]
+[ext_resource type="Texture2D" uid="uid://giaibgloy7a2" path="res://assets/textures/fx/smoke.png" id="3_smoke"]
+
+[sub_resource type="CanvasItemMaterial" id="Mat_spark_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Grad_spark"]
+offsets = PackedFloat32Array(0, 0.333, 0.667, 1)
+colors = PackedColorArray(1, 0.95, 0.7, 1, 1, 0.55, 0.15, 1, 0.6, 0.1, 0.05, 1, 0.6, 0.1, 0.05, 0)
+
+[sub_resource type="GradientTexture1D" id="Ramp_spark"]
+gradient = SubResource("Grad_spark")
+
+[sub_resource type="Curve" id="Curve_spark_scale"]
+_data = [Vector2(0, 1), 0.0, -1.0, 0, 1, Vector2(1, 0), -1.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="Scale_spark"]
+curve = SubResource("Curve_spark_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="Process_spark"]
+particle_flag_disable_z = true
+emission_shape = 0
+direction = Vector3(1, 0, 0)
+spread = 180.0
+initial_velocity_min = 90.0
+initial_velocity_max = 160.0
+gravity = Vector3(0, 300, 0)
+damping_min = 40.0
+damping_max = 60.0
+scale_min = 1.0
+scale_max = 2.0
+scale_curve = SubResource("Scale_spark")
+color_ramp = SubResource("Ramp_spark")
+hue_variation_min = -0.03
+hue_variation_max = 0.03
+
+[sub_resource type="CanvasItemMaterial" id="Mat_smoke_mix"]
+blend_mode = 0
+
+[sub_resource type="Gradient" id="Grad_smoke"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.45, 0.42, 0.4, 0.55, 0.45, 0.42, 0.4, 0)
+
+[sub_resource type="GradientTexture1D" id="Ramp_smoke"]
+gradient = SubResource("Grad_smoke")
+
+[sub_resource type="Curve" id="Curve_smoke_scale"]
+max_value = 2.0
+_data = [Vector2(0, 1), 0.0, 1.0, 0, 1, Vector2(1, 2), 1.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="Scale_smoke"]
+curve = SubResource("Curve_smoke_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="Process_smoke"]
+particle_flag_disable_z = true
+emission_shape = 0
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 15.0
+initial_velocity_max = 35.0
+gravity = Vector3(0, -20, 0)
+damping_min = 10.0
+damping_max = 20.0
+scale_min = 1.0
+scale_max = 1.5
+scale_curve = SubResource("Scale_smoke")
+color_ramp = SubResource("Ramp_smoke")
+
+[node name="FireballImpact" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Sparks" type="GPUParticles2D" parent="."]
+material = SubResource("Mat_spark_add")
+emitting = true
+amount = 24
+texture = ExtResource("2_spark")
+lifetime = 0.45
+one_shot = true
+preprocess = 0.0
+explosiveness = 1.0
+local_coords = false
+visibility_rect = Rect2(-96, -96, 192, 192)
+process_material = SubResource("Process_spark")
+
+[node name="Smoke" type="GPUParticles2D" parent="."]
+material = SubResource("Mat_smoke_mix")
+emitting = true
+amount = 8
+texture = ExtResource("3_smoke")
+lifetime = 0.8
+one_shot = true
+preprocess = 0.0
+explosiveness = 0.9
+local_coords = false
+visibility_rect = Rect2(-96, -96, 192, 192)
+process_material = SubResource("Process_smoke")
