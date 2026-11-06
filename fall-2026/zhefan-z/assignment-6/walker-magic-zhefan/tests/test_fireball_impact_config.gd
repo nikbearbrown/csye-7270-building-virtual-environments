@@ -35,7 +35,8 @@ const EXPECTED := {
 			"initial_velocity_max": 35.0, "gravity": Vector3(0, -20, 0), "damping_min": 10.0, "damping_max": 20.0,
 			"scale_min": 1.0, "scale_max": 1.5},
 		"scale_curve": [[0.0, 1.0], [1.0, 2.0]],
-		"ramp": [Color(0.45, 0.42, 0.40, 0.55)],
+		# r1 (2026-11-06): fades in over the first 0.1 s (0.125 of 0.8 s) so the smoke no longer covers the impact moment.
+		"ramp": [Color(0.45, 0.42, 0.40, 0.0), Color(0.45, 0.42, 0.40, 0.55)], "ramp_offsets": [0.0, 0.125, 1.0],
 		"texture": SMOKE_TEX, "size": Vector2i(12, 12), "blend": CanvasItemMaterial.BLEND_MODE_MIX,
 	},
 }
@@ -122,9 +123,15 @@ func run() -> void:
 			var last := colors[colors.size() - 1]
 			var before: Color = want.ramp.back()
 			stops_ok = is_zero_approx(last.a) and Color(last, 1).is_equal_approx(Color(before, 1))
+		if stops_ok and want.has("ramp_offsets"):
+			var offs: PackedFloat32Array = ramp.gradient.offsets
+			stops_ok = offs.size() == want.ramp_offsets.size()
+			for i in offs.size() if stops_ok else 0:
+				stops_ok = stops_ok and absf(offs[i] - want.ramp_offsets[i]) < EPS
 		check("%s-colour-ramp" % emitter, ramp != null and stops_ok,
 			{"class": pm.color_ramp.get_class() if pm.color_ramp else "null", "colors": colors,
-			"offsets": ramp.gradient.offsets if ramp and ramp.gradient else [], "expected_then_alpha_0": want.ramp})
+			"offsets": ramp.gradient.offsets if ramp and ramp.gradient else [], "expected_then_alpha_0": want.ramp,
+			"expected_offsets": want.get("ramp_offsets", "not checked")})
 
 		var tex := p.texture
 		check("%s-texture" % emitter, tex != null and tex.resource_path == want.texture
