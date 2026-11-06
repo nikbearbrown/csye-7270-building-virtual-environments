@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" uid="uid://co66unc1jkixs" path="res://assets/textures/fx/spark.png" id="1_spark"]
+
+[sub_resource type="CanvasItemMaterial" id="Mat_trail_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Grad_trail"]
+offsets = PackedFloat32Array(0, 0.333, 0.667, 1)
+colors = PackedColorArray(1, 0.95, 0.7, 1, 1, 0.55, 0.15, 1, 0.6, 0.1, 0.05, 1, 0.6, 0.1, 0.05, 0)
+
+[sub_resource type="GradientTexture1D" id="Ramp_trail"]
+gradient = SubResource("Grad_trail")
+
+[sub_resource type="Curve" id="Curve_trail_scale"]
+_data = [Vector2(0, 1), 0.0, -1.0, 0, 1, Vector2(1, 0), -1.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="Scale_trail"]
+curve = SubResource("Curve_trail_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="Process_trail"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 3.0
+direction = Vector3(-1, 0, 0)
+spread = 30.0
+initial_velocity_min = 10.0
+initial_velocity_max = 20.0
+gravity = Vector3(0, -30, 0)
+scale_min = 1.0
+scale_max = 1.5
+scale_curve = SubResource("Scale_trail")
+color_ramp = SubResource("Ramp_trail")
+turbulence_enabled = true
+turbulence_noise_strength = 1.0
+turbulence_noise_scale = 2.0
+turbulence_influence_min = 0.1
+turbulence_influence_max = 0.2
+
+[node name="FireballTrail" type="GPUParticles2D"]
+material = SubResource("Mat_trail_add")
+emitting = true
+amount = 32
+texture = ExtResource("1_spark")
+lifetime = 0.3
+one_shot = false
+preprocess = 0.0
+explosiveness = 0.0
+local_coords = false
+visibility_rect = Rect2(-128, -48, 256, 96)
+process_material = SubResource("Process_trail")
