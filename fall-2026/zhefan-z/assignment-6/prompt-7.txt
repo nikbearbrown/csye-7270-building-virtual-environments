@@ -1,0 +1,36 @@
+Read CLAUDE.md first. Do not change any effect or gameplay file, and do
+not edit any .gdshader file. Do not push.
+
+Part 1 — commit my notes. I saved TUNING.md (Effect B r1, my verdict:
+kept) and CHANGE-BRIEF.md (revision "Effect B r1 kept"). Commit them
+with prompt-7.txt and the r1 strip (7 PNGs in captures/fireball_trail/r1/)
+as "Effect B r1 kept after play; TUNING and brief revision (mine,
+committed by Claude Code at my request)".
+
+Part 2 — the headless price. Write walker-magic-zhefan/tests/cost_effects.gd
+for the effects in CHANGE-BRIEF.md, the chapter's way. At a fixed rate,
+measure the CPU time per frame of:
+1. an empty scene (the control);
+2. the game scene with both effects off;
+3. Effect A at the most bursts the brief says can be alive at once (6);
+4. Effect B in its heaviest state (6 fireballs flying with trails, plus
+   6 detached trails fading).
+Warm up before measuring, measure many frames per case, and report each
+case's mean and spread. If two cases that should differ report the same
+value, say so: the script may be measuring itself. Run it with
+./scripts/run-test.sh cost_effects.gd 60 300 and show the real output.
+
+Part 3 — a windowed GPU price scene for me:
+walker-magic-zhefan/previews/gpu_price.tscn, over the real cave
+background at in-game scale, with on-screen text naming the current
+case and these keys (keys the game doesn't use; check controls.gd):
+  1 = both effects off, 2 = Effect A at 6 bursts (respawned as they
+  expire), 3 = Effect B at its heaviest (as above, continuously),
+  F8 = toggle vsync with DisplayServer.window_set_vsync_mode.
+It must not change project settings. Show its FPS on screen too.
+Give me the exact command to run it windowed from the editor or the
+command line, and step-by-step what to read in the Visual Profiler
+(Debugger panel) for GPU time in each case.
+
+Commit parts 2 and 3 with the cost log as "Headless cost script and GPU
+price scene (agent)", with the cost results in the body. Then stop.

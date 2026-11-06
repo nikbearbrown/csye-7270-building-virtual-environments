@@ -51,3 +51,19 @@ Note added 2026-11-06: this first look ran the preview windowed without `--fixed
 ## 2026-11-06 — Effect B in the running game, before tuning
 
 What I saw (main scene, 1280×720, Effect B wired in since `e174c96`): casts to the right and to the left both trail behind the fireball; a shot straight up that times out leaves its trail fading where it was; Esc mid-flight freezes the trail and Esc again resumes it; no trail appears in the first frames after the scene loads; the trail reads over the pit and over the lighter ground. All normal. The one thing I want to try: the trail a little thicker or brighter.
+
+## 2026-11-06 — Effect B, revision r1 (observation-driven)
+
+What I saw (running game, main scene, 1280×720): see the entry above; everything behaved as the brief says, and the one thing I wanted to try was the trail a little thicker or brighter.
+
+Claude's reading of r0 (`prompt-4c.txt`), measured against frame 50: the length is on target (about 71 px at frame 30, against 60–80), but the trail is 4–6 px tall, about a third of the intended 15–21 px, and reads as a row of separate dots with 3–5 px dark gaps, repeating every 8.7 px. It noted that 8.7 px is one 1/30 s step at 260 px/s, and guessed this comes from `GPUParticles2D` simulating at its default fixed 30 fps (not confirmed). The head is saturated (peak lum 240–255); dots older than about 0.15 s fall below lum 100.
+
+Change: `ParticleProcessMaterial.scale_curve`, linear (0, 1) → (1, 0), to linear (0, 2) → (1, 0) with `max_value = 2.0`. Approved by me. It left the colour ramp alone because the brief ties it to the Sparks ramp.
+
+Claude's prediction for r1: dots at the head 8–12 px, overlapping into a continuous strip; about 2.5–3× as many pixels lit; brighter only where dots overlap; length, fade, colours, turbulence and direction unchanged.
+
+Claude's comparison of r1 with its prediction: every pixel lit in r0 is also lit in r1 (same fixed seed, bigger particles), frame 50 identical. Frames 10, 12, 45 and 50 match; frame 40 matches except for a 1 px gap; the head is 11–13 px (about 1.1–1.3 fireballs, was 0.5–0.7). Where it missed: the strip closes only right behind the fireball; from about the second dot back, 1–3 px gaps remain (r0: 3–5 px), because each dot shrinks as it ages and it had used the head size for the whole trail. Frame 30's changed pixels 208 → 421, under its 450–550, because about 150 of them are the unchanged fireball sprite; at frame 40 (no sprite) the count rose ×3.1. Length unchanged, not "a few px longer".
+
+My verdict (running game, main scene, 1280×720): thicker and brighter. Kept.
+
+Strips: `captures/fireball_trail/r0/`, `captures/fireball_trail/r1/`. Commits: `cc1f2f2` (change), this entry with the r1 strip.
