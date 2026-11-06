@@ -176,4 +176,8 @@ Both effects are GPU nodes, so their budgets are compared on GPU time (Visual Pr
 
 ## Revisions
 
-(None yet.)
+### 2026-11-05 — the A2 flash stays outside the impact
+
+Found while reviewing the CLAUDE.md draft: `tests/test_cast.gd:55–56` counts `Main` children whose names start with `Burst` and expects one after a ground hit (`:115–118`). Putting `burst.tscn` inside `FireballImpact` as `Flash` would fail that earlier suite, which may not be edited.
+
+Revision: `explode()` keeps instancing `burst.tscn` into `Main` exactly as before, and also instances `effects/fireball_impact.tscn` at the same `global_position` into the same parent. `FireballImpact` holds only `Sparks` and `Smoke`. On screen the layers are unchanged: the A2 flash for 0.15 s, the sparks and the smoke. Rule A1 counts `FireballImpact` instances; the `Burst` count stays as `test_cast` expects.

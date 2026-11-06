@@ -8,12 +8,12 @@ Paths below are relative to that folder. `res://` = `walker-magic-zhefan/`. No `
 **Engine.** Godot 4.7.2-stable (official build `ed1daf0bf`): `logs/baseline-before/test_wolf_60fps.log:1`, binary path in
 `scripts/run-test.sh:5`. The project declares feature `"4.7"` (`walker-magic-zhefan/project.godot:15`).
 
-**Renderer.** Not set: `[rendering]` (`project.godot:39–43`) has no `rendering_method`; `CHANGE-BRIEF.md:7` records
-Forward+. 2D, 640×360 viewport, window 1280×720, stretch `viewport`, integer scale (`project.godot:23–29`).
+**Renderer.** Not set: `[rendering]` (`project.godot:39–43`) has no `rendering_method`, so the default, Forward+;
+confirmed at run time in A5 ("Vulkan 1.4.312 - Forward+", RTX 5060 Laptop GPU; A5 `TEST-REPORT.md` at `2b68e0a`). 2D, 640×360 viewport, window 1280×720, stretch `viewport`, integer scale (`project.godot:23–29`).
 
 **Node types** (`CHANGE-BRIEF.md`). Effect A: `effects/fireball_impact.tscn`, root `Node2D` `FireballImpact` that frees
-itself after 0.9 s (`:38`), children `Flash` (the existing `burst.tscn`, a `Sprite2D`), `Sparks` and `Smoke`, both
-`GPUParticles2D` (`:34, :42`). Effect B: `effects/fireball_trail.tscn`, one `GPUParticles2D`, a child of the fireball
+itself after 0.9 s (`:38`), children `Sparks` and `Smoke`, both `GPUParticles2D` (`:42`). The A2 `burst.tscn` flash is
+not inside it: `explode()` still instances it into `Main` as before (brief revision 2026-11-05). Effect B: `effects/fireball_trail.tscn`, one `GPUParticles2D`, a child of the fireball
 (`:95`). `walker-magic-zhefan/effects/` and `assets/textures/fx/` (`spark.png`, `smoke.png`, `:52, :58`) do not exist yet.
 
 **Who owns each event or condition.**
@@ -61,10 +61,10 @@ Not tests: `tests/capture_scene.gd` needs a real window (`:2–4`); `calibrate_n
 Confirmed on this machine (Godot 4.7.2, 2026-10-23) unless marked.
 
 - `get_shader_uniform_list()` works headless only after the main loop starts (in a SceneTree `_init()`:
-  `Parameter "shader" is null`). A parse failure gives an empty list (`logs/mutation-1-semicolon_60fps.log`).
+  `Parameter "shader" is null`). A parse failure gives an empty list (A5 `logs/mutation-1-semicolon_60fps.log` at `2b68e0a`).
 - A uniform renamed in the shader only raises no error: the driver's `set_shader_parameter("intensity")`
   is stored and read back, so 15 checks still passed; only the uniform-list and source-default checks
-  failed (`logs/mutation-2-rename_60fps.log`). Defaults are not reported; tests read the source text.
+  failed (A5 `logs/mutation-2-rename_60fps.log` at `2b68e0a`). Defaults are not reported; tests read the source text.
 - `--fixed-fps` is not in `OS.get_cmdline_args()`; `tests/test_hurt_tint.gd` reads fps from frame deltas.
 - `invulnerable` changes only on physics ticks; across a pause, summed frame time drifts (CHANGE-BRIEF R7 revision).
 - Not observed here, from the assignment text: the dummy renderer draws nothing; import detection runs only
@@ -90,7 +90,8 @@ Use Godot 4 class and property names for 4.7.2, never Godot 3 names. From the Go
 - Ranges are `_min` / `_max` pairs: `initial_velocity_*`, `damping_*`, `scale_*`, `hue_variation_*`, `turbulence_influence_*`
   (Godot 3 had single `initial_velocity`, `scale`, ...). `direction` and `gravity` are `Vector3`: (1, 0) is `Vector3(1, 0, 0)`.
 - Unsure, confirm first: `use_fixed_seed` / `seed` (`CHANGE-BRIEF.md:143` says 4.7 has them); whether 2D needs
-  `particle_flag_disable_z`; how a `Curve` goes above 1 for the smoke's 1 → 2 scale (`:56`). When unsure, say so.
+  `particle_flag_disable_z`; how a `Curve` goes above 1 for the smoke's 1 → 2 scale (`:56`). Before writing a scene
+  file, check every property you set with `ClassDB.class_get_property_list()` on this binary, headless; report misses.
 
 ## Commits
 
@@ -100,18 +101,15 @@ Commit only a commit the human asks for; its message says who wrote the content,
 ## Out of scope
 
 - Game logic: collision, movement, input, the player and wolf state machines, damage, every value in `tuning.gd`, every
-  timing in `fireball.gd` (`CHANGE-BRIEF.md:125`). The only gameplay-script change is in `fireball.gd`: which scene
-  `explode()` instances, and stopping and detaching the trail (`CHANGE-BRIEF.md:63, 111`).
-- `burst.tscn` and `burst.gd` stay as they are; the burst becomes the impact's `Flash` child (`CHANGE-BRIEF.md:63`).
+  timing in `fireball.gd` (`CHANGE-BRIEF.md:125`). The only gameplay-script change is in `fireball.gd`: `explode()` also
+  instances the impact, and the trail is stopped and detached (brief revision 2026-11-05; `CHANGE-BRIEF.md:111`).
+- `burst.tscn`, `burst.gd` and how `explode()` instances the burst stay exactly as they are (`tests/test_cast.gd:55–56`).
   Presentation code reads game state and never writes it. Existing tests are not edited, weakened or deleted.
 - A5 shaders, A3 prop room and 3D showcase, wolf, level, audio, HUD, camera, `project.godot`; nothing outside this folder.
 
 ## Unconfirmed
 
-- **Renderer at run time.** Forward+ is the engine default and the brief's statement, not a value in `project.godot`.
-- **Existing test vs. the wiring.** `tests/test_cast.gd:55–56` counts `Main` children named `Burst*` and expects one on
-  a ground hit (`:115–118`). With the burst under `FireballImpact` as `Flash` (`CHANGE-BRIEF.md:63`) that check would
-  likely fail, yet existing tests stay unchanged (`:125`). Not run; the human decides.
+- **Camera.** Fixed in `main.tscn:93–94`; whether a script moves it (the walls are at x −8 and 1288) is not checked.
 - **GPU particles headless.** Predicted to run no GPU particle process (`CHANGE-BRIEF.md:173`); not observed. Whether a
   hidden emitter keeps simulating is open (`CHANGE-BRIEF.md:120`). Physics rate: unset, so the 60/s engine default.
 - The `logs/mutation-*.log` files in Headless facts are Assignment 5's, not in this `logs/`; test headers still say to
