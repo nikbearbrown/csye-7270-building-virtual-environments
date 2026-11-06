@@ -30,7 +30,7 @@ not inside it: `explode()` still instances it into `Main` as before (brief revis
   `process_mode`, so fireballs pause; only `UI` and `SessionInput` run while paused (`game/main.tscn:97, 117`).
 
 **Scenes.** `res://game/main.tscn` is the main scene (`project.godot:14`); fireballs and impacts are children of `Main`
-(`main.tscn:27`). Camera fixed at (320, 180) (`main.tscn:93–94`); background `CanvasLayer` at layer −10 (`:30–35`);
+(`main.tscn:27`). Camera follows the player in x, clamped 320–960, no zoom (`main.gd:27–31, 47–50`); background `CanvasLayer` at layer −10 (`:30–35`);
 pit `Level/PitDark` (`:51–57`); walls at x −8 and 1288 (`:78–88`). `res://features/fireball/fireball.tscn`: `Area2D`
 root, `Sprite2D` (offset (−6, 0)), `CollisionShape2D` with a `CircleShape2D` of radius 4 (`fireball.tscn:6–17`).
 
@@ -67,9 +67,13 @@ Confirmed on this machine (Godot 4.7.2, 2026-10-23) unless marked.
   failed (A5 `logs/mutation-2-rename_60fps.log` at `2b68e0a`). Defaults are not reported; tests read the source text.
 - `--fixed-fps` is not in `OS.get_cmdline_args()`; `tests/test_hurt_tint.gd` reads fps from frame deltas.
 - `invulnerable` changes only on physics ticks; across a pause, summed frame time drifts (CHANGE-BRIEF R7 revision).
-- Not observed here, from the assignment text: the dummy renderer draws nothing; import detection runs only
-  in a real editor, so run `git status` after the first editor session. `scripts/run-test.sh:10` fails on
-  `SHADER ERROR` / `SCRIPT ERROR` because exit 0 does not mean no errors.
+- A6, 2026-11-05 (`logs/test_fireball_impact_config_60fps.log`): headless draws no particles and runs no GPU particle
+  process (0 draw calls, empty `capture_rect()`); instance counts, `one_shot`, `amount_ratio`, visibility are observable.
+  `emitting` turns false once all are emitted, not when they die; `finished` did not fire: test aliveness by instance.
+  A GPU effect's headless CPU price is near zero by construction (4.6 vs 6.6 µs/frame with 6 impacts). Frame strips
+  come from a windowed Movie Maker run, which I start.
+- From the assignment text: import detection runs only in a real editor (`git status` after an editor session);
+  `scripts/run-test.sh` fails on `SHADER ERROR` / `SCRIPT ERROR` because exit 0 does not mean no errors.
 
 ## Current change
 @CHANGE-BRIEF.md
@@ -109,9 +113,6 @@ Commit only a commit the human asks for; its message says who wrote the content,
 
 ## Unconfirmed
 
-- **Camera.** Fixed in `main.tscn:93–94`; whether a script moves it (the walls are at x −8 and 1288) is not checked.
-- **GPU particles headless.** Predicted to run no GPU particle process (`CHANGE-BRIEF.md:173`); not observed. Whether a
-  hidden emitter keeps simulating is open (`CHANGE-BRIEF.md:120`). Physics rate: unset, so the 60/s engine default.
-- The `logs/mutation-*.log` files in Headless facts are Assignment 5's, not in this `logs/`; test headers still say to
-  run from `fall-2026/zhefan-z/assignment-5/` (e.g. `tests/test_hurt_tint.gd:4`).
+- Whether a hidden emitter keeps simulating (`CHANGE-BRIEF.md:120`). Physics rate: unset, so the 60/s engine default.
+- Test headers still say to run from `fall-2026/zhefan-z/assignment-5/` (e.g. `tests/test_hurt_tint.gd:4`).
 - On screen: every look (timing, contrast, scale, `visibility_rect` at the walls) is a human check in the running game.

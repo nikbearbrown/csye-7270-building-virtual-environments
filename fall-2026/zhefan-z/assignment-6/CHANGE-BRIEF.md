@@ -181,3 +181,12 @@ Both effects are GPU nodes, so their budgets are compared on GPU time (Visual Pr
 Found while reviewing the CLAUDE.md draft: `tests/test_cast.gd:55–56` counts `Main` children whose names start with `Burst` and expects one after a ground hit (`:115–118`). Putting `burst.tscn` inside `FireballImpact` as `Flash` would fail that earlier suite, which may not be edited.
 
 Revision: `explode()` keeps instancing `burst.tscn` into `Main` exactly as before, and also instances `effects/fireball_impact.tscn` at the same `global_position` into the same parent. `FireballImpact` holds only `Sparks` and `Smoke`. On screen the layers are unchanged: the A2 flash for 0.15 s, the sparks and the smoke. Rule A1 counts `FireballImpact` instances; the `Burst` count stays as `test_cast` expects.
+
+### 2026-11-05 — camera and flat emission (from the Effect A build)
+
+Found by the agent while building Effect A, checked by me against its report:
+
+- **The camera is not fixed.** `game/main.gd:47–50` makes it follow the player in x, clamped to 320–960 (`main.gd:27–31`), with no zoom. Pixel scale stays 2×, so every size above holds. The `visibility_rect` check uses this: at either camera limit, the left or right wall is at the screen edge.
+- **`particle_flag_disable_z = true` on every emitter**, added to the settings. In 4.7.2 it defaults to false, and `GPUParticles2D` only sets it itself for a material with default gravity; without it, a 180° spread is a 3D cone instead of a flat circle.
+- The Smoke scale curve sets `max_value = 2.0`, because a `Curve` clamps its points to 1 by default.
+- Because `emitting` turns false as soon as a one-shot has emitted all its particles, rule A6 and failure F2 are checked by instance presence, not by `emitting`.
