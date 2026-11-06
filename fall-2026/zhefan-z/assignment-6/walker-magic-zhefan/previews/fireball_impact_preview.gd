@@ -7,6 +7,8 @@ extends Node2D
 ##   Godot_v4.7.2-stable_win64_console.exe --path walker-magic-zhefan res://previews/fireball_impact_preview.tscn [-- retrigger]
 
 const IMPACT := preload("res://effects/fireball_impact.tscn")
+## Seeds 1 apart gave the second impact nearly the first one's random draws (r0-retrigger strip).
+const SEED_SPACING := 1000
 
 @export var impact_position := Vector2(510, 327)
 @export var trigger_frame := 10
@@ -34,7 +36,7 @@ func _spawn() -> void:
 	for child in fx.get_children():
 		if child is GPUParticles2D:
 			child.use_fixed_seed = true
-			child.seed = first_seed + _spawned
+			child.seed = first_seed + SEED_SPACING * _spawned
 	fx.position = impact_position
 	add_child(fx)
 	_spawned += 1
