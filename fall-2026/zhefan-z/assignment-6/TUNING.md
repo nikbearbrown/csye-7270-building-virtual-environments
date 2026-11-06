@@ -45,3 +45,9 @@ Strips: `captures/fireball_impact/r0/`, `captures/fireball_impact/r1/`. Commits:
 What I saw (preview `previews/fireball_trail_preview.tscn`, windowed, 1280×720): the trail is longer than the fireball; it flickers; after the fireball stops, the rest of the trail fades away slowly where it is.
 
 Effect scene at this point: `8484040`.
+
+Note added 2026-11-06: this first look ran the preview windowed without `--fixed-fps`, at my display's rate (144 Hz or more), and the preview stops its carrier on frame 40 by frame count. So the fireball flew only about 0.28 s (stopped at x ≈ 232, not 410) in what I watched. My three observations stand; the flight was shorter than in the game and in the 30 fps strip.
+
+## 2026-11-06 — Effect B in the running game, before tuning
+
+What I saw (main scene, 1280×720, Effect B wired in since `e174c96`): casts to the right and to the left both trail behind the fireball; a shot straight up that times out leaves its trail fading where it was; Esc mid-flight freezes the trail and Esc again resumes it; no trail appears in the first frames after the scene loads; the trail reads over the pit and over the lighter ground. All normal. The one thing I want to try: the trail a little thicker or brighter.

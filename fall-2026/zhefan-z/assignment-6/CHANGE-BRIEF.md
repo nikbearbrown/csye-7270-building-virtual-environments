@@ -196,3 +196,7 @@ Found by the agent while building Effect A, checked by me against its report:
 After my verdict on r1 (`TUNING.md`), the Smoke colour ramp in the Settings table is now: offsets `(0, 0.125, 1)`, grey (0.45, 0.42, 0.40) at alpha 0 → 0.55 → 0, so the puff fades in over its first 0.1 s instead of starting at full opacity on top of the sparks. Everything else in Effect A is unchanged. `effects/fireball_impact.tscn` and `tests/test_fireball_impact_config.gd` match this (`35a1f70`).
 
 Learned from the r1 comparison, for every later strip prediction: frame n of a Movie Maker strip shows the effect about (n − 9)/30 s after a trigger at frame 10, not (n − 10)/30 s.
+
+### 2026-11-06 — Effect B direction is relative to the fireball
+
+Found by the agent and measured with a windowed probe (`tests/probe_trail_direction.gd`, RTX 5060, Forward+; `e174c96`): the trail's `direction` (−1, 0) follows the emitter's rotation, and the fireball is rotated to its flight direction (`fireball.gd:19`), so it means "behind the fireball" for every shot; gravity (0, −30) stays in world space, so the flames rise whichever way it flies. That is the look I intended. The Settings table's words "in world space" for `direction` are wrong and are replaced by "relative to the fireball (behind it)". No value changes.
