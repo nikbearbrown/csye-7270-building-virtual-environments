@@ -25,6 +25,7 @@ func _physics_process(delta: float) -> void:
 	position += direction * SPEED * delta
 	_age += delta
 	if _age > LIFETIME:
+		_release_trail()
 		queue_free()
 
 
@@ -45,5 +46,18 @@ func explode() -> void:
 	var impact := IMPACT.instantiate()   # one new instance per impact, so impacts overlap (CHANGE-BRIEF A4)
 	impact.global_position = global_position
 	get_parent().add_child(impact)
+	_release_trail()
 	set_deferred("monitoring", false)
 	queue_free()
+
+
+## A6 Effect B (CHANGE-BRIEF B2): the trail moves to this fireball's parent with its global transform kept, so its
+## particles stay where they were drawn, stops emitting and is freed after its particles' lifetime (read from the
+## effect scene, never set here). The timer is pausable, so a paused game holds the fading trail.
+func _release_trail() -> void:
+	var trail := get_node_or_null("FireballTrail") as GPUParticles2D
+	if trail == null:
+		return
+	trail.reparent(get_parent(), true)
+	trail.emitting = false
+	get_tree().create_timer(trail.lifetime, false).timeout.connect(trail.queue_free)
