@@ -14,7 +14,7 @@ confirmed at run time in A5 ("Vulkan 1.4.312 - Forward+", RTX 5060 Laptop GPU; A
 **Node types** (`CHANGE-BRIEF.md`). Effect A: `effects/fireball_impact.tscn`, root `Node2D` `FireballImpact` that frees
 itself after 0.9 s (`:38`), children `Sparks` and `Smoke`, both `GPUParticles2D` (`:42`). The A2 `burst.tscn` flash is
 not inside it: `explode()` still instances it into `Main` as before (brief revision 2026-11-05). Effect B: `effects/fireball_trail.tscn`, one `GPUParticles2D`, a child of the fireball
-(`:95`). `walker-magic-zhefan/effects/` and `assets/textures/fx/` (`spark.png`, `smoke.png`, `:52, :58`) do not exist yet.
+(`:95`). Built: `effects/`, `assets/textures/fx/` (`spark.png`, `smoke.png`, written by `tools/write_fx_textures.gd`).
 
 **Who owns each event or condition.**
 - `Fireball` (`features/fireball/fireball.gd:1–2`, an `Area2D`) declares no signals. `_ready()` connects the built-in
