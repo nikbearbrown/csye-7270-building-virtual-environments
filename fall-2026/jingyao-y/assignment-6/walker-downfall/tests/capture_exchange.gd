@@ -1,0 +1,156 @@
+extends SceneTree
+## Screenshots of the exchange (势力与交易所策划案_v0_7.md): every page, 加工站,
+## 可露希尔's money desk, the base watch window, the swan popup and a post.
+## Writes evidence/exchange-*.png. Not part of run_all (no checks).
+var rig: Node
+var game: GameManager
+func _initialize() -> void: call_deferred("run")
+func step(count: int = 10) -> void:
+	for i in range(count): await process_frame
+func find_game(node: Node) -> GameManager:
+	if node is GameManager: return node
+	for child in node.get_children():
+		var found := find_game(child)
+		if found != null: return found
+	return null
+func capture(label: String) -> void:
+	await step(8)
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png("res://../evidence/exchange-" + ("en-" if I18n.is_english() else "") + label + ".png")
+func page(tab: int, market_id: String = "", mode: int = 0) -> void:
+	ExchangeScreen.tab = tab
+	if not market_id.is_empty(): ExchangeScreen.selected = market_id
+	ExchangeScreen.mode = mode
+	game.menu.show_station("exchange")
+func run() -> void:
+	if OS.get_environment("DOWNFALL_LANG") == "en": I18n.set_language("en")
+	rig = load("res://game/main.tscn").instantiate()
+	rig.persist_sessions = false
+	root.add_child(rig)
+	await step(15)
+	game = find_game(rig)
+	game.save_enabled = false
+	if is_instance_valid(game.system_screens): game.system_screens.hide()
+	game.gold = 240000
+	var ex := game.exchange
+	ex.relations = {"karlan": 700, "lungmen": 560, "rhine": 300, "kazimierz": 150}
+	ex.gold_account = 36.5
+	game.base.set_facility("exchange", 1)
+	for item in [MaterialCatalog.create("螺栓", 20), MaterialCatalog.create("螺栓", 20), MaterialCatalog.create("金属板", 14), MaterialCatalog.create("钉子", 20),
+			MaterialCatalog.create("医用耗材包", 6), MaterialCatalog.create("固源岩", 12), MaterialCatalog.create("源岩", 30),
+			MaterialCatalog.create("建材包", 3), MaterialCatalog.create("防具包", 2), MaterialCatalog.create("寒地物资包", 1)]:
+		game.base.shelf.append(item)
+	var armor := Item.create("近卫局制式护甲", Item.Category.ARMOR, 2, 2)
+	armor.value = 130
+	game.base.shelf.append(armor)
+	ex.toggle_watch("fx")
+	ex.toggle_watch("lungmen:armor")
+	ex.toggle_watch("rhine:originium")
+	game.market.fire("C2")
+	game.market.fire("X2")
+	ex.open_forward("lungmen", "建材包", 2, 1, true, 1)
+	ex.open_forward("karlan", "寒地物资包", 1, 2, false, 3)
+	ex.open_cfd("fx", 1, 5, 6000.0)
+	ex.open_cfd("fx_col", -1, 10, 8.0)
+	ex.convert_fx("lmd", "col", 20000.0)
+	ex.convert_fx("lmd", "kje", 8000.0)
+	ex.open_cfd("comp:kazimierz", -1, 1, 4.0)
+	ex.add_alert("fx", ">=", ex.cfd_price("fx") * 1.03)
+	game.open_exchange()
+	await step(90)
+	ExchangeScreen.fx_selected = "fx_col"
+	ExchangeScreen.fx_mode = 0
+	ExchangeScreen.fx_from = "lmd"
+	ExchangeScreen.fx_to = "col"
+	page(1)
+	await capture("fx-changer")
+	ExchangeScreen.fx_selected = "fx_sar"
+	ExchangeScreen.fx_mode = 1
+	page(1)
+	await capture("fx-cfd")
+	ExchangeScreen.fx_list = 1
+	ExchangeScreen.fx_selected = "x_col"
+	ExchangeScreen.fx_mode = 1
+	page(1)
+	await capture("fx-cross")
+	ExchangeScreen.fx_list = 0
+	page(0, "lungmen:armor", 0)
+	await capture("market-spot")
+	page(0, "lungmen:build", 2)
+	await capture("market-forward")
+	page(0, "lungmen:medical", 1)
+	await capture("market-orders")
+	page(2)
+	await capture("positions")
+	page(3)
+	await capture("news")
+	page(4)
+	await capture("funds")
+	game.menu.show_station("workshop")
+	await capture("workshop")
+	# 交易所交易包修订案: 打包, one-key packing, 拆包, 可露希尔's 代售.
+	ExchangeScreen.workshop_tab = 1
+	ExchangeScreen.pack_pick = "建材包"
+	ExchangeScreen.pack_chosen = game.stash.filter(func(i): return i.material_id == "金属板")
+	game.menu.show_station("workshop")
+	await capture("workshop-pack")
+	game.menu.open_quick_pack()
+	await capture("quick-pack")
+	game.menu.close_quick_pack()
+	ExchangeScreen.workshop_tab = 0
+	game.close_modal()
+	game.base.console = true
+	game.menu.stash_tab = BaseScreens.UNPACK_TAB
+	BaseScreens.unpack_counts = {"金属板": 6, "螺栓": 8}
+	game.open_station("stash")
+	game.menu.show_station("stash")
+	await step(90)
+	await capture("unpack")
+	game.menu.stash_tab = 0
+	game.close_modal()
+	game.base.ship_at = "萨米"
+	game.base.camps["snow"] = 20
+	game.base.shelf.append(MaterialCatalog.create(Economy.GOLD_ID, 30))
+	game.open_station("store")
+	game.menu.camp_tab = 1
+	game.menu.show_station("store")
+	await step(90)
+	await capture("consign-base")
+	game.menu.trader_tab = "sell"
+	game.inventory.add_stack(MaterialCatalog.create("代糖", 12))
+	game.menu.show_station("store")
+	await capture("consign-sell")
+	for item in game.inventory.items.duplicate():
+		if not game.consign_offer(item).is_empty():
+			game.consign_sell(item)
+			break
+	game.menu.show_station("store")
+	await capture("consign-sold")
+	game.menu.trader_tab = "buy"
+	game.voyage.sailing = {"to": "龙门", "start": BaseState.now(), "due": BaseState.now() + 5400}
+	game.menu.show_station("store")
+	await capture("consign-sailing")
+	game.voyage.sailing = {}
+	game.close_modal()
+	game.open_station("store")
+	game.menu.camp_tab = 3
+	game.menu.show_station("store")
+	await capture("closure-fx")
+	game.menu.camp_tab = 4
+	game.menu.show_station("store")
+	await capture("closure-loan")
+	game.close_modal()
+	game.watch_widget.set_meta("on", true)
+	game.swan_popup = "乌萨斯主矿脉枯竭，远北矿区停产"
+	await capture("base-watch-swan")
+	game.close_swan_popup()
+	await game.start_contract("snow")
+	await step(10)
+	game.encounter = "post"
+	game.post_faction = "sami"
+	game.inventory.try_add(MaterialCatalog.create("固体燃料", 12))
+	game.inventory.try_add(MaterialCatalog.create("医用耗材包", 4))
+	game.open_modal("post")
+	game.menu.show_post()
+	await capture("post-sami")
+	quit()
