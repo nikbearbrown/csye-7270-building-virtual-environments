@@ -30,6 +30,8 @@ const FLAMES := preload("res://effects/fire_pit_flames.tscn")
 @export var map_seed := 2026
 @export var particle_seed := 7370
 ## preview frame -> burn_left the pit is set to on that frame.
+## Index into the floor's FirePits (see _load_level).
+@export var pit_index := 1
 @export var light_frame := 10
 @export var light_burn := 120.0
 @export var dwindle_frame := 55
@@ -64,12 +66,17 @@ func _find_game(node: Node) -> GameManager:
 
 func _load_level() -> void:
 	game.fixed_map_seed = map_seed
+	# fixed_map_seed alone left the fire count and places varying run to run; fix every RNG stream too.
+	game.seed_rng(map_seed)
 	await game.start_contract("snow")
 	game.open_modal("capture")
-	for fire in game.fires:
-		if is_instance_valid(fire):
-			pit = fire
-			break
+	# Which of the floor's pits (`-- --pit=N` overrides `pit_index`). With every RNG stream seeded,
+	# seed 2026 gives 3 pits; 1 is in open snow (0 has the player on it, 2 a crowd).
+	var index := pit_index
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--pit="): index = int(arg.trim_prefix("--pit="))
+	var valid := game.fires.filter(func(f): return is_instance_valid(f))
+	if index < valid.size(): pit = valid[index]
 	if pit == null:
 		print("PREVIEW_ERROR no FirePit on this floor (region %s seed %d)" % [game.region_id, map_seed])
 		return

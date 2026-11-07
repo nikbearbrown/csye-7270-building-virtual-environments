@@ -89,7 +89,9 @@ testing most of each flame quad is behind the model.
 
 Change: `Flames` `position` (local y) 0.2 → 0.5 (one setting), reviewed
 against the brief by the agent (intent: "flames lick up 0.6–0.9 units" above
-the pit; nothing else changes); user approval: pending.
+the pit; nothing else changes); user approval: not asked to a decision —
+**withdrawn by the agent** after the user's clarification below. Nothing was
+edited.
 
 Claude's prediction for r1 (same seed 7370, same fixture, 30 fps):
 - Frames 12, 40, 54: warm pixels at least 1.5× r0 (≥ 90 each), topmost warm
@@ -98,3 +100,33 @@ Claude's prediction for r1 (same seed 7370, same fixture, 30 fps):
   (frame 70 ≥ 35 warm px).
 - Frames 10, 130, 175: unchanged (0 warm px). Frame 105: dying specks, ≥ r0.
 - Embers unchanged (still not visible at this size).
+
+**Clarification and withdrawal (same day).** The user sent a screenshot
+(`evidence/a6/user/fire_pit_preview_occluded_by_boulders.png`) and said:
+"It's covered by the rocks in the scene." [是被场景里的石头挡上了] The pit
+was hidden under a cluster of the level's free-standing boulders, not by its
+own stone ring, so Claude's diagnosis (emitter too low inside the pit model)
+was wrong and the proposal was withdrawn.
+
+Two fixture faults explained it:
+1. The preview set only `fixed_map_seed`; the fire count and places still
+   changed run to run (3 or 4 pits, different positions), so the user's
+   window and strip r0 showed different pits. Both previews now also call
+   `game.seed_rng(map_seed)`; two rounds over every pit index gave identical
+   positions.
+2. With that, seed 2026 gives 3 pits: 0 has the player standing on it,
+   2 sits in a crowd, 1 is in open snow. The fixture now uses pit 1
+   (`pit_index`, overridable with `-- --pit=N`).
+
+Fixture change only; no effect setting changed. The level bug itself
+(decorative boulders have no collider and can cover fires and other objects)
+is outside A6's boundary; the user asked for it to be fixed after A6.
+
+New baseline strip `captures/fire_pit_flames/r0b/` (pit 1, open snow), warm
+pixels in the 580–700 × 290–410 crop: 10: 0 · 12: 72 · 40: 58 · 54: 76 ·
+70: 36 · 99: 2 · 105: 7 · 130: 0 · 175: 0; top at y ≈ 346–349. Claude's
+reading: a small orange tuft (~10 px) in the middle of the stone ring from
+frame 12; thinner at 70; gone by 130; embers not visible; faint pink ground
+glow while lit.
+
+User runtime observation of r0b: pending.

@@ -55,6 +55,8 @@ func _find_game(node: Node) -> GameManager:
 
 func _load_level() -> void:
 	game.fixed_map_seed = map_seed
+	# fixed_map_seed alone left the fire count and places varying run to run; fix every RNG stream too.
+	game.seed_rng(map_seed)
 	# `-- --snow`: the brief's lightest ground (萨米 snow) instead of the city street.
 	var region := "snow" if "--snow" in OS.get_cmdline_user_args() else "city"
 	await game.start_contract(region)
