@@ -34,4 +34,9 @@ Zhefan Zhang (zhefan-z), CSYE 7270 Fall 2026. Game: *walker-magic*, a 2D side-sc
 
 ## Film
 
-(Link, filename and SHA-256 added after the final render.)
+*A Burst and a Trail: Two Particle Effects for One Fireball*, 10:08.7, 3840×2160, 30 fps, narrated by Liam (AI).
+
+- Link: https://drive.google.com/file/d/1PQ6Im8D6lHT5SNuIMHbIsd-flERPdFl8/view?usp=sharing
+- File: `claude-liam-walker-magic-particles-gamedev.mp4`
+- SHA-256: `ac6fb7bf9505d96fee604199e93993430528b7f5bb1ab086b841fe249cdff3bb`
+- Game source shown: `3c37fe0`. Gameplay footage is real engine output from scripted input (a windowed Movie Maker run on an isolated copy, inside a SubViewport harness; see `CAPTURE.md` in the film records); strips are fixture captures. Film records: `walker-magic-zhefan/youtube/claude-liam-walker-magic-particles-gamedev/`. The MP4 is not in git.
