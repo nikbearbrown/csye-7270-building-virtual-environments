@@ -415,3 +415,7 @@ Presentation code reads game state; it never writes it.
   this is a known limit, not a regression. A1's "not on a swing that misses"
   is checked only as "a ground click walks and spawns none": since 2026-10-20 a
   click never swings at empty ground, so no real-input miss exists.
+- **2026-11-07 r3 (user verdict "kept", TUNING.md Effect B r2).** Effect B
+  `Flames` QuadMesh size 0.30×0.30 → **0.55×0.55**, after the user said the
+  fire looked "smothered in the wood". The settings table above still reads
+  0.30; this line supersedes it. Scene and config test agree.

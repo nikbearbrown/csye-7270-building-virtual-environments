@@ -167,5 +167,5 @@ r1  12: 170/345 · 40: 164/346 · 54: 162/345 · 70: 108/345 · 99: 33 · 105: 2
   The soft radial texture's faint upper edge also falls below the warm-pixel
   threshold, so the measured top understates the visible one.
 
-User runtime verdict (running game, 1280×720): pending.
+User runtime verdict (running preview, 1280×720): **kept** — "Keep." [保留] (2026-11-07).
 Strips: `captures/fire_pit_flames/r0b/`, `captures/fire_pit_flames/r1/`
