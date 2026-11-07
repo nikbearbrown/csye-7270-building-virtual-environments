@@ -1,0 +1,40 @@
+Read CLAUDE.md first. CHANGE-BRIEF.md is the contract. Do not edit any
+.gdshader file. Do not push.
+
+Part 1 — commit my notes. I saved TUNING.md (entry r0b). Commit it with
+prompt-4a.txt and the r0b-retrigger strip (6 PNGs) as "Effect A r0b:
+preview seeds fixed, my verdict (mine, committed by Claude Code at my
+request)".
+
+Part 2 — the two mutations of Effect A's configuration test. For each,
+change effects/fireball_impact.tscn, run
+./scripts/run-test.sh test_fireball_impact_config.gd 60, confirm the
+exit code, copy the log to logs/mutation-a<N>-<name>_60fps.log, then
+restore the scene file exactly (git checkout) and show git diff is empty:
+1. Godot 3 name: rename initial_velocity_min on Sparks to the Godot 3
+   name initial_velocity. Your ClassDB check found initial_velocity still
+   exists in 4.7.2 as a Vector2, so also say what the loaded material
+   ends up with (initial_velocity_min/_max read back) and whether the
+   effect still fires in a headless run of the preview (node state).
+   If the test still passes, find out why and say so.
+2. Drift: change Sparks lifetime 0.45 -> 0.6 without changing the brief.
+Commit the two logs as "Effect A mutations: Godot 3 name and drift
+(agent)" with a body giving each exit code and what you found.
+
+Part 3 — Step 3, a plan only. Effect A's scene is built and its
+configuration test passes. Do not change the effect's settings. Propose
+the smallest plan that meets the brief: the code that instances Effect A
+on its event (fireball.gd explode(), alongside the unchanged burst), how
+it implements the overlap retrigger rule, and a new state test in
+walker-magic-zhefan/tests/. Say which brief rule each assertion covers
+(A1-A6), and which rules only a human can check. Rules for the test:
+- Presentation code may read game state; it never writes it. Do not
+  change collision, movement, input, the state machine or existing tests.
+- The test drives the event through the real game loop and real input,
+  never by calling the trigger function directly.
+- It asserts that the effect fires on every impact and never otherwise,
+  including on scene load, on a cast and on a fireball timeout, at the
+  impact position.
+- It fires two impacts inside one lifetime and asserts overlap.
+- Aliveness is checked by instance presence, not emitting.
+Then stop and wait for my approval. Do not edit any gameplay file yet.

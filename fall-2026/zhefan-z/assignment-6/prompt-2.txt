@@ -1,0 +1,54 @@
+Read CLAUDE.md first. Effect A's intent and settings are in CHANGE-BRIEF.md,
+including the revision of 2026-11-05 (the A2 burst stays outside the
+impact).
+
+Before writing any scene file:
+- Check every class and property you will set against this binary,
+  headless, with ClassDB (class_exists, class_get_property_list), for
+  GPUParticles2D, ParticleProcessMaterial, CanvasItemMaterial,
+  GradientTexture1D, Gradient, CurveTexture and Curve. Report each one as
+  found or missing, including use_fixed_seed, seed,
+  particle_flag_disable_z and how a Curve's values can exceed 1.
+- Check whether any script moves the Camera2D in game/main.tscn, and
+  report what you find.
+
+Then build Effect A as a scene file in walker-magic-zhefan/effects/,
+using Godot 4 class and property names for the version CLAUDE.md pins.
+Configure it in the scene file, not in code; a small script on the root
+may only free it after 0.9 s. Put both emitters under one root node.
+
+The textures spark.png (4x4) and smoke.png (12x12 soft disc) are written
+by code: add tools/write_fx_textures.gd (extends SceneTree), run it once
+headless, and set their import settings explicitly (lossless, no
+mipmaps, detect_3d/compress_to=0).
+
+Then add:
+- a configuration test, walker-magic-zhefan/tests/test_fireball_impact_config.gd,
+  that loads the scene and reads back every setting the brief names for
+  Sparks and Smoke from the loaded resources, using the brief's values as
+  the expected values;
+- a preview scene, walker-magic-zhefan/previews/fireball_impact_preview.tscn,
+  that holds the effect at in-game camera scale over the real cave
+  background and ground from game/main.tscn, next to the pit, and
+  triggers it at frame 10, and again 6 frames later when its retrigger
+  export is on. Turn use_fixed_seed on for the preview's instances only
+  (if this version has it), never in the effect scene.
+
+Run the configuration test with ./scripts/run-test.sh at 60 and show the
+real output. Also report, with evidence from this run, whether each of
+these holds here, so I can add them to Headless facts:
+- a headless run draws no particles and runs no GPU particle process;
+  node state (emitting, one_shot, amount_ratio, visibility, instance
+  counts) is observable;
+- a GPU effect's headless CPU price is near zero by construction.
+
+Then give me the exact Movie Maker capture command for the preview
+(windowed, absolute output path under captures/fireball_impact/r0/,
+--fixed-fps 30, --quit-after 60), and the command to run the preview
+windowed at the project's window size so I can look first.
+
+Do not wire the effect into gameplay and do not edit any .gdshader file.
+When the test output is shown, commit everything you created with the
+message "Effect A scene, textures, config test, preview (agent, unedited)"
+and a body listing the files and the test result, then show
+git log --oneline -3 and stop.

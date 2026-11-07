@@ -1,0 +1,17 @@
+Assignment: Assignment 6 - Creating Particle Effects with Godot and Claude
+Student: Zhefan Zhang (zhefan-z)
+Project name: walker-magic (folder `walker-magic-zhefan`)
+GitHub repository URL: https://github.com/nikbearbrown/csye-7270-building-virtual-environments — branch `zhefan-z/assignment-6`, folder `fall-2026/zhefan-z/assignment-6`
+Git tag and submitted commit SHA: no tag, per the instructor (2026-10-09); the submitted commit SHA is in the Canvas note, because a commit cannot contain its own SHA
+Game-source revision shown in the film: 3c37fe0 (later commits add only film records, my review flag and documents; game source unchanged)
+Godot version, renderer, and operating system: Godot 4.7.2-stable (official build ed1daf0bf), Forward+ on Vulkan 1.4.312, Windows
+GPU used for the GPU price: NVIDIA GeForce RTX 5060 Laptop GPU
+Effect A: event, node type, retrigger rule: a fireball hit on a wolf, a wall or the ground (`Fireball.explode()`); `effects/fireball_impact.tscn`, a Node2D with two GPUParticles2D emitters (Sparks, Smoke), beside the unchanged A2 flash; overlap (a new instance per hit, at most 3 alive in steady casting, 6 at the bound)
+Effect B: job, condition, node type, feature Effect A doesn't use: a trail; while a fireball exists (from its first frame to its hit or 2.0 s timeout, then detached to fade where it was); `effects/fireball_trail.tscn`, one GPUParticles2D; turbulence and a sphere emission shape
+Budgets, and the price each is compared on: both on GPU time (Visual Profiler). Effect A 0.5 ms, measured about 0.02 ms; Effect B 0.3 ms, measured about 0.10 ms (upper bound, 18 trails). Headless CPU, for the record: A +8.2 µs, B +25.1 µs per frame over dry cases, against an empty-scene control
+Texture sources and licences (or model, version, and terms): `spark.png` and `smoke.png` written by code (`tools/write_fx_textures.gd`), no third-party content (`assets/textures/fx/ATTRIBUTION.md`); the A2 flash sprite is unchanged (sources in `walker-magic-zhefan/SOURCES.md`)
+Final film URL and filename: https://drive.google.com/file/d/1PQ6Im8D6lHT5SNuIMHbIsd-flERPdFl8/view?usp=sharing — claude-liam-walker-magic-particles-gamedev.mp4
+Final film SHA-256: ac6fb7bf9505d96fee604199e93993430528b7f5bb1ab086b841fe249cdff3bb
+Summary of my work: I chose both effects and their look, wrote every prediction and the budgets in CHANGE-BRIEF (five dated revisions), looked at each preview before Claude read a strip, approved every tuning change and gave every verdict in the running game (Effect A: preview seeds fixed after I saw stamped repeats, then a smoke fade-in for a brighter impact; Effect B: a thicker trail), overruled one strip reading, played both effects over the darkest and lightest art and at the screen edges, read GPU time in the Visual Profiler with vsync on and off, and converted the process shader. Claude Code built both effects, their configuration and state tests (54 and 32; 14 and 20 at 30/60/144, all 0 failures), the mutations (the Godot 3 name was dropped silently by the engine and caught only by read-back), previews, the cost script, the GPU price scene and the film. Details: TUNING.md, TEST-REPORT.md, FRICTIONAL.md.
+Known limitations: the `_spent` guard is not exercised by a test; the trail keeps 1–3 px gaps behind its head (cause guessed: a 30 fps particle simulation); Effect B's GPU price is an upper bound; whether the GPU keeps simulating a hidden emitter is not checked. See README.md.
+Changed games since Assignment 2 (yes/no; if yes, FRICTIONAL.md entry): no
