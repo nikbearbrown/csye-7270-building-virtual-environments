@@ -129,4 +129,26 @@ reading: a small orange tuft (~10 px) in the middle of the stone ring from
 frame 12; thinner at 70; gone by 130; embers not visible; faint pink ground
 glow while lit.
 
-User runtime observation of r0b: pending.
+User runtime observation of r0b: see revision r2.
+
+## 2026-11-07 — Effect B, revision r2
+
+User runtime observation (running preview `-- --loop`, 1280×720, 萨米 snow,
+open-snow pit 1): "Looks smothered in the wood; the fire should be bigger."
+[像是闷在木头里，火应该更大]
+
+Claude's reading of r0b: agrees. The tuft is ~10 px across and sits inside the
+log pile; each flame quad is 0.30 units (9 px) and scale 0.6→1.0→0.2, so most
+flames are 5–9 px and their upper half barely clears the logs.
+
+Change: `Flames` `draw_pass_1` QuadMesh size 0.30×0.30 → 0.55×0.55 (one
+setting), reviewed against the brief by the agent (intent: flames 0.6–0.9
+units tall, about half an operator); user approval: pending.
+
+Claude's prediction for r1 (`captures/fire_pit_flames/r1/`, same seed and
+fixture, 30 fps; crop 580–700 × 290–410, warm px as in r0b):
+- Frames 12, 40, 54: at least 2× r0b (≥ 140 each); top at least 5 px higher
+  (y ≤ 342); the core brighter and yellower where more additive quads overlap.
+- Frame 70: still visibly thinner than 54 (≥ 70 warm px, < frame 54).
+- Frames 99, 105: a few larger specks (≥ r0b).
+- Frames 10, 130, 175: 0. Embers unchanged.
