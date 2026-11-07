@@ -143,7 +143,10 @@ flames are 5–9 px and their upper half barely clears the logs.
 
 Change: `Flames` `draw_pass_1` QuadMesh size 0.30×0.30 → 0.55×0.55 (one
 setting), reviewed against the brief by the agent (intent: flames 0.6–0.9
-units tall, about half an operator); user approval: pending.
+units tall, about half an operator); user approval: **"Approved, change it."**
+[批准，改吧] (2026-11-07). Edited `effects/fire_pit_flames.tscn` (QuadMesh_flames
+size) and the config test's expected value; `test_fire_pit_flames_config.gd`
+at 60 fps: 123 checks, 0 failed.
 
 Claude's prediction for r1 (`captures/fire_pit_flames/r1/`, same seed and
 fixture, 30 fps; crop 580–700 × 290–410, warm px as in r0b):
@@ -152,3 +155,17 @@ fixture, 30 fps; crop 580–700 × 290–410, warm px as in r0b):
 - Frame 70: still visibly thinner than 54 (≥ 70 warm px, < frame 54).
 - Frames 99, 105: a few larger specks (≥ r0b).
 - Frames 10, 130, 175: 0. Embers unchanged.
+
+Claude's comparison of r1 with its prediction (warm px / top y, crop as above):
+r0b 12: 72/348 · 40: 58/349 · 54: 76/347 · 70: 36/347 · 99: 2 · 105: 7 · 10/130/175: 0;
+r1  12: 170/345 · 40: 164/346 · 54: 162/345 · 70: 108/345 · 99: 33 · 105: 27 · 10/130/175: 0.
+- Matches: full-fire frames ≥ 140 (2.2–2.8×); core brighter and yellower;
+  frame 70 thinner than 54 and ≥ 70; 99/105 above r0b; 10/130/175 empty.
+- Misses: the top rose only 2–3 px, not ≥ 5. Explanation: flame height is set
+  by how far particles travel (0.5–1.1 u/s for 0.8 s) and the scale curve's
+  shrink to 0.2 at the end; a bigger quad mostly widens and thickens the core.
+  The soft radial texture's faint upper edge also falls below the warm-pixel
+  threshold, so the measured top understates the visible one.
+
+User runtime verdict (running game, 1280×720): pending.
+Strips: `captures/fire_pit_flames/r0b/`, `captures/fire_pit_flames/r1/`
