@@ -77,3 +77,51 @@ byte-for-byte from a copy; the clean rerun is again 165/0.
 So the Godot 3 *float* spelling fails silently in the game and is caught only
 by the read-back test; the Vector2 spelling works because the old name survives
 as a compatibility alias in this version.
+
+## The process shader (Step 6)
+
+**Who did what.** Godot 4.7.2 does not expose a material's shader RID to
+scripts (`get_shader_rid` and `_get_shader_rid` both fail from GDScript:
+`logs/a6_dump_process_shader_windowed.log`), so the agent could not dump the
+code itself. The agent wrote `tests/a6_make_scratch_process_scene.gd`, which
+saves `previews/scratch_process_shader.tscn`: one `GPUParticles3D` with a
+unique deep copy of `effects/hit_spark.tscn` Sparks' `ParticleProcessMaterial`.
+**The user** opened it in the editor and used the Inspector's Process Material
+menu → Convert to ShaderMaterial → Shader → Save As. The agent moved the saved
+file into `shaders/` (the dialog put it under `previews/shaders/` the first
+time and the project root the second).
+
+**Attempt 1 was not the material's shader.** Converted straight after opening,
+the code had a POINT emission shape and no `color_ramp` / `scale_curve`
+sampling (line 157 held only `// Compile-time add textures.`), though the copy
+has a radius-0.1 sphere, a ramp and a curve. Kept as
+`evidence/a6/step6/attempt1_particles_generated.gdshader.txt`. For attempt 2
+the user first changed Spawn → Position → Emission Shape to Point and back to
+Sphere, forcing the material to regenerate, then converted. Attempt 2 has the
+sphere, the ramp and the curve: it is `shaders/particles_generated.gdshader`
+(371 lines; nothing in the game uses it). Conclusion: the converter copies
+whatever shader the material last generated; on a freshly loaded material
+that was a default one.
+
+| What | Line(s) in `shaders/particles_generated.gdshader` |
+|---|---|
+| `shader_type particles;` | 3 |
+| `start()` / `process()` | 224 / 274 |
+| initial velocity from its min and max | 140: `params.initial_velocity_multiplier = mix(initial_linear_velocity_min, initial_linear_velocity_max, rand_from_seed(alt_seed));` (uniforms 10–11); used as the start velocity at 263 |
+| gravity changes velocity | 307 `force = gravity;` then 320 `USERDATA1.xyz += force * DELTA;` (accumulated velocity), 338 `VELOCITY = final_velocity;`, 339 position step |
+| colour over life sampled | 162 `parameters.color *= texture(color_ramp, vec2(lifetime));` inside `process_display_param` (159), called from `process()` at 341 with `lifetime_percent`, written at 346 `COLOR = params.color;` |
+| scale over life applied | 161 `parameters.scale *= texture(scale_curve, vec2(lifetime)).rgb;`, applied to the transform at 361–363 |
+| tie to the brief | 140 ↔ Sparks `initial_velocity_min–max` **3.0–6.0** (CHANGE-BRIEF Effect A settings); also 132 damping ↔ **6.0–10.0** |
+| `amount_ratio` | 236 `if (rand_from_seed(alt_seed) > AMOUNT_RATIO) { ACTIVE = false; }`: a particle is skipped at spawn, the buffer is not reallocated (why Effect B drives `amount_ratio`, not `amount`) |
+
+**Which brief settings live here, which in the draw step.** In this process
+shader: emission shape and radius, direction and spread, initial velocity,
+gravity, damping, scale min/max and scale curve, colour ramp, hue variation,
+angle, lifetime randomness, and the per-particle `AMOUNT_RATIO` test. Not here:
+`amount`, `lifetime`, `one_shot`, `explosiveness`, `preprocess`,
+`local_coords`, `visibility_aabb` (node settings the engine feeds in as
+built-ins such as `LIFETIME`, `EMISSION_TRANSFORM`, `RESTART_*`), and the whole
+draw step: the `QuadMesh` size and its `StandardMaterial3D` (unshaded,
+`BILLBOARD_PARTICLES`, `vertex_color_use_as_albedo`, transparency, blend mode,
+fog) and the gradient texture. The colour this shader writes to `COLOR` only
+shows because the draw material uses vertex colour as albedo.
