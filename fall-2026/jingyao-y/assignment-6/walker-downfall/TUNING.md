@@ -67,3 +67,34 @@ User runtime verdict: not applicable (change not made). Effect A stays at its
 r0 settings. Strips: `captures/hit_spark/r0/`, `captures/hit_spark/r0-snow/`.
 Status: Effect A has no completed tuning revision yet; the assignment's
 "one observation-driven revision per effect" is open for Effect A.
+
+## 2026-11-07 — Effect B, revision r1
+
+User runtime observation (running preview `previews/fire_pit_flames_preview.tscn -- --loop`,
+1280×720, 萨米 snow, real `snow_fire_pit.glb` model under the effect):
+"Blocked by the stones, can't see it." [被石头挡上了看不到]
+
+Claude's reading of r0 (`captures/fire_pit_flames/r0/`, 4× crop of 580–700 × 290–410):
+lit and full on frame 11 (preprocess works; frame 10 is the one-frame GPU lag
+the brief allowed); 12–54 a small orange tuft ~8–10 px tall on the logs; 70
+and 99 visibly thinner with no gap or pop after the ratio change at 55; 105 a
+few dying specks; 130, 175 empty. Embers (0.05-unit quads, ~1.5 px) not
+visible. A faint warm ground glow is visible on the snow while lit.
+Measured warm pixels (r − b > 40 and r ≥ unlit frame + 20) in the crop:
+10: 0 · 12: 61 · 40: 53 · 54: 63 · 70: 24 · 99: 4 · 105: 14 · 130: 0 · 175: 0;
+topmost warm pixel at y ≈ 344–347.
+Cause: the pit model is 1.14 units tall and 1.5 wide (mesh AABB); flames are
+emitted at local y 0.2 ± 0.18, among the logs and stones, so with normal depth
+testing most of each flame quad is behind the model.
+
+Change: `Flames` `position` (local y) 0.2 → 0.5 (one setting), reviewed
+against the brief by the agent (intent: "flames lick up 0.6–0.9 units" above
+the pit; nothing else changes); user approval: pending.
+
+Claude's prediction for r1 (same seed 7370, same fixture, 30 fps):
+- Frames 12, 40, 54: warm pixels at least 1.5× r0 (≥ 90 each), topmost warm
+  pixel at least 4 px higher (y ≤ 341). Same colours.
+- Frames 70, 99: still thinner than 54 (ratio 0.44), but more visible than r0
+  (frame 70 ≥ 35 warm px).
+- Frames 10, 130, 175: unchanged (0 warm px). Frame 105: dying specks, ≥ r0.
+- Embers unchanged (still not visible at this size).
