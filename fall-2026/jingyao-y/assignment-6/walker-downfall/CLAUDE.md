@@ -75,19 +75,24 @@
   (`BaseMaterial3D` enums), `QuadMesh`, `Gradient`, `GradientTexture2D`, `Curve`, `CurveTexture`.
 - Never use Godot 3 names: `Particles`, `ParticlesMaterial`, `SpatialMaterial`,
   `flags_unshaded`, `params_billboard_mode`, `scale_random`.
-- Confirmed in 4.7.2 by the main-session ClassDB probe (2026-11-07, recorded in TEST-REPORT.md):
-  - `GPUParticles3D`: `amount_ratio`, `use_fixed_seed`, `seed`, `preprocess`,
-    `visibility_aabb`, `local_coords`, `trail_enabled`. `CPUParticles3D` has no `amount_ratio`.
-  - `ParticleProcessMaterial`: `turbulence_*`, `damping_min`, `scale_curve`, `color_ramp`,
-    `alpha_curve`, `initial_velocity_min`. `ParticlesMaterial` does not exist. It still lists
-    compatibility names `initial_velocity`/`scale`: write `initial_velocity_min/max`, `scale_min/max`.
-- Confirmed in project code: `SHADING_MODE_UNSHADED`, `TRANSPARENCY_ALPHA`, `BLEND_MODE_ADD`,
-  `BILLBOARD_ENABLED`, `disable_fog`, `vertex_color_use_as_albedo` (`entities/fire_pit.gd:93-99`).
-- Not checked in this version, so confirm before relying on them: `BILLBOARD_PARTICLES`,
-  `BLEND_MODE_MIX`, `particle_flag_disable_z`, `hue_variation_*`, `angle_*`,
-  `emission_sphere_radius`, the `EMISSION_SHAPE_*` names, `turbulence_noise_*`,
-  `turbulence_influence_*`, `damping_max`, `draw_pass_1`, `fixed_fps`, `interpolate`, and the
-  name of the radial fill in `GradientTexture2D`.
+- Confirmed in 4.7.2 by `tests/a6_probe_headless.gd` (`logs/a6_probe_headless_60fps.log`): every
+  property and enum the brief names exists, including `BILLBOARD_PARTICLES`, `BLEND_MODE_MIX`,
+  `EMISSION_SHAPE_SPHERE`, `GradientTexture2D.FILL_RADIAL`, `turbulence_*`, `amount_ratio`.
+  `CPUParticles3D` has no `amount_ratio`; `ParticlesMaterial` and `scale_random` do not exist.
+- Trap: `initial_velocity` and `scale` still exist as Vector2 compatibility properties that
+  map onto `*_min/*_max`. Write `initial_velocity_min/max` and `scale_min/max` anyway.
+
+## Headless facts
+
+Measured by `tests/a6_probe_headless.gd` (`logs/a6_probe_headless_60fps.log`):
+- A headless run uses a dummy renderer (adapter name empty): it draws no particles and runs
+  no GPU particle process. Node state (amount_ratio, visibility, instance counts) is
+  observable; the look is not.
+- A one-shot `GPUParticles3D` reads `emitting == false` from the first frame after it is set,
+  and `finished` never fires headlessly. Do not use either to free or count bursts in a test.
+- A GPU effect's headless CPU price is near zero by construction (predicted; the cost script
+  in Step 7 measures it against an empty-scene control).
+- Frame strips come from a windowed Movie Maker run, which the agent starts.
 
 ## Out of scope
 
@@ -104,16 +109,9 @@
 
 ## Unconfirmed
 
-- No file here records `forward_plus` at run time; `rendering_method` is left at the engine
-  default. `logs/a5_probe_headless_*fps.log`, `TEST-REPORT.md` and `MATERIALS.md` are absent,
-  so the ClassDB probe above is not on disk yet.
-- The RTX 4060 is from memory (`CHANGE-BRIEF.md:45-46`). "Headless never processes particles"
-  is the brief's reasoning (`CHANGE-BRIEF.md:367-372`), not measured in A6.
-- `logs/baseline-before/summary.txt` is empty, so the A6 baseline count is unknown (per-test
-  logs are there). `effects/`, `previews/` and the four new test files do not exist yet.
-- The brief cites `entities/enemy.gd:1509` for `queue_free()` (`CHANGE-BRIEF.md:142`), but it
-  is at `:1501`; `:1509` is `begin_chase()`.
-- The brief's flames are 24 particles with a 0.8 s life (`CHANGE-BRIEF.md:250-251`). Today's
-  CPU flames are 18 with 0.7 s (`entities/fire_pit.gd:37`).
-- Repo-wide Grep misses `game/` and `entities/` (ignore rules?); search them directly. Line
-  numbers drift, so recheck before citing.
+- `rendering_method` is left at the default; the probe reports `forward_plus`/`d3d12` headless.
+  The GPU (RTX 4060) is from memory until the Visual Profiler run names it.
+- `effects/`, `previews/` and the four new test files do not exist yet. The baseline is in
+  `logs/baseline-before/summary.txt`.
+- The brief's flames (24, 0.8 s) differ from today's CPU flames (18, 0.7 s,
+  `entities/fire_pit.gd:37`) on purpose. Line numbers drift; recheck before citing.

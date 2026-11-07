@@ -397,4 +397,15 @@ Presentation code reads game state; it never writes it.
 
 ## Revisions
 
-(none yet)
+- **2026-11-07 r1 (agent, after the Step 1 review and `tests/a6_probe_headless.gd`).**
+  (a) A4's reference `entities/enemy.gd:1509` should read `:1501` (`queue_free()`;
+  `died` is emitted at `:1500`). (b) Headless, a one-shot `GPUParticles3D` reads
+  `emitting == false` from the first frame after it is set and its `finished`
+  signal never fires (`logs/a6_probe_headless_60fps.log`). So `HitSpark` frees
+  itself on a timer: its root script counts its own processed time and frees
+  the root at the longest emitter lifetime plus 0.1 s, **0.55 s**, not on
+  `finished`. A3 becomes "freed within 0.55 s plus one frame". The state test
+  counts `HitSpark` nodes and reads their positions; it does not read
+  `emitting` on the one-shot emitters. (c) The Godot 3 names `initial_velocity`
+  and `scale` exist in 4.7.2 as Vector2 compatibility properties that map onto
+  the min/max pair; F1's mutation is recorded with that in mind.
