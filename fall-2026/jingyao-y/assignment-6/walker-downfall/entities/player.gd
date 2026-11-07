@@ -912,6 +912,7 @@ func attack_direction(direction: Vector3, target: Enemy = null) -> void:
 		target.hitstop_remaining = maxf(target.hitstop_remaining, stop)
 		hitstop_remaining = stop
 		if is_instance_valid(game): CombatVfx.spawn(game, target.global_position, direction, "spark")
+		_hit_spark(target)
 		if crit and has_trigger(ItemModifier.Trigger.MOON_WAVE) and randf() < 0.35:
 			_spawn_wave(direction, arts_power() * WAVE_SCALE * wave_multiplier() * 0.5, false, true)
 		if f("hit_stack_atk") > 0.0:
@@ -939,6 +940,19 @@ func _after_landed(target: Enemy, raw: float, stage: int) -> void:
 					_deal(other, arts_power() * SkillTrees.extra_target(rank("extra_target")), "arts", false, 0.0, false)
 					break
 
+## Effect A `hit_spark` (CHANGE-BRIEF.md, A1-A4): every landed melee hit gets a
+## fresh HitSpark under the GameManager at the struck enemy's position, never
+## under the enemy, so a killing blow's queue_free() cannot take it along and an
+## earlier burst is never restarted (overlap). It frees itself on its own timer
+## (effects/hit_spark.gd). Presentation only: reads `game` and the position.
+const HIT_SPARK := preload("res://effects/hit_spark.tscn")
+
+func _hit_spark(target: Enemy) -> void:
+	if not is_instance_valid(game) or not is_instance_valid(target): return
+	var burst := HIT_SPARK.instantiate() as Node3D
+	burst.position = game.to_local(target.global_position)
+	game.add_child(burst)
+
 ## 拉普兰德's third cut crosses both blades: one more beside the target (within
 ## CROSS_RADIUS of it, in her reach) takes CROSS_SCALE of the blow.
 const CROSS_RADIUS := 2.2
@@ -960,6 +974,7 @@ func _lappland_cross(target: Enemy, raw: float, kind: String, crit: bool, pierce
 	_deal(best, scaled, kind, crit, pierce if kind == "phys" else 0.0, true)
 	_melee_riders(best, scaled, crit, pierce)
 	if is_instance_valid(best): CombatVfx.spawn(game, best.global_position, direction, "spark")
+	_hit_spark(best)
 
 ## 精神摧毁 (用户 2026-10-20: 剑气命中沉默敌人): her wave stops the target's
 ## special abilities for a while (less on elites and bosses), with 模组 fragile.
@@ -1766,6 +1781,7 @@ func _amiya_cut(target: Enemy, raw: float, crit: bool, direction: Vector3) -> vo
 	_after_landed(target, raw, 0)
 	_try_execute(target)
 	if is_instance_valid(game): CombatVfx.spawn(game, target.global_position, direction, "amiya_spark")
+	_hit_spark(target)
 	if f("hit_stack_atk") > 0.0:
 		hit_stacks = mini(HIT_STACK_MAX, hit_stacks + 1)
 		hit_stack_timer = HIT_STACK_SECONDS

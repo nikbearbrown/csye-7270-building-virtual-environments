@@ -16,7 +16,49 @@ emits `finished` headlessly.
 
 ## Baseline (before any A6 code)
 
-Pending: the serial rerun of the parallel failures is still running.
+All 89 `tests/test_*.gd` at fixed 60 fps through `scripts/run-baseline.sh`
+(10 in parallel, each via `run-test.sh <file> 60 <300|1200>`):
+**78 of 89 pass** (`logs/baseline-before/summary.txt`). The 11 failures were
+rerun one at a time (`run-test.sh <file> 60 600`,
+`logs/baseline-before-serial/summary.txt`): `test_audio` and `test_market`
+pass alone (load-sensitive); amiya_input, base_crew, hotbar_input, loot_input
+time out (124) and builds, combat, item_icons, lappland_input fail (1) alone as
+well; `test_ui_v1` was not rerun alone (the serial run was stopped before it).
+The Step 3 session measured why the real-input suites fail headless:
+`Input.parse_input_event` never reaches `GameManager._input`, so their mouse
+pointer stays at (0,0). None of these are touched by A6.
+
+## Effect A state test (Step 3 session, 2026-11-07)
+
+`./scripts/run-test.sh test_hit_spark_state.gd 60 600` — fixed 60 fps,
+headless, real `main.tscn`, real game loop, real left-mouse events
+(`Input.parse_input_event`, plus `root.push_input` when headless so the event
+takes the game's own Window → SubViewport → `GameManager._input` path). The test
+never calls `_hit_spark`, `CombatVfx.spawn`, `attack()` or `attack_direction()`.
+Result: **22 PASS, 0 FAIL, exit 0** (`logs/test_hit_spark_state_60fps.log`).
+
+| Rule | What was asserted |
+|---|---|
+| A1 | none on load (game, base, field, +30 frames); 拉普兰德 held attack: 4 landed hits → 4 HitSparks at the struck enemy's position (max offset 0.0), each a child of GameManager; cross cut adds one on the second enemy; frame-by-frame match of sparks to landed melee hits; sword-wave projectile hit → none; ground click → walk, no swing, none; enemy hits her → none |
+| A2 | 阿米娅's double cut: sparks added 0.117 s apart, two distinct nodes alive together, first not restarted (its own clock never went back) |
+| A3 | all 13 freed; each lived 32 frames = 0.533 s (between 0.45 s and 0.55 s + 1 frame) |
+| A4 | a 1-HP enemy killed by a real hit left the tree on frame 407, its spark on frame 439 |
+
+Parent mutation (burst parented to the enemy): 3 checks fail (GameManager
+parent, A4, A3 lower bound), `logs/test_hit_spark_state_60fps_mutation_parent.log`;
+code restored, diff re-checked by the main session.
+
+Not provable headlessly: that the bursts emit or look right, "both emitting"
+on screen, A4's full play on screen, legibility, screen-edge clipping. Not
+drivable by real input: a swing that misses (a ground click walks since
+2026-10-20; `attack()` only swings at a target in reach and sight).
+
+After the change, all suites in parallel (`logs/baseline-after-step3/summary.txt`):
+**80 of 91** (the two new A6 suites pass). Differences from before:
+`test_audio` FAIL→PASS (load-sensitive, passes alone before too);
+`test_elevation` PASS→FAIL in parallel, passes alone
+(`run-test.sh test_elevation.gd 60 1200`, exit 0). The other ten failures are
+the same as before.
 
 ## Effect A configuration test and mutations (agent, 2026-11-07)
 

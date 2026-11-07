@@ -409,3 +409,9 @@ Presentation code reads game state; it never writes it.
   `emitting` on the one-shot emitters. (c) The Godot 3 names `initial_velocity`
   and `scale` exist in 4.7.2 as Vector2 compatibility properties that map onto
   the min/max pair; F1's mutation is recorded with that in mind.
+- **2026-11-07 r2 (agent, after the Step 3 review).** Scope stays the three
+  `player.gd` sites. 赫拉格, 星熊, 林, 罗莎 and 桑塔拉 make their melee mesh
+  spark through `basic_hit` in `entities/kits/*.gd` and get no `HitSpark`;
+  this is a known limit, not a regression. A1's "not on a swing that misses"
+  is checked only as "a ground click walks and spawns none": since 2026-10-20 a
+  click never swings at empty ground, so no real-input miss exists.
