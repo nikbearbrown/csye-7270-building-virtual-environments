@@ -55,7 +55,9 @@ func _find_game(node: Node) -> GameManager:
 
 func _load_level() -> void:
 	game.fixed_map_seed = map_seed
-	await game.start_contract("city")
+	# `-- --snow`: the brief's lightest ground (萨米 snow) instead of the city street.
+	var region := "snow" if "--snow" in OS.get_cmdline_user_args() else "city"
+	await game.start_contract(region)
 	game.open_modal("capture")
 	var at: Vector2 = game.world_map.main_path[0] + Vector2(0, 8)
 	game.player.teleport(game.world_map.nearest_walkable(Vector3(at.x, 0.7, at.y)))
@@ -75,6 +77,8 @@ func _process(_delta: float) -> void:
 	frame += 1
 	if loaded:
 		_place_camera()
+		# Something re-shows the HUD after _load_level; keep it out of the fixture.
+		if game._hud.visible: game._hud.hide()
 	# `-- --loop` (human viewing only, not used for strips): replay the pair every 90 frames.
 	var f := frame
 	if "--loop" in OS.get_cmdline_user_args() and frame > retrigger_frame:
