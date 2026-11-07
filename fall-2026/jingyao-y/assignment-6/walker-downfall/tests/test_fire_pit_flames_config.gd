@@ -22,7 +22,7 @@ const EXPECT := {
 		"turb_strength": 1.0, "turb_scale": 2.5, "turb_influence": [0.05, 0.12],
 		"scale": [0.8, 1.2], "scale_curve": [[0.0, 0.6], [0.3, 1.0], [1.0, 0.2]],
 		"ramp": [[0.0, Color(1, 0.85, 0.4, 0)], [0.3, Color(1, 0.6, 0.2, 0.9)], [1.0, Color(0.8, 0.2, 0.05, 0)]],
-		"quad": Vector2(0.30, 0.30),
+		"quad": Vector2(0.55, 0.55),  # r2 (2026-11-07), was 0.30
 		"aabb": AABB(Vector3(-0.6, -0.2, -0.6), Vector3(1.2, 2.0, 1.2)),
 	},
 	"Embers": {
