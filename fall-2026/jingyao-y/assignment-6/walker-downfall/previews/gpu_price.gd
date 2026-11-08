@@ -6,12 +6,13 @@ extends Node
 ##
 ## Boots the real game, 萨米 floor (seed 2026, every RNG stream seeded), freezes
 ## the simulation with the "capture" modal, camera on pit 1 at default size.
-## Keys (none is used by the game):
-##   F7  Effect A at its priced peak: a HitSpark every FREE_AFTER/8 s beside the
+## Keys (none is used by the game; F7/F8 are the editor's pause/stop while a
+## scene runs from the editor, so they are not used):
+##   U   Effect A at its priced peak: a HitSpark every FREE_AFTER/8 s beside the
 ##       pit, so about 8 are alive at once (152 particles).
-##   F8  Effect B heaviest: every FirePit on the floor fuelled to 300 s
+##   I   Effect B heaviest: every FirePit on the floor fuelled to 300 s
 ##       (amount_ratio 1.0); again to put them out.
-##   F9  vsync on/off (DisplayServer, this window only; no project setting).
+##   O   vsync on/off (DisplayServer, this window only; no project setting).
 ## The label shows the state, FPS and the number of HitSparks alive.
 
 const HIT_SPARK := preload("res://effects/hit_spark.tscn")
@@ -70,16 +71,16 @@ func _load_level() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo): return
 	match event.keycode:
-		KEY_F7:
+		KEY_U:
 			a_on = not a_on
 			_spawn_clock = 0.0
-		KEY_F8:
+		KEY_I:
 			b_on = not b_on
 			for f in game.fires:
 				if not is_instance_valid(f): continue
 				if b_on: f.feed(FeatureCatalog.FIRE_MAX)
 				else: f.burn(f.burn_left)
-		KEY_F9:
+		KEY_O:
 			var off := DisplayServer.window_get_vsync_mode() == DisplayServer.VSYNC_DISABLED
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if off else DisplayServer.VSYNC_DISABLED)
 		_: return
@@ -99,7 +100,7 @@ func _process(delta: float) -> void:
 	var alive := 0
 	for child in game.get_children():
 		if child.get_script() == preload("res://effects/hit_spark.gd"): alive += 1
-	_label.text = "FIXTURE gpu_price  F7 A:%s (alive %d)  F8 B:%s  F9 vsync:%s  FPS %d" % [
+	_label.text = "FIXTURE gpu_price  U A:%s (alive %d)  I B:%s  O vsync:%s  FPS %d" % [
 		"ON" if a_on else "off", alive, "ON" if b_on else "off",
 		"on" if DisplayServer.window_get_vsync_mode() != DisplayServer.VSYNC_DISABLED else "OFF",
 		Engine.get_frames_per_second()]
