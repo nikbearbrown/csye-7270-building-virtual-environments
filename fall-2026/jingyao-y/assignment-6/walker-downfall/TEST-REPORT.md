@@ -230,3 +230,17 @@ The table reads one selected frame per state, from the user's screenshots in
 - **Not measured:** the draw step (particles' share of the transparent pass was
   not isolated in the screenshots), averages over many frames, and the vsync-off
   FPS comparison (optional; not done).
+
+## In-play checks (human check, 2026-11-07)
+
+**Executor: the user**, running `previews/play_check.tscn` (fixture: real
+萨米 floor, seed 2026, simulation running, fuel in the pack; extra keys Y =
+tree pause, H = hide pit effects), windowed 1280×720, RTX 4060 Laptop.
+Checklist given: (1) Effect A on every hit, including held-button rapid
+repeats; (2) a pit lit with E: full at once, then dwindling and dying out;
+(3) Esc menu (flames keep moving, fuel frozen) and Y tree pause (frozen);
+(4) H hide/show (shown again at the current fuel); (5) camera zoom/rotate so
+a burning pit or a burst sits at the screen edge (no pop-out); (6) size of
+both effects against the character.
+User's verdict, snow (lightest ground): "No problems with any of them."
+[都没有问题]
