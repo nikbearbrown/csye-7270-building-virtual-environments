@@ -52,7 +52,10 @@ Change: `Puff` `draw_pass_1` QuadMesh size 0.5×0.5 → 1.0×1.0 (one setting),
 reviewed against the brief by the agent (the brief's intent: "a third,
 alpha-blended dark layer that reads as a smudge on white"); user approval:
 **declined** — "Don't change." [不改] (2026-11-07). Nothing was edited; no r1
-strips were captured. The prediction below is kept as written, untested.
+strips were captured. The prediction below is kept as written.
+**Later the same day the user approved it:** "Change effect A's puff."
+[把effect A的烟团改了] The change and the prediction are exactly those recorded
+here before the decline (commit `cc9ebfaf`); results below.
 
 Claude's prediction for r1 (same seeds, same fixture, 30 fps):
 - r1-snow: puff 18→42 px across, extending past the body onto the snow. The
@@ -63,10 +66,7 @@ Claude's prediction for r1 (same seeds, same fixture, 30 fps):
 - r1 (city): no visible difference (dark puff on dark street); the "below"
   patch changes by ≤ 3 levels.
 
-User runtime verdict: not applicable (change not made). Effect A stays at its
-r0 settings. Strips: `captures/hit_spark/r0/`, `captures/hit_spark/r0-snow/`.
-Status: Effect A has no completed tuning revision yet; the assignment's
-"one observation-driven revision per effect" is open for Effect A.
+(Superseded by the later approval above.)
 
 ## 2026-11-07 — Effect B, revision r1
 
