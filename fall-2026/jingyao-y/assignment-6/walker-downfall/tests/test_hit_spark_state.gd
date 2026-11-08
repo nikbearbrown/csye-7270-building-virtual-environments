@@ -29,7 +29,7 @@ var enemy_gone: Dictionary = {}
 var watched: Array[Enemy] = []
 var last_health: Dictionary = {}
 var counted_gone: Dictionary = {}
-## 拉普兰德's sword waves (projectiles): which enemies each has struck so far.
+## Lappland's sword waves (projectiles): which enemies each has struck so far.
 var waves: Array = []
 var wave_seen: Dictionary = {}
 ## Health drops caused by a projectile, and those that came with a HitSpark.
@@ -220,12 +220,12 @@ func run() -> void:
 	await step(30)
 	# --- A1: nothing on scene load (rig, base, field, 30 frames after) ---
 	check("A1 no HitSpark from loading the game, the base and the field + 30 frames", sparks.is_empty())
-	check("field is running with 拉普兰德", game.simulation_active() and p.operator_id == Operators.LAPPLAND)
+	check("field is running with Lappland", game.simulation_active() and p.operator_id == Operators.LAPPLAND)
 	game._clear_field()
 	await step(3)
 	var origin := p.global_position
 
-	# --- A1 basic hit + 拉普兰德's cross onto a second enemy ---
+	# --- A1 basic hit + Lappland's cross onto a second enemy ---
 	var first := dummy(Vector3(2, 0, 0), 1000000)
 	var second := dummy(Vector3(2, 0, 1.2), 1000000)
 	watch(first)
@@ -247,7 +247,7 @@ func run() -> void:
 	for c in on_second:
 		for b in on_first:
 			if b.added == c.added: same_frame = true
-	check("A1 拉普兰德's cross cut adds a HitSpark on the second enemy, same frame as the blow", on_second.size() >= 1 and same_frame)
+	check("A1 Lappland's cross cut adds a HitSpark on the second enemy, same frame as the blow", on_second.size() >= 1 and same_frame)
 	check("A1 sparks match landed melee hits frame by frame so far (no extra, none missing)", mismatches.is_empty())
 	print("PROJECTILE hits ", projectile_hits, " with sparks ", projectile_sparks)
 	check("A1 her sword wave (a projectile) struck and made no HitSpark", projectile_hits >= 1 and projectile_sparks == 0)
@@ -309,7 +309,7 @@ func run() -> void:
 		not k.is_empty() and k.parent == game and int(k.removed) > int(enemy_gone.get(victim_id, 1 << 30)) and lifetime(k) >= LONGEST_LIFE)
 	unwatch()
 
-	# --- A2: 阿米娅's stage-2 double cut, two landed hits inside 0.45 s ---
+	# --- A2: Amiya's stage-2 double cut, two landed hits inside 0.45 s ---
 	# Switching who deploys is fixture setup (choose_operator only works at the base).
 	p.set_operator(Operators.AMIYA_GUARD)
 	p.clear_move_target()
@@ -329,7 +329,7 @@ func run() -> void:
 			pair = [a, b]
 			break
 	print("AMIYA sparks ", amiya.size(), " added frames ", amiya.map(func(s): return s.added))
-	check("A1 阿米娅's held cuts make HitSparks on her target", amiya.size() >= 3 and amiya.all(func(s): return s.enemy == target.get_instance_id()))
+	check("A1 Amiya's held cuts make HitSparks on her target", amiya.size() >= 3 and amiya.all(func(s): return s.enemy == target.get_instance_id()))
 	check("A2 two landed hits inside 0.45 s found", pair.size() == 2)
 	if pair.size() == 2:
 		var a: Dictionary = pair[0]

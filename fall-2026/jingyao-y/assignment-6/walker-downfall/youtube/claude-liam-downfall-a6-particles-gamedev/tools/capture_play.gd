@@ -3,7 +3,7 @@ extends SceneTree
 ## Scripted-input fixture, not human play: the real game (game/main.tscn), the
 ## real loop and real left-mouse events, the same input path and fixture
 ## dummies as tests/test_hit_spark_state.gd. City floor (darkest ground),
-## seed 2026 with every RNG stream seeded. 阿米娅 (guard) holds the left
+## seed 2026 with every RNG stream seeded. Amiya (guard) holds the left
 ## button on a still dummy enemy (rapid cuts -> overlapping HitSparks), then
 ## lands one blow on a 1-HP dummy (the burst outlives the freed enemy).
 ## It never calls _hit_spark, CombatVfx.spawn or attack(); it only logs every

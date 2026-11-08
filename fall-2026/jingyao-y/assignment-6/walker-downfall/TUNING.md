@@ -2,8 +2,8 @@
 
 Every strip here is a **fixture capture**: a preview scene (`previews/`) rendered
 by Godot's Movie Maker at a fixed 30 fps, not gameplay footage. The user's
-runtime observations are quoted as given (translated from Chinese, with the
-original in brackets). Claude's readings are claims, not checks.
+runtime observations are quoted in English translation.
+Claude's readings are claims, not checks.
 
 ## 2026-11-07 — Effect A, initial look (r0)
 
@@ -13,8 +13,8 @@ GPU: NVIDIA GeForce RTX 4060 Laptop GPU, D3D12, Forward+.
 
 User runtime observation (running preview `previews/hit_spark_preview.tscn -- --loop`,
 1280×720 window, city background):
-"Splashing outward." [向外迸溅] Asked to clarify, the user chose: "I can see it
-splashing outward" [看得出向外迸溅], i.e. the outward throw reads as intended.
+"Splashing outward." Asked to clarify, the user chose: "I can see it
+splashing outward", i.e. the outward throw reads as intended.
 
 Claude's reading of r0 (4× nearest-neighbour crop of 560–720 × 300–420):
 - 10: a soft white flash about 25 px across on the stand-in's torso, a few tiny
@@ -36,9 +36,9 @@ the snow check covers next.
 
 ## 2026-11-07 — Effect A, revision r1
 
-User runtime observation (running preview `-- --loop --snow`, 1280×720, 萨米 snow):
-"I can see it." [能看到] Asked specifically about the dark puff behind the
-sparks: "Barely see a little." [勉强看到一点]
+User runtime observation (running preview `-- --loop --snow`, 1280×720, Sami snow):
+"I can see it." Asked specifically about the dark puff behind the
+sparks: "Barely see a little."
 
 Claude's reading of r0-snow: flash and sparks read mainly where they overlap the
 stand-in's dark body; specks that leave the body are faint on snow; the puff is
@@ -51,10 +51,10 @@ about 30 px wide, so almost all of it lies over the dark body.
 Change: `Puff` `draw_pass_1` QuadMesh size 0.5×0.5 → 1.0×1.0 (one setting),
 reviewed against the brief by the agent (the brief's intent: "a third,
 alpha-blended dark layer that reads as a smudge on white"); user approval:
-**declined** — "Don't change." [不改] (2026-11-07). Nothing was edited; no r1
+**declined** — "Don't change." (2026-11-07). Nothing was edited; no r1
 strips were captured. The prediction below is kept as written.
 **Later the same day the user approved it:** "Change effect A's puff."
-[把effect A的烟团改了] The change and the prediction are exactly those recorded
+ The change and the prediction are exactly those recorded
 here before the decline (commit `cc9ebfaf`); results below.
 
 Claude's prediction for r1 (same seeds, same fixture, 30 fps):
@@ -71,8 +71,8 @@ Claude's prediction for r1 (same seeds, same fixture, 30 fps):
 ## 2026-11-07 — Effect B, revision r1
 
 User runtime observation (running preview `previews/fire_pit_flames_preview.tscn -- --loop`,
-1280×720, 萨米 snow, real `snow_fire_pit.glb` model under the effect):
-"Blocked by the stones, can't see it." [被石头挡上了看不到]
+1280×720, Sami snow, real `snow_fire_pit.glb` model under the effect):
+"Blocked by the stones, can't see it."
 
 Claude's reading of r0 (`captures/fire_pit_flames/r0/`, 4× crop of 580–700 × 290–410):
 lit and full on frame 11 (preprocess works; frame 10 is the one-frame GPU lag
@@ -103,7 +103,7 @@ Claude's prediction for r1 (same seed 7370, same fixture, 30 fps):
 
 **Clarification and withdrawal (same day).** The user sent a screenshot
 (`evidence/a6/user/fire_pit_preview_occluded_by_boulders.png`) and said:
-"It's covered by the rocks in the scene." [是被场景里的石头挡上了] The pit
+"It's covered by the rocks in the scene." The pit
 was hidden under a cluster of the level's free-standing boulders, not by its
 own stone ring, so Claude's diagnosis (emitter too low inside the pit model)
 was wrong and the proposal was withdrawn.
@@ -133,9 +133,9 @@ User runtime observation of r0b: see revision r2.
 
 ## 2026-11-07 — Effect B, revision r2
 
-User runtime observation (running preview `-- --loop`, 1280×720, 萨米 snow,
+User runtime observation (running preview `-- --loop`, 1280×720, Sami snow,
 open-snow pit 1): "Looks smothered in the wood; the fire should be bigger."
-[像是闷在木头里，火应该更大]
+
 
 Claude's reading of r0b: agrees. The tuft is ~10 px across and sits inside the
 log pile; each flame quad is 0.30 units (9 px) and scale 0.6→1.0→0.2, so most
@@ -144,7 +144,7 @@ flames are 5–9 px and their upper half barely clears the logs.
 Change: `Flames` `draw_pass_1` QuadMesh size 0.30×0.30 → 0.55×0.55 (one
 setting), reviewed against the brief by the agent (intent: flames 0.6–0.9
 units tall, about half an operator); user approval: **"Approved, change it."**
-[批准，改吧] (2026-11-07). Edited `effects/fire_pit_flames.tscn` (QuadMesh_flames
+ (2026-11-07). Edited `effects/fire_pit_flames.tscn` (QuadMesh_flames
 size) and the config test's expected value; `test_fire_pit_flames_config.gd`
 at 60 fps: 123 checks, 0 failed.
 
@@ -167,7 +167,7 @@ r1  12: 170/345 · 40: 164/346 · 54: 162/345 · 70: 108/345 · 99: 33 · 105: 2
   The soft radial texture's faint upper edge also falls below the warm-pixel
   threshold, so the measured top understates the visible one.
 
-User runtime verdict (running preview, 1280×720): **kept** — "Keep." [保留] (2026-11-07).
+User runtime verdict (running preview, 1280×720): **kept** — "Keep." (2026-11-07).
 Strips: `captures/fire_pit_flames/r0b/`, `captures/fire_pit_flames/r1/`
 
 ### Effect A r1 — results (after the user's approval)
@@ -192,5 +192,5 @@ Claude's comparison with the prediction:
   the body's edges. The city prediction (≤ 3 levels in the patch) held.
 
 User runtime verdict (running preview `-- --loop --snow`, 1280×720): **kept** —
-"Keep." [保留] (2026-11-07).
+"Keep." (2026-11-07).
 Strips: `captures/hit_spark/r0/`, `r0-snow/`, `r1/`, `r1-snow/`.

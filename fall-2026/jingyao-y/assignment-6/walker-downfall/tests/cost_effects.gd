@@ -18,7 +18,7 @@ extends SceneTree
 ##     drift in the live floor (enemies, threat) lands on every case alike.
 ## Cases:
 ##   empty      a bare Node under root, no game
-##   game_off   res://game/main.tscn on a real 萨米 floor (fixed seed), no HitSpark,
+##   game_off   res://game/main.tscn on a real Sami floor (fixed seed), no HitSpark,
 ##              every FirePit unlit (burn_left 0)
 ##   A_8        8 HitSpark instances alive at once under the GameManager. Each frees
 ##              itself after 0.55 s (33 frames at 60 fps); the fixture re-instances
@@ -241,7 +241,7 @@ func run() -> void:
 	print("FLOOR region %s floor %d fire pits %d enemies %d simulation_active %s" % [
 		game.region_id, game.floor_number, n_pits, game.floor_enemies().size(), game.simulation_active()])
 	if game.region_id != "snow" or n_pits < 1 or not game.simulation_active():
-		print("FAIL no live 萨米 floor with fire pits")
+		print("FAIL no live Sami floor with fire pits")
 		quit(1)
 		return
 	var order := ["game_off", "A_8", "B_1", "B_all"]

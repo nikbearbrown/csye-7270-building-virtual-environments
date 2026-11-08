@@ -16,14 +16,14 @@ Frozen for this task: `effects/hit_spark.tscn` (settings), `shaders/**`,
     (no damage, hitstop, aggro, charge, cooldown, combo or target change).
 - Called on the line right after each of the three existing landed-hit
   `CombatVfx.spawn(..., "spark"|"amiya_spark")` calls (basic hit in
-  `attack_direction()`, 拉普兰德's cross in `_lappland_cross()`, 阿米娅's cut in
+  `attack_direction()`, Lappland's cross in `_lappland_cross()`, Amiya's cut in
   `_amiya_cut()`), with the same enemy the mesh spark uses. The mesh spark stays.
 - **Retrigger rule (overlap):** every call instances a fresh scene; nothing keeps
   a reference to an earlier burst, so an earlier `HitSpark` is never restarted or
   cut off. Freeing is the effect's own 0.55 s timer (`effects/hit_spark.gd`,
   r1 (b)), unchanged. Because the burst is a child of the `GameManager`, an
   enemy's `queue_free()` on a killing blow cannot take it along (A4).
-- Not touched: ranged shots, sword waves, 绝影 strikes, 月下, enemy-to-player hits,
+- Not touched: ranged shots, sword waves, Shadowless strikes, Moonlit, enemy-to-player hits,
   misses — none of those code paths gets the helper.
 
 ## Step 2 — new state test `tests/test_hit_spark_state.gd` (60 fps)
@@ -41,16 +41,16 @@ frame. It never reads `emitting` on the one-shot emitters (r1 (b)).
 
 Fixture setup (not the event): fixed map seed, `_clear_field()`, enemies spawned
 with `_spawn_enemy`, big health and `set_physics_process(false)` so they stand
-still (as the existing input suites do), `choose_operator` in the base for 阿米娅.
+still (as the existing input suites do), `choose_operator` in the base for Amiya.
 
 | Assertion | Brief rule |
 |---|---|
 | a. From the rig loading through the field loading plus 30 frames after it: zero `HitSpark` nodes created | A1 (never on scene load) |
-| b. 拉普兰德, left mouse held on one enemy: each frame's number of new `HitSpark`s equals that frame's landed hits (health drops), ≥ 3 hits; each is a child of the `GameManager`, at the struck enemy's `global_position` at the instant (≤ 0.01) | A1 (once per landed hit, at the position) |
-| c. 拉普兰德 stage 3 with a second enemy within 2.2 of the first: the cross cut adds a second `HitSpark` at the second enemy's position in the same frame | A1 (third call site), A2 (two alive) |
+| b. Lappland, left mouse held on one enemy: each frame's number of new `HitSpark`s equals that frame's landed hits (health drops), ≥ 3 hits; each is a child of the `GameManager`, at the struck enemy's `global_position` at the instant (≤ 0.01) | A1 (once per landed hit, at the position) |
+| c. Lappland stage 3 with a second enemy within 2.2 of the first: the cross cut adds a second `HitSpark` at the second enemy's position in the same frame | A1 (third call site), A2 (two alive) |
 | d. Left click on empty ground: she walks, no swing, no health drop, no `HitSpark` | A1 (not on a swing at empty ground — see limits) |
 | e. Enemy with physics on attacks her (no input from the test): her HP drops, zero `HitSpark` | A1 (not on enemy-to-player hits) |
-| f. 阿米娅, mouse held: her stage-2 double cut lands two cuts ~0.11 s apart → two `HitSpark`s created < 0.45 s apart, both alive at once, distinct nodes; the first one's own `_age` never goes backwards and it is freed ≥ 0.45 s after it was created (not restarted, not cut off) | A2 (overlap), A1 (阿米娅 call site) |
+| f. Amiya, mouse held: her stage-2 double cut lands two cuts ~0.11 s apart → two `HitSpark`s created < 0.45 s apart, both alive at once, distinct nodes; the first one's own `_age` never goes backwards and it is freed ≥ 0.45 s after it was created (not restarted, not cut off) | A2 (overlap), A1 (Amiya call site) |
 | g. Every `HitSpark` seen is freed, each within 0.55 s + one frame of creation and not before 0.45 s; at the end none is left | A3 |
 | h. A 1-HP enemy killed by a real held-mouse hit: the enemy is freed, its `HitSpark` (parent `GameManager`) is still in the tree after the enemy left it and lives its full 0.45–0.55 s+1 frame | A4 |
 
@@ -73,7 +73,7 @@ rerun alone: `./scripts/run-test.sh <file> 60 600`. A5 (presentation only) rests
   for its full timer.
 - **A2 "both emitting"**: headless cannot read it (`emitting` is false from
   frame 1, r1 (b)); the test proves two live distinct nodes, neither restarted.
-- **Swing that misses**: since 用户 2026-10-20 a left click on the ground walks
+- **Swing that misses**: since the user 2026-10-20 a left click on the ground walks
   (no air swings, `game/gm_pointer.gd:105-111`) and a lock only swings when the
   target is in reach and sight (`Player.attack()`), so no real mouse input can
   produce a melee swing that lands on nobody. Check d covers the real input for
@@ -148,7 +148,7 @@ Changes from the plan, found while running it:
    root window with `root.push_input(event, true)`, so it travels root Window
    -> SubViewportContainer -> SubViewport -> `GameManager._input` ->
    `pointer_step` -> lock -> `Player.attack()`. No game code changed for this.
-2. **Projectile hits.** Default 拉普兰德 releases a sword wave on the 4th swing;
+2. **Projectile hits.** Default Lappland releases a sword wave on the 4th swing;
    the wave struck the enemy 7 frames later (health -214.5, no HitSpark). The
    accounting now identifies such drops by `SwordWave.hit_ids` and asserts they
    bring **zero** HitSparks, which adds a real-input check of A1's "not on

@@ -1,6 +1,6 @@
 extends SceneTree
 ## FILM CAPTURE HELPER (A6 film only; not part of the game or its tests).
-## Fixture, not gameplay: the real game on the real 萨米 floor used by
+## Fixture, not gameplay: the real game on the real Sami floor used by
 ## previews/fire_pit_flames_preview.gd (seed 2026 + seed_rng, pit 1, the
 ## "capture" modal so fuel does not burn on its own). The pit's own
 ## FirePitFlames is driven only through FirePit.feed()/burn() and the tree's

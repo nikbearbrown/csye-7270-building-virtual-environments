@@ -1,6 +1,6 @@
 extends SceneTree
 ## Effect B `fire_pit_flames` state test (CHANGE-BRIEF.md B1-B6, prompts/plan-5.md).
-## The real game (game/main.tscn), the real loop, a real 萨米 floor. Fuel goes on
+## The real game (game/main.tscn), the real loop, a real Sami floor. Fuel goes on
 ## only through the real E key and a real left click on the fuel picker's row
 ## (GameManager._interact -> fuel modal -> Button.pressed -> burn_fuel -> feed);
 ## fuel burns only through GameManager._physics_process -> _tick_features -> burn.
@@ -166,7 +166,7 @@ func run() -> void:
 	await step(30)
 	var fires := game.fires.filter(func(f): return is_instance_valid(f))
 	print("FLOOR region %s floor %d fires %d simulation_active %s modal '%s' display %s" % [game.region_id, game.floor_number, fires.size(), game.simulation_active(), game.modal, DisplayServer.get_name()])
-	check("a real 萨米 floor with fires, the field running", game.region_id == "snow" and fires.size() >= 1 and game.simulation_active())
+	check("a real Sami floor with fires, the field running", game.region_id == "snow" and fires.size() >= 1 and game.simulation_active())
 	var pit: FirePit = fires[mini(PIT_INDEX, fires.size() - 1)]
 	var fx := pit.get_node_or_null("FirePitFlames") as Node3D
 	check("the pit holds one FirePitFlames instance and no CPUParticles3D",
@@ -290,7 +290,7 @@ func run() -> void:
 	await step(1)
 	check("B5 effect root shown again: emitting at the current ratio", state(pit).emitting == [true, true] and absf(state(pit).ratio[0] - 1.0) < EPS)
 
-	# --- B6: a fire lit at floor load (临时休整 campfire) ---
+	# --- B6: a fire lit at floor load (rest-stop campfire) ---
 	# Fixture: the route map's next column is made of rest nodes (as test_route_map.gd
 	# does); then the real advance() builds the floor, which feeds its campfire 300 s.
 	game._ensure_route()
@@ -303,7 +303,7 @@ func run() -> void:
 	await step(5)
 	var rest := game.rest_fire
 	print("B6 floor %d route_kind %s rest_fire %s" % [game.floor_number, game.route_kind, rest])
-	check("B6 a 临时休整 floor with its campfire", game.route_kind == "rest" and is_instance_valid(rest))
+	check("B6 a rest-stop floor with its campfire", game.route_kind == "rest" and is_instance_valid(rest))
 	if is_instance_valid(rest):
 		var first: Dictionary = first_seen.get(rest.get_instance_id(), {})
 		var added := int(added_at.get(rest.get_instance_id(), -1))

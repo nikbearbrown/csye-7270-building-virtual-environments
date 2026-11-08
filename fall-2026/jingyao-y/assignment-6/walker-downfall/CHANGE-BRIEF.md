@@ -13,7 +13,7 @@ that build's ClassDB on 2026-11-07 (scratch probe; the CLAUDE.md step records it
 ## What exists today (audit, 2026-11-07)
 
 Every particle system in the game is a `CPUParticles3D` made in code with
-`.new()`: the 萨米 fire pit (`entities/fire_pit.gd:74`), shower spray, trace
+`.new()`: the Sami fire pit (`entities/fire_pit.gd:74`), shower spray, trace
 motes, boss bursts (`game/boss_vfx.gd:636`), weather and vault grit. None is a
 scene file. The hit "spark" on a landed melee blow is not a particle system at
 all: `CombatVfx.spawn(..., "spark")` draws a few unlit meshes
@@ -38,8 +38,8 @@ all: `CombatVfx.spawn(..., "spark")` draws a few unlit meshes
 - **Event:** an operator's melee hit lands on an enemy. It is raised in
   `entities/player.gd` at the three places that today call
   `CombatVfx.spawn(game, <target>.global_position, direction, "spark"|"amiya_spark")`:
-  the basic combo hit (`player.gd:914`), 拉普兰德's cross cut onto a second
-  target (`player.gd:962`) and 阿米娅's combo cut (`player.gd:1768`). The
+  the basic combo hit (`player.gd:914`), Lappland's cross cut onto a second
+  target (`player.gd:962`) and Amiya's combo cut (`player.gd:1768`). The
   position is the struck enemy's `global_position` at that moment.
 - **Node type:** `GPUParticles3D` ×3 under one `Node3D` root. GPU because the
   game is 3D on Forward+ with a real GPU (RTX 4060 per memory of the D3D12
@@ -58,11 +58,11 @@ all: `CombatVfx.spawn(..., "spark")` draws a few unlit meshes
   3. *Settle, 0.12–0.35 s:* damping brakes the sparks hard; they turn orange then
      deep red, droop under gravity, shrink and vanish. A dark puff behind them
      expands slightly and fades.
-  4. *Clear, by 0.45 s:* nothing left. A follow-up blow (阿米娅's cuts come
+  4. *Clear, by 0.45 s:* nothing left. A follow-up blow (Amiya's cuts come
      0.08 s apart) layers a fresh flash on top of a settling burst, which is
      what "overlap" should look like.
 - **Contrast:** the darkest field ground is the city street, measured in A5 at
-  RGB8 (58,58,67) under the game's normal look; the lightest is 萨米 snow
+  RGB8 (58,58,67) under the game's normal look; the lightest is Sami snow
   (near-white). Additive sparks carry the dark city by value alone. On snow
   additive light has almost nothing to add, so the burst has a third,
   alpha-blended **dark** layer (the puff) that reads as a smudge on white.
@@ -137,7 +137,7 @@ node), never to the enemy; once a spark is out it belongs to the world.
 | # | Rule |
 |---|---|
 | A1 | Fires once per landed melee hit (the three call sites above), at the struck enemy's `global_position` at that instant (tolerance 0.01 units). Never otherwise: not on scene load, not on a swing that misses, not on enemy-to-player hits, not on ranged/projectile hits. |
-| A2 | Retrigger rule **overlap**: every landed hit instances a new `HitSpark` under the `GameManager`; an earlier burst is never restarted or cut off. Two hits 0.1 s apart (inside the 0.45 s life) leave **two** `HitSpark` nodes alive, both emitting. Expected peak in normal play: 6 alive (阿米娅's 3-cut combo 0.08 s apart, the next swing, 拉普兰德's cross onto a second target); priced at 8. |
+| A2 | Retrigger rule **overlap**: every landed hit instances a new `HitSpark` under the `GameManager`; an earlier burst is never restarted or cut off. Two hits 0.1 s apart (inside the 0.45 s life) leave **two** `HitSpark` nodes alive, both emitting. Expected peak in normal play: 6 alive (Amiya's 3-cut combo 0.08 s apart, the next swing, Lappland's cross onto a second target); priced at 8. |
 | A3 | Each `HitSpark` frees itself after its emitters finish (≤ 0.45 s + one frame at any fixed rate); none accumulate. |
 | A4 | Freed parent: if the hit kills the enemy (`queue_free()` on the same call, `entities/enemy.gd:1509`), the burst still plays in full, because it is not a child of the enemy. |
 | A5 | Presentation only: the hit's damage, hitstop, aggro, charge and every existing test expectation are unchanged. |
@@ -159,7 +159,7 @@ Preview `res://previews/hit_spark_preview.tscn`: the real game loaded headed wit
 a fixed map seed into the city region (darkest ground), camera at the game's
 default size and pitch, an enemy stand-in at the centre, the burst fired at the
 enemy's position at frame 10, and (export `retrigger`, on for the strip) again
-at frame 16. A second variant over 萨米 snow is captured for the light-ground
+at frame 16. A second variant over Sami snow is captured for the light-ground
 check. `use_fixed_seed = true` on the preview instance only.
 
 Capture at 30 fps: `--write-movie <abs>/captures/hit_spark/r0/frame.png --fixed-fps 30 --quit-after 60`.
@@ -181,7 +181,7 @@ Frames to read: **10, 12, 15, 20, 30, 50**.
 ### The job
 
 - **What it tells the player:** "this fire is warm, and this is how much fuel
-  it has left." In 萨米 the cold meter rises unless the player stands in a lit
+  it has left." In Sami the cold meter rises unless the player stands in a lit
   fire's 4.5-unit radius (`FeatureCatalog.FIRE_RADIUS`); fuel burns down
   (at most 300 s, `FeatureCatalog.FIRE_MAX`) and the boss's hammer knocks fuel
   off (`entities/boss.gd:1728`). Big flames = plenty; a few licks = feed it now;
@@ -210,7 +210,7 @@ Frames to read: **10, 12, 15, 20, 30, 50**.
   down to 30% at the last second. *Out* — emission stops; the flames already
   alive finish their 0.8 s and embers their 2.2 s, so it dies, it doesn't blink
   off.
-- **Contrast:** 萨米 snow is the lightest ground in the game; the fire's own
+- **Contrast:** Sami snow is the lightest ground in the game; the fire's own
   warm ground glow (the existing additive `Glow` halo, kept) darkens nothing, so
   the flames must read by saturation and brightness against near-white. The
   flame core ramp goes to alpha 0.9 orange; the darkest ground near fires is the
@@ -293,7 +293,7 @@ amount_ratio = 0.3 + 0.7 * clamp(burn_left / 120.0, 0.0, 1.0)   (both emitters)
 
 | Rule | How |
 |---|---|
-| B1–B3 | Headless state test (`tests/test_fire_pit_flames_state.gd`, 60 fps) on a real 萨米 floor: real fuel fed through the real E-interaction path, burning through the real physics loop, values set at least two ways (feed, burn), asserting `amount_ratio` and that `amount` never changes. |
+| B1–B3 | Headless state test (`tests/test_fire_pit_flames_state.gd`, 60 fps) on a real Sami floor: real fuel fed through the real E-interaction path, burning through the real physics loop, values set at least two ways (feed, burn), asserting `amount_ratio` and that `amount` never changes. |
 | B4 | Same test, pausing the tree and opening a real menu modal. Freezing *on screen* is the user's check. |
 | B5 | Same test (state); on screen the user's check. |
 | B6 | Same test on the camp floor (state). First frames on screen: the user's check ("Scene load"). |
@@ -302,7 +302,7 @@ amount_ratio = 0.3 + 0.7 * clamp(burn_left / 120.0, 0.0, 1.0)   (both emitters)
 
 ### Frame strip (Effect B)
 
-Preview `res://previews/fire_pit_flames_preview.tscn`: a real 萨米 floor with a
+Preview `res://previews/fire_pit_flames_preview.tscn`: a real Sami floor with a
 fixed seed, camera at default size, one `FirePit` in view. At frame 10 it is fed
 120 s (ratio 1.0); at frame 55 `burn_left` is set to 24 s (ratio 0.44); at
 frame 100 to 0 (out). `use_fixed_seed = true` on the preview's emitters.
@@ -410,7 +410,7 @@ Presentation code reads game state; it never writes it.
   and `scale` exist in 4.7.2 as Vector2 compatibility properties that map onto
   the min/max pair; F1's mutation is recorded with that in mind.
 - **2026-11-07 r2 (agent, after the Step 3 review).** Scope stays the three
-  `player.gd` sites. 赫拉格, 星熊, 林, 罗莎 and 桑塔拉 make their melee mesh
+  `player.gd` sites. Hellagur, Hoshiguma, Lin, Rosa and Santalla make their melee mesh
   spark through `basic_hit` in `entities/kits/*.gd` and get no `HitSpark`;
   this is a known limit, not a regression. A1's "not on a swing that misses"
   is checked only as "a ground click walks and spawns none": since 2026-10-20 a

@@ -14,7 +14,7 @@ stay out (`scripts/a6_tracked_files.py`, `.gitignore`).
   operator's melee hit lands (`entities/player.gd`, `_hit_spark()` at the three
   landed-hit sites). Three `GPUParticles3D` (Flash, Sparks, Puff); overlap rule:
   a new instance per hit under the GameManager, freed by its own 0.55 s timer.
-- **Effect B `fire_pit_flames`** (`effects/fire_pit_flames.tscn`): the 萨米 fire
+- **Effect B `fire_pit_flames`** (`effects/fire_pit_flames.tscn`): the Sami fire
   pit's flames and embers as two `GPUParticles3D` with turbulence and
   preprocess, replacing the old code-made CPU particles. A feedback loop:
   `entities/fire_pit.gd` sets `amount_ratio = 0.3 + 0.7·clamp(burn_left/120,0,1)`
@@ -70,7 +70,7 @@ load-sensitive failures).
 - Effect A's one revision (Puff 0.5 → 1.0, kept) darkens only the struck
   enemy's body; the puff still does not reach the snow around it (TUNING.md).
 - Effect B's embers (0.05-unit quads) are barely visible at the default zoom.
-- 赫拉格, 星熊, 林, 罗莎 and 桑塔拉 hit through `entities/kits/*.gd` and get no
+- Hellagur, Hoshiguma, Lin, Rosa and Santalla hit through `entities/kits/*.gd` and get no
   HitSpark (brief r2).
 - The GPU price is single-frame Visual Profiler readings of the particle
   process step; the draw step was not isolated (TEST-REPORT.md).
@@ -87,4 +87,4 @@ is. SHA-256 `33d15797d825922546e397b935e8527bbc7d85f4cda731276e1400df883666a2`.
 Filmed at commit `6f980233`. Checker `./art godot-gamedev --check`: PASS,
 16 code→result pairs (`CHECKS-REPORT.md`); final export gate 78 samples, 0
 blockers. The user watched and listened to the final export: "No problems"
-[没问题]. YouTube link: added in SUBMISSION.md once uploaded.
+. YouTube link: added in SUBMISSION.md once uploaded.

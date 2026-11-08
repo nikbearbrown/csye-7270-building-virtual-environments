@@ -17,7 +17,7 @@
   - Event: a landed operator melee hit, a direct call, not a signal. Each site in
     `entities/player.gd` calls `CombatVfx.spawn(game, <enemy>.global_position, direction,
     "spark"|"amiya_spark")`: the basic hit in `attack_direction()` (`:838`, `:901-914`);
-    拉普兰德's cross cut in `_lappland_cross()` (`:947-962`); 阿米娅's cut in `_amiya_cut()`
+    Lappland's cross cut in `_lappland_cross()` (`:947-962`); Amiya's cut in `_amiya_cut()`
     (`:1762-1768`). Her later cuts are queued 0.08 s apart (`:80`, `:1756-1758`, `:1798-1802`).
   - The current spark is not a particle system: unlit meshes in `game/combat_vfx.gd:163-192`.
   - Signal `Enemy.died(enemy)` (`entities/enemy.gd:12`) fires at `:1500`, before `queue_free()`
@@ -35,7 +35,7 @@
     `simulation_active()` is true (`game/game_manager.gd:441-442,848-853`); and the boss hammer
     (`entities/boss.gd:1724-1728`).
   - Constants: `FIRE_RADIUS` 4.5 and `FIRE_MAX` 300 (`game/feature_catalog.gd:91,95`).
-  - Appears on 萨米 (`snow`) floors only (`game/gm_features.gd:143`). Pits are added in code
+  - Appears on Sami (`snow`) floors only (`game/gm_features.gd:143`). Pits are added in code
     under `world_map._generated_root`: ordinary floors (`:180-182`), the boss arena
     (`:145-152`) and the camp rest stop (`game/gm_route.gd:218-226`).
 - Tests: always run through the wrapper: `./scripts/run-test.sh <file>.gd <fps|realtime> [timeout_s]`.

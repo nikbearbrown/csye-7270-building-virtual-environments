@@ -39,8 +39,8 @@ Result: **22 PASS, 0 FAIL, exit 0** (`logs/test_hit_spark_state_60fps.log`).
 
 | Rule | What was asserted |
 |---|---|
-| A1 | none on load (game, base, field, +30 frames); 拉普兰德 held attack: 4 landed hits → 4 HitSparks at the struck enemy's position (max offset 0.0), each a child of GameManager; cross cut adds one on the second enemy; frame-by-frame match of sparks to landed melee hits; sword-wave projectile hit → none; ground click → walk, no swing, none; enemy hits her → none |
-| A2 | 阿米娅's double cut: sparks added 0.117 s apart, two distinct nodes alive together, first not restarted (its own clock never went back) |
+| A1 | none on load (game, base, field, +30 frames); Lappland held attack: 4 landed hits → 4 HitSparks at the struck enemy's position (max offset 0.0), each a child of GameManager; cross cut adds one on the second enemy; frame-by-frame match of sparks to landed melee hits; sword-wave projectile hit → none; ground click → walk, no swing, none; enemy hits her → none |
+| A2 | Amiya's double cut: sparks added 0.117 s apart, two distinct nodes alive together, first not restarted (its own clock never went back) |
 | A3 | all 13 freed; each lived 32 frames = 0.533 s (between 0.45 s and 0.55 s + 1 frame) |
 | A4 | a 1-HP enemy killed by a real hit left the tree on frame 407, its spark on frame 439 |
 
@@ -137,7 +137,7 @@ starts lit. `burn_left`, `feed()`/`burn()` arithmetic, warmth, the model and
 the Glow halo are unchanged; reviewed by the main session.
 
 `./scripts/run-test.sh test_fire_pit_flames_state.gd 60 600` — fixed 60 fps,
-headless; real `main.tscn`, seed 2026 + `seed_rng`, 萨米 floor, pit 1.
+headless; real `main.tscn`, seed 2026 + `seed_rng`, Sami floor, pit 1.
 Feeding only by a real E key event and a real click on the fuel picker row;
 burning only through the physics loop. Result: **0 failures**
 (`logs/test_fire_pit_flames_state_60fps.log`). A per-frame monitor checked
@@ -165,7 +165,7 @@ pixel-identical in warm-pixel counts to r1 (12:170 40:164 54:162 70:108 99:33
 
 All suites in parallel after the change (`logs/baseline-after-step5/summary.txt`):
 **82 of 93** (both new B suites pass). Versus after-step3: `test_elevation`
-FAIL→PASS (load-sensitive); `test_arenas` PASS→FAIL on three 血债 values, passes
+FAIL→PASS (load-sensitive); `test_arenas` PASS→FAIL on three blood-debt values, passes
 alone (85/0). The other ten failures are the known pre-existing ones. No
 existing test reads the old `_flames`/`_embers`.
 
@@ -176,7 +176,7 @@ existing test reads the old `_flames`/`_embers`.
 log `logs/cost_effects_60fps.log`). Metric: wall-clock time between consecutive
 frames; 60 warm-up + 300 timed frames, 5 rounds, the four game cases
 interleaved with rotating order and each compared with the same round's
-effects-off control. 萨米 floor 1, seed 2026 (+ `seed_rng`), 3 pits, 89 enemies.
+effects-off control. Sami floor 1, seed 2026 (+ `seed_rng`), 3 pits, 89 enemies.
 
 | Case | Mean ms/frame | sd over rounds | vs effects off (paired) |
 |---|---|---|---|
@@ -234,7 +234,7 @@ The table reads one selected frame per state, from the user's screenshots in
 ## In-play checks (human check, 2026-11-07)
 
 **Executor: the user**, running `previews/play_check.tscn` (fixture: real
-萨米 floor, seed 2026, simulation running, fuel in the pack; extra keys Y =
+Sami floor, seed 2026, simulation running, fuel in the pack; extra keys Y =
 tree pause, H = hide pit effects), windowed 1280×720, RTX 4060 Laptop.
 Checklist given: (1) Effect A on every hit, including held-button rapid
 repeats; (2) a pit lit with E: full at once, then dwindling and dying out;
@@ -243,12 +243,12 @@ repeats; (2) a pit lit with E: full at once, then dwindling and dying out;
 a burning pit or a burst sits at the screen edge (no pop-out); (6) size of
 both effects against the character.
 User's verdict, snow (lightest ground): "No problems with any of them."
-[都没有问题]
+
 City (darkest ground), `play_check.tscn -- --city`, Effect A from normal
-melee play: "Very clear." [非常清楚]
+melee play: "Very clear."
 Scene load, `play_check.tscn -- --lit` (every pit fed in the frame the floor
 finishes loading; an approximation of the camp fire lit at floor build, which
-the fixture cannot reach): "Burning in full." [完整在烧]
+the fixture cannot reach): "Burning in full."
 Not checked by the user: the boss arena's first fire and the boss hammer's
 fuel cost (same code paths, covered headlessly only for the hammer's `burn()`
 path in general, not on a boss floor).

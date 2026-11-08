@@ -1,7 +1,7 @@
 extends Node
 ## FIXTURE, not gameplay: the frame-strip preview for Effect B (CHANGE-BRIEF.md,
 ## "Frame strip (Effect B)"). Boots the real game (res://game/main.tscn) headed,
-## starts a real 萨米 (`snow`) contract with a fixed map seed, freezes the
+## starts a real Sami (`snow`) contract with a fixed map seed, freezes the
 ## simulation with the "capture" modal, picks the floor's first real FirePit,
 ## puts the player a few units from it, centres the camera on the pit at the
 ## game's default size (24) and pitch, and captures the pit's own

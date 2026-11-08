@@ -96,7 +96,7 @@ records rising (0 → > 0) and falling (> 0 → 0) edges with the sample's state
 | pit `visible = false`, ≈10 s of loop: ratio keeps following `burn_left` (changed, = mapping); shown again: current ratio | B5 |
 | burn to 0 in the loop: on the sample `burn_left` hits 0, both `emitting == false`; 140 frames later still false, `burn_left` 0 | B2 |
 | effect root `visible = false`, solid fuel fed via E + click: 0 → 120, emitting true that sample, ratio 1.0; a plank on top → 180, ratio 1.0; shown again | B1 (relight), B3 (≥ 120 clamp), B5 |
-| `advance()` onto a 临时休整 (rest) node (next column's nodes set to "rest" as `test_route_map.gd` does): the rest fire's first sampled frame has `burn_left` 300, both emitting, ratio 1.0 | B6 |
+| `advance()` onto a rest-stop (rest) node (next column's nodes set to "rest" as `test_route_map.gd` does): the rest fire's first sampled frame has `burn_left` 300, both emitting, ratio 1.0 | B6 |
 | headless observation printed: whether `emitting` on these continuous emitters reads back true while lit | (report) |
 
 B7: every existing suite through `./scripts/run-baseline.sh after-step5 8`,
@@ -254,7 +254,7 @@ index d3cc1dee..13ba9507 100644
 --- a/fall-2026/jingyao-y/assignment-6/walker-downfall/previews/fire_pit_flames_preview.gd
 +++ b/fall-2026/jingyao-y/assignment-6/walker-downfall/previews/fire_pit_flames_preview.gd
 @@ -4,19 +4,16 @@ extends Node
- ## starts a real 萨米 (`snow`) contract with a fixed map seed, freezes the
+ ## starts a real Sami (`snow`) contract with a fixed map seed, freezes the
  ## simulation with the "capture" modal, picks the floor's first real FirePit,
  ## puts the player a few units from it, centres the camera on the pit at the
 -## game's default size (24) and pitch, and instances
@@ -346,8 +346,8 @@ Second run: 0 failures (`logs/test_fire_pit_flames_state_60fps.log`).
 `./scripts/run-baseline.sh after-step5 8` → **82 of 93 pass** (`logs/baseline-after-step5/summary.txt`)
 against after-step3's 80 of 91. Two suites are new and both pass: `test_fire_pit_flames_config`
 and `test_fire_pit_flames_state`. Changes from after-step3: `test_elevation` FAIL → PASS (known
-load-sensitive); `test_arenas` PASS → FAIL, with 3 血债 (debt) values (5.5 where 5 was
+load-sensitive); `test_arenas` PASS → FAIL, with 3 blood-debt (debt) values (5.5 where 5 was
 expected), no fire check involved. Run alone (`./scripts/run-test.sh test_arenas.gd 60 1200`) it gives
 85 checks, 0 failures. The other 10 failures are the known pre-existing ones.
 `test_map_features` passed in the baseline; one earlier standalone run had 6 non-fire failures
-(shower and 血债 checks in the mine and 叙拉古 sections), and two reruns gave 0 failures.
+(shower and blood-debt checks in the mine and Siracusa sections), and two reruns gave 0 failures.

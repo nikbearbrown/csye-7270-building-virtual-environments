@@ -13,7 +13,7 @@ No engine executable is bundled. On Windows, clone to a short path or set
 
 **Effects.** Effect A `effects/hit_spark.tscn`: a one-shot burst (Flash,
 Sparks, Puff) on every landed operator melee hit, overlapping, freed by its own
-timer. Effect B `effects/fire_pit_flames.tscn`: the 萨米 fire pit's flames and
+timer. Effect B `effects/fire_pit_flames.tscn`: the Sami fire pit's flames and
 embers on the GPU with turbulence and preprocess, its `amount_ratio` driven by
 the fuel left (`entities/fire_pit.gd`).
 
@@ -44,7 +44,7 @@ shader at `shaders/particles_generated.gdshader`.
 `youtube/claude-liam-downfall-a6-particles-gamedev/`. 11:36, 3840×2160, 30 fps.
 SHA-256 `33d15797d825922546e397b935e8527bbc7d85f4cda731276e1400df883666a2`;
 checker PASS (16 code→result pairs). The user watched and listened to the
-final export: "No problems" [没问题]. The 4K master is kept locally; rendered
+final export: "No problems". The 4K master is kept locally; rendered
 video, audio and intermediate media are not uploaded to GitHub at the user's
 request. Film source records, provenance and the verification receipt are in
 the folder.

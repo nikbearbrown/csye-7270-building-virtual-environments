@@ -1,7 +1,7 @@
 class_name FirePit
 extends Node3D
 
-## 萨米's 火堆 (地图特色策划案 §5.3): a ring of stones round charred birch, a bone
+## Sami's fire pit (map-features design doc §5.3): a ring of stones round charred birch, a bone
 ## charm on a stick. Cold until she lights it with E and a piece of fuel from
 ## the pack; it burns as long as the fuel lasts (FeatureCatalog.FUELS, at most
 ## FIRE_MAX), and inside FIRE_RADIUS the cold falls. Out, it is cold again and

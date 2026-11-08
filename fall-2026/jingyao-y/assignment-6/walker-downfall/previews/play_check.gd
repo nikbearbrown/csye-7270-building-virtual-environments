@@ -3,7 +3,7 @@ extends Node
 ## field floor with the simulation running, so both effects fire from normal
 ## play. Not gameplay code. Run from the editor (open this scene, F6) or:
 ##   Godot_v4.7.2-stable_win64.exe --path . res://previews/play_check.tscn [-- --city]
-## Default 萨米 snow (lightest ground, fire pits); `-- --city` for the darkest;
+## Default Sami snow (lightest ground, fire pits); `-- --city` for the darkest;
 ## `-- --lit` lights every pit as the floor finishes loading.
 ## The pack gets 6 planks and 2 solid fuel so a pit can be fed with E.
 ## Extra keys (unused by the game and by the editor):

@@ -4,7 +4,7 @@ extends Node
 ## with Debugger → Visual Profiler open, and read GPU time with each effect off
 ## and on at its heaviest.
 ##
-## Boots the real game, 萨米 floor (seed 2026, every RNG stream seeded), freezes
+## Boots the real game, Sami floor (seed 2026, every RNG stream seeded), freezes
 ## the simulation with the "capture" modal, camera on pit 1 at default size.
 ## Keys (none is used by the game; F7/F8 are the editor's pause/stop while a
 ## scene runs from the editor, so they are not used):
