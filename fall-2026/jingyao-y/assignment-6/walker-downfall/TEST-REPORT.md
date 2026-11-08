@@ -244,3 +244,11 @@ a burning pit or a burst sits at the screen edge (no pop-out); (6) size of
 both effects against the character.
 User's verdict, snow (lightest ground): "No problems with any of them."
 [都没有问题]
+City (darkest ground), `play_check.tscn -- --city`, Effect A from normal
+melee play: "Very clear." [非常清楚]
+Scene load, `play_check.tscn -- --lit` (every pit fed in the frame the floor
+finishes loading; an approximation of the camp fire lit at floor build, which
+the fixture cannot reach): "Burning in full." [完整在烧]
+Not checked by the user: the boss arena's first fire and the boss hammer's
+fuel cost (same code paths, covered headlessly only for the hammer's `burn()`
+path in general, not on a boss floor).
