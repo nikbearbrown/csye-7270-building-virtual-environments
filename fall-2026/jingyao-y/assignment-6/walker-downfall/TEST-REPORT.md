@@ -258,3 +258,45 @@ before Effect A r1 (Puff quad 0.5 → 1.0, kept later the same day). That change
 affects only the draw step of 4 puff particles per burst (larger quads, more
 overdraw), not the process step that the `Update GPU Particles` row measures;
 it was not re-priced.
+
+## Fresh-clone check (agent, 2026-11-07)
+
+Sparse clone of the course repo into a scratch folder, then `--import` once
+and every suite through `scripts/run-baseline.sh` (60 fps, 8 jobs).
+
+**Clone of tag `a6` (`1fe584aa`): 75 of 93.** All four A6 suites passed. The
+check found a real gap in the upload: four existing suites read files that
+the export whitelist leaves out (`test_a3_assets`: `art/models/asset_preview.tscn`
+and two `.glb`; `test_audio`: `audio/asset_log.json`; `test_i18n`:
+`i18n/keys.json`; `test_materials`: the two A5 cargo materials and their
+textures). Those 13 files and their sidecars were added
+(`scripts/a6_tracked_files.py`, `TEST_SUPPORT`; commit `b1f0cbb6`). One file
+(the film receipt) did not check out at first because the clone sat in a
+271-character path; `core.longpaths=true` fixed it. Reviewers cloning deep on
+Windows may need the same.
+
+**Clean clone at `b1f0cbb6` (every untracked and ignored file removed, so no
+`.godot` cache): 78 of 93 in parallel.** All four A6 suites pass. The ten
+pre-existing failures are the same as in the baselines above (`amiya_input`,
+`base_crew`, `builds`, `combat`, `hotbar_input`, `item_icons`,
+`lappland_input`, `loot_input`, `market`, `ui_v1`). Five more failed under
+load from a cold cache and were rerun alone in the same clone:
+
+| Suite | Parallel | Alone |
+|---|---|---|
+| test_audio | FAIL | PASS |
+| test_arenas | timeout | PASS |
+| test_boss_show | timeout | PASS |
+| test_bridges | timeout | PASS |
+| test_elevation | FAIL | FAIL, PASS, FAIL (three runs) |
+
+`test_elevation` passes all 17 checks every time; the failures are
+`SCRIPT ERROR` lines from a race in the floor build that the wrapper counts as
+failure (`GameManager._trap_spot_ok` at `game/game_manager.gd:4752` touching a
+freed node, once `FieldLight.build` at `world/field_light.gd:71`). That file
+is unchanged since the A6 starting commit; it passes alone in the working
+folder. Recorded as pre-existing and timing-dependent, not fixed.
+
+Resolved result: 83 of 93 pass when the load-sensitive suites run alone,
+`test_elevation` counted as passing only on its clean run; the ten failures
+are the pre-existing ones.
