@@ -109,9 +109,8 @@ Measured by `tests/a6_probe_headless.gd` (`logs/a6_probe_headless_60fps.log`):
 
 ## Unconfirmed
 
-- `rendering_method` is left at the default; the probe reports `forward_plus`/`d3d12` headless.
-  The GPU (RTX 4060) is from memory until the Visual Profiler run names it.
-- `effects/`, `previews/` and the four new test files do not exist yet. The baseline is in
-  `logs/baseline-before/summary.txt`.
-- The brief's flames (24, 0.8 s) differ from today's CPU flames (18, 0.7 s,
-  `entities/fire_pit.gd:37`) on purpose. Line numbers drift; recheck before citing.
+- `rendering_method` is left at the default; runs report `forward_plus`/`d3d12`; the GPU is an
+  NVIDIA GeForce RTX 4060 Laptop GPU (`captures/hit_spark/r0/capture.log`, `evidence/a6/gpu/`).
+- Effects, previews and the four suites now exist (`effects/`, `previews/`, `tests/`); results
+  in `TEST-REPORT.md`. Fixtures must call `game.seed_rng(seed)`: `fixed_map_seed` alone does not
+  make a floor repeatable (`TUNING.md`, Effect B r1). Line numbers drift; recheck before citing.
