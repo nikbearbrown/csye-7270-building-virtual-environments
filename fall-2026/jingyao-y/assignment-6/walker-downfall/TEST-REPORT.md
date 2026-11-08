@@ -168,3 +168,35 @@ All suites in parallel after the change (`logs/baseline-after-step5/summary.txt`
 FAIL→PASS (load-sensitive); `test_arenas` PASS→FAIL on three 血债 values, passes
 alone (85/0). The other ten failures are the known pre-existing ones. No
 existing test reads the old `_flames`/`_embers`.
+
+## Headless CPU price (Step 7 session, 2026-11-07)
+
+`./scripts/run-test.sh cost_effects.gd 60 300` (fixed 60 fps, headless;
+`tests/cost_effects.gd`, adapted from Example 09's `particle_cost.gd`;
+log `logs/cost_effects_60fps.log`). Metric: wall-clock time between consecutive
+frames; 60 warm-up + 300 timed frames, 5 rounds, the four game cases
+interleaved with rotating order and each compared with the same round's
+effects-off control. 萨米 floor 1, seed 2026 (+ `seed_rng`), 3 pits, 89 enemies.
+
+| Case | Mean ms/frame | sd over rounds | vs effects off (paired) |
+|---|---|---|---|
+| empty scene (control) | 0.0032 | 0.0001 | — |
+| game, both effects off | 7.6759 | 0.0498 | — |
+| A, 8 HitSparks alive (7–8 at any time, 73 added per window) | 7.7008 | 0.0606 | +0.025 ± 0.029 |
+| B, one pit at ratio 1.0 | 7.6627 | 0.0446 | −0.013 ± 0.078 |
+| B, all 3 pits at ratio 1.0 | 7.7380 | 0.1336 | +0.062 ± 0.114 |
+
+Instrument check: empty and game differ 2400×, and the empty frame (3 µs) is far
+below the 6.9 ms low-processor sleep that made the chapter's script report one
+number for every case, so the script measures the scene, not itself. The
+effect cases are **not distinguishable** from the effects-off control (each
+within two standard errors of zero) even though the sparks and fires were
+really alive (+36 nodes for A). Headless runs a dummy renderer: no particle
+process, no draw; only node bookkeeping (HitSpark's age counter and spawn/free,
+the pit's `amount_ratio` writes and glow flicker) reaches the CPU, which is
+microseconds against a 7.7 ms game frame. Consistent with the brief's
+predictions (A +0.02, B +0.005/+0.02 ms) but not resolvable; it says nothing
+about the GPU budgets, which are judged on Visual Profiler GPU time.
+`Performance.TIME_PROCESS`/`TIME_PHYSICS_PROCESS` were tried and rejected (they
+summed to more than the frame headless). The floor has 3 pits, not the 4 the
+brief priced.
