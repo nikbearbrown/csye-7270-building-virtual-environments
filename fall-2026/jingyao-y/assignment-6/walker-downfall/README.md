@@ -79,5 +79,12 @@ load-sensitive failures).
 
 ## Film
 
-Pending (Brutalist godot-gamedev, walker modifier). Link and SHA-256 will be
-added here and in SUBMISSION.md.
+Brutalist godot-gamedev film, walker modifier, narrated by Liam (local Kokoro
+`am_onyx`): `youtube/claude-liam-downfall-a6-particles-gamedev/`. The master
+MP4 (11:36, 3840×2160, 30 fps, H.264 + AAC 48 kHz) is not committed (media is
+excluded); its receipt `exports/landscape/claude-liam-downfall-a6-particles-gamedev.verified.json`
+is. SHA-256 `33d15797d825922546e397b935e8527bbc7d85f4cda731276e1400df883666a2`.
+Filmed at commit `6f980233`. Checker `./art godot-gamedev --check`: PASS,
+16 code→result pairs (`CHECKS-REPORT.md`); final export gate 78 samples, 0
+blockers. The user watched and listened to the final export: "No problems"
+[没问题]. YouTube link: added in SUBMISSION.md once uploaded.

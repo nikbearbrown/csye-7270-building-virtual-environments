@@ -1,0 +1,43 @@
+# A6 components
+
+Code beats are Godot editor reconstructions (source path and lines on screen); each is followed by the real result it produces.
+
+- B00: ClaudeComposerAsk — Composer opens on the A6 demonstration prompt
+- B01: BrutalistHesitantWriter — The writer changes decoration to a message
+- B02: GodotDevWorkbench — Read entities/player.gd lines 948-954, then watch the result in the next beat
+- B03: Real engine evidence (media/B03.mp4) — Scripted-input capture: rapid Amiya cuts stack overlapping bursts; a killed dummy's burst plays out
+- B04: GodotDevWorkbench — Read entities/fire_pit.gd lines 104-110, then watch the result in the next beat
+- B05: Real engine evidence (media/B05.mp4) — Fire preview loop: lit full, thinned at 24 s, out; enlarged crop
+- B06: GodotDevWorkbench — Read CHANGE-BRIEF.md lines 52-63, then watch the result in the next beat
+- B07: Real engine evidence (media/B07.mp4) — Strip r0 (city), frames 10/12/15/20/30/50 against the intent phases
+- B08: GodotDevWorkbench — Read effects/hit_spark.tscn lines 177-191, then watch the result in the next beat
+- B09: Real engine evidence (media/B09.mp4) — Strip r0 crops enlarged; Claude's still reading beside the user's verdict
+- B10: GodotDevWorkbench — Read effects/hit_spark.tscn lines 79-95, then watch the result in the next beat
+- B11: Real engine evidence (media/B11.mp4) — New looping capture in motion with an enlarged crop: throw, brake, darken
+- B12: GodotDevWorkbench — Read effects/hit_spark.tscn lines 145-152, then watch the result in the next beat
+- B13: Real engine evidence (media/B13.mp4) — Strip r0-snow crops: the puff barely reaches the snow (158.3 on every frame)
+- B14: GodotDevWorkbench — Read effects/hit_spark.tscn lines 154-156, then watch the result in the next beat
+- B15: Real engine evidence (media/B15.mp4) — r0-snow vs r1-snow and r0 vs r1 crops: prediction, measurement, the user's verdict
+- B16: GodotDevWorkbench — Read CHANGE-BRIEF.md lines 205-212, then watch the result in the next beat
+- B17: Real engine evidence (media/B17.mp4) — Strip r0 under boulders, the user's screenshot, r0b in open snow
+- B18: GodotDevWorkbench — Read effects/fire_pit_flames.tscn lines 59-61, then watch the result in the next beat
+- B19: Real engine evidence (media/B19.mp4) — r0b vs r1 crops with warm-pixel counts: prediction, match, miss, Keep
+- B20: GodotDevWorkbench — Read effects/fire_pit_flames.tscn lines 113-125, then watch the result in the next beat
+- B21: Real engine evidence (media/B21.mp4) — New fixture capture: lit, tree paused, hidden/shown, thinned, out
+- B22: GodotDevWorkbench — Read effects/fire_pit_flames.tscn lines 44-48, then watch the result in the next beat
+- B23: Real engine evidence (media/B23.mp4) — Strip r1 frames 12/40/54: turbulence changes the stack; embers barely visible
+- B24: GodotDevWorkbench — Read shaders/particles_generated.gdshader lines 138-140, then watch the result in the next beat
+- B25: Real engine evidence (media/B25.mp4) — Mutation M1: r0 frame 12 beside the mutated frame 12; the config FAIL line
+- B26: GodotDevWorkbench — Read shaders/particles_generated.gdshader lines 159-164, then watch the result in the next beat
+- B27: Real engine evidence (media/B27.mp4) — Attempt 1 vs attempt 2 recorded diff; r0 colour over life
+- B28: GodotDevWorkbench — Read shaders/particles_generated.gdshader lines 235-238, then watch the result in the next beat
+- B29: Real engine evidence (media/B29.mp4) — Strip r1 frame 54 vs 70; the state-test monitor line
+- B30: GodotDevWorkbench — Read tests/test_hit_spark_config.gd lines 118-120, then watch the result in the next beat
+- B31: Real engine evidence (media/B31.mp4) — Recorded test, mutation and suite results
+- B32: GodotDevWorkbench — Read tests/cost_effects.gd lines 276-287, then watch the result in the next beat
+- B33: Real engine evidence (media/B33.mp4) — Recorded headless cost table with its self-checks
+- B34: Real engine evidence (media/B34.mp4) — The user's Visual Profiler screenshots: Update GPU Particles row against the budget
+- B35: Real engine evidence (media/B35.mp4) — Who did what, texture sources and the filmed commit
+- B36: ClaudeVerdictArtifact — The verdict separates evidence, mistakes and open questions
+- B37: ClaudeComposerAsk — The viewer's bounded experiment is typed and read aloud
+- B38: ClaudeTitleOutro — Exact title, regular mascot and stock jingle
