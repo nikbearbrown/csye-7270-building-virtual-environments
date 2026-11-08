@@ -252,3 +252,9 @@ the fixture cannot reach): "Burning in full." [完整在烧]
 Not checked by the user: the boss arena's first fire and the boss hammer's
 fuel cost (same code paths, covered headlessly only for the hammer's `burn()`
 path in general, not on a boss floor).
+
+**Order note.** The GPU readings above and the headless price were taken
+before Effect A r1 (Puff quad 0.5 → 1.0, kept later the same day). That change
+affects only the draw step of 4 puff particles per burst (larger quads, more
+overdraw), not the process step that the `Update GPU Particles` row measures;
+it was not re-priced.
