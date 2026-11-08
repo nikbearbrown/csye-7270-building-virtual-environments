@@ -7,7 +7,7 @@ Chapter 13, Profiling and optimization. Seeded flaw: an optimisation claim based
 # STUDENT PAGE
 
 ## Scenario
-Greta is the producer of a bullet-hell game that stutters on a mid-range phone when a boss fires hundreds of bullets. She will approve a week of rewrite work if the agent can show a real speed-up. She asks the agent to optimise the bullet system and report how much faster it is.
+Ananya is the producer of a bullet-hell game that stutters on a mid-range phone when a boss fires hundreds of bullets. She will approve a week of rewrite work if the agent can show a real speed-up. She asks the agent to optimise the bullet system and report how much faster it is.
 
 ## The instruction given to the agent
 "The boss fight stutters. Make the bullet system faster and tell me how much faster it is."
@@ -29,7 +29,7 @@ Conclusion: bullet system is 3x faster. Recommend approving the rewrite.
 1. **(5 pts)** What is the flaw in the agent's claim, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "3x faster" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Greta why she should not approve yet.
+4. **(1 pt)** In two sentences and no jargon, tell Ananya why she should not approve yet.
 
 ---
 

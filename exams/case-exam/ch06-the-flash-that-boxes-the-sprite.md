@@ -7,7 +7,7 @@ Chapter 6, Shader foundations. Seeded flaw: a `canvas_item` fragment shader over
 # STUDENT PAGE
 
 ## Scenario
-Imani is the art director of a 2D platformer. When the hero fails a run she wants the sprite to tint toward dark ink and then fade back before the retry. The sprite is a cutout character: only the character is opaque and the rest of the rectangle is transparent. She asks the agent to add the flash.
+Anjali is the art director of a 2D platformer. When the hero fails a run she wants the sprite to tint toward dark ink and then fade back before the retry. The sprite is a cutout character: only the character is opaque and the rest of the rectangle is transparent. She asks the agent to add the flash.
 
 ## The instruction given to the agent
 "Add a failure flash shader to the hero sprite: tint toward the ink colour when a run fails, then fade back before the retry. Tell me when it is done."
@@ -33,7 +33,7 @@ Done: the failure flash works.
 1. **(5 pts)** What is the flaw, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "the failure flash works" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Imani what she will see on screen when the hero fails.
+4. **(1 pt)** In two sentences and no jargon, tell Anjali what she will see on screen when the hero fails.
 
 ---
 

@@ -7,7 +7,7 @@ Chapter 11, Animation and interaction. Seeded flaw: a state machine with separat
 # STUDENT PAGE
 
 ## Scenario
-Nia is the lead designer of a 3D platformer. The robot should walk slowly with a light stick push, jog with a bit more, and run with a full push, changing smoothly with how far the stick is pushed. After the agent's change the robot looks fine standing still or at a full run, but between those it snaps between poses as the stick passes a point.
+Sunita is the lead designer of a 3D platformer. The robot should walk slowly with a light stick push, jog with a bit more, and run with a full push, changing smoothly with how far the stick is pushed. After the agent's change the robot looks fine standing still or at a full run, but between those it snaps between poses as the stick passes a point.
 
 ## The instruction given to the agent
 "Make the robot's locomotion animation respond smoothly to how hard the stick is pushed. Verify it."
@@ -34,7 +34,7 @@ with a 0.2 s cross-fade makes the transitions smooth.
 1. **(5 pts)** What is the flaw in the agent's design and report, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "responds smoothly" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Nia why the robot snaps between poses.
+4. **(1 pt)** In two sentences and no jargon, tell Sunita why the robot snaps between poses.
 
 ---
 

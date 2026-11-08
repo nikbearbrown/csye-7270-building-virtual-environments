@@ -7,7 +7,7 @@ Chapter 8, Shader verification. Seeded flaw: the reference ("golden") image was 
 # STUDENT PAGE
 
 ## Scenario
-Oskar is the lead of a small studio. A teammate changed the failure-flash shader so it counts frames instead of reading the game's clock, and the screen colour looked "a bit off" to Oskar. The studio has a visual regression test that compares a rendered frame to a saved reference image. He asks an agent to make sure nothing regressed.
+Vikram is the lead of a small studio. A teammate changed the failure-flash shader so it counts frames instead of reading the game's clock, and the screen colour looked "a bit off" to Vikram. The studio has a visual regression test that compares a rendered frame to a saved reference image. He asks an agent to make sure nothing regressed.
 
 ## The instruction given to the agent
 "The flash shader changed. Run the visual regression test and make sure nothing regressed."
@@ -29,7 +29,7 @@ The new frame-counting fade is behaviourally equivalent to the old clock-based f
 1. **(5 pts)** What is the flaw in the agent's report, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "nothing regressed" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Oskar why the pass means nothing.
+4. **(1 pt)** In two sentences and no jargon, tell Vikram why the pass means nothing.
 
 ---
 

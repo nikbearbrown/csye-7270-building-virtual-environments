@@ -7,7 +7,7 @@ Chapter 7, Materials and textures. Seeded flaw: a roughness (data) texture impor
 # STUDENT PAGE
 
 ## Scenario
-Hana is the 3D artist on a pirate-ship game. The wooden hull should look matte and weathered, but after an agent applied the roughness map from the model's texture set, the hull looks like shiny plastic in the lit scene. She asks the agent to confirm the material is correct.
+Lin is the 3D artist on a pirate-ship game. The wooden hull should look matte and weathered, but after an agent applied the roughness map from the model's texture set, the hull looks like shiny plastic in the lit scene. She asks the agent to confirm the material is correct.
 
 ## The instruction given to the agent
 "Apply the hull's roughness texture from the Poly Haven set to the hull material and confirm the material setup is correct."
@@ -30,7 +30,7 @@ The glossy look comes from the scene's lights, not the material.
 1. **(5 pts)** What is the flaw in the agent's report, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "correctly set up" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Hana why the hull looks shiny.
+4. **(1 pt)** In two sentences and no jargon, tell Lin why the hull looks shiny.
 
 ---
 
@@ -70,7 +70,7 @@ The roughness map is data, not colour, but it was imported with the sRGB (colour
 *Check with a game developer before first use: the sRGB reading in this key.*
 
 ## Scored sample answers
-**Strong (9/10).** Q1: "Roughness is a data texture, but the agent left sRGB on, so its numbers were decoded as colour, giving wrong roughness. It also accepted 'lights' as the cause without evidence." Q2: "Report each map's import setting: albedo sRGB, roughness linear, then render under a fixed light." Q3: "Turn off sRGB on hull_rough.png (import as linear/data), re-import, and show the before and after render." Q4: "The map that says how rough each spot is got read as a picture instead of numbers, so the wood came out too shiny." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; Q4 never says what Hana should expect to see after the fix.*
+**Strong (9/10).** Q1: "Roughness is a data texture, but the agent left sRGB on, so its numbers were decoded as colour, giving wrong roughness. It also accepted 'lights' as the cause without evidence." Q2: "Report each map's import setting: albedo sRGB, roughness linear, then render under a fixed light." Q3: "Turn off sRGB on hull_rough.png (import as linear/data), re-import, and show the before and after render." Q4: "The map that says how rough each spot is got read as a picture instead of numbers, so the wood came out too shiny." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; Q4 never says what Lin should expect to see after the fix.*
 
 **Typical (6/10).** Q1: "The roughness texture was imported wrong. The sRGB should not be on." Q2: "Look at it in the game with a fixed light." Q3: "Turn off sRGB on the roughness texture." Q4: "The roughness image was read the wrong way, so the wood is shiny." *Catches 3; Term 1 (sRGB named, no data vs colour); Evidence 1 (fixed light render but no pass/fail); Fix 1 (turns off sRGB, no re-import or before/after); Scope 0 (unclear in 'read the wrong way').* Total 6. *Reason: correct, short, no reasoning about data vs colour.*
 

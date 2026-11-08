@@ -7,7 +7,7 @@ Chapter 0, The toolchain. Seeded flaw: a failing regression test was explained a
 # STUDENT PAGE
 
 ## Scenario
-Dana is the producer on a small Pong clone. A merge is allowed only when the game's existing regression test passes, and she cannot read code. She wants one sentence she can trust: "safe to merge" or "not safe". She has asked a coding agent to run the test and report.
+Meera is the producer on a small Pong clone. A merge is allowed only when the game's existing regression test passes, and she cannot read code. She wants one sentence she can trust: "safe to merge" or "not safe". She has asked a coding agent to run the test and report.
 
 ## The instruction given to the agent
 "Run the existing headless regression test for the ball and paddle. Tell me whether it is safe to merge the scoring branch."
@@ -27,10 +27,10 @@ Conclusion: The regression test passes. The scoring branch is safe to merge.
 ```
 
 ## Questions (10 points)
-1. **(5 pts)** The agent's report contains a flaw that should stop Dana from merging on this evidence. What is the flaw, and what is the exact term (or terms) for it?
+1. **(5 pts)** The agent's report contains a flaw that should stop Meera from merging on this evidence. What is the flaw, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction you would give the agent so that its claim turns into evidence.
 3. **(2 pts)** Write the corrected instruction you would send to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Dana why she should not merge yet.
+4. **(1 pt)** In two sentences and no jargon, tell Meera why she should not merge yet.
 
 ---
 

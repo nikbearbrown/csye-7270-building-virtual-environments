@@ -7,7 +7,7 @@ Chapter 4, Scenes, collision and physics. Seeded flaw: a pickup's collision laye
 # STUDENT PAGE
 
 ## Scenario
-Lena is a game designer on a 2D dodge game. She wants a shield pickup: when the player touches it, the player is protected for three seconds. In the build she walks straight over the shield and nothing happens. The developer says the agent's report says it works.
+Mei is a game designer on a 2D dodge game. She wants a shield pickup: when the player touches it, the player is protected for three seconds. In the build she walks straight over the shield and nothing happens. The developer says the agent's report says it works.
 
 ## The instruction given to the agent
 "Add a shield pickup that the player collects by touching it. The player gets a 3-second shield. Put the pickup on its own physics layer and prove it works with a headless test."
@@ -33,7 +33,7 @@ Summary: shield pickup works; all tests pass.
 1. **(5 pts)** What is the flaw in the agent's work, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "shield pickup works" into evidence.
 3. **(2 pts)** Write the corrected instruction you would send to the agent.
-4. **(1 pt)** In two sentences and no jargon, explain to Lena why walking over the shield does nothing.
+4. **(1 pt)** In two sentences and no jargon, explain to Mei why walking over the shield does nothing.
 
 ---
 

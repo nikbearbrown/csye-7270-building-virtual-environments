@@ -7,7 +7,7 @@ Chapter 3, 3D assets and the Blender pipeline. Seeded flaw: size reported from t
 # STUDENT PAGE
 
 ## Scenario
-Tomas is the level designer of a 3D platformer. He needs a checkpoint post that is 2 metres tall so the player can see it from one jump away. A modeller made it in Blender, and the coding agent exported it to Godot. In the test level the post looks the right height but the player stops about a metre short of touching it and sometimes bounces off the air beside it.
+Wei is the level designer of a 3D platformer. He needs a checkpoint post that is 2 metres tall so the player can see it from one jump away. A modeller made it in Blender, and the coding agent exported it to Godot. In the test level the post looks the right height but the player stops about a metre short of touching it and sometimes bounces off the air beside it.
 
 ## The instruction given to the agent
 "Export the checkpoint post from Blender to Godot at 2 metres tall with a collision hull around it. Confirm the size."
@@ -29,7 +29,7 @@ Conclusion: size confirmed at 2 m; collision matches the post.
 1. **(5 pts)** What is the flaw in the agent's report, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "collision matches the post" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Tomas why the player stops short of the post.
+4. **(1 pt)** In two sentences and no jargon, tell Wei why the player stops short of the post.
 
 ---
 

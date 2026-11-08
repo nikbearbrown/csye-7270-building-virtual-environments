@@ -7,7 +7,7 @@ Chapter 1, Walker and Godot. Seeded flaw: a character that moves and collides is
 # STUDENT PAGE
 
 ## Scenario
-Marco is the designer of a 2D platformer. Playtesters on slower laptops say the hero "sometimes sinks into the floor" and "slips through thin ledges" when the game stutters, while on his desktop it feels fine. He asks a coding agent to fix the hero's movement so it behaves the same on every machine.
+Arjun is the designer of a 2D platformer. Playtesters on slower laptops say the hero "sometimes sinks into the floor" and "slips through thin ledges" when the game stutters, while on his desktop it feels fine. He asks a coding agent to fix the hero's movement so it behaves the same on every machine.
 
 ## The instruction given to the agent
 "The hero's movement feels different on slow machines. Make it behave identically regardless of the machine's speed, and tell me what you changed."
@@ -33,7 +33,7 @@ Status: fixed.
 1. **(5 pts)** What is the flaw in the agent's fix, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that would turn "Status: fixed" into evidence.
 3. **(2 pts)** Write the corrected instruction you would send to the agent.
-4. **(1 pt)** In two sentences and no jargon, explain to Marco why slow laptops still have trouble.
+4. **(1 pt)** In two sentences and no jargon, explain to Arjun why slow laptops still have trouble.
 
 ---
 

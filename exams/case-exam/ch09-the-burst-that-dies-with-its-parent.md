@@ -7,7 +7,7 @@ Chapter 9, Particle effects. Seeded flaw: the burst effect is parented to the cr
 # STUDENT PAGE
 
 ## Scenario
-Zoe is the designer of a 2D dodge game. When the player's shield pops a creep she wants a small burst of sparks at the spot where the creep was. The agent added the effect and reports success, but when Zoe plays she sees the creep vanish with no sparks at all.
+Jing is the designer of a 2D dodge game. When the player's shield pops a creep she wants a small burst of sparks at the spot where the creep was. The agent added the effect and reports success, but when Jing plays she sees the creep vanish with no sparks at all.
 
 ## The instruction given to the agent
 "When a creep is destroyed, play a one-shot burst of 24 sparks at its position. Make sure it works."
@@ -33,7 +33,7 @@ Conclusion: the death burst works; a burst of 24 sparks plays at the creep's pos
 1. **(5 pts)** What is the flaw in the agent's work, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "the burst works" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Zoe why she sees no sparks.
+4. **(1 pt)** In two sentences and no jargon, tell Jing why she sees no sparks.
 
 ---
 

@@ -7,7 +7,7 @@ Chapter 10, Animation foundations. Seeded flaw: a looping walk clip whose last k
 # STUDENT PAGE
 
 ## Scenario
-Kenji is the animator on a 2D action game. The hero's walk cycle has six poses. In the game the walk looks fine except for a tiny stall once per cycle, "like a limp". He asks the agent to check the clip and fix it if needed.
+Hao is the animator on a 2D action game. The hero's walk cycle has six poses. In the game the walk looks fine except for a tiny stall once per cycle, "like a limp". He asks the agent to check the clip and fix it if needed.
 
 ## The instruction given to the agent
 "The walk animation stalls once per cycle. Inspect the clip and fix it. Report what you checked."
@@ -28,7 +28,7 @@ interpolation artefact and is fixed.
 1. **(5 pts)** What is the flaw in the agent's report, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "loops correctly" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Kenji why the walk stalls.
+4. **(1 pt)** In two sentences and no jargon, tell Hao why the walk stalls.
 
 ---
 

@@ -7,7 +7,7 @@ Chapter 12, Audio and triggers. Seeded flaw: a hit sound's trigger signal is con
 # STUDENT PAGE
 
 ## Scenario
-Felix is the designer of a rhythm game. Each Perfect or Good hit should play a short click. Playtesters say the clicks are harsh and distorted compared to the music, as if too loud. The agent had added the click and reports that the audio works.
+Rohan is the designer of a rhythm game. Each Perfect or Good hit should play a short click. Playtesters say the clicks are harsh and distorted compared to the music, as if too loud. The agent had added the click and reports that the audio works.
 
 ## The instruction given to the agent
 "Play a click on every Perfect or Good hit, on the SFX bus, and add a test showing it triggers once per hit."
@@ -32,7 +32,7 @@ Result: one click per hit; the SFX bus plays at normal level.
 1. **(5 pts)** What is the flaw in the agent's work, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "one click per hit" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Felix why the click sounds harsh.
+4. **(1 pt)** In two sentences and no jargon, tell Rohan why the click sounds harsh.
 
 ---
 

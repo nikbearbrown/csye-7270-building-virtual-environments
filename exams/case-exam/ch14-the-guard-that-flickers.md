@@ -7,7 +7,7 @@ Chapter 14, Game AI and systems. Seeded flaw: a guard's state machine switches b
 # STUDENT PAGE
 
 ## Scenario
-Aisha is the designer of a stealth game. Guards should notice the player within a sight range and give chase, then give up when the player escapes. In play, a guard standing with the player at the edge of its vision rapidly alternates between chasing and patrolling and looks "twitchy". The agent says the AI is finished.
+Li is the designer of a stealth game. Guards should notice the player within a sight range and give chase, then give up when the player escapes. In play, a guard standing with the player at the edge of its vision rapidly alternates between chasing and patrolling and looks "twitchy". The agent says the AI is finished.
 
 ## The instruction given to the agent
 "Make the guard chase the player when within sight range and go back to patrolling when the player is out of sight. Test it."
@@ -30,7 +30,7 @@ The guard behaves correctly at all distances.
 1. **(5 pts)** What is the flaw in the agent's work, and what is the exact term (or terms) for it?
 2. **(2 pts)** Write the one check or instruction that turns "behaves correctly at all distances" into evidence.
 3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Aisha why the guard looks twitchy.
+4. **(1 pt)** In two sentences and no jargon, tell Li why the guard looks twitchy.
 
 ---
 
