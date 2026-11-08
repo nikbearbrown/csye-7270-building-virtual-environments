@@ -1,0 +1,51 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+FLOOR region snow floor 1 fires 3 simulation_active true modal '' display headless
+PASS a real 萨米 floor with fires, the field running
+PASS the pit holds one FirePitFlames instance and no CPUParticles3D
+PASS model and Glow kept
+PASS cold pit: burn_left 0, not emitting, ratio 0.3  [{ "burn_left": 0.0, "emitting": [false, false], "ratio": [0.30000001192093, 0.30000001192093], "amount": [24, 10], "processing": [true, true] }]
+PROMPT '火堆' near_fire true
+B1 after plank: { "burn_left": 59.9666666666667, "emitting": [true, true], "ratio": [0.64980554580688, 0.64980554580688], "amount": [24, 10], "processing": [true, true] } edges [{ "pit": 917076195680, "frame": 60, "from": 0.0, "to": 59.9833333333333, "emitting": [true, true], "ratio": [0.64990276098251, 0.64990276098251] }]
+PASS B1 E + click on the plank row fed the fire through the real path (burn_left ~60)  [59.9666666666667]
+PASS B1 the sample where burn_left went 0 -> >0 already has both emitters emitting  [[{ "pit": 917076195680, "frame": 60, "from": 0.0, "to": 59.9833333333333, "emitting": [true, true], "ratio": [0.64990276098251, 0.64990276098251] }]]
+PASS B3 (feed) amount_ratio = mapping(burn_left) at ~60 (~0.65) on both  [[0.64980554580688, 0.64980554580688]]
+HEADLESS emitting read back on continuous GPU emitters right after lighting: [true, true]
+B3 after 600 frames: { "burn_left": 49.9666666666672, "emitting": [true, true], "ratio": [0.59147220849991, 0.59147220849991], "amount": [24, 10], "processing": [true, true] }
+PASS B3 (burn) the physics loop burned ~10 s (simulation_active)  [9.99999999999943]
+PASS B3 (burn) amount_ratio followed: = mapping(49.967) and moved off 0.65  [[0.59147220849991, 0.59147220849991]]
+PASS B3 amount unchanged 24 / 10  [[24, 10]]
+B4 paused 60 frames: { "burn_left": 49.9666666666672, "emitting": [true, true], "ratio": [0.59147220849991, 0.59147220849991], "amount": [24, 10], "processing": [false, false] }
+PASS B4 tree paused: burn_left frozen  [[49.9666666666672, 49.9666666666672]]
+PASS B4 tree paused: emitting and amount_ratio unchanged  [[[0.59147220849991, 0.59147220849991], [0.59147220849991, 0.59147220849991]]]
+PASS B4 tree paused: both emitters stop processing (can_process false)  [[false, false]]
+PASS B4 tree paused: still exactly frozen 30 frames later
+B4 menu 'pause' simulation_active false 60 frames: { "burn_left": 49.9333333333339, "emitting": [true, true], "ratio": [0.59127777814865, 0.59127777814865], "amount": [24, 10], "processing": [true, true] }
+PASS B4 Esc opened a real menu modal and simulation_active() went false; tree not paused  [["pause", false]]
+PASS B4 menu: burn_left frozen  [[49.9333333333339, 49.9333333333339]]
+PASS B4 menu: emitting / amount_ratio unchanged (constant ratio)  [[[0.59127777814865, 0.59127777814865], [0.59127777814865, 0.59127777814865]]]
+PASS B4 menu: the GPU nodes keep processing  [[true, true]]
+PASS Esc closed the menu, the field runs again  []
+B5 pit hidden 600 frames: { "burn_left": 39.8666666666678, "emitting": [true, true], "ratio": [0.53255558013916, 0.53255558013916], "amount": [24, 10], "processing": [true, true] }
+PASS B5 pit hidden: burn_left still falls in the loop  [[49.8666666666672, 39.8666666666678]]
+PASS B5 pit hidden: emitting true and amount_ratio = mapping(burn_left), changed while hidden  [[[0.59088891744614, 0.59088891744614], [0.53255558013916, 0.53255558013916]]]
+PASS B5 shown again: the current ratio  [{ "burn_left": 39.8500000000011, "emitting": [true, true], "ratio": [0.53245830535889, 0.53245830535889], "amount": [24, 10], "processing": [true, true] }]
+B2 out after 2392 frames, edges [{ "pit": 917076195680, "frame": 3812, "from": 0.00000000000213, "to": 0.0, "emitting": [false, false], "ratio": [0.30000001192093, 0.30000001192093] }]
+PASS B2 burned out in the loop
+PASS B2 the sample where burn_left reached 0 has both emitters stopped  [[{ "pit": 917076195680, "frame": 3812, "from": 0.00000000000213, "to": 0.0, "emitting": [false, false], "ratio": [0.30000001192093, 0.30000001192093] }]]
+PASS B2 2.3 s later: still not emitting, burn_left 0, ratio 0.3  [{ "burn_left": 0.0, "emitting": [false, false], "ratio": [0.30000001192093, 0.30000001192093], "amount": [24, 10], "processing": [true, true] }]
+B1 relight (effect hidden): { "burn_left": 119.966666666667, "emitting": [true, true], "ratio": [0.99980556964874, 0.99980556964874], "amount": [24, 10], "processing": [true, true] } edges [{ "pit": 917076195680, "frame": 3959, "from": 0.0, "to": 119.983333333333, "emitting": [true, true], "ratio": [0.99990278482437, 0.99990278482437] }]
+PASS B1 relight by E + click (solid fuel, 0 -> ~120) with the effect root hidden  [119.966666666667]
+PASS B1 relight: emitting on the 0 -> >0 sample  [[{ "pit": 917076195680, "frame": 3959, "from": 0.0, "to": 119.983333333333, "emitting": [true, true], "ratio": [0.99990278482437, 0.99990278482437] }]]
+PASS B3/B5 at ~120 while hidden: ratio = mapping (~1.0)  [[0.99980556964874, 0.99980556964874]]
+B3 plank on a lit fire: { "burn_left": 179.933333333333, "emitting": [true, true], "ratio": [1.0, 1.0], "amount": [24, 10], "processing": [true, true] }
+PASS B3 (feed, lit fire) a plank on top -> ~180, ratio clamps at 1.0  [{ "burn_left": 179.933333333333, "emitting": [true, true], "ratio": [1.0, 1.0], "amount": [24, 10], "processing": [true, true] }]
+PASS B5 effect root shown again: emitting at the current ratio
+B6 floor 2 route_kind rest rest_fire FirePit:<Node3D#1395210071984>
+PASS B6 a 临时休整 floor with its campfire
+B6 campfire added at frame 3974, first sample { "frame": 3975, "burn_left": 299.983333333333, "emitting": [true, true], "ratio": [1.0, 1.0] }
+PASS B6 the campfire's first sampled frame (same or next frame after it entered the tree): burn_left 300, both emitting, ratio 1.0  [{ "frame": 3975, "burn_left": 299.983333333333, "emitting": [true, true], "ratio": [1.0, 1.0] }]
+MONITOR samples 11846 lit 3766 distinct ratios 352 edges 3 violations 0
+PASS B3 every frame, every pit: emitting == (burn_left > 0), amount_ratio == mapping (±1e-4), amount 24/10
+PASS B3 amount_ratio took many values while lit (feeding and burning)  [352]
+FIRE_PIT_FLAMES_STATE: 0 failures

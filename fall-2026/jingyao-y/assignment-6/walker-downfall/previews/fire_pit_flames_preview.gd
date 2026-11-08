@@ -4,19 +4,16 @@ extends Node
 ## starts a real 萨米 (`snow`) contract with a fixed map seed, freezes the
 ## simulation with the "capture" modal, picks the floor's first real FirePit,
 ## puts the player a few units from it, centres the camera on the pit at the
-## game's default size (24) and pitch, and instances
-## res://effects/fire_pit_flames.tscn at the pit's global_position under the
-## GameManager. The FirePitFlames instance made here is the only one with
-## use_fixed_seed on.
+## game's default size (24) and pitch, and captures the pit's own
+## res://effects/fire_pit_flames.tscn instance (FirePit makes it). That pit's
+## emitters are the only ones with use_fixed_seed on.
 ##
-## Gameplay is not wired yet (FirePit still makes its own CPU "Flames"/"Embers"),
-## so this fixture plays the condition itself, by the brief's feedback mapping:
+## The pit applies the brief's feedback mapping itself (FirePit._show_fuel):
 ##   emitting     = burn_left > 0
 ##   amount_ratio = 0.3 + 0.7 * clamp(burn_left / 120.0, 0, 1)
-## It changes the real pit's burn_left through FirePit.feed()/burn() (so the
-## pit's Glow halo follows) and hides the pit's own CPU particle children so
-## only the GPU effect is drawn. Frames: 10 feed 120 s (ratio 1.0), 55 burn to
-## 24 s (ratio 0.44), 100 burn to 0 (out).
+## This fixture changes the real pit's burn_left through FirePit.feed()/burn()
+## (so the flames and the Glow halo follow). Frames: 10 feed 120 s (ratio 1.0),
+## 55 burn to 24 s (ratio 0.44), 100 burn to 0 (out).
 ##
 ## Frame count: `frame` is 0 on this script's first _process and goes up by one
 ## per processed frame. PREVIEW_LOADED says on which frame the level was ready.
@@ -24,8 +21,6 @@ extends Node
 ## Capture (windowed, Movie Maker):
 ##   godot --path . res://previews/fire_pit_flames_preview.tscn
 ##     --write-movie <abs>/captures/fire_pit_flames/r0/frame.png --fixed-fps 30 --quit-after 180
-
-const FLAMES := preload("res://effects/fire_pit_flames.tscn")
 
 @export var map_seed := 2026
 @export var particle_seed := 7370
@@ -80,19 +75,14 @@ func _load_level() -> void:
 	if pit == null:
 		print("PREVIEW_ERROR no FirePit on this floor (region %s seed %d)" % [game.region_id, map_seed])
 		return
-	# The pit's own CPU particles stay off screen; the GPU effect is what is captured.
-	for child_name in ["Flames", "Embers"]:
-		var cpu := pit.get_node_or_null(NodePath(child_name)) as Node3D
-		if cpu != null: cpu.visible = false
 	game.player.teleport(game.world_map.nearest_walkable(pit.global_position + Vector3(2.5, 0.0, 0.0)))
-	effect = FLAMES.instantiate() as Node3D
-	effect.name = "FirePitFlames"
+	# The pit's own FirePitFlames (entities/fire_pit.gd) is the one captured; the fixed
+	# seed is turned on for this preview's pit only.
+	effect = pit.get_node("FirePitFlames") as Node3D
 	for child in effect.get_children():
 		if child is GPUParticles3D:
 			child.use_fixed_seed = true
 			child.seed = particle_seed
-	game.add_child(effect)
-	effect.global_position = pit.global_position
 	game._hud.hide()
 	game.camera_size_goal = GameManager.CAMERA_SIZE
 	game.camera.size = GameManager.CAMERA_SIZE
@@ -104,15 +94,10 @@ func _place_camera() -> void:
 	if is_instance_valid(pit):
 		game.camera.global_position = pit.global_position + game.camera_offset()
 
-## The brief's feedback mapping, played by the fixture from the pit's real burn_left.
+## The pit itself applies the feedback mapping from burn_left; this only logs it.
 func _apply() -> void:
-	var burn_left := pit.burn_left
-	var ratio := 0.3 + 0.7 * clampf(burn_left / 120.0, 0.0, 1.0)
-	for child in effect.get_children():
-		if child is GPUParticles3D:
-			child.amount_ratio = ratio
-			child.emitting = burn_left > 0.0
-	print("PREVIEW_SET preview_frame %d engine_frame %d burn_left %.1f emitting %s amount_ratio %.4f" % [frame, Engine.get_process_frames(), burn_left, burn_left > 0.0, ratio])
+	var flames := effect.get_node("Flames") as GPUParticles3D
+	print("PREVIEW_SET preview_frame %d engine_frame %d burn_left %.1f emitting %s amount_ratio %.4f" % [frame, Engine.get_process_frames(), pit.burn_left, flames.emitting, flames.amount_ratio])
 
 func _process(_delta: float) -> void:
 	frame += 1

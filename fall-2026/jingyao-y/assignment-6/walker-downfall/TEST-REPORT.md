@@ -125,3 +125,46 @@ draw step: the `QuadMesh` size and its `StandardMaterial3D` (unshaded,
 `BILLBOARD_PARTICLES`, `vertex_color_use_as_albedo`, transparency, blend mode,
 fog) and the gradient texture. The colour this shader writes to `COLOR` only
 shows because the draw material uses vertex colour as albedo.
+
+## Effect B wiring and state test (Step 5 session, 2026-11-07)
+
+`entities/fire_pit.gd`: the two code-made `CPUParticles3D` are replaced by one
+`effects/fire_pit_flames.tscn` instance; `_show_fuel()` reads `burn_left` and
+sets only `emitting` and `amount_ratio = 0.3 + 0.7·clamp(burn_left/120, 0, 1)`
+on both emitters (a fire lit from cold is `restart()`ed so preprocess applies);
+`_ready` ends with `_set_lit(lit())` so a pit fuelled before it enters the tree
+starts lit. `burn_left`, `feed()`/`burn()` arithmetic, warmth, the model and
+the Glow halo are unchanged; reviewed by the main session.
+
+`./scripts/run-test.sh test_fire_pit_flames_state.gd 60 600` — fixed 60 fps,
+headless; real `main.tscn`, seed 2026 + `seed_rng`, 萨米 floor, pit 1.
+Feeding only by a real E key event and a real click on the fuel picker row;
+burning only through the physics loop. Result: **0 failures**
+(`logs/test_fire_pit_flames_state_60fps.log`). A per-frame monitor checked
+11 846 samples (352 distinct ratios): `emitting == (burn_left > 0)`,
+`amount_ratio == mapping` (±1e-4), `amount` 24/10 every frame.
+
+| Rule | Asserted |
+|---|---|
+| B1 | on the sample where `burn_left` first goes 0→>0 (E + plank, ~60) both emitters emit; same for a relight (solid fuel, ~120) |
+| B2 | on the sample where it reaches 0 in the loop both stop; still stopped 2.3 s later, ratio 0.3 |
+| B3 | ratio = mapping after feeding (0.65), burning (0.59), refuelling (≈1.0), clamped at 180 (1.0); `amount` never changes |
+| B4 | tree paused: `burn_left` frozen, state unchanged, emitters `can_process() == false`, still frozen 30 frames on; Esc pause menu: `simulation_active()` false, tree not paused, fuel frozen, GPU nodes keep processing |
+| B5 | pit hidden, and effect root hidden: state keeps following `burn_left`; shown again at the current ratio |
+| B6 | rest-stop campfire (fed 300 at load): first sampled frame both emitting, ratio 1.0 (route column set to "rest" as a fixture, then the real `advance(0)`) |
+
+Headless `emitting` on these continuous emitters reads back correctly (true
+while lit, false after); only one-shot emitters misreport (r1 b).
+Not driven: the boss hammer's `burn()` and the arena's first fire (same code
+paths). Not provable headlessly: preprocess on the first drawn frame, the die-out
+on screen, freezing on screen, nothing drawn while hidden.
+
+After wiring, the fixture strip `captures/fire_pit_flames/r1-wired/` is
+pixel-identical in warm-pixel counts to r1 (12:170 40:164 54:162 70:108 99:33
+105:27, 10/130/175: 0): the in-game pit draws exactly what the fixture did.
+
+All suites in parallel after the change (`logs/baseline-after-step5/summary.txt`):
+**82 of 93** (both new B suites pass). Versus after-step3: `test_elevation`
+FAIL→PASS (load-sensitive); `test_arenas` PASS→FAIL on three 血债 values, passes
+alone (85/0). The other ten failures are the known pre-existing ones. No
+existing test reads the old `_flames`/`_embers`.
