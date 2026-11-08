@@ -191,4 +191,6 @@ Claude's comparison with the prediction:
   is nearly transparent; doubling the quad widened the visible part only to
   the body's edges. The city prediction (≤ 3 levels in the patch) held.
 
-User runtime verdict (running preview, 1280×720): pending.
+User runtime verdict (running preview `-- --loop --snow`, 1280×720): **kept** —
+"Keep." [保留] (2026-11-07).
+Strips: `captures/hit_spark/r0/`, `r0-snow/`, `r1/`, `r1-snow/`.

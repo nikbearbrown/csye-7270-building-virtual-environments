@@ -67,8 +67,8 @@ load-sensitive failures).
 
 ## Known limitations
 
-- Effect A has no completed tuning revision: the one observation-driven
-  proposal (a larger Puff for snow) was declined by the user (TUNING.md).
+- Effect A's one revision (Puff 0.5 → 1.0, kept) darkens only the struck
+  enemy's body; the puff still does not reach the snow around it (TUNING.md).
 - Effect B's embers (0.05-unit quads) are barely visible at the default zoom.
 - 赫拉格, 星熊, 林, 罗莎 and 桑塔拉 hit through `entities/kits/*.gd` and get no
   HitSpark (brief r2).

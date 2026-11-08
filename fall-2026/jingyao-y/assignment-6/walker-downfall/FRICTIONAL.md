@@ -38,8 +38,11 @@ over ~1 MB). This is a deviation from the course command, not a hidden one.
    user's verdict stood and nothing was changed on the agent's reading.
 4. **Effect A's only proposal was declined** (TUNING Effect A r1): the Puff
    barely showed on snow ("Barely see a little" [勉强看到一点]); the agent proposed
-   a larger quad; the user said "Don't change" [不改]. Effect A therefore has no
-   completed tuning revision. Unresolved by choice.
+   a larger quad; the user first said "Don't change" [不改], then later asked
+   for it ("Change effect A's puff" [把effect A的烟团改了]). Applied with the
+   prediction written before the decline; the predicted darkening of the snow
+   did not happen (only the body darkened); the user kept it [保留]
+   (`bac2d460`, `ca1b6142`).
 5. **Wrong diagnosis on the fire pit** (TUNING Effect B r1). User: "Blocked by
    the stones, can't see it" [被石头挡上了看不到]. The agent blamed the emitter
    height and wrote a prediction; the user's screenshot showed level boulders.
@@ -84,8 +87,8 @@ over ~1 MB). This is a deviation from the course command, not a hidden one.
 
 The agent accepted the sessions' code after reading every diff; it modified
 the previews (loop/snow/seed/pit fixes) and rejected nothing outright. The
-user rejected one tuning proposal, approved and kept one, and redirected one
-diagnosis.
+user declined one tuning proposal and later approved it, approved and kept
+both revisions, and redirected one diagnosis.
 
 ## Still uncertain
 

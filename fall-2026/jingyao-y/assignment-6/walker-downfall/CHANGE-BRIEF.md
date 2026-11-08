@@ -419,3 +419,9 @@ Presentation code reads game state; it never writes it.
   `Flames` QuadMesh size 0.30×0.30 → **0.55×0.55**, after the user said the
   fire looked "smothered in the wood". The settings table above still reads
   0.30; this line supersedes it. Scene and config test agree.
+- **2026-11-07 r4 (user verdict "kept", TUNING.md Effect A r1).** Effect A
+  `Puff` QuadMesh size 0.5×0.5 → **1.0×1.0**, from the user's observation that
+  the puff barely showed on snow. The settings table above still reads 0.5;
+  this line supersedes it. Scene and config test agree. The darker haze stays
+  within the stand-in's body; it does not reach the snow around it (miss on
+  Claude's prediction, recorded in TUNING.md).
