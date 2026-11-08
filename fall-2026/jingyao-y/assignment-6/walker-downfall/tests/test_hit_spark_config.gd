@@ -39,7 +39,7 @@ const EXPECT := {
 		"velocity": [0.4, 0.9], "gravity": Vector3(0, 0.6, 0), "damping": [1.0, 1.0],
 		"scale": [0.8, 1.2], "scale_curve": [[0.0, 0.6], [1.0, 1.4]],
 		"ramp": [[0.0, Color(0.16, 0.15, 0.18, 0.55)], [1.0, Color(0.16, 0.15, 0.18, 0)]],
-		"hue": [0.0, 0.0], "angle": [0.0, 360.0], "quad": Vector2(0.5, 0.5),
+		"hue": [0.0, 0.0], "angle": [0.0, 360.0], "quad": Vector2(1.0, 1.0),  # r1 (2026-11-07), was 0.5
 		"blend": BaseMaterial3D.BLEND_MODE_MIX, "aabb": AABB(Vector3(-1.5, -1, -1.5), Vector3(3, 3, 3)),
 	},
 }
