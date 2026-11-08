@@ -200,3 +200,33 @@ about the GPU budgets, which are judged on Visual Profiler GPU time.
 `Performance.TIME_PROCESS`/`TIME_PHYSICS_PROCESS` were tried and rejected (they
 summed to more than the frame headless). The floor has 3 pits, not the 4 the
 brief priced.
+
+## GPU price (human check, windowed, 2026-11-07)
+
+**Executor: the user**, in the Godot 4.7.2 editor, running `previews/gpu_price.tscn`
+(fixture; F6) with Debugger → Visual Profiler, on **NVIDIA GeForce RTX 4060
+Laptop GPU** (CPU AMD Ryzen 9 7940HX), D3D12 / Forward+, 1280×720, vsync on.
+Keys U / I / O toggle Effect A at peak (≈8 HitSparks alive), Effect B (all 3
+pits at 300 s, ratio 1.0) and vsync. (F7/F8 were tried first: they are the
+editor's pause/stop for a running scene, found by the user; keys moved.)
+The table reads one selected frame per state, from the user's screenshots in
+`evidence/a6/gpu/`.
+
+| State | Render Viewport GPU (whole frame) | `Update GPU Particles` GPU (the process step) | Screenshot |
+|---|---|---|---|
+| both off | 3.73 ms | row absent | `visual_profiler_round3_both_off.png` |
+| A on (≈8 bursts) | 3.71 ms | **0.14 ms** | `visual_profiler_round2_U_A_on.png` |
+| B on (3 pits full) | 3.68 ms | **0.09 ms** | `visual_profiler_round2_I_B_on.png` |
+
+- The whole-frame difference (−0.02 / −0.05 ms) is smaller than frame-to-frame
+  variation (round-1 frames read 3.7–10.7 ms), so the whole-frame on/off
+  comparison cannot resolve either effect from single frames.
+- The `Update GPU Particles` row exists only while these GPU effects run (every
+  other particle system in the game is a `CPUParticles3D`), so it is a direct
+  reading of their process step on the GPU.
+- **Budget:** A 0.14 ms ≤ 0.25 ms; B 0.09 ms (3 pits) ≤ 0.15 ms (budget set for
+  4 pits). Both within budget on the process step. Predicted 0.05 / 0.06 ms:
+  the readings are about 2–3× the prediction.
+- **Not measured:** the draw step (particles' share of the transparent pass was
+  not isolated in the screenshots), averages over many frames, and the vsync-off
+  FPS comparison (optional; not done).
