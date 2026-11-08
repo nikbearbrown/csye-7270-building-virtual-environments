@@ -1,24 +1,83 @@
-# Downfall — Assignment 5
+# Downfall (walker-downfall) — Assignment 6: particle effects
 
-Godot 4.7.2, **Forward+ / D3D12** on Windows.
+Downfall is the Assignment 2 game, unchanged as a game since then (no change of
+game): an Arknights-inspired extraction roguelike built in **Godot 4.7.2,
+Forward+, D3D12 on Windows**. This folder is the A6 upload: the game files a
+reviewer needs to open and run the project (the export whitelist from
+`tools/export_manifest.py`, their `.import`/`.uid` sidecars, every test and
+script) plus the A6 work. Art source files, reference sheets and Blender files
+stay out (`scripts/a6_tracked_files.py`, `.gitignore`).
 
-This complete project adds a state-driven burning-bottle flame, lit cargo-panel materials, and color/normal experiments to the existing game. Open project.godot, import resources, and run game/main.tscn. WASD moves, mouse buttons attack, E interacts, and Esc pauses or closes a window. Two hall crate_stack props use separate cargo materials sharing one shader.
+## What A6 added
 
-The three custom programs are in shaders/. standard_generated.gdshader is a comparison export and is not referenced by game materials. Read CHANGE-BRIEF.md for the rules and original predictions, LANGUAGE-NOTES.md for language questions, MATERIALS.md for the sampler audit, TEST-REPORT.md for results, and SOURCES.md / FRICTIONAL.md for provenance.
+- **Effect A `hit_spark`** (`effects/hit_spark.tscn`): a one-shot burst when an
+  operator's melee hit lands (`entities/player.gd`, `_hit_spark()` at the three
+  landed-hit sites). Three `GPUParticles3D` (Flash, Sparks, Puff); overlap rule:
+  a new instance per hit under the GameManager, freed by its own 0.55 s timer.
+- **Effect B `fire_pit_flames`** (`effects/fire_pit_flames.tscn`): the 萨米 fire
+  pit's flames and embers as two `GPUParticles3D` with turbulence and
+  preprocess, replacing the old code-made CPU particles. A feedback loop:
+  `entities/fire_pit.gd` sets `amount_ratio = 0.3 + 0.7·clamp(burn_left/120,0,1)`
+  and `emitting = burn_left > 0`.
+- Configuration and state tests for both, frame-strip previews (fixtures), the
+  generated process shader `shaders/particles_generated.gdshader` (reference
+  only), a headless cost script and a GPU-price fixture.
 
-With Git Bash and GODOT set to the engine executable:
+Read `CHANGE-BRIEF.md` (contract, predictions, dated revisions), `TUNING.md`
+(every tuning step with prediction, strips and the user's verdict),
+`TEST-REPORT.md` (all results), `FRICTIONAL.md`, `SOURCES.md`, `CLAUDE.md`.
+
+## Run
+
+Open `project.godot` in Godot 4.7.2 (run `--import` once after cloning) and run
+`game/main.tscn`. Controls: left mouse moves and attacks (no keyboard
+movement), E interacts (feeds a fire), Esc opens the menu, mouse wheel zooms,
+Z/X rotate the camera.
+
+Fixtures (labelled FIXTURE on screen; not gameplay):
+
+- `previews/hit_spark_preview.tscn` (`-- --snow`, `-- --loop`) and
+  `previews/fire_pit_flames_preview.tscn` (`-- --loop`, `-- --pit=N`): the
+  strip sources.
+- `previews/play_check.tscn` (`-- --city`, `-- --lit`): a real field floor for
+  in-play checks; **Y** pauses the whole tree, **H** hides the pit effects.
+- `previews/gpu_price.tscn`, run from the editor with Visual Profiler:
+  **U** Effect A at its peak, **I** all pits full, **O** toggles vsync (the
+  vsync debug key; no project setting changes). F7/F8 are not used because the
+  editor uses them to pause/stop a running scene.
+
+## Tests
+
+Git Bash, from this folder (the wrapper finds Godot three folders up, or set
+`GODOT`):
 
 ```bash
-TEST_TIMEOUT=1200 ./scripts/run-test.sh test_fire_shader.gd 30
-TEST_TIMEOUT=1200 ./scripts/run-test.sh test_fire_shader.gd 60
-TEST_TIMEOUT=1200 ./scripts/run-test.sh test_fire_shader.gd 144
-./scripts/run-test.sh test_materials.gd 60
-./scripts/run-test.sh normal_map_check.gd 60
+./scripts/run-test.sh test_hit_spark_config.gd 60
+./scripts/run-test.sh test_hit_spark_state.gd 60 600
+./scripts/run-test.sh test_fire_pit_flames_config.gd 60
+./scripts/run-test.sh test_fire_pit_flames_state.gd 60 600
+./scripts/run-test.sh cost_effects.gd 60 300
+./scripts/run-baseline.sh <label> 8
 ```
 
-The wrapper is unchanged. The capture scripts require a real renderer and must run without --headless. Calibration uses 1280×720 because the predicted pixel coordinates depend on it.
+`run-test.sh <file> <fps|realtime> [timeout]` is the A6 course wrapper adapted
+to this repository (`--path .`). Baseline before A6: 78/89 at 60 fps in
+parallel; after A6: 82/93 (TEST-REPORT.md lists the pre-existing and
+load-sensitive failures).
 
-The resolved baseline result is 70/73, including an isolated performance repeat; three pre-existing suites failed in that run. The fresh-checkout result is recorded separately in TEST-REPORT. See the report before interpreting an exit code as an A5 regression. Evidence is under evidence/a5/. Film/audio and regenerable .godot caches stay outside GitHub. SUBMISSION.md identifies the final package and course location.
+## Known limitations
 
+- Effect A has no completed tuning revision: the one observation-driven
+  proposal (a larger Puff for snow) was declined by the user (TUNING.md).
+- Effect B's embers (0.05-unit quads) are barely visible at the default zoom.
+- 赫拉格, 星熊, 林, 罗莎 and 桑塔拉 hit through `entities/kits/*.gd` and get no
+  HitSpark (brief r2).
+- The GPU price is single-frame Visual Profiler readings of the particle
+  process step; the draw step was not isolated (TEST-REPORT.md).
+- Level dressing (boulders without colliders) can hide a fire pit; found during
+  A6, outside its scope, to be fixed after A6.
 
-The final fresh GitHub checkout passes 72/73 original suites, with only the previously observed test_item_icons failure. test_combat and test_loading_screen pass in this run; no fix for those earlier failures is claimed. The A5 fire, material and curl checks all pass.
+## Film
+
+Pending (Brutalist godot-gamedev, walker modifier). Link and SHA-256 will be
+added here and in SUBMISSION.md.
