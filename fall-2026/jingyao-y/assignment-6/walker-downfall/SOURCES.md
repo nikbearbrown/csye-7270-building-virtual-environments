@@ -2,8 +2,11 @@
 
 The A5 version of this file is at tag `a5`
 (`fall-2026/jingyao-y/assignment-5/walker-downfall/SOURCES.md`). The A5 cargo
-textures (Poly Haven, CC0, credited there) are no longer used by the game and
-are not part of this upload.
+textures (`textures/cargo_panel/rusty_metal_sheet_*_1k.png`, Poly Haven
+"Rusty Metal Sheet", CC0, credited there) are no longer drawn by the game. They
+are included only because the existing `test_materials` suite loads them; the
+fresh-clone check of tag `a6` found that suite failing without them
+(TEST-REPORT.md).
 
 ## Textures used by the A6 effects
 

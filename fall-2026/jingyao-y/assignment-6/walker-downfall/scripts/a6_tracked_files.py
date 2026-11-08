@@ -30,6 +30,24 @@ for top in ("tests", "scripts"):
         for n in names:
             if not n.endswith(JUNK):
                 out.add(os.path.relpath(os.path.join(d, n), ROOT).replace("\\", "/"))
+# Data the existing suites read that the export does not ship (found by the
+# fresh-clone check of tag a6, 2026-11-07): without them test_a3_assets,
+# test_audio, test_i18n and test_materials fail on a clean checkout.
+TEST_SUPPORT = (
+    "art/models/asset_preview.tscn", "art/models/arched_ramp_segment.glb",
+    "art/models/cliff_wall_segment.glb", "audio/asset_log.json", "i18n/keys.json",
+    "materials/cargo_panel_mild.tres", "materials/cargo_panel_weathered.tres",
+    "textures/cargo_panel/rusty_metal_sheet_diff_1k.png",
+    "textures/cargo_panel/rusty_metal_sheet_nor_dx_1k.png",
+    "textures/cargo_panel/rusty_metal_sheet_nor_dx_1k_inverty.png",
+    "textures/cargo_panel/rusty_metal_sheet_nor_gl_1k.png",
+    "textures/cargo_panel/rusty_metal_sheet_rough_1k.png",
+    "textures/hint_experiment/greys_3x1.png",
+)
+for f in TEST_SUPPORT:
+    for side in ("", ".import", ".uid"):
+        if os.path.exists(os.path.join(ROOT, f + side)):
+            out.add(f + side)
 for f in ("project.godot", "export_presets.cfg", "icon.svg", "default_bus_layout.tres"):
     if os.path.exists(os.path.join(ROOT, f)):
         out.add(f)
