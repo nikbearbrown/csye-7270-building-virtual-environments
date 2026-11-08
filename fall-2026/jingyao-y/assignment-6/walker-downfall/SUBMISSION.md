@@ -40,7 +40,9 @@ shader at `shaders/particles_generated.gdshader`.
   floor-build race (pre-existing). The first fresh clone found four suites
   missing data files; they were added before this release.
 
-**Film.** Brutalist godot-gamedev, walker modifier, Liam (local Kokoro):
+**Film.** YouTube: https://youtu.be/W5IPPXVlI6M
+
+Brutalist godot-gamedev, walker modifier, Liam (local Kokoro):
 `youtube/claude-liam-downfall-a6-particles-gamedev/`. 11:36, 3840×2160, 30 fps.
 SHA-256 `33d15797d825922546e397b935e8527bbc7d85f4cda731276e1400df883666a2`;
 checker PASS (16 code→result pairs). The user watched and listened to the
