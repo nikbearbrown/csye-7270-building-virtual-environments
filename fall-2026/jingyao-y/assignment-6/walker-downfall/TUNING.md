@@ -169,3 +169,26 @@ r1  12: 170/345 · 40: 164/346 · 54: 162/345 · 70: 108/345 · 99: 33 · 105: 2
 
 User runtime verdict (running preview, 1280×720): **kept** — "Keep." [保留] (2026-11-07).
 Strips: `captures/fire_pit_flames/r0b/`, `captures/fire_pit_flames/r1/`
+
+### Effect A r1 — results (after the user's approval)
+
+Edited `effects/hit_spark.tscn` (QuadMesh_puff size 0.5 → 1.0) and the config
+test's expected value; `test_hit_spark_config.gd` at 60 fps: 165 checks, 0
+failed. Strips `captures/hit_spark/r1/` (city) and `r1-snow/`, same seeds and
+the same stand-ins (brawler / ice_warrior at (−1.5, 0.65, −14)) as r0.
+
+Claude's comparison with the prediction:
+- **Miss:** the "below" snow patch (630–650 × 378–386) reads 158.3 on every
+  frame in both r0-snow and r1-snow; predicted ≤ 150 on frames 15 and 20.
+- What did change: pixels differing by > 3 levels between r0 and r1 lie only
+  in 621–661 × 340–376 (≈ 34 px, about the stand-in's body), 446–513 px per
+  frame on snow and 622–808 on the city street, frames 10–20; mostly darker on
+  frames 10–12 (428 / 344 px on snow); none at frame 30. On screen: a slightly
+  larger, darker brown haze over the torso; the snow around the body looks the
+  same.
+- Explanation: the puff starts at alpha 0.55 and fades linearly to 0 while it
+  grows 0.6 → 1.4, through a soft radial texture, so by the time it is large it
+  is nearly transparent; doubling the quad widened the visible part only to
+  the body's edges. The city prediction (≤ 3 levels in the patch) held.
+
+User runtime verdict (running preview, 1280×720): pending.
