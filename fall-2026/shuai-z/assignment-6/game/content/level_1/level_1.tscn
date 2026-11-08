@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://content/level_1/ground_segment.gd" id="1_ground"]
+[ext_resource type="Script" path="res://content/level_1/backdrop.gd" id="2_backdrop"]
+[ext_resource type="PackedScene" path="res://content/level_1/waystone.tscn" id="3_waystone"]
+[ext_resource type="PackedScene" path="res://content/level_1/portal.tscn" id="4_portal"]
+[ext_resource type="PackedScene" path="res://content/level_1/spikes.tscn" id="5_spikes"]
+[ext_resource type="PackedScene" path="res://content/goblin/goblin.tscn" id="6_goblin"]
+[ext_resource type="PackedScene" path="res://content/sword_pickup/sword_pickup.tscn" id="7_pickup"]
+[ext_resource type="Texture2D" path="res://content/level_1/art/sky_castle.jpg" id="8_sky"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_left"]
+normal = Vector2(1, 0)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_right"]
+normal = Vector2(-1, 0)
+
+[node name="Level1" type="Node2D"]
+texture_filter = 4
+
+[node name="Backdrop" type="Node2D" parent="."]
+script = ExtResource("2_backdrop")
+
+[node name="Far" type="CanvasLayer" parent="Backdrop"]
+layer = -1
+
+[node name="Sky" type="Sprite2D" parent="Backdrop/Far"]
+texture = ExtResource("8_sky")
+centered = false
+
+[node name="PitShade" type="ColorRect" parent="."]
+offset_top = 840.0
+offset_right = 7700.0
+offset_bottom = 1080.0
+mouse_filter = 2
+color = Color(0.3529412, 0.30588236, 0.26666668, 1)
+
+[node name="Ground" type="Node2D" parent="."]
+
+[node name="Segment1" type="StaticBody2D" parent="Ground"]
+position = Vector2(0, 840)
+script = ExtResource("1_ground")
+size = Vector2(4300, 240)
+cliff_right = true
+
+[node name="Segment2" type="StaticBody2D" parent="Ground"]
+position = Vector2(4510, 840)
+script = ExtResource("1_ground")
+size = Vector2(1890, 240)
+cliff_left = true
+cliff_right = true
+
+[node name="Segment3" type="StaticBody2D" parent="Ground"]
+position = Vector2(6600, 840)
+script = ExtResource("1_ground")
+size = Vector2(1100, 240)
+cliff_left = true
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="SpikesA" parent="Hazards" instance=ExtResource("5_spikes")]
+position = Vector2(1065, 840)
+
+[node name="SpikesB" parent="Hazards" instance=ExtResource("5_spikes")]
+position = Vector2(5180, 840)
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="GoblinA" parent="Enemies" instance=ExtResource("6_goblin")]
+position = Vector2(1500, 840)
+
+[node name="GoblinB" parent="Enemies" instance=ExtResource("6_goblin")]
+position = Vector2(3000, 840)
+patrol_distance = 500.0
+
+[node name="GoblinC" parent="Enemies" instance=ExtResource("6_goblin")]
+position = Vector2(5600, 840)
+
+[node name="SwordPickup" parent="." instance=ExtResource("7_pickup")]
+position = Vector2(2500, 840)
+
+[node name="Waystone" parent="." instance=ExtResource("3_waystone")]
+position = Vector2(4000, 840)
+
+[node name="Portal" parent="." instance=ExtResource("4_portal")]
+position = Vector2(7200, 840)
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+
+[node name="Left" type="CollisionShape2D" parent="Bounds"]
+shape = SubResource("WorldBoundaryShape2D_left")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(7700, 0)
+shape = SubResource("WorldBoundaryShape2D_right")
+
+[node name="StartPoint" type="Marker2D" parent="."]
+position = Vector2(300, 840)

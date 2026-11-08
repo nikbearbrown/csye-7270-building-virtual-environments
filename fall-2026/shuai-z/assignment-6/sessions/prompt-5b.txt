@@ -1,0 +1,43 @@
+Read CLAUDE.md first. CHANGE-BRIEF.md is the contract for this change;
+the Headless facts in CLAUDE.md describe what a test on this machine
+can observe. Effect B's scene is built and tuned, its configuration
+test passes, and Effect A is already wired in. Do not change either
+effect's settings in this task, and do not edit any .gdshader file.
+Write your reports in English.
+
+In an earlier session you proposed a plan. sessions/plan-5.md is that
+plan, unchanged. I approve all of it: steps 1, 2, 3, 3b, 4 and 5. On
+step 1's question, put the emitter in game/app/main.tscn as the plan
+says. Implement the approved steps in order, one at a time. After each
+step, show its diff before you start the next: git diff for a changed
+file, git diff --no-index /dev/null <file> for a new one. Do nothing
+that the plan does not name. If a step cannot be done as approved,
+stop and say why; do not change the plan yourself. If an assertion
+fails because the game does not do what the brief says, do not weaken
+the assertion: stop and report it, with the evidence.
+
+Step 5: make each mutation, run the state test at 60, show its output,
+and restore the file before the next mutation. After the last restore,
+show git diff for game/effects/effects_driver.gd and
+game/app/main.tscn, and run the state test once more at 60.
+
+These rules hold:
+- Presentation code may read game state; it never writes it. Do not
+  change collision, movement, input, the state machine or the existing
+  tests.
+- The test drives the condition through the real game loop and real
+  input, never by calling the start or stop function directly.
+- It asserts that the effect starts when the condition begins and
+  stops when it ends, and what it does while the tree is paused and
+  while the node is hidden, as the brief says.
+- For a feedback loop, it sets the game value to at least two values
+  and asserts that the code changes amount_ratio, not amount.
+- Run every test with ./scripts/run-test.sh: the existing ones as
+  CLAUDE.md says, and the new one at 60, or in realtime if it waits on
+  audio. Show the real output and say which mode you used. Run the
+  wrapper on its own, with nothing chained after it.
+- Say exactly what the test proves and what it cannot prove headlessly.
+- You can write only game/effects/effects_driver.gd,
+  game/app/main.tscn, game/tests/test_run_dust_state.gd and
+  game/tests/test_run_dust_state.tscn.
+- Do not commit.

@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://content/rudy/rudy.gd" id="1_rudy"]
+[ext_resource type="Script" path="res://content/rudy/rudy_look.gd" id="2_look"]
+[ext_resource type="Texture2D" path="res://content/rudy/frames/CHAR-IDLE.png" id="3_idle"]
+[ext_resource type="Material" path="res://systems/art/outline.tres" id="4_outline"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 20.0
+height = 136.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sword"]
+size = Vector2(56, 70)
+
+[node name="Rudy" type="CharacterBody2D"]
+collision_layer = 2
+script = ExtResource("1_rudy")
+
+[node name="Body" type="CollisionShape2D" parent="."]
+position = Vector2(0, -68)
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="Look" type="Node2D" parent="."]
+texture_filter = 4
+script = ExtResource("2_look")
+
+[node name="Sprite" type="Sprite2D" parent="Look"]
+material = ExtResource("4_outline")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_idle")
+centered = false
+offset = Vector2(-205, -370)
+
+[node name="SwordHitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitoring = false
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="SwordHitbox"]
+position = Vector2(50, -76)
+shape = SubResource("RectangleShape2D_sword")
+disabled = true
