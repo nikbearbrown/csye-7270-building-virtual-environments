@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Unreal Editor interface | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: The Unreal Editor interface">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="The Unreal Editor interface">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapters 0 to 10 and Epic documentation</p>
+      <h1 class="t-opening rise g2">The Unreal Editor interface</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">What each part of the Unreal Editor is for, and how to find it, for a student who knows the Godot editor</p>
+      <div class="speaker-notes" hidden><p>Deck 15 of the topic order. 32 terms. Tags: in the book text means a chapter uses and explains it; in the glossary means a glossary row; editor or docs means Epic's editor documentation or the editor itself (page named on the slide). The chapters name few editor windows, so most terms are tagged editor. Unreal was not run for the chapters; the meanings of Play In Editor and the Blueprint Editor parts come from knowledge of the editor because the Epic pages returned only navigation text.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-two terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-two terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0, 1, 4, 5, 9 and 10 (“Doing the same thing in Unreal Engine”); glossary, Engine vocabulary and Agent workflow terms: Unreal workflows; Epic documentation, “Unreal Editor Interface”.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The editor window: viewport, Content Browser, Outliner, Details, toolbar">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Find your way</p>
+      <h2 class="t-chart">The editor window: viewport, Content Browser, Outliner, Details, toolbar</h2>
+      <div class="diagram build" data-build="win" style="flex-basis:700px"></div>
+      <p class="source">Source: Epic documentation, “Unreal Editor Interface”, Viewport, Content Browser, Outliner, Details, Main Toolbar.</p>
+      <div class="speaker-notes" hidden><p>Drawn layout, not a screenshot. The 0.3 px per unit door scale is an illustration. Your layout can differ, because panels can be moved.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Perspective, orthographic, view modes and right-mouse fly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Find your way</p>
+      <h2 class="t-chart">Perspective, orthographic, view modes and right-mouse fly</h2>
+      <div class="diagram build" data-build="views" style="flex-basis:700px"></div>
+      <p class="source">Source: Epic documentation, “Unreal Editor Interface”, Viewport Toolbar and viewport controls.</p>
+      <div class="speaker-notes" hidden><p>Edge ratios and face greys are computed from a projected cube. The flight path integrates held keys at 100 px per second; the speed is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Content Drawer, Place Actors panel and World Settings">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Place and play</p>
+      <h2 class="t-chart">Content Drawer, Place Actors panel and World Settings</h2>
+      <div class="diagram build" data-build="place" style="flex-basis:700px"></div>
+      <p class="source">Source: Epic documentation, “Placing Actors”, “Unreal Editor Interface” (Content Drawer).</p>
+      <div class="speaker-notes" hidden><p>Kill Z fall time is computed: t = sqrt(2 × 1000 ÷ 980) = 1.43 s. The values shown in World Settings are examples.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Actor, Component and Blueprint class">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">What a level holds</p>
+      <h2 class="t-chart">Actor, Component and Blueprint class</h2>
+      <div class="diagram build" data-build="actor" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1 and 4, tables; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Actor, Component and Blueprint class are glossary rows. Chapters 1 and 4 use them in their Godot-to-Unreal tables without a full definition, so they are tagged glossary.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Play, Simulate, Eject, discarded edits and the Output Log">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Place and play</p>
+      <h2 class="t-chart">Play, Simulate, Eject, discarded edits and the Output Log</h2>
+      <div class="diagram build" data-build="play" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10 (Python is not available in Play In Editor); glossary, Agent workflow terms: Unreal workflows; Epic documentation, “Play In Editor”.</p>
+      <div class="speaker-notes" hidden><p>Ball bounce is a computed simulation (gravity 900, restitution 0.55). The 6 s door chart is illustrative; log lines are examples, not Unreal's exact text. Epic's Play In Editor page returned only navigation text, so the discard rule is written from knowledge of the editor.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Levels, and why .umap and .uasset cannot be diffed">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a level holds</p>
+      <h2 class="t-chart">Levels, and why .umap and .uasset cannot be diffed</h2>
+      <div class="diagram build" data-build="levels" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0, 1 and 5, “Doing the same thing in Unreal Engine”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Actor counts 12, 5 and 40 are illustrative; the sum is computed. The hex bytes are seeded. The binary quote is from Epic’s Perforce page as cited in Chapters 1, 4 and 5.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Blueprint Editor, Event Graph and Construction Script">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Editors and settings</p>
+      <h2 class="t-chart">Blueprint Editor, Event Graph and Construction Script</h2>
+      <div class="diagram build" data-build="bp" style="flex-basis:700px"></div>
+      <p class="source">Source: Glossary, Agent workflow terms: Unreal workflows (Graph); Epic documentation, “Blueprint Editor”.</p>
+      <div class="speaker-notes" hidden><p>The execution order is computed by walking the wires of the drawn graph for each Has Key value. Panel names are from the editor; Epic's Blueprint Editor page returned only navigation text.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Material Editor, Niagara and the Animation editors">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Editors and settings</p>
+      <h2 class="t-chart">Material Editor, Niagara and the Animation editors</h2>
+      <div class="diagram build" data-build="editors" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9 (Niagara); Chapter 10 (Notifies, Montages); Chapter 6 (Material Editor).</p>
+      <div class="speaker-notes" hidden><p>Colour = texture × brightness, per channel. Niagara particles are a seeded burst of 32 (Chapter 9 gives a burst count of 32). The 6-frame notify window follows the Chapter 10 sword example in shape only.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Collision: object type, response and preset">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a level holds</p>
+      <h2 class="t-chart">Collision: object type, response and preset</h2>
+      <div class="diagram build" data-build="collide" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Doing the same thing in Unreal Engine”; Epic documentation, “Collision Overview”.</p>
+      <div class="speaker-notes" hidden><p>Rule: a pair gets the weaker of the two responses (Block over Overlap over Ignore); Chapter 4 states that both sides must agree.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Project Settings, Editor Preferences, Plugins and Package Project">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Editors and settings</p>
+      <h2 class="t-chart">Project Settings, Editor Preferences, Plugins and Package Project</h2>
+      <div class="diagram build" data-build="settings" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 and 4 (plugins); Epic documentation, “Project Settings”, “Plugins”, “Packaging Projects”.</p>
+      <div class="speaker-notes" hidden><p>Project Settings are stored in the project; preferences are per user. The plugins named are from Chapters 0, 1 and 4.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Unreal parts and their Godot equivalents">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map to Godot</p>
+      <h2 class="t-chart">Unreal parts and their Godot equivalents</h2>
+      <div class="diagram build" data-build="godot" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1, 4 and 6 (Godot and Unreal tables); deck “Terms - Godot editor and scenes”.</p>
+      <div class="speaker-notes" hidden><p>Nine pairs. Close matches only: a Blueprint class is nearer to a scene than to a script.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Glossary, Agent workflow terms: Unreal workflows (Package, Play-in-editor); Epic documentation, “Unreal Editor Interface”.</p>
+      <div class="speaker-notes" hidden><p>Play and Simulate, Browser and Outliner, Project Settings and Preferences, Package (an asset) and Package Project.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed (log counts seeded)</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0, 4 and 10; Epic documentation, “Unreal Editor Interface”.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust an editor change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust an editor change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0, 1 and 4; Epic documentation.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= The Unreal Editor interface ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = a chapter uses and explains it; gloss = glossary row; editor = Epic's editor documentation or the editor itself */
+  var T = {
+    viewport: { n: "Level Viewport", tag: "editor", m: "The main window onto the level, where you see Actors and move them" },
+    projection: { n: "Perspective/orthographic", tag: "editor", m: "Perspective shows depth; orthographic drops it, so parallel edges stay parallel" },
+    viewmode: { n: "View modes", tag: "editor", m: "Ways to draw the same scene: Lit, Unlit, Wireframe and others" },
+    fly: { n: "Right-mouse fly", tag: "editor", m: "Hold the right mouse button and press W A S D to fly the viewport camera" },
+    browser: { n: "Content Browser", tag: "editor", m: "Where you browse, import and organize every asset in the project" },
+    drawer: { n: "Content Drawer", tag: "editor", m: "A Content Browser that slides up from the bottom-left and hides when you click away" },
+    outliner: { n: "Outliner", tag: "editor", m: "A tree of every Actor in the open level, which you can search and put in folders" },
+    details: { n: "Details panel", tag: "editor", m: "Shows the properties and Components of the selected Actor, and lets you edit them" },
+    world: { n: "World Settings", tag: "editor", m: "Settings for the open level as a whole, such as its Game Mode and Kill Z" },
+    place: { n: "Place Actors panel", tag: "editor", m: "A palette of Actor types that you drag into the level" },
+    toolbar: { n: "Main toolbar", tag: "editor", m: "Save, mode switching, adding content, and the Play and Stop controls" },
+    pie: { n: "Play In Editor (PIE)", tag: "gloss", m: "Running the game inside the editor" },
+    sim: { n: "Simulate", tag: "editor", m: "Runs the level's logic and physics with no player; you keep the editor camera" },
+    eject: { n: "Eject", tag: "editor", m: "While playing, release the player so you can fly the camera and select Actors" },
+    discard: { n: "PIE changes discarded", tag: "editor", m: "Edits made to Actors during play are thrown away when you stop; edits made before play stay" },
+    log: { n: "Output Log", tag: "editor", m: "A window of messages from the editor and the game, with warnings and errors marked" },
+    actor: { n: "Actor and Component", tag: "gloss", m: "An Actor is an object you can place in a level; a Component is a piece of behaviour or data attached to it" },
+    bpclass: { n: "Blueprint class", tag: "gloss", m: "Unreal's reusable object template, built visually or in code" },
+    level: { n: "Level and Levels window", tag: "gloss", m: "A level is one playable space, saved as a map file; the Levels window lists the levels in the world" },
+    binary: { n: ".uasset and .umap", tag: "book", m: "Binary asset and level files that a text tool cannot open or merge" },
+    bped: { n: "Blueprint Editor", tag: "editor", m: "Opens on a Blueprint class: Components, My Blueprint, a Viewport, an Event Graph and Details" },
+    graph: { n: "Event Graph", tag: "gloss", m: "The node-and-wire view of a Blueprint; white execution wires set the order" },
+    cscript: { n: "Construction Script", tag: "editor", m: "A graph that runs when the Actor is built or changed in the editor, before play" },
+    matted: { n: "Material Editor", tag: "editor", m: "A node graph that builds a material; its result node takes Base Color and more" },
+    objtype: { n: "Object type and response", tag: "book", m: "Each object has a type, and a response to every other type: Block, Overlap or Ignore" },
+    preset: { n: "Collision preset", tag: "editor", m: "A named bundle of responses, such as BlockAll, OverlapAll or NoCollision" },
+    niagara: { n: "Niagara", tag: "book", m: "Unreal's visual-effects system: a system holds emitters; an emitter is a stack of modules" },
+    animed: { n: "Animation editors", tag: "editor", m: "Windows opened from animation assets: Sequence, Montage and Animation Blueprint" },
+    projset: { n: "Project Settings", tag: "editor", m: "Settings saved with the project and shared by everyone who opens it" },
+    prefs: { n: "Editor Preferences", tag: "editor", m: "Settings for you and your copy of the editor, not saved with the project" },
+    plugins: { n: "Plugins", tag: "editor", m: "Add-on modules you switch on or off per project; most need an editor restart" },
+    build: { n: "Build and Package", tag: "editor", m: "Package Project turns the project into a runnable game for one platform" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  /* show only the latest three entries so the right column never overflows */
+  function bs(svg, list, k, anim, a, b) { return base(svg, list.filter(function (it) { return it.s <= k; }).slice(-3), k, anim, a, b); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function clr(g) { g.selectAll("*").remove(); }
+  function ln(g, x1, y1, x2, y2, c, w, dash) { var p = g.append("path").attr("d", "M" + x1 + "," + y1 + " L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 2).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function pbox(g, x, y, w, h, title, on) { box(g, x, y, w, h, { stroke: on ? RED : INK, sw: on ? 4 : 2, fill: on ? TINT : "#FFFFFF" }); if (title) cap(g, x + 10, y + 30, title, { size: 24, weight: 700, fill: on ? RED : INK }); }
+  function tab(g, x, y, w, h, s, on) { box(g, x, y, w, h, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" }); cap(g, x + w / 2, y + h - 9, s, { size: 24, anchor: "middle", weight: on ? 700 : 400 }); }
+  function btn(g, x, y, w, h, s, on) { box(g, x, y, w, h, { stroke: INK, sw: 2, fill: on ? RED : "#FFFFFF" }); cap(g, x + w / 2, y + h - 11, s, { size: 24, anchor: "middle", weight: 700, fill: on ? "#FFFFFF" : INK }); }
+  function fmtV(v) { return String(Math.round(v)); }
+
+  var MAPROWS = [
+    ["Look and move", "Level Viewport, perspective/orthographic, view modes, right-mouse fly, Content Browser, Content Drawer, Outliner, Details panel", "Where you look, how you move, and where things are listed"],
+    ["Place and play", "Place Actors panel, World Settings, Main toolbar, Play In Editor, Simulate, Eject, PIE changes discarded, Output Log", "How you add things, run them, and read what happened"],
+    ["What a level holds", "Actor and Component, Blueprint class, Level and Levels window, .uasset and .umap, object type and response, collision preset", "The objects and files behind the panels"],
+    ["Editors and settings", "Blueprint Editor, Event Graph, Construction Script, Material Editor, Niagara, Animation editors, Project Settings, Editor Preferences, Plugins, Build and Package", "The tools opened from assets, and the switches around them"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of Unreal Editor terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "32 terms for a student who knows the Godot editor. Each one is a part of the Unreal Editor, a thing it shows, or a rule about files.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1030];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 126, row = g.append("g");
+      box(row, 0, y, 1400, 114, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 115).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 12, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 58, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 28, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. the editor window (Conceptual illustration) ---------- */
+  function ued(g, S) {
+    var hl = S.hl;
+    /* main toolbar */
+    box(g, 0, 0, 760, 52, { stroke: hl === "tool" ? RED : INK, sw: hl === "tool" ? 4 : 2, fill: hl === "tool" ? TINT : SUBTLE });
+    btn(g, 8, 6, 76, 40, "Save", false); btn(g, 94, 6, 100, 40, "Modes", false);
+    btn(g, 560, 6, 120, 40, S.play ? "▶ Playing" : "▶ Play", !!S.play); btn(g, 688, 6, 64, 40, "■", false);
+    /* viewport */
+    box(g, 0, 60, 480, 350, { stroke: hl === "view" ? RED : S.play ? RED : INK, sw: hl === "view" || S.play ? 4 : 2, fill: hl === "view" ? TINT : "#FFFFFF" });
+    cap(g, 10, 90, "Perspective", { size: 24, weight: 700 }); cap(g, 170, 90, "Lit", { size: 24, weight: 700 });
+    d3.range(1, 5).forEach(function (i) { ln(g, 10 + i * 94, 370, 10 + i * 94, 400, GRID, 1.5); });
+    ln(g, 10, 360, 470, 360, INK, 3);
+    g.append("rect").attr("x", 60).attr("y", 300).attr("width", 60).attr("height", 60).attr("fill", "#FFFFFF").attr("stroke", S.sel === "cube" ? RED : INK).attr("stroke-width", S.sel === "cube" ? 5 : 3);
+    g.append("circle").attr("cx", 380).attr("cy", 160).attr("r", 18).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+    if (S.door) g.append("rect").attr("x", 200 + S.doorX * 0.3).attr("y", 260).attr("width", 40).attr("height", 100).attr("fill", "#FFFFFF").attr("stroke", S.sel === "door" ? RED : INK).attr("stroke-width", S.sel === "door" ? 5 : 3);
+    /* outliner */
+    pbox(g, 490, 60, 270, 170, "Outliner", hl === "outliner");
+    var rows = ["Cube", "PointLight"].concat(S.door ? ["BP_Door"] : []);
+    rows.forEach(function (r, i) {
+      var y = 124 + i * 30, on = (S.sel === "cube" && r === "Cube") || (S.sel === "door" && r === "BP_Door");
+      if (on) g.append("rect").attr("x", 496).attr("y", y - 23).attr("width", 258).attr("height", 30).attr("fill", RED).attr("opacity", 0.18);
+      cap(g, 504, y, r, { size: 24, fill: on ? RED : INK, weight: on ? 700 : 400 });
+    });
+    /* details */
+    pbox(g, 490, 238, 270, 172, "Details", hl === "details");
+    if (S.sel === "door") { cap(g, 502, 304, "BP_Door", { size: 24, weight: 700 }); cap(g, 502, 344, "Location X", { size: 24 }); cap(g, 750, 344, fmtV(S.doorX), { size: 24, weight: 700, anchor: "end", fill: S.doorX > 0 ? RED : INK }); cap(g, 502, 384, "Components", { size: 24 }); cap(g, 750, 384, "3", { size: 24, weight: 700, anchor: "end" }); }
+    else if (S.sel === "cube") { cap(g, 502, 304, "Cube", { size: 24, weight: 700 }); cap(g, 502, 344, "Location X", { size: 24 }); cap(g, 750, 344, "0", { size: 24, weight: 700, anchor: "end" }); cap(g, 502, 384, "Components", { size: 24 }); cap(g, 750, 384, "1", { size: 24, weight: 700, anchor: "end" }); }
+    else cap(g, 502, 330, "Nothing selected", { size: 24, fill: MUTED });
+    /* content browser */
+    pbox(g, 0, 418, 760, 104, "Content Browser", hl === "browser");
+    cap(g, 250, 448, "Content > Blueprints", { size: 24, fill: MUTED });
+    [["BP_Door", 10], ["SM_Cube", 150], ["M_Wood", 290]].forEach(function (a) { box(g, a[1], 462, 130, 56, { stroke: a[0] === "BP_Door" && S.drag ? RED : FAMILIAR, sw: 2 }); cap(g, a[1] + 65, 498, a[0], { size: 24, anchor: "middle" }); });
+    /* bottom bar */
+    box(g, 0, 528, 760, 40, { stroke: FAMILIAR, sw: 1.5, fill: SUBTLE }); cap(g, 10, 556, "Content Drawer", { size: 24, weight: 700 }); cap(g, 240, 556, "Output Log", { size: 24, weight: 700 });
+    if (S.drag) { var dg = g.append("g"); box(dg, S.drag[0], S.drag[1], 130, 44, { stroke: RED, sw: 3, fill: TINT }); cap(dg, S.drag[0] + 65, S.drag[1] + 31, "BP_Door", { size: 24, anchor: "middle", weight: 700, fill: RED }); }
+  }
+  function renderWindow(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Unreal Editor window: toolbar, Level Viewport, Outliner, Details and Content Browser", "A drawing of the editor with a toolbar, a viewport, an Outliner and Details panel on the right, a Content Browser underneath and a bottom bar. Each step lights one part and shows what it does.");
+    var ey = bs(svg, [{ id: "viewport", s: 1 }, { id: "browser", s: 2 }, { id: "outliner", s: 3 }, { id: "details", s: 4 }, { id: "toolbar", s: 5 }], k, anim, ["Outliner", "lists Actors in the level"], ["Content Browser", "lists assets on disk"]);
+    var d = svg.append("g");
+    function draw(t) {
+      var s = { hl: [null, "view", "browser", "outliner", "details", "tool"][k], door: k >= 2, doorX: 0, sel: null };
+      if (k === 1) s.sel = t > 0.5 ? "cube" : null;
+      if (k === 2) { var p = Math.min(1, Math.max(0, (t - 0.1) / 0.6)); s.drag = t > 0.1 && t < 0.72 ? [10 + (210 - 10) * p, 462 + (300 - 462) * p - 10] : null; s.door = t >= 0.72; }
+      if (k === 3) s.sel = t > 0.5 ? "door" : "cube";
+      if (k === 4) { s.sel = "door"; s.doorX = t < 0.2 ? 0 : t > 0.8 ? 300 : 300 * (t - 0.2) / 0.6; }
+      if (k === 5) { s.sel = "door"; s.doorX = 300; s.play = t > 0.4; }
+      clr(d); ued(d, s);
+    }
+    if (k === 0) { draw(1); } else run(d, [0, 3000, 3500, 3000, 3500, 3000][k], draw, anim);
+    note(svg, ey, ["", "The Level Viewport is where you see the level and click an Actor to select it.", "Drag BP_Door into the viewport: the Outliner then lists 3 Actors.", "Click a name in the Outliner and the same Actor is selected in the viewport.", "Edit Location X in Details: 0 to 300 moves the door 90 px here (0.3 px per unit).", "Play starts the game in the editor; Stop ends it."][k]);
+  }
+
+  /* ---------- 2. perspective/orthographic, view modes, right-mouse fly ---------- */
+  var CUBE_F = [[0, 1, 3, 2], [4, 5, 7, 6], [0, 1, 5, 4], [2, 3, 7, 6], [0, 2, 6, 4], [1, 3, 7, 5]], CUBE_N = [[0, 0, -1], [0, 0, 1], [0, -1, 0], [0, 1, 0], [-1, 0, 0], [1, 0, 0]];
+  function rot(v, yaw, pit) {
+    var x = v[0] * Math.cos(yaw) + v[2] * Math.sin(yaw), z = -v[0] * Math.sin(yaw) + v[2] * Math.cos(yaw), y = v[1] * Math.cos(pit) - z * Math.sin(pit), z2 = v[1] * Math.sin(pit) + z * Math.cos(pit);
+    return [x, y, z2];
+  }
+  function cubeGeom(yaw, pit, persp, s, cx, cy) {
+    var d = 5, P = d3.range(8).map(function (i) { var v = rot([i & 1 ? 1 : -1, i & 2 ? 1 : -1, i & 4 ? 1 : -1], yaw, pit), kk = persp ? d / (d + v[2]) : 1; return { x: cx + v[0] * kk * s, y: cy + v[1] * kk * s, z: v[2] }; });
+    var faces = CUBE_F.map(function (f, i) { var n = rot(CUBE_N[i], yaw, pit), L = [0.5, -0.7, -0.5], lum = Math.max(0, (n[0] * L[0] + n[1] * L[1] + n[2] * L[2]) / Math.hypot(L[0], L[1], L[2])); return { f: f, vis: n[2] < 0, z: d3.mean(f, function (j) { return P[j].z; }), lum: lum }; });
+    var edges = []; d3.range(8).forEach(function (i) { [1, 2, 4].forEach(function (b) { if (!(i & b)) edges.push([i, i | b]); }); });
+    var vl = [[0, 2], [1, 3], [4, 6], [5, 7]].map(function (e) { return Math.hypot(P[e[0]].x - P[e[1]].x, P[e[0]].y - P[e[1]].y); });
+    return { P: P, faces: faces, edges: edges, ratio: d3.min(vl) / d3.max(vl) };
+  }
+  function drawCube(g, geo, mode) {
+    if (mode === "wire") { geo.edges.forEach(function (e) { ln(g, geo.P[e[0]].x, geo.P[e[0]].y, geo.P[e[1]].x, geo.P[e[1]].y, INK, 3); }); return; }
+    geo.faces.filter(function (f) { return f.vis; }).sort(function (a, b) { return b.z - a.z; }).forEach(function (f) {
+      var gr = mode === "unlit" ? 226 : Math.round(120 + 120 * f.lum);
+      g.append("path").attr("d", "M" + f.f.map(function (j) { return geo.P[j].x + "," + geo.P[j].y; }).join(" L") + "Z").attr("fill", "rgb(" + gr + "," + gr + "," + gr + ")").attr("stroke", INK).attr("stroke-width", 3);
+    });
+  }
+  var FLY = (function () {
+    var segs = [["W", 2, 0], ["", 1, -50], ["W", 1.5, 0], ["D", 1, 0], ["", 1, 90], ["W", 1, 0]], pts = [], x = 90, y = 400, a = -20 * DEG, tt = 0, sp = 100, dt = 0.05;
+    segs.forEach(function (s) { var n = Math.round(s[1] / dt); for (var i = 0; i < n; i++) { if (s[0] === "W") { x += Math.cos(a) * sp * dt; y += Math.sin(a) * sp * dt; } if (s[0] === "D") { x += Math.cos(a + Math.PI / 2) * sp * dt; y += Math.sin(a + Math.PI / 2) * sp * dt; } a += s[2] * DEG / n; tt += dt; pts.push({ x: x, y: y, a: a, key: s[0], t: tt }); } });
+    return { pts: pts, segs: segs, total: tt };
+  })();
+  function renderViews(el, k, anim) {
+    var svg = svgFor(el, W, H, "Perspective and orthographic views, view modes, and right-mouse fly", "A cube drawn in perspective and in orthographic projection with edge lengths measured. Then a cube drawn Lit, Unlit and Wireframe. Then a top-down room with a camera flying along a path while the right mouse button is held.");
+    var ey = bs(svg, [{ id: "projection", s: 1 }, { id: "viewmode", s: 2 }, { id: "fly", s: 3 }], k, anim, ["Perspective", "far things look smaller"], ["Orthographic", "same size at any depth"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      if (k === 1) {
+        lab(d, 0, 30, "SAME CUBE, TWO CAMERAS");
+        var yaw = (30 + 30 * Math.sin(t * Math.PI * 2)) * DEG, pit = 25 * DEG;
+        [["Perspective", true, 190], ["Orthographic", false, 570]].forEach(function (c) {
+          box(d, c[2] - 190, 60, 370, 330, { stroke: INK, sw: 2 }); cap(d, c[2] - 180, 94, c[0], { size: 24, weight: 700 });
+          var geo = cubeGeom(yaw, pit, c[1], 95, c[2], 250); drawCube(d, geo, "lit");
+          cap(d, c[2], 420, "short edge ÷ long edge", { size: 24, anchor: "middle", fill: MUTED });
+          cap(d, c[2], 460, geo.ratio.toFixed(2), { size: 32, anchor: "middle", weight: 700, fill: c[1] ? RED : INK });
+        });
+        cap(d, 0, 520, "Four edges are the same length in the cube. Perspective shrinks the far ones; orthographic keeps all four equal (1.00).", { size: 24, fill: MUTED });
+      } else if (k === 2) {
+        lab(d, 0, 30, "SAME CUBE, THREE VIEW MODES");
+        var shown = Math.min(3, Math.floor(t * 3.2) + 1);
+        [["Lit", "lit", 130], ["Unlit", "unlit", 380], ["Wireframe", "wire", 630]].forEach(function (m, i) {
+          if (i + 1 > shown) return;
+          var gg = d.append("g"); box(gg, m[2] - 120, 60, 240, 300, { stroke: i + 1 === shown ? RED : INK, sw: 2 });
+          cap(gg, m[2], 94, m[0], { size: 24, weight: 700, anchor: "middle", fill: i + 1 === shown ? RED : INK });
+          drawCube(gg, cubeGeom(35 * DEG, 25 * DEG, true, 62, m[2], 215), m[1]);
+          if (anim && i + 1 === shown) gg.attr("opacity", 0).transition().duration(300).attr("opacity", 1);
+        });
+        cap(d, 0, 420, "Lit: light changes each face's grey (here from " + Math.round(120 + 120 * 0) + " to " + 240 + ").", { size: 24 });
+        cap(d, 0, 460, "Unlit: every face is the same grey (226). Wireframe: edges only (12).", { size: 24 });
+        cap(d, 0, 520, "The scene did not change. Only how the viewport draws it.", { size: 24, weight: 700, fill: RED });
+      } else {
+        lab(d, 0, 30, "TOP VIEW: FLYING, RIGHT MOUSE HELD");
+        box(d, 0, 50, 760, 400, { stroke: INK, sw: 2 });
+        [[250, 330], [470, 150], [640, 330]].forEach(function (p) { d.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 22).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+        var i = Math.min(FLY.pts.length - 1, Math.floor(t * (FLY.pts.length - 1))), c = FLY.pts[i];
+        d.append("path").attr("d", "M90,400 " + FLY.pts.slice(0, i + 1).map(function (p) { return "L" + p.x + "," + p.y; }).join(" ")).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+        cone(d, c.x, c.y, c.a, 60, 110); camBody(d, c.x, c.y, c.a);
+        [["W", 70, 458], ["A", 20, 498], ["S", 70, 498], ["D", 120, 498]].forEach(function (kk) { var on = c.key === kk[0]; box(d, kk[1], kk[2], 44, 36, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" }); cap(d, kk[1] + 22, kk[2] + 27, kk[0], { size: 24, anchor: "middle", weight: 700, fill: on ? RED : MUTED }); });
+        box(d, 200, 478, 340, 54, { stroke: RED, sw: 3, fill: TINT }); cap(d, 370, 514, "right mouse button held", { size: 24, anchor: "middle", weight: 700, fill: RED });
+        cap(d, 560, 514, "t = " + (c.t).toFixed(1) + " s", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { clr(d); d.append("g"); cap(d, 0, 300, "Click or press → to see the three view controls.", { fill: MUTED }); } else run(d, [0, 5000, 4500, 7000][k], draw, anim);
+    note(svg, ey, ["", "Perspective is the default view and works like a camera. Orthographic (Top, Front, Side) is for lining things up.", "View modes change how the viewport draws the scene, not the scene itself.", "Hold the right mouse button: W A S D move, the mouse turns. 2 s forward, a turn, 1.5 s forward, 1 s sideways, a turn, 1 s forward."][k]);
+  }
+
+  /* ---------- 3. Content Drawer, Place Actors, World Settings ---------- */
+  function renderPlace(el, k, anim) {
+    var svg = svgFor(el, W, H, "Content Drawer, Place Actors panel and World Settings", "Step 1: the drawer slides up from the bottom left and hides again. Step 2: an Actor is dragged from the Place Actors panel into the level and the Outliner count goes up. Step 3: a ball falls below the Kill Z line in World Settings and is removed.");
+    var ey = bs(svg, [{ id: "drawer", s: 1 }, { id: "place", s: 2 }, { id: "world", s: 3 }], k, anim, ["Content Browser", "docked, stays open"], ["Content Drawer", "pops up, hides again"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      if (k === 1) {
+        lab(d, 0, 30, "THE DRAWER OPENS OVER THE VIEWPORT");
+        box(d, 0, 50, 760, 450, { stroke: INK, sw: 2 }); ln(d, 10, 440, 750, 440, INK, 3); d.append("rect").attr("x", 330).attr("y", 340).attr("width", 60).attr("height", 100).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        box(d, 0, 510, 760, 70, { stroke: FAMILIAR, sw: 1.5, fill: SUBTLE });
+        var open = t < 0.2 ? t / 0.2 : t < 0.7 ? 1 : Math.max(0, 1 - (t - 0.7) / 0.2), h = 240 * d3.easeCubicOut(open);
+        btn(d, 8, 522, 200, 48, "Content Drawer", open > 0.5);
+        if (h > 1) { var dr = d.append("g"); box(dr, 0, 510 - h, 560, h, { stroke: RED, sw: 3, fill: "#FFFFFF" }); if (h > 120) { cap(dr, 14, 510 - h + 34, "Content Browser", { size: 24, weight: 700, fill: RED }); [["BP_Door", 14], ["SM_Cube", 154], ["M_Wood", 294]].forEach(function (a) { box(dr, a[1], 510 - h + 56, 130, 56, { stroke: FAMILIAR, sw: 2 }); cap(dr, a[1] + 65, 510 - h + 92, a[0], { size: 24, anchor: "middle" }); }); } }
+        if (t > 0.72 && t < 0.9) { d.append("circle").attr("cx", 640).attr("cy", 250).attr("r", 14).attr("fill", RED); cap(d, 640, 300, "click away", { size: 24, anchor: "middle", fill: RED, weight: 700 }); }
+      } else if (k === 2) {
+        lab(d, 0, 30, "DRAG AN ACTOR FROM THE PLACE ACTORS PANEL");
+        pbox(d, 0, 50, 250, 450, "Place Actors", false);
+        [["Basic", 8, 80], ["Lights", 92, 86], ["All", 182, 52]].forEach(function (s, i) { tab(d, s[1], 94, s[2], 36, s[0], i === 0); });
+        [["Cube", 0], ["Sphere", 1], ["Cylinder", 2]].forEach(function (a) { box(d, 10, 146 + a[1] * 64, 230, 54, { stroke: a[0] === "Cube" ? RED : FAMILIAR, sw: 2 }); cap(d, 24, 182 + a[1] * 64, a[0], { size: 24, weight: a[0] === "Cube" ? 700 : 400 }); });
+        box(d, 262, 50, 498, 450, { stroke: INK, sw: 2 }); cap(d, 274, 82, "Level Viewport", { size: 24, weight: 700, fill: MUTED }); ln(d, 272, 440, 750, 440, INK, 3);
+        var p = Math.min(1, Math.max(0, (t - 0.1) / 0.6)), landed = t >= 0.72;
+        if (landed) d.append("rect").attr("x", 470).attr("y", 380).attr("width", 60).attr("height", 60).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 4);
+        else if (t > 0.1) box(d, 10 + (440 - 10) * p, 146 + (350 - 146) * p, 100, 44, { stroke: RED, sw: 3, fill: TINT });
+        var n = landed ? 3 : 2;
+        cap(d, 0, 540, "Outliner count: " + n + (landed ? " (Cube added)" : ""), { size: 26, weight: 700, fill: landed ? RED : INK });
+      } else {
+        lab(d, 0, 30, "WORLD SETTINGS: KILL Z = -1000");
+        pbox(d, 0, 50, 380, 300, "World Settings", false);
+        [["Game Mode Override", "BP_Mode"], ["Kill Z", "-1000"]].forEach(function (r, i) { var y = 110 + i * 70; cap(d, 12, y, r[0], { size: 24 }); cap(d, 366, y + 34, r[1], { size: 24, weight: 700, anchor: "end", fill: i ? RED : INK }); ln(d, 12, y + 46, 368, y + 46, FAMILIAR, 1.5); });
+        var g0 = 980, tc = Math.sqrt(2 * 1000 / g0), ts = t * 2.2, z = 0.5 * g0 * ts * ts, gone = z >= 1000, ypx = 80 + z / 1000 * 330;
+        box(d, 420, 50, 340, 450, { stroke: INK, sw: 2 }); cap(d, 432, 82, "side view", { size: 24, fill: MUTED, weight: 700 });
+        ln(d, 430, 120, 750, 120, INK, 3); ln(d, 430, 410, 750, 410, RED, 3, "10 8"); cap(d, 740, 400, "Kill Z", { size: 24, anchor: "end", fill: RED, weight: 700 });
+        if (!gone) d.append("circle").attr("cx", 590).attr("cy", Math.min(ypx + 40, 410)).attr("r", 18).attr("fill", RED);
+        cap(d, 440, 460, gone ? "Actor destroyed" : "falling: " + ts.toFixed(2) + " s", { size: 26, weight: 700, fill: gone ? RED : INK });
+        wrap(d, 0, 400, "Fall of 1000 units at 980 units/s² takes " + tc.toFixed(2) + " s.", 30, { size: 24, lh: 30, fill: MUTED });
+      }
+    }
+    if (k === 0) { cap(d, 0, 300, "Click or press → for the drawer, the Place Actors panel and World Settings.", { fill: MUTED }); } else run(d, [0, 4500, 4000, 4500][k], draw, anim);
+    note(svg, ey, ["", "Click the Content Drawer button and it covers the viewport until you click away. Dock it to keep it open.", "Drag Cube out of Place Actors. The Outliner count goes from 2 to 3.", "World Settings holds level-wide values. An Actor that falls below Kill Z is removed."][k]);
+  }
+
+  /* ---------- 4. Actor, Component, Blueprint class ---------- */
+  function renderActor(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Outliner lists Actors; Details shows an Actor's Components; a Blueprint class is the template", "Step 1: a tree of Actors, one selected, with its Components listed in Details. Step 2: three placed copies of a Blueprint class; changing the class default changes the copies except one with an override.");
+    var ey = bs(svg, [{ id: "actor", s: 1 }, { id: "bpclass", s: 2 }], k, anim, ["Actor", "an object placed in a level"], ["Blueprint class", "the template it came from"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      if (k === 1) {
+        lab(d, 0, 30, "OUTLINER (LEFT) AND DETAILS (RIGHT)");
+        pbox(d, 0, 50, 340, 330, "Outliner", false);
+        var sel = t > 0.4 ? 0 : 1;
+        [["BP_Door", 0], ["SM_Cube", 1], ["PointLight", 2]].forEach(function (a, i) { var y = 130 + i * 44; if (i === sel) d.append("rect").attr("x", 6).attr("y", y - 27).attr("width", 328).attr("height", 38).attr("fill", RED).attr("opacity", 0.18); cap(d, 20, y, a[0], { size: 24, weight: i === sel ? 700 : 400, fill: i === sel ? RED : INK }); });
+        pbox(d, 380, 50, 380, 330, "Details", false);
+        var comps = sel === 0 ? ["DefaultSceneRoot", "DoorMesh", "BoxTrigger"] : ["StaticMeshComponent"];
+        cap(d, 394, 124, sel === 0 ? "BP_Door" : "SM_Cube", { size: 26, weight: 700 }); cap(d, 394, 164, "Components", { size: 24, fill: MUTED, weight: 700 });
+        comps.forEach(function (c, i) { cap(d, 410 + (i ? 20 : 0), 204 + i * 40, (i ? "└ " : "") + c, { size: 24 }); });
+        cap(d, 0, 440, "Actors in the level: 3.   Components on the selected Actor: " + comps.length + ".", { size: 26, weight: 700, fill: RED });
+        cap(d, 0, 490, "The Outliner picks the Actor. Details lists what it is made of.", { size: 24, fill: MUTED });
+      } else {
+        lab(d, 0, 30, "CLASS DEFAULT → COPIES FOLLOW");
+        var def = t < 0.45 ? 90 : 110, ov = [null, 45, null];
+        pbox(d, 0, 60, 300, 140, "BP_Door class", false); cap(d, 14, 130, "Open Angle", { size: 24 }); cap(d, 286, 130, String(def), { size: 28, weight: 700, anchor: "end", fill: def === 110 ? RED : INK });
+        cap(d, 14, 176, "default for all copies", { size: 24, fill: MUTED });
+        [0, 1, 2].forEach(function (i) {
+          var x = 340 + 0, y = 60 + i * 130, val = ov[i] === null ? def : ov[i];
+          box(d, x, y, 420, 110, { stroke: ov[i] === null ? INK : RED, sw: ov[i] === null ? 2 : 3 });
+          cap(d, x + 14, y + 38, "BP_Door " + (i + 1) + (ov[i] === null ? "" : "  (override)"), { size: 24, weight: 700, fill: ov[i] === null ? INK : RED });
+          cap(d, x + 14, y + 84, "Open Angle " + val, { size: 24 });
+          d.append("path").attr("d", "M300,130 L" + (x - 4) + "," + (y + 55)).attr("stroke", ov[i] === null ? INK : FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", ov[i] === null ? null : "6 6").attr("fill", "none");
+        });
+        cap(d, 0, 480, "Class default " + def + ": copies 1 and 3 show " + def + ", copy 2 keeps its own 45.", { size: 24, weight: 700 });
+      }
+    }
+    if (k === 0) cap(d, 0, 300, "Click or press → for Actors and Components, then Blueprint classes.", { fill: MUTED }); else run(d, [0, 4000, 4500][k], draw, anim);
+    note(svg, ey, ["", "An Actor is one placed object. Its Components, like a mesh or a trigger box, are listed in Details.", "A Blueprint class is the template. Edit the default and every copy follows, unless that copy overrides it."][k]);
+  }
+
+  /* ---------- 5. Play In Editor, Simulate, Eject, discarded edits, Output Log ---------- */
+  var BALL = (function () { var a = [], y = 0, v = 0, dt = 1 / 60; for (var i = 0; i < 360; i++) { v += 900 * dt; y += v * dt; if (y > 250) { y = 250; v = -v * 0.55; } a.push(y); } return a; })();
+  function playMock(g, S) {
+    box(g, 0, 0, 760, 52, { stroke: INK, sw: 2, fill: SUBTLE });
+    btn(g, 8, 6, 132, 40, "▶ Play", S.mode === "pie"); btn(g, 150, 6, 132, 40, "Simulate", S.mode === "sim"); btn(g, 292, 6, 100, 40, "■ Stop", false);
+    if (S.mode === "pie") btn(g, 402, 6, 100, 40, "Eject", !!S.eject);
+    box(g, 0, 60, 760, 340, { stroke: S.mode ? RED : INK, sw: S.mode ? 4 : 2 });
+    box(g, 0, 410, 760, 150, { stroke: INK, sw: 2 }); cap(g, 10, 440, "Output Log", { size: 24, weight: 700 });
+    (S.log || []).forEach(function (l, i) { mono(g, 10, 474 + i * 32, l[0], { size: 24, fill: l[1] ? RED : INK, weight: l[1] ? 700 : 400 }); });
+  }
+  function renderPlay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Play In Editor, Simulate and Eject; edits made while playing are discarded; the Output Log", "A toolbar with Play, Simulate, Stop and Eject over a viewport and an Output Log. Step 1 a player walks. Step 2 a ball falls with no player. Step 3 the camera ejects from the player. Step 4 a chart of a door value that is set during play and snaps back at Stop. Step 5 the log lines.");
+    var ey = bs(svg, [{ id: "pie", s: 1 }, { id: "sim", s: 2 }, { id: "eject", s: 3 }, { id: "discard", s: 4 }, { id: "log", s: 5 }], k, anim, ["Play In Editor", "you are the player"], ["Simulate", "no player, editor camera"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      var S = { mode: k === 2 ? "sim" : k === 5 ? null : "pie", eject: k === 3, log: [] };
+      if (k === 1) S.log = [["PIE started: player at Player Start"]];
+      if (k === 2) S.log = [["Simulate started: no player"]];
+      if (k === 3) S.log = [["PIE started: player at Player Start"], ["Ejected: camera is free"]];
+      if (k === 4) S.log = [["PIE started"], t > 0.5 ? ["Door X set to 300"] : ["Door X = 0"], t > 0.82 ? ["PIE stopped: Door X back to 0", 1] : ["PIE running"]];
+      if (k === 5) S.log = [["Door opened"], ["Warning: no key found"], ["Error: Door has no mesh", 1]];
+      playMock(d, S);
+      var v = d.append("g");
+      ln(v, 10, 360, 750, 360, INK, 3);
+      if (k === 1) {
+        var px = 100 + 450 * t; v.append("rect").attr("x", px).attr("y", 290).attr("width", 34).attr("height", 70).attr("fill", INK); cap(v, px + 17, 280, "Player", { size: 24, anchor: "middle", weight: 700 });
+        cap(v, 14, 100, "keys go to the game", { size: 24, fill: RED, weight: 700 }); cap(v, 14, 134, "x = " + Math.round(px) + " px", { size: 24, fill: MUTED });
+      } else if (k === 2) {
+        var i = Math.min(BALL.length - 1, Math.floor(t * (BALL.length - 1))), by = BALL[i];
+        v.append("circle").attr("cx", 400).attr("cy", 100 + by).attr("r", 18).attr("fill", RED);
+        camBody(v, 60, 110, 0); cap(v, 14, 156, "editor camera", { size: 24, fill: MUTED }); cap(v, 14, 190, "no Player in the level", { size: 24, weight: 700 });
+      } else if (k === 3) {
+        v.append("rect").attr("x", 330).attr("y", 290).attr("width", 34).attr("height", 70).attr("fill", INK); cap(v, 347, 280, "Player", { size: 24, anchor: "middle", weight: 700 });
+        var p = d3.easeCubicInOut(Math.min(1, t / 0.7)), cx = 347 + (620 - 347) * p, cy = 300 + (150 - 300) * p, ang = Math.atan2(300 - cy, 347 - cx);
+        cone(v, cx, cy, p < 0.01 ? -0.3 : ang, 50, 150); camBody(v, cx, cy, p < 0.01 ? -0.3 : ang);
+        cap(v, 14, 100, "player stays where it was", { size: 24, weight: 700 }); cap(v, 14, 134, "camera is free: click an Actor", { size: 24, fill: RED, weight: 700 });
+      } else if (k === 4) {
+        clr(v); box(v, 0, 60, 760, 340, { stroke: RED, sw: 4 }); lab(v, 14, 92, "DOOR X (UNITS) OVER 6 SECONDS");
+        var x0 = 80, x1 = 730, y0 = 360, y1 = 130, tt = t * 6;
+        v.append("rect").attr("x", x0 + (1 / 6) * (x1 - x0)).attr("y", y1 - 10).attr("width", (4 / 6) * (x1 - x0)).attr("height", y0 - y1 + 10).attr("fill", TINT);
+        function X(s) { return x0 + s / 6 * (x1 - x0); }
+        function Y(val) { return y0 - val / 300 * (y0 - y1); }
+        function val(s) { return s < 2.5 ? 0 : s < 3.5 ? 300 * (s - 2.5) : s < 5 ? 300 : 0; }
+        ln(v, x0, y0, x1, y0, INK, 2); cap(v, 14, y0 + 8, "0", { size: 24 }); cap(v, 14, y1 + 8, "300", { size: 24 });
+        cap(v, X(3), y0 + 34, "Play", { size: 24, fill: RED, weight: 700, anchor: "middle" }); cap(v, X(1), y0 + 34, "▶", { size: 24, fill: RED, anchor: "middle" }); cap(v, X(5), y0 + 34, "■ Stop", { size: 24, fill: RED, anchor: "middle", weight: 700 });
+        var pts = []; for (var s = 0; s <= tt + 1e-9; s += 0.05) pts.push([X(s), Y(val(s))]);
+        v.append("path").attr("d", "M" + pts.map(function (q) { return q.join(","); }).join(" L")).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 5);
+        if (tt >= 5) ln(v, X(5), Y(300), X(5), Y(0), RED, 4, "8 6");
+      }
+      if (k === 5) {
+        ln(v, 10, 360, 750, 360, INK, 3); v.append("rect").attr("x", 300).attr("y", 260).attr("width", 50).attr("height", 100).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        tab(v, 380, 80, 360, 40, "filter: Warning, Error", true); cap(v, 14, 100, "3 messages: 1 error", { size: 24, weight: 700, fill: RED });
+      }
+    }
+    if (k === 0) { clr(d); playMock(d, { log: [] }); ln(d, 10, 360, 750, 360, INK, 3); } else run(d, [0, 4500, 5500, 4000, 6500, 1200][k], draw, anim);
+    note(svg, ey, ["", "Play runs the game as a player: the keys go to the game, not the editor.", "Simulate runs physics with no player. The ball falls and the editor camera stays yours.", "Eject frees the camera while play continues, so you can click Actors in the running level.", "Set the door to 300 during play: at Stop it goes back to 0. Edit it before pressing Play to keep it.", "Print String text, warnings and errors all appear in the Output Log."][k]);
+  }
+
+  /* ---------- 6. Levels window, binary assets ---------- */
+  function renderLevels(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Levels window lists levels; .umap and .uasset are binary so cannot be diffed or merged as text", "Step 1: three levels with eye toggles and a count of visible Actors. Step 2: a one-number change shows as a readable line in a text file but as Binary files differ for a .umap. Step 3: two people edit the same file; text merges both edits, binary keeps one.");
+    var ey = bs(svg, [{ id: "level", s: 1 }, { id: "binary", s: 2 }], k, anim, ["Level", "one playable space, .umap"], ["Asset", "one file in Content, .uasset"]);
+    var d = svg.append("g");
+    var LV = [["Persistent Level", 12], ["Lighting", 5], ["Rooms", 40]];
+    function draw(t) {
+      clr(d);
+      if (k === 1) {
+        lab(d, 0, 30, "LEVELS WINDOW: EYE ON = LOADED IN THE VIEWPORT");
+        var vis = [true, true, t < 0.35 || t > 0.7];
+        pbox(d, 0, 50, 360, 260, "Levels", false);
+        LV.forEach(function (l, i) { var y = 92 + i * 60; box(d, 10, y, 340, 50, { stroke: FAMILIAR, sw: 1.5 }); d.append("circle").attr("cx", 36).attr("cy", y + 25).attr("r", 12).attr("fill", vis[i] ? INK : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(d, 62, y + 34, l[0], { size: 24, weight: vis[i] ? 700 : 400, fill: vis[i] ? INK : MUTED }); cap(d, 340, y + 34, String(l[1]), { size: 24, anchor: "end" }); });
+        var n = d3.sum(LV, function (l, i) { return vis[i] ? l[1] : 0; });
+        box(d, 380, 50, 380, 260, { stroke: INK, sw: 2 }); cap(d, 392, 82, "viewport", { size: 24, fill: MUTED, weight: 700 });
+        var c = 0; LV.forEach(function (l, i) { for (var j = 0; j < l[1]; j++) { var xx = 400 + (c % 12) * 29, yy = 110 + Math.floor(c / 12) * 40; c++; if (vis[i]) d.append("circle").attr("cx", xx).attr("cy", yy).attr("r", 10).attr("fill", [INK, RED, GREY][i]); } });
+        cap(d, 0, 370, "Actors loaded: " + n, { size: 28, weight: 700, fill: RED });
+        cap(d, 0, 420, "12 + 5 + 40 = 57 with all three on; toggling Rooms off leaves 17.", { size: 24, fill: MUTED });
+        cap(d, 0, 470, "The Persistent Level is the one that is always loaded.", { size: 24, fill: MUTED });
+      } else {
+        var r = rng(15), hex = []; for (var q = 0; q < 3; q++) { var row = []; for (var b = 0; b < 6; b++) row.push(("0" + Math.floor(r() * 256).toString(16)).slice(-2).toUpperCase()); hex.push(row.join(" ")); }
+        lab(d, 0, 30, k === 2 ? "SAME CHANGE: OPEN ANGLE 90 → 110" : "TWO PEOPLE EDIT THE SAME FILE");
+        if (k === 2) {
+          box(d, 0, 50, 370, 300, { stroke: INK, sw: 3 }); cap(d, 14, 86, "Godot .tscn (text)", { size: 24, weight: 700 });
+          [["  name = Door", 0], ["- angle = 90", 1], ["+ angle = 110", 2], ["  speed = 2", 0]].forEach(function (l, i) { var g2 = d.append("g"); mono(g2, 14, 140 + i * 46, l[0], { fill: l[1] === 1 ? RED : INK, weight: l[1] ? 700 : 400 }); fade(g2, anim, i * 250); });
+          box(d, 390, 50, 370, 300, { stroke: GREY, sw: 3 }); cap(d, 404, 86, ".umap (binary)", { size: 24, weight: 700 });
+          var g3 = d.append("g"); hex.forEach(function (h, i) { mono(g3, 404, 132 + i * 34, h, { fill: MUTED }); }); mono(g3, 404, 262, "Binary files differ", { weight: 700, fill: RED }); mono(g3, 404, 310, "which line?", { weight: 700, fill: RED }); fade(g3, anim, 500);
+          cap(d, 0, 410, "A reviewer can read one line in the text file and nothing in the binary one.", { size: 24, weight: 700 });
+        } else {
+          [["text (.tscn)", 0, "Alice edits line 12", "Bob edits line 40", "merged: 2 of 2 edits kept", INK], ["binary (.umap)", 390, "Alice edits the file", "Bob edits the file", "conflict: keep one, 1 of 2 edits", RED]].forEach(function (c, i) {
+            var g4 = d.append("g"); box(g4, c[1], 50, 370, 360, { stroke: c[5 - 0] === RED ? RED : INK, sw: 3 }); cap(g4, c[1] + 14, 86, c[0], { size: 24, weight: 700 });
+            cap(g4, c[1] + 14, 150, c[2], { size: 24 }); cap(g4, c[1] + 14, 196, c[3], { size: 24 });
+            ln(g4, c[1] + 14, 226, c[1] + 356, 226, FAMILIAR, 2);
+            wrap(g4, c[1] + 14, 276, c[4], 28, { size: 26, lh: 34, weight: 700, fill: c[5] });
+            fade(g4, anim, i * 400);
+          });
+          cap(d, 0, 470, "Source control also locks a binary file while one person has it checked out.", { size: 24, fill: MUTED });
+        }
+      }
+    }
+    if (k === 0) cap(d, 0, 300, "Click or press → for the Levels window, then binary files.", { fill: MUTED }); else run(d, [0, 5000, 2500, 2500][Math.min(k, 3)], draw, anim);
+    note(svg, ey, ["", "The Levels window lists the levels in the world. Eyes switch them on and off in the editor.", "Epic says .uasset and .umap files are binary, so cannot be opened as text or merged in a text tool.", "That is why the editor has its own diff tool. Two edits to one binary file cannot be combined by git."][k]);
+  }
+
+  /* ---------- 7. Blueprint Editor, Event Graph, Construction Script ---------- */
+  function bpMock(g, hl) {
+    box(g, 0, 0, 760, 50, { stroke: INK, sw: 2, fill: SUBTLE }); btn(g, 8, 5, 130, 40, "Compile", false); btn(g, 148, 5, 90, 40, "Save", false); btn(g, 248, 5, 110, 40, "▶ Play", false);
+    [["Viewport", 0, 130, 1], ["Construction Script", 138, 270, 0], ["Event Graph", 416, 170, 0]].forEach(function (t) { var on = hl === "tabs"; box(g, t[1], 58, t[2], 40, { stroke: on ? RED : t[3] ? INK : FAMILIAR, sw: on ? 4 : 2, fill: on || t[3] ? TINT : "#FFFFFF" }); cap(g, t[1] + t[2] / 2, 87, t[0], { size: 24, anchor: "middle", weight: t[3] || on ? 700 : 400 }); });
+    pbox(g, 0, 108, 200, 170, "Components", hl === "comp"); ["Door (Self)", "DoorMesh", "BoxTrigger"].forEach(function (s, i) { cap(g, 12 + (i ? 16 : 0), 170 + i * 34, s, { size: 24 }); });
+    pbox(g, 0, 286, 200, 180, "My Blueprint", hl === "mybp"); ["Graphs", "Variables", "HasKey"].forEach(function (s, i) { cap(g, 12 + (i === 2 ? 16 : 0), 348 + i * 34, s, { size: 24, weight: i === 2 ? 700 : 400 }); });
+    box(g, 208, 108, 380, 358, { stroke: hl === "graph" ? RED : INK, sw: hl === "graph" ? 4 : 2, fill: hl === "graph" ? TINT : "#FFFFFF" }); cap(g, 220, 140, "Viewport", { size: 24, fill: MUTED, weight: 700 });
+    ln(g, 220, 400, 576, 400, INK, 3); g.append("rect").attr("x", 360).attr("y", 300).attr("width", 50).attr("height", 100).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+    pbox(g, 596, 108, 164, 358, "Details", hl === "details"); cap(g, 606, 170, "Name", { size: 24 }); cap(g, 606, 204, "Door", { size: 24, weight: 700 });
+  }
+  var GN = { begin: { x: 20, y: 150, w: 210, h: 90, t: "Event BeginPlay" }, branch: { x: 290, y: 150, w: 200, h: 130, t: "Branch" }, open: { x: 540, y: 120, w: 200, h: 70, t: "Open Door" }, print: { x: 540, y: 280, w: 200, h: 70, t: "Print String" } };
+  var GW = { bb: [[230, 170], [290, 170]], bo: [[490, 219], [515, 219], [515, 140], [540, 140]], bp: [[490, 253], [515, 253], [515, 300], [540, 300]] };
+  function trace(has) { return { nodes: ["begin", "branch", has ? "open" : "print"], wires: ["bb", has ? "bo" : "bp"] }; }
+  function polyLen(p) { var L = 0; for (var i = 1; i < p.length; i++) L += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); return L; }
+  function renderBP(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Blueprint Editor, its Event Graph with execution wires, and the Construction Script", "Step 1: the Blueprint Editor parts light one by one. Step 2: an Event Graph where a pulse follows white execution wires from Event BeginPlay through Branch to Open Door or Print String depending on Has Key. Step 3: a Construction Script builds fence posts from a Count value without playing.");
+    var ey = bs(svg, [{ id: "bped", s: 1 }, { id: "graph", s: 2 }, { id: "cscript", s: 3 }], k, anim, ["Event Graph", "runs when play events fire"], ["Construction Script", "runs when you edit, no play"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      if (k === 1) {
+        var seq = ["comp", "mybp", "tabs", "graph", "details"], hl = seq[Math.min(4, Math.floor(t * 5))];
+        bpMock(d, hl);
+        var what = { comp: "Components: the parts of this Actor", mybp: "My Blueprint: its graphs and variables", tabs: "Tabs: Viewport, Construction Script, Event Graph", graph: "Centre: the tab you chose", details: "Details: properties of the selection" }[hl];
+        cap(d, 0, 520, what, { size: 26, weight: 700, fill: RED });
+      } else if (k === 2) {
+        var has = t < 0.5, p = has ? t / 0.5 : (t - 0.5) / 0.5, tr = trace(has);
+        box(d, 0, 0, 760, 400, { stroke: INK, sw: 2 }); tab(d, 10, 8, 170, 38, "Event Graph", true);
+        var wires = {}; tr.wires.forEach(function (w) { wires[w] = 1; });
+        var path = [GW.bb, has ? GW.bo : GW.bp], tot = d3.sum(path, polyLen), dist = p * tot, run_ = 0, reach = [0];
+        reach.push(polyLen(path[0])); reach.push(tot);
+        Object.keys(GW).forEach(function (w) { var on = wires[w] && dist >= (w === "bb" ? 1 : polyLen(GW.bb)); d.append("path").attr("d", "M" + GW[w].map(function (q) { return q.join(","); }).join(" L")).attr("fill", "none").attr("stroke", on ? RED : INK).attr("stroke-width", 4); });
+        ln(d, 220, 315, 255, 315, GREY, 3, "6 6"); ln(d, 255, 315, 255, 219, GREY, 3, "6 6"); ln(d, 255, 219, 290, 219, GREY, 3, "6 6");
+        Object.keys(GN).forEach(function (id) {
+          var n = GN[id], ix = tr.nodes.indexOf(id), thr = ix <= 0 ? 0 : ix === 1 ? reach[1] : reach[2], on = ix >= 0 && dist >= thr - 1e-6 && p > 0;
+          box(d, n.x, n.y, n.w, n.h, { stroke: on ? RED : INK, sw: on ? 4 : 2 }); d.append("rect").attr("x", n.x + 0.5).attr("y", n.y + 0.5).attr("width", n.w).attr("height", 40).attr("fill", on ? RED : INK);
+          cap(d, n.x + 10, n.y + 29, n.t, { size: 24, weight: 700, fill: "#FFFFFF" });
+          if (on) { d.append("circle").attr("cx", n.x + n.w - 6).attr("cy", n.y - 6).attr("r", 18).attr("fill", RED); cap(d, n.x + n.w - 6, n.y + 2, String(ix + 1), { size: 24, anchor: "middle", weight: 700, fill: "#FFFFFF" }); }
+        });
+        cap(d, 300, 224 + 2, "Condition", { size: 24 }); cap(d, 480, 232, "True", { size: 24, anchor: "end", weight: 700 }); cap(d, 480, 266, "False", { size: 24, anchor: "end", weight: 700 });
+        box(d, 20, 290, 200, 50, { stroke: GREY, sw: 2 }); cap(d, 120, 323, "Has Key: " + has, { size: 24, anchor: "middle", weight: 700 });
+        if (p > 0 && p < 1) { var L = 0, seg = [GW.bb].concat([has ? GW.bo : GW.bp]).reduce(function (a, b) { return a.concat(b); }, []), q = dist, pp = null; [GW.bb, has ? GW.bo : GW.bp].forEach(function (pl) { for (var i = 1; i < pl.length && !pp; i++) { var l = Math.hypot(pl[i][0] - pl[i - 1][0], pl[i][1] - pl[i - 1][1]); if (q <= l) pp = [pl[i - 1][0] + (pl[i][0] - pl[i - 1][0]) * q / l, pl[i - 1][1] + (pl[i][1] - pl[i - 1][1]) * q / l]; else q -= l; } }); if (pp) d.append("circle").attr("cx", pp[0]).attr("cy", pp[1]).attr("r", 10).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 4); }
+        [true, false].forEach(function (h, i) { var o = trace(h).nodes.map(function (n, j) { return (j + 1) + " " + GN[n].t; }).join(" → "); cap(d, 0, 450 + i * 40, "Has Key " + h + ":", { size: 24, weight: 700, fill: has === h ? RED : MUTED }); cap(d, 190, 450 + i * 40, o.replace(/→/g, "›"), { size: 24, fill: has === h ? RED : MUTED }); });
+      } else {
+        box(d, 0, 0, 760, 52, { stroke: INK, sw: 2, fill: SUBTLE }); tab(d, 8, 8, 270, 38, "Construction Script", true);
+        [["Construction Script", 0], ["Loop 0 to Count − 1", 1], ["Add Mesh at X = i × 60", 2]].forEach(function (n, i) { var y = 80 + i * 110; box(d, 0, y, 340, 80, { stroke: INK, sw: 2 }); d.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 340).attr("height", 36).attr("fill", i ? INK : RED); cap(d, 10, y + 27, n[0], { size: 24, weight: 700, fill: "#FFFFFF" }); if (i < 2) { ln(d, 170, y + 80, 170, y + 110, RED, 4); } });
+        var cnt = t < 0.35 ? 3 : t < 0.65 ? 4 : 5;
+        box(d, 370, 80, 390, 300, { stroke: INK, sw: 2 }); cap(d, 382, 112, "viewport (no Play)", { size: 24, fill: MUTED, weight: 700 }); ln(d, 380, 340, 750, 340, INK, 3);
+        d3.range(cnt).forEach(function (i) { d.append("rect").attr("x", 395 + i * 65).attr("y", 250).attr("width", 28).attr("height", 90).attr("fill", i < 3 ? "#FFFFFF" : TINT).attr("stroke", i < 3 ? INK : RED).attr("stroke-width", 3); });
+        pbox(d, 370, 400, 390, 100, "Details", false); cap(d, 380, 482, "Count", { size: 24 }); cap(d, 750, 482, String(cnt), { size: 28, weight: 700, anchor: "end", fill: cnt > 3 ? RED : INK });
+        cap(d, 0, 430, cnt + " posts from Count = " + cnt, { size: 26, weight: 700, fill: RED }); cap(d, 0, 476, "Post " + cnt + " sits at X = " + ((cnt - 1) * 60) + ".", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { cap(d, 0, 300, "Click or press → for the editor parts, the Event Graph and the Construction Script.", { fill: MUTED }); } else run(d, [0, 6000, 8000, 4500][k], draw, anim);
+    note(svg, ey, ["", "Open a Blueprint class and this window opens. It is a different editor from the level window.", "Execution wires carry the order. Has Key decides which branch runs: 3 nodes either way.", "The Construction Script rebuilds the Actor when you change Count in the editor. Count 3 to 5 adds 2 posts."][k]);
+  }
+
+  /* ---------- 8. Material Editor, Niagara, Animation editors ---------- */
+  var NI = (function () { var r = rng(9), a = []; for (var i = 0; i < 32; i++) { var an = -Math.PI / 2 + (r() - 0.5) * 2.2, sp = 160 + r() * 120; a.push([Math.cos(an) * sp, Math.sin(an) * sp]); } return a; })();
+  function renderEditors(el, k, anim) {
+    var svg = svgFor(el, W, H, "Material Editor, Niagara and the Animation editors", "Step 1: a Material graph multiplies a texture colour by a brightness value and shows the result colour. Step 2: a Niagara emitter's module stack lights top to bottom and a burst of 32 particles flies. Step 3: an animation timeline with a playhead and a notify window that opens for six frames.");
+    var ey = bs(svg, [{ id: "matted", s: 1 }, { id: "niagara", s: 2 }, { id: "animed", s: 3 }], k, anim, ["Material Editor", "nodes in, colour out"], ["Niagara", "systems, emitters, modules"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      if (k === 1) {
+        var b = t < 0.2 ? 1 : t > 0.8 ? 0.5 : 1 - 0.5 * (t - 0.2) / 0.6, base_ = [176, 124, 72], c = base_.map(function (v) { return Math.round(v * b); });
+        lab(d, 0, 30, "MATERIAL GRAPH: TEXTURE × BRIGHTNESS → BASE COLOR");
+        function nd(x, y, w, h, title, hot) { box(d, x, y, w, h, { stroke: hot ? RED : INK, sw: 2 }); d.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", 38).attr("fill", hot ? RED : INK); cap(d, x + 10, y + 28, title, { size: 24, weight: 700, fill: "#FFFFFF" }); }
+        nd(0, 60, 210, 110, "T_Wood"); mono(d, 14, 130, base_.join(" "), { size: 24 });
+        nd(0, 250, 210, 90, "Scalar", true); cap(d, 14, 322, "Brightness " + b.toFixed(2), { size: 24, weight: 700, fill: RED });
+        nd(280, 150, 150, 120, "Multiply"); cap(d, 292, 214, "A", { size: 24 }); cap(d, 292, 252, "B", { size: 24 });
+        nd(500, 80, 260, 330, "M_Wood"); cap(d, 512, 152, "Base Color", { size: 24 });
+        [[[210, 115], [280, 209]], [[210, 295], [280, 247]], [[430, 210], [500, 148]]].forEach(function (w) { d.append("path").attr("d", "M" + w[0] + " C" + (w[0][0] + 40) + "," + w[0][1] + " " + (w[1][0] - 40) + "," + w[1][1] + " " + w[1]).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); });
+        d.append("rect").attr("x", 520).attr("y", 190).attr("width", 220).attr("height", 120).attr("fill", "rgb(" + c.join(",") + ")").attr("stroke", INK).attr("stroke-width", 3);
+        mono(d, 520, 350, c.join(" "), { size: 26, weight: 700, fill: RED });
+        cap(d, 0, 420, "176 × " + b.toFixed(2) + " = " + c[0] + " (red channel)", { size: 24, weight: 700 });
+      } else if (k === 2) {
+        lab(d, 0, 30, "NS_SPARKS: ONE EMITTER, MODULES TOP TO BOTTOM");
+        var rows = ["Emitter Spawn", "Emitter Update: burst 32", "Particle Spawn", "Particle Update", "Render"], idx = Math.min(4, Math.floor(t * 5.99));
+        box(d, 0, 50, 380, 420, { stroke: INK, sw: 2 }); cap(d, 12, 82, "Emitter: Sparks", { size: 24, weight: 700 });
+        rows.forEach(function (s, i) { var on = i === idx; box(d, 12, 100 + i * 70, 356, 58, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" }); cap(d, 24, 138 + i * 70, s, { size: 24, weight: on ? 700 : 400, fill: on ? RED : INK }); });
+        box(d, 400, 50, 360, 420, { stroke: INK, sw: 2 });
+        var ts = Math.max(0, t - 0.2) / 0.8 * 1.5, alive = 0;
+        NI.forEach(function (v) { if (ts <= 0 || ts > 1.5) return; alive++; d.append("circle").attr("cx", 580 + v[0] * ts * 0.6).attr("cy", 420 + v[1] * ts * 0.6 + 0.5 * 300 * ts * ts).attr("r", 7 * (1 - ts / 1.5) + 2).attr("fill", RED); });
+        cap(d, 412, 82, "viewport", { size: 24, fill: MUTED, weight: 700 }); cap(d, 412, 452, "particles alive: " + alive, { size: 24, weight: 700 });
+        cap(d, 0, 520, "A system holds emitters; modules run in order, top to bottom.", { size: 24, fill: MUTED });
+      } else {
+        lab(d, 0, 30, "ANIMATION SEQUENCE: SWING, 30 FRAMES AT 30 FPS");
+        var fr = Math.min(30, Math.floor(t * 31)), inW = fr >= 12 && fr < 18;
+        var x0 = 30, x1 = 730, X = function (f) { return x0 + f / 30 * (x1 - x0); };
+        d.append("rect").attr("x", X(12)).attr("y", 80).attr("width", X(18) - X(12)).attr("height", 90).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 2);
+        ln(d, x0, 125, x1, 125, INK, 3); [0, 15, 30].forEach(function (f) { ln(d, X(f), 108, X(f), 142, INK, 3); cap(d, X(f), 200, String(f), { size: 24, anchor: "middle" }); });
+        cap(d, X(15), 70, "Notify window", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+        ln(d, X(fr), 70, X(fr), 150, RED, 5);
+        var ang = (-60 + 120 * fr / 30) * DEG; box(d, 120, 250, 360, 280, { stroke: INK, sw: 2 });
+        ln(d, 300, 500, 300 + 190 * Math.sin(ang), 500 - 190 * Math.cos(ang), INK, 8); d.append("circle").attr("cx", 300).attr("cy", 500).attr("r", 12).attr("fill", INK);
+        if (inW) d.append("circle").attr("cx", 300 + 190 * Math.sin(ang)).attr("cy", 500 - 190 * Math.cos(ang)).attr("r", 30).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+        cap(d, 500, 300, "frame " + fr, { size: 28, weight: 700 }); cap(d, 500, 346, inW ? "hit window open" : "hit window closed", { size: 24, weight: 700, fill: inW ? RED : MUTED });
+        cap(d, 500, 392, "window: 6 frames", { size: 24, fill: MUTED }); cap(d, 500, 428, "= " + (6 / 30).toFixed(1) + " s", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { cap(d, 0, 300, "Click or press → for three editors that open from assets.", { fill: MUTED }); } else run(d, [0, 4500, 5000, 5000][k], draw, anim);
+    note(svg, ey, ["", "Halve the Brightness scalar and every colour channel halves: the red channel goes 176 to 88.", "Niagara runs the module stack in order. The burst module spawns 32 particles at once.", "A notify marks frames 12 to 17 on the sequence. The sword's hitbox is live only inside that window."][k]);
+  }
+
+  /* ---------- 9. collision: object type and response, presets ---------- */
+  var RL = { B: 2, O: 1, I: 0 }, RN = { 2: "Block", 1: "Overlap", 0: "Ignore" };
+  function pairRes(a, b) { return Math.min(a, b); }
+  function renderCollide(el, k, anim) {
+    var svg = svgFor(el, W, H, "Collision: each object has a type and a response to other types; the weaker response wins; a preset sets them", "A lane with a player, a pickup and a wall, and a table of each pair's two responses and the result. In step 2 the pickup's preset changes from OverlapAll to NoCollision and the result for the player and pickup pair changes to Ignore.");
+    var ey = bs(svg, [{ id: "objtype", s: 1 }, { id: "preset", s: 2 }], k, anim, ["Block", "stops movement"], ["Overlap", "fires an event, lets through"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      var pk = k === 2 && t > 0.5 ? "I" : "O", PR = { player: { wall: "B", pickup: "O" }, pickup: { player: pk, wall: pk }, wall: { player: "B", pickup: "B" } };
+      lab(d, 0, 30, k === 1 ? "TWO RESPONSES PER PAIR; THE WEAKER ONE WINS" : "PICKUP PRESET: " + (pk === "O" ? "OVERLAPALL" : "NOCOLLISION"), { fill: pk === "I" ? RED : MUTED });
+      box(d, 0, 50, 760, 190, { stroke: INK, sw: 2 }); ln(d, 10, 210, 750, 210, INK, 3);
+      var px = 60 + 520 * Math.min(1, t / 0.8) * (k === 1 ? 1 : 1), hitW = px >= 580 - 40, pxe = Math.min(px, 560);
+      d.append("rect").attr("x", 620).attr("y", 90).attr("width", 40).attr("height", 120).attr("fill", INK); cap(d, 640, 82, "Wall", { size: 24, anchor: "middle", weight: 700 });
+      d.append("circle").attr("cx", 340).attr("cy", 190).attr("r", 18).attr("fill", pk === "I" ? "#FFFFFF" : TINT).attr("stroke", RED).attr("stroke-width", 4); cap(d, 340, 150, "Pickup", { size: 24, anchor: "middle", weight: 700 });
+      d.append("rect").attr("x", pxe).attr("y", 140).attr("width", 34).attr("height", 70).attr("fill", GREY); cap(d, pxe + 17, 130, "Player", { size: 24, anchor: "middle", weight: 700 });
+      if (Math.abs(pxe + 17 - 340) < 30 && pk === "O") cap(d, 340, 232 - 8, "overlap event", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      lab(d, 0, 276, "PAIR"); lab(d, 250, 276, "A SAYS"); lab(d, 410, 276, "B SAYS"); lab(d, 570, 276, "RESULT");
+      [["Player–Wall", "player", "wall"], ["Player–Pickup", "player", "pickup"], ["Pickup–Wall", "pickup", "wall"]].forEach(function (r, i) {
+        var a = RL[PR[r[1]][r[2]]], b = RL[PR[r[2]][r[1]]], res = pairRes(a, b), y = 290 + i * 76, ch = k === 2 && r[1] === "player" && r[2] === "pickup";
+        box(d, 0, y, 760, 66, { stroke: ch ? RED : FAMILIAR, sw: ch ? 3 : 1.5 }); cap(d, 12, y + 42, r[0], { size: 24 }); cap(d, 250, y + 42, RN[a], { size: 24 }); cap(d, 410, y + 42, RN[b], { size: 24 });
+        cap(d, 570, y + 42, RN[res], { size: 26, weight: 700, fill: res === 2 ? INK : res === 1 ? RED : MUTED });
+      });
+      cap(d, 0, 556, "Block needs both sides to block. Overlap needs both sides to allow overlaps.", { size: 24, fill: MUTED });
+    }
+    if (k === 0) { cap(d, 0, 300, "Click or press → for object types and responses, then presets.", { fill: MUTED }); } else run(d, [0, 5000, 7000][k], draw, anim);
+    note(svg, ey, ["", "Each object answers Block, Overlap or Ignore for every other type. A pair gets the weaker answer.", "Choosing NoCollision for the pickup sets all its responses to Ignore. Player–Pickup then reads Ignore."][k]);
+  }
+
+  /* ---------- 10. Project Settings, Editor Preferences, Plugins, Build and Package ---------- */
+  function renderSettings(el, k, anim) {
+    var svg = svgFor(el, W, H, "Project Settings are shared; Editor Preferences are yours; Plugins need a restart; Package Project builds the game", "Step 1: a project setting changed by one person appears for a teammate. Step 2: a preference changed by one person does not. Step 3: switching on a plugin shows a restart message. Step 4: a pipeline from the project to a packaged game.");
+    var ey = bs(svg, [{ id: "projset", s: 1 }, { id: "prefs", s: 2 }, { id: "plugins", s: 3 }, { id: "build", s: 4 }], k, anim, ["Project Settings", "go with the project"], ["Editor Preferences", "stay on your machine"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clr(d);
+      if (k <= 2) {
+        var ch = t > 0.35, arrive = t > 0.7, map = k === 1 ? (ch ? "Arena" : "Lobby") : "Arena", themeYou = k === 2 && ch ? "Dark" : "Light", mateMap = k === 1 ? (arrive ? "Arena" : "Lobby") : "Arena";
+        lab(d, 0, 30, k === 1 ? "A PROJECT SETTING TRAVELS WITH THE PROJECT" : "A PREFERENCE STAYS WITH YOU");
+        pbox(d, 150, 50, 460, 120, "Project folder (shared)", false); cap(d, 164, 140, "Default Map: " + map, { size: 24, weight: k === 1 && ch ? 700 : 400, fill: k === 1 && ch ? RED : INK });
+        [["You", 0, map, themeYou, true], ["Teammate", 400, mateMap, "Light", false]].forEach(function (m) {
+          box(d, m[1], 230, 360, 190, { stroke: INK, sw: 2 }); cap(d, m[1] + 12, 262, m[0], { size: 24, weight: 700 });
+          cap(d, m[1] + 12, 316, "Default Map: " + m[2], { size: 24, fill: k === 1 && ch && (m[4] || arrive) ? RED : INK, weight: k === 1 && ch && (m[4] || arrive) ? 700 : 400 });
+          cap(d, m[1] + 12, 366, "Theme: " + m[3], { size: 24, fill: k === 2 && m[4] && ch ? RED : INK, weight: k === 2 && m[4] && ch ? 700 : 400 });
+        });
+        if (k === 1) { ln(d, 380, 170, 380, 230, ch ? RED : FAMILIAR, 4); if (arrive) ln(d, 540, 230, 540, 170, RED, 4); }
+        if (k === 1 && ch) ln(d, 220, 230, 220, 170, RED, 4);
+        cap(d, 0, 480, k === 1 ? (arrive ? "Teammate now sees Arena. Settings changed: 1, copies updated: 2." : "You pick Arena in Project Settings.") : (ch ? "Your theme is Dark. Teammate: still Light. Copies changed: 1 of 2." : "You switch your Theme in Editor Preferences."), { size: 26, weight: 700 });
+      } else if (k === 3) {
+        lab(d, 0, 30, "PLUGINS: SWITCH ON, THEN RESTART");
+        var on = t > 0.3;
+        box(d, 0, 50, 760, 280, { stroke: INK, sw: 2 });
+        [["Python Editor Script", on], ["Paper 2D", false], ["Unreal MCP", false]].forEach(function (p, i) { var y = 70 + i * 80; box(d, 14, y + 6, 40, 40, { stroke: INK, sw: 3, fill: p[1] ? RED : "#FFFFFF" }); if (p[1]) check(d, 34, y + 28, 12, "#FFFFFF"); cap(d, 76, y + 38, p[0], { size: 26, weight: p[1] ? 700 : 400 }); });
+        if (t > 0.6) { box(d, 0, 360, 760, 64, { stroke: RED, sw: 3, fill: TINT }); cap(d, 14, 402, "Restart the editor to turn the plugin on", { size: 26, weight: 700, fill: RED }); }
+        cap(d, 0, 480, on ? "Plugins switched on: 1 of 3." : "Plugins switched on: 0 of 3.", { size: 26, weight: 700 });
+      } else {
+        lab(d, 0, 30, "PACKAGE PROJECT: PROJECT IN, GAME OUT");
+        var st = Math.min(3, Math.floor(t * 3.6));
+        [["Project (.uasset, .umap)", 0], ["Cook", 1], ["Package", 2], ["Game folder", 3]].forEach(function (s, i) {
+          var y = 60 + i * 110, on = i <= st; box(d, 0, y, 520, 80, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" }); cap(d, 14, y + 50, s[0], { size: 26, weight: on ? 700 : 400, fill: on ? RED : MUTED });
+          if (i < 3) ln(d, 260, y + 80, 260, y + 110, on ? RED : FAMILIAR, 4);
+        });
+        cap(d, 560, 120, "Platforms", { size: 24, weight: 700 }); cap(d, 560, 156, "› Package Project", { size: 24, fill: RED, weight: 700 }); cap(d, 560, 210, "Cook turns assets", { size: 24, fill: MUTED }); cap(d, 560, 244, "into the form the", { size: 24, fill: MUTED }); cap(d, 560, 278, "platform uses.", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { cap(d, 0, 300, "Click or press → for settings, preferences, plugins and packaging.", { fill: MUTED }); } else run(d, [0, 5000, 5000, 4500, 4500][k], draw, anim);
+    note(svg, ey, ["", "Project Settings are saved with the project, so a teammate gets them.", "Editor Preferences belong to your install. A teammate keeps theirs.", "Most plugins need a restart before they work.", "Package Project is the Unreal word for making a build."][k]);
+  }
+
+  /* ---------- 11. Godot map ---------- */
+  var GM = [
+    ["Level Viewport", "2D and 3D main view", "see the scene and move things"],
+    ["Outliner", "Scene dock", "tree of what is in the open scene"],
+    ["Content Browser", "FileSystem dock", "every file in the project"],
+    ["Details panel", "Inspector", "properties of the selection"],
+    ["Output Log", "Output panel", "messages from the editor and game"],
+    ["Play In Editor", "Run Project, Run Scene", "run the game; edits to a live run are lost"],
+    ["Blueprint class", "Scene (.tscn)", "reusable template of an object"],
+    ["Material Editor", "VisualShader editor", "build a material from nodes"],
+    ["Package Project", "Export", "make a build to ship"]
+  ];
+  function renderGodot(el, k, anim) {
+    var svg = svgFor(el, W, H, "Unreal Editor parts mapped to their Godot equivalents", "A three column table: the Unreal part, the nearest Godot part, and what it is for. One row is added at each step.");
+    var g = svg.append("g"), cx = [0, 380, 790];
+    lab(g, 18, 28, "UNREAL EDITOR", { fill: RED }); lab(g, cx[1] + 18, 28, "GODOT"); lab(g, cx[2] + 18, 28, "WHAT IT IS FOR");
+    g.append("path").attr("d", "M0,40 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    GM.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 50 + i * 60, row = g.append("g");
+      box(row, 0, y, 1400, 54, { stroke: FAMILIAR }); row.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 55).attr("fill", RED);
+      cap(row, 22, y + 36, r[0], { size: 26, weight: 700, fill: RED }); cap(row, cx[1] + 18, y + 36, r[1], { size: 26, weight: 700 }); cap(row, cx[2] + 18, y + 36, r[2], { size: 24 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,14)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 330, "Click or press → to add the nine pairs, one row at a time.", { fill: MUTED });
+    cap(g, 0, 640, k === 0 ? "" : k + " of " + GM.length + " pairs placed. The match is close, not exact.", { size: 26, weight: 700, fill: INK });
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the Unreal Editor", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Play In Editor", "You are the player; keys go to the game"], ["Simulate", "No player; you keep the editor camera"]],
+      [["Content Browser", "Assets on disk: 1 BP_Door"], ["Outliner", "Actors in the level: copies of it"]],
+      [["Project Settings", "Saved with the project, shared"], ["Editor Preferences", "Yours alone, not in the project"]],
+      [["Package (an asset)", "One saved asset file (glossary)"], ["Package Project", "The whole game as a build"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        LG.append("rect").attr("x", 20 + 240 * t).attr("y", 230).attr("width", 34).attr("height", 70).attr("fill", INK); cap(LG, 20, 340, "player moves with your keys", { size: 24, fill: MUTED });
+        var bi = Math.min(BALL.length - 1, Math.floor(t * (BALL.length - 1)));
+        RG.append("circle").attr("cx", 170).attr("cy", 120 + BALL[bi] * 0.8).attr("r", 18).attr("fill", RED); cap(RG, 20, 340, "physics runs, nobody plays", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var n = Math.min(3, Math.floor(t * 3.99));
+        box(LG, 20, 200, 160, 60, { stroke: INK, sw: 3 }); cap(LG, 100, 240, "BP_Door", { size: 24, anchor: "middle", weight: 700 }); cap(LG, 20, 300, "assets: 1", { size: 24, weight: 700 }); cap(LG, 20, 340, "stays 1 however many you place", { size: 24, fill: MUTED });
+        d3.range(n).forEach(function (j) { box(RG, 20, 150 + j * 52, 160, 44, { stroke: RED, sw: 3 }); cap(RG, 100, 182 + j * 52, "BP_Door " + (j + 1), { size: 24, anchor: "middle", weight: 700 }); });
+        cap(RG, 20, 340, "Actors placed: " + n, { size: 24, weight: 700, fill: RED });
+      } else if (i === 2) {
+        [LG, RG].forEach(function (G, j) {
+          box(G, 0, 150, 130, 80, { stroke: INK, sw: 3 }); cap(G, 65, 200, "You", { size: 24, anchor: "middle", weight: 700 }); box(G, 220, 150, 130, 80, { stroke: INK, sw: 3 }); cap(G, 285, 200, "Mate", { size: 24, anchor: "middle", weight: 700 });
+          if (j === 0) { ln(G, 130, 190, 130 + 90 * Math.min(1, t * 1.3), 190, RED, 5); cap(G, 20, 300, "reaches the teammate", { size: 24, fill: MUTED }); } else { ln(G, 130, 190, 180, 190, FAMILIAR, 5); cross(G, 200, 190, 12, RED); cap(G, 20, 300, "stops at your machine", { size: 24, fill: MUTED }); }
+        });
+      } else {
+        var f = Math.min(1, t * 1.2);
+        box(LG, 20, 180, 110, 70, { stroke: INK, sw: 3 }); cap(LG, 75, 224, ".uasset", { size: 24, anchor: "middle", weight: 700 }); cap(LG, 20, 300, "1 file", { size: 24, weight: 700 });
+        [0, 1, 2].forEach(function (j) { box(RG, 20 + j * 30, 140 + j * 24, 100, 56, { stroke: INK, sw: 2 }); });
+        ln(RG, 160, 200, 160 + 90 * f, 200, RED, 5); box(RG, 270, 160, 110, 80, { stroke: RED, sw: 3, fill: TINT }); cap(RG, 325, 208, "game", { size: 24, anchor: "middle", weight: 700, fill: RED }); cap(RG, 20, 300, "many files in, one game out", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "see the game from the side", x: "Switch the viewport from Perspective to Orthographic, Side view" },
+    { v: "test the door while I edit", x: "Press Play, change Door X, press Stop: it goes back to its saved value" },
+    { v: "find what went wrong", x: "Open the Output Log, filter to Error, read the first line" },
+    { v: "make the pickup not block me", x: "Set the pickup's response to the player to Overlap, and enable overlap events" },
+    { v: "check what changed in that Blueprint", x: "Use the editor's diff tool; git diff only says binary files differ" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests about the Unreal Editor turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      var gp = cubeGeom(35 * DEG, 25 * DEG, true, 95, 0, 0), go = cubeGeom(35 * DEG, 25 * DEG, false, 95, 0, 0);
+      [["Perspective", gp.ratio, "#C4C4C4"], ["Orthographic", go.ratio, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": short edge ÷ long edge " + r[1].toFixed(2), { size: 24 }); bar(p, 14, 84 + i * 110, 560 * r[1], 40, r[2], anim, i * 400); });
+      nt = "Orthographic keeps parallel edges equal";
+    } else if (k === 2) {
+      [["before Play", 0, "#C4C4C4"], ["during Play", 300, RED], ["after Stop", 0, "#C4C4C4"]].forEach(function (r, i) { cap(p, 14, 60 + i * 84, r[0] + ": Door X = " + r[1], { size: 24 }); bar(p, 14, 72 + i * 84, Math.max(r[1] / 300 * 560, 5), 34, r[2], anim, i * 300); });
+      nt = "300 exists only while playing";
+    } else if (k === 3) {
+      var rg = rng(31), cnt = { Log: 0, Warning: 0, Error: 0 }; d3.range(40).forEach(function () { var u = rg(); cnt[u < 0.07 ? "Error" : u < 0.3 ? "Warning" : "Log"]++; });
+      ["Log", "Warning", "Error"].forEach(function (c, i) { cap(p, 14, 60 + i * 84, c + ": " + cnt[c] + " of 40 lines", { size: 24 }); bar(p, 14, 72 + i * 84, Math.max(cnt[c] / 40 * 560, 5), 34, c === "Error" ? RED : "#C4C4C4", anim, i * 300); });
+      nt = "filter to Error: " + cnt.Error + " lines to read";
+    } else if (k === 4) {
+      var before = pairRes(RL.B, RL.B), after = pairRes(RL.O, RL.B);
+      [["Player–Pickup before: " + RN[before], before], ["Player–Pickup after: " + RN[after], after], ["Player–Wall, unchanged: " + RN[pairRes(RL.B, RL.B)], 2]].forEach(function (r, i) { cap(p, 14, 60 + i * 84, r[0], { size: 24 }); bar(p, 14, 72 + i * 84, Math.max(r[1] / 2 * 560, 5), 34, i === 1 ? RED : "#C4C4C4", anim, i * 300); });
+      nt = "bar length: how much it stops the player";
+    } else {
+      [[".tscn text", 2, "#C4C4C4"], [".uasset binary", 0, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": changed lines git diff shows: " + r[1], { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(r[1] / 2 * 560, 5), 40, r[2], anim, i * 400); });
+      nt = "the editor's diff tool fills the gap";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Am I in the level editor, or in a running PIE window?",
+    "Did I change it while playing? Play changes are discarded.",
+    "Did I save the level and the changed assets?",
+    "Is this a Project Setting, or only my Editor Preference?",
+    "Is the file text, or .uasset and .umap that an agent cannot read?",
+    "Do both objects answer Block or Overlap for the pair?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust an Unreal Editor change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “try it”, but “press Play, then Stop, and read the Output Log”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, win: { steps: 5, render: renderWindow }, views: { steps: 3, render: renderViews },
+    place: { steps: 3, render: renderPlace }, actor: { steps: 2, render: renderActor }, play: { steps: 5, render: renderPlay },
+    levels: { steps: 3, render: renderLevels }, bp: { steps: 3, render: renderBP }, editors: { steps: 3, render: renderEditors },
+    collide: { steps: 2, render: renderCollide }, settings: { steps: 4, render: renderSettings }, godot: { steps: 9, render: renderGodot },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

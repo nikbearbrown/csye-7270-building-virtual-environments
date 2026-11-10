@@ -154,33 +154,28 @@ Done: Game design A, B, C, Camera (Camera belongs with Assignments 1 and 7 for t
 
 If current students need help first, move 16 to 18 to the front: Assignment 7 is due Nov 15.
 
-## Build order, revised by Bear (2026-11-10): nine topics, overview decks
+## Build order, revised by Bear (2026-11-10): overview decks, updated with Camera as its own topic
 
-Replaces the 33-deck order above. Bear wants the main topics, with important terms only, in this order. Sections not named (Audio and triggers, Profiling, Collision and physics detail, the agent workflow sections) wait.
+Replaces the 33-deck order above. Terms are the important ones, chosen by what the chapters and assignments use. Sections not named (Audio and triggers, Profiling, the detailed Collision and physics section, the agent workflow sections) wait. The Godot editor interface is taught inside topic 2, so there is no separate Godot interface deck.
 
-| # | Topic | Decks (proposed) | Source sections |
+| # | Topic | Decks | Status |
 |---|---|---|---|
-| 1 | Game design | Done: A, B, C | videos plus glossary rows |
-| 2 | Walker and Godot: important terms and using Godot | 2: "Walker and the toolchain", "Godot: scenes, nodes, signals and movement" | Toolchain, Engine vocabulary, Scenes nodes and signals, Game movement and collision (pick the terms the chapters use) |
-| 3 | Art | 2: 2D art and sound assets, plus art principles (Riot Ep 1 to 3) | 2D art and sound assets, Riot art episodes |
-| 4 | Blender: important terms and using Blender | 2 | 3D assets and Blender |
-| 5 | Game design document, the full thing | 1 to 2 | Game design documents (38 rows) |
-| 6 | Shaders | 3: shader foundations and materials, textures, verification | Shaders and materials, Shader foundations, Textures and materials, Shader verification, Riot Ep 4 and 5 |
-| 7 | Particles and VFX | 1 | Particles, Riot Ep 7 |
-| 8 | Animation | 3: animation basics, foundations, interaction | Animation, Animation foundations, Animation and interaction, Riot Ep 6 |
-| 9 | Game AI | 2 | Game AI |
+| 1 | Game design | A, B, C | Built |
+| 2 | Walker and Godot: important terms and using Godot | Walker and the toolchain; Godot editor and scenes | Built |
+| 3 | Art | 2D art and sound assets; Art principles and concept art | Built |
+| 4 | Blender: important terms and using Blender | Blender interface and modeling; Blender to Godot | Built |
+| 5 | Game design document, the full thing | Game design document | Built |
+| 6 | Shaders | Shader foundations; Materials and textures; Shader verification | Built |
+| 7 | Particles and VFX | Particles and VFX | Built |
+| 8 | Animation | Animation principles; Animation foundations; Animation and interaction | Built |
+| 9 | Camera (camera motion matters for understanding animation and film) | Camera | Built, do not rebuild |
+| 10 | Game AI | Game AI perception and pathfinding; Game AI decisions and systems | Decisions built; perception and pathfinding in progress |
+| 11 | How to make a walkthrough film | Walkthrough film | Built |
+| 12 | How to make a trailer for your game | Game trailer | Built |
+| 13 | The differences between Godot, Unity and Unreal | Godot Unity Unreal | Built |
+| 14 | The Unity editor interface | Unity editor | Built |
+| 15 | The Unreal editor interface | Unreal editor | Built |
 
-About 17 decks, down from 33. Terms are chosen for importance by checking which ones the chapters and assignments use.
-
-Added by Bear (message cut off at "a trailer for ..."; confirm the target):
-| 10 | After Game AI: how to make a walkthrough film, and its important terms | 1 | Not in the glossary. Source: course films, Assignments 8 and the final project, Riot art/sound episodes |
-| 11 | After that: how to make a trailer (for the student's game, assumed) | 1 | Not in the glossary. Source: Assignment 8 pitch film, trailer material in the course |
-
-Confirmed by Bear: 10 walkthrough film deck and 11 trailer deck (trailer for the student's game).
-| 12 | After the trailer: the differences between the three engines, Godot, Unity and Unreal | 1 to 2 | Engine vocabulary (rows that name each engine), Agent workflow terms: Unity workflows and Unreal workflows, and the Unity and Unreal comparison passages in the chapters (e.g. Chapter 1, 7, 9, 12) |
-| 13 | The Unity editor interface (windows, what each is for, how to find things) | 1 | Chapters' Unity passages, glossary Unity workflows |
-| 14 | The Unreal editor interface | 1 | Chapters' Unreal passages, glossary Unreal workflows |
-| 15 | DROPPED by Bear: the Godot editor interface is taught inside deck 2, "Walker and Godot" | 0 | |
 
 ## Progress log
 - 2026-11-10: Deck 2a BUILT: `Terms - Walker and the toolchain.html` (14 slides, 13 animated, 26 terms; 22 tagged in the book text, 4 glossary only; 60 steps checked at 1920 and 390). Next: deck 2b, Godot editor, scenes, nodes, signals and movement.

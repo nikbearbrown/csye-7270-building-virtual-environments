@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to make a walkthrough film: important terms | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: how to make a walkthrough film">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="How to make a walkthrough film">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Assignments 8 and 10</p>
+      <h1 class="t-opening rise g2">How to make a walkthrough film</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Important terms for planning, capturing and checking a film that tours a game or asset</p>
+      <div class="speaker-notes" hidden><p>Deck 10 of the topic order. 32 terms. Tags: in the book text means the chapters use and explain it; in the glossary is a glossary row; video only means the course film skills, film folders and assignment briefs; outside source means general film vocabulary, no page fetched. Camera moves are in the Terms - Camera deck and are referenced here, not re-taught.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-two terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-two terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Assignments 8 and 10; building-walkthrough SKILL.md and walkthrough-craft.md.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Walkthrough film, central idea, beat, beat sheet">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Plan it</p>
+      <h2 class="t-chart">Walkthrough film, central idea, beat, beat sheet</h2>
+      <div class="diagram build" data-build="plan" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 15, “The final Brutalist film”; Assignments 8 and 10; building-walkthrough SKILL.md and walkthrough-craft.md.</p>
+      <div class="speaker-notes" hidden><p>The example film (Walker Jumpman level 1) and its beat lengths are invented for illustration. Total is the sum of the beat lengths. Walkthrough film is explained in Chapter 15, “The final Brutalist film”; the beat sheet and central idea come from the toolkit skill and Assignment 8.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Storyboard, script, voice-over, pacing">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Plan it</p>
+      <h2 class="t-chart">Storyboard, script, voice-over, pacing</h2>
+      <div class="diagram build" data-build="words" style="flex-basis:700px"></div>
+      <p class="source">Source: building-walkthrough SKILL.md and walkthrough-craft.md (pace section); Assignment 8 beat sheet.</p>
+      <div class="speaker-notes" hidden><p>Speech time is words divided by 2.4 words a second, the toolkit gate’s estimate; once real audio exists its measured length replaces it. Word counts are computed from the example lines. Beat lengths are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Shot, route, waypoint, establishing shot">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Route it</p>
+      <h2 class="t-chart">Shot, route, waypoint, establishing shot</h2>
+      <div class="diagram build" data-build="route" style="flex-basis:700px"></div>
+      <p class="source">Source: building-walkthrough SKILL.md and walkthrough-craft.md; glossary, Game AI section (Waypoint).</p>
+      <div class="speaker-notes" hidden><p>Leg lengths are computed from the waypoint coordinates; time uses 1.0 m/s, inside the walking-speed default of 0.7 to 1.2. Landmarks counted by containment in each frame rectangle. Order of the sections follows rule 2 in walkthrough-craft.md.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Camera move and route check">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Route it</p>
+      <h2 class="t-chart">Camera move and route check</h2>
+      <div class="diagram build" data-build="check" style="flex-basis:700px"></div>
+      <p class="source">Source: building-walkthrough SKILL.md and walkthrough-craft.md, rule 5 and 6; Terms - Camera deck; glossary, Camera section.</p>
+      <div class="speaker-notes" hidden><p>Pan rate, dolly speed and orbit speed are computed from stated inputs. Limits (1.5 m/s, 30°/s, 0.5°, 1.6 m ±0.10) are the toolkit’s starting points. The sine ease has peak = average × π/2. Measured values in the table are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Real-time capture, render, fixed frame rate, deterministic capture">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Record it</p>
+      <h2 class="t-chart">Real-time capture, render, fixed frame rate, deterministic capture</h2>
+      <div class="diagram build" data-build="capture" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-waikthrough SKILL.md and capture-and-coverage.md; Chapter 0, headless runs and --fixed-fps; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Frame times are a seeded simulation (about one frame in five takes 1.6 to 3.2 times the budget). Render time uses an illustrative 4 s a frame. Movie Maker is offline rendering and is not evidence of real-time fps, per the capture reference.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Frame rate, frame count, resolution, aspect ratio">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Record it</p>
+      <h2 class="t-chart">Frame rate, frame count, resolution, aspect ratio</h2>
+      <div class="diagram build" data-build="format" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, 2D art and sound assets (Resolution, Aspect ratio) and Animation (Frame rate); godot-waikthrough SKILL.md and capture-and-coverage.md.</p>
+      <div class="speaker-notes" hidden><p>Pixel counts and ratios are computed from the sizes shown. The 3840×2160 native capture requirement is from the walkthrough skill; resolution and aspect ratio are glossary rows.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Cut, b-roll and title card">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Finish and check</p>
+      <h2 class="t-chart">Cut, b-roll and title card</h2>
+      <div class="diagram build" data-build="edit" style="flex-basis:700px"></div>
+      <p class="source">Source: outside source, general film vocabulary (not fetched); godot-waikthrough SKILL.md (regular outro).</p>
+      <div class="speaker-notes" hidden><p>Overlap arithmetic is computed. Cut and b-roll are general film vocabulary from an outside source; no page was fetched. The title card and the regular outro card are described in the godot-waikthrough skill.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Safe margins, captions, decibel, loudness">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Finish and check</p>
+      <h2 class="t-chart">Safe margins, captions, decibel, loudness</h2>
+      <div class="diagram build" data-build="sound" style="flex-basis:700px"></div>
+      <p class="source">Source: ai-explainer SKILL.md, title-safe inset; a course film’s LOUDNESS.md; glossary, Decibel and dBFS; godot-waikthrough SKILL.md.</p>
+      <div class="speaker-notes" hidden><p>Pixel insets and decibel values are computed. The −24.55 LUFS and −2.96 dBTP are the measured numbers in LOUDNESS.md of one course lecture film; the window −28 to −18 and ceiling −1.0 are that gate’s settings.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="What it is not, call to action, claim versus evidence">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Finish and check</p>
+      <h2 class="t-chart">What it is not, call to action, claim versus evidence</h2>
+      <div class="diagram build" data-build="honest" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “The evidence ladder”; Assignments 8 and 10; building-walkthrough SKILL.md and walkthrough-craft.md, section 3.</p>
+      <div class="speaker-notes" hidden><p>Example disclosure, task and claims are invented for illustration. The honesty rule is Assignment 8’s: past tense only for what exists and can be shown. Claim versus evidence is Chapter 0.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: building-walkthrough SKILL.md and walkthrough-craft.md; godot-waikthrough SKILL.md and capture-and-coverage.md; glossary.</p>
+      <div class="speaker-notes" hidden><p>Capture and render, resolution and frame rate, cut and transition, storyboard and beat sheet.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: building-walkthrough SKILL.md and walkthrough-craft.md; godot-waikthrough SKILL.md and capture-and-coverage.md.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions, each charted from computed numbers.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you show a walkthrough film">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you show a walkthrough film</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: building-walkthrough SKILL.md and walkthrough-craft.md; Assignments 8 and 10.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= How to make a walkthrough film: important terms ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = chapters use and explain it; gloss = glossary row; video = course film skills, film folders and assignment briefs; web = general film vocabulary, no page fetched */
+  var T = {
+    walk: { n: "Walkthrough film", tag: "book", m: "A narrated camera tour of a game or asset that shows what it does and says what it leaves out" },
+    idea: { n: "Central idea", tag: "video", m: "The one sentence every shot must serve; a shot that does not serve it is cut" },
+    beat: { n: "Beat", tag: "video", m: "One unit of the film: one picture, one idea, and the words spoken over it" },
+    sheet: { n: "Beat sheet", tag: "video", alias: "also the shot list: one row per shot", m: "The film as a table: each beat's picture, words and length, in order" },
+    story: { n: "Storyboard", tag: "web", m: "Rough drawings of the key frames in order, made before anything is captured" },
+    script: { n: "Script", tag: "video", m: "The words of the narration, written out and checked before anyone records them" },
+    vo: { n: "Voice-over", tag: "video", m: "Narration heard over the pictures; the speaker is not shown in the shot" },
+    pace: { n: "Pacing", tag: "video", m: "How long each beat lasts, set by the route to cover and the time the words need" },
+    shot: { n: "Shot", tag: "video", m: "One continuous camera take, with a job and something it reveals that no earlier shot did" },
+    route: { n: "Route", tag: "video", m: "The planned path the camera travels through the scene, measured before any frame is rendered" },
+    wp: { n: "Waypoint", tag: "gloss", m: "A point along the route where the camera passes, turns or stops" },
+    est: { n: "Establishing shot", tag: "web", m: "A wide opening shot that shows where everything is before the close looks" },
+    move: { n: "Camera move", tag: "gloss", m: "Pan, tilt, dolly, truck, orbit and the rest, defined in the Terms - Camera deck" },
+    rcheck: { n: "Route check", tag: "video", m: "A script that steps every frame and measures speed, turn rate, roll and height" },
+    rt: { n: "Real-time capture", tag: "video", m: "Recording the game as it runs live, so frame times vary from frame to frame" },
+    render: { n: "Render", tag: "video", m: "Computing each frame offline, as slowly as needed, then joining the frames into a film" },
+    fixfps: { n: "Fixed frame rate", tag: "book", m: "Every frame lasts exactly 1/fps seconds of game time, whatever the machine does" },
+    determ: { n: "Deterministic capture", tag: "video", m: "A capture that gives the same frames every take: fixed frame rate, same inputs, same route" },
+    fps: { n: "Frame rate", tag: "gloss", m: "How many frames are shown each second" },
+    fcount: { n: "Frame count", tag: "video", m: "Frame rate times duration: how many frames the film needs" },
+    res: { n: "Resolution", tag: "gloss", m: "The width and height of a frame in pixels" },
+    aspect: { n: "Aspect ratio", tag: "gloss", m: "Width divided by height, such as 16:9 for a landscape film" },
+    cut: { n: "Cut and transition", tag: "web", m: "A cut jumps to the next shot; a transition, such as a dissolve, overlaps the two" },
+    broll: { n: "B-roll", tag: "web", m: "Extra footage laid over the main capture; the main footage carries the claim" },
+    card: { n: "Title card", tag: "video", m: "A full-screen card with the film's name, shown briefly at the start and end" },
+    safe: { n: "Safe margins", tag: "video", m: "The inner area, inset about 5% on each side, where text and logos must sit" },
+    cap: { n: "Captions", tag: "video", m: "The narration as text, burned in or in a separate .srt file with start and end times" },
+    db: { n: "Decibel (dB, dBFS)", tag: "gloss", m: "Logarithmic loudness unit; in digital audio 0 dBFS is the maximum level" },
+    lufs: { n: "Loudness (LUFS)", tag: "video", m: "How loud the whole film is on average, measured against a target window" },
+    isnot: { n: "What it is not", tag: "video", m: "A spoken and on-screen statement of what the film leaves out, placed in the first two shots" },
+    cta: { n: "Call to action", tag: "video", m: "The last request to the viewer: one concrete thing to try, with a way to check it" },
+    claim: { n: "Claim versus evidence", tag: "book", m: "A claim says what the film asserts; evidence is the capture or output on screen that backs it" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function mmss(s) { s = Math.round(s); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
+  function fmtM(v) { return d3.format(",")(Math.round(v)); }
+  function frameRect(g, x, y, w, h, o) { o = o || {}; return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h).attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || INK).attr("stroke-width", o.sw || 3).attr("stroke-dasharray", o.dash || null); }
+
+  /* shared example film: Walker Jumpman level 1 (illustrative) */
+  var BEATS = [["Title card", 6], ["What it is not", 12], ["Move and jump", 18], ["Hazard and retry", 20], ["Finish and restart", 16], ["Your turn", 10]];
+  var TOTAL = d3.sum(BEATS, function (b) { return b[1]; });
+  var WPS = 2.4; /* words a second, the toolkit gate's estimate */
+
+  var MAPROWS = [
+    ["Plan it", "walkthrough film, central idea, beat, beat sheet, storyboard, script, voice-over, pacing", "What the film says, in what order, for how long"],
+    ["Route it", "shot, route, waypoint, establishing shot, camera move, route check", "Where the camera goes and how it is checked"],
+    ["Record it", "real-time capture, render, fixed frame rate, deterministic capture, frame rate, frame count, resolution, aspect ratio", "How the frames are made"],
+    ["Finish and check", "cut and transition, b-roll, title card, safe margins, captions, decibel, loudness, what it is not, call to action, claim versus evidence", "How it is put together and proved honest"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Thirty-two walkthrough film terms in four groups", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "32 terms for planning and making a film that moves a camera through a game or asset, and says what it is and is not.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 58, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. walkthrough film, central idea, beat, beat sheet ---------- */
+  function miniLevel(g, x, y, w, h) {
+    g.append("rect").attr("x", x).attr("y", y + h - 40).attr("width", w).attr("height", 40).attr("fill", "#C4C4C4");
+    g.append("rect").attr("x", x + w * 0.38).attr("y", y + h - 40).attr("width", w * 0.12).attr("height", 40).attr("fill", "#FFFFFF");
+    g.append("path").attr("d", "M" + (x + w * 0.66) + "," + (y + h - 40) + " l14,-30 l14,30Z").attr("fill", RED);
+    g.append("rect").attr("x", x + w * 0.08).attr("y", y + h - 76).attr("width", 20).attr("height", 36).attr("fill", INK);
+    g.append("path").attr("d", "M" + (x + w * 0.9) + "," + (y + h - 40) + " v-70").attr("stroke", INK).attr("stroke-width", 4);
+    g.append("path").attr("d", "M" + (x + w * 0.9) + "," + (y + h - 110) + " l36,14 l-36,14Z").attr("fill", INK);
+  }
+  function renderPlan(el, k, anim) {
+    var svg = svgFor(el, W, H, "A walkthrough film is one idea, shown, with its limits stated", "A camera frame sweeps across a game level. Then six shots tested against one idea. Then a single beat. Then a table of six beats with seconds summing to a total.");
+    var ey = base(svg, [{ id: "walk", s: 1 }, { id: "idea", s: 2 }, { id: "beat", s: 3 }, { id: "sheet", s: 4 }], k, anim, ["Storyboard", "pictures, in order"], ["Beat sheet", "pictures, words and seconds"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "A FRAME SWEEPING ACROSS A LEVEL");
+      var LW = 740, LH = 230, LY = 56; frameRect(d, 0, LY, LW, LH, { stroke: FAMILIAR, sw: 2 }); miniLevel(d, 0, LY, LW, LH);
+      var fw = 250, vf = frameRect(d, 0, LY + 4, fw, LH - 8, { fill: "none", stroke: RED, sw: 4 }), nr = txt(d, 0, 340, "", { size: 24, weight: 700, fill: RED });
+      run(d, 5000, function (t) { var x = (LW - fw) * d3.easeCubicInOut(t); vf.attr("x", x + 0.5); nr.attr("x", x).text("camera frame at " + Math.round(x) + " px"); }, k === 1 && anim);
+      [["camera moves", INK], ["voice-over", INK], ["says what it is not", RED]].forEach(function (c, i) { var g = d.append("g"); box(g, i * 250, 400, 236, 64, { stroke: c[1], sw: 2.5 }); cap(g, i * 250 + 118, 440, c[0], { size: 24, anchor: "middle", weight: 700, fill: c[1] }); fade(g, A(anim, k, 1), 1200 + i * 300); });
+      if (k === 0) cap(d, 0, 520, "A film has all three, or it is a tour.", { size: 24, fill: MUTED }); else cap(d, 0, 520, "Real captures of what the game does, nothing invented.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SIX CANDIDATE SHOTS AGAINST ONE IDEA");
+      wrap(d, 0, 66, "Idea (illustrative): “Level 1 teaches the jump.”", 56, { size: 26, lh: 32, weight: 700, fill: INK });
+      var SH = [["Wide view of level 1", 1], ["The first gap jump", 1], ["Spike and retry", 1], ["Menu music reel", 0], ["Flag and restart", 1], ["Credits scroll", 0]], ok = d3.sum(SH, function (s) { return s[1]; });
+      SH.forEach(function (s, i) { var y = 110 + i * 56, g = d.append("g"); box(g, 0, y, 740, 46, { stroke: s[1] ? INK : RED, sw: 2 }); cap(g, 14, y + 32, (i + 1) + ". " + s[0], { size: 24, fill: s[1] ? INK : MUTED }); if (s[1]) check(g, 690, y + 22, 12, RED); else { cap(g, 726, y + 32, "cut", { size: 24, anchor: "end", weight: 700, fill: RED }); } fade(g, A(anim, k, 2), i * 200); });
+      cap(d, 0, 500, ok + " of " + SH.length + " shots serve the idea; " + (SH.length - ok) + " are cut.", { size: 26, weight: 700, fill: RED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "ONE BEAT");
+      var wcount = "Walker clears the first gap by holding the jump key a little longer".split(" ").length;
+      frameRect(d, 0, 56, 380, 214); miniLevel(d, 0, 56, 380, 214);
+      cap(d, 0, 304, "one picture: the jump over gap 1", { size: 24, weight: 700 });
+      cap(d, 0, 346, "one idea: a longer press jumps farther", { size: 24, weight: 700 });
+      cap(d, 0, 388, "its words: " + wcount + " words", { size: 24, weight: 700 });
+      cap(d, 0, 430, "spoken in " + (wcount / WPS).toFixed(1) + " s at " + WPS + " words a second", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 480, "Illustrative beat. The beat's length is the time its words need.", { size: 24, fill: MUTED });
+      var wv = d.append("g").attr("transform", "translate(410,56)"); lab(wv, 0, -24 + 24, "NARRATION", { fill: MUTED });
+      var r = rng(4); d3.range(18).forEach(function (j) { var h = 30 + r() * 120, b = wv.append("rect").attr("x", j * 18).attr("y", 107 - h / 2 + 20).attr("width", 12).attr("height", h).attr("fill", INK); if (A(anim, k, 3)) b.attr("opacity", 0).transition().delay(j * 60).duration(200).attr("opacity", 1); });
+    } else {
+      lab(d, 0, 30, "BEAT SHEET: SECONDS PER BEAT");
+      var t0 = 0, sc = 17;
+      BEATS.forEach(function (b, i) {
+        var y = 56 + i * 58, g = d.append("g"), s = t0, e = t0 + b[1]; t0 = e;
+        cap(g, 0, y + 30, (i + 1) + "  " + b[0], { size: 24, weight: 700, fill: i === 1 ? RED : INK });
+        bar(g, 252, y + 6, b[1] * sc, 32, i === 1 ? RED : INK, A(anim, k, 4), i * 250);
+        mono(g, 252 + 20 * sc + 14, y + 31, mmss(s) + "-" + mmss(e), { size: 24 });
+      });
+      cap(d, 0, 56 + 6 * 58 + 34, "Total: " + BEATS.map(function (b) { return b[1]; }).join(" + ") + " = " + TOTAL + " s (" + mmss(TOTAL) + ")", { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "It moves a camera through the real thing, speaks over it, and states its limits.", "A shot that does not serve the one-sentence idea is cut, however good it looks.", "One beat is one picture, one idea and the words that fit over it.", "The beat sheet lists every beat and its seconds. The total is the sum, not a target."][k]);
+  }
+
+  /* ---------- 2. storyboard, script, voice-over, pacing ---------- */
+  var VB = [["Walker stands at the edge of the first gap.", 5, "gap"], ["He jumps, and the camera follows him across the whole gap without cutting away.", 5, "jump"], ["The spike kills him, and he restarts at the last checkpoint in under a second.", 7, "spike"], ["He reaches the flag, the level ends, and the game offers a restart, which we show now.", 7, "flag"]];
+  VB.forEach(function (b) { b.push(b[0].split(" ").length); b.push(b[3] / WPS); });
+  function renderWords(el, k, anim) {
+    var svg = svgFor(el, W, H, "Storyboard, script, voice-over and pacing: do the words fit the beat", "Four storyboard frames, then the narration line under each, then speaking time as bars, then each bar set against its beat length.");
+    var ey = base(svg, [{ id: "story", s: 1 }, { id: "script", s: 2 }, { id: "vo", s: 3 }, { id: "pace", s: 4 }], k, anim, ["Script", "the words, on paper"], ["Voice-over", "the words, spoken"]);
+    var d = svg.append("g"), fw = 170;
+    function frame(g, i, x, y) { frameRect(g, x, y, fw, 96, { sw: 2.5 }); var gx = x + 8, gy = y;
+      if (i === 0) { g.append("rect").attr("x", gx).attr("y", gy + 62).attr("width", 60).attr("height", 30).attr("fill", "#C4C4C4"); g.append("rect").attr("x", gx + 96).attr("y", gy + 62).attr("width", 60).attr("height", 30).attr("fill", "#C4C4C4"); g.append("rect").attr("x", gx + 40).attr("y", gy + 30).attr("width", 12).attr("height", 30).attr("fill", INK); }
+      else if (i === 1) { g.append("path").attr("d", "M" + (gx + 30) + "," + (gy + 60) + " Q" + (gx + 80) + "," + (gy + 8) + " " + (gx + 130) + "," + (gy + 60)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "6 5"); g.append("rect").attr("x", gx).attr("y", gy + 66).attr("width", 56).attr("height", 24).attr("fill", "#C4C4C4"); g.append("rect").attr("x", gx + 100).attr("y", gy + 66).attr("width", 56).attr("height", 24).attr("fill", "#C4C4C4"); }
+      else if (i === 2) { g.append("path").attr("d", "M" + (gx + 60) + "," + (gy + 88) + " l22,-44 l22,44Z").attr("fill", RED); g.append("rect").attr("x", gx).attr("y", gy + 88).attr("width", 156).attr("height", 4).attr("fill", "#C4C4C4"); }
+      else { g.append("path").attr("d", "M" + (gx + 100) + "," + (gy + 90) + " v-70").attr("stroke", INK).attr("stroke-width", 4); g.append("path").attr("d", "M" + (gx + 100) + "," + (gy + 20) + " l36,14 l-36,14Z").attr("fill", INK); g.append("rect").attr("x", gx).attr("y", gy + 90).attr("width", 156).attr("height", 4).attr("fill", "#C4C4C4"); }
+    }
+    lab(d, 0, 30, k >= 3 ? (k === 3 ? "SPEAKING TIME AT 2.4 WORDS A SECOND" : "SPEAKING TIME AGAINST BEAT LENGTH") : (k === 2 ? "THE SCRIPT UNDER EACH FRAME" : "FOUR STORYBOARD FRAMES"));
+    if (k <= 1) {
+      VB.forEach(function (b, i) { var x = (i % 2) * 400, y = 50 + Math.floor(i / 2) * 250, g = d.append("g"); g.append("g").attr("transform", "translate(" + x + "," + y + ") scale(2)").call(function (q) { frame(q, i, 0, 0); }); cap(g, x + 170, y + 232, (i + 1) + " " + VB[i][2], { size: 24, anchor: "middle", weight: 700 }); fade(g, A(anim, k, 1), i * 300); });
+    } else if (k === 2) {
+      VB.forEach(function (b, i) { var y = 64 + i * 118, g = d.append("g"); box(g, 0, y, 8, 100, { stroke: RED, fill: RED }); cap(g, 22, y + 28, "frame " + (i + 1) + " · " + b[3] + " words", { size: 24, weight: 700, fill: RED }); wrap(g, 22, y + 62, b[0], 58, { size: 24, lh: 30, fill: INK }); fade(g, A(anim, k, 2), i * 300); });
+    } else {
+      var sc = 36, x0 = 190;
+      VB.forEach(function (b, i) { var y = 70 + i * 100, g = d.append("g"); cap(g, 0, y + 30, "beat " + (i + 1), { size: 24, weight: 700 });
+        if (k === 4) { var bx = box(g, x0, y + 4, b[1] * sc, 44, { stroke: INK, sw: 3 }); bx.attr("fill", "none"); }
+        var over = b[4] > b[1]; bar(g, x0, y + 4, b[4] * sc, 44, k === 4 && over ? RED : "#C4C4C4", A(anim, k, k), i * 250);
+        cap(g, x0, y + 78, b[3] + " words → " + b[4].toFixed(1) + " s" + (k === 4 ? " in a " + b[1] + " s beat" : ""), { size: 24 });
+        if (k === 4) { var mx = Math.floor(b[1] * WPS); cap(g, 740, y + 30, over ? "cut " + (b[3] - mx) + " word" + (b[3] - mx > 1 ? "s" : "") : "fits", { size: 24, anchor: "end", weight: 700, fill: over ? RED : INK }); } });
+    }
+    note(svg, ey, ["", "A storyboard is a strip of rough frames, one per beat, drawn before anything is captured.", "The script is the narration, written under each frame so it can be counted and cut.", "Voice-over takes time: words divided by 2.4 a second. 4 beats of speech add up to " + d3.sum(VB, function (b) { return b[4]; }).toFixed(1) + " s.", "Pacing: speech must fit its beat. " + VB.filter(function (b) { return b[4] > b[1]; }).length + " of 4 beats overrun, so cut words, not seconds of footage."][k]);
+  }
+
+  /* ---------- 3. shot, route, waypoint, establishing shot ---------- */
+  var PL = { s: 18, ox: 20, oy: 62 };
+  function mx(m) { return PL.ox + m * PL.s; } function my(m) { return PL.oy + m * PL.s; }
+  var WP = [[3, 4], [12, 4], [12, 14], [26, 14], [34, 8]], WALLS = [[16, 0, 4, 12], [14, 16, 10, 6], [28, 14, 4, 8]], LM = [[6, 6], [20, 14.6], [22, 3], [30, 6], [34, 18]];
+  var LEG = []; for (var li = 0; li < WP.length - 1; li++) LEG.push(Math.hypot(WP[li + 1][0] - WP[li][0], WP[li + 1][1] - WP[li][1]));
+  var RLEN = d3.sum(LEG), RSPD = 1.0;
+  function posAt(dist) { var d = Math.max(0, Math.min(RLEN, dist)), i = 0; while (i < LEG.length - 1 && d > LEG[i]) { d -= LEG[i]; i++; } var f = d / LEG[i], a = WP[i], b = WP[i + 1]; return [mx(a[0] + (b[0] - a[0]) * f), my(a[1] + (b[1] - a[1]) * f), Math.atan2(b[1] - a[1], b[0] - a[0])]; }
+  function drawPlan(d) { d.append("rect").attr("x", mx(0) + 0.5).attr("y", my(0) + 0.5).attr("width", 38 * PL.s).attr("height", 22 * PL.s).attr("fill", "#FFFFFF").attr("stroke", FAMILIAR).attr("stroke-width", 2); WALLS.forEach(function (w) { d.append("rect").attr("x", mx(w[0])).attr("y", my(w[1])).attr("width", w[2] * PL.s).attr("height", w[3] * PL.s).attr("fill", "#C4C4C4"); }); }
+  function renderRoute(el, k, anim) {
+    var svg = svgFor(el, W, H, "A route is the camera's path, built from waypoints and cut into shots", "A top view of a level with walls and five landmarks. One camera leg, then the whole path with a travelling camera, then numbered waypoints with leg lengths, then a wide frame that holds all five landmarks.");
+    var ey = base(svg, [{ id: "shot", s: 1 }, { id: "route", s: 2 }, { id: "wp", s: 3 }, { id: "est", s: 4 }], k, anim, ["Route", "the whole path"], ["Shot", "one take along part of it"]);
+    var d = svg.append("g"); lab(d, 0, 30, "TOP VIEW, 38 M BY 22 M");
+    drawPlan(d); var P = WP.map(function (w) { return [mx(w[0]), my(w[1])]; });
+    var line = d3.line();
+    function lms(g, inFn) { return LM.map(function (l) { var on = inFn ? inFn(l) : false; post(g, mx(l[0]), my(l[1]), on, 9); return on; }).filter(Boolean).length; }
+    if (k <= 3) {
+      lms(d);
+      var cam = d.append("g"), tx = cap(d, 0, 494, "", { size: 24, weight: 700 }), tx2 = cap(d, 0, 528, "", { size: 24, fill: MUTED });
+      function drawCam(dist) { cam.selectAll("*").remove(); var p = posAt(dist); cone(cam, p[0], p[1], p[2], 60, 70); camBody(cam, p[0], p[1], p[2]); }
+      if (k === 1) {
+        d.append("path").attr("d", line(P.slice(0, 2))).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+        run(d, 3500, function (t) { drawCam(LEG[0] * t); tx.text("Shot 1: " + (LEG[0] * t).toFixed(1) + " m of " + LEG[0].toFixed(1) + " m"); }, anim);
+        tx.text("Shot 1: " + LEG[0].toFixed(1) + " m of " + LEG[0].toFixed(1) + " m"); tx2.text(LEG[0].toFixed(1) + " m ÷ " + RSPD.toFixed(1) + " m/s = " + (LEG[0] / RSPD).toFixed(1) + " s");
+      } else if (k === 2) {
+        var pth = d.append("path").attr("d", line(P)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5); if (A(anim, k, 2)) drawIn(pth, 0, 5000);
+        run(d, 5000, function (t) { drawCam(RLEN * t); tx.text("Route so far: " + (RLEN * t).toFixed(1) + " m"); tx2.text("time at " + RSPD.toFixed(1) + " m/s: " + (RLEN * t / RSPD).toFixed(1) + " s"); }, anim, d3.easeLinear);
+      } else {
+        d.append("path").attr("d", line(P)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+        P.forEach(function (p, i) { var g = d.append("g"); g.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 17).attr("fill", INK); cap(g, p[0], p[1] + 8, String(i + 1), { size: 24, anchor: "middle", weight: 700, fill: "#FFFFFF" }); fade(g, A(anim, k, 3), i * 250); });
+        var off = [[0, -16], [14, 0], [0, -16], [-18, -8]]; LEG.forEach(function (l, i) { var mxp = (P[i][0] + P[i + 1][0]) / 2 + off[i][0], myp = (P[i][1] + P[i + 1][1]) / 2 + off[i][1]; var g = d.append("g"); cap(g, myp > 0 ? mxp : mxp, myp, l.toFixed(1) + " m", { size: 24, weight: 700, anchor: i === 1 ? "start" : i === 3 ? "end" : "middle" }); fade(g, A(anim, k, 3), 1000 + i * 200); });
+        tx.text("5 waypoints, 4 legs: " + LEG.map(function (l) { return l.toFixed(0); }).join(" + ") + " = " + RLEN.toFixed(1) + " m"); tx2.text("Each leg can be its own shot.");
+      }
+    } else {
+      d.append("path").attr("d", line(P)).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 3);
+      var wide = [0, 0, 38, 22], nar = [0, 1.5, 9.5, 8.5];
+      var inR = function (r) { return function (l) { return l[0] >= r[0] && l[0] <= r[0] + r[2] && l[1] >= r[1] && l[1] <= r[1] + r[3]; }; };
+      var fr = frameRect(d, mx(wide[0]), my(wide[1]), wide[2] * PL.s, wide[3] * PL.s, { fill: "none", stroke: RED, sw: 5, dash: "14 8" }); var fr2 = frameRect(d, mx(nar[0]), my(nar[1]), nar[2] * PL.s, nar[3] * PL.s, { fill: TINT, stroke: INK, sw: 3 }); fr2.attr("fill-opacity", 0.5);
+      var cw = lms(d, inR(wide)), cn = LM.filter(inR(nar)).length;
+      if (A(anim, k, 4)) { fr.attr("stroke-opacity", 0).transition().duration(900).attr("stroke-opacity", 1); }
+      cap(d, 0, 494, "wide frame (red): " + cw + " of " + LM.length + " landmarks in view", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 528, "first close look (black): " + cn + " of " + LM.length, { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "A shot is one take. This one covers leg 1 of the route, " + LEG[0].toFixed(1) + " m, in " + (LEG[0] / RSPD).toFixed(1) + " s.", "The route is the whole path. Its length divided by speed gives the running time: " + (RLEN / RSPD).toFixed(0) + " s.", "Waypoints are the points the camera must hit. They turn a wish into numbers.", "An establishing shot opens wide: the viewer sees all " + LM.length + " landmarks before any close look."][k]);
+  }
+
+  /* ---------- 4. camera move, route check ---------- */
+  function renderCheck(el, k, anim) {
+    var svg = svgFor(el, W, H, "Camera moves have rates; a route check compares them with limits", "Four small top views of a pan, a dolly in, a truck and an orbit, each with its computed rate. Then speed against time for a linear and an eased route. Then a table of checks, limits and results.");
+    var ey = base(svg, [{ id: "move", s: 1 }, { id: "rcheck", s: 2 }], k, anim, ["Camera move", "what the camera does"], ["Route check", "whether it is allowed"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "FOUR MOVES, SAME TOP VIEW (REF: TERMS - CAMERA)");
+      var PN = [{ n: "Pan", x: 0, y: 46, r: "40° in 4 s = " + (40 / 4).toFixed(0) + "°/s" }, { n: "Dolly in", x: 400, y: 46, r: "6 m in 6 s = " + (6 / 6).toFixed(1) + " m/s" }, { n: "Truck", x: 0, y: 312, r: "5 m in 5 s = " + (5 / 5).toFixed(1) + " m/s" }, { n: "Orbit", x: 400, y: 312, r: "90° in 9 s = " + (90 / 9).toFixed(0) + "°/s" }];
+      var ORR = 100, orbitSpd = ORR / 20 * (90 / 9) * DEG * 20 / 20; /* radius 5 m at 20 px/m, angular rate 10 deg/s */
+      PN.forEach(function (p, i) {
+        var g = d.append("g").attr("transform", "translate(" + p.x + "," + p.y + ")"); box(g, 0, 0, 360, 256, { stroke: FAMILIAR, sw: 2 }); cap(g, 12, 32, p.n, { size: 24, weight: 700, fill: RED });
+        var sc = g.append("g"); post(sc, i === 0 ? 300 : i === 1 ? 300 : i === 2 ? 300 : 180, i === 3 ? 130 : 120, true, 11);
+        cap(g, 12, 222, p.r, { size: 24, weight: 700 }); if (i === 3) cap(g, 12, 248, "5 m radius: " + (5 * 10 * DEG).toFixed(2) + " m/s", { size: 24, fill: MUTED }); if (i === 0) cap(g, 12, 248, "limit 30°/s", { size: 24, fill: MUTED });
+        var cm = g.append("g");
+        run(g, 4000, function (t) { cm.selectAll("*").remove(); var x, y, a, fov = 50, len = 100;
+          if (i === 0) { x = 60; y = 120; a = (-20 + 40 * d3.easeCubicInOut(t)) * DEG; }
+          else if (i === 1) { x = 40 + 120 * d3.easeLinear(t); y = 120; a = 0; len = 90; }
+          else if (i === 2) { x = 120; y = 50 + 100 * t; a = 0; len = 90; }
+          else { var th = (180 + 90 * t) * DEG; x = 180 + ORR * Math.cos(th); y = 130 + ORR * Math.sin(th); a = Math.atan2(130 - y, 180 - x); len = 70; }
+          cone(cm, x, y, a, fov, len); camBody(cm, x, y, a); }, k === 1 && anim);
+      });
+    } else {
+      var Lm = 30, Ts = 24, vavg = Lm / Ts, vpk = vavg * Math.PI / 2, LIM = 1.5;
+      if (k === 2) {
+        lab(d, 0, 30, "SPEED AGAINST TIME, 30 M IN 24 S");
+        var X0 = 90, X1 = 720, Y0 = 450, Y1 = 110, sx = function (t) { return X0 + (X1 - X0) * t / Ts; }, sy = function (v) { return Y0 - (Y0 - Y1) * v / 2.2; };
+        d.append("path").attr("d", "M" + X0 + "," + Y0 + " H" + X1 + " M" + X0 + "," + Y0 + " V" + (Y1 - 20)).attr("stroke", INK).attr("stroke-width", 2).attr("fill", "none");
+        [0, 12, 24].forEach(function (t) { cap(d, sx(t), Y0 + 34, String(t), { size: 24, anchor: "middle" }); }); cap(d, X1, Y0 + 66, "seconds", { size: 24, anchor: "end", fill: MUTED });
+        [0, 1.5].forEach(function (v) { cap(d, X0 - 12, sy(v) + 8, String(v), { size: 24, anchor: "end" }); });
+        d.append("path").attr("d", "M" + X0 + "," + sy(LIM) + " H" + X1).attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "10 8"); cap(d, X1, sy(LIM) - 10, "limit 1.5 m/s", { size: 24, anchor: "end", fill: MUTED, weight: 700 });
+        var lin = d.append("path").attr("d", "M" + sx(0) + "," + sy(vavg) + " H" + sx(Ts)).attr("stroke", INK).attr("stroke-width", 5).attr("fill", "none");
+        var pts = d3.range(0, Ts + 0.01, 0.5).map(function (t) { return [sx(t), sy(vpk * Math.sin(Math.PI * t / Ts))]; });
+        var eas = d.append("path").attr("d", d3.line()(pts)).attr("stroke", RED).attr("stroke-width", 5).attr("fill", "none");
+        if (A(anim, k, 2)) { drawIn(lin, 0, 900); drawIn(eas, 700, 1800); }
+        cap(d, sx(Ts / 2), sy(vavg) + 36, "linear: " + vavg.toFixed(2), { size: 24, anchor: "middle", weight: 700 }); cap(d, sx(Ts / 2), sy(vpk) - 14, "sine ease peak: " + vpk.toFixed(2), { size: 24, anchor: "middle", weight: 700, fill: RED });
+      } else {
+        lab(d, 0, 30, "ROUTE CHECK RESULT (ILLUSTRATIVE VALUES)");
+        var ROWS = [["Speed, linear", "≤ 1.5 m/s", vavg, "m/s", vavg <= LIM], ["Speed, eased", "≤ 1.5 m/s", vpk, "m/s", vpk <= LIM], ["Turn rate", "≤ 30°/s", 10, "°/s", 10 <= 30], ["Roll", "within 0.5°", 0.2, "°", 0.2 <= 0.5], ["Eye height", "1.6 ± 0.10 m", 1.62, "m", Math.abs(1.62 - 1.6) <= 0.10]];
+        [["CHECK", 0], ["LIMIT", 270], ["MEASURED", 450], ["RESULT", 640]].forEach(function (h) { lab(d, h[1], 84, h[0]); });
+        d.append("path").attr("d", "M0,98 H740").attr("stroke", INK).attr("stroke-width", 2);
+        ROWS.forEach(function (r, i) { var y = 104 + i * 60, g = d.append("g"); cap(g, 0, y + 34, r[0], { size: 24, weight: 700 }); cap(g, 270, y + 34, r[1], { size: 24 }); cap(g, 450, y + 34, r[2].toFixed(2) + " " + r[3], { size: 24 }); cap(g, 640, y + 34, r[4] ? "pass" : "FAIL", { size: 24, weight: 700, fill: r[4] ? INK : RED }); fade(g, A(anim, k, 3), i * 250); });
+        cap(d, 0, 470, "Limits are the toolkit's starting points, not standards.", { size: 24, fill: MUTED });
+        cap(d, 0, 506, "Fix the route, not the report.", { size: 24, weight: 700, fill: RED });
+      }
+    }
+    note(svg, ey, ["", "Each move can be measured: a pan in degrees a second, a dolly in metres a second.", "Eased from rest, 30 m in 24 s peaks at " + (30 / 24 * Math.PI / 2).toFixed(2) + " m/s, over the 1.5 limit.", "The check steps every frame. One fail sends you back to the route, not the film."][k]);
+  }
+
+  /* ---------- 5. real-time capture, render, fixed frame rate, deterministic ---------- */
+  function ftimes(seed, n) { var r = rng(seed), a = []; for (var i = 0; i < n; i++) a.push(1000 / 60 * (r() < 0.2 ? 1.6 + r() * 1.6 : 1 + r() * 0.2)); return a; }
+  function firstFrame(a, ms) { var s = 0; for (var i = 0; i < a.length; i++) { s += a[i]; if (s >= ms) return i + 1; } return a.length; }
+  function renderCapture(el, k, anim) {
+    var svg = svgFor(el, W, H, "Real-time capture wobbles; render and a fixed frame rate make every take match", "Frame times as bars for a live capture, then render time compared to film length, then equal frame times at a fixed rate, then the frame where an event lands in two live takes and two fixed takes.");
+    var ey = base(svg, [{ id: "rt", s: 1 }, { id: "render", s: 2 }, { id: "fixfps", s: 3 }, { id: "determ", s: 4 }], k, anim, ["Real-time capture", "records the live run"], ["Render", "computes each frame offline"]);
+    var d = svg.append("g");
+    if (k === 1 || k === 3) {
+      var a = k === 1 ? ftimes(7, 36) : d3.range(36).map(function () { return 1000 / 30; });
+      lab(d, 0, 30, k === 1 ? "MILLISECONDS PER FRAME, 36 FRAMES" : "MILLISECONDS PER FRAME AT A FIXED 30 FPS");
+      var BY = 430, sc = 6; a.forEach(function (v, i) { var b = d.append("rect").attr("x", i * 20).attr("y", BY - v * sc).attr("width", 14).attr("height", v * sc).attr("fill", k === 1 && v > 1000 / 60 * 1.5 ? RED : INK); if (A(anim, k, k)) b.attr("opacity", 0).transition().delay(i * 40).duration(200).attr("opacity", 1); });
+      var ly = BY - 1000 / 60 * sc; d.append("path").attr("d", "M0," + ly + " H740").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+      var mean = d3.mean(a), worst = d3.max(a);
+      if (k === 1) { cap(d, 0, 458, "dashed line: 16.7 ms = 60 fps", { size: 24, fill: MUTED }); cap(d, 0, 494, "mean " + mean.toFixed(1) + " ms = " + (1000 / mean).toFixed(1) + " fps; worst frame " + worst.toFixed(1) + " ms", { size: 24, weight: 700 }); cap(d, 0, 530, a.filter(function (v) { return v > 1000 / 60 * 1.5; }).length + " of 36 frames took over 1.5 times the budget", { size: 24, fill: RED, weight: 700 }); }
+      else { cap(d, 0, 480, "every frame " + (1000 / 30).toFixed(1) + " ms of game time", { size: 24, weight: 700 }); cap(d, 0, 520, "36 frames = " + (36 / 30).toFixed(2) + " s of game time, on any machine", { size: 24, fill: RED, weight: 700 }); }
+    } else if (k === 2) {
+      lab(d, 0, 30, "OFFLINE RENDER: 10 S FILM AT 30 FPS");
+      var frames = 10 * 30, per = 4, tot = frames * per;
+      [["film length", 10, INK], ["render time", tot, RED]].forEach(function (r, i) { var y = 80 + i * 130, g = d.append("g"); cap(g, 0, y, r[0], { size: 24, weight: 700 }); var w = Math.max(r[1] / tot * 600, 6); bar(g, 0, y + 14, w, 44, r[2], A(anim, k, 2), i * 400); cap(g, w + 12, y + 46, (r[1] >= 60 ? (r[1] / 60).toFixed(0) + " min" : r[1] + " s"), { size: 26, weight: 700 }); });
+      cap(d, 0, 380, frames + " frames × " + per + " s each = " + tot + " s = " + (tot / 60).toFixed(0) + " min", { size: 24, weight: 700 }); cap(d, 0, 420, (tot / 10).toFixed(0) + " times slower than the film plays (4 s a frame is illustrative)", { size: 24, fill: MUTED });
+      cap(d, 0, 470, "Slow is fine: nobody watches a render run. It is not a frame-rate test.", { size: 24, fill: RED, weight: 700 });
+    } else {
+      lab(d, 0, 30, "FRAME WHERE GAME TIME REACHES 1.000 S");
+      var A1 = firstFrame(ftimes(25, 80), 1000), B1 = firstFrame(ftimes(6, 80), 1000), F1 = firstFrame(d3.range(80).map(function () { return 1000 / 60; }), 1000 - 0.001), s2 = 10;
+      var rows = [["live take A", A1, INK], ["live take B", B1, INK], ["fixed 60 fps, take A", F1, RED], ["fixed 60 fps, take B", F1, RED]];
+      rows.forEach(function (r, i) { var y = 70 + i * 92, g = d.append("g"); cap(g, 0, y + 26, r[0], { size: 24, weight: 700, fill: r[2] }); g.append("path").attr("d", "M0," + (y + 60) + " H" + (62 * s2)).attr("stroke", FAMILIAR).attr("stroke-width", 2); var c = g.append("circle").attr("cx", r[1] * s2).attr("cy", y + 60).attr("r", 11).attr("fill", r[2]); if (A(anim, k, 4)) c.attr("cx", 0).transition().delay(i * 250).duration(900).attr("cx", r[1] * s2);
+        cap(g, Math.min(r[1] * s2 + 20, 720), y + 40, "frame " + r[1], { size: 24, weight: 700, fill: r[2], anchor: r[1] > 55 ? "end" : "start" }); });
+      cap(d, 0, 470, "Live: the event lands on frame " + A1 + " or " + B1 + ". Fixed: frame " + F1 + ", every take.", { size: 24, weight: 700 }); cap(d, 0, 506, "Seeded simulation of frame times; real ones vary by machine.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Live capture records what the machine managed. Frame times wobble and the take is hard to repeat.", "Render builds every frame offline, so quality can beat speed. It proves nothing about live fps.", "A fixed frame rate gives every frame the same slice of game time on any machine.", "Same inputs plus a fixed rate put each event on the same frame, take after take."][k]);
+  }
+
+  /* ---------- 6. frame rate, frame count, resolution, aspect ratio ---------- */
+  function renderFormat(el, k, anim) {
+    var svg = svgFor(el, W, H, "Frame rate times duration gives frame count; resolution and aspect ratio shape each frame", "Tick marks for one second at 24, 30 and 60 frames a second, then frame counts for a ten second film, then three nested frame sizes with pixel counts, then three aspect ratios.");
+    var ey = base(svg, [{ id: "fps", s: 1 }, { id: "fcount", s: 2 }, { id: "res", s: 3 }, { id: "aspect", s: 4 }], k, anim, ["Resolution", "pixels in one frame"], ["Frame rate", "frames in one second"]);
+    var d = svg.append("g");
+    if (k <= 2) {
+      lab(d, 0, 30, k === 1 ? "FRAMES IN ONE SECOND" : "FRAMES IN A 10 S FILM");
+      [24, 30, 60].forEach(function (f, i) { var y = 70 + i * 140, g = d.append("g"); cap(g, 0, y + 24, f + " frames a second", { size: 24, weight: 700 });
+        var tk = g.append("g"); d3.range(f).forEach(function (j) { var t = tk.append("path").attr("d", "M" + (j * 740 / f) + "," + (y + 44) + " v36").attr("stroke", i === 2 ? RED : INK).attr("stroke-width", 3); if (A(anim, k, 1)) t.attr("opacity", 0).transition().delay(j * 700 / f + i * 200).duration(100).attr("opacity", 1); });
+        if (k === 1) cap(g, 740, y + 24, f + " ticks", { size: 24, anchor: "end", fill: MUTED }); else cap(g, 740, y + 24, f + " × 10 s = " + f * 10, { size: 26, anchor: "end", weight: 700, fill: RED }); });
+      if (k === 2) cap(d, 0, 500, "Every frame is stored or rendered. 60 fps doubles the work of 30.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "SAME 16:9 SHAPE, MORE PIXELS");
+      var S = [[1280, 720, GREY], [1920, 1080, INK], [3840, 2160, RED]], u = 640 / 3840;
+      S.slice().reverse().forEach(function (s, i) { var g = d.append("g"); frameRect(g, 0, 56, s[0] * u, s[1] * u, { fill: "none", stroke: s[2], sw: 3 }); fade(g, A(anim, k, 3), i * 400); });
+      S.forEach(function (s, i) { var g = d.append("g"); cap(g, 340, 100 + i * 50, s[0] + "×" + s[1] + " = " + (s[0] * s[1] / 1e6).toFixed(2) + " M px", { size: 24, weight: 700, fill: s[2] }); fade(g, A(anim, k, 3), i * 400); });
+      cap(d, 0, 470, fmtM(3840 * 2160) + " ÷ " + fmtM(1920 * 1080) + " = " + (3840 * 2160 / (1920 * 1080)).toFixed(1) + " times the pixels", { size: 24, weight: 700 });
+      cap(d, 0, 510, "Native capture means 3840×2160 from the start, not scaled up.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "WIDTH DIVIDED BY HEIGHT");
+      var AR = [[16, 9, 0], [9, 16, 380], [1, 1, 540]], hh = 180;
+      AR.forEach(function (a, i) { var w = hh * a[0] / a[1], g = d.append("g"); frameRect(g, a[2], 56, w, hh, { stroke: i === 0 ? RED : INK }); cap(g, a[2], 56 + hh + 34, a[0] + ":" + a[1], { size: 24, weight: 700 }); cap(g, a[2], 56 + hh + 66, "= " + (a[0] / a[1]).toFixed(2), { size: 24 }); fade(g, A(anim, k, 4), i * 350); });
+      cap(d, 0, 400, "3840×2160 is 16:9. Turn it 90° for a vertical 2160×3840:", { size: 24, weight: 700 }); cap(d, 0, 436, "same " + fmtM(3840 * 2160) + " pixels, aspect " + (2160 / 3840).toFixed(2) + ".", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 480, "A landscape film and a vertical clip are two renders, not one crop.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Frame rate: how many frames each second. Film often uses 24 or 30; games 60.", "Frame count is rate × duration: 30 fps for 10 s is 300 frames.", "Resolution is the frame's size in pixels. Doubling width and height gives 4× the pixels.", "Aspect ratio is width ÷ height. 16:9 is 1.78; a vertical clip is 0.56."][k]);
+  }
+
+  /* ---------- 7. cut and transition, b-roll, title card ---------- */
+  function renderEdit(el, k, anim) {
+    var svg = svgFor(el, W, H, "A cut, a dissolve and b-roll change the film's length and its evidence differently", "Two clips joined by a hard cut and by a one second dissolve with the total times. Then a main capture with b-roll laid over part of it. Then a title card and its share of the film.");
+    var ey = base(svg, [{ id: "cut", s: 1 }, { id: "broll", s: 2 }, { id: "card", s: 3 }], k, anim, ["Cut", "jumps to the next shot"], ["Transition", "overlaps two shots"]);
+    var d = svg.append("g"), u = 64;
+    function blk(g, x, y, w, c, txt_, tc) { g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", 48).attr("fill", c); if (txt_) cap(g, x + 10, y + 33, txt_, { size: 24, weight: 700, fill: tc || "#FFFFFF" }); }
+    if (k === 1) {
+      lab(d, 0, 30, "TWO 5 S CLIPS, JOINED TWO WAYS");
+      var g1 = d.append("g"); cap(g1, 0, 90, "hard cut", { size: 24, weight: 700 }); blk(g1, 0, 106, 5 * u, INK, "A  5 s"); blk(g1, 5 * u, 106, 5 * u, "#6B6B6B", "B  5 s"); cap(g1, 0, 190, "total " + (5 + 5) + ".0 s", { size: 26, weight: 700 });
+      var g2 = d.append("g"); cap(g2, 0, 260, "dissolve, 1 s overlap", { size: 24, weight: 700 }); blk(g2, 0, 276, 5 * u, INK, "A  5 s"); blk(g2, 4 * u, 324, 5 * u, "#6B6B6B", "B  5 s"); g2.append("rect").attr("x", 4 * u).attr("y", 276).attr("width", u).attr("height", 96).attr("fill", RED).attr("fill-opacity", 0.35); cap(g2, 0, 410, "total " + (5 + 5 - 1) + ".0 s", { size: 26, weight: 700, fill: RED }); cap(g2, 4 * u + u / 2, 270, "1 s", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      fade(g1, A(anim, k, 1), 0); fade(g2, A(anim, k, 1), 600);
+      cap(d, 0, 470, "A dissolve eats its overlap: 5 + 5 − 1 = 9 s.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "MAIN CAPTURE WITH B-ROLL, 10 S");
+      var rows = [["b-roll track", 76], ["capture track", 181], ["voice-over", 286]];
+      rows.forEach(function (r) { cap(d, 0, r[1], r[0], { size: 24, weight: 700, fill: MUTED }); });
+      d.append("rect").attr("x", 0).attr("y", 190).attr("width", 10 * u).attr("height", 48).attr("fill", INK); cap(d, 10, 223, "real capture, 10 s", { size: 24, weight: 700, fill: "#FFFFFF" });
+      var br = d.append("rect").attr("x", 3 * u).attr("y", 85).attr("width", 3 * u).attr("height", 48).attr("fill", RED); cap(d, 3 * u + 10, 118, "b-roll 3 s", { size: 24, weight: 700, fill: "#FFFFFF" });
+      d.append("rect").attr("x", 0).attr("y", 295).attr("width", 10 * u).attr("height", 48).attr("fill", "#C4C4C4"); cap(d, 10, 328, "narration, unbroken", { size: 24, weight: 700 });
+      if (A(anim, k, 2)) br.attr("y", 30).transition().duration(800).attr("y", 85);
+      cap(d, 0, 400, "total still " + 10 + ".0 s; b-roll covers 3 s of it.", { size: 24, weight: 700 }); cap(d, 0, 440, "The claim is carried by the capture; b-roll only decorates it.", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 490, "Label constructed b-roll as constructed.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "A TITLE CARD AND ITS SHARE OF THE FILM");
+      frameRect(d, 0, 56, 480, 270, { fill: INK, stroke: INK }); cap(d, 240, 170, "Walker Jumpman", { size: 28, anchor: "middle", weight: 700, fill: "#FFFFFF" }); cap(d, 240, 214, "a walkthrough", { size: 24, anchor: "middle", fill: "#FFFFFF" }); d.append("rect").attr("x", 200).attr("y", 232).attr("width", 80).attr("height", 6).attr("fill", RED);
+      var cd = BEATS[0][1], g3 = d.append("g"); cap(g3, 510, 140, cd + " s of " + TOTAL + " s", { size: 24, weight: 700 }); cap(g3, 510, 180, "= " + (cd / TOTAL * 100).toFixed(1) + " %", { size: 26, weight: 700, fill: RED }); fade(g3, A(anim, k, 3), 500);
+      var bx = 0; BEATS.forEach(function (b, i) { var w = b[1] / TOTAL * 740; d.append("rect").attr("x", bx).attr("y", 380).attr("width", w - 2).attr("height", 40).attr("fill", i === 0 ? RED : "#C4C4C4"); bx += w; });
+      cap(d, 0, 460, "Each beat of the film as a block: the card is the shortest.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A hard cut keeps each clip whole. A dissolve overlaps, so the film gets shorter.", "B-roll is cut in over the capture. It never replaces the evidence.", "A title card names the film briefly. Here it is " + (BEATS[0][1] / TOTAL * 100).toFixed(0) + "% of the run."][k]);
+  }
+
+  /* ---------- 8. safe margins, captions, decibel, loudness ---------- */
+  function renderSound(el, k, anim) {
+    var svg = svgFor(el, W, H, "Safe margins and captions keep text readable; decibels and loudness keep sound in range", "A frame with a dashed inner safe area, then a caption with its start and end times, then amplitude against decibels, then a loudness scale with a target window.");
+    var ey = base(svg, [{ id: "safe", s: 1 }, { id: "cap", s: 2 }, { id: "db", s: 3 }, { id: "lufs", s: 4 }], k, anim, ["Captions", "text with start and end"], ["Voice-over", "sound you hear"]);
+    var d = svg.append("g"), FW = 600, FH = FW * 9 / 16, sx = FW / 3840;
+    if (k <= 2) {
+      lab(d, 0, 30, k === 1 ? "A 3840×2160 FRAME, 5% SAFE AREA" : "A CAPTION INSIDE THE SAFE AREA");
+      frameRect(d, 0, 50, FW, FH, { stroke: INK, sw: 3 }); var ix = 0.05 * 3840, iy = 0.05 * 2160;
+      var sa = frameRect(d, ix * sx, 50 + iy * sx, FW - 2 * ix * sx, FH - 2 * iy * sx, { fill: "none", stroke: RED, sw: 3, dash: "10 7" }); if (A(anim, k, 1)) sa.attr("stroke-opacity", 0).transition().duration(800).attr("stroke-opacity", 1);
+      if (k === 1) { d.append("rect").attr("x", 8).attr("y", 54).attr("width", 150).attr("height", 9).attr("fill", RED); cap(d, ix * sx + 12, 50 + FH - iy * sx - 14, "Level 1: the first gap", { size: 24, weight: 700 }); cap(d, 0, 430, "5% of 3840 = " + ix + " px at each side", { size: 24, weight: 700 }); cap(d, 0, 466, "5% of 2160 = " + iy + " px at top and bottom", { size: 24, weight: 700 }); cap(d, 0, 506, "Red bar: text in the margin, which may be cropped.", { size: 24, fill: RED, weight: 700 }); }
+      else {
+        var CT = "Walker stands at the first gap.", dur = 3.0; cap(d, ix * sx + 12, 50 + FH - iy * sx - 14, CT, { size: 24, weight: 700, fill: INK });
+        mono(d, 0, 430, "1", { size: 24 }); mono(d, 0, 464, "00:00:01,000 --> 00:00:04,000", { size: 24 }); mono(d, 0, 498, CT, { size: 24 }); cap(d, 0, 540, CT.length + " characters in " + dur.toFixed(1) + " s = " + (CT.length / dur).toFixed(1) + " characters a second", { size: 24, weight: 700, fill: RED });
+      }
+    } else if (k === 3) {
+      lab(d, 0, 30, "AMPLITUDE (0 TO 1) AGAINST DECIBELS");
+      [1, 0.5, 0.25, 0.1, 0.01].forEach(function (a, i) { var y = 56 + i * 76, g = d.append("g"); cap(g, 0, y + 34, a.toString(), { size: 24, weight: 700 }); bar(g, 110, y + 10, a * 360, 36, a === 0.5 ? RED : "#C4C4C4", A(anim, k, 3), i * 250); cap(g, 740, y + 34, (20 * Math.log10(a)).toFixed(2).replace("-", "−") + " dB", { size: 24, weight: 700, anchor: "end", fill: a === 0.5 ? RED : INK }); });
+      cap(d, 0, 470, "dB = 20 × log10(amplitude). Half the amplitude is −6.02 dB.", { size: 24, fill: INK, weight: 700 }); cap(d, 0, 506, "In digital audio, 0 dBFS is the largest value; levels sit below it.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "LOUDNESS OF ONE COURSE FILM");
+      var L0 = -40, sx2 = function (v) { return 20 + (v - L0) * 17; };
+      d.append("rect").attr("x", sx2(-28)).attr("y", 80).attr("width", 10 * 17).attr("height", 70).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 2); d.append("path").attr("d", "M" + sx2(-40) + ",150 H" + sx2(0)).attr("stroke", INK).attr("stroke-width", 2);
+      [-40, -28, -18, 0].forEach(function (v) { cap(d, sx2(v), 190, String(v).replace("-", "−"), { size: 24, anchor: "middle" }); });
+      cap(d, sx2(-23), 72, "target window", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      var mk = d.append("path").attr("d", "M" + sx2(-24.55) + ",150 l-12,-30 h24Z").attr("fill", INK); if (A(anim, k, 4)) mk.attr("transform", "translate(-300,0)").transition().duration(900).attr("transform", "translate(0,0)");
+      cap(d, 0, 250, "integrated −24.55 LUFS: inside −28 to −18", { size: 24, weight: 700 });
+      cap(d, 0, 300, "true peak −2.96 dBTP: under the −1.0 ceiling", { size: 24, weight: 700 }); cap(d, 0, 340, "headroom " + (-1.0 - -2.96).toFixed(2) + " dB", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 400, "Values from the LOUDNESS.md of one course film.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Keep text inside the inner 5%. The outer edge is cropped on some screens.", "A caption is a line of text with a start and an end. Too many characters a second is unreadable.", "A decibel is a ratio on a log scale, so halving the amplitude is about −6 dB.", "Loudness is an average over the film. Check it against a window and a peak ceiling."][k]);
+  }
+
+  /* ---------- 9. what it is not, call to action, claim versus evidence ---------- */
+  function renderHonest(el, k, anim) {
+    var svg = svgFor(el, W, H, "An honest film says what it is not up front, ends on a task, and backs every claim", "A timeline with the disclosure inside the first two beats, then a call to action with a way to check it, then five narration claims each matched to evidence or cut.");
+    var ey = base(svg, [{ id: "isnot", s: 1 }, { id: "cta", s: 2 }, { id: "claim", s: 3 }], k, anim, ["Claim", "what the film says"], ["Evidence", "what backs it, on screen"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "WHERE THE DISCLOSURE SITS");
+      var bx = 0; BEATS.forEach(function (b, i) { var w = b[1] / TOTAL * 740; d.append("rect").attr("x", bx).attr("y", 50).attr("width", w - 3).attr("height", 40).attr("fill", i === 1 ? RED : i === 0 ? INK : "#C4C4C4"); bx += w; });
+      var by = (BEATS[0][1] + BEATS[1][1]); cap(d, 0, 124, "disclosed by " + by + " s of " + TOTAL + " s = " + (by / TOTAL * 100).toFixed(0) + "% of the run", { size: 24, weight: 700, fill: RED });
+      [["IT IS", ["one level", "two gaps, a spike, a flag", "real captured play"], INK], ["IT IS NOT", ["a finished game", "no save, no sound yet", "not tested by players"], RED]].forEach(function (c, i) { var g = d.append("g").attr("transform", "translate(" + i * 380 + ",160)"); box(g, 0, 0, 360, 250, { stroke: c[2], sw: 3 }); lab(g, 16, 40, c[0], { fill: c[2] }); c[1].forEach(function (s, j) { wrap(g, 16, 96 + j * 56, s, 28, { size: 24, lh: 30, fill: INK }); }); fade(g, A(anim, k, 1), 400 + i * 400); });
+      cap(d, 0, 450, "Illustrative: the example game's limits, in plain words.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "YOUR TURN");
+      box(d, 0, 56, 740, 200, { stroke: INK, sw: 3 });
+      wrap(d, 20, 100, "Widen the first gap from 3 m to 4 m. Run the jump test and watch whether Walker still clears it.", 58, { size: 26, lh: 34, fill: INK });
+      var tk = d.append("g"); box(tk, 20, 190, 340, 50, { stroke: RED, sw: 2.5 }); cap(tk, 36, 224, "check: test exits 0", { size: 24, weight: 700, fill: RED }); check(tk, 320, 214, 12, RED);
+      fade(tk, A(anim, k, 2), 600);
+      cap(d, 0, 320, "One task, a number to change, and a way to know it worked.", { size: 24, weight: 700 }); cap(d, 0, 360, "Not “try it yourself!”", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "FIVE NARRATION CLAIMS");
+      var CL = [["“Walker clears gap 1”", "clip run-03, jump test", 1], ["“It runs at 60 fps”", "no measurement on screen", 0], ["“The spike resets him”", "clip run-04, retry", 1], ["“Reaches the flag”", "clip run-05, completion", 1], ["“Players love it”", "no playtest", 0]], ok = d3.sum(CL, function (c) { return c[2]; });
+      CL.forEach(function (c, i) { var y = 54 + i * 70, g = d.append("g"); box(g, 0, y, 740, 58, { stroke: c[2] ? INK : RED, sw: 2 }); cap(g, 14, y + 38, c[0], { size: 24, weight: 700, fill: c[2] ? INK : RED }); cap(g, 340, y + 38, c[1], { size: 24, fill: MUTED }); if (c[2]) check(g, 712, y + 28, 12, RED); else cross(g, 712, y + 28, 10, RED); fade(g, A(anim, k, 3), i * 250); });
+      cap(d, 0, 450, ok + " of " + CL.length + " claims are backed. Cut or prove the other " + (CL.length - ok) + ".", { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Say what the model is not in the first two beats, spoken and on screen.", "End on one task the viewer can do and check. Name the number to change.", "Every claim needs evidence on screen. A claim with none is cut or measured first."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from walkthrough film making", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Real-time capture", "Records the live run as it goes"], ["Render", "Computes each frame offline"]],
+      [["Resolution", "Pixels in one frame"], ["Frame rate", "Frames in one second"]],
+      [["Cut", "Jump straight to the next shot"], ["Transition", "Overlap the two shots"]],
+      [["Storyboard", "Pictures in order"], ["Beat sheet", "Pictures, words and seconds"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(20,0)"), RG = R.append("g").attr("transform", "translate(20,0)");
+      if (i === 0) {
+        var a = ftimes(7, 14); a.forEach(function (v, j) { var on = j / 14 < t; LG.append("rect").attr("x", j * 44).attr("y", 330 - v * 6).attr("width", 32).attr("height", v * 6).attr("fill", INK).attr("opacity", on ? 1 : 0.15); RG.append("rect").attr("x", j * 44).attr("y", 330 - 100).attr("width", 32).attr("height", 100).attr("fill", RED).attr("opacity", on ? 1 : 0.15); });
+        cap(LG, 0, 380, "frame times wobble", { size: 24, fill: MUTED }); cap(RG, 0, 380, "every frame built to order", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var cols = 8, rows = 5; d3.range(cols * rows).forEach(function (j) { var on = j / (cols * rows) < t; LG.append("rect").attr("x", (j % cols) * 60).attr("y", 130 + Math.floor(j / cols) * 36).attr("width", 54).attr("height", 30).attr("fill", INK).attr("opacity", on ? 1 : 0.15); });
+        cap(LG, 0, 380, cols * rows + " cells in one picture", { size: 24, fill: MUTED });
+        d3.range(24).forEach(function (j) { RG.append("path").attr("d", "M" + (j * 25) + ",230 v70").attr("stroke", RED).attr("stroke-width", 4).attr("opacity", j / 24 < t ? 1 : 0.15); }); cap(RG, 0, 380, "24 pictures in one second", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        var u = 56, w1 = t * 5 * u; LG.append("rect").attr("x", 0).attr("y", 170).attr("width", w1).attr("height", 44).attr("fill", INK); LG.append("rect").attr("x", 5 * u).attr("y", 170).attr("width", Math.max(0, (t - 0.5) * 2) * 5 * u).attr("height", 44).attr("fill", "#6B6B6B");
+        RG.append("rect").attr("x", 0).attr("y", 170).attr("width", w1).attr("height", 44).attr("fill", INK); RG.append("rect").attr("x", 4 * u).attr("y", 214).attr("width", Math.max(0, (t - 0.5) * 2) * 5 * u).attr("height", 44).attr("fill", "#6B6B6B"); if (t > 0.6) RG.append("rect").attr("x", 4 * u).attr("y", 170).attr("width", u).attr("height", 88).attr("fill", RED).attr("fill-opacity", 0.35);
+        cap(LG, 0, 380, "5 + 5 = 10 s", { size: 24, fill: MUTED }); cap(RG, 0, 380, "5 + 5 − 1 = 9 s", { size: 24, fill: MUTED });
+      } else {
+        d3.range(3).forEach(function (j) { var on = j / 3 < t; var g = LG.append("g").attr("opacity", on ? 1 : 0.15); frameRect(g, j * 200, 140, 180, 110, { sw: 2.5 }); g.append("path").attr("d", "M" + (j * 200 + 30) + ",230 L" + (j * 200 + 90) + ",170 L" + (j * 200 + 150) + ",230").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+          var g2 = RG.append("g").attr("opacity", on ? 1 : 0.15); g2.append("rect").attr("x", 0).attr("y", 140 + j * 50).attr("width", 18 + j * 30 + 40).attr("height", 36).attr("fill", INK); mono(g2, 18 + j * 30 + 60, 140 + j * 50 + 27, [6, 12, 18][j] + " s", { size: 24 }); });
+        cap(LG, 0, 380, "no words, no seconds", { size: 24, fill: MUTED }); cap(RG, 0, 380, "words and seconds per beat", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the camera smoother", x: "Linear keys at 1.25 m/s; ease only at rest. A sine ease peaks at 1.96 m/s" },
+    { v: "make it sharper", x: "Capture native 3840×2160: 4× the pixels of 1080p, not 720p scaled up" },
+    { v: "the voice runs past the shot", x: "Cut 17 words to 16 so speech (6.7 s) fits the 7 s beat" },
+    { v: "keep text away from the edge", x: "Keep text inside the 5% safe area: 192 px at the sides, 108 px top and bottom" },
+    { v: "make the sound right", x: "Integrated loudness −28 to −18 LUFS and true peak below −1 dBTP" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague film requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 46, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      var vv = 30 / 24, vp = vv * Math.PI / 2, X0 = 40, X1 = 600, Y0 = 250, Y1 = 40, sx = function (t) { return X0 + (X1 - X0) * t / 24; }, sy = function (v) { return Y0 - (Y0 - Y1) * v / 2.2; };
+      p.append("path").attr("d", "M" + X0 + "," + sy(1.5) + " H" + X1).attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "8 6"); cap(p, X1, sy(1.5) - 8, "limit 1.5", { size: 24, anchor: "end", fill: MUTED });
+      var l1 = p.append("path").attr("d", "M" + sx(0) + "," + sy(vv) + " H" + sx(24)).attr("stroke", INK).attr("stroke-width", 5).attr("fill", "none"); var l2 = p.append("path").attr("d", d3.line()(d3.range(0, 24.01, 0.5).map(function (t) { return [sx(t), sy(vp * Math.sin(Math.PI * t / 24))]; }))).attr("stroke", RED).attr("stroke-width", 5).attr("fill", "none");
+      if (anim) { drawIn(l1, 0, 700); drawIn(l2, 400, 1400); } nt = "linear " + vv.toFixed(2) + " m/s; eased peak " + vp.toFixed(2);
+    } else if (k === 2) {
+      var px1 = 1280 * 720, px2 = 1920 * 1080, px3 = 3840 * 2160, sc = 560 / px3; [["720p", px1, GREY], ["1080p", px2, INK], ["4K", px3, RED]].forEach(function (r, i) { cap(p, 14, 52 + i * 88, r[0] + ": " + (r[1] / 1e6).toFixed(2) + " M px", { size: 24 }); bar(p, 14, 64 + i * 88, r[1] * sc, 30, r[2], anim, i * 300); }); nt = "4K has " + (px3 / px2).toFixed(1) + "× the pixels of 1080p";
+    } else if (k === 3) {
+      var words = VB[3][3], sp = words / WPS, bl = 7, fit = Math.floor(bl * WPS), sp2 = fit / WPS; cap(p, 14, 60, "speech now: " + words + " words = " + sp.toFixed(1) + " s", { size: 24 }); bar(p, 14, 74, sp * 70, 36, RED, anim, 0); cap(p, 14, 170, "after the cut: " + fit + " words = " + sp2.toFixed(1) + " s", { size: 24 }); bar(p, 14, 184, sp2 * 70, 36, INK, anim, 400); p.append("path").attr("d", "M" + (14 + bl * 70) + ",64 V234").attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "8 6"); cap(p, 14 + bl * 70 + 8, 260, "7 s beat", { size: 24, fill: MUTED }); nt = "speech must end by the beat does";
+    } else if (k === 4) {
+      var Fw = 400, Fh = Fw * 9 / 16, f0 = 120; var fr = frameRect(p, f0, 24, Fw, Fh, { stroke: INK, sw: 3 }); var s5 = Fw / 3840; frameRect(p, f0 + 192 * s5, 24 + 108 * s5, Fw - 384 * s5, Fh - 216 * s5, { fill: "none", stroke: RED, sw: 3, dash: "10 7" }); cap(p, f0 + 192 * s5 + 12, 24 + Fh - 108 * s5 - 14, "inside the line", { size: 24, weight: 700 }); cap(p, 14, 290, "192 px = " + (192 / 3840 * 100).toFixed(0) + "%, 108 px = " + (108 / 2160 * 100).toFixed(0) + "%", { size: 24 }); nt = "5% on every side";
+    } else {
+      var sx3 = function (v) { return 20 + (v + 40) * 14; }; p.append("rect").attr("x", sx3(-28)).attr("y", 60).attr("width", 140).attr("height", 70).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 2); p.append("path").attr("d", "M" + sx3(-40) + ",130 H" + sx3(0)).attr("stroke", INK).attr("stroke-width", 2); [-40, -28, -18, 0].forEach(function (v) { cap(p, sx3(v), 166, String(v).replace("-", "−"), { size: 24, anchor: "middle" }); }); p.append("path").attr("d", "M" + sx3(-24.55) + ",130 l-12,-30 h24Z").attr("fill", INK); cap(p, 14, 230, "−24.55 LUFS: inside the window", { size: 24, weight: 700 }); cap(p, 14, 270, "true peak −2.96 dBTP: under −1.0", { size: 24, weight: 700 }); nt = "one window, one ceiling";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Does every shot serve the one-sentence idea?",
+    "Does the film say what it is not in its first two beats?",
+    "Was the route measured: speed, turn rate, height?",
+    "Is every clip real capture, or labelled constructed?",
+    "Do the words fit each beat and the sound fit its window?",
+    "Does every claim in the narration have evidence on screen?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you show a walkthrough film", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it smoother”, but “1.25 m/s, linear, under 1.5”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, plan: { steps: 4, render: renderPlan }, words: { steps: 4, render: renderWords },
+    route: { steps: 4, render: renderRoute }, check: { steps: 3, render: renderCheck }, capture: { steps: 4, render: renderCapture },
+    format: { steps: 4, render: renderFormat }, edit: { steps: 3, render: renderEdit }, sound: { steps: 4, render: renderSound },
+    honest: { steps: 3, render: renderHonest }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>
