@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Walker and the toolchain | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Walker and the toolchain">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Walker and the toolchain">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapters 0 and 1</p>
+      <h1 class="t-opening rise g2">Walker and the toolchain</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for getting an agent to change a Godot game, and proving it did</p>
+      <div class="speaker-notes" hidden><p>Deck 2 of the topic order. 26 terms. Tags: in the book text means Chapter 0 or 1 uses and explains it; in the glossary means a glossary row only. The Godot editor itself is the next deck.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Twenty-six terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Twenty-six terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 and 1; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The Walker loop and git">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The four tools</p>
+      <h2 class="t-chart">The Walker loop and git</h2>
+      <div class="diagram build" data-build="loop" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “Four tools, four jobs”; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Commit sizes are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Command line, flags and headless">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Running without a window</p>
+      <h2 class="t-chart">Command line, flags and headless</h2>
+      <div class="diagram build" data-build="cli" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “Godot is also a command-line program”; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>The command shown is the shape used in Chapter 0; exact flags vary by task.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Exit code, hang and timeout">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Running without a window</p>
+      <h2 class="t-chart">Exit code, hang and timeout</h2>
+      <div class="diagram build" data-build="exit" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “The headless test”; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Run lengths are illustrative; the 30 s limit is an example.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Import and cache">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Running without a window</p>
+      <h2 class="t-chart">Import and cache</h2>
+      <div class="diagram build" data-build="imp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, headless runs; Chapter 1, “The project”; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Stale cache shown as a version mismatch.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Permissions and sandbox">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Telling the agent</p>
+      <h2 class="t-chart">Permissions and sandbox</h2>
+      <div class="diagram build" data-build="perm" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “Permissions and sandboxes”; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Six actions, three rule sets. Prompt counts are computed from the table.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Instruction files and checkable instructions">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Telling the agent</p>
+      <h2 class="t-chart">Instruction files and checkable instructions</h2>
+      <div class="diagram build" data-build="instr" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “Instruction files”; Chapter 1; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>The speed 160.0 to 192.0 test and its 2 failures are from Chapter 1.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Frames are not seconds">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Proving it</p>
+      <h2 class="t-chart">Frames are not seconds</h2>
+      <div class="diagram build" data-build="time" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “The time trap”; Chapter 1; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>22.4 s and 0.34 s are from Chapter 1 and the Chapter 0 headless run.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The evidence ladder">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Proving it</p>
+      <h2 class="t-chart">The evidence ladder</h2>
+      <div class="diagram build" data-build="ladder" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “The evidence ladder”; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Six rungs, one per click, from Chapter 0.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Text scenes, binary scenes, regression tests">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Proving it</p>
+      <h2 class="t-chart">Text scenes, binary scenes, regression tests</h2>
+      <div class="diagram build" data-build="scene" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Chapter 0, “Why an agent can work on a Godot project at all: it is all text”.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Claim and evidence, commit and push, hang and failure, deterministic and flaky.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 and 1; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust an agent’s change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust an agent’s change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “The evidence ladder”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Walker and the toolchain (Chapters 0 and 1) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 0 or 1 uses and explains it; gloss = glossary row only */
+  var T = {
+    walker: { n: "Walker", tag: "book", m: "The working method and its files: brief, build, playtest, inspect, revise, export" },
+    repo: { n: "Repository", tag: "book", m: "A project folder with its full version history" },
+    commit: { n: "Commit", tag: "book", m: "A saved snapshot in version history" },
+    diff: { n: "Diff", tag: "book", m: "The exact lines that changed between two versions" },
+    cli: { n: "CLI and shell", tag: "book", m: "You drive a program by typing commands; the shell (zsh, bash) reads them" },
+    flag: { n: "Flag", tag: "book", m: "An option on a command, such as --headless" },
+    headless: { n: "Headless", tag: "book", m: "Running with no window or display" },
+    exit: { n: "Exit code", tag: "book", m: "A number a program returns; 0 means success" },
+    timeout: { n: "Timeout", tag: "book", m: "A limit after which a run is stopped" },
+    hang: { n: "Hang", tag: "book", m: "A run that never finishes" },
+    imp: { n: "Import", tag: "book", m: "Convert a source file into the form the engine uses" },
+    cache: { n: "Cache", tag: "book", m: "Stored results reused to save time, which can also go stale" },
+    perm: { n: "Permission prompt", tag: "book", m: "A question asking you to approve an action" },
+    allow: { n: "Allow rule", tag: "book", m: "A saved permission letting a command run without asking" },
+    sandbox: { n: "Sandbox", tag: "book", m: "A restricted environment where mistakes cannot reach the rest of the machine" },
+    instr: { n: "Instruction file", tag: "book", m: "A standing file of project rules the agent reads, such as CLAUDE.md or AGENTS.md" },
+    spec: { n: "Spec", tag: "gloss", m: "A written description of what must be built" },
+    check: { n: "Checkable instruction", tag: "gloss", m: "An instruction written so a check can pass or fail" },
+    claim: { n: "Claim versus evidence", tag: "book", m: "A claim says what happened; evidence is proof that it did" },
+    regress: { n: "Regression test", tag: "book", m: "A test that guards a behaviour that worked before" },
+    determ: { n: "Deterministic", tag: "book", m: "The same inputs always give the same result" },
+    flaky: { n: "Flaky", tag: "gloss", m: "Passes sometimes and fails sometimes with no change" },
+    gtime: { n: "Game time", tag: "gloss", m: "The simulation's clock, as opposed to the wall clock" },
+    fixfps: { n: "Fixed frame rate", tag: "book", m: "Rendering locked to a set number of frames a second so runs match" },
+    pinned: { n: "Pinned time step", tag: "book", m: "A constant step length forced on the simulation" },
+    textscene: { n: "Text versus binary scene", tag: "book", m: "Readable scene files diff cleanly; opaque ones do not" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+
+  var MAPROWS = [
+    ["The four tools", "Walker, repository, commit, diff", "Who does what, and how changes are remembered"],
+    ["Running without a window", "CLI and shell, flag, headless, exit code, timeout, hang, import, cache", "How a script runs and judges the game"],
+    ["Telling the agent", "instruction file, spec, checkable instruction, permission prompt, allow rule, sandbox", "What the agent knows and what it may touch"],
+    ["Proving it", "claim versus evidence, regression test, deterministic, flaky, game time, fixed frame rate, pinned time step, text versus binary scene", "How you know a change is real"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of toolchain terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "26 terms from Chapters 0 and 1 and the glossary. Every one is about getting an agent to change a Godot game and checking that it did.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. Walker loop, repository, commit, diff ---------- */
+  function renderLoop(el, k, anim) {
+    var svg = svgFor(el, W, H, "Walker is a loop, and git remembers every lap", "Six stages in a ring: brief, build, playtest, inspect, revise, export, with a dot travelling round. Then three commits with the lines each one changed.");
+    var ey = base(svg, [{ id: "walker", s: 1 }, { id: "repo", s: 2 }, { id: "commit", s: 2 }, { id: "diff", s: 3 }], k, anim, ["Commit", "a saved snapshot"], ["Diff", "what changed between two snapshots"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "THE WALKER LOOP");
+      var ST = ["Game brief", "Build", "Playtest", "Inspect", "Revise", "Export"], cx = 330, cy = 270, R = 190;
+      ST.forEach(function (s, i) { var a = -Math.PI / 2 + i * Math.PI / 3, x = cx + R * Math.cos(a), y = cy + R * Math.sin(a); box(d, x - 70, y - 28, 140, 56, { stroke: i === 0 || i === 5 ? RED : INK, sw: 2.5 }); cap(d, x, y + 8, s, { size: 24, anchor: "middle", weight: 700 }); });
+      d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", R).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      var dot = d.append("circle").attr("r", 11).attr("fill", RED), lap = cap(d, cx, cy + 10, "", { size: 26, weight: 700, anchor: "middle" });
+      run(d, 5000, function (t) { var a = -Math.PI / 2 + t * 2 * Math.PI * 1.0; dot.attr("cx", cx + R * Math.cos(a)).attr("cy", cy + R * Math.sin(a)); lap.text(ST[Math.floor(t * 6) % 6]); }, k === 1 && anim);
+    } else {
+      lab(d, 0, 30, k === 2 ? "A REPOSITORY IS ITS COMMITS" : "WHAT EACH COMMIT CHANGED");
+      var CM = [["add score", 12, 0], ["fix speed", 1, 1], ["add test", 20, 2]];
+      CM.forEach(function (c, i) {
+        var y = 80 + i * 130, g = d.append("g"); g.append("circle").attr("cx", 30).attr("cy", y + 30).attr("r", 14).attr("fill", i === 2 ? RED : INK); if (i < 2) g.append("path").attr("d", "M30," + (y + 44) + " V" + (y + 116)).attr("stroke", INK).attr("stroke-width", 3);
+        cap(g, 64, y + 38, "commit " + (i + 1) + ": " + c[0], { size: 26, weight: 700 });
+        if (k >= 3) { bar(g, 64, y + 54, c[1] * 20, 26, "#C4C4C4", A(anim, k, 3), i * 200); cap(g, 64 + c[1] * 20 + 12, y + 76, c[1] + " lines changed", { size: 24 }); }
+        fade(g, A(anim, k, 2), i * 250);
+      });
+      if (k >= 3) cap(d, 0, 500, "Total: " + d3.sum(CM, function (c) { return c[1]; }) + " lines changed across 3 commits (illustrative).", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Walker is the loop you run for every change: brief, build, playtest, inspect, revise, export.", "Git keeps every lap as a commit. \"What changed?\" then has an exact answer.", "A diff lists the lines. It proves what changed, but not that the change works."][k]);
+  }
+
+  /* ---------- 2. CLI, flag, headless ---------- */
+  function renderCli(el, k, anim) {
+    var svg = svgFor(el, W, H, "A command line has a program, flags and an output; headless means no window", "A terminal line with the program and two flags picked out. Then a window with a game beside a run with no window that prints lines instead.");
+    var ey = base(svg, [{ id: "cli", s: 1 }, { id: "flag", s: 2 }, { id: "headless", s: 3 }], k, anim, ["Flag", "changes how one command runs"], ["Headless", "runs with no window at all"]);
+    var d = svg.append("g");
+    if (k <= 2) {
+      lab(d, 0, 30, "ONE TYPED COMMAND");
+      d.append("rect").attr("x", 0.5).attr("y", 60.5).attr("width", 740).attr("height", 90).attr("fill", INK);
+      var parts = [["godot", "#FFFFFF"], [" --headless", k >= 2 ? "#FBE7EA" : "#FFFFFF"], [" --path .", "#FFFFFF"], [" --quit", k >= 2 ? "#FBE7EA" : "#FFFFFF"]];
+      var tx = 20, t = d.append("text").attr("x", 20).attr("y", 118).attr("font-family", MONO).attr("font-size", 28);
+      t.append("tspan").attr("fill", GREY).text("% "); parts.forEach(function (p) { t.append("tspan").attr("fill", p[1]).attr("font-weight", p[1] === "#FBE7EA" ? 700 : 400).text(p[0]); });
+      if (anim && k === 1) t.attr("opacity", 0).transition().duration(600).attr("opacity", 1);
+      cap(d, 20, 190, "program: godot", { size: 24 });
+      if (k >= 2) { cap(d, 20, 230, "flags: --headless and --quit", { size: 24, fill: RED, weight: 700 }); cap(d, 20, 270, "--path . is a flag with a value (the project folder).", { size: 24, fill: MUTED }); }
+      cap(d, 20, 330, "The shell reads the line. The program runs and returns a number.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "WINDOW VERSUS NO WINDOW");
+      box(d, 0, 70, 340, 240, { stroke: INK, sw: 3 }); d.append("circle").attr("cx", 120).attr("cy", 200).attr("r", 30).attr("fill", RED); d.append("rect").attr("x", 240).attr("y", 175).attr("width", 20).attr("height", 70).attr("fill", INK); cap(d, 170, 350, "with a window", { size: 24, anchor: "middle", weight: 700 });
+      box(d, 400, 70, 340, 240, { stroke: GREY, sw: 3 }); var lines = ["start 60 ticks", "ball hits wall: ok", "score = 1: ok", "25 checks, 0 failures"];
+      lines.forEach(function (l, i) { var g = d.append("g"); mono(g, 414, 120 + i * 40, l, { size: 24 }); fade(g, A(anim, k, 3), i * 500); }); cap(d, 570, 350, "headless: text out", { size: 24, anchor: "middle", weight: 700 });
+      cap(d, 0, 430, "A script can read the lines. Nobody has to watch a screen.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A CLI is a program you drive by typing. The shell is the program that reads what you type.", "Flags are options. --headless turns the window off; --quit stops when done.", "No window means a script can run the game, read its output and check the result."][k]);
+  }
+
+  /* ---------- 3. exit code, timeout, hang ---------- */
+  function renderExit(el, k, anim) {
+    var svg = svgFor(el, W, H, "A run ends with an exit code, or never ends and gets stopped by a timeout", "Three runs on a time axis: one finishes with exit code 0, one finishes with code 1, one hangs until a 30 second timeout stops it.");
+    var ey = base(svg, [{ id: "exit", s: 1 }, { id: "hang", s: 2 }, { id: "timeout", s: 3 }], k, anim, ["Hang", "never finishes on its own"], ["Failure", "finishes, and says it went wrong"]);
+    var d = svg.append("g"), RUNS = [["run A", 4, 0, "exit code 0: success"], ["run B", 6, 1, "exit code 1: failure"], ["run C", 60, null, "no exit code"]];
+    var sc = 600 / 30;
+    lab(d, 0, 30, "SECONDS (30 S TIMEOUT)");
+    d.append("path").attr("d", "M130,60 V400").attr("stroke", FAMILIAR).attr("stroke-width", 2); d.append("path").attr("d", "M" + (130 + 30 * sc) + ",60 V400").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6"); if (k >= 3) cap(d, 130 + 30 * sc, 54, "timeout 30 s", { size: 24, fill: RED, weight: 700, anchor: "end" });
+    RUNS.forEach(function (r, i) {
+      if (i + 1 > Math.max(k, 1) && k < 2) return; if (i === 2 && k < 2) return;
+      var y = 90 + i * 110, g = d.append("g"), len = Math.min(r[1], 30) * sc, tot = (r[2] === null && k >= 3) ? 30 * sc : len;
+      cap(g, 0, y + 30, r[0], { size: 24, weight: 700 });
+      var b = bar(g, 130, y + 8, r[2] === null && k < 3 ? 30 * sc : tot, 40, r[2] === 0 ? INK : RED, A(anim, k, i === 2 ? 2 : 1), 0);
+      if (r[2] === null) { g.append("path").attr("d", "M" + (130 + 30 * sc) + "," + (y + 28) + " h30").attr("stroke", RED).attr("stroke-width", 4); cap(g, 130 + 30 * sc + 10, y + 70, "…", { size: 24 }); }
+      cap(g, 130, y + 84, k >= 3 && r[2] === null ? "stopped at 30 s: counts as a failure" : r[3], { size: 24, weight: 700, fill: r[2] === 0 ? INK : RED });
+    });
+    note(svg, ey, ["", "Every finished run returns a number. 0 means success; anything else means something went wrong.", "A hang is a run that never finishes. It returns no number, so a script waiting for one waits for ever.", "A timeout stops it at a set time. Treat the stop as a failure, not as success."][k]);
+  }
+
+  /* ---------- 4. import and cache ---------- */
+  function renderImport(el, k, anim) {
+    var svg = svgFor(el, W, H, "Import makes engine-ready copies; a cache can go stale when the source changes", "A source image becomes an imported copy. Then the source is edited and the copy stays old until it is imported again.");
+    var ey = base(svg, [{ id: "imp", s: 1 }, { id: "cache", s: 2 }], k, anim, ["Import", "convert a source file for the engine"], ["Cache", "a stored result, maybe out of date"]);
+    var d = svg.append("g");
+    lab(d, 0, 30, "SOURCE FILE → IMPORTED COPY");
+    var ver = k >= 2 ? 2 : 1;
+    box(d, 20, 100, 200, 120, { stroke: INK, sw: 3 }); cap(d, 120, 150, "hero.png", { size: 26, weight: 700, anchor: "middle" }); cap(d, 120, 190, "source v" + ver, { size: 24, anchor: "middle", fill: ver === 2 ? RED : INK });
+    d.append("path").attr("d", "M230,160 H450").attr("stroke", INK).attr("stroke-width", 4); cap(d, 340, 140, "import", { size: 24, anchor: "middle", weight: 700 });
+    var stale = k === 2; box(d, 460, 100, 260, 120, { stroke: stale ? RED : INK, sw: 3 }); cap(d, 590, 150, "imported copy", { size: 26, weight: 700, anchor: "middle" }); cap(d, 590, 190, "made from v" + (k >= 3 ? 2 : 1), { size: 24, anchor: "middle", fill: stale ? RED : INK });
+    if (stale) { cap(d, 590, 260, "STALE: the engine still shows v1", { size: 24, anchor: "middle", weight: 700, fill: RED }); }
+    if (k >= 3) cap(d, 590, 260, "fresh again", { size: 24, anchor: "middle", weight: 700 });
+    cap(d, 0, 400, k === 0 ? "" : k === 1 ? "Imported once: the copy matches the source." : k === 2 ? "Source edited, copy not yet re-imported: the two disagree." : "Re-import: the copy matches again.", { size: 26, weight: 700 });
+    cap(d, 0, 450, "In a headless run, import first, or the engine uses whatever the cache holds.", { size: 24, fill: MUTED });
+    note(svg, ey, ["", "Import turns a PNG, a sound or a model into the form the engine runs.", "A cache saves time by reusing a result. If the source changes and the cache does not, you are looking at an old version.", "Re-importing refreshes it. Stale caches cause bugs that look like your change did nothing."][k > 2 ? 2 : k]);
+  }
+
+  /* ---------- 5. permissions ---------- */
+  var ACT = [["read a script", "ask", "ok"], ["edit logic/ball.gd", "ask", "ask"], ["run the headless test", "ask", "ok"], ["delete ~/Documents", "ask", "block"], ["run the headless test", "ask", "ok"], ["write outside the project", "ask", "block"]];
+  function renderPerm(el, k, anim) {
+    var svg = svgFor(el, W, H, "Prompts, allow rules and a sandbox decide what the agent may do", "Six actions an agent tries. With prompts every one asks. With an allow rule the test runs without asking. With a sandbox, actions outside the project are blocked.");
+    var ey = base(svg, [{ id: "perm", s: 1 }, { id: "allow", s: 2 }, { id: "sandbox", s: 3 }], k, anim, ["Allow rule", "pre-approved command"], ["Sandbox", "walls the agent cannot cross"]);
+    var d = svg.append("g");
+    lab(d, 0, 30, k === 1 ? "EVERY ACTION ASKS" : k === 2 ? "WITH AN ALLOW RULE FOR THE TEST" : "WITH A SANDBOX AROUND THE PROJECT");
+    var asked = 0;
+    ACT.forEach(function (a, i) {
+      var res = k <= 1 ? "ask" : (k === 2 ? (i === 2 || i === 4 || i === 0 ? "ok" : "ask") : a[2]);
+      if (k >= 1 && res === "ask") asked++;
+      var y = 60 + i * 66, g = d.append("g"); box(g, 0, y, 740, 54, { stroke: FAMILIAR }); mono(g, 12, y + 36, a[0], { size: 24 });
+      var lbl = k === 0 ? "" : res === "ok" ? "runs" : res === "ask" ? "asks you" : "blocked";
+      cap(g, 730, y + 36, lbl, { size: 24, weight: 700, anchor: "end", fill: res === "block" ? RED : res === "ok" ? INK : MUTED });
+      fade(g, k >= 1 && A(anim, k, k), i * 120);
+    });
+    if (k >= 1) cap(d, 0, 500, "Prompts for you: " + asked + " of " + ACT.length, { size: 26, weight: 700, fill: RED });
+    note(svg, ey, ["", "At first every action asks. Safe, but you click six times, and tired people click yes.", "An allow rule lets the one command you trust run unasked. Prompts drop from 6 to 3.", "A sandbox goes further: deleting the Documents folder, or writing outside the project, is blocked outright."][k]);
+  }
+
+  /* ---------- 6. instruction file, spec, checkable instruction ---------- */
+  function renderInstr(el, k, anim) {
+    var svg = svgFor(el, W, H, "An instruction file tells the agent the rules; a checkable instruction can be proved", "A list of project rules the agent reads first. Then two instructions, one vague and one checkable, each run against a test.");
+    var ey = base(svg, [{ id: "instr", s: 1 }, { id: "spec", s: 2 }, { id: "check", s: 2 }], k, anim, ["Checkable", "a check can pass or fail"], ["Vague", "no check can decide"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "CLAUDE.MD (THE AGENT READS IT FIRST)");
+      box(d, 0, 60, 740, 330, { stroke: INK, sw: 3 });
+      ["Run Godot with --headless, never with a window.", "Pin the time step with --fixed-fps 60 in tests.", "Do not change tuning.gd without asking.", "Report the exit code of every run."].forEach(function (l, i) { var g = d.append("g"); mono(g, 20, 110 + i * 70, "- " + l, { size: 24 }); fade(g, k === 1 && anim, i * 350); });
+    } else {
+      lab(d, 0, 30, "TWO WAYS TO ASK");
+      [["make the ball faster", false, "no check can decide"], ["change speed 160.0 to 192.0 and pass the mechanics test", true, "test: 25 checks, 2 fail"]].forEach(function (r, i) {
+        var y = 70 + i * 190, g = d.append("g"); box(g, 0, y, 740, 160, { stroke: r[1] ? INK : RED, sw: 3 }); wrap(g, 16, y + 40, "“" + r[0] + "”", 46, { size: 26, lh: 32, weight: 700, fill: r[1] ? INK : RED });
+        cap(g, 16, y + 130, r[1] ? "→ result: " + r[2] : "→ " + r[2], { size: 24, weight: 700, fill: r[1] ? INK : RED }); fade(g, A(anim, k, 2), i * 500);
+      });
+    }
+    note(svg, ey, ["", "The instruction file holds standing rules, so you do not repeat them. Keep them short and checkable.", "A spec says what must be built. \"Faster\" has no check. A number and a test do. The second run shows 2 of 25 checks fail: the answer is real."][k]);
+  }
+
+  /* ---------- 7. time trap ---------- */
+  function renderTime(el, k, anim) {
+    var svg = svgFor(el, W, H, "Frames are not seconds: a pinned time step makes runs match and fast", "Two balls moving at 30 and 144 frames a second. With delta both go the same distance in a second. Then a real-time test run against one with a fixed frame rate.");
+    var ey = base(svg, [{ id: "gtime", s: 1 }, { id: "fixfps", s: 2 }, { id: "pinned", s: 2 }], k, anim, ["Frame", "one image drawn"], ["Second", "one unit of game time"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "DISTANCE IN ONE SECOND (SPEED 100 PX/S)");
+      [30, 144].forEach(function (fps, i) { var y = 90 + i * 150, g = d.append("g"); cap(g, 0, y, fps + " frames a second", { size: 24, weight: 700 });
+        var perFrame = 100 / fps, dist = perFrame * fps; bar(g, 0, y + 14, dist * 6, 40, INK, k === 1 && anim, i * 300); cap(g, dist * 6 + 12, y + 46, dist.toFixed(0) + " px", { size: 24, weight: 700 }); cap(g, 0, y + 90, "uses delta = " + (1000 / fps).toFixed(1) + " ms per frame", { size: 24, fill: MUTED }); });
+      cap(d, 0, 450, "Without delta the 144 fps ball would go " + (144 / 30).toFixed(1) + " times as far.", { size: 24, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "TIME TO RUN THE SAME 25-CHECK TEST (SECONDS)");
+      [["real-time", 22.4, "#C4C4C4"], ["--fixed-fps 60", 0.34, RED]].forEach(function (r, i) { var y = 90 + i * 140, g = d.append("g"); cap(g, 0, y, r[0], { size: 24, weight: 700 }); bar(g, 0, y + 14, Math.max(r[1] / 22.4 * 560, 5), 44, r[2], A(anim, k, 2), i * 400); cap(g, Math.max(r[1] / 22.4 * 560, 5) + 12, y + 48, r[1] + " s", { size: 26, weight: 700 }); });
+      cap(d, 0, 400, "About " + Math.round(22.4 / 0.34) + " times faster, with identical results.", { size: 26, weight: 700, fill: RED }); cap(d, 0, 440, "Numbers from Chapter 1's run.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Motion is measured in seconds, not frames. Using delta keeps a ball's speed the same at any frame rate.", "A fixed frame rate pins the time step. The test then runs the same way every time, and in a third of a second."][k]);
+  }
+
+  /* ---------- 8. evidence ladder ---------- */
+  var RUNG = [["the agent says \"done\"", "a message exists", "anything about the game"], ["a git diff", "which lines changed", "that it works"], ["clean --import and --check-only", "scripts parse", "behaviour is right"], ["headless test passes, step pinned", "the tested state is right", "feel, untested inputs"], ["you played it", "what one person feels", "other people, other machines"], ["exported build runs on the target", "it survives packaging", "that anyone wants it"]];
+  function renderLadder(el, k, anim) {
+    var svg = svgFor(el, W, H, "The evidence ladder: say which rung your claim stands on", "Six rungs from the agent saying done up to a build running on the target machine, each with what it proves and what it does not.");
+    var ey = base(svg, [{ id: "claim", s: 1 }, { id: "determ", s: 4 }, { id: "flaky", s: 4 }, { id: "regress", s: 4 }], k, anim, ["Claim", "someone says it works"], ["Evidence", "you can show that it works"]);
+    var d = svg.append("g");
+    RUNG.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 20 + (5 - i) * 62, g = d.append("g"), cur = i + 1 === k;
+      box(g, 0, y, 740, 52, { stroke: cur ? RED : INK, sw: cur ? 3 : 2 }); cap(g, 14, y + 34, (i + 1) + ". " + r[0], { size: 24, weight: cur ? 700 : 400, fill: cur ? RED : INK });
+      fade(g, cur && anim, 0);
+    });
+    if (k >= 1) { cap(d, 0, 450, "Rung " + k + " proves: " + RUNG[k - 1][1], { size: 24, weight: 700 }); cap(d, 0, 486, "It does not prove: " + RUNG[k - 1][2], { size: 24, weight: 700, fill: RED }); }
+    note(svg, ey, ["", "Rung 1: the agent says done. That proves only that a message exists.", "Rung 2: a git diff. Exactly what changed, not whether it works.", "Rung 3: it imports and parses. The project loads. It still may do the wrong thing.", "Rung 4: a headless test passes with a pinned step. The tested state is right, deterministic and repeatable. A flaky test could not claim this.", "Rung 5: you played it. Real feel, but only one person on one machine.", "Rung 6: the export runs on the target. It survives packaging, which is the last proof."][k]);
+  }
+
+  /* ---------- 9. text vs binary scene ---------- */
+  function renderScene(el, k, anim) {
+    var svg = svgFor(el, W, H, "A text scene shows exactly what changed; a binary scene only says it changed", "Two diffs of the same one-number change: one shows the changed line, the other prints that binary files differ.");
+    var ey = base(svg, [{ id: "textscene", s: 1 }, { id: "regress", s: 2 }], k, anim, ["Text scene", "a diff you can read"], ["Binary scene", "a diff that says nothing"]);
+    var d = svg.append("g");
+    lab(d, 0, 30, "SAME CHANGE: RUN SPEED 160 → 192");
+    box(d, 0, 60, 360, 300, { stroke: INK, sw: 3 }); cap(d, 14, 96, "text (.tscn)", { size: 24, weight: 700 });
+    [["  position = (0, 0)", 0], ["- speed = 160.0", 1], ["+ speed = 192.0", 2], ["  visible = true", 0]].forEach(function (l, i) { var g = d.append("g"); mono(g, 14, 150 + i * 46, l[0], { size: 24, fill: l[1] === 1 ? RED : INK, weight: l[1] ? 700 : 400 }); fade(g, A(anim, k, 1), i * 300); });
+    box(d, 380, 60, 360, 300, { stroke: GREY, sw: 3 }); cap(d, 394, 96, "binary", { size: 24, weight: 700 });
+    var g2 = d.append("g"); mono(g2, 394, 170, "Binary files", { size: 24 }); mono(g2, 394, 216, "differ", { size: 24 }); mono(g2, 394, 290, "which line?", { size: 24, fill: RED, weight: 700 }); fade(g2, A(anim, k, 1), 800);
+    cap(d, 0, 430, "Review: one line in the text version; nothing to review in the other.", { size: 24, weight: 700 });
+    if (k >= 2) cap(d, 0, 470, "A regression test then protects the behaviour you changed.", { size: 24, fill: RED });
+    note(svg, ey, ["", "Godot scenes are text, so an agent can edit them and you can read the diff.", "Add a regression test: after the change, re-run it. If run speed breaks something that worked, a check fails."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the toolchain", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Claim", "Someone says it works"], ["Evidence", "A check shows it works"]],
+      [["Commit", "Saves a snapshot on your machine"], ["Push", "Sends commits to a remote repository"]],
+      [["Hang", "Never finishes"], ["Failure", "Finishes with a bad exit code"]],
+      [["Deterministic", "Same inputs, same result"], ["Flaky", "Same inputs, results vary"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        LG.append("rect").attr("x", 20).attr("y", 200).attr("width", 300).attr("height", 80).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(LG, 170, 250, "“done”", { size: 28, anchor: "middle", weight: 700 });
+        RG.append("rect").attr("x", 20).attr("y", 200).attr("width", 300).attr("height", 80).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); mono(RG, 40, 250, "exit 0, 25/25", { size: 26, weight: 700 }); if (t > 0.4) check(RG, 300, 236, 16, RED);
+      } else if (i === 1) {
+        d3.range(3).forEach(function (j) { LG.append("circle").attr("cx", 50 + j * 70).attr("cy", 250).attr("r", 22).attr("fill", j / 3 < t ? INK : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); RG.append("circle").attr("cx", 50 + j * 70).attr("cy", 250).attr("r", 22).attr("fill", j / 3 < t ? INK : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+        cap(LG, 20, 330, "stays on this machine", { size: 24, fill: MUTED }); RG.append("path").attr("d", "M20,160 h280").attr("stroke", RED).attr("stroke-width", 4); cap(RG, 20, 330, "also reaches the remote", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        LG.append("rect").attr("x", 20).attr("y", 230).attr("width", 300 * t).attr("height", 40).attr("fill", RED); cap(LG, 20, 330, "still running at " + (t * 60).toFixed(0) + " s", { size: 24, fill: MUTED });
+        RG.append("rect").attr("x", 20).attr("y", 230).attr("width", Math.min(120, 300 * t)).attr("height", 40).attr("fill", INK); if (t > 0.4) mono(RG, 150, 258, "exit 1", { size: 26, weight: 700, fill: RED }); cap(RG, 20, 330, "ended, and told you", { size: 24, fill: MUTED });
+      } else {
+        var r = rng(6); d3.range(8).forEach(function (j) { LG.append("circle").attr("cx", 40 + j * 40).attr("cy", 250).attr("r", 14).attr("fill", INK).attr("opacity", j / 8 < t ? 1 : 0.15); RG.append("circle").attr("cx", 40 + j * 40).attr("cy", 250).attr("r", 14).attr("fill", r() < 0.4 ? RED : INK).attr("opacity", j / 8 < t ? 1 : 0.15); });
+        cap(LG, 20, 330, "8 of 8 the same", { size: 24, fill: MUTED }); cap(RG, 20, 330, "some runs fail with no change", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "check it works", x: "Run the headless test with --fixed-fps 60 and accept only exit code 0" },
+    { v: "make sure it doesn't hang", x: "Stop the run after 30 seconds; a timeout counts as a failure" },
+    { v: "keep the agent away from my files", x: "Allow only the test command; block writes outside the project" },
+    { v: "the test is too slow", x: "Pin the time step: 22.4 s real-time becomes 0.34 s" },
+    { v: "make the player faster", x: "Change run speed from 160.0 to 192.0, then run the mechanics test (25 checks)" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests to an agent turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { [["claim", "agent says done", "#C4C4C4", 0.15], ["evidence", "exit code 0, 25 of 25", RED, 0.9]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[1], { size: 24 }); bar(p, 14, 84 + i * 110, 560 * r[3], 40, r[2], anim, i * 400); }); nt = "the second one you can check"; }
+    else if (k === 2) { var sc = 560 / 60; bar(p, 14, 90, 22 * sc, 40, "#C4C4C4", anim, 0); bar(p, 14, 200, 30 * sc, 40, RED, anim, 400); cap(p, 14, 80, "a run that ends at 22 s: passes", { size: 24 }); cap(p, 14, 190, "a hang: stopped at 30 s, fails", { size: 24 }); nt = "the timeout turns waiting into an answer"; }
+    else if (k === 3) { ["read", "edit", "run test", "delete", "outside"].forEach(function (a, i) { var ok = i < 3; var g2 = p.append("g"); cap(g2, 14, 60 + i * 52, a, { size: 24 }); cap(g2, 560, 60 + i * 52, ok ? "allowed" : "blocked", { size: 24, weight: 700, anchor: "end", fill: ok ? INK : RED }); fade(g2, anim, i * 250); }); nt = "3 allowed, 2 blocked"; }
+    else if (k === 4) { var sc2 = 560 / 22.4; bar(p, 14, 90, 22.4 * sc2, 40, "#C4C4C4", anim, 0); bar(p, 14, 200, Math.max(0.34 * sc2, 5), 40, RED, anim, 400); cap(p, 14, 80, "real-time: 22.4 s", { size: 24 }); cap(p, 14, 190, "pinned: 0.34 s", { size: 24 }); nt = "about " + Math.round(22.4 / 0.34) + " times faster"; }
+    else { d3.range(25).forEach(function (j) { var bad = j === 3 || j === 11; var c = p.append("rect").attr("x", 14 + (j % 13) * 46).attr("y", 80 + Math.floor(j / 13) * 70).attr("width", 38).attr("height", 54).attr("fill", bad ? RED : INK); if (anim) c.attr("opacity", 0).transition().delay(j * 60).duration(200).attr("opacity", 1); }); cap(p, 14, 240, "2 of 25 checks fail after the change", { size: 24, weight: 700, fill: RED }); nt = "a one-number change can break two checks"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Did the run end with an exit code, or did a timeout stop it?",
+    "Was it headless, with the time step pinned?",
+    "Did I import first, so the cache is not stale?",
+    "Is the command allowed, and is everything else blocked?",
+    "Is the instruction checkable, with a number and a test?",
+    "Which rung of the evidence ladder am I standing on?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust an agent's change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “check it works”, but “exit code 0 at --fixed-fps 60”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, loop: { steps: 3, render: renderLoop }, cli: { steps: 3, render: renderCli },
+    exit: { steps: 3, render: renderExit }, imp: { steps: 3, render: renderImport }, perm: { steps: 3, render: renderPerm },
+    instr: { steps: 2, render: renderInstr }, time: { steps: 2, render: renderTime }, ladder: { steps: 6, render: renderLadder },
+    scene: { steps: 2, render: renderScene }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

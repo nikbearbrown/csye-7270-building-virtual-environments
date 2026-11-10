@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Godot: the editor, scenes, nodes, signals and movement | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Godot, the editor, scenes, nodes, signals and movement">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Godot: the editor, scenes, nodes, signals and movement">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapters 1 and 4</p>
+      <h1 class="t-opening rise g2">Godot: the editor, scenes, nodes, signals and movement</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for using the Godot editor and building a game from scenes, nodes, signals and bodies</p>
+      <div class="speaker-notes" hidden><p>Deck 2b. 34 terms. Tags: in the book text means Chapter 1, 4 or 15 uses and explains it; in the glossary means a glossary row only; video only means it comes from the Godot editor itself, not the chapters or glossary.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1 and 4; glossary, Engine vocabulary; glossary, Scenes, nodes and signals; glossary, Collision and physics.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The docks: Scene, FileSystem, Inspector, Node">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The editor</p>
+      <h2 class="t-chart">The docks: Scene, FileSystem, Inspector, Node</h2>
+      <div class="diagram build" data-build="tourA" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “Nodes, scenes, and the scene tree”; Chapter 4, “Use It”; glossary, Scenes, nodes and signals; Godot 4.7.2 editor (not defined in the chapters).</p>
+      <div class="speaker-notes" hidden><p>Scene dock, Remote tab and Inspector are in Chapter 1 and 4; the Inspector is also a glossary row. FileSystem dock and Node dock are named by the editor, not the chapters. Mob count: a Mob every 0.5 s (Chapter 4) for 2 s gives 4.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Views, Output, Debugger, Settings, Run">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The editor</p>
+      <h2 class="t-chart">Views, Output, Debugger, Settings, Run</h2>
+      <div class="diagram build" data-build="tourB" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “The project”; Chapter 4, “Autoloads”, “Layers and masks”; Godot 4.7.2 editor (not defined in the chapters).</p>
+      <div class="speaker-notes" hidden><p>The four Project Settings rows come from Chapters 1 and 4: 60 physics ticks, layer 4 Hazard, autoload global, input actions. F5 is used in Chapter 4; Run Current Scene in Chapter 14.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Project, scene, node and script">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Scenes and nodes</p>
+      <h2 class="t-chart">Project, scene, node and script</h2>
+      <div class="diagram build" data-build="proj" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “The project”, “Nodes, scenes, and the scene tree”, “Scripts and the two clocks”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>The three [node] lines are a cut-down version of the main.tscn shape in Chapter 4. 160 px/s is the jumpman speed in Chapter 1.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The scene tree and instances">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Scenes and nodes</p>
+      <h2 class="t-chart">The scene tree and instances</h2>
+      <div class="diagram build" data-build="tree" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Nodes and scenes”, “The scene tree”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Order numbers come from walking the tree. MobTimer 0.5 s and radius 37 are from Chapter 4; the edit to 45 is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Polling, event-driven and signals">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Clocks, input and signals</p>
+      <h2 class="t-chart">Polling, event-driven and signals</h2>
+      <div class="diagram build" data-build="sig" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “Input: actions, not keys”; Chapter 4, “Signals: who tells whom”; glossary, Engine vocabulary; glossary, Scenes, nodes and signals.</p>
+      <div class="speaker-notes" hidden><p>120 ticks = 2 s at 60 a second. The five connections are the ones listed at the bottom of Dodge the Creeps main.tscn in Chapter 4.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The two clocks">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Clocks, input and signals</p>
+      <h2 class="t-chart">The two clocks</h2>
+      <div class="diagram build" data-build="clk" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “Scripts and the two clocks”; Chapter 4, “Two clocks”; glossary, Scenes, nodes and signals.</p>
+      <div class="speaker-notes" hidden><p>Counts are computed: floor(0.25 x fps). Step 3: 4 px per frame against 240 px/s scaled by 1/fps.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Input actions and just-pressed">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Clocks, input and signals</p>
+      <h2 class="t-chart">Input actions and just-pressed</h2>
+      <div class="diagram build" data-build="inp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “Input: actions, not keys”; glossary, Scenes, nodes and signals.</p>
+      <div class="speaker-notes" hidden><p>A press of 30 ticks (0.5 s) is illustrative. Space for jump is from Chapter 1; W and Pad A are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The four collision objects">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Bodies and contact</p>
+      <h2 class="t-chart">The four collision objects</h2>
+      <div class="diagram build" data-build="bod" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Four collision objects”; Chapter 1, “Bodies, shapes, layers”; glossary, Collision and physics; glossary, Game movement and collision.</p>
+      <div class="speaker-notes" hidden><p>Gravity 960 px/s2 is the jumpman tuning in Chapter 1. Bounce 0.6 and the velocity (200, 160) are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Layers, masks and the bitmask">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Bodies and contact</p>
+      <h2 class="t-chart">Layers, masks and the bitmask</h2>
+      <div class="diagram build" data-build="lay" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Layers and masks”; Chapter 1, “Bodies, shapes, layers”; glossary, Collision and physics.</p>
+      <div class="speaker-notes" hidden><p>Detect = (mask AND layer) is not zero. Layer names World 1, Player 2, Hazard 4, Goal 5 follow Chapter 4; the Coin on layer 3 is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Collision shape and area snapshot">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Bodies and contact</p>
+      <h2 class="t-chart">Collision shape and area snapshot</h2>
+      <div class="diagram build" data-build="shp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “The art is not the collider”; Chapter 1, “Areas are snapshots”; glossary, Collision and physics.</p>
+      <div class="speaker-notes" hidden><p>Capsule radius 27 and sprite scale 0.5 are from Chapter 4. The tick rows follow the Chapter 1 bug with contact_settle_ticks = 2.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Group, autoload, resource and export">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Scenes and nodes</p>
+      <h2 class="t-chart">Group, autoload, resource and export</h2>
+      <div class="diagram build" data-build="keep" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Groups”, “Autoloads”; Chapter 1, “Resources”; Chapter 15, “Export presets and export templates”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>call_group and global.gd are from Chapter 4; the Tuning speed 160 to 192 is Chapter 1; export preset and template are Chapter 15.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1 and 4.</p>
+      <div class="speaker-notes" hidden><p>Scene and scene tree, the two clocks, layer and mask, collision shape and sprite.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1 and 4.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a Godot change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a Godot change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1 and 4.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Godot: the editor, scenes, nodes, signals and movement (Chapters 1 and 4) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 1, 4 (or 15 for export) uses and explains it; gloss = glossary row only; video = outside source (the Godot editor itself) */
+  var T = {
+    scenedock: { n: "Scene dock, Remote tab", tag: "book", m: "Lists the scene's nodes; the Remote tab lists the running game's" },
+    filedock: { n: "FileSystem dock", tag: "editor", m: "Lists every file in the project, under res://" },
+    inspector: { n: "Inspector", tag: "gloss", m: "The editor panel for viewing and editing properties" },
+    nodedock: { n: "Node dock", tag: "editor", m: "Shows the selected node's signals and groups" },
+    views: { n: "2D, 3D and Script views", tag: "editor", m: "Tabs along the top: 2D and 3D edit scenes, Script edits code" },
+    outdbg: { n: "Output and Debugger", tag: "editor", m: "Bottom panels: Output shows printed text, Debugger shows errors" },
+    settings: { n: "Project Settings", tag: "book", m: "Project-wide values: physics rate, layer names, input actions, autoloads" },
+    runbtn: { n: "Run and Play buttons", tag: "editor", m: "Run Project (F5) starts the main scene; Run Current Scene starts the open one" },
+    project: { n: "Project", tag: "book", m: "A folder with a project.godot file at its root; res:// means that folder" },
+    scene: { n: "Scene", tag: "book", m: "A saved, reusable tree of nodes: a level, a character, a menu" },
+    node: { n: "Node", tag: "book", m: "The smallest building block: one object doing one job" },
+    script: { n: "Script", tag: "book", m: "Attaches behaviour to a node; GDScript here" },
+    tree: { n: "Scene tree", tag: "book", m: "The live hierarchy of nodes in a running game" },
+    instance: { n: "Instance", tag: "book", m: "One live copy of a saved scene; a change on one instance overrides the template" },
+    process: { n: "_process", tag: "book", m: "Runs once per rendered frame; the rate varies by machine" },
+    physics: { n: "_physics_process", tag: "book", m: "Runs at a fixed rate, 60 times a second by default" },
+    action: { n: "Input action", tag: "book", m: "A named intent such as jump, bound to keys or buttons" },
+    justp: { n: "Just-pressed vs held", tag: "book", m: "Just-pressed is true only on the tick a press began; held stays true while down" },
+    polling: { n: "Polling", tag: "book", m: "Asking every tick whether something has happened" },
+    event: { n: "Event-driven", tag: "gloss", m: "Code runs only when something announces that it happened" },
+    signal: { n: "Signal", tag: "book", m: "A named event a node emits; other nodes connect to it" },
+    group: { n: "Group", tag: "book", m: "A named tag on nodes; one call reaches every node in it" },
+    autoload: { n: "Autoload", tag: "book", m: "A script or scene kept loaded across scene changes" },
+    resource: { n: "Resource", tag: "book", m: "A typed data container nodes share, made by extending Resource" },
+    export: { n: "Export preset, template", tag: "book", m: "A preset is the recipe for one platform; the template is the prebuilt engine it packs your data into" },
+    area: { n: "Area2D", tag: "book", m: "Detects overlaps and can emit signals; never blocks or pushes" },
+    stat: { n: "StaticBody2D", tag: "book", m: "Not moved by physics; others collide with it" },
+    rigid: { n: "RigidBody2D", tag: "book", m: "Simulated physics: you set forces or velocity, the engine moves it" },
+    char: { n: "CharacterBody2D", tag: "book", m: "Moved by your code; move_and_slide() slides it along what it hits" },
+    shape: { n: "Collision shape", tag: "book", m: "The geometry physics uses, separate from the drawn sprite" },
+    layer: { n: "Collision layer", tag: "book", m: "Where an object is: the layers it appears in" },
+    mask: { n: "Collision mask", tag: "book", m: "What an object scans: it detects B only if B is in a layer it scans" },
+    bitmask: { n: "Bitmask", tag: "book", m: "A number whose bits switch layers on or off; layer n has the value 2^(n−1)" },
+    snapshot: { n: "Area snapshot", tag: "book", m: "An Area's overlap list is updated once per physics step, so it can be a tick old" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function chip(g, x, y, w, h, s, o) { o = o || {}; box(g, x, y, w, h, { stroke: o.stroke || INK, sw: o.sw || 2, fill: o.fill || "#FFFFFF" }); return cap(g, x + w / 2, y + h / 2 + 8, s, { size: o.size || 24, anchor: "middle", weight: o.weight || 400, fill: o.color || INK }); }
+  function line(g, x1, y1, x2, y2, c, w, dash) { var p = g.append("path").attr("d", "M" + x1 + "," + y1 + " L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 3).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function clear(g) { g.selectAll("*").remove(); }
+
+  var MAPROWS = [
+    ["The editor", "Scene dock and Remote tab, FileSystem dock, Inspector, Node dock, 2D 3D and Script views, Output and Debugger, Project Settings, Run buttons", "Where you look, and what each part is for"],
+    ["Scenes and nodes", "project, scene, node, script, scene tree, instance, group, autoload, resource, export preset and template", "How a game is built and kept together"],
+    ["Clocks, input and signals", "_process, _physics_process, input action, just-pressed vs held, polling, event-driven, signal", "When code runs and how parts talk"],
+    ["Bodies and contact", "Area2D, StaticBody2D, RigidBody2D, CharacterBody2D, collision shape, layer, mask, bitmask, area snapshot", "What can touch what, and what notices it"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of Godot terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from Chapters 1 and 4, the glossary and the Godot editor. Every one is about building a game in Godot and using the editor to see it.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1030];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 126, row = g.append("g");
+      box(row, 0, y, 1400, 114, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 115).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 12, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 58, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 28, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- the editor mock (Conceptual illustration) ---------- */
+  function eb(g, x, y, w, h, on) { return box(g, x, y, w, h, { stroke: on ? RED : INK, sw: on ? 4 : 2, fill: on ? TINT : "#FFFFFF" }); }
+  function editor(g, S) {
+    var hl = S.hl;
+    box(g, 0, 0, 760, 56, { stroke: INK, sw: 2, fill: SUBTLE });
+    if (hl === "menu") box(g, 4, 6, 100, 44, { stroke: RED, sw: 4, fill: TINT });
+    cap(g, 14, 37, "Project", { size: 24, weight: 700, fill: hl === "menu" ? RED : INK });
+    if (hl === "views") box(g, 140, 4, 250, 48, { stroke: RED, sw: 4, fill: TINT });
+    [["2D", 150, 54], ["3D", 214, 54], ["Script", 278, 100]].forEach(function (t) {
+      var on = S.main === t[0].toLowerCase();
+      box(g, t[1], 8, t[2], 40, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" });
+      cap(g, t[1] + t[2] / 2, 37, t[0], { size: 24, anchor: "middle", weight: on ? 700 : 400 });
+    });
+    if (hl === "run") box(g, 498, 4, 258, 48, { stroke: RED, sw: 4, fill: TINT });
+    [["▶ Project", 506, 128, 1], ["▶ Scene", 644, 104, 2]].forEach(function (b) {
+      var on = S.run === b[3];
+      box(g, b[1], 8, b[2], 40, { stroke: on ? RED : INK, sw: 2, fill: on ? RED : "#FFFFFF" });
+      cap(g, b[1] + b[2] / 2, 37, b[0], { size: 24, anchor: "middle", weight: 700, fill: on ? "#FFFFFF" : INK });
+    });
+    if (S.dlg) {
+      var rows = [["Physics ticks per second", "60"], ["2D Physics layer 4", "Hazard"], ["Autoload", "global"], ["Input Map", "jump: Space"]];
+      box(g, 0, 66, 760, 424, { stroke: INK, sw: 3, fill: "#FFFFFF" });
+      g.append("rect").attr("x", 0.5).attr("y", 66.5).attr("width", 759).attr("height", 46).attr("fill", INK);
+      cap(g, 20, 99, "Project Settings", { size: 24, weight: 700, fill: "#FFFFFF" });
+      rows.forEach(function (r, i) { if (i >= S.dlg) return; var y = 170 + i * 76; cap(g, 24, y, r[0], { size: 28 }); cap(g, 736, y, r[1], { size: 28, anchor: "end", weight: 700, fill: RED }); line(g, 24, y + 22, 736, y + 22, FAMILIAR, 1.5); });
+    }
+    if (!S.dlg) {
+    /* Scene dock */
+    eb(g, 0, 66, 190, 250, hl === "scene");
+    cap(g, 12, 96, "Scene", { size: 24, weight: 700 });
+    [["Local", 8, 66], ["Remote", 80, 102]].forEach(function (t, i) {
+      var on = (i === 1) === !!S.remote;
+      box(g, t[1], 104, t[2], 34, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" });
+      cap(g, t[1] + t[2] / 2, 128, t[0], { size: 24, anchor: "middle", weight: on ? 700 : 400 });
+    });
+    cap(g, 12, 166, "Main", { size: 24 }); cap(g, 30, 196, "Player", { size: 24 }); cap(g, 30, 226, "MobTimer", { size: 24 });
+    var mobs = S.remote ? S.mobs : 0;
+    if (mobs > 0) cap(g, 30, 256, "Mob × " + mobs, { size: 24, fill: RED, weight: 700 });
+    cap(g, 12, 286, (3 + mobs) + " nodes", { size: 24, fill: MUTED });
+    /* FileSystem dock */
+    eb(g, 0, 326, 190, 164, hl === "files");
+    cap(g, 12, 356, "FileSystem", { size: 24, weight: 700 });
+    [["res://", 12], ["main.tscn", 30], ["player.tscn", 30], ["player.gd", 30]].forEach(function (f, i) {
+      var y = 388 + i * 29;
+      if (S.fileHi === i) g.append("rect").attr("x", 6).attr("y", y - 21).attr("width", 178).attr("height", 28).attr("fill", RED).attr("opacity", 0.18);
+      cap(g, f[1], y, f[0], { size: 24, fill: S.fileHi === i ? RED : INK, weight: S.fileHi === i ? 700 : 400 });
+    });
+    /* main screen */
+    eb(g, 200, 66, 300, 424, false);
+    cap(g, 212, 96, S.open || "main.tscn", { size: 24, weight: 700, fill: MUTED });
+    if (S.main === "2d") {
+      d3.range(5).forEach(function (i) { line(g, 250 + i * 50, 110, 250 + i * 50, 490, GRID, 1.5); line(g, 210, 150 + i * 70, 490, 150 + i * 70, GRID, 1.5); });
+      g.append("rect").attr("x", 330).attr("y", 340).attr("width", 40).attr("height", 70).attr("fill", INK);
+      g.append("circle").attr("cx", 440).attr("cy", 380).attr("r", 24).attr("fill", GREY);
+      line(g, 210, 410, 490, 410, INK, 4);
+    } else if (S.main === "3d") {
+      var P = [[270, 250], [390, 250], [390, 370], [270, 370]], Q = P.map(function (p) { return [p[0] + 60, p[1] - 60]; });
+      [P, Q].forEach(function (s) { g.append("path").attr("d", "M" + s.map(function (p) { return p.join(","); }).join(" L") + "Z").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); });
+      for (var i = 0; i < 4; i++) line(g, P[i][0], P[i][1], Q[i][0], Q[i][1], INK, 3);
+    } else if (S.main === "script") {
+      ["extends Area2D", "@export var speed", "func _ready():", "    pass"].forEach(function (s, i) { mono(g, 214, 150 + i * 36, s, { size: 24 }); });
+    }
+    if (S.win) {
+      var w = S.win; box(g, 210, 110, 280, 250, { stroke: INK, sw: 3, fill: "#FFFFFF" });
+      g.append("rect").attr("x", 210.5).attr("y", 110.5).attr("width", 279).attr("height", 40).attr("fill", INK);
+      cap(g, 222, 139, w.title, { size: 24, weight: 700, fill: "#FFFFFF" });
+      g.append("rect").attr("x", 330).attr("y", 270).attr("width", 36).attr("height", 62).attr("fill", INK);
+      w.mobs.forEach(function (m) { g.append("circle").attr("cx", m[0]).attr("cy", m[1]).attr("r", 18).attr("fill", RED); });
+    }
+    /* right dock */
+    eb(g, 510, 66, 250, 424, hl === "right");
+    [["Inspector", 516, 134, "insp"], ["Node", 656, 96, "node"]].forEach(function (t) {
+      var on = S.rtab === t[3];
+      box(g, t[1], 72, t[2], 38, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" });
+      cap(g, t[1] + t[2] / 2, 99, t[0], { size: 24, anchor: "middle", weight: on ? 700 : 400 });
+    });
+    if (S.rtab === "node") {
+      box(g, 516, 120, 110, 34, { stroke: RED, sw: 3, fill: "#FFFFFF" }); cap(g, 571, 144, "Signals", { size: 24, anchor: "middle", weight: 700 });
+      box(g, 632, 120, 118, 34, { stroke: FAMILIAR, sw: 1.5, fill: "#FFFFFF" }); cap(g, 691, 144, "Groups", { size: 24, anchor: "middle" });
+      cap(g, 522, 198, "body_entered", { size: 24 }); cap(g, 540, 230, "→ Main", { size: 24, fill: RED, weight: 700 });
+      cap(g, 522, 276, "hit", { size: 24 }); cap(g, 540, 308, "→ Main", { size: 24, fill: RED, weight: 700 });
+    } else {
+      cap(g, 522, 150, "Player", { size: 24, weight: 700 });
+      [["Speed", (S.speed === undefined ? 160 : S.speed).toFixed(1)], ["Layer", "1"], ["Mask", "1"]].forEach(function (r, i) {
+        var y = 200 + i * 48; line(g, 520, y + 14, 750, y + 14, FAMILIAR, 1.5);
+        cap(g, 522, y, r[0], { size: 24 });
+        cap(g, 748, y, r[1], { size: 24, anchor: "end", weight: 700, fill: (i === 0 && S.speed !== undefined && S.speed !== 160) ? RED : INK });
+      });
+    }
+    }
+    /* bottom panel */
+    eb(g, 0, 498, 760, 78, hl === "bot");
+    [["Output", 8, 100, "out"], ["Debugger", 114, 130, "dbg"]].forEach(function (t) {
+      var on = S.bot === t[3];
+      box(g, t[1], 502, t[2], 34, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" });
+      cap(g, t[1] + t[2] / 2, 526, t[0], { size: 24, anchor: "middle", weight: on ? 700 : 400 });
+    });
+    if (S.botTxt) mono(g, 14, 565, S.botTxt, { size: 24, fill: S.bot === "dbg" ? RED : INK });
+  }
+
+  /* ---------- 1. the docks ---------- */
+  function renderTourA(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Godot editor: Scene dock, FileSystem dock, Inspector and Node dock", "A drawing of the editor with the Scene dock, FileSystem dock, main screen, Inspector and Node dock, bottom panel and top bar. Each step lights one part.");
+    var ey = base(svg, [{ id: "scenedock", s: 1 }, { id: "filedock", s: 2 }, { id: "inspector", s: 3 }, { id: "nodedock", s: 4 }], k, anim, ["Inspector", "properties of the selected node"], ["Node dock", "signals and groups of that node"]);
+    var d = svg.append("g"), nm = 3 + Math.floor(2 / 0.5);
+    function draw(t) {
+      var s = { hl: [null, "scene", "files", "right", "right"][k], main: "2d", bot: "out", speed: k > 3 ? 192 : 160, rtab: "insp" };
+      if (k === 1) { s.remote = t > 0.35; s.mobs = s.remote ? Math.floor((t - 0.35) / 0.65 * 2 / 0.5 + 1e-9) : 0; }
+      if (k === 2) s.fileHi = [1, 3, 2][Math.min(2, Math.floor(t * 3))];
+      if (k === 3) s.speed = t < 0.2 ? 160 : t > 0.8 ? 192 : 160 + 32 * (t - 0.2) / 0.6;
+      if (k === 4) s.rtab = t > 0.3 ? "node" : "insp";
+      clear(d); editor(d, s);
+    }
+    if (k === 0) draw(1); else run(d, [0, 4000, 2500, 3000, 1800][k], draw, anim);
+    note(svg, ey, ["", "Local: 3 nodes. While the game runs, Remote adds a Mob every 0.5 s: " + nm + " nodes after 2 s.", "Open or drag a scene from here: files under res://.", "Edit a value here: Speed 160.0 to 192.0 is one number.", "The Node tab lists the selected node's signals and who they call."][k]);
+  }
+
+  /* ---------- 2. views, bottom panels, settings, run ---------- */
+  function renderTourB(el, k, anim) {
+    var svg = svgFor(el, W, H, "The 2D, 3D and Script views, the bottom panels, Project Settings and the Run buttons", "The editor drawing again. Step 1 switches the main screen between 2D, 3D and Script. Step 2 shows Output then Debugger. Step 3 opens Project Settings. Step 4 runs the main scene, then the open scene.");
+    var ey = base(svg, [{ id: "views", s: 1 }, { id: "outdbg", s: 2 }, { id: "settings", s: 3 }, { id: "runbtn", s: 4 }], k, anim, ["Run Project", "starts the main scene (F5)"], ["Run Current Scene", "starts only the open scene"]);
+    var d = svg.append("g");
+    function draw(t) {
+      var s = { hl: [null, "views", "bot", "menu", "run"][k], main: "2d", bot: "out", botTxt: "player ready: speed 160.0", rtab: "insp", open: k === 4 ? "player.tscn" : "main.tscn" };
+      if (k === 1) s.main = ["2d", "3d", "script"][Math.min(2, Math.floor(t * 3))];
+      if (k === 2) { s.bot = t < 0.5 ? "out" : "dbg"; if (s.bot === "dbg") s.botTxt = "Error: player.gd:12 null instance"; }
+      if (k === 3) s.dlg = Math.min(4, Math.floor(t * 4.9));
+      if (k === 4) { var p1 = t < 0.5; s.run = p1 ? 1 : 2; s.win = { title: p1 ? "main.tscn" : "player.tscn", mobs: p1 ? [[250, 200 + 30 * Math.sin(t * 12)], [330, 240 - 30 * Math.sin(t * 12)], [410, 200 + 30 * Math.cos(t * 12)]] : [] }; }
+      clear(d); editor(d, s);
+    }
+    if (k === 0) draw(1); else run(d, [0, 4500, 3500, 3500, 3500][k], draw, anim);
+    note(svg, ey, ["", "2D and 3D edit scenes. Script edits code. The tab lit last is Script.", "Output shows what the game printed. Debugger shows the error and where.", "Four things the chapters say live here: 60 ticks, layer names, autoload, input actions.", "Project runs main.tscn. Scene runs only the scene you have open, player.tscn."][k]);
+  }
+
+  /* ---------- 3. project, scene, node, script ---------- */
+  function renderProject(el, k, anim) {
+    var svg = svgFor(el, W, H, "A project is a folder, a scene is a saved tree of nodes, a node does one job, a script gives it behaviour", "Step 1 a folder with project.godot. Step 2 scene file lines becoming a tree of three nodes. Step 3 three nodes with one job each. Step 4 a node with and without a script.");
+    var ey = base(svg, [{ id: "project", s: 1 }, { id: "scene", s: 2 }, { id: "node", s: 3 }, { id: "script", s: 4 }], k, anim, ["Scene", "a saved tree of nodes (a file)"], ["Scene tree", "the live tree while running"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "ONE FOLDER IS THE PROJECT");
+      box(d, 0, 50, 460, 330, { stroke: INK, sw: 3 });
+      cap(d, 20, 96, "res://", { size: 28, weight: 700, fill: RED });
+      [["project.godot", true], ["game/main.tscn", false], ["game/player.gd", false], ["art/player.png", false]].forEach(function (f, i) {
+        var g = d.append("g"); mono(g, 50, 150 + i * 56, f[0], { size: 24, weight: f[1] ? 700 : 400, fill: f[1] ? RED : INK }); fade(g, anim, i * 300);
+      });
+      wrap(d, 500, 96, "project.godot sits at the root. That is how Godot knows this folder is the project.", 18, { size: 24, lh: 32, fill: BODY });
+      wrap(d, 500, 280, "In walker-jumpman the project is the godot/ subfolder.", 18, { size: 24, lh: 32, fill: MUTED });
+      line(d, 440, 150, 496, 120, RED, 3);
+    } else if (k === 2) {
+      lab(d, 0, 30, "FILE LINES BECOME NODES");
+      var L = ['[node name="Main" type="Node"]', '[node name="Player" type="Area2D" parent="."]', '[node name="MobTimer" type="Timer" parent="."]'];
+      var cnt = L.filter(function (s) { return s.indexOf("[node") === 0; }).length;
+      L.forEach(function (s, i) { var g = d.append("g"); mono(g, 0, 76 + i * 36, s, { size: 24 }); fade(g, anim, i * 700); });
+      var tg = d.append("g");
+      [["Main", "Node", 280, 230], ["Player", "Area2D", 80, 370], ["MobTimer", "Timer", 400, 370]].forEach(function (n, i) {
+        var g = tg.append("g");
+        if (i > 0) line(g, 380, 300, n[2] + 110, 370, INK, 3);
+        box(g, n[2], n[3], 220, 74, { stroke: INK, sw: 2.5 });
+        cap(g, n[2] + 110, n[3] + 32, n[0], { size: 24, anchor: "middle", weight: 700 }); cap(g, n[2] + 110, n[3] + 62, n[1], { size: 24, anchor: "middle", fill: MUTED });
+        fade(g, anim, i * 700 + 400);
+      });
+      cap(d, 0, 520, cnt + " [node] lines make " + cnt + " nodes. A text file an agent can read.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "ONE NODE, ONE JOB");
+      [["Sprite2D", "draws a picture"], ["CollisionShape2D", "holds a shape"], ["Timer", "counts down"]].forEach(function (n, i) {
+        var g = d.append("g"), y = 60 + i * 130;
+        box(g, 0, y, 740, 100, { stroke: INK, sw: 2.5 }); cap(g, 24, y + 60, n[0], { size: 28, weight: 700, fill: RED }); cap(g, 330, y + 60, n[1], { size: 28 });
+        fade(g, anim, i * 500);
+      });
+      cap(d, 0, 500, "A scene is a saved tree of nodes like these.", { size: 24, fill: MUTED });
+    } else if (k === 4) {
+      lab(d, 0, 30, "A SCRIPT ADDS BEHAVIOUR");
+      var rows = [["no script: the node sits still", 120], ["script: position moves at 160 px/s", 300]];
+      var g1 = d.append("g"); var live = d.append("g");
+      rows.forEach(function (r, i) { cap(g1, 0, r[1] - 34, r[0], { size: 24, weight: 700 }); line(g1, 40, r[1], 640, r[1], FAMILIAR, 4); });
+      function drawS(t) {
+        clear(live); var T_ = 2 * t, x = 160 * T_;
+        live.append("circle").attr("cx", 40).attr("cy", 120).attr("r", 18).attr("fill", GREY);
+        live.append("circle").attr("cx", 40 + x * 1.5).attr("cy", 300).attr("r", 18).attr("fill", RED);
+        cap(live, 0, 400, "t = " + T_.toFixed(1) + " s: x = 160 × t = " + x.toFixed(0) + " px", { size: 24 });
+      }
+      run(live, 2500, drawS, anim);
+    }
+    note(svg, ey, ["", "A project is a folder with project.godot at its root.", "A scene is saved as text. Each [node] line is one node.", "A node does one job. Many nodes make a scene.", "A script attaches behaviour to a node: here, move right at 160 px/s."][k]);
+  }
+
+  /* ---------- 4. scene tree and instances ---------- */
+  function renderTree(el, k, anim) {
+    var svg = svgFor(el, W, H, "The scene tree runs in order; an instance is a live copy of a saved scene", "Step 1 four nodes with the order they process and the order _ready runs. Step 2 a template scene and four instances spawned every half second, then the template is edited and all four change. Step 3 one instance has its own value and keeps it.");
+    var ey = base(svg, [{ id: "tree", s: 1 }, { id: "instance", s: 2 }], k, anim, ["Scene", "a saved tree of nodes (a file)"], ["Scene tree", "the live tree while running"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      var N = [["Main", 0], ["Player", 1], ["HUD", 1], ["MobTimer", 1]];
+      var ready = N.slice(1).concat([N[0]]), rank = {}; ready.forEach(function (n, i) { rank[n[0]] = i + 1; });
+      lab(d, 440, 30, "PROCESS"); lab(d, 600, 30, "_READY");
+      N.forEach(function (n, i) {
+        var y = 60 + i * 110, x = n[1] * 70, g = d.append("g");
+        if (n[1]) line(g, 30, 124, 70, y + 32, INK, 3);
+        box(g, x, y, 250, 64, { stroke: INK, sw: 2.5 }); cap(g, x + 125, y + 41, n[0], { size: 26, anchor: "middle", weight: 700 });
+        var a = cap(d, 470, y + 41, String(i + 1), { size: 28, weight: 700, anchor: "middle" }); fade(a, A(anim, k, 1), i * 400);
+        var b = cap(d, 630, y + 41, String(rank[n[0]]), { size: 28, weight: 700, anchor: "middle", fill: RED }); fade(b, A(anim, k, 1), 1800 + rank[n[0]] * 400);
+      });
+      wrap(d, 0, 520, "Process and draw: top to bottom. _ready: every child before its parent.", 58, { size: 24, lh: 30, fill: MUTED });
+    } else {
+      var live = d.append("g"), over = k === 3;
+      lab(d, 0, 30, "TEMPLATE: MOB.TSCN"); lab(d, 330, 30, "INSTANCES");
+      function drawI(t) {
+        clear(live);
+        var rt = over ? (t < 0.2 ? 37 : t > 0.8 ? 45 : 37 + 8 * (t - 0.2) / 0.6) : (t < 0.6 ? 37 : 37 + 8 * (t - 0.6) / 0.4);
+        var vis = over ? 4 : Math.floor(t / 0.6 * 4 + 1e-9);
+        box(live, 0, 60, 250, 210, { stroke: INK, sw: 2.5 });
+        live.append("circle").attr("cx", 125).attr("cy", 150).attr("r", rt).attr("fill", GREY);
+        cap(live, 125, 250, "radius " + rt.toFixed(0), { size: 24, anchor: "middle", weight: 700 });
+        var follow = 0;
+        d3.range(4).forEach(function (i) {
+          if (i >= vis) return; var ov = over && i === 2, r = ov ? 30 : rt; if (!ov) follow++;
+          var x = 360 + i * 120;
+          live.append("circle").attr("cx", x).attr("cy", 150).attr("r", r).attr("fill", ov ? RED : GREY);
+          cap(live, x, 250, (i * 0.5 + 0.5).toFixed(1) + " s", { size: 24, anchor: "middle", fill: MUTED });
+          if (ov) cap(live, x, 290, "override", { size: 24, anchor: "middle", weight: 700, fill: RED });
+        });
+        if (vis > 0) cap(live, 0, 380, follow + " of " + vis + " instances follow the template (radius " + rt.toFixed(0) + ")" + (over ? "; 1 keeps its own 30." : "."), { size: 24, fill: INK, weight: 700 });
+        else cap(live, 0, 380, "A new Mob is instanced every 0.5 s.", { size: 24, fill: MUTED });
+      }
+      run(live, 4000, drawI, anim);
+    }
+    note(svg, ey, ["", "Nodes process top to bottom. A parent's _ready waits for its children.", "A MobTimer spawns an instance every 0.5 s. Edit mob.tscn and all four change.", "A change made on one instance overrides the template for that instance only."][k]);
+  }
+
+  /* ---------- 5. polling, event-driven, signal ---------- */
+  function renderSignals(el, k, anim) {
+    var svg = svgFor(el, W, H, "Polling asks every tick; an event-driven signal calls once when it happens", "Step 1 a row of 120 physics ticks over 2 seconds, each asking whether the player was hit; one says yes. Step 2 the same time axis with a single call at tick 72. Step 3 five signal connections from Player, three timers and the HUD into Main.");
+    var ey = base(svg, [{ id: "polling", s: 1 }, { id: "event", s: 2 }, { id: "signal", s: 3 }], k, anim, ["Polling", "you ask, every tick"], ["Event-driven", "it tells you, once"]);
+    var d = svg.append("g"), N = 120, EV = 72, PW = 720 / N;
+    function pollRow(g, y, upto) {
+      for (var i = 0; i < upto; i++) g.append("rect").attr("x", i * PW).attr("y", y).attr("width", PW - 1.5).attr("height", 40).attr("fill", i + 1 === EV ? RED : FAMILIAR);
+    }
+    if (k === 1) {
+      lab(d, 0, 30, "EVERY TICK MAIN ASKS: HIT YET?");
+      var g = d.append("g"), tx = d.append("g");
+      cap(d, 0, 150, "0 s", { size: 24, fill: MUTED }); cap(d, 720, 150, "2 s", { size: 24, fill: MUTED, anchor: "end" });
+      function dr(t) { clear(g); clear(tx); var n = Math.floor(t * N + 1e-9); pollRow(g, 60, n); cap(tx, 0, 220, "asks so far: " + n + (n >= EV ? " (1 yes, " + (n - 1) + " no)" : " (all no)"), { size: 26, weight: 700 }); }
+      run(g, 4500, dr, anim);
+      cap(d, 0, 300, "Over 2 s at 60 ticks that is " + N + " questions for one event.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "POLLING: " + N + " ASKS"); pollRow(d.append("g"), 50, N);
+      lab(d, 0, 200, "EVENT-DRIVEN: NOBODY ASKS");
+      line(d, 0, 290, 720, 290, INK, 3); cap(d, 0, 350, "0 s", { size: 24, fill: MUTED }); cap(d, 720, 350, "2 s", { size: 24, fill: MUTED, anchor: "end" });
+      var e = d.append("g");
+      function de(t) { clear(e); var n = Math.floor(t * N + 1e-9); line(e, n * PW, 230, n * PW, 330, GREY, 2); if (n >= EV) { e.append("circle").attr("cx", EV * PW).attr("cy", 290).attr("r", 14).attr("fill", RED); cap(e, EV * PW - 18, 260, "hit", { size: 26, weight: 700, fill: RED, anchor: "end" }); } cap(e, 0, 420, "calls: " + (n >= EV ? 1 : 0) + (n >= EV ? ", at tick " + EV : ""), { size: 26, weight: 700 }); }
+      run(e, 4500, de, anim);
+    } else if (k === 3) {
+      var C = [["Player", "hit"], ["MobTimer", "timeout"], ["ScoreTimer", "timeout"], ["StartTimer", "timeout"], ["HUD", "start_game"]];
+      var pl = d.append("g");
+      cap(d, 520, 126, C.length + " connections", { size: 26, weight: 700, fill: RED });
+      box(d, 520, 150, 240, 230, { stroke: INK, sw: 3 }); cap(d, 640, 196, "Main", { size: 28, weight: 700, anchor: "middle" });
+      ["game_over", "new_game", "3 timer methods"].forEach(function (s, i) { cap(d, 640, 250 + i * 40, s, { size: 24, anchor: "middle", fill: MUTED }); });
+      C.forEach(function (c, i) {
+        var y = 20 + i * 100, g2 = d.append("g");
+        box(g2, 0, y, 330, 76, { stroke: INK, sw: 2.5 }); cap(g2, 16, y + 34, c[0], { size: 24, weight: 700 }); mono(g2, 16, y + 64, c[1], { size: 24, fill: RED });
+        line(g2, 330, y + 38, 520, 265, FAMILIAR, 3);
+        fade(g2, anim, i * 150);
+      });
+      function dp(t) {
+        clear(pl); var s = Math.min(4, Math.floor(t * 5)), f = t * 5 - s, y = 20 + s * 100 + 38;
+        pl.append("circle").attr("cx", 330 + 190 * f).attr("cy", y + (265 - y) * f).attr("r", 10).attr("fill", RED);
+      }
+      if (anim) run(pl, 5000, dp, anim);
+    }
+    note(svg, ey, ["", "Polling asks each tick: 120 asks to catch one event.", "An event-driven design is told once, at tick 72.", "A signal is the event. Each connection says who listens. Nobody reaches into another node."][k]);
+  }
+
+  /* ---------- 6. the two clocks ---------- */
+  function renderClocks(el, k, anim) {
+    var svg = svgFor(el, W, H, "_process runs per frame, _physics_process runs at a fixed 60 a second", "Two machines, one at 30 frames a second and one at 144. Step 1 their _process calls in 0.25 seconds. Step 2 adds the _physics_process calls, 15 on each. Step 3 bars of distance moved in one second with and without scaling by delta.");
+    var ey = base(svg, [{ id: "process", s: 1 }, { id: "physics", s: 2 }], k, anim, ["_process", "once per rendered frame"], ["_physics_process", "fixed rate, 60 a second"]);
+    var d = svg.append("g"), X0 = 230, PX = 510 / 0.25;
+    if (k <= 2) {
+      lab(d, 0, 28, "0.25 S OF GAME TIME", { fill: RED });
+      var M = [{ n: "30 fps machine", fps: 30, y: 70 }, { n: "144 fps machine", fps: 144, y: 290 }], live = d.append("g");
+      function dc(t) {
+        clear(live);
+        M.forEach(function (m) {
+          var np = Math.floor(0.25 * m.fps + 1e-9), nq = Math.floor(0.25 * 60 + 1e-9), tp = k === 1 ? t * 0.25 : 0.25, tq = k === 2 ? t * 0.25 : 0;
+          cap(live, 0, m.y + 24, m.n + ": " + np + " frames" + (k === 2 ? ", " + nq + " physics ticks" : ""), { size: 24, weight: 700 });
+          cap(live, 0, m.y + 78, "_process", { size: 24 });
+          line(live, X0, m.y + 58, X0 + 510, m.y + 58, FAMILIAR, 1.5);
+          for (var i = 1; i <= np; i++) if (i / m.fps <= tp + 1e-9) live.append("rect").attr("x", X0 + i / m.fps * PX - 1.5).attr("y", m.y + 44).attr("width", 3).attr("height", 40).attr("fill", INK);
+          if (k === 2) {
+            cap(live, 0, m.y + 148, "_physics_process", { size: 24 });
+            line(live, X0, m.y + 128, X0 + 510, m.y + 128, FAMILIAR, 1.5);
+            for (var j = 1; j <= nq; j++) if (j / 60 <= tq + 1e-9) live.append("rect").attr("x", X0 + j / 60 * PX - 2).attr("y", m.y + 114).attr("width", 4).attr("height", 40).attr("fill", RED);
+          }
+        });
+      }
+      run(live, 4500, dc, anim);
+    } else {
+      lab(d, 0, 30, "DISTANCE IN ONE SECOND", { fill: RED });
+      var B = [], sp = 240, st = 4;
+      [30, 144].forEach(function (f) { B.push([f + " fps, 4 px per frame", st * f]); });
+      [30, 144].forEach(function (f) { var s = 0; for (var i = 0; i < f; i++) s += sp * (1 / f); B.push([f + " fps, speed × delta", s]); });
+      var mx = d3.max(B, function (b) { return b[1]; });
+      B.forEach(function (b, i) {
+        var y = 70 + i * 100, g = d.append("g"); cap(g, 0, y, b[0], { size: 24 });
+        bar(g, 0, y + 14, b[1] / mx * 520, 36, i < 2 ? RED : INK, anim, i * 300);
+        cap(g, b[1] / mx * 520 + 14, y + 42, b[1].toFixed(0) + " px", { size: 24, weight: 700 });
+      });
+    }
+    note(svg, ey, ["", "30 fps gives 7 frames in 0.25 s, 144 fps gives 36. The count depends on the machine.", "Physics ticks stay at 15 on both. Collision, forces and repeatable movement belong here.", "Per-frame steps give 120 px on one machine and 576 px on the other. Scale by delta, or move in _physics_process."][k]);
+  }
+
+  /* ---------- 7. input actions ---------- */
+  function renderInput(el, k, anim) {
+    var svg = svgFor(el, W, H, "An input action names an intent; just-pressed is true for one tick, held for as long as the button is down", "Step 1 three inputs bound to one action called jump. Step 2 a button held for 30 ticks of 60: held is true on 30, just-pressed on one.");
+    var ey = base(svg, [{ id: "action", s: 1 }, { id: "justp", s: 2 }], k, anim, ["Just-pressed", "true on the first tick only"], ["Held", "true while the button is down"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "KEYS AND BUTTONS");
+      var live = d.append("g");
+      function di(t) {
+        clear(live); var s = Math.min(2, Math.floor(t * 3));
+        ["Space", "W", "Pad A"].forEach(function (n, i) {
+          var on = i === s; chip(live, 0, 70 + i * 110, 170, 70, n, { stroke: on ? RED : INK, fill: on ? RED : "#FFFFFF", color: on ? "#FFFFFF" : INK, weight: 700 });
+          line(live, 170, 105 + i * 110, 340, 215, on ? RED : FAMILIAR, on ? 5 : 3);
+        });
+        chip(live, 340, 170, 190, 90, "jump", { stroke: RED, sw: 4, fill: TINT, weight: 700, color: RED, size: 32 });
+      }
+      run(live, 3000, di, anim);
+      mono(d, 0, 440, 'Input.is_action_just_pressed("jump")', { size: 24 });
+      cap(d, 0, 490, "Code asks about the action, never the key.", { size: 24, fill: MUTED });
+    } else {
+      var X0 = 250, TW = 500 / 60, DN = [12, 42];
+      lab(d, 0, 30, "ONE PRESS, 60 TICKS (1 S)");
+      var ROWS = [["button down", 80], ["is_action_pressed", 210], ["is_action_just_pressed", 340]], lv = d.append("g");
+      function dj(t) {
+        clear(lv); var cur = Math.floor(t * 60 + 1e-9), held = 0, jp = 0;
+        ROWS.forEach(function (r, ri) {
+          cap(lv, 0, r[1] + 20, ri === 0 ? "button down" : ri === 1 ? "held" : "just pressed", { size: 24, weight: 700 });
+          line(lv, X0, r[1] + 52, X0 + 500, r[1] + 52, FAMILIAR, 1.5);
+        });
+        for (var i = 1; i <= 60; i++) {
+          if (i > cur) break; var down = i >= DN[0] && i < DN[1], jpr = i === DN[0];
+          if (down) { held++; lv.append("rect").attr("x", X0 + (i - 1) * TW).attr("y", 80 + 30).attr("width", TW - 1).attr("height", 40).attr("fill", INK); lv.append("rect").attr("x", X0 + (i - 1) * TW).attr("y", 210 + 30).attr("width", TW - 1).attr("height", 40).attr("fill", RED); }
+          if (jpr) { jp++; lv.append("rect").attr("x", X0 + (i - 1) * TW).attr("y", 340 + 30).attr("width", TW - 1).attr("height", 40).attr("fill", RED); }
+        }
+        cap(lv, X0, 210 + 106, "true on " + held + " ticks", { size: 24, fill: MUTED }); cap(lv, X0, 340 + 106, "true on " + jp + " tick", { size: 24, fill: MUTED });
+        cap(lv, 0, 530, "A jump code run on held would fire " + held + " times; on just-pressed, " + jp + ".", { size: 24, weight: 700 });
+      }
+      run(lv, 4500, dj, anim);
+    }
+    note(svg, ey, ["", "An action is a name. Keys, buttons and a pad all bind to it.", "Just-pressed is one tick. Held is every tick the button stays down."][k]);
+  }
+
+  /* ---------- 8. the four collision objects ---------- */
+  function renderBodies(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four collision objects: static, rigid, character and area", "Step 1 a ball lands on a static floor that does not move. Step 2 a rigid ball falls and bounces under simulated gravity. Step 3 a character moved by code slides along a floor. Step 4 a ball passes through an area and fires enter and exit.");
+    var ey = base(svg, [{ id: "stat", s: 1 }, { id: "rigid", s: 2 }, { id: "char", s: 3 }, { id: "area", s: 4 }], k, anim, ["Area2D", "reports overlap, never blocks"], ["CharacterBody2D", "blocks, and you move it"]);
+    var d = svg.append("g"), G = 960, FL = 440, R = 24, dt = 1 / 60, live = d.append("g");
+    function floor_() { d.append("rect").attr("x", 20).attr("y", FL).attr("width", 720).attr("height", 14).attr("fill", INK); }
+    if (k === 1) {
+      lab(d, 0, 30, "SIMULATION", { fill: RED }); floor_();
+      var y0 = 100, tl = Math.sqrt(2 * (FL - R - y0) / G);
+      run(live, 3000, function (t) { clear(live); var T_ = Math.min(t * 1.2, tl), y = y0 + 0.5 * G * T_ * T_; live.append("circle").attr("cx", 380).attr("cy", y).attr("r", R).attr("fill", GREY); cap(live, 0, 520, "floor moved: 0 px.  Ball lands at y = " + (y0 + 0.5 * G * tl * tl).toFixed(0) + " after " + tl.toFixed(2) + " s.", { size: 24, weight: 700 }); }, anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "SIMULATION", { fill: RED }); floor_();
+      var y = 100, v = 0, path = [], bounces = 0;
+      for (var i = 0; i < 240; i++) { v += G * dt; y += v * dt; if (y + R >= FL) { y = FL - R; if (Math.abs(v) > 60) { v = -v * 0.6; bounces++; } else v = 0; } path.push([y, bounces]); }
+      run(live, 4000, function (t) { clear(live); var n = Math.min(239, Math.floor(t * 239)); for (var j = 0; j <= n; j += 8) live.append("circle").attr("cx", 120 + j * 2.4).attr("cy", path[j][0]).attr("r", 5).attr("fill", GREY); live.append("circle").attr("cx", 120 + n * 2.4).attr("cy", path[n][0]).attr("r", R).attr("fill", RED); cap(live, 0, 520, "tick " + n + " of 240: " + path[n][1] + " bounces. Gravity 960 px/s² moves it.", { size: 24, weight: 700 }); }, anim);
+    } else if (k === 3) {
+      lab(d, 0, 30, "SIMULATION", { fill: RED }); floor_(); d.append("rect").attr("x", 600).attr("y", 120).attr("width", 14).attr("height", 320).attr("fill", INK);
+      var px = 60, py = 100, w = 40, h = 50, P = [], onF = -1;
+      for (var s = 0; s < 190; s++) { var nx = px + 200 * dt, ny = py + 160 * dt; nx = Math.min(nx, 600 - w); if (ny + h >= FL) { ny = FL - h; if (onF < 0) onF = s; } px = nx; py = ny; P.push([px, py]); }
+      run(live, 4000, function (t) { clear(live); var n = Math.min(P.length - 1, Math.floor(t * (P.length - 1))); for (var j = 0; j <= n; j += 6) live.append("circle").attr("cx", P[j][0] + w / 2).attr("cy", P[j][1] + h / 2).attr("r", 4).attr("fill", GREY); live.append("rect").attr("x", P[n][0]).attr("y", P[n][1]).attr("width", w).attr("height", h).attr("fill", RED); cap(live, 0, 520, "velocity (200, 160): is_on_floor() true from tick " + onF + ".", { size: 24, weight: 700 }); }, anim);
+    } else if (k === 4) {
+      lab(d, 0, 30, "SIMULATION", { fill: RED });
+      var ax0 = 300, ax1 = 460, bx0 = 40, vx = 240, tIn = (ax0 - R - bx0) / vx, tOut = (ax1 + R - bx0) / vx;
+      d.append("rect").attr("x", ax0).attr("y", 200).attr("width", ax1 - ax0).attr("height", 200).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3);
+      cap(d, (ax0 + ax1) / 2, 180, "Area2D", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      run(live, 4500, function (t) { clear(live); var T_ = t * 2.8, x = bx0 + vx * T_; live.append("circle").attr("cx", x).attr("cy", 300).attr("r", R).attr("fill", GREY); if (T_ >= tIn) cap(live, 0, 470, "body_entered at " + tIn.toFixed(2) + " s", { size: 24, weight: 700 }); if (T_ >= tOut) cap(live, 0, 510, "body_exited at " + tOut.toFixed(2) + " s; speed never changed", { size: 24, weight: 700 }); }, anim);
+    }
+    note(svg, ey, ["", "The static floor moved 0 px. Others collide with it.", "A rigid body falls and bounces: the engine moves it.", "Your code sets velocity, then move_and_slide() slides along the floor.", "The area never stopped the ball. It only reported enter and exit."][k]);
+  }
+
+  /* ---------- 9. layers, masks, bitmask (computed filtering) ---------- */
+  function renderLayers(el, k, anim) {
+    var svg = svgFor(el, W, H, "Collision layer, mask and bitmask: A detects B only if B is in a layer A scans", "Step 1 four objects with their layer values. Step 2 the Player scans layers 1, 4 and 5 and detects three of four objects. Step 3 the bit cells for the mask 25, for layer 4 which is the value 8, and for the wrong value 4.");
+    var ey = base(svg, [{ id: "layer", s: 1 }, { id: "mask", s: 2 }, { id: "bitmask", s: 3 }], k, anim, ["Collision layer", "where I am"], ["Collision mask", "what I scan"]);
+    var d = svg.append("g");
+    var val = function (n) { return Math.pow(2, n - 1); };
+    var OBJ = [{ n: "Floor", l: 1 }, { n: "Coin", l: 3 }, { n: "Spikes", l: 4 }, { n: "Goal", l: 5 }];
+    var maskv = val(1) + val(4) + val(5);
+    if (k <= 2) {
+      var live = d.append("g");
+      cap(d, 0, 28, "layer 2 · value " + val(2), { size: 24, weight: 700 });
+      function dl(t) {
+        clear(live);
+        chip(live, 0, 250, 210, 100, "Player", { stroke: RED, sw: 4, fill: TINT, weight: 700, size: 28, color: RED });
+        if (k === 2) cap(live, 105, 380, "mask " + maskv, { size: 28, anchor: "middle", weight: 700, fill: RED });
+        OBJ.forEach(function (o, i) {
+          var y = 40 + i * 130, hit = (maskv & val(o.l)) !== 0, show = k === 2 && t > (i + 0.5) / 5;
+          box(live, 480, y, 280, 90, { stroke: INK, sw: 2.5, fill: "#FFFFFF" });
+          cap(live, 496, y + 36, o.n, { size: 26, weight: 700 }); cap(live, 496, y + 74, "layer " + o.l + " · value " + val(o.l), { size: 24, fill: MUTED });
+          if (k === 2) {
+            var c = hit ? RED : FAMILIAR;
+            if (t > i / 5) { line(live, 210, 300, 480, y + 45, c, hit ? 5 : 2, hit ? null : "8 6"); }
+            if (show) { if (hit) check(live, 450, y + 45, 14, RED); else cross(live, 450, y + 45, 12, GREY); }
+          }
+        });
+        if (k === 2 && t > 0.95) cap(live, 0, 560, "Player detects " + OBJ.filter(function (o) { return (maskv & val(o.l)) !== 0; }).length + " of " + OBJ.length + ": Coin is on layer 3, which it does not scan.", { size: 24, weight: 700 });
+      }
+      if (k === 1) dl(0); else run(live, 4000, dl, anim);
+      if (k === 1) wrap(live, 0, 470, "Each object appears in a layer. The number counts from 1; the value in code does not.", 28, { size: 24, lh: 30, fill: MUTED });
+    } else {
+      var ROW = [["Player mask", [1, 4, 5], 70], ["Spikes layer", [4], 220], ["collision_layer = 4", [3], 370]];
+      ROW.forEach(function (r, ri) {
+        var g = d.append("g"), sum = d3.sum(r[1], val);
+        cap(g, 0, r[2] + 6, r[0], { size: 24, weight: 700, fill: ri === 2 ? RED : INK });
+        [5, 4, 3, 2, 1].forEach(function (n, ci) {
+          var on = r[1].indexOf(n) >= 0, x = 270 + ci * 96;
+          box(g, x, r[2] - 28, 86, 60, { stroke: on ? (ri === 2 ? RED : INK) : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? (ri === 2 ? RED : INK) : "#FFFFFF" });
+          cap(g, x + 43, r[2] + 12, String(val(n)), { size: 24, anchor: "middle", weight: 700, fill: on ? "#FFFFFF" : GREY });
+          cap(g, x + 43, r[2] + 62, "L" + n, { size: 24, anchor: "middle", fill: MUTED });
+        });
+        cap(g, 0, r[2] + 56, ri === 0 ? r[1].map(val).join(" + ") + " = " + sum : ri === 1 ? "value " + sum : "layer " + (Math.log2(sum) + 1) + ", not 4", { size: 24, fill: ri === 2 ? RED : MUTED, weight: ri === 2 ? 700 : 400 });
+        fade(g, anim, ri * 600);
+      });
+      cap(d, 0, 520, "Layer n has the value 2^(n−1): layer 4 is 8, layer 5 is 16.", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "Each object is in a layer. The editor counts from 1; code uses the value.", "Player scans 1, 4 and 5 (mask 25). It detects what it scans. Spikes' own mask is 0.", "Bits switch layers on. Writing 4 for layer 4 puts the object on layer 3."][k]);
+  }
+
+  /* ---------- 10. collision shape, area snapshot ---------- */
+  function renderShape(el, k, anim) {
+    var svg = svgFor(el, W, H, "The collision shape is not the sprite; an Area's overlap list can be one tick old", "Step 1 a sprite grows while the collision shape stays the same size. Step 2 eight ticks showing the truth, the lagging overlap list, and the list after discarding two ticks.");
+    var ey = base(svg, [{ id: "shape", s: 1 }, { id: "snapshot", s: 2 }], k, anim, ["Collision shape", "what physics uses"], ["Sprite", "what the player sees"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "ILLUSTRATIVE SIZES", { fill: RED });
+      var live = d.append("g"), art = 160, capW = 54;
+      function ds(t) {
+        clear(live); var sc = k === 0 ? 0.5 : (t < 0.2 ? 0.5 : t > 0.8 ? 0.8 : 0.5 + 0.3 * (t - 0.2) / 0.6), w = art * sc;
+        live.append("rect").attr("x", 380 - w / 2).attr("y", 300 - w * 0.6).attr("width", w).attr("height", w * 1.2).attr("fill", GREY).attr("opacity", 0.55);
+        live.append("rect").attr("x", 380 - capW / 2).attr("y", 300 - 68 / 2 - 8).attr("width", capW).attr("height", 68 + 16).attr("rx", 27).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+        cap(live, 380, 440, "sprite " + w.toFixed(0) + " px wide  ·  collision shape " + capW + " px", { size: 24, anchor: "middle", weight: 700 });
+        cap(live, 380, 490, "scale " + sc.toFixed(2) + ": the shape did not follow", { size: 24, anchor: "middle", fill: MUTED });
+      }
+      if (k === 0) ds(0); else run(live, 3500, ds, anim);
+    } else {
+      var X0 = 190, TW = 70, rows = [["truth", 90], ["list says", 220], ["with fix", 350]], reset = 4, fx = 2;
+      lab(d, 0, 30, "TICKS", { fill: RED });
+      var truth = [], list = [], fixed = [];
+      for (var i = 0; i < 8; i++) { truth.push(i < reset); list.push(i === 0 ? true : truth[i - 1]); fixed.push(list[i] && i >= reset + fx); }
+      var lv = d.append("g");
+      function dn(t) {
+        clear(lv); var cur = Math.floor(t * 8 + 1e-9);
+        d3.range(8).forEach(function (i) { cap(lv, X0 + i * TW + TW / 2, 70, String(i), { size: 24, anchor: "middle", fill: MUTED }); });
+        rows.forEach(function (r, ri) {
+          cap(lv, 0, r[1] + 20, r[0], { size: 24, weight: 700 });
+          d3.range(8).forEach(function (i) {
+            if (i >= cur && !(cur === 8)) return; var arr = [truth, list, fixed][ri], on = arr[i], bad = ri > 0 && on && !truth[i] && ri === 1;
+            box(lv, X0 + i * TW, r[1], TW - 6, 44, { stroke: bad ? RED : (on ? INK : FAMILIAR), sw: 2, fill: bad ? RED : (on ? INK : "#FFFFFF") });
+          });
+        });
+        cap(lv, 0, 470, "Tick " + reset + ": the player was reset, but the list still says touching.", { size: 24, weight: 700, fill: RED });
+        cap(lv, 0, 510, "Discard " + fx + " ticks after a reset: false hits " + d3.sum(list, function (v, i) { return v && !truth[i] ? 1 : 0; }) + " become " + d3.sum(fixed, function (v, i) { return v && !truth[i] ? 1 : 0; }) + ".", { size: 24, weight: 700 });
+      }
+      run(lv, 4500, function (t) { dn(Math.min(0.9999, t) + (t >= 1 ? 1 : 0)); }, anim);
+      cap(d, 0, 560, "Dark cell: touching. Red cell: touching reported, but untrue.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Swap the art and the collision shape stays put. Two separate numbers.", "The overlap list is a snapshot from before the physics step. After a teleport it lags."][k]);
+  }
+
+  /* ---------- 11. group, autoload, resource, export ---------- */
+  function renderKeep(el, k, anim) {
+    var svg = svgFor(el, W, H, "A group reaches many nodes, an autoload survives scene changes, a resource is shared data, an export packs the game", "Step 1 five of eight nodes in the group mobs vanish after one call. Step 2 three scenes in turn while a global autoload keeps its score. Step 3 one shared resource changed from 160 to 192 while a test with its own literal 160 disagrees. Step 4 an export preset, a template and the project combine into an exported game.");
+    var ey = base(svg, [{ id: "group", s: 1 }, { id: "autoload", s: 2 }, { id: "resource", s: 3 }, { id: "export", s: 4 }], k, anim, ["Resource", "data many nodes read"], ["Autoload", "a node kept across scenes"]);
+    var d = svg.append("g"), live = d.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "ONE CALL");
+      mono(d, 0, 76, 'get_tree().call_group("mobs", "queue_free")', { size: 24 });
+      var NS = d3.range(8).map(function (i) { return { x: 70 + (i % 4) * 190, y: 190 + Math.floor(i / 4) * 130, mob: i >= 3 }; });
+      run(live, 3500, function (t) {
+        clear(live); var f = Math.max(0, (t - 0.45) / 0.45), gone = f > 0 ? Math.floor(f * 5 + 1e-9) : 0; if (f >= 1) gone = 5; var mi = 0;
+        NS.forEach(function (n) { var vis = true; if (n.mob) { mi++; vis = mi > gone; } if (vis) live.append("circle").attr("cx", n.x).attr("cy", n.y).attr("r", 40).attr("fill", n.mob ? RED : INK); });
+        cap(live, 0, 420, "nodes in the tree: " + (8 - gone), { size: 26, weight: 700 }); cap(live, 0, 470, "red = in group mobs (5)   ·   dark = not in it (3)", { size: 24, fill: MUTED });
+      }, anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "THREE SCENES, ONE AUTOLOAD");
+      var SC = [["menu.tscn", 0], ["level1.tscn", 5], ["level2.tscn", 7]], acc = 0, AUT = SC.map(function (s) { acc += s[1]; return acc; });
+      run(live, 4500, function (t) {
+        clear(live); var n = Math.min(3, Math.floor(t * 3 + 1e-9) + (t >= 1 ? 0 : 1)); if (t >= 1) n = 3;
+        SC.forEach(function (s, i) {
+          if (i >= n) return; var x = i * 250;
+          chip(live, x, 70, 230, 56, s[0], { weight: 700 });
+          chip(live, x, 150, 230, 70, "scene var " + s[1], { stroke: GREY });
+          chip(live, x, 250, 230, 70, "autoload " + AUT[i], { stroke: RED, sw: 3, fill: TINT, weight: 700, color: RED });
+        });
+        box(live, 0, 360, 730, 56, { stroke: INK, sw: 3, fill: INK }); cap(live, 365, 397, "global.gd stays loaded the whole time", { size: 24, anchor: "middle", weight: 700, fill: "#FFFFFF" });
+        if (n >= 3) cap(live, 0, 480, "Scene variables reset on each change. The autoload kept " + AUT[2] + ".", { size: 24, weight: 700 });
+      }, anim);
+      cap(d, 0, 530, "Illustrative scores.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "ONE RESOURCE, SHARED");
+      run(live, 4000, function (t) {
+        clear(live); var sp = t < 0.3 ? 160 : t > 0.7 ? 192 : 160 + 32 * (t - 0.3) / 0.4, ch = Math.abs(sp - 160) > 0.5;
+        chip(live, 220, 60, 300, 100, "Tuning.speed " + sp.toFixed(0), { stroke: RED, sw: 4, fill: TINT, weight: 700, color: RED, size: 28 });
+        [["Player", 0, true], ["HUD", 260, true], ["Test", 520, false]].forEach(function (r) {
+          line(live, 370, 160, r[1] + 105, 270, r[2] ? INK : RED, r[2] ? 3 : 3, r[2] ? null : "8 6");
+          box(live, r[1], 270, 210, 110, { stroke: r[2] ? INK : RED, sw: 2.5 });
+          cap(live, r[1] + 105, 312, r[0], { size: 24, anchor: "middle", weight: 700 });
+          cap(live, r[1] + 105, 358, r[2] ? "reads " + sp.toFixed(0) : "literal 160", { size: 24, anchor: "middle", fill: r[2] ? INK : RED, weight: 700 });
+        });
+        if (t > 0.7) cap(live, 0, 450, "Player and HUD now read 192. The test still checks 160.", { size: 24, weight: 700, fill: RED });
+      }, anim);
+    } else if (k === 4) {
+      lab(d, 0, 30, "WHAT EXPORT COMBINES");
+      var parts = [["Preset", "files, output, options", 0], ["Template", "engine, no editor", 260], ["Project", "scenes, scripts, art", 520]];
+      parts.forEach(function (p, i) { var g = live.append("g"); chip(g, p[2], 70, 230, 70, p[0], { weight: 700, size: 26 }); cap(g, p[2] + 115, 176, p[1], { size: 24, anchor: "middle", fill: MUTED }); fade(g, anim, i * 450); line(g, p[2] + 115, 190, 380, 280, INK, 3); });
+      var res = live.append("g"); chip(res, 215, 280, 300, 90, "Exported game", { stroke: RED, sw: 4, fill: TINT, weight: 700, color: RED, size: 28 }); fade(res, anim, 1600);
+      cap(d, 0, 440, "Templates are named for the exact engine version: 4.7.2.stable.", { size: 24, weight: 700 });
+      cap(d, 0, 480, "Install them from Editor → Manage Export Templates.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "One call_group reaches all 5 mobs. Anything not in a group is untouched.", "Scene change deletes the scene. The autoload is still there with its value.", "Change the resource once and every reader of it changes. A typed-in copy does not.", "Preset: the recipe. Template: the engine to pack into. Both must match your engine."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from Godot", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Scene", "A saved tree of nodes, in a file"], ["Scene tree", "The live tree while the game runs"]],
+      [["_process", "Once per frame; the rate varies"], ["_physics_process", "Fixed rate, 60 a second"]],
+      [["Collision layer", "Where an object is"], ["Collision mask", "What an object scans for"]],
+      [["Collision shape", "What physics uses"], ["Sprite", "What the player sees"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    var jit = []; (function () { var r = rng(3), t0 = 0; while (true) { t0 += (1 / 30) * (0.7 + 0.6 * r()); if (t0 > 0.25) break; jit.push(t0); } })();
+    function draw(i, t) {
+      clear(L); clear(R); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        LG.append("rect").attr("x", 20).attr("y", 200).attr("width", 60).attr("height", 60).attr("fill", INK); cap(LG, 20, 300, "main.tscn: 1 node", { size: 24, fill: MUTED });
+        var tot = 1 + 7 + 2 + 1 + 1 + 1, n = Math.max(1, Math.round(t * tot));
+        d3.range(n).forEach(function (j) { RG.append("rect").attr("x", 20 + (j % 5) * 70).attr("y", 150 + Math.floor(j / 5) * 70).attr("width", 56).attr("height", 56).attr("fill", j === 0 ? INK : GREY); });
+        cap(RG, 20, 400, "running: at least " + tot + " nodes", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var PXs = 560 / 0.25; line(LG, 20, 260, 580, 260, FAMILIAR, 2); line(RG, 20, 260, 580, 260, FAMILIAR, 2);
+        jit.forEach(function (tt) { if (tt <= t * 0.25) LG.append("rect").attr("x", 20 + tt * PXs - 2).attr("y", 230).attr("width", 4).attr("height", 60).attr("fill", INK); });
+        d3.range(1, 16).forEach(function (j) { if (j / 60 <= t * 0.25) RG.append("rect").attr("x", 20 + j / 60 * PXs - 2).attr("y", 230).attr("width", 4).attr("height", 60).attr("fill", RED); });
+        cap(LG, 20, 340, jit.length + " calls, uneven gaps", { size: 24, fill: MUTED }); cap(RG, 20, 340, "15 calls, equal gaps", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        chip(LG, 20, 190, 200, 80, "Player", { stroke: INK, sw: 3, weight: 700 }); chip(LG, 330, 205, 240, 50, "layer 2", { stroke: RED, sw: 3, fill: TINT, color: RED, weight: 700 });
+        line(LG, 220, 230, 330, 230, RED, 4 * Math.min(1, t * 2) + 0.01);
+        chip(RG, 20, 190, 200, 80, "Player", { stroke: INK, sw: 3, weight: 700 });
+        [1, 4, 5].forEach(function (n, j) { if (t > j / 3) { chip(RG, 330, 130 + j * 70, 240, 50, "scans layer " + n, { stroke: RED, sw: 3, fill: TINT, color: RED, weight: 700 }); line(RG, 220, 230, 330, 155 + j * 70, RED, 3); } });
+        cap(LG, 20, 340, "labels the object", { size: 24, fill: MUTED }); cap(RG, 20, 400, "decides what it notices", { size: 24, fill: MUTED });
+      } else {
+        var sc = 0.5 + 0.3 * Math.min(1, t);
+        LG.append("rect").attr("x", 200).attr("y", 190).attr("width", 54).attr("height", 84).attr("rx", 27).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+        cap(LG, 20, 340, "54 px wide, unchanged", { size: 24, fill: MUTED });
+        RG.append("rect").attr("x", 227 - 160 * sc / 2).attr("y", 232 - 160 * sc * 0.6).attr("width", 160 * sc).attr("height", 160 * sc * 1.2).attr("fill", GREY).attr("opacity", 0.55);
+        cap(RG, 20, 340, "art scales " + sc.toFixed(2) + ": " + (160 * sc).toFixed(0) + " px wide", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the player touch the coin", x: "Put the coin on layer 2 (value 2); add 2 to the player's mask: 1 becomes 3" },
+    { v: "make movement the same on every computer", x: "Move in _physics_process: 60 ticks a second on any machine" },
+    { v: "jump when I press space", x: "Bind Space to the action jump; test is_action_just_pressed(\"jump\") each tick" },
+    { v: "tell the main scene when the player dies", x: "Player emits hit; connect it to Main.game_over; do not poll" },
+    { v: "show me what the game really contains", x: "Run it, switch the Scene dock to Remote, and count: 13 nodes, not 1" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague Godot requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "", val = function (n) { return Math.pow(2, n - 1); };
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      [["mask 1: coin on layer 2?", 1], ["mask 3: coin on layer 2?", 3]].forEach(function (r, i) {
+        var det = (r[1] & val(2)) !== 0; cap(p, 14, 70 + i * 110, r[0], { size: 24 });
+        bar(p, 14, 84 + i * 110, det ? 560 : 40, 40, det ? RED : "#C4C4C4", anim, i * 400); cap(p, 580, 114 + i * 110, det ? "yes" : "no", { size: 24, weight: 700, anchor: "end", fill: det ? "#FFFFFF" : INK });
+      });
+      nt = "(1 & 2) = 0 : no.   (3 & 2) = 2 : yes";
+    } else if (k === 2) {
+      var m = [["_process, 30 fps", 7], ["_process, 144 fps", 36], ["_physics_process, both", 15]];
+      m.forEach(function (r, i) { cap(p, 14, 62 + i * 82, r[0] + ": " + r[1] + " in 0.25 s", { size: 24 }); bar(p, 14, 74 + i * 82, r[1] / 36 * 560, 34, i === 2 ? RED : "#C4C4C4", anim, i * 350); });
+      nt = "physics stays at 15 on both machines";
+    } else if (k === 3) {
+      [["is_action_pressed", 30, "#C4C4C4"], ["is_action_just_pressed", 1, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": true on " + r[1], { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(8, r[1] / 30 * 560), 40, r[2], anim, i * 400); });
+      nt = "30 jumps against 1 for a 0.5 s press";
+    } else if (k === 4) {
+      [["polling: asks in 2 s", 120, "#C4C4C4"], ["signal: calls in 2 s", 1, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + " " + r[1], { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(8, r[1] / 120 * 560), 40, r[2], anim, i * 400); });
+      nt = "120 questions against 1 call";
+    } else {
+      var run_ = 1 + 7 + 2 + 1 + 1 + 1;
+      [["saved main.tscn", 1, "#C4C4C4"], ["running (Remote tab)", run_, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": " + r[1] + (r[1] === 1 ? " node" : " nodes"), { size: 24 }); bar(p, 14, 84 + i * 110, r[1] / run_ * 560, 40, r[2], anim, i * 400); });
+      nt = "1 + 7 + 2 + 1 + 1 + 1 = " + run_ + " nodes, at least";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Does the saved scene match the running tree? Check the Scene dock's Remote tab.",
+    "Does movement that must repeat run in _physics_process, on the fixed tick?",
+    "Is the input an action in the Input Map, and do I want just-pressed or held?",
+    "Who emits, who connects, and should this be a signal instead of a poll?",
+    "Do layer and mask use the value 2^(n−1), and does the shape match the art?",
+    "Is the area's overlap a tick old, and is the shared number in one resource?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a Godot change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 90, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it collide”, but “layer 2, mask 3”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, tourA: { steps: 4, render: renderTourA }, tourB: { steps: 4, render: renderTourB },
+    proj: { steps: 4, render: renderProject }, tree: { steps: 3, render: renderTree }, sig: { steps: 3, render: renderSignals },
+    clk: { steps: 3, render: renderClocks }, inp: { steps: 2, render: renderInput }, bod: { steps: 4, render: renderBodies },
+    lay: { steps: 3, render: renderLayers }, shp: { steps: 2, render: renderShape }, keep: { steps: 4, render: renderKeep },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>
