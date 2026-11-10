@@ -169,7 +169,7 @@ Replaces the 33-deck order above. Terms are the important ones, chosen by what t
 | 7 | Particles and VFX | Particles and VFX | Built |
 | 8 | Animation | Animation principles; Animation foundations; Animation and interaction | Built |
 | 9 | Camera (camera motion matters for understanding animation and film) | Camera | Built, do not rebuild |
-| 10 | Game AI | Game AI perception and pathfinding; Game AI decisions and systems | Decisions built; perception and pathfinding in progress |
+| 10 | Game AI | Game AI perception and pathfinding; Game AI decisions and systems | Built |
 | 11 | How to make a walkthrough film | Walkthrough film | Built |
 | 12 | How to make a trailer for your game | Game trailer | Built |
 | 13 | The differences between Godot, Unity and Unreal | Godot Unity Unreal | Built |

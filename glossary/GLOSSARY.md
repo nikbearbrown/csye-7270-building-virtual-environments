@@ -15,6 +15,7 @@ Every term in every deck in `decks/`, with its meaning and a tag: **in the book 
 | [Blender to Godot: MCP, export and measuring a prop](decks/Terms%20-%20Blender%20to%20Godot.html) | 14 | 30 |
 | [Terms: Camera](decks/Terms%20-%20Camera.html) | 19 | 20 |
 | [Game AI: decisions, generation and systems](decks/Terms%20-%20Game%20AI%20decisions%20and%20systems.html) | 16 | 33 |
+| [Game AI: perception, movement and pathfinding](decks/Terms%20-%20Game%20AI%20movement%20and%20pathfinding.html) | 15 | 33 |
 | [Game design A: what a game is](decks/Terms%20-%20Game%20design%20A.html) | 14 | 22 |
 | [Game design B: choices and challenge](decks/Terms%20-%20Game%20design%20B.html) | 14 | 19 |
 | [Game design C: pacing and guidance](decks/Terms%20-%20Game%20design%20C.html) | 15 | 19 |
@@ -31,7 +32,7 @@ Every term in every deck in `decks/`, with its meaning and a tag: **in the book 
 | [Walker and the toolchain](decks/Terms%20-%20Walker%20and%20the%20toolchain.html) | 14 | 26 |
 | [How to make a walkthrough film: important terms](decks/Terms%20-%20Walkthrough%20film.html) | 14 | 32 |
 
-Total: 24 decks, 730 term entries.
+Total: 25 decks, 763 term entries.
 
 ---
 
@@ -379,6 +380,46 @@ Total: 24 decks, 730 term entries.
 | Authority | The part of the system allowed to change a value. | in the book text |
 | RPC | A function one computer asks another computer to run. | in the book text |
 | Replication | Copying a value from the peer that owns it to the other peers. | in the book text |
+
+## Game AI: perception, movement and pathfinding
+
+[Open the deck](decks/Terms%20-%20Game%20AI%20movement%20and%20pathfinding.html) · 15 slides · 33 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Agent | A game character that senses and acts on its own. | outside source |
+| Sense, decide, act | The loop every system in Chapter 14 runs, once per tick. | in the book text |
+| Sight range | How far an NPC can see. | in the glossary |
+| Field-of-view cone | The angle across which the agent can see. | outside source |
+| Line of sight | A straight line to the target that nothing blocks. | in the book text |
+| Hearing (noise) radius | How far a noise carries to an agent. | outside source |
+| Last known position | Where the target was last seen, kept in memory. | in the book text |
+| Steering | Behaviours that adjust movement toward a goal. | in the glossary |
+| Velocity, max speed | Speed with a direction; max speed caps its size. | in the book text |
+| Seek | Steer toward a target. | in the glossary |
+| Flee | Steer away from a target. | in the glossary |
+| Arrive | Seek and slow down to stop at the target. | in the glossary |
+| Pursue | Steer toward where a moving target will be. | in the glossary |
+| Wander | Small random turns, so the path meanders. | outside source |
+| Separation | Steer away from close neighbours. | in the glossary |
+| Alignment | Steer to match neighbours' heading. | in the glossary |
+| Cohesion | Steer toward the neighbours' centre. | in the glossary |
+| Emergent behavior | Complex group behaviour from simple rules. | in the glossary |
+| Graph, edge, weight | Points (nodes) joined by edges, each with a cost. | outside source |
+| Grid (AStarGrid2D) | Cells marked solid or free; the light tool for grid games. | in the book text |
+| Navigation mesh | Polygons marking where agents can walk. | in the book text |
+| Waypoint | A point along a path. | in the glossary |
+| Breadth-first search | Expands outward one step at a time and ignores cost. | outside source |
+| Dijkstra | Pathfinding that expands by cost so far only, with no heuristic. | in the glossary |
+| Open and closed set | Open: found, not yet expanded. Closed: already expanded. | outside source |
+| A* | Pathfinding that picks the lowest f = g + h node first. | in the glossary |
+| f, g, h | Total estimated cost / cost so far / estimated cost to goal. | in the glossary |
+| Manhattan distance | Distance counted along grid axes only. | in the glossary |
+| Euclidean distance | Straight-line distance. | outside source |
+| Admissible heuristic | An estimate that never overestimates the true cost. | in the glossary |
+| NavigationAgent2D | Godot node that follows a navmesh path. | in the book text |
+| Path smoothing | Cut corners from a path wherever the straight line is clear. | outside source |
+| Local avoidance | Steering around nearby obstacles and agents. | in the glossary |
 
 ## Game design A: what a game is
 
@@ -950,14 +991,18 @@ Total: 24 decks, 730 term entries.
 | [OBSERVED] | The game design document | The code does this; the tag names a file and line. |
 | 2D, 3D and Script views | Godot: the editor, scenes, nodes, signals and movement | Tabs along the top: 2D and 3D edit scenes, Script edits code. |
 | 3D viewport | Blender: the interface and modeling terms | The area where you see and edit the scene in 3D. |
+| A* | Game AI: perception, movement and pathfinding | Pathfinding that picks the lowest f = g + h node first. |
 | Acceptance criterion | The game design document | A concrete condition that must be true for work to count as done. |
 | Accessibility | How to make a trailer for your game | Captions for speech and no rapid flashing, so more people can watch. |
 | Active | Animation and interaction: state machines and blending | The frames in which an attack can hit. |
 | Actor and Component | The Unreal Editor interface | An Actor is an object you can place in a level; a Component is a piece of behaviour or data attached to it. |
 | Additive blending | Particles and VFX | Adds the new colour to what is behind it; glows and fire. |
+| Admissible heuristic | Game AI: perception, movement and pathfinding | An estimate that never overestimates the true cost. |
 | Advance mode | Animation and interaction: state machines and blending | Enabled: only travel() uses the transition. Auto: it fires by itself when its condition or expression is true. |
 | Agency (autonomy) | Game design B: choices and challenge | The player takes control of how the game is played. |
+| Agent | Game AI: perception, movement and pathfinding | A game character that senses and acts on its own. |
 | Albedo | Materials and textures | The colour the surface reflects, before any lighting. |
+| Alignment | Game AI: perception, movement and pathfinding | Steer to match neighbours' heading. |
 | Allow rule | Walker and the toolchain | A saved permission letting a command run without asking. |
 | Alpha channel | 2D art and sound assets in the engine | The extra channel storing opacity. |
 | Ambient occlusion | Materials and textures | Darkening in creases where ambient light cannot reach; direct light is not affected. |
@@ -985,6 +1030,7 @@ Total: 24 decks, 730 term entries.
 | Area of focus | Art principles: concept art and character art | The place in the image where the artist wants the eye to land. |
 | Area snapshot | Godot: the editor, scenes, nodes, signals and movement | An Area's overlap list is updated once per physics step, so it can be a tick old. |
 | Area2D | Godot: the editor, scenes, nodes, signals and movement | Detects overlaps and can emit signals; never blocks or pushes. |
+| Arrive | Game AI: perception, movement and pathfinding | Seek and slow down to stop at the target. |
 | Art style | Art principles: concept art and character art | A consistent look: colour, designs, shapes. |
 | Art, design, engineering | Game design A: what a game is | They depend on each other; results are best when all three aim at the same target. |
 | Aspect ratio | 2D art and sound assets in the engine | Width divided by height. |
@@ -1022,6 +1068,7 @@ Total: 24 decks, 730 term entries.
 | Bounding box | Blender to Godot: MCP, export and measuring a prop | The smallest axis-aligned box that holds an object. |
 | BPM | How to make a trailer for your game | Beats per minute of the music; 60 divided by it is the seconds per beat. |
 | bpy | Blender to Godot: MCP, export and measuring a prop | Blender's Python module; scripts and MCP tools both drive it. |
+| Breadth-first search | Game AI: perception, movement and pathfinding | Expands outward one step at a time and ignores cost. |
 | Build and export | Godot, Unity and Unreal: the differences | Godot saves export presets, Unity 6 saves a build profile, Unreal packages and cooks the project. |
 | Build and Package | The Unreal Editor interface | Package Project turns the project into a runnable game for one platform. |
 | Build Profiles | The Unity editor interface | A saved set of build settings for one platform: target and scenes to include, kept as an asset. |
@@ -1058,6 +1105,7 @@ Total: 24 decks, 730 term entries.
 | Clipping | 2D art and sound assets in the engine | Distortion when a signal exceeds the maximum level. |
 | Closing doors | Art principles: concept art and character art | Each round closes the options that failed. |
 | Coherent noise | Game AI: decisions, generation and systems | Random values that change smoothly (Perlin, simplex). |
+| Cohesion | Game AI: perception, movement and pathfinding | Steer toward the neighbours' centre. |
 | Collection | Blender: the interface and modeling terms | A named group of objects you can hide, show or export together. |
 | Collider | 2D art and sound assets in the engine | Shape used for contact tests; separate from the art and sized from the body. |
 | Collision layer | Godot: the editor, scenes, nodes, signals and movement | Where an object is: the layers it appears in. |
@@ -1121,6 +1169,7 @@ Total: 24 decks, 730 term entries.
 | Deterministic capture | How to make a walkthrough film: important terms | A capture that gives the same frames every take: fixed frame rate, same inputs, same route. |
 | Diff | Walker and the toolchain | The exact lines that changed between two versions. |
 | Difficulty | Game design B: choices and challenge | How hard the opposition is; it is separate from fairness. |
+| Dijkstra | Game AI: perception, movement and pathfinding | Pathfinding that expands by cost so far only, with no heuristic. |
 | Dimensions | Blender to Godot: MCP, export and measuring a prop | An object's size in metres on each axis, as Blender reports it. |
 | Direct state write | The game design document | Setting a value in code instead of producing it through gameplay. |
 | Discount factor | Game AI: decisions, generation and systems | How much future reward is worth compared to now. |
@@ -1138,12 +1187,14 @@ Total: 24 decks, 730 term entries.
 | Edit Mode | Blender: the interface and modeling terms | Work on the mesh itself: its vertices, edges and faces. |
 | Editor Preferences | The Unreal Editor interface | Settings for you and your copy of the editor, not saved with the project. |
 | Eject | The Unreal Editor interface | While playing, release the player so you can fly the camera and select Actors. |
+| Emergent behavior | Game AI: perception, movement and pathfinding | Complex group behaviour from simple rules. |
 | Emission | Materials and textures | Light the surface gives off itself. |
 | Emission shape | Particles and VFX | The volume particles spawn in: point, sphere, box. |
 | Emitter | Particles and VFX | The thing that spawns particles. |
 | Enter Play Mode Options | The Unity editor interface | A Project Settings choice to skip reloading code or scene when Play starts, so it starts faster. |
 | Epsilon-greedy | Game AI: decisions, generation and systems | Take a random action with probability epsilon, otherwise the best known one. |
 | Establishing shot | How to make a walkthrough film: important terms | A wide opening shot that shows where everything is before the close looks. |
+| Euclidean distance | Game AI: perception, movement and pathfinding | Straight-line distance. |
 | Evaluative play | Game design B: choices and challenge | The player steps back and asks why this action matters to the whole game. |
 | Event Dispatcher | Godot, Unity and Unreal: the differences | Unreal's Blueprint form of a signal. One Call fires every bound event; C++ uses a delegate. |
 | Event Graph | The Unreal Editor interface | The node-and-wire view of a Blueprint; white execution wires set the order. |
@@ -1155,6 +1206,7 @@ Total: 24 decks, 730 term entries.
 | explosiveness | Particles and VFX | 0 spreads births across the cycle; 1 emits them all at its start. |
 | Export preset, template | Godot: the editor, scenes, nodes, signals and movement | A preset is the recipe for one platform; the template is the prebuilt engine it packs your data into. |
 | Exposing input | Shader verification | Where right and wrong answers are far apart. |
+| f, g, h | Game AI: perception, movement and pathfinding | Total estimated cost / cost so far / estimated cost to goal. |
 | FABRIK | Animation foundations | An IK solver that moves a chain back and forth between target and root until it fits. |
 | Face | Blender: the interface and modeling terms | A flat surface bounded by edges. |
 | Fairness | Game design B: choices and challenge | Clear expectations and consistent design, so the player can learn from failing. |
@@ -1162,6 +1214,7 @@ Total: 24 decks, 730 term entries.
 | False pass | The game design document | A test that passes though the behaviour is wrong. |
 | False positive | Shader verification | A check passes though the thing is wrong. |
 | Field of view (FOV) | Terms: Camera | The lens angle; wider shows more. |
+| Field-of-view cone | Game AI: perception, movement and pathfinding | The angle across which the agent can see. |
 | FileSystem dock | Godot: the editor, scenes, nodes, signals and movement | Lists every file in the project, under res://. |
 | Finite state machine | Game AI: decisions, generation and systems | A set of states with transitions; one is active. |
 | Fixed frame rate | Animation foundations | --fixed-fps n: every frame advances game time by exactly 1/n s. |
@@ -1173,6 +1226,7 @@ Total: 24 decks, 730 term entries.
 | Flag | Walker and the toolchain | An option on a command, such as --headless. |
 | Flaky | Walker and the toolchain | Passes sometimes and fails sometimes with no change. |
 | Flat normal texel | Shader verification | The pixel (128, 128, 255): a surface facing out. |
+| Flee | Game AI: perception, movement and pathfinding | Steer away from a target. |
 | Flicker | Game AI: decisions, generation and systems | Rapid back-and-forth switching between states. |
 | Flipped normals | Blender: the interface and modeling terms | Faces pointing inward, so they look dark or vanish. |
 | Flythrough | The Unity editor interface | Hold the right mouse button and press W, A, S, D to move the camera itself. |
@@ -1213,8 +1267,10 @@ Total: 24 decks, 730 term entries.
 | Godot shading language | Shaders: foundations | Based on GLSL but simplified; the ideas carry over between dialects. |
 | Golden image | Shader verification | A saved correct picture to compare renders with. |
 | GPUParticles2D / 3D | Particles and VFX | Simulated on the graphics card; many particles, more features. |
+| Graph, edge, weight | Game AI: perception, movement and pathfinding | Points (nodes) joined by edges, each with a cost. |
 | Gravity | Particles and VFX | Constant downward acceleration applied to particles. |
 | Green channel convention | Materials and textures | Whether green points up (OpenGL, Godot) or down (DirectX). |
+| Grid (AStarGrid2D) | Game AI: perception, movement and pathfinding | Cells marked solid or free; the light tool for grid games. |
 | Group | Godot: the editor, scenes, nodes, signals and movement | A named tag on nodes; one call reaches every node in it. |
 | Guiding the focus | Game design C: pacing and guidance | Making clear what the player should concentrate on. |
 | Hang | Walker and the toolchain | A run that never finishes. |
@@ -1223,6 +1279,7 @@ Total: 24 decks, 730 term entries.
 | Headless Blender | Blender to Godot: MCP, export and measuring a prop | Running Blender with no window, from the command line. |
 | Headless mode | Shader verification | A run with no window, so no pixels are drawn. |
 | Headroom | 2D art and sound assets in the engine | Spare level left below the maximum. |
+| Hearing (noise) radius | Game AI: perception, movement and pathfinding | How far a noise carries to an agent. |
 | Heightmap | Game AI: decisions, generation and systems | A grid with one height value per position. |
 | Hierarchy | The Unity editor interface | A tree of every GameObject in the open scene; drag one onto another to nest it. |
 | High-poly and low-poly | Blender to Godot: MCP, export and measuring a prop | A very detailed sculpt, and the cheap copy of it that the engine runs. |
@@ -1264,6 +1321,7 @@ Total: 24 decks, 730 term entries.
 | Key art | How to make a trailer for your game | The one still image that stands for the game: title, character, idea. |
 | Keyframe | Animation: principles and character animation | A stored value at a specific time. |
 | Kill a tween | Animation foundations | Abort a tween where it is. It stops short of its end value. |
+| Last known position | Game AI: perception, movement and pathfinding | Where the target was last seen, kept in memory. |
 | Layer | The Unity editor interface | A numbered category, one per object, for rendering or collision filtering; set in the Layer dropdown at the top of the Inspector. |
 | Layer and mask | Godot, Unity and Unreal: the differences | Each object has a layer and a mask. A notices B if B's layer is in A's mask: one way. |
 | Layer Collision Matrix | Godot, Unity and Unreal: the differences | One layer per GameObject. A project-wide grid says which pairs of layers collide. |
@@ -1275,6 +1333,7 @@ Total: 24 decks, 730 term entries.
 | lifetime | Particles and VFX | Seconds a particle lives; also the length of one emission cycle. |
 | Light and dark contrast | Art principles: concept art and character art | The gap between light and dark areas. |
 | Lighting | Materials and textures | Light and camera turn the material's quantities into the colour you see. |
+| Line of sight | Game AI: perception, movement and pathfinding | A straight line to the target that nothing blocks. |
 | Linear | Animation: principles and character animation | Constant rate of change. |
 | Linear and decoding | Materials and textures | Values proportional to light. Colour is decoded to linear first; data must not be. |
 | Linear and nonlinear | Game design C: pacing and guidance | Straight from start to end, or with alternate choices along the way. |
@@ -1282,6 +1341,7 @@ Total: 24 decks, 730 term entries.
 | Linked test | The game design document | A test row that names the mechanic it checks. |
 | Local and global space | Blender: the interface and modeling terms | Local coordinates are measured from the object's origin; global ones from the scene's. |
 | Local and world space | The Unity editor interface | Local is relative to the parent object; world is relative to the whole level. |
+| Local avoidance | Game AI: perception, movement and pathfinding | Steering around nearby obstacles and agents. |
 | local_coords | Particles and VFX | On: particles move with the emitter. Off: they are left behind. |
 | LOD | Blender to Godot: MCP, export and measuring a prop | Level of detail: cheaper versions of a model swapped in at distance. |
 | Logical events | Game design C: pacing and guidance | Events behave sensibly and meet the player's unspoken expectations. |
@@ -1300,6 +1360,7 @@ Total: 24 decks, 730 term entries.
 | Low-poly mesh | Art principles: concept art and character art | A simplified copy with far fewer polygons. |
 | Luck and skill | Game design B: choices and challenge | Luck: chance decides. Skill: the player's ability decides. Games mix the two. |
 | Main toolbar | The Unreal Editor interface | Save, mode switching, adding content, and the Play and Stop controls. |
+| Manhattan distance | Game AI: perception, movement and pathfinding | Distance counted along grid axes only. |
 | Map slot naming | Materials and textures | The agreed names for each texture slot, such as albedo, normal, roughness. |
 | Material | Materials and textures | A stack of textures and numbers that says how a surface looks. |
 | Material | Shaders: foundations | A shader plus its parameter values and textures. |
@@ -1334,6 +1395,8 @@ Total: 24 decks, 730 term entries.
 | Muted test | How to make a trailer for your game | Check that the film still makes sense with the sound off. |
 | Name suffix | Blender to Godot: MCP, export and measuring a prop | A tail on a mesh name, such as -convcolonly, that tells Godot to build collision. |
 | Naming conventions | Blender to Godot: MCP, export and measuring a prop | Agreed rules for how files and objects are named. |
+| Navigation mesh | Game AI: perception, movement and pathfinding | Polygons marking where agents can walk. |
+| NavigationAgent2D | Game AI: perception, movement and pathfinding | Godot node that follows a navmesh path. |
 | Nearest vs linear | 2D art and sound assets in the engine | Nearest reads one texel and keeps hard edges; linear blends four and smooths. |
 | Neutral pose | Art principles: concept art and character art | The default pose a model is built in; some designs fail once the character moves. |
 | Niagara | The Unreal Editor interface | Unreal's visual-effects system: a system holds emitters; an emitter is a stack of modules. |
@@ -1353,6 +1416,7 @@ Total: 24 decks, 730 term entries.
 | one_shot | Particles and VFX | Only one emission cycle occurs; otherwise it loops forever. |
 | One-shot | 2D art and sound assets in the engine | Plays once and stops. |
 | OneShot | Animation and interaction: state machines and blending | A blend-tree node that plays a clip once over whatever is below it, then returns. |
+| Open and closed set | Game AI: perception, movement and pathfinding | Open: found, not yet expanded. Closed: already expanded. |
 | Opposition | Game design A: what a game is | Obstacles the player must overcome; it makes a game fun and can frustrate. |
 | Orbit | Terms: Camera | Move around a subject on a curved path while keeping it framed. |
 | Orbit, pan, zoom | The Unity editor interface | Orbit turns around a point, pan slides the view, zoom changes the distance. |
@@ -1378,6 +1442,7 @@ Total: 24 decks, 730 term entries.
 | Particle system | Godot, Unity and Unreal: the differences | Many small sprites simulated together. A one-shot burst spawns them all at once. |
 | Particle system | Particles and VFX | The emitter plus the rules for its particles. |
 | ParticleProcessMaterial | Particles and VFX | The resource that holds a GPU particle system's rules for moving and changing. |
+| Path smoothing | Game AI: perception, movement and pathfinding | Cut corners from a path wherever the straight line is clear. |
 | PBR | Materials and textures | Physically based rendering: a few measured quantities per pixel, so a material holds up under any light. |
 | PCM | 2D art and sound assets in the engine | Uncompressed digital audio samples. |
 | Pedestal | Terms: Camera | Move the camera straight up or down, still facing the same way. |
@@ -1436,6 +1501,7 @@ Total: 24 decks, 730 term entries.
 | Property track | Animation and interaction: state machines and blending | A track that animates any property, not just bones. |
 | Prototype | Game design A: what a game is | A simplified version made first to test whether the idea has appeal. |
 | Proxy model | Art principles: concept art and character art | A rough block model of big shapes, used to check proportions and silhouette early. |
+| Pursue | Game AI: perception, movement and pathfinding | Steer toward where a moving target will be. |
 | Pushed proportions | Art principles: concept art and character art | Exaggerated shapes, as in a cartoon look. |
 | PX goal | The game design document | A feeling or experience the player should have, with an ID like PX-01. |
 | Q-learning | Game AI: decisions, generation and systems | Learning the value of each action in each state. |
@@ -1505,7 +1571,10 @@ Total: 24 decks, 730 term entries.
 | Secondary motion | Animation: principles and character animation | Extra movement the main action causes, such as a tail or hair, not keyed by hand. |
 | Seed | Game AI: decisions, generation and systems | A number that fixes a random sequence. |
 | Seed, determinism | Particles and VFX | Same seed and inputs give the same random choices and output every run. |
+| Seek | Game AI: perception, movement and pathfinding | Steer toward a target. |
 | Selector | Game AI: decisions, generation and systems | Tries children in order until one succeeds. |
+| Sense, decide, act | Game AI: perception, movement and pathfinding | The loop every system in Chapter 14 runs, once per tick. |
+| Separation | Game AI: perception, movement and pathfinding | Steer away from close neighbours. |
 | Sequence | Game AI: decisions, generation and systems | Runs children in order and stops at the first failure. |
 | set_shader_parameter | Shaders: foundations | Changes one uniform's value on a material, by name; a typo does nothing. |
 | Shader | Shaders: foundations | A small program on the graphics processor, run many times at once. |
@@ -1518,6 +1587,7 @@ Total: 24 decks, 730 term entries.
 | Shared material | Shaders: foundations | One material used by many objects, so a change hits them all. |
 | Shot | How to make a walkthrough film: important terms | One continuous camera take, with a job and something it reveals that no earlier shot did. |
 | Side quest | Game design C: pacing and guidance | A detour from the main storyline. |
+| Sight range | Game AI: perception, movement and pathfinding | How far an NPC can see. |
 | Signal | Godot, Unity and Unreal: the differences | Godot's named event. Other nodes connect to it and run when it fires. |
 | Signal | Godot: the editor, scenes, nodes, signals and movement | A named event a node emits; other nodes connect to it. |
 | Silhouette | 2D art and sound assets in the engine | The outline of an object; it should still read when filled black at game size. |
@@ -1557,6 +1627,7 @@ Total: 24 decks, 730 term entries.
 | State machine | Godot, Unity and Unreal: the differences | States joined by transitions with rules. The current state picks the clip. |
 | StaticBody2D | Godot: the editor, scenes, nodes, signals and movement | Not moved by physics; others collide with it. |
 | Steady state | Particles and VFX | Births equal deaths, so the live count levels off. |
+| Steering | Game AI: perception, movement and pathfinding | Behaviours that adjust movement toward a goal. |
 | Step (discrete) | Animation: principles and character animation | The value holds until the next key, then jumps. |
 | step(edge, x) | Shaders: foundations | Gives 0 below the edge and 1 from the edge up: a hard switch. |
 | Storyboard | How to make a walkthrough film: important terms | Rough drawings of the key frames in order, made before anything is captured. |
@@ -1647,6 +1718,7 @@ Total: 24 decks, 730 term entries.
 | Validator | Game AI: decisions, generation and systems | A check that tests generated content against rules. |
 | Value track | Animation foundations | Sets a property, such as rotation_degrees, to a value at each time. |
 | Varying | Shaders: foundations | A value passed from the vertex stage to the fragment stage, interpolated on the way. |
+| Velocity, max speed | Game AI: perception, movement and pathfinding | Speed with a direction; max speed caps its size. |
 | Version control | Blender to Godot: MCP, export and measuring a prop | Software that records every version of a file and who changed it, and warns of clashes. |
 | Vertex | Blender: the interface and modeling terms | A corner point of a mesh. |
 | Vertex colour | Shaders: foundations | Colour stored on each vertex; can blend textures or paint terrain by height. |
@@ -1659,8 +1731,10 @@ Total: 24 decks, 730 term entries.
 | Voice-over | How to make a walkthrough film: important terms | Narration heard over the pictures; the speaker is not shown in the shot. |
 | Walker | Walker and the toolchain | The working method and its files: brief, build, playtest, inspect, revise, export. |
 | Walkthrough film | How to make a walkthrough film: important terms | A narrated camera tour of a game or asset that shows what it does and says what it leaves out. |
+| Wander | Game AI: perception, movement and pathfinding | Small random turns, so the path meanders. |
 | WAV vs Ogg Vorbis | 2D art and sound assets in the engine | WAV for short effects; Ogg Vorbis for music, speech and long sounds. |
 | Waves | Game design C: pacing and guidance | A group of enemies sent together: many weak ones or a few strong ones. |
+| Waypoint | Game AI: perception, movement and pathfinding | A point along a path. |
 | Waypoint | How to make a walkthrough film: important terms | A point along the route where the camera passes, turns or stops. |
 | Weight and balance | Animation: principles and character animation | Where the balance falls; stable when it sits over the feet. |
 | Weighted sum | Game AI: decisions, generation and systems | Adding scores, each multiplied by an importance weight. |
