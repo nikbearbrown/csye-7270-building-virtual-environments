@@ -1,52 +1,45 @@
-# CLAUDE.md — Assignment 5 (screen-glow shader, then the crate shader)
+# CLAUDE.md — Assignment 6 (landing dust + dust under the ceiling light)
 
 ## Project context
 
-- **Engine version:** Godot 4.7 (`godot/project.godot` line 15, `config/features` lists "4.7"); the baseline log was produced by `Godot Engine v4.7.2.stable.official` (`logs/a3_asset_check_60fps.log` line 1).
-- **Renderer:** Forward+ (`godot/project.godot` line 15 lists "Forward Plus"; no `rendering_method` override in the `[rendering]` section, lines 72–74). Windows driver: D3D12 (`godot/project.godot` line 74). Physics: Jolt (`godot/project.godot` line 70).
-- **Main scene:** `godot/base.tscn` (`godot/project.godot` line 14 names `uid://b78l24afmav2c`, which is the uid on `godot/base.tscn` line 1). The player is instanced in it at `godot/base.tscn` line 184.
-- **Environment:** `WorldEnvironment` in `godot/base.tscn` lines 11–16 and 23–24 sets a background colour and ambient light only; no tonemap, exposure or glow keys are written there.
+### Engine and project
+- **Godot version:** 4.7.2-stable: every baseline log starts with `Godot Engine v4.7.2.stable.official.ed1daf0bf` (`logs/a3_asset_check_60fps.log` line 1); the project declares `"4.7"` (`godot/project.godot` line 15).
+- **Renderer:** Forward+ (`godot/project.godot` line 15, `"Forward Plus"`; the `[rendering]` section, lines 90–92, sets no `rendering_method`). Windows driver D3D12 (line 92). Physics: Jolt (line 88). No `physics_ticks_per_second`, so physics runs at the default 60 ticks/s.
+- **Main scene:** `godot/base.tscn` (`project.godot` line 14 = `uid://b78l24afmav2c` = `base.tscn` line 1). Window 2048 × 1152 (`project.godot` lines 24–25).
+- `godot/effects/` does not exist yet; the brief creates `landing_dust.tscn` and `light_dust.tscn` there (`CHANGE-BRIEF.md` lines 50 and 148).
 
-### How the shaded object (the tablet screen) is drawn
-- Chain: `godot/base.tscn` line 184 instances `godot/characters/human/player/player.tscn`, which inherits `godot/characters/human/humanoid/humanoid.tscn` (`player.tscn` line 9); the humanoid instances `godot/items/tablet/tablet_device.tscn` as `Visual/TabletDevice` (`humanoid.tscn` lines 53–54).
-- The screen is the `Screen` node, a `MeshInstance3D` (`godot/items/tablet/tablet_device.tscn` lines 28–31), with a `QuadMesh` of size 0.18 × 0.108 (`tablet_device.tscn` lines 7–8) placed at z = 0.012 in front of the tablet model (`tablet_device.tscn` line 29).
-- Its material is `surface_material_override/0` = a `ShaderMaterial` sub-resource (`tablet_device.tscn` line 31 → lines 10–15) with `resource_local_to_scene = true` (line 11), using `res://shaders/pad_base_light.gdshader` (lines 5 and 13). Stored parameters: `cold_white = Color(0.902, 0.969, 0.969, 1)` and `pad_light_data = 0.0` (lines 14–15).
-- The shader is `spatial`, `unshaded`, with uniforms `cold_white` (`vec4`, `source_color`) and `pad_light_data` (`float`, `hint_range(0.0, 1.0)`), and writes `ALBEDO = mix(vec3(0.0), cold_white.rgb, pad_light_data)` (`godot/shaders/pad_base_light.gdshader` lines 1–7).
-- Outside code reaches the node through `TabletDevice.get_screen()` (`godot/items/tablet/tablet_device.gd` lines 23–24).
-- The tablet's position is animated by `Humanoid._update_tablet_visual()` (`godot/characters/human/humanoid/humanoid.gd` lines 115–130), which moves it between the hip, one-hand and two-hand `Marker3D` slots (`humanoid.tscn` lines 44–51) over `tablet_move_seconds` = 0.35 (`humanoid.gd` line 36).
-- A debug `UpMarker` box (black `StandardMaterial3D`) sits above the tablet (`tablet_device.tscn` lines 17–21 and 33–36); the brief requires it hidden or deleted before captures (`CHANGE-BRIEF.md` line 100).
+### Effect A — landing dust
+- **Node types:** root `Node3D` with two `GPUParticles3D` children, `Dust` and `GroundRing` (`CHANGE-BRIEF.md` lines 46–52); scene file `godot/effects/landing_dust.tscn` (line 50).
+- **Event owner:** `godot/characters/human/humanoid/humanoid.gd` (class `Humanoid`, line 4, extends `CharacterBody3D`, line 5). The signal `landed` does **not** exist yet; the brief allows adding it, notify-only, emitted once when `is_on_floor()` goes false → true (`CHANGE-BRIEF.md` lines 25 and 205). The only signal today is `tablet_hold_changed` (line 26).
+- Where landing becomes known: `apply_intent()` (lines 69–95) reads `is_on_floor()` at line 75 before moving, then calls `move_and_slide()` at line 94. `jump_velocity` = 4.5 (line 36); gravity from project settings (line 42).
+- `Humanoid` is shared by the player and future human enemies (line 6), so every humanoid would emit `landed`.
+- **Scene it appears in:** `godot/base.tscn`, in the world, not under the player (`CHANGE-BRIEF.md` line 54). The player is `Player` at `base.tscn` lines 189–190 (spawn y = 0.25), an instance of `godot/characters/human/player/player.tscn`, which inherits `humanoid.tscn` (`player.tscn` lines 3 and 11). Capsule radius 0.3, height 1.6 (`humanoid.tscn` lines 6–8).
+- Floor: `room/floor`, a `CSGBox3D` 16 × 0.5 × 10 at y = 0 (`base.tscn` lines 31–32), so its top is y = 0.25.
+- Retrigger must call `restart()`, not only `emitting = true` (`CHANGE-BRIEF.md` line 91).
 
-### Which script owns the game state that drives the effect
-- `godot/characters/human/humanoid/humanoid.gd` (class `Humanoid`, line 4) owns `_tablet_hold` (line 43), of type `enum TabletHold { NONE, ONE_HAND, TWO_HAND }` (lines 13–17).
-- It is changed only in `_apply_tablet_press()` (lines 158–163), using the table in `_next_tablet_hold()` (lines 167–175). Read with `get_tablet_hold()` (lines 152–153). Announced by `signal tablet_hold_changed(old_hold, new_hold)` (line 25, emitted at line 163).
-- "Arrived at the hand slot" = `_tablet_move_progress` (line 47) reaching `TABLET_MOVE_DONE` (line 19); `_tablet_shown_hold` (line 45) is the slot being moved to. Both are presentation variables (comment on line 44).
-- The key press comes from the player brain: `PlayerController._read_tablet_press()` with `tablet_long_press_seconds` = 0.4 (`godot/characters/human/player/player_controller.gd` lines 24 and 127–137), passed in `CharacterIntent.tablet_press` (`godot/characters/character_intent.gd` line 27). The `tablet` input action is bound to Tab (`godot/project.godot` lines 62–66).
-- No driver script for `pad_light_data` exists yet (no `.gd` file under `godot/` mentions `pad_light_data`).
+### Effect B — dust under the ceiling light
+- **Node type:** one `GPUParticles3D` (`CHANGE-BRIEF.md` line 149); scene file `godot/effects/light_dust.tscn` (line 148).
+- **Condition owner:** `godot/world/lights/ceiling_lights.gd` (class `CeilingLights`, line 4, extends `Node`): `signal lights_changed(lights_on: bool)` (line 19), emitted only from `set_lights_on()` when the state really changes (lines 45–50); `is_lights_on()` (lines 57–58); `start_on = true` (line 24). `_ready()` sets the start state and does **not** emit (lines 36–38), so the effect must query `is_lights_on()` once at start.
+- The switch: `godot/world/light_switch/light_switch.gd` `interact()` → `ceiling_lights.toggle()` (lines 40–41); action `interact` = physical key F (`project.godot` lines 80–84). Lights are found through group `ceiling_lights` (`ceiling_lights.gd` line 13).
+- **Scene it appears in:** `godot/base.tscn`, under `ceiling_light_1` (`OmniLight3D` at (0.02, 2.60, -3.66), shadows on, range 8; `base.tscn` lines 161–166). `CeilingLights` node: lines 158–159; `LightSwitch` wired to it: lines 192–194. Lights 2 and 3: lines 168–173 and 182–187.
+- Environment: background (0.03, 0.035, 0.045), ambient (0.45, 0.5, 0.6) energy 0.35 (`base.tscn` lines 12–18).
 
-### The 3D object for the textured shader and where its material comes from
-- Objects: `crate_long` and `crate_cube` in `godot/base.tscn` (lines 141–142 and 144–145), named in `CHANGE-BRIEF.md` line 115.
-- They are instances of `godot/assets/furniture/crate_long.glb` and `godot/assets/furniture/crate_cube.glb` (`godot/base.tscn` lines 4–5).
-- Their current materials are the ones embedded in the `.glb` files: both import files have `materials/extract=0` and `_subresources={}` (`godot/assets/furniture/crate_long.glb.import` lines 39 and 42; `crate_cube.glb.import` lines 39 and 42). No external material file exists yet; the brief says the new materials go behind the importer's Use External setting (`CHANGE-BRIEF.md` line 115).
-
-### Test commands (always through `scripts/run-test.sh`)
-- Run from this folder (the one holding `godot/` and `scripts/`). The wrapper picks `godot/` as the project when `godot/project.godot` exists (`scripts/run-test.sh` lines 21–25) and uses `$GODOT`, else `godot_console`, else `godot` (lines 28–34).
-- It runs `timeout 120 <godot> --headless --path godot --script res://tests/<file> --fixed-fps <fps>`, writes `logs/<test>_<fps>fps.log`, and fails on `SHADER ERROR` or `SCRIPT ERROR` (`scripts/run-test.sh` lines 40–45). Exit 124 = hung.
-- Existing test (the only file in `godot/tests/`):
+### Tests (always through `scripts/run-test.sh`, run from this folder)
+- Usage: `./scripts/run-test.sh <file.gd> <fps|realtime> [timeout-seconds]` (`scripts/run-test.sh` line 5). Project = `godot/` when `godot/project.godot` exists (lines 25–29). Binary = `$GODOT`, else `godot_console`, else `godot` (lines 32–38).
+- A number pins `--fixed-fps <fps>`; `realtime` adds no `--fixed-fps` and names the log `<test>_realtime.log` (lines 43–49). Timeout defaults to 120 s (line 56). Always `--headless` (line 56). Log: `logs/<test>_<mode>.log` (line 55). Fails on `SHADER ERROR` / `SCRIPT ERROR` (line 58); exit 124 = hung.
+- Baseline (`CHANGE-BRIEF.md` lines 209–211; logs in `logs/`):
 
 ```bash
-./scripts/run-test.sh a3_asset_check.gd 60
+./scripts/run-test.sh a3_asset_check.gd 60       # 55 PASS, exit 0
+./scripts/run-test.sh screen_glow_check.gd 30    # 24 PASS (also 60 and 144)
+./scripts/run-test.sh normal_map_check.gd 60     # 2 PASS
+./scripts/run-test.sh test_materials.gd 60       # 168 PASS, 1 FAIL, exit 1
+./scripts/run-test.sh <test>.gd realtime         # realtime mode (no pinned fps)
+./scripts/run-test.sh <test>.gd 60 300           # longer timeout, e.g. a cost run
 ```
 
-  Expected: 55 `PASS` lines and `== ALL PASS: 0 failure(s) ==` (`logs/a3_asset_check_60fps.log`), exit 0 (`godot/tests/a3_asset_check.gd` line 133). This result must not change (`CHANGE-BRIEF.md` line 61).
-- The screen-glow test the brief asks for must be run at 30, 60 and 144 fps (`CHANGE-BRIEF.md` lines 63–71), i.e. `./scripts/run-test.sh <screen test>.gd 30`, then `60`, then `144`. Its file name is not decided yet (see Unconfirmed).
-
-### Headless facts (observed on this machine, 2026-10-29, Godot 4.7.2 `--headless`)
-- Nothing is rendered headless, so no pixel can be read: the screen colour is a human check with captures (`CHANGE-BRIEF.md` lines 63–71).
-- `Shader.get_shader_uniform_list()` works headless: it returns `cold_white` as a Color and `pad_light_data` as a float with a range hint (`0.0,1.0`).
-- Uniform defaults are **not** reported headless: `RenderingServer.shader_get_parameter_default()` returned `null` for both uniforms. Read defaults from the shader source text.
-- `ShaderMaterial.get_shader_parameter()` returns the value stored in the material, and a value set with `set_shader_parameter()` reads back. A name the shader does not declare also reads back, so only the uniform list proves the name contract.
-- Local To Scene works when `humanoid.tscn` is instanced twice: the two `Screen` materials are different objects, and setting `pad_light_data` on one leaves the other at 0.0.
-- `--fixed-fps` pins each frame's `delta`; physics runs at the default 60 ticks per second (no `physics_ticks_per_second` in `godot/project.godot`). The tablet move measured 0.367 / 0.350 / 0.354 s at 30 / 60 / 144 fps for `tablet_move_seconds` = 0.35.
+- The one known failure: `FAIL base.tscn: 3 Light3D nodes (got 4)` (`logs/test_materials_60fps.log`), from `test_materials.gd` lines 369–370 counting every `Light3D`; the extra one is `ScreenTabletLight` (`player.tscn` line 56). Report "168 passed, 1 failed", never "all pass".
+- `screen_glow_check.gd` and `test_materials.gd` load `res://base.tscn` (lines 16 and 30); `a3_asset_check.gd` too (line 101). Whatever is added to `base.tscn` must keep these results.
 
 ## Current change
 
@@ -54,27 +47,37 @@
 
 ## Ownership
 
-- Every file in `godot/shaders/` (currently `pad_base_light.gdshader` and its `.uid`) is hand-written by the human. An agent never creates, edits, reformats or deletes anything in `godot/shaders/`, even to fix an error; it reports the problem instead.
-- Material set-up done by the human in the editor (the `Screen` `ShaderMaterial` with Local To Scene) is not reworked by an agent.
+- Every file in `godot/shaders/` is hand-written by the human. An agent never creates, edits, reformats or deletes anything there, even to fix an error; it reports the problem instead.
+- Material set-up done by the human in the editor (the tablet `Screen` `ShaderMaterial` with Local To Scene) is not reworked by an agent.
+- Effect settings (amounts, lifetimes, shapes, curves, ramps, materials, `visibility_aabb`, `preprocess`, `local_coords`) live in scene files in `godot/effects/`, not in code. Scripts only listen to events and call `restart()` / set `emitting` / `visible`.
+
+## Godot 4 names
+
+- Use Godot 4 names for 4.7.2: `GPUParticles3D` (not `Particles`), `ParticleProcessMaterial` (not `ParticlesMaterial`), `StandardMaterial3D` (not `SpatialMaterial`), `GradientTexture2D`, `QuadMesh`, `Node3D` (not `Spatial`).
+- Material switches are properties, not Godot 3 `flags_*` / `params_*`: `shading_mode`, `transparency`, `blend_mode`, `vertex_color_use_as_albedo`, `billboard_mode`, `albedo_texture`. Shadows: `cast_shadow` on the node.
+- Velocity is the `initial_velocity_min` / `initial_velocity_max` pair. The brief records that 4.7.2's ClassDB still also lists `initial_velocity` (`CHANGE-BRIEF.md` line 276), so a write to it may not fail; read values back to prove a setting took effect.
+- I could not check the other property names against 4.7.2 here (no engine run was allowed outside this repo). The names in the brief's tables are the Godot 4.x names as I know them; before relying on one, confirm it with `ClassDB.class_get_property_list()` or by reading it back in a headless test, and say so if it is missing instead of guessing a replacement.
 
 ## Out of scope
 
-- No changes to movement, collision, input actions or `project.godot`.
-- No changes to the tablet state machine: `_tablet_hold`, `_apply_tablet_press()`, `_next_tablet_hold()`, the 0.4 s long press or the 0.35 s tablet move. The driver may read `TabletHold` and the move progress; it never writes them.
-- No change to the existing test `godot/tests/a3_asset_check.gd` or its 55-PASS result.
-- No object other than the tablet `Screen` gets the screen-glow effect: not the tablet model, not the `UpMarker`, not the display tablet prop `tablet` in `godot/base.tscn` line 147.
-- The shared material is never edited at runtime in a way that affects other tablets; each driver touches only its own tablet's screen.
-- The `.glb` source models and the Blender files are not changed.
-- Parts 2 (hint experiment) and 3 (crate wear shader) are not started until their dated revisions are added to `CHANGE-BRIEF.md` (lines 104–120).
-- Sound, UI and other presentation code never decide game state.
+- No change to collision, movement, velocity, jumping, input actions or `project.godot`.
+- In `humanoid.gd`, only the notify-only `landed` signal may be added; nothing else there (tablet state machine, timings, facing) changes.
+- `CeilingLights`, the light switch and the three ceiling lights stay as they are; the dust only listens and queries.
+- Effect code reads game state and never writes it; it never decides whether the lights are on or whether the player is on the floor.
+- No change to the existing tests or their expected values (55 / 24 × 3 / 2 / 168 + 1 known failure).
+- Nothing in `godot/shaders/`, no `.glb` or Blender source, and no other object or scene is changed for this effect.
+- No extra effects beyond A (two emitters) and B (one emitter under light 1).
 
 ## Unconfirmed
 
-- There is no `README.md` and no `AGENTS.md` in this folder, so nothing from them is included.
-- Where the driver lives (a new script, or a function on `TabletDevice` / `Humanoid`) and the name of the screen-glow test file are not stated in the files.
-- Which `godot_console` / `godot` binary is on `PATH` on the machine that runs the tests is not recorded; set `GODOT` if neither is found.
-- The brief says the `Screen` quad is 1 mm in front of the model's screen; the scene only shows z = 0.012 relative to `TabletDevice` (`tablet_device.tscn` line 29), so the 1 mm gap was not checked against the model.
-- The default tonemap / exposure values the pixel predictions rely on come from a headless check recorded in `CHANGE-BRIEF.md` (line 85), not from a file I could read.
-- The doc comment in `godot/items/tablet/tablet_device.gd` lines 21–22 still says every tablet shares one material; the scene now has Local To Scene ticked (`tablet_device.tscn` line 11). The comment is out of date and will be updated together with the driver.
-- `godot/base.tscn` has only one character; the two-body independence test needs a second humanoid that does not exist in any scene yet.
-- The crate wear look, textures, uniforms and the external material file names are listed in the brief as "to be added" (`CHANGE-BRIEF.md` lines 112–120).
+- No `AGENTS.md` and no `README.md` exist in this folder.
+- Which script listens to `landed` / `lights_changed` and drives the emitters (a script on each effect root, or elsewhere), and how Effect A finds the player, are not stated in the files.
+- Where `landing_dust.tscn` is instanced (the brief says "in the world"; I assume `base.tscn`, not confirmed). Whether `light_dust.tscn` is placed by its own transform at (0, 1.45, -3.20) or under another node is not stated.
+- Whether `landed` should fire for every `Humanoid` or only the player; the brief says "the player lands".
+- If the dust node's `_ready()` runs before `CeilingLights._ready()`, `is_lights_on()` returns the field default `true`, not `start_on` (`ceiling_lights.gd` lines 24, 29, 37). Order in `base.tscn` decides this.
+- The rendered frame strips use `--quit-after` and real drawing; `run-test.sh` always passes `--headless` (line 56), so those captures cannot run through it. How they are run is not recorded.
+- The preview scenes for the frame strips (light off at start, retrigger switch) do not exist yet; their paths are not named.
+- New test file names (configuration, event, logic) are not named in the brief.
+- Brief "Unconfirmed" items (lines 274–277): whether `restart()` re-runs `preprocess`; whether a hidden `GPUParticles3D` keeps simulating in 4.7.2; why `initial_velocity` still exists; whether 0.006–0.012 m specks are visible.
+- The `interact` action's key event has `"device": 16` (`project.godot` line 82), not `-1` like the others; I did not check whether this affects F in the running game.
+- Which `godot_console` / `godot` is on `PATH` on the test machine is not recorded; set `GODOT` if neither is found.
