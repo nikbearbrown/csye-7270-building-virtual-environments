@@ -1,349 +1,385 @@
 # Practice exam 02: ANSWER KEY (read it only AFTER doing the exam cold)
 
-Each statement is scored on its own, 1 point. Under every statement is the reason it is true or false, and each question names the course topic to review.
+Each statement is scored on its own, 1 point. Under every statement is the reason it is true or false, and each question names the course chapter passage it follows. The answers are **awaiting a game developer's check**; if a key looks wrong to you, say so.
 
-The physics, shader, audio and animation answers are **awaiting a game developer's check**. If a key looks wrong to you on those, say so.
+## 1. Chapter 0: Checking an agent's report against evidence
 
----
+**A student is judging whether an agent's change to a game altered anything it should not have, using the kinds of evidence a project can provide.**  *(5 points)*
 
-## 1. Chapter 0: The toolchain (agents, repositories, sandboxes, instruction files)
+**True: A, E** (2 of 5)
 
-**A coding agent runs in a sandbox that lets it write inside the project folder. During an import step the engine prints an error that it cannot save its settings file, which lives in the user's home directory, yet the import still produces a usable project. Check each statement that is true.**  *(5 points)*
+- **A. TRUE.** Writing down the exact results of a passing test run before a change lets the student see afterwards whether the change altered behaviour under that same run.
+  - Why: Identical before-and-after numbers were the strongest evidence that the score feature changed nothing under the route.
+- **B. FALSE.** An exported build that runs on the target machine shows that players will want to play the game.
+  - Why: Running a build shows the game survives packaging, not that anyone wants to play it.
+- **C. FALSE.** A scripted route that passes is the same kind of evidence as a person playing, because it presses the game's real controls.
+  - Why: A passing route is evidence about state under one sequence of inputs; it is not a person playing.
+- **D. FALSE.** An agent that ran its own new test correctly can be assumed to have run the project's older tests correctly too.
+  - Why: Both agents ran the new test fine but ran the old regression test in a way that made it unreliable.
+- **E. TRUE.** A test that counts frames while the game moves by seconds can give different results on different runs, so its result is weak evidence until the time step is fixed.
+  - Why: Without a pinned time step the result depends on machine speed and load; rung 4 of the ladder requires the pinned step.
 
-**True: B, C, D** (3 of 5)
+*Covered in:* Ch 0, 'The evidence ladder' (rungs 4, 5 and 6); 'My verification' (identical regression numbers before and after are the strongest evidence here, and why a baseline written down in Step 3 is worth having); 'The time trap: frames are not seconds' (a test that counts frames while the game moves by delta time is machine-dependent unless the time step is pinned); 'Where each agent was right and where it was wrong' (both climbed to rung 4 for the new test, then misread the old test because they ran it in a way that made it unreliable).
 
-- **A. FALSE.** Running in a sandbox confirms that the code the agent writes is correct.
-  - Why: A sandbox limits damage; it says nothing about correctness.
-- **B. TRUE.** A sandbox is a technical limit on what a process may read, write or reach.
-  - Why: Sandboxes restrict capabilities at the operating-system level.
-- **C. TRUE.** Inside this sandbox the agent can still delete project files, including test output it produced earlier.
-  - Why: Deleting is a kind of write, and writes inside the workspace are allowed.
-- **D. TRUE.** The error fits a sandbox blocking a write outside the project folder while writes inside it succeed.
-  - Why: The settings file is outside the project folder, and the cache is inside it.
-- **E. FALSE.** A sandbox and a permission prompt are one mechanism under two names.
-  - Why: A prompt asks a human before a command runs; a sandbox enforces limits on what a running command can touch.
+## 2. Chapter 0: Working safely with an agent (instruction files, permissions, headless runs)
 
-## 2. Chapter 1: Scenes, nodes and signals
-
-**A developer tells a coding agent: "Add ten enemies to the level." The agent duplicates the enemy's nodes ten times directly inside the level scene, and later the developer changes the enemy sprite. Check each statement that is true.**  *(5 points)*
-
-**True: B, C, D, E** (4 of 5)
-
-- **A. FALSE.** Instances of one scene share a single position because they share one scene file.
-  - Why: Each instance has its own transform.
-- **B. TRUE.** Instancing one saved Enemy scene ten times lets an edit to that scene reach each instance.
-  - Why: Instances stay linked to the scene file they came from.
-- **C. TRUE.** Duplicated nodes are independent copies with no link to a shared enemy scene.
-  - Why: Plain duplicates are unlinked, so each needs the edit by hand.
-- **D. TRUE.** The word "add" does not say whether to duplicate nodes or to instance a scene, which leaves open a choice that affects maintenance.
-  - Why: Duplicating and instancing give different results later, so the verb needs to be exact.
-- **E. TRUE.** "Instance the Enemy scene ten times in the level, at these positions" is a precise version of the instruction.
-  - Why: It names the term (instance), the scene and the placement.
-
-## 3. Chapter 2: Game art and sound assets
-
-**A developer asks an image generator for a character sprite "on a transparent background" and gets hero.jpg. In the engine the sprite sits inside a white rectangle. Check each statement that is true.**  *(5 points)*
-
-**True: A, B, E** (3 of 5)
-
-- **A. TRUE.** An alpha channel stores opacity for each pixel.
-  - Why: Alpha is the extra channel for opacity.
-- **B. TRUE.** Removing a background by colour key can leave light fringe pixels along the edge.
-  - Why: Anti-aliased edge pixels blend the character with the old background.
-- **C. FALSE.** Lowering the sprite node's opacity makes just the white rectangle transparent.
-  - Why: Node opacity fades the whole image, character and background.
-- **D. FALSE.** A white background painted into the pixels counts as transparency.
-  - Why: Painted white is colour content, not an alpha value.
-- **E. TRUE.** JPEG has no alpha channel, so it does not hold transparency.
-  - Why: PNG stores alpha and JPEG does not.
-
-## 4. Chapter 3: 3D assets and the Blender pipeline
-
-**A scene has 50 identical trees. A developer asks the agent to add levels of detail (LOD). Check each statement that is true about the terms.**  *(5 points)*
-
-**True: A, C** (2 of 5)
-
-- **A. TRUE.** The engine picks the LOD version by distance or screen size.
-  - Why: Smaller on screen means a cheaper version.
-- **B. FALSE.** LOD reduces the number of trees that are drawn.
-  - Why: LOD lowers the triangles per tree and leaves the tree count alone.
-- **C. TRUE.** LOD keeps several versions of a mesh with decreasing triangle counts.
-  - Why: That is the definition of level of detail.
-- **D. FALSE.** A visible jump when the engine switches versions is called aliasing.
-  - Why: The visible switch is called popping; aliasing is jagged edges.
-- **E. FALSE.** Extra LOD meshes add no storage or load time.
-  - Why: Each version is more data to store and load.
-
-## 5. Chapter 4: Collision and physics
-
-**A bomb should damage the enemies within 3 metres in any direction. Check each statement that is true about a shape query (overlap query) and a raycast.**  *(5 points)*
-
-**True: A, B** (2 of 5)
-
-- **A. TRUE.** A shape query returns the objects that overlap a given shape, such as a sphere.
-  - Why: A shape query tests a region at this moment.
-- **B. TRUE.** A ray covers a line, not a region.
-  - Why: A ray is a single line.
-- **C. FALSE.** One ray from the bomb finds the enemies in the whole area around it.
-  - Why: A 3 metre region needs a shape query or many rays.
-- **D. FALSE.** A ray is used to ask who is near, and a shape query to ask what stands between two points.
-  - Why: The roles are swapped: a shape query finds who is near and a ray checks what is in between.
-- **E. FALSE.** A shape query finds trigger regions and does not report solid bodies.
-  - Why: Shape queries test colliders in general, solid bodies included.
-
-## 6. Chapter 5: Game design documents and virtual worlds
-
-**A designer wants a stealth meter that fills while an enemy can see the player. Sort what is built from what emerges using mechanic, dynamic and aesthetic. Check each statement that is true.**  *(5 points)*
-
-**True: A, C** (2 of 5)
-
-- **A. TRUE.** A fill rate per second and the threshold at which enemies attack are parameters of the mechanic, and a test can check them.
-  - Why: Numbers and observable results make a mechanic buildable and checkable.
-- **B. FALSE.** Players rushing between blind spots is a mechanic because the player performs it.
-  - Why: Emergent player behaviour is a dynamic; the mechanic is the rule that makes it worthwhile.
-- **C. TRUE.** The rule "the meter fills at a set rate while seen and drains when unseen" is a mechanic.
-  - Why: It is a rule the designer builds.
-- **D. FALSE.** Players waiting at cover for a patrol gap is an aesthetic.
-  - Why: That is behaviour that emerges, so it is a dynamic.
-- **E. FALSE.** The satisfaction of slipping past a guard is a dynamic.
-  - Why: A felt response is an aesthetic.
-
-## 7. Chapter 6: Shader foundations (what a shader is and does)
-
-**A simplified chain: vertex data, vertex shader, mapping to the screen, rasterization, fragment shader, depth and stencil tests plus blending, framebuffer. Check each statement that is true.**  *(5 points)*
+**A student runs a game's automated test from the command line in headless mode, and the run finishes with a success result.**  *(5 points)*
 
 **True: B, C** (2 of 5)
 
-- **A. FALSE.** Blending happens before the fragment shader.
-  - Why: Blending uses the shader's output colour, so it comes after.
-- **B. TRUE.** The vertex shader and the fragment shader are programmable stages.
-  - Why: Developers write both in a shader language.
-- **C. TRUE.** Rasterization is fixed-function: configured, not programmed.
-  - Why: Developers do not write it.
-- **D. FALSE.** The vertex shader's output is already in screen pixels.
-  - Why: It typically outputs clip-space positions that are converted later.
-- **E. FALSE.** The fragment shader runs before rasterization to decide which pixels a triangle covers.
-  - Why: It runs on fragments rasterization produced.
+- **A. FALSE.** A headless test that counts sound cues shows that the sound is audible and sounds right.
+  - Why: Headless uses a dummy audio driver; a cue counter is a state change, not a sound.
+- **B. TRUE.** A headless run has no window and no sound, yet the game's scripts, physics, signals and timers still run.
+  - Why: That is the chapter's definition of headless mode: no picture and no sound, everything else runs.
+- **C. TRUE.** Because a headless run produces no picture, a test can read values such as positions or a label's text, but it cannot judge whether the label is readable.
+  - Why: A headless test observes state, never pixels; readability is a human check.
+- **D. FALSE.** A headless run that finishes with a success result printed no errors while it ran.
+  - Why: The engine can print script errors while the run still exits with success, so the error output must be read too.
+- **E. FALSE.** If a headless test script hits an error before it finishes, the run ends by itself with a failing result, so a time limit is unnecessary.
+  - Why: The run can hang forever with no window to close; a time limit turns the hang into a visible failure.
 
-## 8. Chapter 7: Materials and textures (material, shader, texture)
+*Covered in:* Ch 0, 'Godot is also a command-line program' (headless means no picture and no sound; scene tree, scripts, physics, signals and timers still run; a headless test observes state, never pixels) and 'The headless test: a script that plays the game' (wrap runs in a time limit because a script that errors before quitting hangs; read the error output even when the exit code is 0). Ch 2, 'Verify' (headless uses the Dummy audio driver; a cue counter is a state change, not a sound).
 
-**In the metallic-roughness material model, each surface has a metallic value between 0 and 1. Check each statement that is true.**  *(5 points)*
+## 3. Chapter 1: Walker, Godot projects and how a game updates
 
-**True: A, C, E** (3 of 5)
-
-- **A. TRUE.** A dielectric is a non-metal such as plastic, wood or skin, and it sits near metallic 0.
-  - Why: Dielectric is the term for a non-metal, and metallic 0 selects that behaviour.
-- **B. FALSE.** A bare metal with a pure black albedo still shows bright, naturally coloured reflections.
-  - Why: A metal takes its reflection tint from the base colour, so a black albedo gives almost no reflection.
-- **C. TRUE.** Specular is the reflection strength of a non-metal, which is a different control from metallic.
-  - Why: Specular scales reflection on non-metals, while metallic switches the kind of material.
-- **D. FALSE.** Metallic controls how blurred reflections are, so metallic 1 gives the blurriest reflections.
-  - Why: Reflection blur is roughness, not metallic.
-- **E. TRUE.** Values between 0 and 1 stand for transitions such as rust, dirt or chipped paint on a metal.
-  - Why: A real point is metal or not, so in-between values stand for mixed or partly covered areas.
-
-## 9. Chapter 7: Materials and textures (physically based surface properties)
-
-**A material pack has albedo, normal map, roughness, ambient occlusion and emission colour images. A colour texture is stored in sRGB and decoded to linear before lighting; a data texture holds numbers used as stored. Check each statement that is true.**  *(5 points)*
+**A beginner is learning when Godot runs the code that updates a game while it plays.**  *(5 points)*
 
 **True: A, C, E** (3 of 5)
 
-- **A. TRUE.** Linear means the stored number goes into the shading maths as it is.
-  - Why: Linear values are used directly in lighting calculations.
-- **B. FALSE.** A data texture is another name for a texture with an alpha channel.
-  - Why: A data texture is defined by its content being numbers, not by having alpha.
-- **C. TRUE.** Emission colour is authored like albedo and is treated as sRGB.
-  - Why: Emission colour is a colour and follows the colour path.
-- **D. FALSE.** The normal map, roughness and ambient occlusion images are colour textures and are flagged as sRGB like albedo.
-  - Why: Those three hold numbers or vectors, so they are data textures and are read as linear.
-- **E. TRUE.** Albedo is a colour texture and is imported as sRGB.
-  - Why: Albedo is authored as colour for human vision and decoded to linear.
+- **A. TRUE.** One kind of update runs once for every drawn frame, so how often it runs depends on how fast the machine can draw.
+  - Why: The per-frame update follows the machine's rendering speed.
+- **B. FALSE.** A game that moves objects by a distance per second of elapsed time makes them travel farther each second on a machine that draws more frames.
+  - Why: Scaling by elapsed time makes the distance per second the same at 30 and at 144 frames per second.
+- **C. TRUE.** Another kind of update, used for physics, runs at a fixed rate, so each step covers the same slice of game time.
+  - Why: The physics update runs at a fixed rate set in the project settings.
+- **D. FALSE.** A test that counts fixed-rate physics steps measures more game time on a fast machine than on a slow one.
+  - Why: Each physics step is the same slice of game time, so the count means the same time everywhere.
+- **E. TRUE.** A game that moves an object by a fixed distance on every drawn frame makes it move faster on a machine that draws more frames per second.
+  - Why: The per-frame update runs once per drawn frame, as often as the machine can manage.
 
-## 10. Chapter 8: Shader verification (evidence that a shader is right)
+*Covered in:* Ch 1, 'Scripts and the two clocks' (the per-frame update runs once per rendered frame; the physics update runs at a fixed rate, set in Project Settings; nodes with a lower priority run first, so the player moves before the session checks hazards) and 'Running Godot without a window' (the tests count physics ticks and gave identical numbers with and without the fixed-frame-rate flag). Ch 0, 'The time trap' (the ball moves the same distance per second at 30 and at 144 frames per second).
 
-**A coding agent reports: "Done. The shader compiles with no errors and the existing automated tests pass." Check each statement that is true about the terms.**  *(5 points)*
+## 4. Chapter 2: Game art and sound (pixel art, asset requests, loops)
 
-**True: B, C, E** (3 of 5)
-
-- **A. FALSE.** Existing tests that pass before and after a change show that nothing is drawn differently.
-  - Why: Tests cover only what they check, and drawing may be outside them.
-- **B. TRUE.** A shader that multiplies a colour by the wrong factor still compiles.
-  - Why: A wrong formula is valid code, so it compiles.
-- **C. TRUE.** A compile error means the source was rejected, while a visual bug means it built and ran but drew a wrong result.
-  - Why: Compile errors and visual bugs are different failure types caught at different stages.
-- **D. FALSE.** A clean compile shows that the output matches the intended look.
-  - Why: A compiler checks syntax and types, not the design.
-- **E. TRUE.** The agent's reply is a claim, and the compile log is evidence of valid syntax rather than of correct output.
-  - Why: A claim is a statement, and evidence is something observed that supports it.
-
-## 11. Chapter 9: Particle effects
-
-**A smoke emitter runs continuously. Check each statement that is true about the terms that fix how many particles are alive.**  *(5 points)*
-
-**True: D, E** (2 of 5)
-
-- **A. FALSE.** Doubling the lifetime at the same rate leaves the live count unchanged.
-  - Why: A longer life means particles pile up for longer before removal, so the count grows.
-- **B. FALSE.** Doubling the emission rate at the same lifetime leaves the live count unchanged.
-  - Why: Live count scales with the rate, so doubling the rate doubles the count.
-- **C. FALSE.** Lifetime is the number of particles the emitter makes per second.
-  - Why: That describes emission rate, not lifetime.
-- **D. TRUE.** The steady-state live count is roughly emission rate times lifetime.
-  - Why: Births per second times seconds of life gives the number alive once the effect has settled.
-- **E. TRUE.** Lifetime is the time a particle stays alive after it is born, before the system removes it.
-  - Why: Lifetime is the length of a particle's life in seconds.
-
-## 12. Chapter 10: Animation foundations (sprite sheets, rigs, kinematics)
-
-**An animator keys a door's rotation to 0 degrees at 0.0 s and to 90 degrees at 1.0 s and sets nothing else. Check each statement that is true about the terms.**  *(5 points)*
-
-**True: A, B** (2 of 5)
-
-- **A. TRUE.** Interpolation computes the values between keys, so the door shows intermediate angles.
-  - Why: Interpolation fills in the in-betweens.
-- **B. TRUE.** A keyframe is an authored value at a chosen time.
-  - Why: A key is a value pinned to a time.
-- **C. FALSE.** The clip stores one value for each rendered frame.
-  - Why: The clip stores two keys; the engine computes values for frames.
-- **D. FALSE.** A display with a higher refresh rate needs the clip re-authored with more keys.
-  - Why: Values are sampled from time, so any display rate works with the same keys.
-- **E. FALSE.** Linear interpolation gives 60 degrees at 0.5 s.
-  - Why: Linear interpolation halfway between 0 and 90 gives 45 degrees.
-
-## 13. Chapter 11: Animation and interaction (state machines, blending)
-
-**A character has the states Idle, Run, Attack, Hurt and Dead. Hit reactions interrupt an attack, Dead overrides the other states, and Run input does not interrupt an attack. Check each statement that is true.**  *(5 points)*
-
-**True: A, B, C, E** (4 of 5)
-
-- **A. TRUE.** An interrupt is a transition taken out of the current state before its clip ends.
-  - Why: An interrupt leaves a state early, through a transition that does not wait for the clip to finish.
-- **B. TRUE.** Priority or order decides which transition is taken when more than one is valid at the same moment.
-  - Why: Equal-looking choices are settled by an order, which should be stated.
-- **C. TRUE.** A transition from Any State to Dead expresses that death overrides the other states.
-  - Why: Any State is a special source that stands for the states in the machine.
-- **D. FALSE.** Priority is needed because two states can be active at once.
-  - Why: A machine has one active state; priority chooses between several valid transitions.
-- **E. TRUE.** Leaving out an Attack-to-Run transition forbids that interruption, and Attack still needs some exit.
-  - Why: A missing transition is how a machine forbids a change, but a state without an exit sticks.
-
-## 14. Chapter 12: Audio and triggers
-
-**A cave region adds reverb to the SFX bus from the cave trigger's enter event and removes it on the exit event. Check each statement that is true.**  *(5 points)*
+**A student adds looping music and short sound effects to a 2D game.**  *(5 points)*
 
 **True: C, D** (2 of 5)
 
-- **A. FALSE.** The reverb also colours the Music bus.
-  - Why: Only sounds routed through SFX are processed.
-- **B. FALSE.** Reverb on a bus is the same as positional attenuation.
-  - Why: Reverb adds reflections; attenuation lowers level with distance.
-- **C. TRUE.** Enter and exit events are paired, and a missed exit can leave the reverb on.
-  - Why: A toggle driven by two events is correct only if both arrive.
-- **D. TRUE.** The reverb applies to sound effects routed through the SFX bus, including ones from far outside the cave.
-  - Why: A bus effect is not positional.
-- **E. FALSE.** The cave trigger blocks the player, or its exit event will not fire.
-  - Why: A trigger reports enter and exit without blocking.
+- **A. FALSE.** Short sound effects are usually imported with looping turned on, so that they can be repeated.
+  - Why: Effects are imported without looping; music is imported with looping.
+- **B. FALSE.** A sound played without any position still gets quieter and pans as the listener moves away from the place it came from.
+  - Why: Only the positional players pan and fade with position; the non-positional one does not.
+- **C. TRUE.** To play a jump sound once per jump, start it when the player enters the jumping state, not on every frame the player is in that state.
+  - Why: Playing on every frame the state is true cuts off the oldest sound and causes stutter; trigger on the transition.
+- **D. TRUE.** A one-shot effect plays from start to finish once each time it is triggered, while a loop returns to its loop point and keeps playing until it is stopped.
+  - Why: Effects are imported with looping disabled; the music track is set to loop.
+- **E. FALSE.** The engine automatically finds a smooth loop point in any music file, so it does not matter where a generated track is cut.
+  - Why: The track must be cut at a bar boundary before import; the engine cannot end a loop early for some formats.
 
-## 15. Chapter 13: Profiling and optimization
+*Covered in:* Ch 2, idea 7 'Sound: import, loop, trigger' (WAV loop modes and loop points; effects imported with looping disabled and the music with a forward loop; cut a generated music track at a bar boundary before import because the engine cannot end the loop early for Ogg or MP3; the non-positional player versus the positional ones that pan and attenuate by position; play on the transition into a state, not on every frame the state is true) and idea 8 'Procedural audio is not generative audio'.
 
-**A developer is choosing between batching, instancing and a texture atlas to cut draw calls. Check each statement that is true.**  *(5 points)*
+## 5. Chapter 3: 3D assets from Blender to Godot
 
-**True: B, C, D** (3 of 5)
+**A 3D artist builds a prop in Blender and brings it into a Godot game. Check each statement that is true about carrying it across.**  *(5 points)*
 
-- **A. FALSE.** Giving each object its own unique material makes batching easier.
-  - Why: Unique materials split the groups and defeat batching.
-- **B. TRUE.** Batching merges geometry that shares a material into fewer draw calls.
-  - Why: Shared material is the condition for merging into fewer calls.
-- **C. TRUE.** Instancing draws many copies of one mesh and one material in a single call, with per-instance data such as transform.
-  - Why: Per-instance data such as transform is supplied alongside the shared mesh.
-- **D. TRUE.** A texture atlas packs many images into one texture, so objects that show different images can share a material.
-  - Why: An atlas lets different pictures live in one texture and one material.
-- **E. FALSE.** Instancing draws many copies of different meshes with different materials in one call.
-  - Why: Instances share one mesh and one material.
+**True: A, B, D** (3 of 5)
 
-## 16. Chapter 14: Game AI and systems
+- **A. TRUE.** Blender, glTF and Godot all count one unit of distance as one metre, so a prop built at Blender's standard unit setting arrives at its intended size.
+  - Why: All three use metres, so no conversion is needed while the Blender scene keeps its standard unit setting.
+- **B. TRUE.** glTF is an interchange format for moving a 3D model between tools, and Godot recommends it for importing models.
+  - Why: Godot's documentation lists glTF 2.0 as the recommended import format.
+- **C. FALSE.** Godot's physics works the same at any scale, so the size of an imported prop changes how it looks but not how it plays.
+  - Why: Godot's physics is tuned for metres; a prop at the wrong scale can become a wall that cannot be climbed or a step that is not noticed.
+- **D. TRUE.** Blender treats Z as up while glTF and Godot treat Y as up, so the exporter turns the model's height onto the other axis.
+  - Why: Blender is Z-up, glTF and Godot are Y-up, and the exporter converts.
+- **E. FALSE.** A prop that arrives in Godot lying on its side was exported at the wrong size.
+  - Why: Lying on its side is an up-direction (axis) problem; size is a separate matter.
 
-**A designer discusses reward design and deployment of an RL NPC. Check each statement that is true.**  *(5 points)*
+*Covered in:* Ch 3, 'Units: a metre is a metre, until it is not', 'Axes: Blender is Z-up; glTF and Godot are Y-up' and 'glTF is the interchange format': all three tools use metres; Blender is Z-up while glTF and Godot are Y-up and the exporter converts; glTF 2.0 is Godot's recommended 3D format; a prop at the wrong scale is 'a wall the robot cannot climb or a step it does not notice'.
 
-**True: B, E** (2 of 5)
+## 6. Chapter 3: Driving Blender with an agent (MCP and scripts)
 
-- **A. FALSE.** Reward shaping removes the need to inspect the trained behavior.
-  - Why: Shaping adds guiding rewards; the result still has to be inspected.
-- **B. TRUE.** A sparse reward is feedback that arrives rarely, which makes learning hard.
-  - Why: Rare reward gives little signal.
-- **C. FALSE.** A trained policy is expected to keep learning during play by default.
-  - Why: A trained policy typically runs as a fixed decision function.
-- **D. FALSE.** RL lets designers directly author each behavior.
-  - Why: Behavior is learned, so it is hard to author or debug directly.
-- **E. TRUE.** Reward hacking is an agent exploiting a loophole that scores well without doing what the designer meant.
-  - Why: The agent optimizes the score, not the intent.
+**A coding agent reports that it built a prop in Blender and exported it for a Godot game. Check each statement that is true about what to verify afterwards.**  *(5 points)*
 
-## 17. Across engines: Godot, Unity and Unreal vocabulary
+**True: C** (1 of 5)
 
-**Engines package a reusable game object once and then place many copies of it. Check each statement that is true.**  *(5 points)*
+- **A. FALSE.** Once the exported file exists, the script that made it can be thrown away, because the file records how it was built.
+  - Why: The source of truth for how the asset was made is the script; the exported file is a build product.
+- **B. FALSE.** If the numbers the agent reports match the plan, the prop is known to look right under the game's lights.
+  - Why: Numbers do not show how the prop looks lit, or whether it reads as the intended object; those are human checks.
+- **C. TRUE.** A script that fails partway can still let Blender finish as if it had succeeded unless told otherwise, so a finished run is not evidence of success.
+  - Why: Without the error-exit option Blender exits as success even when the script raises an exception.
+- **D. FALSE.** If the agent's own test passes, the collision shape must be correct, since the agent wrote the test to check it.
+  - Why: In the worked example a check the agents did not write found part of the pennant inside the collision shape although the agent's tests passed.
+- **E. FALSE.** Test output pasted into the agent's report is as good as evidence as running the checks yourself.
+  - Why: The chapter says to run the checks yourself and not accept the agent's pasted output as evidence.
 
-**True: B, C, D** (3 of 5)
+*Covered in:* Ch 3, 'Two ways for an agent to drive Blender' (add the error-exit option; without it Blender exits as success when the script raises), 'Ship It' (the .glb is a build product of the script), 'What we actually ran' (a passing agent test still missed the pennant inside the collider) and 'Verify' ('What a pass proves ... What it does not prove: that the post looks right lit ...').
 
-- **A. FALSE.** In Unity, a scene and a prefab are the same kind of asset, so loading a prefab replaces the current level.
-  - Why: Scenes and prefabs are different asset types; opening a prefab does not replace the level.
-- **B. TRUE.** In Unity, a prefab is an asset that serves as a template, and each copy placed in a scene is a prefab instance linked to that asset.
-  - Why: The prefab asset is the template; instances in scenes are linked copies of it.
-- **C. TRUE.** In Godot, a saved scene can be instantiated inside another scene, so one mechanism covers a whole level and a reusable object such as an enemy.
-  - Why: In Godot a scene file is both the level format and the reusable-object format, and scenes nest.
-- **D. TRUE.** In Unreal, a Blueprint class is an asset that defines a custom Actor type, and each Actor placed in a level from it is an instance of that class.
-  - Why: A Blueprint class is the definition; each placed copy is an instance of that class.
-- **E. FALSE.** In Unity, a prefab instance in a scene and the prefab asset are one object, so deleting the instance from the scene deletes the asset file.
-  - Why: The instance is a separate object in the scene; removing it leaves the asset untouched.
+## 7. Chapter 4: Nodes, scenes, signals and groups
 
-## 18. Agents and tools: MCP (what it is and its parts)
+**A student asks how the tree of nodes shown in the editor relates to what actually runs when a Godot game plays. Check each statement that is true.**  *(5 points)*
 
-**An agent remembers a tool name from a tutorial, but the connected server does not list it. Which statements are correct? Check each statement that is true.**  *(5 points)*
+**True: A, B, D** (3 of 5)
 
-**True: D, E** (2 of 5)
+- **A. TRUE.** A property changed on one instance of a scene overrides the value from the source scene for that instance alone.
+  - Why: Changing a property on an instance overrides the value from the packed scene.
+- **B. TRUE.** Code that creates scene instances during play also has to decide who frees them, or unused objects can pile up.
+  - Why: Ownership (who creates and who frees an instance) is the design question; getting it wrong leaks objects or frees something still in use.
+- **C. FALSE.** Every instance of a scene has to be placed in the editor before play, because new instances cannot be created while the game runs.
+  - Why: Scenes can be instanced at run time; the mobs in the example game are created while it plays.
+- **D. TRUE.** The running scene tree can contain nodes that scripts add during play, so it can be larger than the tree shown for a saved scene.
+  - Why: The saved scene and the running tree are not the same; in one example the saved scene held one node while scripts built the level at run time.
+- **E. FALSE.** A signal works by one node reaching into another node and changing its data directly.
+  - Why: With signals no object reaches into another; one emits, and the scene says who listens.
 
-- **A. FALSE.** A name remembered from a tutorial substitutes for the advertised tool definition.
-  - Why: Names and arguments differ between integrations.
-- **B. FALSE.** An input schema is the list of tools a server has installed.
-  - Why: A schema describes one tool's arguments.
-- **C. FALSE.** Renaming a scene object to the tutorial's tool name makes the server advertise that tool.
-  - Why: Object names do not register server operations.
-- **D. TRUE.** Tool discovery means asking the server for the tools it advertises and then calling one of those.
-  - Why: Discovery grounds the call in the live server.
-- **E. TRUE.** Two servers can advertise differently named or shaped tools for the same goal.
-  - Why: Tool catalogs are implementation-specific.
+*Covered in:* Ch 4, 'The scene tree: what is actually running' (the saved scene and the running tree are not the same thing; scripts add nodes at run time), 'Nodes and scenes: composition you can save' (instancing, edit-time and run-time instances, instance overrides, ownership: who creates it, who frees it) and 'Signals: who tells whom' (react without referencing one another; 'No object reaches into another').
 
-## 19. Agents and safety: permissions and untrusted text
+## 8. Chapter 4: Collision (colliders, triggers, layers and masks)
 
-**A server labels an operation read-only, and a studio decides whether an agent may call it automatically. Check each statement that is true.**  *(5 points)*
+**A 2D platformer has a stone floor, a crate that should tumble when pushed, and a hero steered by the player's own code. Check each statement that is true.**  *(5 points)*
 
-**True: B, C, D** (3 of 5)
+**True: B, D, E** (3 of 5)
 
-- **A. FALSE.** A read-only annotation guarantees the process is blocked from writing files.
-  - Why: An annotation is metadata, not a technical limit.
-- **B. TRUE.** A read-only hint is a label from the server about what a tool does.
-  - Why: It describes intent.
-- **C. TRUE.** An annotation is metadata, and an enforced permission is a technical limit.
-  - Why: Only the limit constrains behaviour.
-- **D. TRUE.** Provenance is where software came from and who maintains it.
-  - Why: It informs how much to trust it.
-- **E. FALSE.** A description string performs enforcement.
-  - Why: Enforcement comes from permissions or sandboxing.
+- **A. FALSE.** If the hero's artwork is swapped for a wider picture, its collision shape resizes itself to match the new art.
+  - Why: The collision shape and the sprite are separate; change the art and nothing moves the collision shape.
+- **B. TRUE.** Turning on the display of collision shapes while the game runs lets you compare them with what is drawn.
+  - Why: The debug option makes collision shapes visible in the running project, so you can see where they sit against the art.
+- **C. FALSE.** A body that the physics engine moves, like the crate, is steered best by having your code overwrite its position every frame.
+  - Why: Changing such a body's position or velocity very often may lead to unpredictable behaviour; you give it forces or a starting velocity and the engine moves it.
+- **D. TRUE.** A solid fixed body, like the floor, is never moved by the physics engine, but other bodies collide with it.
+  - Why: A static body is not moved by the physics engine and others collide with it.
+- **E. TRUE.** A body you move yourself, like the hero, gets collision detection but not simulated physics, so your code decides how it moves.
+  - Why: A character body has collision detection but no physics; you move it yourself.
 
-## 20. Agents and checking: claim versus evidence, tests that test
+*Covered in:* Ch 4, 'Four collision objects, and one way around them' (fixed body: 'not moved by the physics engine'; physics body: you set forces or velocity and the engine moves it, and rewriting its transform very often 'may lead to unpredictable behaviors'; character body: 'collision detection, but no physics', you move it), 'The art is not the collider' ('Change the art and nothing moves the capsule') and 'Use It' (showing collision shapes in the running project).
 
-**A test oracle is the source of the expected result in a test. Check each statement that is true about oracles and checks.**  *(5 points)*
+## 9. Chapter 5: Game design documents and requirements
 
-**True: A, C, E** (3 of 5)
+**A coding agent reads an existing Godot project and writes a design document for the game that is already there, marking each claim with how it is known. Check each statement that is true.**  *(5 points)*
 
-- **A. TRUE.** A tolerance lets a position comparison pass when the difference is small.
-  - Why: A tolerance is an allowed difference for numeric results.
-- **B. FALSE.** A negative case proves that the positive case works.
-  - Why: Each case tests its own path.
-- **C. TRUE.** An oracle taken from the code under test is not independent.
-  - Why: An independent oracle comes from the requirement, not from the implementation.
-- **D. FALSE.** Floating-point positions are compared with exact equality because they are stored with perfect precision.
-  - Why: Floating-point results often differ in the last digits, so a tolerance is used.
-- **E. TRUE.** Deliberately breaking the activation path to see the test fail checks that the test can detect the bug.
-  - Why: A test that cannot fail on broken code gives false confidence.
+**True: B, C** (2 of 5)
 
-**Total true statements: 53 of 100.**
+- **A. FALSE.** If the project contains a sprite for a feature, the document can list that feature as a working mechanic.
+  - Why: Sprites do not prove a mechanic; a drawing is not behaviour.
+- **B. TRUE.** A claim marked 'observed' is meant to be something the code actually does, and one marked 'missing' is something the code cannot tell you.
+  - Why: These are the meanings of the evidence tags: observed means the code does it; missing means the code cannot say.
+- **C. TRUE.** To check a claim marked 'observed', the student opens the code it points to and reads it.
+  - Why: An 'observed' claim is checked by reading the code it cites.
+- **D. FALSE.** Numbers the agent finds in the code, such as a jump speed, show the values the team has approved for the final design.
+  - Why: Numbers found in code are observed tuning, not approved design.
+- **E. FALSE.** Once every claim in the recovered document carries a tag, the design stages count as signed off.
+  - Why: A recovered document is not an approval; a person signs each stage, the agent does not.
+
+*Covered in:* Ch 5, 'Provenance tags': [OBSERVED] = the code does this, [INFERRED] = the code strongly implies it, [MISSING] = the code cannot tell you; 'Sprites do not prove a mechanic... a TODO is not a design decision'; numbers found in code are 'observed tuning, not approved design'; 'A tag is a claim about evidence. It is not evidence. The only way to know an [OBSERVED] tag is right is to open the cited line.' Also 'Gates, and who signs them' (a human signs; the agent never signs a gate) and the audit table of nine wrong claims.
+
+## 10. Chapter 6: Shaders
+
+**A student is comparing the different jobs a shader can do in a Godot game. Check each statement that is true.**  *(5 points)*
+
+**True: A, B** (2 of 5)
+
+- **A. TRUE.** A shader can include an optional part that runs for every pixel and every light, which is where it controls how lighting affects a surface.
+  - Why: There is an optional per-pixel, per-light part that handles lighting, and it replaces the built-in lighting when present.
+- **B. TRUE.** There are different kinds of shader for different jobs, for example one for 3D models, one for 2D sprites and interface, and one for the sky.
+  - Why: A shader declares what it draws; the kinds include 3D, 2D, particles, sky and fog.
+- **C. FALSE.** Changing where a shape's corners land in a shader does not move the drawing, which can only be moved by the game's own code.
+  - Why: The corner part sets positions, so moving a corner moves the drawing.
+- **D. FALSE.** The graphics processor runs a shader's pixel part for one pixel at a time, in order, finishing each before starting the next.
+  - Why: A shader is run over many pixels in parallel, many times at once.
+- **E. FALSE.** The part of a shader that colours pixels runs once for the whole shape, so every pixel of the shape gets the same result.
+  - Why: The pixel part runs for every pixel the shape covers, and each run can give a different colour.
+
+*Covered in:* Ch 6, 'Shader types and processor functions' (six shader types, e.g. one for 3D meshes, one for 2D sprites, shapes and UI, one for the sky; vertex part 'runs over all the vertices in the mesh and sets their positions', fragment part 'runs for every pixel covered by the mesh', light part 'runs for every pixel and for every light') and 'A shader is a small program the GPU runs many times at once' (once per vertex, once per pixel covered, optionally once per pixel per light, 'in parallel'); 'Inside a canvas_item shader' (move the vertex position and the drawing moves).
+
+## 11. Chapter 7: Materials (material, shader, texture)
+
+**Ten identical crates in a 3D level use one shared material. A designer wants a single crate to glow red when it is hit. Check each statement that is true about materials.**  *(5 points)*
+
+**True: A, B** (2 of 5)
+
+- **A. TRUE.** A model made of several parts can have a different material on each part, so changing one part's material leaves the others as they were.
+  - Why: A ship model has separate materials for hull, rigging and sails; changing the hull's left the others untouched.
+- **B. TRUE.** The designer can give the hit crate its own copy of the material, or use a setting kept separately for each object, so the other nine are not affected.
+  - Why: Either a duplicated material or a per-object setting gives one object its own value.
+- **C. FALSE.** A setting such as the glow amount is stored on the shader program itself, not on any material.
+  - Why: The values are set on a material; the shader is only the program.
+- **D. FALSE.** The material alone decides the colour a player sees, so a material that looks right in one scene will look right in every other.
+  - Why: Light and camera turn the measurements into colour, so a material is judged under stated lighting.
+- **E. FALSE.** If the game changes a setting on the shared material, the change affects just the crate that was hit.
+  - Why: A change on a shared material affects every object that shares it.
+
+*Covered in:* Ch 6, 'Uniforms and hints: the contract with GDScript': 'Setting a value happens on a material, not on the shader... The ShaderMaterial reference warns that the change affects every node sharing that material, and points to per-instance uniforms or a duplicated material when you need per-node values.' Ch 7, 'A PBR material is a set of measurements, not a picture' (a material that looks right under one light can look wrong under another) and 'Walker example / Hands-on' (the ship's hull, rigging and sails each have their own material; changing the hull's left rigging and sails as they were).
+
+## 12. Chapter 7: Textures (colour, data and normal maps)
+
+**A student copies the textures for a 3D model into a Godot project and notices that each image has import settings. Check each statement that is true about why those settings matter.**  *(5 points)*
+
+**True: B, C, D, E** (4 of 5)
+
+- **A. FALSE.** When an AI agent connects a texture to a material by editing the project's text files, the texture's import settings are adjusted automatically to suit its use.
+  - Why: The automatic detection runs only when the editor draws the texture in a 3D material; editing text leaves the settings as they were.
+- **B. TRUE.** A normal map has its own import setting, so it can be treated as a normal map instead of as an ordinary picture.
+  - Why: The importer has a setting for whether a texture is a normal map.
+- **C. TRUE.** Without mipmaps, which are smaller pre-made versions of a texture, distant surfaces on a 3D model shimmer.
+  - Why: Mipmaps are recommended in 3D; without them distant surfaces shimmer.
+- **D. TRUE.** Textures for a 3D model left in the lossless mode meant for 2D art use more video memory than a compressed mode meant for 3D would.
+  - Why: The lossless mode is the 2D default; the compressed mode is the 3D default and reduces video memory.
+- **E. TRUE.** Import settings decide how an image is prepared before it reaches the graphics processor, for example how it is compressed.
+  - Why: The import file decides what reaches the graphics processor, including compression.
+
+*Covered in:* Ch 7, 'Texture import: the half an agent forgets' (the import file decides what reaches the GPU; compression modes: lossless is the default for 2D, VRAM-compressed the default for 3D and reduces video memory; 'It's recommended to enable mipmaps in 3D. Without them, distant surfaces shimmer'; a normal-map import option; 'The detection trap': Detect 3D and Normal Map Detect run only when the editor's renderer draws the texture in a 3D material, so an agent that edits text leaves import settings unchanged) and the executive summary ('how Godot imports it (compression, mipmaps, whether it is a normal map)'); 'What we actually ran' lists all nine textures imported lossless as a finding.
+
+## 13. Chapter 8: Checking a shader
+
+**A team wants to trust its checks of a shader's colour flash. It writes an automated timing check, a small model that predicts the colours, and a test scene with fixed inputs. Check each statement that is true.**  *(5 points)*
+
+**True: A, B, D** (3 of 5)
+
+- **A. TRUE.** A test scene with fixed inputs is built to be looked at: a person screenshots it and compares sampled pixel colours with the model's predictions.
+  - Why: This is the bench step: fixed inputs, a screenshot, and a comparison with the predicted colours.
+- **B. TRUE.** Before a new check is trusted, it should be tried on a version known to be wrong and on a version known to be right.
+  - Why: Testing the test: it must fail on known-bad code and pass on known-good code, or the check itself may be wrong.
+- **C. FALSE.** A check that compares the fade with the current code's own internal countdown still passes after the fade is correctly rewritten to use a different timer.
+  - Why: A check tied to the implementation fails equally on a correct rewrite; a check tied to the spec survives it.
+- **D. TRUE.** A check that follows the written specification may still need a small tolerance, because the engine's clocks make even correct code differ slightly from the ideal.
+  - Why: The first spec check rejected correct code until its tolerance was reasoned out from the engine's frame and physics timing.
+- **E. FALSE.** A test that confirms the scene is set up with the intended inputs also confirms that the shader draws the expected colours.
+  - Why: A headless setup test passed even on the broken shader; it checks the scene's build, not what is drawn.
+
+*Covered in:* Ch 8, 'Test the spec, not the implementation, and then test the test' (an implementation-coupled check fails on a correct rewrite; a new check must fail on a known-bad and pass on a known-good version), 'The CPU model and the bench' (a bench holds fixed inputs, is screenshotted, and its pixels are compared with the model; a headless test can only check the bench is built right), and 'What we actually ran' (the oracle rejected correct code at the high frame rate until the tolerance was reasoned out).
+
+## 14. Chapter 9: Particle effects
+
+**A mobile game's smoke effect makes the frame rate drop, and a programmer is looking for the cause. Check each statement that is true.**  *(5 points)*
+
+**True: A, E** (2 of 5)
+
+- **A. TRUE.** Large, see-through particles that overlap cost extra to draw, because each covers many pixels and the same pixels get filled again and again.
+  - Why: Large, transparent, overlapping particles cost fill rate; overdraw from big see-through pictures is a main drawing cost.
+- **B. FALSE.** Particles simulated on the graphics processor cost nothing, so there is no need to limit how many an effect has.
+  - Why: Graphics-processor simulation is one of the places particle cost lands, and the particle count is the direct multiplier.
+- **C. FALSE.** A test run with no window can measure what a graphics-processor particle effect costs the graphics hardware.
+  - Why: A headless run uses a dummy renderer that does no graphics work, so it reports such particles as nearly free.
+- **D. FALSE.** An effect that costs little on a powerful desktop computer will cost just as little on a phone.
+  - Why: Fill rate is very expensive on mobile, so a cheap-looking effect on a desktop can be costly on a phone.
+- **E. TRUE.** Particles simulated on the main processor take more main-processor time each frame as their number grows.
+  - Why: Main-processor particles are updated one by one each frame; the measured cost rose steadily with the count.
+
+*Covered in:* Ch 9, 'Where particle cost lands' (main-processor simulation, graphics-processor simulation, and drawing; large, transparent, overlapping quads cost fill rate, which is very expensive on mobile; a headless measurement reports GPU particles as nearly free, a property of the instrument; the particle count is the direct multiplier; overdraw is a cost lever) and the measured main-processor cost rising with particle count.
+
+## 15. Chapter 10: Animation foundations (sprite sheets, rigs, keyframes, inverse kinematics)
+
+**A character has a skeleton of bones with its visible surface attached to them. A designer wants the character's hand to reach toward a target while an animation plays. Check each statement that is true.**  *(5 points)*
+
+**True: A, C, D** (3 of 5)
+
+- **A. TRUE.** Skinning attaches the character's visible surface to the bones, with weights saying how strongly each bone moves each part of the surface.
+  - Why: A surface is skinned to the bones with painted weights, from full influence to none.
+- **B. FALSE.** A skeleton's rest pose is the pose at the end of the most recent animation that played on it.
+  - Why: The rest pose is the skeleton's default pose, which you can return to at any time.
+- **C. TRUE.** Inverse kinematics pulls the end of a chain of bones, such as a hand at the end of an arm, toward a target position.
+  - Why: The solvers in the example pull the head and arms toward a moving target.
+- **D. TRUE.** Inverse kinematics is applied on top of the animation, adjusting the pose that the animation has already produced.
+  - Why: Procedural modifiers such as inverse kinematics always run after the animation has played.
+- **E. FALSE.** Inverse kinematics blends two animation clips together according to a continuous value such as the character's speed.
+  - Why: Blending clips by a value is a blend; inverse kinematics pulls bones toward a target.
+
+*Covered in:* Ch 10, 'Skeletons and IK' (a hierarchy of bones; a surface skinned to the bones with painted weights, where full weight means full influence; the rest pose is the default pose; procedural changes layered on top of animation always run after the animation's playback) and the walker-3d-ik example, where mouse-moved targets make the solvers pull the head and arms toward them.
+
+## 16. Chapter 11: State machines and blending
+
+**A designer adds a lunge attack in which the character's body moves forward as part of the animation, and wants smooth changes between the character's states. Check each statement that is true.**  *(5 points)*
+
+**True: A, D, E** (3 of 5)
+
+- **A. TRUE.** A transition between two states can include a short cross-fade, so the pose changes smoothly instead of cutting at once.
+  - Why: Each transition can carry a cross-fade length; without one the change is a cut.
+- **B. FALSE.** Root motion is the setting that decides how long a transition between two states takes.
+  - Why: The length of a transition's cross-fade is a transition setting; root motion is about where movement comes from.
+- **C. FALSE.** A blend of clips driven by speed is the right tool for a jump that must play its takeoff once started, even if the player lets go of the button.
+  - Why: Blends suit continuous input; a character that must commit to a jump needs states.
+- **D. TRUE.** With root motion, the forward movement of the body comes from the animation itself, as in a lunge that carries the character ahead.
+  - Why: Root motion uses clips that move the character's root as part of the animation, such as a lunge or a vault.
+- **E. TRUE.** Using root motion hands control of the character's movement to the animation, so tests of that movement become tests of animation data.
+  - Why: Root motion hands movement authority to the animation, which changes what a movement test is really testing.
+
+*Covered in:* Ch 11, 'Root motion' (some clips move the root as part of the animation, such as a lunge or a vault; it hands movement authority to the animation, so movement tests become tests of animation data), 'The state machine, as machinery' (a transition has a cross-fade length) and 'BlendSpace: continuous input, continuous pose' (blends suit continuous input and are the wrong tool when the character must commit, such as a jump that has started).
+
+## 17. Chapter 12: Audio and triggers
+
+**A rhythm game plays a short click when the player hits a note well, over a looping background song. Check each statement that is true.**  *(5 points)*
+
+**True: B** (1 of 5)
+
+- **A. FALSE.** A player that can play only one sound at a time layers each new sound on top of the old one, so every rapid hit stays audible.
+  - Why: A new sound cuts off the oldest, so fast hits sound like one hit that keeps restarting.
+- **B. TRUE.** Game logic usually decides when a sound plays, by reacting to an event such as a hit being scored.
+  - Why: Cues are triggered from game events, not by the audio system itself.
+- **C. FALSE.** When the game is paused, sound players keep playing as normal, so a pause menu's click needs no special setup.
+  - Why: Players pause with the game; a pause-menu sound needs a player that keeps running.
+- **D. FALSE.** If a sound player reports that it is playing, that shows players will hear the sound.
+  - Why: 'Playing' is a flag at one instant; it does not show routing, level or that anyone hears it.
+- **E. FALSE.** A sound set to loop still announces that it has finished each time it reaches its end.
+  - Why: A looping sound never reports finishing, because it never ends on its own.
+
+*Covered in:* Ch 12, 'Triggers: signals decide when, not the audio system' (game logic decides when, usually through a signal); 'Polyphony, restart and pause' (one voice by default so a new play cuts off the oldest; the finished notice never fires for a looping stream; players pause with the tree); 'The question' (a playing flag proves only that a flag was true at one instant, not that anyone hears it); 'Import' (looping is an import setting; flip it and the song never ends).
+
+## 18. Chapter 13: Profiling and optimization
+
+**A team's game stutters on its target device, and the team decides to measure before changing anything. Check each statement that is true.**  *(5 points)*
+
+**True: B, C, D, E** (4 of 5)
+
+- **A. FALSE.** A speed-up measured on a desktop tells you exactly how many milliseconds the same change will save on a phone.
+  - Why: A desktop result gives at best a ratio to test on the device, not a prediction of its milliseconds.
+- **B. TRUE.** A timing taken in a headless run (no display) leaves out the graphics processor's work, so it cannot show whether drawing is the problem.
+  - Why: In a headless run draw counts and render times read zero; the numbers are CPU only.
+- **C. TRUE.** Turning on a profiler slows the game while it records, so time the game with it off and use the profiler to find where the time went.
+  - Why: Recording can slow a project significantly; timing is done with the profiler off.
+- **D. TRUE.** Optimization should always be guided by measurement: profile, find the bottleneck, change that one thing, then measure again.
+  - Why: The profile, identify, optimize, repeat loop is the discipline stated for optimization.
+- **E. TRUE.** Repeating a measurement shows how much a result varies, because other work on the machine can change it, so a single run is weak evidence.
+  - Why: Identical code gave very different times between runs; one run is an anecdote.
+
+*Covered in:* Ch 13, 'Frame time is the unit' (always use profiling and timing to guide your efforts, in a loop), 'The human-with-a-screen tools' (the profiler must be started by hand because recording can slow the project; time with it off), 'Headless timing' (draw calls and GPU times read 0 headless), 'My verification' (variance is the machine; one run is an anecdote) and 'Mobile and XR constraints' (a desktop CPU measurement offers a ratio, a hypothesis to test on the device).
+
+## 19. Chapter 14: How game characters decide (state machines, behavior trees)
+
+**An enemy chases the player if it can see them, otherwise searches where it last saw them, otherwise patrols, and its brain is a behavior tree. Check each statement that is true.**  *(5 points)*
+
+**True: A, E** (2 of 5)
+
+- **A. TRUE.** A selector tries its children from left to right and stops at the first one that does not fail, which gives a do-this-otherwise-that priority.
+  - Why: A selector is OR with priority: chase if you can, else search, else patrol.
+- **B. FALSE.** A sequence stops at the first child that succeeds, so it behaves like an either-or choice.
+  - Why: A sequence stops at the first child that does not succeed; it is AND with order. A selector is the either-or.
+- **C. FALSE.** A node must report either success or failure straight away, so an action that takes time holds up the whole tree until it finishes.
+  - Why: A node can also report that it is still running, which tells the tree to come back to it on the next tick.
+- **D. FALSE.** A condition is the kind of leaf that moves the character and keeps reporting that it is still running until it arrives.
+  - Why: That is an action; a condition asks a question and answers success or failure at once.
+- **E. TRUE.** A blackboard is memory shared by the tree's nodes, where they can leave facts such as the last place the player was seen.
+  - Why: The blackboard is the shared memory the leaves read and write.
+
+*Covered in:* Ch 14, 'Behavior trees: priority, re-evaluated or remembered': every node returns SUCCESS, FAILURE or RUNNING (not finished, tick me again); a Condition returns success or failure immediately while an Action moves the guard and usually returns running; a Sequence stops at the first child that does not succeed (AND with order); a Selector stops at the first child that does not fail (OR with priority); the blackboard is the shared memory the leaves read and write.
+
+## 20. Chapter 14: Generating levels (seed, noise, checking)
+
+**A team's validator accepts a generated platformer level as crossable, and a designer asks what that acceptance shows. Check each statement that is true.**  *(5 points)*
+
+**True: A** (1 of 5)
+
+- **A. TRUE.** It shows only that the level fits the validator's model of the player's jumps; things the model leaves out, such as ceilings, could still make it uncrossable.
+  - Why: The model ignores ceilings, run-up distance, the player's width and anything a designer would call fun.
+- **B. FALSE.** It shows the level is fun and fair to play.
+  - Why: The validator checks a playability rule, not fun or fairness.
+- **C. FALSE.** It shows the generator can never produce an impossible level.
+  - Why: One accepted level says nothing about every other level, and the model can still be wrong.
+- **D. FALSE.** It proves that a real player can cross the level.
+  - Why: A validator only models the player; acceptance does not establish that a real player can cross.
+- **E. FALSE.** The validator's numbers for the player's jump are just as trustworthy when taken from memory as when measured on the real player.
+  - Why: A validator is only as good as the numbers it is given, so the real jump is measured first.
+
+*Covered in:* Ch 14, 'Procedural content generation' ('The validator is a model of the game's rules. It is only as good as the numbers you feed it, which is why Lab B measures the player's real jump before writing any validator') and Lab B 'Verify' ('It does not establish that an accepted level can be crossed. The validator's model ignores ceilings, run-up distance before a jump, the player's 14-pixel width, and anything a designer would call fun').
+
+**Total true statements: 48 of 100.**

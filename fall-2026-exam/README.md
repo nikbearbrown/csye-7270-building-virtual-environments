@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-The Fall 2026 exam is **entirely multiple-answer** and tests the **high-level concepts of the whole course**: what a shader is, what a material is, how a collider differs from a trigger, how a sprite sheet differs from a rig, why state machines are useful, what a frame budget is, what MCP is, and how a claim differs from evidence. It is worth 100 points: **20 questions x 5 points.** There are no cases, no code to read and no shader code to write or change. This folder holds two full **practice exams**, each with its answer key in a **separate file**. The practice exams are practice only: the real exam uses different questions.
+The Fall 2026 exam is **entirely multiple-answer** and tests the **high-level concepts of the whole course**: what a shader is, what a material is, how a collider differs from a trigger, how a sprite sheet differs from a rig, what a state machine is for, what a frame budget is, and how an agent's claim differs from evidence. It is worth 100 points: **20 questions x 5 points.** There are no cases, no code to read and no shader code to write or change. This folder holds two full **practice exams**, each with its answer key in a **separate file**. The practice exams are practice only: the real exam uses different questions.
 
 ## What the exam tests
 
@@ -18,30 +18,30 @@ Each question has **five statements, A to E**, and **anywhere from one to four o
 
 ## What the exam covers
 
-Every practice exam has one question on each of these topics, so each one is a sample of the whole course.
+Every practice exam has one question on each of these topics, so each one is a sample of the whole course. The exam is about Godot only, and every question follows the course chapters: each answer key names the chapter passage the question follows.
 
 | # | Topic |
 |---:|---|
-| 1 | Chapter 0: The toolchain (agents, repositories, sandboxes, instruction files) |
-| 2 | Chapter 1: Scenes, nodes and signals |
-| 3 | Chapter 2: Game art and sound assets |
-| 4 | Chapter 3: 3D assets and the Blender pipeline |
-| 5 | Chapter 4: Collision and physics |
-| 6 | Chapter 5: Game design documents and virtual worlds |
-| 7 | Chapter 6: Shader foundations (what a shader is and does) |
-| 8 | Chapter 7: Materials and textures (material, shader, texture) |
-| 9 | Chapter 7: Materials and textures (physically based surface properties) |
-| 10 | Chapter 8: Shader verification (evidence that a shader is right) |
-| 11 | Chapter 9: Particle effects |
-| 12 | Chapter 10: Animation foundations (sprite sheets, rigs, kinematics) |
-| 13 | Chapter 11: Animation and interaction (state machines, blending) |
-| 14 | Chapter 12: Audio and triggers |
-| 15 | Chapter 13: Profiling and optimization |
-| 16 | Chapter 14: Game AI and systems |
-| 17 | Across engines: Godot, Unity and Unreal vocabulary |
-| 18 | Agents and tools: MCP (what it is and its parts) |
-| 19 | Agents and safety: permissions and untrusted text |
-| 20 | Agents and checking: claim versus evidence, tests that test |
+| 1 | Chapter 0: Checking an agent's report against evidence |
+| 2 | Chapter 0: Working safely with an agent (instruction files, permissions, headless runs) |
+| 3 | Chapter 1: Walker, Godot projects and how a game updates |
+| 4 | Chapter 2: Game art and sound (pixel art, asset requests, loops) |
+| 5 | Chapter 3: 3D assets from Blender to Godot |
+| 6 | Chapter 3: Driving Blender with an agent (MCP and scripts) |
+| 7 | Chapter 4: Nodes, scenes, signals and groups |
+| 8 | Chapter 4: Collision (colliders, triggers, layers and masks) |
+| 9 | Chapter 5: Game design documents and requirements |
+| 10 | Chapter 6: Shaders |
+| 11 | Chapter 7: Materials (material, shader, texture) |
+| 12 | Chapter 7: Textures (colour, data and normal maps) |
+| 13 | Chapter 8: Checking a shader |
+| 14 | Chapter 9: Particle effects |
+| 15 | Chapter 10: Animation foundations (sprite sheets, rigs, keyframes, inverse kinematics) |
+| 16 | Chapter 11: State machines and blending |
+| 17 | Chapter 12: Audio and triggers |
+| 18 | Chapter 13: Profiling and optimization |
+| 19 | Chapter 14: How game characters decide (state machines, behavior trees) |
+| 20 | Chapter 14: Generating levels (seed, noise, checking) |
 
 Chapter 15 (the final project) is not examined.
 
@@ -65,14 +65,14 @@ Chapter 15 (the final project) is not examined.
 
 ## What to study
 
-- [Cheat sheet](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/CHEAT-SHEET.md)
-- [Glossary of tested terms](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/GLOSSARY-jargon-midterm.md)
-- [Question bank](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/question-bank/INDEX.md): 678 multiple-answer questions by chapter, with keys and reasons. Some of its questions quote code; the exam does not.
-- [More multiple-answer practice exams](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/practice-exams/) (exam-01 to exam-06, each with a separate `-KEY` file). Some of these also quote code, which the exam does not.
+- The course chapters ([chapters](../chapters/README.md)) and lessons ([modules](../modules/README.md)). Every question follows a passage in the chapters, and each answer key names the passage.
+- The two practice exams above: after you finish one, read the reason under every statement you got wrong.
+
+The older question bank, cheat sheet and glossary in the `interview-bank` repository were written for an earlier version of this exam and cover other engines and code that this exam does not, so they are not needed.
 
 ## Notes
 
 - **Practice only.** The real Fall 2026 exam uses different questions, so do not expect to see any of these on it.
 - **Awaiting a game developer's check.** The keys for the physics, shader, material, audio and animation questions have not yet been verified by a game developer. If a key looks wrong to you on those, say so.
-- **Draft.** The questions are drawn from the draft question bank and have not been signed off by the instructor.
+- **Draft.** The questions were written from the course chapters (and checked against the chapter text by an AI reader, which is not a substitute for the instructor) and have not been signed off by the instructor.
 - **No case questions.** An earlier draft of this exam used seven case questions. That format is no longer used and the old case set has been removed from the repository.

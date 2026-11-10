@@ -6,14 +6,14 @@
 
 The exam is **entirely multiple-answer**: 20 questions, 5 points each, 100 points. Each question has five statements; you decide whether each one is true or false on its own. It tests whether you know **what the course's ideas mean and how each differs from its nearest neighbour** (what a shader is, a material, a collider, a trigger, a sprite sheet, a rig, a state machine, a frame budget, MCP, a claim versus evidence). It does not ask you to read or write code. So preparing means: **practise in that exact format, with the answers hidden, and fix what you miss.**
 
-The exam: fully on paper (no laptop, no phone; pen or pencil on the printed exam). 100 points: 20 multiple-answer questions, five statements each (A to E), each statement true or false on its own, 1 point per statement. A question has anywhere from one to four true statements. You score a point for a true statement you checked and for a false statement you left blank. There is one question on each course chapter from 0 to 14 (Chapter 7 has two) and four questions that run across the course: engine vocabulary, MCP, agent safety, and claim versus evidence. See [README.md](README.md) for the topic list.
+The exam: fully on paper (no laptop, no phone; pen or pencil on the printed exam). 100 points: 20 multiple-answer questions, five statements each (A to E), each statement true or false on its own, 1 point per statement. A question has anywhere from one to four true statements. You score a point for a true statement you checked and for a false statement you left blank. The 20 questions cover the course's Chapters 0 to 14: Chapters 0, 3, 4, 7 and 14 have two questions each and every other chapter has one. See [README.md](README.md) for the topic list.
 
 ## Which practice file to open
 
 Each practice exam has two files:
 
 - **The exam** (`practice-exam-01.md`, `practice-exam-02.md`): the one to **practise from**. Questions only. Answer it cold, on paper, with no answers in sight.
-- **The key, with the questions shown** (`practice-exam-01-KEY.md`, `practice-exam-02-KEY.md`): every question in full, with the true statements marked, a one-line reason under every statement, and the course topic to review. Open it after you finish, or use it to study.
+- **The key, with the questions shown** (`practice-exam-01-KEY.md`, `practice-exam-02-KEY.md`): every question in full, with the true statements marked, a one-line reason under every statement, and the chapter passage the question follows. Open it after you finish, or use it to study.
 
 The plans below say "study keyed answers" in the early days and "attempt cold" later. Use the key file for the first, and the exam file for the second.
 
@@ -50,11 +50,11 @@ Keep two logs from Day 1.
 - Pair list: every pair of terms you confused, plus pairs that sit near each other in the chapters.
 
 Five clusters to review, used in the plans below:
-1. Toolchain, agents, MCP, safety and checking claims (Chapter 0 and the agent topics).
-2. Scenes, 2D and 3D assets, and engine vocabulary (Chapters 1 to 3; Godot, Unity and Unreal words).
-3. Collision, design documents and shader foundations (Chapters 4 to 6).
-4. Materials, shader checking and particles (Chapters 7 to 9).
-5. Animation, audio, performance and game AI (Chapters 10 to 14).
+1. Toolchain, working with an agent, and checking its claims (Chapter 0).
+2. Walker and Godot projects, game art and sound, and 3D assets with Blender (Chapters 1 to 3).
+3. Nodes, scenes and collision; design documents; shader foundations (Chapters 4 to 6).
+4. Materials and textures, checking a shader, and particles (Chapters 7 to 9).
+5. Animation, state machines, audio, performance and game AI (Chapters 10 to 14).
 
 ### 14-day plan (Day 14 = day before the exam)
 | Day | What to do | Time | Why |
@@ -62,15 +62,15 @@ Five clusters to review, used in the plans below:
 | 1 | Practice exam 01, cold, by hand, timed. Mark it with the key. Start both logs. | 1.5-2 h | Pretest; shows your gaps; sets a baseline. |
 | 2 | Build term cards from the chapters' own wording and the pair list. Read the key's reasons for every statement you missed and say why the tempting wrong one fails. Cluster 1: re-read, then say each idea in one sentence without notes. | 75 min | Worked examples while the format is new. |
 | 3 | Cards in both directions (25 min). Cluster 2 and 3: for each chapter, write what each term means and how it differs from its nearest neighbour; check the chapter. | 75 min | Moving from examples to solo work. |
-| 4 | Do the practice questions for clusters 1 to 3 from the question bank (skip any that quote code: the exam has none), covering the answers. Mark and log. | 75 min | Retrieval in exam format. |
+| 4 | Cover the key of practice exam 01 and re-answer only its questions on clusters 1 to 3, with your Day 1 answers hidden. Mark and log. | 75 min | Retrieval in exam format. |
 | 5 | Re-attempt every confident error from Days 1-4. Rewrite each rule until it would stop you from making the same mistake. | 60 min | Hypercorrection. |
-| 6 | Clusters 4 and 5, then a mixed set of 20 bank questions from different chapters, shuffled. | 75 min | Interleaving where categories are easy to confuse. |
+| 6 | Clusters 4 and 5, then re-answer practice exam 01's questions on clusters 4 and 5, shuffled, with the key covered. | 75 min | Interleaving where categories are easy to confuse. |
 | 7 | Rest, or 20 minutes of cards. | 0-20 min | Spacing gap. |
 | 8 | Practice exam 02, full, timed, by hand. Mark it. | 1.5-2 h | Spaced retrieval; measures progress. |
 | 9 | Work the error log: for each miss, write why the wrong answer tempted you and the rule that would have stopped you. Re-test Day 1 confident errors. | 60 min | Delayed re-test; confident errors can return. |
 | 10 | Write three questions of your own, each on a different chapter: five statements, with some true and some plausible but false. Swap with a classmate if you can and mark each other; explain every statement aloud. | 75 min | Thinking like the exam author; partner feedback. (The guide's suggestion; not directly tested.) |
-| 11 | A mixed block of 20 bank questions from different chapters, timed with your per-question minutes. Then review every miss. | 75 min | Speed once accuracy is solid. |
-| 12 | Full rehearsal: practice exam 01 again (it is 11 days since you first saw it) or a fresh mixed set of 20, under exact timing. | 1.5-2 h | Full rehearsal. |
+| 11 | Swap the questions you wrote on Day 10 with a classmate and answer theirs, timed with your per-question minutes. Then review every miss. | 75 min | Speed once accuracy is solid. |
+| 12 | Full rehearsal: practice exam 01 again (it is 11 days since you first saw it), under exact timing. | 1.5-2 h | Full rehearsal. |
 | 13 | Cards only for terms missed twice. Re-read the two chapters where you lost most statements. | 45 min | Targeted and light. |
 | 14 | Ten cards and one chapter's pair list. Pack pens and pencils. Sleep. Nothing new. | 30 min | Protect sleep; avoid late confusion. |
 Avoid reusing a practice exam within 4 days, or you will be recognizing answers rather than retrieving them.
@@ -80,7 +80,7 @@ You lose most of the spacing benefit. Make up for it by testing, never by reread
 | Day | What to do | Time | Why |
 |---|---|---|---|
 | 1 | Practice exam 01, timed, by hand. Mark it. Build a pair list from misses only; make cards in both directions. Read the key's reasons for the chapters you missed most. | 3 h | Diagnose, then worked examples on your gaps only. |
-| 2 | Cards (30 min). Bank questions for your two weakest clusters, answers covered, marked. In the evening, re-attempt Day 1 confident errors. | 3 h | Retrieval with feedback; a same-day gap. |
+| 2 | Cards (30 min). Re-answer practice exam 01's questions on your two weakest clusters, key covered, marked. In the evening, re-attempt Day 1 confident errors. | 3 h | Retrieval with feedback; a same-day gap. |
 | 3 | Practice exam 02, timed. Review only confident errors and your weakest chapters. Stop by early evening and sleep. | 2.5 h | Final rehearsal; protect sleep. |
 | Exam morning | Ten cards. | 15 min | Warm-up only. |
 
@@ -107,36 +107,32 @@ For each pair, make one card with: each term's one-line definition, in the chapt
 Example pairs. Every term below is used and explained in the book text; where the chapter's wording differs, the chapter wins. Each pair names the chapter to reread. This is a study aid, not a list of what will be asked.
 | Pair | Deciding question | Chapter |
 |---|---|---|
+| Claim / evidence | Is it the agent's report, or a result you checked yourself? | 0 |
+| Instruction file / permission | Is it standing knowledge the agent starts each session with, or a rule about which commands it may run? | 0 |
+| Headless run / looking at the screen | Does it check game state and numbers, or what a person sees and hears? | 0, 8 |
+| Per-frame update / fixed-rate physics update | Does it run once per drawn frame, or at a fixed rate? | 1, 4 |
+| Nearest / smooth texture filter | Does a pixel stay a hard block, or do neighbouring pixels blend? | 2 |
+| Collision shape / the picture | Is it the shape the physics engine uses, or what the player sees? Nothing ties them together. | 3, 4 |
+| Script / MCP connection | Is it a saved file you can rerun, or a live conversation with an open program? | 3 |
+| Node / scene / instance | Is it one job, a saved tree of nodes, or one use of a saved scene? | 4 |
+| Signal / group | Is it a message that something happened, or a tag used to call many nodes? | 4 |
 | Collider / trigger | Does it block, or only report an overlap? | 4 |
 | Collision layer / collision mask | Is it what this object is, or what this object looks for? | 4 |
-| Overlap query / raycast | Does it ask what is inside a region, or what a line hits first? | 4 |
+| Design document / brief | Is it the detailed record builders and testers work from, or the short statement of the idea? | 5 |
+| Texture / material / shader | Is it image data, a bundle of settings and textures, or the program that draws? | 6, 7 |
+| Vertex part / pixel part of a shader | Does it run once per corner (position), or once per covered pixel (colour)? | 6 |
+| Colour texture / data texture | Is it display colour, or a number used as stored? | 7 |
+| Albedo / normal map | Is it the base colour of the surface, or a per-pixel direction used for lighting? | 7 |
+| Compile check / looking at the drawn result | Does it show that the code is valid, or that the picture is right? | 8 |
+| Burst / continuous effect | Are the particles born all at once, or at a steady pace? | 9 |
 | Sprite sheet / rig | Does the animation change which image is shown, or move bones that the parts follow? | 10 |
 | Keyframe / interpolation | Is it a value stored at a time, or the rule that fills in between? | 10 |
 | State machine / blend space | Is exactly one state active with transitions between them, or are clips mixed by a continuous value? | 11 |
-| Texture / material / shader | Is it image data, a bundle of settings and textures, or the program that draws? | 6, 7 |
-| Vertex stage / fragment stage | Does it run once per corner (position), or once per covered pixel (colour)? | 6 |
-| Fragment / pixel | Is it a candidate colour for a pixel, or the final element of the image? | 6 |
-| Albedo / normal map | Is it the base colour of the surface, or a per-pixel direction used for lighting? | 7 |
-| Colour texture / data texture | Is it display colour, or a number used as stored? | 7 |
-| Compile check / golden image / run on the target device | Does it show valid syntax, a match with an approved picture, or behaviour on real hardware? | 8 |
-| Emitter / particle / particle system | Is it the source, one element, or the whole effect? | 9 |
-| Additive / alpha blending | Does it add light, or mix by transparency? | 9 |
-| Bus / attenuation | Is it a channel for a group of sounds, or loudness falling with distance? | 12 |
-| Nearest / linear texture filter | Does a texel stay a hard block, or do neighbouring texels blend? | 2 |
-| Sprite sheet / atlas / tileset / tilemap | Is it animation frames, packed images, a library of tiles, or the level grid? | 2 |
-| Normals / normal map | Is it a surface direction on the mesh, or a texture that fakes detail? | 3 |
-| Prototype / vertical slice / MVP | Is it a build to answer a question, a thin polished piece, or the smallest releasable game? | 5 |
-| Mechanic / dynamic / aesthetic | Is it a rule built, behaviour that emerges, or a feeling? | 5 |
+| Bus / positional sound | Is it a channel for a group of sounds, or a sound with a place in the world? | 12 |
 | Frame time / FPS / frame budget | Is it milliseconds per frame, frames per second, or the longest allowed frame time? | 13 |
-| CPU-bound / GPU-bound | Does game logic and draw preparation set the frame length, or shading work? | 13 |
-| Finite state machine / behavior tree | Is one state active with transitions, or are children tried in priority order from a root? | 14 |
-| Steering / pathfinding | Is it per-frame movement toward or away from something, or a route to follow? | 14 |
-| Scene / level / map | What does each engine call a saved arrangement of objects? | Engine vocabulary |
-| MCP tool / resource / prompt | Is it an operation, readable content, or a reusable template? | MCP |
-| MCP host / client / server | Is it the app you work in, its connection, or the service offering tools? | MCP |
-| Label / enforcement | Is it a tag from the server, or a technical limit? | Agent safety |
-| Least privilege / scope | Is it the narrowest permission that does the job, or what a grant covers? | Agent safety |
-| Claim / evidence | Is it the agent's report, or a result you checked yourself? | 0 and checking |
+| CPU-bound / GPU-bound | Does game logic and draw preparation set the frame length, or drawing work? | 13 |
+| State machine / behavior tree | Is one state active with transitions, or are children tried in priority order from a root? | 14 |
+| Seed / noise | Does it make a level repeatable, or give smoothly varying values? | 14 |
 
 Make cards in both directions: definition -> term, and term -> "which description fits?" Practice in one direction transfers poorly to the other [3]. Shuffle within a cluster of similar terms, not across unrelated ones [4].
 
@@ -145,7 +141,7 @@ Make cards in both directions: definition -> term, and term -> "which descriptio
 2. Find the word that carries the meaning: usually the technical term or a qualifier ("always", "only", "guarantees", "never").
 3. Ask: is this term the correct name for exactly what is described? Common traps are:
    - **swapped definitions:** the right two terms with their meanings exchanged;
-   - **the right term with the wrong condition:** true in one engine or setting, stated as true everywhere;
+   - **the right term with the wrong condition:** true in one setting, stated as true everywhere;
    - **a near-synonym swapped in:** "fragment" for "pixel", "normals" for "normal map";
    - **a qualifier that makes the statement too strong.** A strong word often makes a statement false, but not always: check the meaning, not the word.
 4. Mark it and move on. Do not count how many you have marked true; there is no quota (one to four are true).
@@ -163,7 +159,7 @@ For every missed statement, log the deciding word and a one-line rule (for examp
 | Marking the answer you recognise rather than the one you can explain. | Say why the nearest wrong statement is false. |
 | Judging statements against each other, or assuming one true statement per question. | Judge each alone; no quota [9]. |
 | Treating "always", "only" and "never" as automatically false. | Check the meaning; some strong-sounding statements are true. |
-| Learning a term in one engine and assuming it holds in all three. | Note where a word means different things in Godot, Unity and Unreal. |
+| Answering from another engine or from general games experience instead of from what the course teaches. | The exam is about Godot and follows the course text; where your experience differs, the course text wins. |
 | Practising only on screen. | Every timed drill on paper. |
 | Spending the whole sitting on early questions and leaving boxes undecided. | Fixed minutes per question; an undecided box counts as "false" [12]. |
 | Repeating one practice exam until you remember the answers. | Leave at least 4 days; use a fresh mixed set. |

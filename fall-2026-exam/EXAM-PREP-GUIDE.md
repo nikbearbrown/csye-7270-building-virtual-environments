@@ -6,7 +6,7 @@
 
 The current public format is **100 points: twenty multiple-answer questions × 5 points**. Each question has **five statements, A to E**; one to four of them are true. Each statement is true or false on its own and is worth **1 point**: you score a point for a true statement you checked and for a false statement you left blank. There are no case questions, no code to read and no shader code to write or change. Read each statement by itself: a strong word such as "always" often makes a statement false, but not every strong-sounding statement is false. See the [public exam overview](README.md) for the topic list and the exact marking rule.
 
-Every practice exam has one question on each chapter from 0 to 14 (Chapter 7 has two) and four questions that run across the course: engine vocabulary, MCP, agent safety, and claim versus evidence. Practise recognising what an idea means and how it differs from the one next to it, not memorizing editor menu locations.
+Every practice exam covers the course's Chapters 0 to 14: Chapters 0, 3, 4, 7 and 14 have two questions each and every other chapter has one. Practise recognising what an idea means and how it differs from the one next to it, not memorizing editor menu locations.
 
 ## 1. What the evidence says
 
@@ -48,24 +48,24 @@ These are adjustable study sessions, not required workloads. Include breaks and 
 | 1 | Attempt public practice 01 cold; then check it and start both logs. | Exam-length sitting plus review |
 | 2 | Review cluster 1 below; make two-direction term cards; read the key's reasons for what you missed. | 60–75 min |
 | 3 | Review clusters 2 and 3; for each term, write what it is and how it differs from its nearest neighbour. | 60–75 min |
-| 4 | Answer bank questions for clusters 1 to 3 with the answers covered (skip any that quote code; the exam has none). | 60–75 min |
+| 4 | Cover the key of practice 01 and re-answer only its questions on clusters 1 to 3. | 60–75 min |
 | 5 | Retest confident errors; rewrite each rule until it would stop the mistake. | 45–60 min |
 | 6 | Review clusters 4–5; then mix questions from different chapters. | 60–75 min |
 | 7 | Rest or brief spaced retrieval from the pair list. | 0–20 min |
 | 8 | Attempt public practice 02 cold, then check every statement. | Exam-length sitting plus review |
 | 9 | Revisit the oldest errors. Explain why the tempting alternative is not supported. | 45–60 min |
 | 10 | Write three five-statement questions from public lessons, each with some true and some plausible false statements. Exchange with a peer and explain every statement. | 60–75 min |
-| 11 | A mixed block of 20 bank questions from different chapters, timed. Review every miss. | 60–75 min |
+| 11 | Answer a classmate's Day 10 questions, timed. Review every miss. | 60–75 min |
 | 12 | Full rehearsal using practice 01 again (it is 11 days since you first saw it) or a fresh mixed set; do not assume a third full practice paper exists. | Exam-length sitting plus review |
 | 13 | Retest the most consequential remaining errors and explain one idea aloud. | 30–45 min |
 | 14 | Light retrieval, check logistics, and protect sleep. | 20–30 min |
 
 Course-specific clusters:
-1. Toolchain, agents, MCP, safety and checking claims (Chapter 0 and the agent topics).
-2. Scenes, 2D and 3D assets, and engine vocabulary (Chapters 1 to 3).
-3. Collision, design documents and shader foundations (Chapters 4 to 6).
-4. Materials, shader checking and particles (Chapters 7 to 9).
-5. Animation, audio, performance and game AI (Chapters 10 to 14).
+1. Toolchain, working with an agent, and checking its claims (Chapter 0).
+2. Walker and Godot projects, game art and sound, and 3D assets with Blender (Chapters 1 to 3).
+3. Nodes, scenes and collision; design documents; shader foundations (Chapters 4 to 6).
+4. Materials and textures, checking a shader, and particles (Chapters 7 to 9).
+5. Animation, state machines, audio, performance and game AI (Chapters 10 to 14).
 
 When repeating a question, explain the reasoning before recalling the answer. A familiar score is not evidence that you can transfer the concept to a new scenario.
 
@@ -74,7 +74,7 @@ When repeating a question, explain the reasoning before recalling the answer. A 
 | Day | Work |
 |---|---|
 | 1 | Diagnose with practice 01. Review the two weakest clusters and make cards only for important gaps. |
-| 2 | Answer bank questions for your weakest clusters with the answers covered; inspect feedback; retest earlier mistakes after a break. |
+| 2 | Re-answer practice 01's questions on your weakest clusters with the key covered; inspect feedback; retest earlier mistakes after a break. |
 | 3 | Rehearse with practice 02, review remaining gaps, and stop intensive work early enough to rest. |
 
 Short preparation cannot reproduce two weeks of spacing. Focus on accurate reasoning and targeted reading rather than memorizing complete answers.
@@ -109,30 +109,32 @@ For each pair, make a card with a definition, deciding question, original exampl
 
 | Terms | Deciding distinction |
 |---|---|
-| Node / scene / instance | A node is one element of the running tree; a scene is a reusable saved tree; an instance is a particular use of it. |
-| Collider / trigger | Does it block, or only report an overlap? |
-| Collision layer / collision mask | Which category does the object belong to, and which categories does the relevant detector inspect? Direction matters. |
-| Collision shape / visual mesh | What geometry participates in contact, and what geometry is drawn? Their bounds need not match. |
-| Texture / material / shader | Is it sampled image data, surface configuration, or a program controlling rendering? |
-| Vertex stage / fragment stage | Does it run once per corner (position), or once per covered pixel (colour)? |
-| Colour texture / data texture | Does the channel represent display colour or a value such as roughness? Check how it is sampled. |
-| Sprite sheet / rig | Does the animation change which image is shown, or move bones that attached parts follow? |
-| Keyframe / interpolation | Is this a stored value at a time, or the rule determining values between keys? |
-| State machine / blend space | Does the system choose one state with transitions, or combine clips by a continuous value? |
-| Bus / attenuation | Is it a channel for a group of sounds, or loudness falling with distance? |
-| Frame rate / frame time / frame budget | Frames per second is not milliseconds per frame; the budget is the longest frame time that meets the target. |
-| CPU-bound / GPU-bound | Does game logic and draw preparation set the frame length, or shading work? |
-| Finite state machine / behavior tree | Is one state active with transitions, or are children tried in priority order from a root? |
-| MCP tool / resource / prompt | Is it an operation, readable content, or a reusable template? |
 | Claim / evidence | Is it the agent's report, or a result you checked yourself? |
+| Instruction file / permission | Is it standing knowledge the agent starts each session with, or a rule about which commands it may run? |
+| Collision shape / the picture | Is it the shape the physics engine uses, or what the player sees? Nothing ties them together. |
+| Script / MCP connection | Is it a saved file you can rerun, or a live conversation with an open program? |
+| Node / scene / instance | Is it one job, a saved tree of nodes, or one use of a saved scene? |
+| Signal / group | Is it a message that something happened, or a tag used to call many nodes? |
+| Collider / trigger | Does it block, or only report an overlap? |
+| Collision layer / collision mask | Is it what this object is, or what this object looks for? |
+| Texture / material / shader | Is it image data, a bundle of settings and textures, or the program that draws? |
+| Vertex part / pixel part of a shader | Does it run once per corner (position), or once per covered pixel (colour)? |
+| Colour texture / data texture | Is it display colour, or a number used as stored? |
+| Sprite sheet / rig | Does the animation change which image is shown, or move bones that the parts follow? |
+| Keyframe / interpolation | Is it a value stored at a time, or the rule that fills in between? |
+| State machine / blend space | Is exactly one state active with transitions between them, or are clips mixed by a continuous value? |
+| Bus / positional sound | Is it a channel for a group of sounds, or a sound with a place in the world? |
+| Frame time / FPS / frame budget | Is it milliseconds per frame, frames per second, or the longest allowed frame time? |
+| CPU-bound / GPU-bound | Does game logic and draw preparation set the frame length, or drawing work? |
+| State machine / behavior tree | Is one state active with transitions, or are children tried in priority order from a root? |
 
-These are study aids, not a complete syllabus or a claim that these particular terms will appear. Prefer the course's explicitly stated usage, but ask about a factual conflict or a term whose meaning varies across fields or engines.
+These are study aids, not a complete syllabus or a claim that these particular terms will appear. Prefer the course's explicitly stated usage, but ask about a factual conflict or a term whose meaning varies across fields.
 
 ### Judge each statement independently
 
 1. Identify the claim and its qualifiers.
 2. Work out whether the stated conditions are enough. For a number, verify the denominator, units and assumptions.
-3. Look for the usual traps: two terms with their meanings swapped, the right term with the wrong condition (true in one engine, stated as true in all), a near-synonym swapped in, and a qualifier that makes the statement too strong.
+3. Look for the usual traps: two terms with their meanings swapped, the right term with the wrong condition (true in one setting, stated as true in all), a near-synonym swapped in, and a qualifier that makes the statement too strong.
 4. Use a counterexample when evaluating a universal claim. "Always" is not automatically false, and a cautious-sounding sentence is not automatically true.
 5. Mark the statement according to its meaning and the printed marking instructions, not a guessed answer pattern. Do not count how many you have marked true; there is no quota.
 6. During review, explain why the nearest wrong alternative fails. Retest high-confidence errors later.
@@ -148,7 +150,7 @@ The published rules score each of the five statements separately: correctly chec
 | Marking the statement you recognise rather than the one you can explain | Say why the nearest wrong statement is false. |
 | Assuming one true statement per question, or judging statements against each other | Judge each alone; one to four are true. |
 | Treating "always", "only" or "never" as automatically false | Check the meaning; some strong-sounding statements are true. |
-| Assuming a term means the same thing in every engine | Note where Godot, Unity and Unreal use a word differently. |
+| Answering from another engine or from general games experience instead of from what the course teaches | The exam is about Godot and follows the course text; where your experience differs, the course text wins. |
 | Treating completion as verification | Identify the observable result and the appropriate source of evidence. |
 | Using an AI answer as proof of understanding | Attempt cold first, then critique help against public sources. |
 | Spending the whole sitting on early questions | Use the announced timing; an undecided box counts as "false". |
@@ -165,7 +167,7 @@ Can you say what each idea in each chapter is, name its nearest neighbour, and s
 - [Exam overview](README.md).
 - [Practice exam 01](practice-exam-01.md) and [practice exam 02](practice-exam-02.md). Open each matching key only after attempting the student file.
 - [Chapter map](../chapters/README.md) and [modules](../modules/README.md).
-- The exam overview links the tested glossary and additional public multiple-answer bank. Their legacy filenames may say "midterm"; this document is an **exam preparation guide**, not a new midterm specification. Some bank questions quote code; the exam does not.
+- This document is an **exam preparation guide**, not a specification of the exam. The older question bank, cheat sheet and glossary in the `interview-bank` repository were written for an earlier version of the exam; they cover other engines and code that this exam does not.
 
 This guide uses the public overview as of 9 November 2026. It does not reproduce private examination questions, solutions, topic allocations or answer patterns. The instructor's current examination sheet controls scope, duration and permitted materials.
 
