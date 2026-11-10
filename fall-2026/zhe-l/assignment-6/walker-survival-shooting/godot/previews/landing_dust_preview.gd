@@ -9,6 +9,8 @@ extends Node3D  # Root-node script of the preview scene landing_dust_preview.tsc
 ## Nothing listens to the player's landing here: the frames are fixed, so the strip is the same on every run.
 ## The two captures: retrigger off (read frames 10-60) and retrigger on (read frames 25, 27, 30, 35), once each over each background.
 ## Command-line switches after "--" override the exports: "dark" picks the dark background, "retrigger" turns the second landing on.
+## The preview's instance of the effect has use_fixed_seed on (seed 7270, set in landing_dust_preview.tscn), so every capture round scatters the
+## particles the same way and before/after comparisons only show the settings change. The effect scene itself keeps random seeds, so repeats vary in the game.
 
 # ============================================================
 # Constants: the frames and the in-game camera rig, from CHANGE-BRIEF and player.tscn
