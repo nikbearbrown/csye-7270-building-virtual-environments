@@ -41,6 +41,12 @@
 - The one known failure: `FAIL base.tscn: 3 Light3D nodes (got 4)` (`logs/test_materials_60fps.log`), from `test_materials.gd` lines 369–370 counting every `Light3D`; the extra one is `ScreenTabletLight` (`player.tscn` line 56). Report "168 passed, 1 failed", never "all pass".
 - `screen_glow_check.gd` and `test_materials.gd` load `res://base.tscn` (lines 16 and 30); `a3_asset_check.gd` too (line 101). Whatever is added to `base.tscn` must keep these results.
 
+### Headless facts (observed on this machine, Godot 4.7.2 `--headless`)
+- A headless run uses a dummy renderer: it draws no particles and runs no GPU particle process. Node state (emitting, one_shot, amount_ratio, visibility, instance counts) is observable; the look is not. (2026-11-10: `DisplayServer.get_name()` = `headless`, `RenderingServer.get_rendering_device()` = null, adapter name empty; `emitting`, `one_shot`, `amount_ratio` and `visible` read back; a one-shot node's `emitting` turned false after its lifetime; `capture_aabb()` returned an empty AABB.)
+- A GPU effect's headless CPU price is near zero by construction. (2026-11-10: 60 headless frames with a 24-particle `GPUParticles3D` took 1 ms of wall time.)
+- Frame strips come from a windowed Movie Maker run, which I start.
+- `--fixed-fps` pins each frame's `delta`; physics runs at the default 60 ticks per second (no `physics_ticks_per_second` in `godot/project.godot`). (Kept from Assignment 5.)
+
 ## Current change
 
 @CHANGE-BRIEF.md
@@ -57,6 +63,7 @@
 - Material switches are properties, not Godot 3 `flags_*` / `params_*`: `shading_mode`, `transparency`, `blend_mode`, `vertex_color_use_as_albedo`, `billboard_mode`, `albedo_texture`. Shadows: `cast_shadow` on the node.
 - Velocity is the `initial_velocity_min` / `initial_velocity_max` pair. The brief records that 4.7.2's ClassDB still also lists `initial_velocity` (`CHANGE-BRIEF.md` line 276), so a write to it may not fail; read values back to prove a setting took effect.
 - I could not check the other property names against 4.7.2 here (no engine run was allowed outside this repo). The names in the brief's tables are the Godot 4.x names as I know them; before relying on one, confirm it with `ClassDB.class_get_property_list()` or by reading it back in a headless test, and say so if it is missing instead of guessing a replacement.
+- Review (2026-11-09, ClassDB on 4.7.2): every property name in the brief's tables exists on its class (`ParticleProcessMaterial`, `GPUParticles3D`, `QuadMesh`, `StandardMaterial3D`, `GradientTexture2D`). `lifetime_randomness` is on `ParticleProcessMaterial`, not on `GPUParticles3D`. `restart()` takes one argument, `keep_seed`.
 
 ## Out of scope
 
@@ -75,9 +82,9 @@
 - Where `landing_dust.tscn` is instanced (the brief says "in the world"; I assume `base.tscn`, not confirmed). Whether `light_dust.tscn` is placed by its own transform at (0, 1.45, -3.20) or under another node is not stated.
 - Whether `landed` should fire for every `Humanoid` or only the player; the brief says "the player lands".
 - If the dust node's `_ready()` runs before `CeilingLights._ready()`, `is_lights_on()` returns the field default `true`, not `start_on` (`ceiling_lights.gd` lines 24, 29, 37). Order in `base.tscn` decides this.
-- The rendered frame strips use `--quit-after` and real drawing; `run-test.sh` always passes `--headless` (line 56), so those captures cannot run through it. How they are run is not recorded.
+- The rendered frame strips use `--quit-after` and real drawing; `run-test.sh` always passes `--headless` (line 56), so those captures cannot run through it. How they are run is not recorded. Review: they are windowed Movie Maker runs that I start (see "Headless facts").
 - The preview scenes for the frame strips (light off at start, retrigger switch) do not exist yet; their paths are not named.
 - New test file names (configuration, event, logic) are not named in the brief.
 - Brief "Unconfirmed" items (lines 274–277): whether `restart()` re-runs `preprocess`; whether a hidden `GPUParticles3D` keeps simulating in 4.7.2; why `initial_velocity` still exists; whether 0.006–0.012 m specks are visible.
-- The `interact` action's key event has `"device": 16` (`project.godot` line 82), not `-1` like the others; I did not check whether this affects F in the running game.
+- The `interact` action's key event has `"device": 16` (`project.godot` line 82), not `-1` like the others; I did not check whether this affects F in the running game. Review: 16 is `InputEvent.DEVICE_ID_KEYBOARD`, which the 4.7 editor writes for keyboard bindings; it is not an error.
 - Which `godot_console` / `godot` is on `PATH` on the test machine is not recorded; set `GODOT` if neither is found.
