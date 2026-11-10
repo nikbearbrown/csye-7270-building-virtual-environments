@@ -59,6 +59,27 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 
 ---
 
+### 2026-11-10 — A6 Step 2: the agent builds Effect A, my first look at it, and the two mutations
+
+- **Date and what I was working on:** 2026-11-10. A6 Step 2: having another agent session build Effect A's (landing dust) scene, configuration test and preview scene from the assignment's prompt-2; looking at the preview myself first, capturing the r0 strips and writing my first verdict; then the two mutations.
+- **I tried / expected:** Running the assignment's Step 2 command (file edits and `run-test.sh` allowed, `godot/shaders/` refused) in the A6 folder. I expected to see the effect in the game.
+- **What happened:**
+  - Result event: `success`, `end_turn`, 26 turns, about 6 minutes, about USD 1.89; 4 permission denials: two compound read commands, one test call with a `GODOT=` prefix, and one direct run of the preview. After the denial it reran through `./scripts/run-test.sh`, so the test really ran. `git diff --stat godot/shaders/` and `scripts/run-test.sh` were unchanged.
+  - Configuration test: 157 passed, exit 0; Claude reran it with the same result. Every value in the scene matches the brief's two tables. The agent added one setting the brief does not name, `billboard_keep_scale = true`, and said why; the camera looks down 30°, and the dark background spot was its guess.
+  - It did not turn on the fixed seed for the preview's instance as the assignment asks. The review added it (preview instance only, seed 7270); the effect scene itself keeps random seeds.
+  - I first started the game: the light switch worked both ways, but I saw no particles. Effect A is wired into the game only in Step 3, and Effect B is not built yet. I saw it once I ran the preview scene from the command line.
+  - Watching the preview windowed, the ring seemed to appear "the moment the capsule spawns": a windowed run has no fixed frame rate, so frame 10 came less than 0.1 s after the start. In the strips, with `--fixed-fps 30`, frame 10 is at 0.33 s, and the picture first changes on frame 11.
+  - The r0 strips: the dust is specks a few pixels wide, no longer visible after about 0.7 s; many are hidden by the capsule (emission radius 0.2 m, smaller than the capsule's 0.3 m); the ground ring is more noticeable than the dust; the "dark" background is not dark; the retrigger clears the old effect and replays 0.5 m away, as the rule says.
+  - Mutation 1 (`initial_velocity_min` renamed to Godot 3's `initial_velocity`): the test exited 1, but **the engine reported nothing** and the effect still fired. In 4.7.2, `initial_velocity` is an editor-only Vector2 (min, max); the float written in the scene file is silently dropped, and min becomes 0.
+  - Mutation 2 (`amount` 24 to 30, brief unchanged): the test exited 1. The scene was restored after each; the clean test passed 157.
+  - Movie Maker also wrote a `frame.wav` for each run; Claude's deletion was stopped by an automatic permission check and went ahead only after I confirmed.
+- **What I did:** Ran the agent command in Git Bash; chose to commit its output unedited first and add the fixed seed afterwards; ran the preview and the four captures and watched them slowed down; wrote my first verdict: the dust is not noticeable, and what I want is "a number of grey cloud-like puffs, not a number of dots"; agreed to deleting the extra frames; agreed to the two mutations.
+- **What Claude or another person contributed:** Effect A's scene, configuration test and preview scene were written by another Claude Code session (Opus 5.5) from prompt-2. Claude Code (Opus 5.5) in my main session prepared prompt-2.txt (identical to the assignment text), read the result event and the diff, checked the scene values one by one, added the fixed seed, gave me the capture commands, matched the PNG numbering, read the strips, ran the two mutations and wrote TEST-REPORT, and replaced the local paths in the transcript (the raw transcript stays in my local folder).
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `walker-survival-shooting/prompt-2.txt`, `session-2.jsonl`, `godot/effects/landing_dust.tscn`, `godot/tests/test_landing_dust_config.gd`, `godot/previews/` (agent output unedited 6f3c739b, fixed seed 1df1db72); `captures/landing_dust/r0/`, `TUNING.md`, `TEST-REPORT.md`, `logs/mutation_*.log` (9fff7906). Next: Step 3, wiring Effect A to the `landed` signal and testing its state; the "cloud" change is left for Step 4.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -66,3 +87,4 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 | 2026-11-10 | Start Assignment 6: the Godot project as the A6 starting point (light switch, `CeilingLights`, on-screen tablet), the A6 `scripts/run-test.sh`, baseline logs (55 / 24×3 / 2 / 168 passed + 1 existing failure), the A5 CLAUDE.md copied unchanged, and SOURCES with the light switch's asset row |
 | 2026-11-10 | Add the A6 CHANGE-BRIEF (both effects' intent, settings, rules, strip predictions, predicted failures, budgets and short answers), committed before the first agent prompt |
 | 2026-11-10 | A6 Step 1: the agent's CLAUDE.md draft (unedited), prompt-1, the session transcript (local paths replaced), and my review (a separate commit) |
+| 2026-11-10 | A6 Step 2: Effect A as built by the agent (scene, configuration test, preview scene; unedited), prompt-2, the session transcript (local paths replaced), the fixed seed on the preview's instance, the r0 strips, my first verdict and Claude's reading (TUNING), and the two mutations (TEST-REPORT) |
