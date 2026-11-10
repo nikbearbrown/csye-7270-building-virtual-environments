@@ -70,4 +70,4 @@ Chapter 15 (the final project) is not examined.
 - **Practice only.** The real Fall 2026 exam uses different questions, so do not expect to see any of these on it.
 - **Awaiting a game developer's check.** The keys for the physics, shader, material, audio and animation questions have not yet been verified by a game developer. If a key looks wrong to you on those, say so.
 - **Draft.** The questions are drawn from the draft question bank and have not been signed off by the instructor.
-- **Cases retired.** An earlier draft of this exam used seven case questions. That format is no longer used; the old case set in `../exams/case-exam/` is kept for reference only.
+- **No case questions.** An earlier draft of this exam used seven case questions. That format is no longer used and the old case set has been removed from the repository.
