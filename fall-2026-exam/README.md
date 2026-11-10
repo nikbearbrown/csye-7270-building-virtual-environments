@@ -58,6 +58,11 @@ Chapter 15 (the final project) is not examined.
 | [practice-exam-02.md](practice-exam-02.md) | a second exam; no question repeats from exam 01 |
 | [practice-exam-02-KEY.md](practice-exam-02-KEY.md) | answers and a reason for every statement |
 
+## How to prepare
+
+- [HOW-TO-PREPARE.md](HOW-TO-PREPARE.md): a study guide for this exam: what the research says, a 14-day and a 3-day plan, how to learn each idea and how to practise the multiple-answer questions, and the common mistakes.
+- [EXAM-PREP-GUIDE.md](EXAM-PREP-GUIDE.md): a shorter preparation guide for the same exam, with course-specific review pairs and the same plans.
+
 ## What to study
 
 - [Cheat sheet](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/CHEAT-SHEET.md)
