@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://blnstghhwkhvc"]
+
+[ext_resource type="PackedScene" uid="uid://babynifwykyvo" path="res://characters/human/humanoid/humanoid.tscn" id="1_xxgcw"]
+[ext_resource type="Script" uid="uid://cvr1q6l1ib7b3" path="res://characters/human/player/player_controller.gd" id="2_controller"]
+[ext_resource type="PackedScene" uid="uid://bt1mbvrpgjc6g" path="res://items/tablet/tablet_device.tscn" id="3_tablet"]
+[ext_resource type="Script" uid="uid://cm3ee5gqgwynj" path="res://characters/human/player/screen_tablet.gd" id="4_screen"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_arm"]
+radius = 0.2
+
+[node name="Player" unique_id=145051725 instance=ExtResource("1_xxgcw")]
+
+[node name="PlayerController" type="Node3D" parent="." index="2" unique_id=904077733]
+script = ExtResource("2_controller")
+
+[node name="CameraPivot" type="Node3D" parent="PlayerController" index="0" unique_id=523571452]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="PlayerController/CameraPivot" index="0" unique_id=1680660108]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, 0)
+shape = SubResource("SphereShape3D_arm")
+spring_length = 2.2
+
+[node name="ThirdPersonCameraPosition" type="Marker3D" parent="PlayerController/CameraPivot/SpringArm3D" index="0" unique_id=222368465]
+
+[node name="FirstPersonCameraPosition" type="Marker3D" parent="PlayerController/CameraPivot" index="1" unique_id=1226852724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+
+[node name="PlayerCamera" type="Camera3D" parent="PlayerController" index="1" unique_id=1894701924]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 1.45, 0)
+
+[node name="ScreenTabletLayer" type="CanvasLayer" parent="PlayerController" index="2" unique_id=1462093817]
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="PlayerController/ScreenTabletLayer" index="0" unique_id=873015642]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="PlayerController/ScreenTabletLayer/SubViewportContainer" index="0" unique_id=1930456021]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+msaa_3d = 2
+size = Vector2i(2048, 1152)
+render_target_update_mode = 4
+
+[node name="ScreenTabletCamera" type="Camera3D" parent="PlayerController/ScreenTabletLayer/SubViewportContainer/SubViewport" index="0" unique_id=402718364]
+projection = 1
+current = true
+size = 0.537
+
+[node name="ScreenTabletLight" type="DirectionalLight3D" parent="PlayerController/ScreenTabletLayer/SubViewportContainer/SubViewport" index="1" unique_id=1175320946]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0)
+
+[node name="ScreenTablet" type="Node3D" parent="PlayerController/ScreenTabletLayer/SubViewportContainer/SubViewport" index="2" unique_id=691847203]
+script = ExtResource("4_screen")
+
+[node name="ShownSlot" type="Marker3D" parent="PlayerController/ScreenTabletLayer/SubViewportContainer/SubViewport/ScreenTablet" index="0" unique_id=1588203479]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.15, -0.35)
+
+[node name="HiddenSlot" type="Marker3D" parent="PlayerController/ScreenTabletLayer/SubViewportContainer/SubViewport/ScreenTablet" index="1" unique_id=264930175]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, -0.15, -0.35)
+
+[node name="TabletDevice" parent="PlayerController/ScreenTabletLayer/SubViewportContainer/SubViewport/ScreenTablet" index="2" unique_id=1039486721 instance=ExtResource("3_tablet")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.15, -0.35)
