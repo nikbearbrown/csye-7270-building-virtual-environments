@@ -1,298 +1,177 @@
 # CSYE 7270 Building Virtual Environments: Fall 2026 practice exam 02
 
-**PRACTICE ONLY. The real Fall 2026 exam uses different cases and different questions.** The answers are kept in a separate file for after you finish.
+**PRACTICE ONLY. The real Fall 2026 exam uses different questions.** The answers are kept in a separate file for after you finish.
 
 Name: ______________________
 
-**100 points = Part A (7 cases x 10 points = 70) + Part B (6 multiple-answer questions x 5 points = 30).**
-Suggested time: Part A about 6 to 7 minutes per case, Part B about 2 minutes per question.
+**100 points = 20 multiple-answer questions x 5 points.** Suggested time: about 60 minutes (about 3 minutes per question).
 
 ## How to answer
 
-- **Part A.** Each case gives a scenario, the instruction given to a coding agent, and the agent's report. The report sounds confident and contains **one flaw**. Answer the four questions in plain words. Use the course's exact terms where you know them. Short rough English that names the real problem earns the same as polished writing; grammar earns nothing.
-- **Part B.** Each question has five statements, A to E. Check the statements that are true. Each statement is worth 1 point, true or false on its own: you score a point when you check a true statement or leave a false one blank.
-- The agent reports are written by the course author for illustration. They are not sampled runs of any real agent.
+- Each question has five statements, A to E. Check the statements that are true. A question can have anywhere from one to four true statements.
+- Each statement is worth 1 point, true or false on its own: you score a point when you check a true statement and a point when you leave a false statement blank.
+- The exam tests what the ideas of the course mean and how they differ. It does not ask you to read or write code.
+- Read each statement by itself. A strong word such as "always" often makes a statement false, but not every strong-sounding statement is false.
 
 ---
 
-# Part A: Cases (70 points)
+**1.** A coding agent runs in a sandbox that lets it write inside the project folder. During an import step the engine prints an error that it cannot save its settings file, which lives in the user's home directory, yet the import still produces a usable project. Check each statement that is true.  *(5 points)*
 
-## Case 1
-*Chapter 1, Walker and Godot*
+- [ ] A. Running in a sandbox confirms that the code the agent writes is correct.
+- [ ] B. A sandbox is a technical limit on what a process may read, write or reach.
+- [ ] C. Inside this sandbox the agent can still delete project files, including test output it produced earlier.
+- [ ] D. The error fits a sandbox blocking a write outside the project folder while writes inside it succeed.
+- [ ] E. A sandbox and a permission prompt are one mechanism under two names.
 
-### Scenario
-Arjun is the designer of a 2D platformer. Playtesters on slower laptops say the hero "sometimes sinks into the floor" and "slips through thin ledges" when the game stutters, while on his desktop it feels fine. He asks a coding agent to fix the hero's movement so it behaves the same on every machine.
+**2.** A developer tells a coding agent: "Add ten enemies to the level." The agent duplicates the enemy's nodes ten times directly inside the level scene, and later the developer changes the enemy sprite. Check each statement that is true.  *(5 points)*
 
-### The instruction given to the agent
-"The hero's movement feels different on slow machines. Make it behave identically regardless of the machine's speed, and tell me what you changed."
+- [ ] A. Instances of one scene share a single position because they share one scene file.
+- [ ] B. Instancing one saved Enemy scene ten times lets an edit to that scene reach each instance.
+- [ ] C. Duplicated nodes are independent copies with no link to a shared enemy scene.
+- [ ] D. The word "add" does not say whether to duplicate nodes or to instance a scene, which leaves open a choice that affects maintenance.
+- [ ] E. "Instance the Enemy scene ten times in the level, at these positions" is a precise version of the instruction.
 
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
+**3.** A developer asks an image generator for a character sprite "on a transparent background" and gets hero.jpg. In the engine the sprite sits inside a white rectangle. Check each statement that is true.  *(5 points)*
 
-```
-Diagnosis: speed was applied without scaling by elapsed time.
-Change in hero.gd:
-  func _process(delta):
-      velocity.x = Input.get_axis("left", "right") * SPEED * delta * 60.0
-      velocity.y += GRAVITY * delta
-      move_and_slide()
-Moving every movement line into _process and multiplying by delta makes
-the hero frame-rate independent: a 30 FPS machine takes bigger steps that
-add up to the same distance per second as a 144 FPS machine.
-Verified by reasoning: distance per second is identical at any frame rate.
-Status: fixed.
-```
+- [ ] A. An alpha channel stores opacity for each pixel.
+- [ ] B. Removing a background by colour key can leave light fringe pixels along the edge.
+- [ ] C. Lowering the sprite node's opacity makes just the white rectangle transparent.
+- [ ] D. A white background painted into the pixels counts as transparency.
+- [ ] E. JPEG has no alpha channel, so it does not hold transparency.
 
-### Questions (10 points)
-1. **(5 pts)** What is the flaw in the agent's fix, and what is the exact term (or terms) for it?
-2. **(2 pts)** Write the one check or instruction that would turn "Status: fixed" into evidence.
-3. **(2 pts)** Write the corrected instruction you would send to the agent.
-4. **(1 pt)** In two sentences and no jargon, explain to Arjun why slow laptops still have trouble.
+**4.** A scene has 50 identical trees. A developer asks the agent to add levels of detail (LOD). Check each statement that is true about the terms.  *(5 points)*
 
----
+- [ ] A. The engine picks the LOD version by distance or screen size.
+- [ ] B. LOD reduces the number of trees that are drawn.
+- [ ] C. LOD keeps several versions of a mesh with decreasing triangle counts.
+- [ ] D. A visible jump when the engine switches versions is called aliasing.
+- [ ] E. Extra LOD meshes add no storage or load time.
 
-## Case 2
-*Chapter 3, 3D assets and the Blender pipeline*
+**5.** A bomb should damage the enemies within 3 metres in any direction. Check each statement that is true about a shape query (overlap query) and a raycast.  *(5 points)*
 
-### Scenario
-Wei is the level designer of a 3D platformer. He needs a checkpoint post that is 2 metres tall so the player can see it from one jump away. A modeller made it in Blender, and the coding agent exported it to Godot. In the test level the post looks the right height but the player stops about a metre short of touching it and sometimes bounces off the air beside it.
+- [ ] A. A shape query returns the objects that overlap a given shape, such as a sphere.
+- [ ] B. A ray covers a line, not a region.
+- [ ] C. One ray from the bomb finds the enemies in the whole area around it.
+- [ ] D. A ray is used to ask who is near, and a shape query to ask what stands between two points.
+- [ ] E. A shape query finds trigger regions and does not report solid bodies.
 
-### The instruction given to the agent
-"Export the checkpoint post from Blender to Godot at 2 metres tall with a collision hull around it. Confirm the size."
+**6.** A designer wants a stealth meter that fills while an enemy can see the player. Sort what is built from what emerges using mechanic, dynamic and aesthetic. Check each statement that is true.  *(5 points)*
 
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
+- [ ] A. A fill rate per second and the threshold at which enemies attack are parameters of the mechanic, and a test can check them.
+- [ ] B. Players rushing between blind spots is a mechanic because the player performs it.
+- [ ] C. The rule "the meter fills at a set rate while seen and drains when unseen" is a mechanic.
+- [ ] D. Players waiting at cover for a patrol gap is an aesthetic.
+- [ ] E. The satisfaction of slipping past a guard is a dynamic.
 
-```
-Blender check (units: metres, scale 1.0 on the unit system):
-  post object dimensions: 0.4 x 0.4 x 2.0 m     -> height 2.0 m, confirmed.
-  object scale: (1.0, 1.0, 4.0)   (mesh drawn 0.5 m tall, stretched on Z)
-  collision hull object "post-col": scale (1,1,1), size 0.4 x 0.4 x 0.5 m
-Exported checkpoint.glb. Placed at the pad; Godot shows a 2 m tall post.
-Collision: hull imported from "post-col".
-Conclusion: size confirmed at 2 m; collision matches the post.
-```
+**7.** A simplified chain: vertex data, vertex shader, mapping to the screen, rasterization, fragment shader, depth and stencil tests plus blending, framebuffer. Check each statement that is true.  *(5 points)*
 
-### Questions (10 points)
-1. **(5 pts)** What is the flaw in the agent's report, and what is the exact term (or terms) for it?
-2. **(2 pts)** Write the one check or instruction that turns "collision matches the post" into evidence.
-3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Wei why the player stops short of the post.
+- [ ] A. Blending happens before the fragment shader.
+- [ ] B. The vertex shader and the fragment shader are programmable stages.
+- [ ] C. Rasterization is fixed-function: configured, not programmed.
+- [ ] D. The vertex shader's output is already in screen pixels.
+- [ ] E. The fragment shader runs before rasterization to decide which pixels a triangle covers.
 
----
+**8.** In the metallic-roughness material model, each surface has a metallic value between 0 and 1. Check each statement that is true.  *(5 points)*
 
-## Case 3
-*Chapter 5, The GDD and virtual worlds*
+- [ ] A. A dielectric is a non-metal such as plastic, wood or skin, and it sits near metallic 0.
+- [ ] B. A bare metal with a pure black albedo still shows bright, naturally coloured reflections.
+- [ ] C. Specular is the reflection strength of a non-metal, which is a different control from metallic.
+- [ ] D. Metallic controls how blurred reflections are, so metallic 1 gives the blurriest reflections.
+- [ ] E. Values between 0 and 1 stand for transitions such as rust, dirt or chipped paint on a metal.
 
-### Scenario
-Ravi is the producer of a 3D platformer. The design document says players should be able to save progress at checkpoint pads. He wants the agent to build the pad and prove it works, because the last pad "worked in the test" but players walked over it without it saving.
+**9.** A material pack has albedo, normal map, roughness, ambient occlusion and emission colour images. A colour texture is stored in sRGB and decoded to linear before lighting; a data texture holds numbers used as stored. Check each statement that is true.  *(5 points)*
 
-### The instruction given to the agent
-"Write an acceptance criterion for the checkpoint pad, build it, and write a test that proves the criterion is met."
+- [ ] A. Linear means the stored number goes into the shading maths as it is.
+- [ ] B. A data texture is another name for a texture with an alpha channel.
+- [ ] C. Emission colour is authored like albedo and is treated as sRGB.
+- [ ] D. The normal map, roughness and ambient occlusion images are colour textures and are flagged as sRGB like albedo.
+- [ ] E. Albedo is a colour texture and is imported as sRGB.
 
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
+**10.** A coding agent reports: "Done. The shader compiles with no errors and the existing automated tests pass." Check each statement that is true about the terms.  *(5 points)*
 
-```
-Acceptance criterion (GDD section 4.2):
-  "When the player reaches the checkpoint pad, it should activate
-   quickly and feel responsive."
-Implementation: pad.tscn (Area3D), body_entered -> save_checkpoint().
-Test checkpoint_test.gd:
-  player.global_position = pad.global_position
-  await get_tree().physics_frame
-  assert(pad.is_active)           # PASS
-Result: 1/1 tests pass. The criterion is met.
-```
+- [ ] A. Existing tests that pass before and after a change show that nothing is drawn differently.
+- [ ] B. A shader that multiplies a colour by the wrong factor still compiles.
+- [ ] C. A compile error means the source was rejected, while a visual bug means it built and ran but drew a wrong result.
+- [ ] D. A clean compile shows that the output matches the intended look.
+- [ ] E. The agent's reply is a claim, and the compile log is evidence of valid syntax rather than of correct output.
 
-### Questions (10 points)
-1. **(5 pts)** What is wrong with this criterion and test, and what are the exact terms for the problems?
-2. **(2 pts)** Write the one check or instruction that turns "the criterion is met" into evidence.
-3. **(2 pts)** Write the corrected criterion or instruction you would give the agent.
-4. **(1 pt)** In two sentences and no jargon, explain to Ravi why the earlier pad could pass its test and still fail with players.
+**11.** A smoke emitter runs continuously. Check each statement that is true about the terms that fix how many particles are alive.  *(5 points)*
 
----
+- [ ] A. Doubling the lifetime at the same rate leaves the live count unchanged.
+- [ ] B. Doubling the emission rate at the same lifetime leaves the live count unchanged.
+- [ ] C. Lifetime is the number of particles the emitter makes per second.
+- [ ] D. The steady-state live count is roughly emission rate times lifetime.
+- [ ] E. Lifetime is the time a particle stays alive after it is born, before the system removes it.
 
-## Case 4
-*Chapter 7, Materials and textures*
+**12.** An animator keys a door's rotation to 0 degrees at 0.0 s and to 90 degrees at 1.0 s and sets nothing else. Check each statement that is true about the terms.  *(5 points)*
 
-### Scenario
-Lin is the 3D artist on a pirate-ship game. The wooden hull should look matte and weathered, but after an agent applied the roughness map from the model's texture set, the hull looks like shiny plastic in the lit scene. She asks the agent to confirm the material is correct.
+- [ ] A. Interpolation computes the values between keys, so the door shows intermediate angles.
+- [ ] B. A keyframe is an authored value at a chosen time.
+- [ ] C. The clip stores one value for each rendered frame.
+- [ ] D. A display with a higher refresh rate needs the clip re-authored with more keys.
+- [ ] E. Linear interpolation gives 60 degrees at 0.5 s.
 
-### The instruction given to the agent
-"Apply the hull's roughness texture from the Poly Haven set to the hull material and confirm the material setup is correct."
+**13.** A character has the states Idle, Run, Attack, Hurt and Dead. Hit reactions interrupt an attack, Dead overrides the other states, and Run input does not interrupt an attack. Check each statement that is true.  *(5 points)*
 
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
+- [ ] A. An interrupt is a transition taken out of the current state before its clip ends.
+- [ ] B. Priority or order decides which transition is taken when more than one is valid at the same moment.
+- [ ] C. A transition from Any State to Dead expresses that death overrides the other states.
+- [ ] D. Priority is needed because two states can be active at once.
+- [ ] E. Leaving out an Attack-to-Run transition forbids that interruption, and Attack still needs some exit.
 
-```
-hull_material (StandardMaterial3D):
-  albedo_texture     = hull_diff.png   (import: Compress/Lossless, sRGB on)
-  roughness_texture  = hull_rough.png  (import: Compress/Lossless, sRGB on, as imported by default)
-  roughness          = 1.0
-  roughness_texture_channel = Red
-Checks: all 3 texture slots non-null; paths exist; attribution file present.
-Result: material is correctly set up; the hull is textured.
-The glossy look comes from the scene's lights, not the material.
-```
+**14.** A cave region adds reverb to the SFX bus from the cave trigger's enter event and removes it on the exit event. Check each statement that is true.  *(5 points)*
 
-### Questions (10 points)
-1. **(5 pts)** What is the flaw in the agent's report, and what is the exact term (or terms) for it?
-2. **(2 pts)** Write the one check or instruction that turns "correctly set up" into evidence.
-3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Lin why the hull looks shiny.
+- [ ] A. The reverb also colours the Music bus.
+- [ ] B. Reverb on a bus is the same as positional attenuation.
+- [ ] C. Enter and exit events are paired, and a missed exit can leave the reverb on.
+- [ ] D. The reverb applies to sound effects routed through the SFX bus, including ones from far outside the cave.
+- [ ] E. The cave trigger blocks the player, or its exit event will not fire.
 
----
+**15.** A developer is choosing between batching, instancing and a texture atlas to cut draw calls. Check each statement that is true.  *(5 points)*
 
-## Case 5
-*Chapter 9, Particle effects*
+- [ ] A. Giving each object its own unique material makes batching easier.
+- [ ] B. Batching merges geometry that shares a material into fewer draw calls.
+- [ ] C. Instancing draws many copies of one mesh and one material in a single call, with per-instance data such as transform.
+- [ ] D. A texture atlas packs many images into one texture, so objects that show different images can share a material.
+- [ ] E. Instancing draws many copies of different meshes with different materials in one call.
 
-### Scenario
-Jing is the designer of a 2D dodge game. When the player's shield pops a creep she wants a small burst of sparks at the spot where the creep was. The agent added the effect and reports success, but when Jing plays she sees the creep vanish with no sparks at all.
+**16.** A designer discusses reward design and deployment of an RL NPC. Check each statement that is true.  *(5 points)*
 
-### The instruction given to the agent
-"When a creep is destroyed, play a one-shot burst of 24 sparks at its position. Make sure it works."
+- [ ] A. Reward shaping removes the need to inspect the trained behavior.
+- [ ] B. A sparse reward is feedback that arrives rarely, which makes learning hard.
+- [ ] C. A trained policy is expected to keep learning during play by default.
+- [ ] D. RL lets designers directly author each behavior.
+- [ ] E. Reward hacking is an agent exploiting a loophole that scores well without doing what the designer meant.
 
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
+**17.** Engines package a reusable game object once and then place many copies of it. Check each statement that is true.  *(5 points)*
 
-```
-Added GPUParticles2D "Burst" as a child of the Creep scene.
-  amount = 24, one_shot = true, explosiveness = 1.0, lifetime = 0.6
-creep.gd:
-  func die():
-      $Burst.emitting = true
-      queue_free()
-Headless test (9/9 PASS):
-  - Burst.amount == 24
-  - Burst.one_shot == true
-  - Burst.emitting == true after die()
-Conclusion: the death burst works; a burst of 24 sparks plays at the creep's position.
-```
+- [ ] A. In Unity, a scene and a prefab are the same kind of asset, so loading a prefab replaces the current level.
+- [ ] B. In Unity, a prefab is an asset that serves as a template, and each copy placed in a scene is a prefab instance linked to that asset.
+- [ ] C. In Godot, a saved scene can be instantiated inside another scene, so one mechanism covers a whole level and a reusable object such as an enemy.
+- [ ] D. In Unreal, a Blueprint class is an asset that defines a custom Actor type, and each Actor placed in a level from it is an instance of that class.
+- [ ] E. In Unity, a prefab instance in a scene and the prefab asset are one object, so deleting the instance from the scene deletes the asset file.
 
-### Questions (10 points)
-1. **(5 pts)** What is the flaw in the agent's work, and what is the exact term (or terms) for it?
-2. **(2 pts)** Write the one check or instruction that turns "the burst works" into evidence.
-3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Jing why she sees no sparks.
+**18.** An agent remembers a tool name from a tutorial, but the connected server does not list it. Which statements are correct? Check each statement that is true.  *(5 points)*
 
----
+- [ ] A. A name remembered from a tutorial substitutes for the advertised tool definition.
+- [ ] B. An input schema is the list of tools a server has installed.
+- [ ] C. Renaming a scene object to the tutorial's tool name makes the server advertise that tool.
+- [ ] D. Tool discovery means asking the server for the tools it advertises and then calling one of those.
+- [ ] E. Two servers can advertise differently named or shaped tools for the same goal.
 
-## Case 6
-*Chapter 11, Animation and interaction*
+**19.** A server labels an operation read-only, and a studio decides whether an agent may call it automatically. Check each statement that is true.  *(5 points)*
 
-### Scenario
-Sunita is the lead designer of a 3D platformer. The robot should walk slowly with a light stick push, jog with a bit more, and run with a full push, changing smoothly with how far the stick is pushed. After the agent's change the robot looks fine standing still or at a full run, but between those it snaps between poses as the stick passes a point.
+- [ ] A. A read-only annotation guarantees the process is blocked from writing files.
+- [ ] B. A read-only hint is a label from the server about what a tool does.
+- [ ] C. An annotation is metadata, and an enforced permission is a technical limit.
+- [ ] D. Provenance is where software came from and who maintains it.
+- [ ] E. A description string performs enforcement.
 
-### The instruction given to the agent
-"Make the robot's locomotion animation respond smoothly to how hard the stick is pushed. Verify it."
+**20.** A test oracle is the source of the expected result in a test. Check each statement that is true about oracles and checks.  *(5 points)*
 
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
-
-```
-AnimationTree root: AnimationNodeStateMachine
-  states: idle, walk, run
-  transitions:
-    idle -> walk  : condition speed > 0.1
-    walk -> run   : condition speed > 4.0, xfade 0.2 s
-    run  -> walk  : condition speed < 3.5, xfade 0.2 s
-    walk -> idle  : condition speed < 0.1
-  parameter "speed" set each physics tick from velocity.length().
-Test: scripted input ramps speed 0 -> 6 -> 0.
-      State sequence observed: idle, walk, run, walk, idle. PASS.
-Result: locomotion responds smoothly to stick pressure. The state machine
-with a 0.2 s cross-fade makes the transitions smooth.
-```
-
-### Questions (10 points)
-1. **(5 pts)** What is the flaw in the agent's design and report, and what is the exact term (or terms) for it?
-2. **(2 pts)** Write the one check or instruction that turns "responds smoothly" into evidence.
-3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Sunita why the robot snaps between poses.
-
----
-
-## Case 7
-*Chapter 14, Game AI and systems*
-
-### Scenario
-Li is the designer of a stealth game. Guards should notice the player within a sight range and give chase, then give up when the player escapes. In play, a guard standing with the player at the edge of its vision rapidly alternates between chasing and patrolling and looks "twitchy". The agent says the AI is finished.
-
-### The instruction given to the agent
-"Make the guard chase the player when within sight range and go back to patrolling when the player is out of sight. Test it."
-
-### Agent output
-*(Author-written for illustration. This is not a sampled run.)*
-
-```
-Guard FSM: states patrol, chase.
-  patrol -> chase : distance_to_player < SIGHT (200 px)
-  chase  -> patrol: distance_to_player >= SIGHT (200 px)
-Test guard_test.gd:
-  player at 150 px  -> expect state == chase   PASS
-  player at 250 px  -> expect state == patrol  PASS
-Result: 2/2 pass. Both transitions are verified.
-The guard behaves correctly at all distances.
-```
-
-### Questions (10 points)
-1. **(5 pts)** What is the flaw in the agent's work, and what is the exact term (or terms) for it?
-2. **(2 pts)** Write the one check or instruction that turns "behaves correctly at all distances" into evidence.
-3. **(2 pts)** Write the corrected instruction to the agent.
-4. **(1 pt)** In two sentences and no jargon, tell Li why the guard looks twitchy.
-
----
-
-# Part B: Multiple-answer questions (30 points)
-
-Check each statement that is true. 1 point per statement.
-
-**1.** A developer wants the vocabulary for 2D art straight before instructing a coding agent. Check each statement that is true.  *(5 points)*
-
-- [ ] A. Resolution is the pixel dimensions of an image, written as width by height.
-- [ ] B. Texture and sprite are synonyms for one thing.
-- [ ] C. A sprite is a 2D image, or one frame of one, drawn as an object in the game scene.
-- [ ] D. Aspect ratio is the total pixel count of an image.
-- [ ] E. A texture is image data applied to a surface or drawn, and a sprite is drawn using a texture.
-
-**2.** A team talks about its documents before building a 2D platformer. The words pitch, brief, GDD and pillar get mixed up. Check each statement that is true.  *(5 points)*
-
-- [ ] A. A design pillar is a planned feature in the backlog, such as double jump.
-- [ ] B. A GDD is the source code of the mechanics written in prose, so editing the document edits the game.
-- [ ] C. A GDD is frozen at the start of production so playtest findings do not change it.
-- [ ] D. A pitch or brief states the core idea and scope in short form, and the GDD develops those decisions in detail.
-- [ ] E. A game design document (GDD) records what the game is and how it should behave, in enough detail for builders and testers to work from.
-
-**3.** A student reads that in physically based rendering a surface is described by separate properties, one of which is albedo (also called base colour). Check each statement that is true.  *(5 points)*
-
-- [ ] A. Albedo and base colour are two names for the colour a surface reflects diffusely before lighting.
-- [ ] B. For a bare metal, the base colour tints the reflections.
-- [ ] C. Albedo sets how blurred the reflections are.
-- [ ] D. Shadows painted into an albedo texture are called baked lighting and double up with the engine's own lighting.
-- [ ] E. Albedo is the finished on-screen colour of a pixel after lights and shadows.
-
-**4.** A 2D developer gets one PNG holding a regular grid of equal-sized drawings of a character in successive poses. Check each statement that is true about the exact names.  *(5 points)*
-
-- [ ] A. The PNG is itself an animation clip, because it records the order and timing of its frames.
-- [ ] B. A tilemap is the same thing as a sprite sheet, because both cut one image into a grid.
-- [ ] C. A texture atlas packs images of different sizes into one texture and keeps a table of their rectangles.
-- [ ] D. The file is a sprite sheet, and showing its cells in sequence at a chosen rate is frame-by-frame animation.
-- [ ] E. A tilemap holds the poses of one character to play in sequence.
-
-**5.** A Godot game has background music, a menu click and the footsteps of an enemy walking around a 3D world. The developer chooses between a plain AudioStreamPlayer and a positional AudioStreamPlayer3D for each. Check each statement that is true.  *(5 points)*
-
-- [ ] A. Attenuation is the drop in loudness as the distance between a positional source and the listener grows.
-- [ ] B. The menu click suits a positional player, so that it pans and fades like the rest of the 3D world.
-- [ ] C. For a positional player, the listener is the point whose position and orientation define what is heard, and in Godot 3D it defaults to the active camera.
-- [ ] D. The listener is the object that emits a positional sound, so each positional sound needs its own listener at its source.
-- [ ] E. A plain AudioStreamPlayer is non-positional, so its loudness does not depend on where the camera is.
-
-**6.** A developer asks a coding agent to build a guard non-player character (NPC) as a finite state machine (FSM) instead of nested if statements. Check each statement that is true about the terms.  *(5 points)*
-
-- [ ] A. An FSM has a defined set of states, one of which is the current state.
-- [ ] B. A transition is a rule for moving from one state to another.
-- [ ] C. Ordered child nodes that are re-evaluated from a root describe an FSM.
-- [ ] D. A guard stuck in Search is often missing a transition out of that state.
-- [ ] E. An FSM lets the guard be in the Chase state and the Patrol state at the same time.
+- [ ] A. A tolerance lets a position comparison pass when the difference is small.
+- [ ] B. A negative case proves that the positive case works.
+- [ ] C. An oracle taken from the code under test is not independent.
+- [ ] D. Floating-point positions are compared with exact equality because they are stored with perfect precision.
+- [ ] E. Deliberately breaking the activation path to see the test fail checks that the test can detect the bug.
 

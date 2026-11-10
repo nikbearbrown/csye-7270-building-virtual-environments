@@ -1,202 +1,349 @@
-# Practice exam 02: ANSWER KEY (instructors and TAs; students read it only AFTER doing the exam cold)
+# Practice exam 02: ANSWER KEY (read it only AFTER doing the exam cold)
 
-How cases are scored: catches the flaw 3, uses the exact term 2, asks for evidence 2, gives a fix or next step 2, keeps scope and plain language 1. If the flaw is missed, the case is capped at 5/10. Grammar and polish earn nothing.
+Each statement is scored on its own, 1 point. Under every statement is the reason it is true or false, and each question names the course topic to review.
 
-Physics and shader cases (chapters 1, 4, 6, 7, 8) are **awaiting a game developer's check**.
-
----
-
-# Part A: Cases
-
-## Case 1: Movement on the wrong clock
-*Chapter 1, Walker and Godot*
-
-**The flaw.** The hero moves and collides inside `_process`, which runs once per rendered frame at a variable rate, instead of `_physics_process`, the fixed-rate tick physics uses, so on slow machines steps get large and the hero can sink into floors or tunnel through thin colliders; scaling by delta fixes distance per second but not collision.
-
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** `_physics_process` / physics tick / fixed timestep, with the explanation that collision needs fixed steps; "tunnelling" used correctly.
-- **Half credit (1):** "should use the physics callback" with no reason; "frame-rate independence" alone (the agent claimed it, so naming it only repeats the claim); "delta is wrong".
-- **No credit:** "needs a higher frame rate", "gravity too weak", "should cap the FPS".
-
-**Acceptable evidence requests**
-1. "Run the headless movement test with a deliberately slowed frame rate (e.g. 15 and 144 FPS) and show the hero stays on the floor and cannot pass through the 4-pixel ledge at both."
-2. "Move the logic into `_physics_process`, run the existing floor and ledge checks with `--fixed-fps` pinned at two values, and show matching positions after 2 seconds."
-
-**Unacceptable:** "Look at the code again", "run the game on my laptop and see", "verified by reasoning" repeated.
-
-**One strong sample answer.** Q1: "Movement and collision are in `_process`, which runs at the frame rate. They belong in `_physics_process`, the fixed timestep. At low FPS each step is big enough to sink into the floor or tunnel through a thin ledge; delta only fixes speed, not contact." Q2: "Run the floor and ledge test at 15 and 144 FPS and show no sinking or passing through." Q3: "Move velocity and `move_and_slide` into `_physics_process`, keep gravity there, and remove the `* 60.0`. Re-run the test at two frame rates." Q4: "The game checks for walls only once per picture, and on slow laptops pictures come far apart, so the hero can jump into the floor between checks, which is why the fix has to be about how often the game checks." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct, but Q4 is one long sentence a designer would not follow.*
+The physics, shader, audio and animation answers are **awaiting a game developer's check**. If a key looks wrong to you on those, say so.
 
 ---
 
-## Case 2: The checkpoint post that was "2 metres"
-*Chapter 3, 3D assets and the Blender pipeline*
+## 1. Chapter 0: The toolchain (agents, repositories, sandboxes, instruction files)
 
-**The flaw.** The post's 2 m height comes from an object scale of 4 stretched over a 0.5 m mesh (the transform was not applied), while the collision hull has scale 1 and is only 0.5 m tall, so the visual mesh and the collider disagree and "confirmed" rested on the wrong number.
+**A coding agent runs in a sandbox that lets it write inside the project folder. During an import step the engine prints an error that it cannot save its settings file, which lives in the user's home directory, yet the import still produces a usable project. Check each statement that is true.**  *(5 points)*
 
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** apply transforms / scale left on the object (node scale) vs real mesh size; collision shape not matching the visual mesh.
-- **Half credit (1):** "units are wrong", "scale problem", "axis problem", "collider too small" with no link to the unapplied transform.
-- **No credit:** "poly count", "wrong file format", "export setting".
+**True: B, C, D** (3 of 5)
 
-**Acceptable evidence requests**
-1. "Apply all transforms in Blender, re-export, and report the mesh bounding box and the collision shape size in Godot from a headless script; both must be 0.4 x 0.4 x 2.0 m with node scale (1,1,1)."
-2. "Print the node scale and the collision-shape extents for the post and hull in Godot; show they match within 1 cm."
+- **A. FALSE.** Running in a sandbox confirms that the code the agent writes is correct.
+  - Why: A sandbox limits damage; it says nothing about correctness.
+- **B. TRUE.** A sandbox is a technical limit on what a process may read, write or reach.
+  - Why: Sandboxes restrict capabilities at the operating-system level.
+- **C. TRUE.** Inside this sandbox the agent can still delete project files, including test output it produced earlier.
+  - Why: Deleting is a kind of write, and writes inside the workspace are allowed.
+- **D. TRUE.** The error fits a sandbox blocking a write outside the project folder while writes inside it succeed.
+  - Why: The settings file is outside the project folder, and the cache is inside it.
+- **E. FALSE.** A sandbox and a permission prompt are one mechanism under two names.
+  - Why: A prompt asks a human before a command runs; a sandbox enforces limits on what a running command can touch.
 
-**Unacceptable:** "Open it in Godot and look", "confirm in Blender again", "check the polygon count".
+## 2. Chapter 1: Scenes, nodes and signals
 
-**One strong sample answer.** Q1: "The scale of 4 on Z was left on the object instead of applying transforms, so the mesh is really 0.5 m tall and the 2 m comes only from stretching. The hull is a true 0.5 m with scale 1, so the collider does not match the visual mesh." Q2: "Print the node scale and mesh/collider extents in Godot; they should both be 2 m with scale 1." Q3: "In Blender, apply transforms to both objects, re-export, then show the post and hull extents in Godot." Q4: "The post looks tall but the invisible wall around it is only a quarter as tall and in the wrong place, so the player meets the wall, not the post." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; Q4 misstates where the hull is ("wrong place").*
+**A developer tells a coding agent: "Add ten enemies to the level." The agent duplicates the enemy's nodes ten times directly inside the level scene, and later the developer changes the enemy sprite. Check each statement that is true.**  *(5 points)*
 
----
+**True: B, C, D, E** (4 of 5)
 
-## Case 3: The checkpoint that "activates quickly"
-*Chapter 5, The GDD and virtual worlds*
+- **A. FALSE.** Instances of one scene share a single position because they share one scene file.
+  - Why: Each instance has its own transform.
+- **B. TRUE.** Instancing one saved Enemy scene ten times lets an edit to that scene reach each instance.
+  - Why: Instances stay linked to the scene file they came from.
+- **C. TRUE.** Duplicated nodes are independent copies with no link to a shared enemy scene.
+  - Why: Plain duplicates are unlinked, so each needs the edit by hand.
+- **D. TRUE.** The word "add" does not say whether to duplicate nodes or to instance a scene, which leaves open a choice that affects maintenance.
+  - Why: Duplicating and instancing give different results later, so the verb needs to be exact.
+- **E. TRUE.** "Instance the Enemy scene ten times in the level, at these positions" is a precise version of the instruction.
+  - Why: It names the term (instance), the scene and the placement.
 
-**The flaw.** The criterion ("quickly", "responsive") has no number or tolerance so nothing can fail it, and the test teleports the player onto the pad (a direct state write) instead of making the player walk in, so it skips the very contact the pad depends on and passes whatever the pad does.
+## 3. Chapter 2: Game art and sound assets
 
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** acceptance criterion that is measurable / checkable / has a tolerance; direct state write / teleport instead of scripted input; false pass; given-when-then.
-- **Half credit (1):** "criterion is vague", "test is too simple", "not realistic", with no further term.
-- **No credit:** "needs more tests", "the pad should be bigger", "use a different node".
+**A developer asks an image generator for a character sprite "on a transparent background" and gets hero.jpg. In the engine the sprite sits inside a white rectangle. Check each statement that is true.**  *(5 points)*
 
-**Acceptable evidence requests**
-1. "Rewrite the criterion as: given the player on the ground 3 m from the pad, when scripted input walks onto it, then `pad.is_active` is true within 0.2 s (12 physics ticks); run it and show both the pass and a failing run with the pad moved away."
-2. "Run the test with scripted input, not a position write, and show it fails if the pad's collision shape is deleted."
+**True: A, B, E** (3 of 5)
 
-**Unacceptable:** "play it and see if it feels responsive", "add more asserts", "make the test longer".
+- **A. TRUE.** An alpha channel stores opacity for each pixel.
+  - Why: Alpha is the extra channel for opacity.
+- **B. TRUE.** Removing a background by colour key can leave light fringe pixels along the edge.
+  - Why: Anti-aliased edge pixels blend the character with the old background.
+- **C. FALSE.** Lowering the sprite node's opacity makes just the white rectangle transparent.
+  - Why: Node opacity fades the whole image, character and background.
+- **D. FALSE.** A white background painted into the pixels counts as transparency.
+  - Why: Painted white is colour content, not an alpha value.
+- **E. TRUE.** JPEG has no alpha channel, so it does not hold transparency.
+  - Why: PNG stores alpha and JPEG does not.
 
-**One strong sample answer.** Q1: "The criterion has no tolerance, so nothing can fail it; 'quickly' needs a number. The test teleports the player by setting position, a direct state write, so it never uses real contact and is a false pass." Q2: "Given-when-then: given the player 3 m away, when scripted input walks in, then the pad is active within 12 ticks. Show it fails when the collision shape is removed." Q3: "Rewrite the criterion with the number, drive the player by scripted input, and add a negative case." Q4: "The test put the player on the pad by magic instead of walking, so it never tested walking." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; "by magic" is not a plain reason players failed.*
+## 4. Chapter 3: 3D assets and the Blender pipeline
 
----
+**A scene has 50 identical trees. A developer asks the agent to add levels of detail (LOD). Check each statement that is true about the terms.**  *(5 points)*
 
-## Case 4: The hull that turned to plastic
-*Chapter 7, Materials and textures*
+**True: A, C** (2 of 5)
 
-**The flaw.** The roughness map is data, not colour, but it was imported with the sRGB (colour) setting on, so its values are decoded as if they were colours and the roughness the shader reads is wrong (typically too low, so too shiny); the agent's checks only proved that the slots were filled.
+- **A. TRUE.** The engine picks the LOD version by distance or screen size.
+  - Why: Smaller on screen means a cheaper version.
+- **B. FALSE.** LOD reduces the number of trees that are drawn.
+  - Why: LOD lowers the triangles per tree and leaves the tree count alone.
+- **C. TRUE.** LOD keeps several versions of a mesh with decreasing triangle counts.
+  - Why: That is the definition of level of detail.
+- **D. FALSE.** A visible jump when the engine switches versions is called aliasing.
+  - Why: The visible switch is called popping; aliasing is jagged edges.
+- **E. FALSE.** Extra LOD meshes add no storage or load time.
+  - Why: Each version is more data to store and load.
 
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** data texture vs colour texture; sRGB-to-linear decode / sRGB flag should be off for roughness (linear); import settings.
-- **Half credit (1):** "wrong import setting", "texture compression", "texture is not linear" with no data/colour reasoning.
-- **No credit:** "needs a normal map", "increase roughness to 1", "polygon count", "lighting is too bright" (this repeats the agent's excuse).
+## 5. Chapter 4: Collision and physics
 
-**Acceptable evidence requests**
-1. "Report the import colour-space setting for each map and show that albedo is sRGB and roughness is linear; then render the hull under a fixed light before and after and show the highlight is broader."
-2. "Read back the roughness value at three known pixels of hull_rough.png in the engine and compare to the file; they should match."
+**A bomb should damage the enemies within 3 metres in any direction. Check each statement that is true about a shape query (overlap query) and a raycast.**  *(5 points)*
 
-**Unacceptable:** "check the slots are filled" (already claimed), "view it in the editor", "try other lights".
+**True: A, B** (2 of 5)
 
-**One strong sample answer.** Q1: "Roughness is a data texture, but the agent left sRGB on, so its numbers were decoded as colour, giving wrong roughness. It also accepted 'lights' as the cause without evidence." Q2: "Report each map's import setting: albedo sRGB, roughness linear, then render under a fixed light." Q3: "Turn off sRGB on hull_rough.png (import as linear/data), re-import, and show the before and after render." Q4: "The map that says how rough each spot is got read as a picture instead of numbers, so the wood came out too shiny." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; Q4 never says what Lin should expect to see after the fix.*
+- **A. TRUE.** A shape query returns the objects that overlap a given shape, such as a sphere.
+  - Why: A shape query tests a region at this moment.
+- **B. TRUE.** A ray covers a line, not a region.
+  - Why: A ray is a single line.
+- **C. FALSE.** One ray from the bomb finds the enemies in the whole area around it.
+  - Why: A 3 metre region needs a shape query or many rays.
+- **D. FALSE.** A ray is used to ask who is near, and a shape query to ask what stands between two points.
+  - Why: The roles are swapped: a shape query finds who is near and a ray checks what is in between.
+- **E. FALSE.** A shape query finds trigger regions and does not report solid bodies.
+  - Why: Shape queries test colliders in general, solid bodies included.
 
----
+## 6. Chapter 5: Game design documents and virtual worlds
 
-## Case 5: The death burst nobody sees
-*Chapter 9, Particle effects*
+**A designer wants a stealth meter that fills while an enemy can see the player. Sort what is built from what emerges using mechanic, dynamic and aesthetic. Check each statement that is true.**  *(5 points)*
 
-**The flaw.** The burst is a child of the creep, and `queue_free()` removes the creep and its children in the same frame, so the particles are deleted before they are drawn; the test only checked the emitter's settings (state), not that particles live on screen (visual intent).
+**True: A, C** (2 of 5)
 
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** parenting (attach the effect to something that outlives the creep, e.g. the level, in world coordinates); node lifetime; state vs visual intent.
-- **Half credit (1):** "the node is freed", "queue_free is the problem", "effect is deleted", with no parenting or lifetime reasoning.
-- **No credit:** "too few particles", "lifetime too short", "needs a GPU particle shader", "CPU vs GPU".
+- **A. TRUE.** A fill rate per second and the threshold at which enemies attack are parameters of the mechanic, and a test can check them.
+  - Why: Numbers and observable results make a mechanic buildable and checkable.
+- **B. FALSE.** Players rushing between blind spots is a mechanic because the player performs it.
+  - Why: Emergent player behaviour is a dynamic; the mechanic is the rule that makes it worthwhile.
+- **C. TRUE.** The rule "the meter fills at a set rate while seen and drains when unseen" is a mechanic.
+  - Why: It is a rule the designer builds.
+- **D. FALSE.** Players waiting at cover for a patrol gap is an aesthetic.
+  - Why: That is behaviour that emerges, so it is a dynamic.
+- **E. FALSE.** The satisfaction of slipping past a guard is a dynamic.
+  - Why: A felt response is an aesthetic.
 
-**Acceptable evidence requests**
-1. "In a headless test, kill a creep, step 10 physics ticks, then count live particle nodes in the scene tree and require at least 1 burst node with emitting or particles alive; fail if there are none."
-2. "Report the burst node's parent and show it is not the freed creep; then a screenshot 0.1 s after the death showing sparks."
+## 7. Chapter 6: Shader foundations (what a shader is and does)
 
-**Unacceptable:** "Check amount is 24" (already tested), "run the test again", "make the burst longer".
+**A simplified chain: vertex data, vertex shader, mapping to the screen, rasterization, fragment shader, depth and stencil tests plus blending, framebuffer. Check each statement that is true.**  *(5 points)*
 
-**One strong sample answer.** Q1: "The Burst is parented to the creep, which is freed on the next line, so the effect is deleted with it. This is a parenting and node-lifetime error. The test checked the emitter's properties (state), not that sparks appear." Q2: "Kill a creep, step ten ticks, and require a live burst node in the tree." Q3: "Make the burst its own scene instead of a child of the creep." Q4: "The sparks were stuck to the creep, and when the creep vanished they vanished too." *Catches 3, Term 2, Evidence 2, Fix 1, Scope 1.* Total 9. *Reason: all correct, but the fix does not say where the new scene goes or when it is freed.*
+**True: B, C** (2 of 5)
 
----
+- **A. FALSE.** Blending happens before the fragment shader.
+  - Why: Blending uses the shader's output colour, so it comes after.
+- **B. TRUE.** The vertex shader and the fragment shader are programmable stages.
+  - Why: Developers write both in a shader language.
+- **C. TRUE.** Rasterization is fixed-function: configured, not programmed.
+  - Why: Developers do not write it.
+- **D. FALSE.** The vertex shader's output is already in screen pixels.
+  - Why: It typically outputs clip-space positions that are converted later.
+- **E. FALSE.** The fragment shader runs before rasterization to decide which pixels a triangle covers.
+  - Why: It runs on fragments rasterization produced.
 
-## Case 6: Walk and run as two states
-*Chapter 11, Animation and interaction*
+## 8. Chapter 7: Materials and textures (material, shader, texture)
 
-**The flaw.** Continuous input (how hard the stick is pushed) needs a blend space (blend tree) that mixes walk and run clips by the speed parameter, but the agent used discrete states with a threshold, so the pose jumps at the threshold; the test checked the order of states, not smoothness.
+**In the metallic-roughness material model, each surface has a metallic value between 0 and 1. Check each statement that is true.**  *(5 points)*
 
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** blend space / blend tree driven by a parameter (speed); state machine vs blend space; threshold.
-- **Half credit (1):** "should blend instead", "needs smoothing", "cross-fade is too short".
-- **No credit:** "needs a longer cross-fade" as the only fix; "root motion"; "needs IK".
+**True: A, C, E** (3 of 5)
 
-**Acceptable evidence requests**
-1. "Ramp speed from 0 to 6 in small steps and print the blend weights or the bone pose each step; the pose must change a little each step with no jump larger than a set limit."
-2. "Sample the pose at speed 3.9, 4.0 and 4.1 and show the difference between consecutive samples is small."
+- **A. TRUE.** A dielectric is a non-metal such as plastic, wood or skin, and it sits near metallic 0.
+  - Why: Dielectric is the term for a non-metal, and metallic 0 selects that behaviour.
+- **B. FALSE.** A bare metal with a pure black albedo still shows bright, naturally coloured reflections.
+  - Why: A metal takes its reflection tint from the base colour, so a black albedo gives almost no reflection.
+- **C. TRUE.** Specular is the reflection strength of a non-metal, which is a different control from metallic.
+  - Why: Specular scales reflection on non-metals, while metallic switches the kind of material.
+- **D. FALSE.** Metallic controls how blurred reflections are, so metallic 1 gives the blurriest reflections.
+  - Why: Reflection blur is roughness, not metallic.
+- **E. TRUE.** Values between 0 and 1 stand for transitions such as rust, dirt or chipped paint on a metal.
+  - Why: A real point is metal or not, so in-between values stand for mixed or partly covered areas.
 
-**Unacceptable:** "Check the state sequence again" (already claimed), "watch it", "make the cross-fade longer and test".
+## 9. Chapter 7: Materials and textures (physically based surface properties)
 
-**One strong sample answer.** Q1: "The agent used separate walk and run states with a threshold. Smooth control by stick pressure needs a blend space driven by speed. At 4.0 the state flips and the pose snaps; the cross-fade only softens it. The test checked state order, not smoothness." Q2: "Sample the pose at 3.9, 4.0 and 4.1 and show consecutive samples differ little." Q3: "Put walk and run into a one-dimensional blend space driven by speed, inside a locomotion state, and keep the state machine for idle and jump. Re-run the sampling." Q4: "It switches from one animation to another at a line instead of mixing them gradually, so the change is sudden." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; Q4 does not mention the stick.*
+**A material pack has albedo, normal map, roughness, ambient occlusion and emission colour images. A colour texture is stored in sRGB and decoded to linear before lighting; a data texture holds numbers used as stored. Check each statement that is true.**  *(5 points)*
 
----
+**True: A, C, E** (3 of 5)
 
-## Case 7: The guard that cannot decide
-*Chapter 14, Game AI and systems*
+- **A. TRUE.** Linear means the stored number goes into the shading maths as it is.
+  - Why: Linear values are used directly in lighting calculations.
+- **B. FALSE.** A data texture is another name for a texture with an alpha channel.
+  - Why: A data texture is defined by its content being numbers, not by having alpha.
+- **C. TRUE.** Emission colour is authored like albedo and is treated as sRGB.
+  - Why: Emission colour is a colour and follows the colour path.
+- **D. FALSE.** The normal map, roughness and ambient occlusion images are colour textures and are flagged as sRGB like albedo.
+  - Why: Those three hold numbers or vectors, so they are data textures and are read as linear.
+- **E. TRUE.** Albedo is a colour texture and is imported as sRGB.
+  - Why: Albedo is authored as colour for human vision and decoded to linear.
 
-**The flaw.** Both transitions use the same 200 px threshold, so a player hovering near 200 px flips the guard between states every tick (flicker) and the fix is hysteresis (a larger distance to stop chasing than to start); the test only checked 150 px and 250 px, far from the boundary.
+## 10. Chapter 8: Shader verification (evidence that a shader is right)
 
-**Terms that earn the Exact-term credit**
-- **Full credit (2):** hysteresis (different thresholds to enter and leave); flicker; boundary / edge case near the threshold.
-- **Half credit (1):** "needs a delay", "a cooldown", "the guard switches too fast", "needs smoothing".
-- **No credit:** "use A*", "use a behavior tree" as the only answer, "increase sight range", "navigation mesh".
+**A coding agent reports: "Done. The shader compiles with no errors and the existing automated tests pass." Check each statement that is true about the terms.**  *(5 points)*
 
-**Acceptable evidence requests**
-1. "Move the player slowly back and forth across 190 to 210 px for 100 ticks and count state changes; require at most 1 or 2 changes, not one per tick."
-2. "Test the boundary: player at 199, 200 and 201 px, and a path that wobbles around 200; report the state each tick."
+**True: B, C, E** (3 of 5)
 
-**Unacceptable:** "Test at 100 px and 300 px" (already done), "play it", "run the same test twice".
+- **A. FALSE.** Existing tests that pass before and after a change show that nothing is drawn differently.
+  - Why: Tests cover only what they check, and drawing may be outside them.
+- **B. TRUE.** A shader that multiplies a colour by the wrong factor still compiles.
+  - Why: A wrong formula is valid code, so it compiles.
+- **C. TRUE.** A compile error means the source was rejected, while a visual bug means it built and ran but drew a wrong result.
+  - Why: Compile errors and visual bugs are different failure types caught at different stages.
+- **D. FALSE.** A clean compile shows that the output matches the intended look.
+  - Why: A compiler checks syntax and types, not the design.
+- **E. TRUE.** The agent's reply is a claim, and the compile log is evidence of valid syntax rather than of correct output.
+  - Why: A claim is a statement, and evidence is something observed that supports it.
 
-**One strong sample answer.** Q1: "Both transitions use one threshold, 200 px, so near the edge the guard flickers between chase and patrol. It needs hysteresis. The tests used 150 and 250 px, far from the boundary." Q2: "Move the player back and forth across 190 to 210 px for 100 ticks and count state changes." Q3: "Start chasing under 200 px but only return to patrol past 260 px, and add a boundary test that counts changes." Q4: "The guard has one line for 'I see you' and the same one for 'I lost you', so it flips back and forth at the line." *Catches 3, Term 2, Evidence 2, Fix 2, Scope 0.* Total 9. *Reason: all correct; Q4 uses "line" without saying what the line is.*
+## 11. Chapter 9: Particle effects
 
----
+**A smoke emitter runs continuously. Check each statement that is true about the terms that fix how many particles are alive.**  *(5 points)*
 
-# Part B: Multiple-answer questions
+**True: D, E** (2 of 5)
 
-T = true (should be checked), F = false (should be blank).
+- **A. FALSE.** Doubling the lifetime at the same rate leaves the live count unchanged.
+  - Why: A longer life means particles pile up for longer before removal, so the count grows.
+- **B. FALSE.** Doubling the emission rate at the same lifetime leaves the live count unchanged.
+  - Why: Live count scales with the rate, so doubling the rate doubles the count.
+- **C. FALSE.** Lifetime is the number of particles the emitter makes per second.
+  - Why: That describes emission rate, not lifetime.
+- **D. TRUE.** The steady-state live count is roughly emission rate times lifetime.
+  - Why: Births per second times seconds of life gives the number alive once the effect has settled.
+- **E. TRUE.** Lifetime is the time a particle stays alive after it is born, before the system removes it.
+  - Why: Lifetime is the length of a particle's life in seconds.
 
-**1.** (`MA-ch02.1`, None)
+## 12. Chapter 10: Animation foundations (sprite sheets, rigs, kinematics)
 
-- A = T: A 32 by 48 image has a resolution of 32 by 48 pixels.
-- B = F: The two words name different things.
-- C = T: A sprite is a drawn 2D object.
-- D = F: Aspect ratio is the proportion of width to height.
-- E = T: Texture names the image data and sprite names the thing drawn from it.
+**An animator keys a door's rotation to 0 degrees at 0.0 s and to 90 degrees at 1.0 s and sets nothing else. Check each statement that is true about the terms.**  *(5 points)*
 
-**2.** (`MA-ch05.1`, None)
+**True: A, B** (2 of 5)
 
-- A = F: A pillar is a short statement of the intended experience, not a feature.
-- B = F: A GDD describes intended behaviour; code is the implementation.
-- C = F: A GDD is revised as prototypes and playtests teach the team; an unrevised one becomes stale.
-- D = T: The brief is the compact form; the GDD is the detailed one.
-- E = T: A GDD is the detailed shared description of intended behaviour.
+- **A. TRUE.** Interpolation computes the values between keys, so the door shows intermediate angles.
+  - Why: Interpolation fills in the in-betweens.
+- **B. TRUE.** A keyframe is an authored value at a chosen time.
+  - Why: A key is a value pinned to a time.
+- **C. FALSE.** The clip stores one value for each rendered frame.
+  - Why: The clip stores two keys; the engine computes values for frames.
+- **D. FALSE.** A display with a higher refresh rate needs the clip re-authored with more keys.
+  - Why: Values are sampled from time, so any display rate works with the same keys.
+- **E. FALSE.** Linear interpolation gives 60 degrees at 0.5 s.
+  - Why: Linear interpolation halfway between 0 and 90 gives 45 degrees.
 
-**3.** (`MA-ch07.1`, None)
+## 13. Chapter 11: Animation and interaction (state machines, blending)
 
-- A = T: Albedo is the intrinsic diffuse colour, and the renderer applies lighting on top of it.
-- B = T: A metal has little diffuse colour, so its base colour supplies the tint of its reflections.
-- C = F: Blur of reflections is set by roughness, not albedo.
-- D = T: Baked lighting is shading precomputed into the image, so it stacks with runtime lighting and looks double-shaded.
-- E = F: The on-screen colour also depends on light colour, light direction, shadows and reflections.
+**A character has the states Idle, Run, Attack, Hurt and Dead. Hit reactions interrupt an attack, Dead overrides the other states, and Run input does not interrupt an attack. Check each statement that is true.**  *(5 points)*
 
-**4.** (`MA-ch10.1`, None)
+**True: A, B, C, E** (4 of 5)
 
-- A = F: An image holds pixels only; order, timing and looping come from animation data that refers to it.
-- B = F: A sprite sheet's cells are poses to play in sequence, whereas a tilemap's tiles build a level.
-- C = T: An atlas is a general packing of many images with a lookup table.
-- D = T: A sprite sheet stores the poses of an animation in one image, and playing them in sequence is frame-by-frame animation.
-- E = F: A tilemap places reusable tiles on a level grid; poses to play in sequence belong to a sprite sheet.
+- **A. TRUE.** An interrupt is a transition taken out of the current state before its clip ends.
+  - Why: An interrupt leaves a state early, through a transition that does not wait for the clip to finish.
+- **B. TRUE.** Priority or order decides which transition is taken when more than one is valid at the same moment.
+  - Why: Equal-looking choices are settled by an order, which should be stated.
+- **C. TRUE.** A transition from Any State to Dead expresses that death overrides the other states.
+  - Why: Any State is a special source that stands for the states in the machine.
+- **D. FALSE.** Priority is needed because two states can be active at once.
+  - Why: A machine has one active state; priority chooses between several valid transitions.
+- **E. TRUE.** Leaving out an Attack-to-Run transition forbids that interruption, and Attack still needs some exit.
+  - Why: A missing transition is how a machine forbids a change, but a state without an exit sticks.
 
-**5.** (`MA-ch12.1`, None)
+## 14. Chapter 12: Audio and triggers
 
-- A = T: Attenuation, also called falloff, is the distance-dependent loss of level.
-- B = F: A menu click has no place in the world, and a positional player would change its level and pan with the camera.
-- C = T: A positional sound is heard relative to a listener, which Godot takes from the current camera unless told otherwise.
-- D = F: The listener is the receiver (the ears), and one is active at a time.
-- E = T: A non-positional player ignores listener position, which suits music and interface sounds.
+**A cave region adds reverb to the SFX bus from the cave trigger's enter event and removes it on the exit event. Check each statement that is true.**  *(5 points)*
 
-**6.** (`MA-ch14.1`, None)
+**True: C, D** (2 of 5)
 
-- A = T: A finite state machine has states and one current state at a time.
-- B = T: Transitions are the rules that connect states.
-- C = F: Ordered children ticked from a root describe a behavior tree.
-- D = T: A missing or unreachable exit leaves the NPC stuck in that state.
-- E = F: An FSM has one current state, so blending needs a different design.
+- **A. FALSE.** The reverb also colours the Music bus.
+  - Why: Only sounds routed through SFX are processed.
+- **B. FALSE.** Reverb on a bus is the same as positional attenuation.
+  - Why: Reverb adds reflections; attenuation lowers level with distance.
+- **C. TRUE.** Enter and exit events are paired, and a missed exit can leave the reverb on.
+  - Why: A toggle driven by two events is correct only if both arrive.
+- **D. TRUE.** The reverb applies to sound effects routed through the SFX bus, including ones from far outside the cave.
+  - Why: A bus effect is not positional.
+- **E. FALSE.** The cave trigger blocks the player, or its exit event will not fire.
+  - Why: A trigger reports enter and exit without blocking.
 
+## 15. Chapter 13: Profiling and optimization
+
+**A developer is choosing between batching, instancing and a texture atlas to cut draw calls. Check each statement that is true.**  *(5 points)*
+
+**True: B, C, D** (3 of 5)
+
+- **A. FALSE.** Giving each object its own unique material makes batching easier.
+  - Why: Unique materials split the groups and defeat batching.
+- **B. TRUE.** Batching merges geometry that shares a material into fewer draw calls.
+  - Why: Shared material is the condition for merging into fewer calls.
+- **C. TRUE.** Instancing draws many copies of one mesh and one material in a single call, with per-instance data such as transform.
+  - Why: Per-instance data such as transform is supplied alongside the shared mesh.
+- **D. TRUE.** A texture atlas packs many images into one texture, so objects that show different images can share a material.
+  - Why: An atlas lets different pictures live in one texture and one material.
+- **E. FALSE.** Instancing draws many copies of different meshes with different materials in one call.
+  - Why: Instances share one mesh and one material.
+
+## 16. Chapter 14: Game AI and systems
+
+**A designer discusses reward design and deployment of an RL NPC. Check each statement that is true.**  *(5 points)*
+
+**True: B, E** (2 of 5)
+
+- **A. FALSE.** Reward shaping removes the need to inspect the trained behavior.
+  - Why: Shaping adds guiding rewards; the result still has to be inspected.
+- **B. TRUE.** A sparse reward is feedback that arrives rarely, which makes learning hard.
+  - Why: Rare reward gives little signal.
+- **C. FALSE.** A trained policy is expected to keep learning during play by default.
+  - Why: A trained policy typically runs as a fixed decision function.
+- **D. FALSE.** RL lets designers directly author each behavior.
+  - Why: Behavior is learned, so it is hard to author or debug directly.
+- **E. TRUE.** Reward hacking is an agent exploiting a loophole that scores well without doing what the designer meant.
+  - Why: The agent optimizes the score, not the intent.
+
+## 17. Across engines: Godot, Unity and Unreal vocabulary
+
+**Engines package a reusable game object once and then place many copies of it. Check each statement that is true.**  *(5 points)*
+
+**True: B, C, D** (3 of 5)
+
+- **A. FALSE.** In Unity, a scene and a prefab are the same kind of asset, so loading a prefab replaces the current level.
+  - Why: Scenes and prefabs are different asset types; opening a prefab does not replace the level.
+- **B. TRUE.** In Unity, a prefab is an asset that serves as a template, and each copy placed in a scene is a prefab instance linked to that asset.
+  - Why: The prefab asset is the template; instances in scenes are linked copies of it.
+- **C. TRUE.** In Godot, a saved scene can be instantiated inside another scene, so one mechanism covers a whole level and a reusable object such as an enemy.
+  - Why: In Godot a scene file is both the level format and the reusable-object format, and scenes nest.
+- **D. TRUE.** In Unreal, a Blueprint class is an asset that defines a custom Actor type, and each Actor placed in a level from it is an instance of that class.
+  - Why: A Blueprint class is the definition; each placed copy is an instance of that class.
+- **E. FALSE.** In Unity, a prefab instance in a scene and the prefab asset are one object, so deleting the instance from the scene deletes the asset file.
+  - Why: The instance is a separate object in the scene; removing it leaves the asset untouched.
+
+## 18. Agents and tools: MCP (what it is and its parts)
+
+**An agent remembers a tool name from a tutorial, but the connected server does not list it. Which statements are correct? Check each statement that is true.**  *(5 points)*
+
+**True: D, E** (2 of 5)
+
+- **A. FALSE.** A name remembered from a tutorial substitutes for the advertised tool definition.
+  - Why: Names and arguments differ between integrations.
+- **B. FALSE.** An input schema is the list of tools a server has installed.
+  - Why: A schema describes one tool's arguments.
+- **C. FALSE.** Renaming a scene object to the tutorial's tool name makes the server advertise that tool.
+  - Why: Object names do not register server operations.
+- **D. TRUE.** Tool discovery means asking the server for the tools it advertises and then calling one of those.
+  - Why: Discovery grounds the call in the live server.
+- **E. TRUE.** Two servers can advertise differently named or shaped tools for the same goal.
+  - Why: Tool catalogs are implementation-specific.
+
+## 19. Agents and safety: permissions and untrusted text
+
+**A server labels an operation read-only, and a studio decides whether an agent may call it automatically. Check each statement that is true.**  *(5 points)*
+
+**True: B, C, D** (3 of 5)
+
+- **A. FALSE.** A read-only annotation guarantees the process is blocked from writing files.
+  - Why: An annotation is metadata, not a technical limit.
+- **B. TRUE.** A read-only hint is a label from the server about what a tool does.
+  - Why: It describes intent.
+- **C. TRUE.** An annotation is metadata, and an enforced permission is a technical limit.
+  - Why: Only the limit constrains behaviour.
+- **D. TRUE.** Provenance is where software came from and who maintains it.
+  - Why: It informs how much to trust it.
+- **E. FALSE.** A description string performs enforcement.
+  - Why: Enforcement comes from permissions or sandboxing.
+
+## 20. Agents and checking: claim versus evidence, tests that test
+
+**A test oracle is the source of the expected result in a test. Check each statement that is true about oracles and checks.**  *(5 points)*
+
+**True: A, C, E** (3 of 5)
+
+- **A. TRUE.** A tolerance lets a position comparison pass when the difference is small.
+  - Why: A tolerance is an allowed difference for numeric results.
+- **B. FALSE.** A negative case proves that the positive case works.
+  - Why: Each case tests its own path.
+- **C. TRUE.** An oracle taken from the code under test is not independent.
+  - Why: An independent oracle comes from the requirement, not from the implementation.
+- **D. FALSE.** Floating-point positions are compared with exact equality because they are stored with perfect precision.
+  - Why: Floating-point results often differ in the last digits, so a tolerance is used.
+- **E. TRUE.** Deliberately breaking the activation path to see the test fail checks that the test can detect the bug.
+  - Why: A test that cannot fail on broken code gives false confidence.
+
+**Total true statements: 53 of 100.**

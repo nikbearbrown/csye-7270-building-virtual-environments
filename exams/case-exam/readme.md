@@ -1,3 +1,5 @@
+> **Retired 2026-11-09.** The Fall 2026 exam is now entirely multiple-answer, with no case questions. These 16 cases are kept for reference only and are not used for practice or for the exam. See [../../fall-2026-exam/README.md](../../fall-2026-exam/README.md).
+
 # CSYE 7270 case exam: audit an agent's report
 
 One case per chapter, Chapters 0 to 14 (Chapter 15 is the final project and has no case). Drafted 2026-11-08 for Bear to review. Nothing here is wired into the exam yet.

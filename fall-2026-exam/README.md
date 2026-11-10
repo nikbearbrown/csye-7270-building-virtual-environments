@@ -2,70 +2,72 @@
 
 ## Executive summary
 
-The Fall 2026 exam checks whether you can **direct and audit a coding agent in Godot** using the course's exact terms. It is worth 100 points: **7 case questions x 10 points = 70, plus 6 multiple-answer questions x 5 points = 30.** In each case an agent hands you a confident report with **one planted flaw**; you find it, name it with the right term, ask for evidence, and say what to do next. This folder holds two full **practice exams**, each with its answer key in a **separate file**. The practice exams are practice only: the real exam uses different cases and different questions.
+The Fall 2026 exam is **entirely multiple-answer** and tests the **high-level concepts of the whole course**: what a shader is, what a material is, how a collider differs from a trigger, how a sprite sheet differs from a rig, why state machines are useful, what a frame budget is, what MCP is, and how a claim differs from evidence. It is worth 100 points: **20 questions x 5 points.** There are no cases, no code to read and no shader code to write or change. This folder holds two full **practice exams**, each with its answer key in a **separate file**. The practice exams are practice only: the real exam uses different questions.
 
 ## What the exam tests
 
-Not memorised facts, and not writing style. It tests whether you can use the course's terms precisely enough to (1) tell an agent exactly what to do and (2) notice when an agent's report does not prove what it claims. "Claim versus evidence" is the habit behind every question.
+Whether you know what the course's ideas mean and how they differ from their near neighbours, so that you can tell an AI coding agent or a teammate exactly what you want and notice when a report does not prove what it claims. It does not test memorised facts, code, menu paths or writing style.
 
 ## Format and time
 
-| Part | What | Points | Suggested time |
-|---|---|---:|---|
-| A | 7 cases, 10 points each | 70 | about 6 to 7 minutes per case |
-| B | 6 multiple-answer questions, 5 points each | 30 | about 2 minutes per question |
-| | Total | 100 | |
+| What | Points | Suggested time |
+|---|---:|---|
+| 20 multiple-answer questions, 5 points each | 100 | about 3 minutes per question, about 60 minutes in all |
 
-## What a case looks like
+Each question has **five statements, A to E**, and **anywhere from one to four of them can be true**. Each statement is **true or false on its own**, worth **1 point**. Check the ones you think are true. You score a point for a true statement you checked and for a false statement you left blank. Read each statement by itself: a strong word like "always" often makes a statement false, but not every strong-sounding statement is false.
 
-Every case has the same parts:
+## What the exam covers
 
-1. **Scenario.** A designer, artist or producer with a goal. They may not read code.
-2. **The instruction** a person gave the coding agent.
-3. **The agent's output.** A short report, plan or diff summary. It sounds sure of itself and contains **one planted flaw** on a concept from the course. Agent outputs are **author-written for illustration**, not sampled runs.
-4. **Four probes** (10 points in all): what is the flaw and its exact term (5); what one check would turn the agent's claim into evidence (2); what corrected instruction would you send the agent (2); how would you explain it to the designer in two plain sentences (1).
+Every practice exam has one question on each of these topics, so each one is a sample of the whole course.
 
-## Multiple-answer questions (Part B)
+| # | Topic |
+|---:|---|
+| 1 | Chapter 0: The toolchain (agents, repositories, sandboxes, instruction files) |
+| 2 | Chapter 1: Scenes, nodes and signals |
+| 3 | Chapter 2: Game art and sound assets |
+| 4 | Chapter 3: 3D assets and the Blender pipeline |
+| 5 | Chapter 4: Collision and physics |
+| 6 | Chapter 5: Game design documents and virtual worlds |
+| 7 | Chapter 6: Shader foundations (what a shader is and does) |
+| 8 | Chapter 7: Materials and textures (material, shader, texture) |
+| 9 | Chapter 7: Materials and textures (physically based surface properties) |
+| 10 | Chapter 8: Shader verification (evidence that a shader is right) |
+| 11 | Chapter 9: Particle effects |
+| 12 | Chapter 10: Animation foundations (sprite sheets, rigs, kinematics) |
+| 13 | Chapter 11: Animation and interaction (state machines, blending) |
+| 14 | Chapter 12: Audio and triggers |
+| 15 | Chapter 13: Profiling and optimization |
+| 16 | Chapter 14: Game AI and systems |
+| 17 | Across engines: Godot, Unity and Unreal vocabulary |
+| 18 | Agents and tools: MCP (what it is and its parts) |
+| 19 | Agents and safety: permissions and untrusted text |
+| 20 | Agents and checking: claim versus evidence, tests that test |
 
-Each question has **five statements, A to E**. Each statement is **true or false on its own**, worth **1 point**. Check the ones you think are true. You score a point for a true statement you checked and for a false statement you left blank. Read each statement by itself: a strong word like "always" often makes a statement false, but not every strong-sounding statement is false.
-
-## How cases are scored
-
-| What earns points | Points |
-|---|---:|
-| Catches the flaw (you say what is actually wrong) | 3 |
-| Uses the exact term for it | 2 |
-| Asks for evidence (a check that can pass or fail and aims at the flaw) | 2 |
-| Gives a fix or next step the agent could carry out | 2 |
-| Keeps scope and plain language (does not over-claim; a non-expert could follow) | 1 |
-
-- **If you miss the flaw, the case is capped at 5/10**, however good the rest sounds. Fluent jargon cannot buy points.
-- **Grammar, spelling, length and polish earn nothing.** Short, rough English that names the real problem scores the same as polished prose.
-- A correct idea written in another case's terms does not earn this case's term credit.
+Chapter 15 (the final project) is not examined.
 
 ## How to practise
 
-1. Do a practice exam **cold**: no notes, no key, about 100 minutes in all.
-2. Only then open its `-KEY` file. For each case read the flaw, the terms that earn credit, the near-misses, and the sample answer, and compare with what you wrote. For Part B read the one-line reason for every statement.
+1. Do a practice exam **cold**: no notes, no key, no phone, no laptop; paper and pen or pencil; about 60 minutes.
+2. Only then open its `-KEY` file. For every statement you got wrong, read the one-line reason and then the course chapter named by the topic.
 3. Study what you missed, then do the second practice exam.
 
 | File | What |
 |---|---|
-| [practice-exam-01.md](practice-exam-01.md) | 7 cases and 6 multiple-answer questions, no answers |
-| [practice-exam-01-KEY.md](practice-exam-01-KEY.md) | answers and reasons for exam 01 |
-| [practice-exam-02.md](practice-exam-02.md) | a second set; no case or question repeats from exam 01 |
-| [practice-exam-02-KEY.md](practice-exam-02-KEY.md) | answers and reasons for exam 02 |
+| [practice-exam-01.md](practice-exam-01.md) | 20 multiple-answer questions, no answers |
+| [practice-exam-01-KEY.md](practice-exam-01-KEY.md) | answers and a reason for every statement |
+| [practice-exam-02.md](practice-exam-02.md) | a second exam; no question repeats from exam 01 |
+| [practice-exam-02-KEY.md](practice-exam-02-KEY.md) | answers and a reason for every statement |
 
 ## What to study
 
 - [Cheat sheet](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/CHEAT-SHEET.md)
 - [Glossary of tested terms](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/GLOSSARY-jargon-midterm.md)
-- [Question bank](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/question-bank/INDEX.md): 678 multiple-answer questions by chapter, with keys and reasons
-- [More multiple-answer practice exams](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/practice-exams/) (exam-01 to exam-06, each with a separate `-KEY` file)
+- [Question bank](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/question-bank/INDEX.md): 678 multiple-answer questions by chapter, with keys and reasons. Some of its questions quote code; the exam does not.
+- [More multiple-answer practice exams](https://github.com/nikbearbrown/interview-bank/tree/main/csye-7270-building-virtual-environments/ma-exams/practice-exams/) (exam-01 to exam-06, each with a separate `-KEY` file). Some of these also quote code, which the exam does not.
 
 ## Notes
 
-- **Practice only.** These cases and questions are for practice. The real Fall 2026 exam uses different cases and different questions, so do not expect to see any of these on it.
-- **Awaiting a game developer's check.** The keys for the physics and shader cases (the two clocks, collision layer and mask, alpha, sRGB decode, golden images) have not yet been verified by a game developer. If a key looks wrong to you on those, say so.
-- **Draft.** The cases come from the draft case set and have not been signed off by the instructor.
-- The names in scenarios are made up.
+- **Practice only.** The real Fall 2026 exam uses different questions, so do not expect to see any of these on it.
+- **Awaiting a game developer's check.** The keys for the physics, shader, material, audio and animation questions have not yet been verified by a game developer. If a key looks wrong to you on those, say so.
+- **Draft.** The questions are drawn from the draft question bank and have not been signed off by the instructor.
+- **Cases retired.** An earlier draft of this exam used seven case questions. That format is no longer used; the old case set in `../exams/case-exam/` is kept for reference only.
