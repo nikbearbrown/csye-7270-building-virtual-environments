@@ -46,3 +46,4 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 | Date | Commit note |
 |---|---|
 | 2026-11-10 | Start Assignment 6: the Godot project as the A6 starting point (light switch, `CeilingLights`, on-screen tablet), the A6 `scripts/run-test.sh`, baseline logs (55 / 24×3 / 2 / 168 passed + 1 existing failure), the A5 CLAUDE.md copied unchanged, and SOURCES with the light switch's asset row |
+| 2026-11-10 | Add the A6 CHANGE-BRIEF (both effects' intent, settings, rules, strip predictions, predicted failures, budgets and short answers), committed before the first agent prompt |
