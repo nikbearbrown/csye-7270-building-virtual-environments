@@ -41,9 +41,28 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 
 ---
 
+### 2026-11-10 — A6 Step 1: the agent revises CLAUDE.md, and my review
+
+- **Date and what I was working on:** 2026-11-10. A6 Step 1: having a separate agent session revise CLAUDE.md from the assignment's prompt-1, then reviewing it.
+- **I tried / expected:** As the assignment suggests, a non-interactive `claude -p` run with the read-only allow list, started in the course repository's A6 folder (so it reads only the CLAUDE.md there, not my working folder's Chinese CLAUDE.md and memory), keeping `session-1.jsonl`.
+- **What happened:**
+  - This time `claude -p` ran normally in my own Git Bash; the A5 login error did not come back.
+  - Result event: `success`, `end_turn`, 17 turns, about 2 minutes, about USD 1.11; **6 permission denials**: two read commands with `sed` / `for` loops, and four attempts to run Godot `--doctool` to dump the class docs and check property names (once in Bash, three times in PowerShell). After the denials it did not invent output; it wrote in CLAUDE.md that it could not run the engine and had not checked the other property names. The allow list had only `git` and `ls`, yet several `cd … && cat …` read commands ran; I only record that.
+  - Only CLAUDE.md changed (`git status`), and `git diff --stat godot/shaders/` printed nothing. The draft was 83 lines, in the right order, with `@CHANGE-BRIEF.md` unchanged. Claude opened and checked each of its roughly 60 file and line references; all were correct.
+  - It dropped the whole "Headless facts" block from the A5 CLAUDE.md.
+  - Real problems it found on its own: `CeilingLights._ready()` emits nothing, so the dust has to query once; if the dust's `_ready()` runs before `CeilingLights`, it reads the field default; `landed` would fire for every Humanoid; `run-test.sh` always passes `--headless`, so it cannot take the frame strips.
+  - The transcript is 294 KB (under about 1 MB) but contained 33 local paths and my user name; the uploaded copy replaces them with placeholders, and the raw transcript stays in my local folder.
+- **What I did:** Ran the assignment's command in Git Bash; approved four review changes: restore the Headless facts block (the assignment's three lines, confirmed on this machine, plus A5's `--fixed-fps` line), record that ClassDB confirmed the brief's property names, note that `device 16` is `DEVICE_ID_KEYBOARD`, and note that strips come from a windowed Movie Maker run I start. The draft was committed unedited and the review separately.
+- **What Claude or another person contributed:** The draft was written by another Claude Code session (Opus 5.5) from prompt-1. Claude Code (Opus 5.5) in my main session prepared prompt-1.txt and the command, read the result event and the diff, checked every reference, ran the Headless facts checks on this machine, replaced the local paths in the transcript, and wrote the four review changes I approved.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `walker-survival-shooting/prompt-1.txt`, `session-1.jsonl`, `CLAUDE.md` (draft 5f766ea4 unedited, review 3a398596). Next: Step 2, building Effect A's scene, configuration test and preview scene.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
 |---|---|
 | 2026-11-10 | Start Assignment 6: the Godot project as the A6 starting point (light switch, `CeilingLights`, on-screen tablet), the A6 `scripts/run-test.sh`, baseline logs (55 / 24×3 / 2 / 168 passed + 1 existing failure), the A5 CLAUDE.md copied unchanged, and SOURCES with the light switch's asset row |
 | 2026-11-10 | Add the A6 CHANGE-BRIEF (both effects' intent, settings, rules, strip predictions, predicted failures, budgets and short answers), committed before the first agent prompt |
+| 2026-11-10 | A6 Step 1: the agent's CLAUDE.md draft (unedited), prompt-1, the session transcript (local paths replaced), and my review (a separate commit) |
