@@ -1,8 +1,10 @@
 # Terminology-deck template (proposed, from the Camera pilot)
 
-Pilot file: `Terms - Camera.html` (19 slides, 15 animated, 65 steps). It covers every row of the glossary's "Camera" table: 22 rows, 20 distinct ideas (two ideas appear under two names: "Dolly in/out" and "Dolly in / dolly out"; "Smoothing (damping)" and "Smoothing/damping").
+Pilot file: `18 Camera.html` (19 slides, 15 animated, 65 steps). It covers every row of the glossary's "Camera" table: 22 rows, 20 distinct ideas (two ideas appear under two names: "Dolly in/out" and "Dolly in / dolly out"; "Smoothing (damping)" and "Smoothing/damping").
 
 Source of terms: `interview-bank/csye-7270-building-virtual-environments/GLOSSARY-jargon-midterm.md`. The glossary is broader than the chapter text. That is fine for these decks, and each term carries a tag that says which it is.
+
+> **File names (2026-11-10):** the final decks are named `NN Title.html` (01 to 25, course order, listed in `glossary/decks/`). Sections below written earlier use planned names such as `Terms - X.html`; those are superseded.
 
 ## How a deck is built
 
@@ -65,15 +67,15 @@ Rule used: up to 40 terms is one deck (about 0.85 slides per term, so up to abou
 
 | Glossary section(s) | Terms | Deck | Decks | Note |
 |---|---|---|---|---|
-| Camera | 22 | Terms - Camera.html | 1 | Built (pilot) |
+| Camera | 22 | 18 Camera.html | 1 | Built (pilot) |
 | Animation | 23 | Terms - Animation.html | 1 |  |
 | Game movement and collision | 19 | Terms - Movement.html | 1 |  |
 | Shaders and materials, Shader foundations | 40 | Terms - Shaders.html | 1 | merge: 15 is too small alone |
-| Shader verification | 29 | Terms - Shader verification.html | 1 |  |
+| Shader verification | 29 | 13 Shader verification.html | 1 |  |
 | Textures and materials | 43 | Terms - Textures and materials (A, B).html | 2 | 43: split in two |
 | Particles | 35 | Terms - Particles.html | 1 |  |
-| Animation foundations | 35 | Terms - Animation foundations.html | 1 |  |
-| Animation and interaction | 40 | Terms - Animation and interaction.html | 1 |  |
+| Animation foundations | 35 | 16 Animation foundations.html | 1 |  |
+| Animation and interaction | 40 | 17 Animation and interaction.html | 1 |  |
 | Audio and triggers | 33 | Terms - Audio and triggers.html | 1 |  |
 | Engine vocabulary | 48 | Terms - Engine vocabulary (A, B).html | 2 | 48: split in two |
 | Toolchain | 30 | Terms - Toolchain.html | 1 |  |
@@ -81,7 +83,7 @@ Rule used: up to 40 terms is one deck (about 0.85 slides per term, so up to abou
 | 2D art and sound assets | 48 | Terms - 2D art and sound (A, B).html | 2 | 48: split in two |
 | 3D assets and Blender | 44 | Terms - 3D assets and Blender (A, B).html | 2 | 44: split in two |
 | Collision and physics | 37 | Terms - Collision and physics.html | 1 |  |
-| Game design documents | 38 | Terms - Game design documents.html | 1 |  |
+| Game design documents | 38 | 10 Game design documents.html | 1 |  |
 | Profiling and optimization | 40 | Terms - Profiling and optimization.html | 1 |  |
 | Game AI | 58 | Terms - Game AI (A, B).html | 2 | 58: split in two |
 | Agent workflow terms: MCP fundamentals | 58 | Terms - Agent MCP (A, B).html | 2 | 58: split in two |
@@ -178,4 +180,4 @@ Replaces the 33-deck order above. Terms are the important ones, chosen by what t
 
 
 ## Progress log
-- 2026-11-10: Deck 2a BUILT: `Terms - Walker and the toolchain.html` (14 slides, 13 animated, 26 terms; 22 tagged in the book text, 4 glossary only; 60 steps checked at 1920 and 390). Next: deck 2b, Godot editor, scenes, nodes, signals and movement.
+- 2026-11-10: Deck 2a BUILT: `04 Walker and the toolchain.html` (14 slides, 13 animated, 26 terms; 22 tagged in the book text, 4 glossary only; 60 steps checked at 1920 and 390). Next: deck 2b, Godot editor, scenes, nodes, signals and movement.

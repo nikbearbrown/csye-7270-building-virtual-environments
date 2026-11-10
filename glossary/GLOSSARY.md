@@ -6,39 +6,194 @@ Every term in every deck in `decks/`, with its meaning and a tag: **in the book 
 
 | Deck | Slides | Terms |
 |---|---|---|
-| [2D art and sound assets in the engine](decks/Terms%20-%202D%20art%20and%20sound%20assets.html) | 16 | 34 |
-| [Animation and interaction: state machines and blending](decks/Terms%20-%20Animation%20and%20interaction.html) | 16 | 34 |
-| [Animation foundations](decks/Terms%20-%20Animation%20foundations.html) | 14 | 33 |
-| [Animation: principles and character animation](decks/Terms%20-%20Animation%20principles.html) | 16 | 34 |
-| [Art principles: concept art and character art](decks/Terms%20-%20Art%20principles%20and%20concept%20art.html) | 15 | 34 |
-| [Blender: the interface and modeling terms](decks/Terms%20-%20Blender%20interface%20and%20modeling.html) | 16 | 30 |
-| [Blender to Godot: MCP, export and measuring a prop](decks/Terms%20-%20Blender%20to%20Godot.html) | 14 | 30 |
-| [Terms: Camera](decks/Terms%20-%20Camera.html) | 19 | 20 |
-| [Game AI: decisions, generation and systems](decks/Terms%20-%20Game%20AI%20decisions%20and%20systems.html) | 16 | 33 |
-| [Game AI: perception, movement and pathfinding](decks/Terms%20-%20Game%20AI%20movement%20and%20pathfinding.html) | 15 | 33 |
-| [Game design A: what a game is](decks/Terms%20-%20Game%20design%20A.html) | 14 | 22 |
-| [Game design B: choices and challenge](decks/Terms%20-%20Game%20design%20B.html) | 14 | 19 |
-| [Game design C: pacing and guidance](decks/Terms%20-%20Game%20design%20C.html) | 15 | 19 |
-| [The game design document](decks/Terms%20-%20Game%20design%20document.html) | 16 | 34 |
-| [How to make a trailer for your game](decks/Terms%20-%20Game%20trailer.html) | 16 | 32 |
-| [Godot, Unity and Unreal: the differences](decks/Terms%20-%20Godot%20Unity%20Unreal.html) | 16 | 34 |
-| [Godot: the editor, scenes, nodes, signals and movement](decks/Terms%20-%20Godot%20editor%20and%20scenes.html) | 16 | 34 |
-| [Materials and textures](decks/Terms%20-%20Materials%20and%20textures.html) | 16 | 34 |
-| [Particles and VFX](decks/Terms%20-%20Particles%20and%20VFX.html) | 16 | 35 |
-| [Shaders: foundations](decks/Terms%20-%20Shader%20foundations.html) | 16 | 33 |
-| [Shader verification](decks/Terms%20-%20Shader%20verification.html) | 14 | 30 |
-| [The Unity editor interface](decks/Terms%20-%20Unity%20editor.html) | 17 | 32 |
-| [The Unreal Editor interface](decks/Terms%20-%20Unreal%20editor.html) | 16 | 32 |
-| [Walker and the toolchain](decks/Terms%20-%20Walker%20and%20the%20toolchain.html) | 14 | 26 |
-| [How to make a walkthrough film: important terms](decks/Terms%20-%20Walkthrough%20film.html) | 14 | 32 |
+| [Game design A: what a game is](decks/01%20Game%20design%20A.html) | 14 | 22 |
+| [Game design B: choices and challenge](decks/02%20Game%20design%20B.html) | 14 | 19 |
+| [Game design C: pacing and guidance](decks/03%20Game%20design%20C.html) | 15 | 19 |
+| [Walker and the toolchain](decks/04%20Walker%20and%20the%20toolchain.html) | 14 | 26 |
+| [Godot: the editor, scenes, nodes, signals and movement](decks/05%20Godot%20editor%20and%20scenes.html) | 16 | 34 |
+| [2D art and sound assets in the engine](decks/06%202D%20art%20and%20sound%20assets.html) | 16 | 34 |
+| [Art principles: concept art and character art](decks/07%20Art%20principles%20and%20concept%20art.html) | 15 | 34 |
+| [Blender: the interface and modeling terms](decks/08%20Blender%20interface%20and%20modeling.html) | 16 | 30 |
+| [Blender to Godot: MCP, export and measuring a prop](decks/09%20Blender%20to%20Godot.html) | 14 | 30 |
+| [The game design document](decks/10%20Game%20design%20document.html) | 16 | 34 |
+| [Shaders: foundations](decks/11%20Shader%20foundations.html) | 16 | 33 |
+| [Materials and textures](decks/12%20Materials%20and%20textures.html) | 16 | 34 |
+| [Shader verification](decks/13%20Shader%20verification.html) | 14 | 30 |
+| [Particles and VFX](decks/14%20Particles%20and%20VFX.html) | 16 | 35 |
+| [Animation: principles and character animation](decks/15%20Animation%20principles.html) | 16 | 34 |
+| [Animation foundations](decks/16%20Animation%20foundations.html) | 14 | 33 |
+| [Animation and interaction: state machines and blending](decks/17%20Animation%20and%20interaction.html) | 16 | 34 |
+| [Terms: Camera](decks/18%20Camera.html) | 19 | 20 |
+| [Game AI: perception, movement and pathfinding](decks/19%20Game%20AI%20perception%20and%20pathfinding.html) | 15 | 33 |
+| [Game AI: decisions, generation and systems](decks/20%20Game%20AI%20decisions%20and%20systems.html) | 16 | 33 |
+| [How to make a walkthrough film: important terms](decks/21%20Walkthrough%20film.html) | 14 | 32 |
+| [How to make a trailer for your game](decks/22%20Game%20trailer.html) | 16 | 32 |
+| [Godot, Unity and Unreal: the differences](decks/23%20Godot%20Unity%20Unreal%20comparison.html) | 16 | 34 |
+| [The Unity editor interface](decks/24%20Unity%20editor%20interface.html) | 17 | 32 |
+| [The Unreal Editor interface](decks/25%20Unreal%20editor%20interface.html) | 16 | 32 |
 
 Total: 25 decks, 763 term entries.
 
 ---
 
+## Game design A: what a game is
+
+[Open the deck](decks/01%20Game%20design%20A.html) · 14 slides · 22 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Game | An activity that has all four: a goal, opposition, decisions and rules. | video only |
+| Goal | The objective the player works toward. | in the glossary |
+| Opposition | Obstacles the player must overcome; it makes a game fun and can frustrate. | video only |
+| Decisions | The ways the player can get past the opposition. | video only |
+| Rules | The framework that limits and governs the whole experience. | video only |
+| House rules | Rules a group changes for its own table; they change how the game plays. | video only |
+| Mechanic | A rule-governed action in the game. | in the book text |
+| Player verb | An action the player can take: jump, shoot, build. | in the glossary |
+| Core mechanic | The action players do over and over again. | video only |
+| Core loop | The repeated moment-to-moment cycle the player enjoys. | in the glossary |
+| Thematic feel | Mechanics alone can set the tone: what a thing does tells the player what it is. | video only |
+| Movement pattern | How a character moves gives it personality: a hop is a frog, a wave is a snake. | video only |
+| Types of fun (also Eight Kinds of Fun (Marc LeBlanc)) | "Fun" is too vague. Name the kind: fantasy, thrill, fellowship, mastery, exploration, creativity. | video only |
+| Target experience | The one specific experience everyone on the team aims at. | video only |
+| Appeal | The pull to keep playing; it differs by game and by player. | video only |
+| Art, design, engineering | They depend on each other; results are best when all three aim at the same target. | video only |
+| Space | The look, sound, lighting and physical setting; it shapes what fits in the game. | video only |
+| Components | The objects in the space that players use or meet: characters, weapons, vehicles. | video only |
+| Prototype | A simplified version made first to test whether the idea has appeal. | video only |
+| Play testing | Letting players challenge the design so it can be revisited and improved. | video only |
+| Clear progress | The player can see how close they are to the goal. | video only |
+| Climactic arc | Difficulty and tension build toward the goal's resolution. | video only |
+
+## Game design B: choices and challenge
+
+[Open the deck](decks/02%20Game%20design%20B.html) · 14 slides · 19 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Meaningful play | The player acts and the game responds in a way that matters. | in the glossary |
+| Descriptive play | The player acts and sees the game respond: the bola hits, the ice shatters. | in the glossary |
+| Evaluative play | The player steps back and asks why this action matters to the whole game. | in the glossary |
+| Meaningful choice | A choice that changes what happens and that the player has to think about. | in the glossary |
+| Agency (autonomy) | The player takes control of how the game is played. | in the glossary |
+| Risk versus reward | A harder or riskier action pays more, and the player weighs the factors. | in the glossary |
+| Trade-off | Give up one thing to get another. | in the glossary |
+| Persistence | The player lives with the consequences of a choice for a set time. | in the glossary |
+| Situational choice | The same choice is better or worse depending on the situation the player is in. | in the glossary |
+| Unit differentiation (also orthogonal unit differentiation) | Each enemy type does something different, which forces the player to prioritise. | in the glossary |
+| Personalisation | Players build their own play style from the decisions they make. | in the glossary |
+| Frustration | Some is part of challenge; it has to be the kind the player can learn from. | in the glossary |
+| Difficulty | How hard the opposition is; it is separate from fairness. | in the glossary |
+| Fairness | Clear expectations and consistent design, so the player can learn from failing. | in the glossary |
+| Luck and skill | Luck: chance decides. Skill: the player's ability decides. Games mix the two. | in the glossary |
+| Balance | Every advantage has a disadvantage; no role starts with an unfair edge. | in the glossary |
+| Rock-paper-scissors | Each option beats one and loses to another, so no option wins everywhere. | in the glossary |
+| Downtime | Time a player waits with nothing to do. | in the glossary |
+| Probability | The odds of each result; extra rolls change them. | in the glossary |
+
+## Game design C: pacing and guidance
+
+[Open the deck](decks/03%20Game%20design%20C.html) · 15 slides · 19 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Three pillars | A game rests on the player's role, communication and appeal. | in the glossary |
+| Player purpose | What the player does and why; the player, not the game, drives it forward. | in the glossary |
+| Communication | Showing the player the goal and how to reach it, with clues in the environment. | in the glossary |
+| Guiding the focus | Making clear what the player should concentrate on. | in the glossary |
+| Linear and nonlinear | Straight from start to end, or with alternate choices along the way. | in the glossary |
+| Side quest | A detour from the main storyline. | in the glossary |
+| Level design | Planning and building the spaces the player moves through. | in the glossary |
+| Teaching through levels | The first level lets the player try each skill, with no text. | in the glossary |
+| Design the middle first | Build the engaging middle levels, then the opening levels that lead there. | in the glossary |
+| Anticipation | Prepare the player for what comes next, such as a wind-up before an attack. | in the glossary |
+| Build-up | A sequence that raises tension toward an event: sound, sparks, camera shake. | in the glossary |
+| Logical events | Events behave sensibly and meet the player's unspoken expectations. | in the glossary |
+| Consistent rules | Even where physics is bent, it is bent the same way every time. | in the glossary |
+| Games can cheat | Hidden help the player does not notice, such as enemies told not to turn around. | in the glossary |
+| Dynamic | Many things happening at once, so play stays fresh. | in the glossary |
+| Progression | A natural rise in challenge; do not over-stimulate or under-stimulate. | in the glossary |
+| Pacing | Alternating intense and calm moments. | in the glossary |
+| Waves | A group of enemies sent together: many weak ones or a few strong ones. | in the glossary |
+| Spacing | Open areas to admire, or tight ones that feel claustrophobic; leave room for AI. | in the glossary |
+
+## Walker and the toolchain
+
+[Open the deck](decks/04%20Walker%20and%20the%20toolchain.html) · 14 slides · 26 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Walker | The working method and its files: brief, build, playtest, inspect, revise, export. | in the book text |
+| Repository | A project folder with its full version history. | in the book text |
+| Commit | A saved snapshot in version history. | in the book text |
+| Diff | The exact lines that changed between two versions. | in the book text |
+| CLI and shell | You drive a program by typing commands; the shell (zsh, bash) reads them. | in the book text |
+| Flag | An option on a command, such as --headless. | in the book text |
+| Headless | Running with no window or display. | in the book text |
+| Exit code | A number a program returns; 0 means success. | in the book text |
+| Timeout | A limit after which a run is stopped. | in the book text |
+| Hang | A run that never finishes. | in the book text |
+| Import | Convert a source file into the form the engine uses. | in the book text |
+| Cache | Stored results reused to save time, which can also go stale. | in the book text |
+| Permission prompt | A question asking you to approve an action. | in the book text |
+| Allow rule | A saved permission letting a command run without asking. | in the book text |
+| Sandbox | A restricted environment where mistakes cannot reach the rest of the machine. | in the book text |
+| Instruction file | A standing file of project rules the agent reads, such as CLAUDE.md or AGENTS.md. | in the book text |
+| Spec | A written description of what must be built. | in the glossary |
+| Checkable instruction | An instruction written so a check can pass or fail. | in the glossary |
+| Claim versus evidence | A claim says what happened; evidence is proof that it did. | in the book text |
+| Regression test | A test that guards a behaviour that worked before. | in the book text |
+| Deterministic | The same inputs always give the same result. | in the book text |
+| Flaky | Passes sometimes and fails sometimes with no change. | in the glossary |
+| Game time | The simulation's clock, as opposed to the wall clock. | in the glossary |
+| Fixed frame rate | Rendering locked to a set number of frames a second so runs match. | in the book text |
+| Pinned time step | A constant step length forced on the simulation. | in the book text |
+| Text versus binary scene | Readable scene files diff cleanly; opaque ones do not. | in the book text |
+
+## Godot: the editor, scenes, nodes, signals and movement
+
+[Open the deck](decks/05%20Godot%20editor%20and%20scenes.html) · 16 slides · 34 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Scene dock, Remote tab | Lists the scene's nodes; the Remote tab lists the running game's. | in the book text |
+| FileSystem dock | Lists every file in the project, under res://. | editor or docs |
+| Inspector | The editor panel for viewing and editing properties. | in the glossary |
+| Node dock | Shows the selected node's signals and groups. | editor or docs |
+| 2D, 3D and Script views | Tabs along the top: 2D and 3D edit scenes, Script edits code. | editor or docs |
+| Output and Debugger | Bottom panels: Output shows printed text, Debugger shows errors. | editor or docs |
+| Project Settings | Project-wide values: physics rate, layer names, input actions, autoloads. | in the book text |
+| Run and Play buttons | Run Project (F5) starts the main scene; Run Current Scene starts the open one. | editor or docs |
+| Project | A folder with a project.godot file at its root; res:// means that folder. | in the book text |
+| Scene | A saved, reusable tree of nodes: a level, a character, a menu. | in the book text |
+| Node | The smallest building block: one object doing one job. | in the book text |
+| Script | Attaches behaviour to a node; GDScript here. | in the book text |
+| Scene tree | The live hierarchy of nodes in a running game. | in the book text |
+| Instance | One live copy of a saved scene; a change on one instance overrides the template. | in the book text |
+| _process | Runs once per rendered frame; the rate varies by machine. | in the book text |
+| _physics_process | Runs at a fixed rate, 60 times a second by default. | in the book text |
+| Input action | A named intent such as jump, bound to keys or buttons. | in the book text |
+| Just-pressed vs held | Just-pressed is true only on the tick a press began; held stays true while down. | in the book text |
+| Polling | Asking every tick whether something has happened. | in the book text |
+| Event-driven | Code runs only when something announces that it happened. | in the glossary |
+| Signal | A named event a node emits; other nodes connect to it. | in the book text |
+| Group | A named tag on nodes; one call reaches every node in it. | in the book text |
+| Autoload | A script or scene kept loaded across scene changes. | in the book text |
+| Resource | A typed data container nodes share, made by extending Resource. | in the book text |
+| Export preset, template | A preset is the recipe for one platform; the template is the prebuilt engine it packs your data into. | in the book text |
+| Area2D | Detects overlaps and can emit signals; never blocks or pushes. | in the book text |
+| StaticBody2D | Not moved by physics; others collide with it. | in the book text |
+| RigidBody2D | Simulated physics: you set forces or velocity, the engine moves it. | in the book text |
+| CharacterBody2D | Moved by your code; move_and_slide() slides it along what it hits. | in the book text |
+| Collision shape | The geometry physics uses, separate from the drawn sprite. | in the book text |
+| Collision layer | Where an object is: the layers it appears in. | in the book text |
+| Collision mask | What an object scans: it detects B only if B is in a layer it scans. | in the book text |
+| Bitmask | A number whose bits switch layers on or off; layer n has the value 2^(n−1). | in the book text |
+| Area snapshot | An Area's overlap list is updated once per physics step, so it can be a tick old. | in the book text |
+
 ## 2D art and sound assets in the engine
 
-[Open the deck](decks/Terms%20-%202D%20art%20and%20sound%20assets.html) · 16 slides · 34 terms
+[Open the deck](decks/06%202D%20art%20and%20sound%20assets.html) · 16 slides · 34 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -77,131 +232,9 @@ Total: 25 decks, 763 term entries.
 | Headroom | Spare level left below the maximum. | in the glossary |
 | Clipping | Distortion when a signal exceeds the maximum level. | in the glossary |
 
-## Animation and interaction: state machines and blending
-
-[Open the deck](decks/Terms%20-%20Animation%20and%20interaction.html) · 16 slides · 34 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| AnimationPlayer | Godot node that plays clips. | in the book text |
-| Loop | A clip that repeats. | in the book text |
-| OneShot | A blend-tree node that plays a clip once over whatever is below it, then returns. | in the book text |
-| Animation tree | Godot's graph of blends and state machines. | in the book text |
-| State | One named mode of a state machine, such as idle or run. | in the book text |
-| Transition | A connection from one state to another, with its own rule for when it fires and how long it blends. | in the book text |
-| Condition | A test on a parameter that must hold for a transition. | in the book text |
-| Advance mode | Enabled: only travel() uses the transition. Auto: it fires by itself when its condition or expression is true. | in the book text |
-| Travel | Ask the machine to go to a state by the shortest path of transitions; with no path it jumps there. | in the book text |
-| Priority | Which transition wins when several are true at once; in Godot the lower number is preferred. | in the book text |
-| Interrupt | A transition that cuts off the current state early. | in the glossary |
-| Exit-time transition (Godot: switch mode At End. Unity: Has Exit Time) | A transition that waits for the clip to reach a set point. | in the book text |
-| Cross-fade (also transition time, xfade_time) | Blend smoothly from one clip to the next over a short time. | in the book text |
-| get_current_node() | The playback's reading of the current state. During a cross-fade it already names the new state. | in the book text |
-| Blend tree | A graph of nodes that mix clips by numbers your code writes. | in the book text |
-| Blend space (BlendSpace1D, BlendSpace2D) | Clips placed on a line or a plane; a position between them mixes the nearest ones. | in the book text |
-| Parameter | A tunable number on the tree, addressed by a path; code drives the tree by writing it. | in the book text |
-| Property track | A track that animates any property, not just bones. | in the glossary |
-| Method track (Unity: Animation Event. Unreal: Anim Notify) | A track that calls a function when the playhead reaches a key. | in the book text |
-| Tween | Code-made animation of a value toward a target, then discarded; it can be killed halfway. | in the book text |
-| Startup | The windup frames before an attack can hit. | in the glossary |
-| Active | The frames in which an attack can hit. | in the glossary |
-| Recovery | The frames after an attack before the character can act. | in the glossary |
-| Hit list | The record of targets already hit so one swing hits each once. | in the glossary |
-| Sampling | Reading a value at one moment, so brief events between samples can be missed. | in the book text |
-| Intermittent fault | A bug that appears only sometimes. | in the glossary |
-| Input probe | A script that loads the real scene, presses only ordinary actions and records what happens. | in the book text |
-| Mutation check | Put the old broken version back and run the new test; it must fail. | in the book text |
-| Animator Controller | Unity asset holding an animation state machine. | in the book text |
-| Unity transition | Moves from one state to another over a set time. | in the book text |
-| Unity blend tree | Mixes several clips by a parameter value. | in the book text |
-| Animation Blueprint | Unreal asset holding an animation state machine and logic. | in the book text |
-| Transition rule | A small graph that outputs true or false; true lets the state change. | in the book text |
-| Conduit | A hub that joins many states to many with one set of transitions. | in the book text |
-
-## Animation foundations
-
-[Open the deck](decks/Terms%20-%20Animation%20foundations.html) · 14 slides · 33 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Animation resource | Stored animation data: a length plus tracks of keys. It does nothing until a player plays it. | in the book text |
-| AnimationPlayer | The node that plays animations by name. | in the book text |
-| AnimationLibrary | A named collection of animations that a player holds. | in the book text |
-| AnimatedSprite2D | A 2D node that plays a list of frames. Simpler than AnimationPlayer, which can key any property. | in the book text |
-| Track | One property's keyframes inside a clip, bound to a node path. | in the book text |
-| Key | One point on a track: a time, a value and an easing value. | in the book text |
-| Playhead | The marker for the current time on the timeline. | in the glossary |
-| Interpolation | How values are filled in between keys: nearest, linear or cubic. | in the book text |
-| Value track | Sets a property, such as rotation_degrees, to a value at each time. | in the book text |
-| Method track | Calls a function at chosen times. Does not fire when you scrub in the editor. | in the book text |
-| Bezier track | Fills a value in between keys along a hand-shaped curve. | in the book text |
-| Audio track | Plays a sound stream at a chosen time. | in the book text |
-| Loop mode | Whether a clip plays once, loops or ping-pongs. | in the glossary |
-| Loop seam | A jump where the last value meets the first on a loop. Test that they match. | in the book text |
-| Speed scale | A multiplier on how fast a clip plays. 0.5 is half speed. | in the glossary |
-| Autoplay | The animation a player starts by itself when its scene loads. | editor or docs |
-| animation_finished | A signal sent when a clip ends. A looping clip does not send it. | editor or docs |
-| Callback modes | Settings for when animation updates (idle or physics) and when method keys run (deferred or now). | in the book text |
-| Update mode | Per value track: update between keys (continuous), or only at the keys (discrete). | in the book text |
-| Tween | A value animated from code toward a target, then thrown away. For end values that come from gameplay. | in the book text |
-| Easing | The speed curve of a change: slow start (ease-in) or slow end (ease-out). | in the glossary |
-| Transition type | The family of curve a tween follows: linear, sine, quad, cubic, back, bounce and more. | editor or docs |
-| Kill a tween | Abort a tween where it is. It stops short of its end value. | editor or docs |
-| Skeleton | The hierarchy of bones. A child bone moves with its parent. | in the book text |
-| Rest pose | The skeleton's default pose, which you can return to at any time. | in the book text |
-| Inverse kinematics | Choose a target and compute the joint angles that reach it. | in the book text |
-| Pole target | A helper point that sets which way an elbow or knee bends. | in the glossary |
-| FABRIK | An IK solver that moves a chain back and forth between target and root until it fits. | outside source |
-| Look-at | Turn one bone to face a target. No chain is solved. | editor or docs |
-| SkeletonIK3D | The older built-in IK node. Marked Deprecated in the class reference. | in the book text |
-| skeleton_updated | A signal sent when the final pose, IK included, is ready to read. | in the book text |
-| Fixed frame rate | --fixed-fps n: every frame advances game time by exactly 1/n s. | in the book text |
-| Backend limit | Something a headless run cannot test, such as a captured mouse. It stays unverified. | in the book text |
-
-## Animation: principles and character animation
-
-[Open the deck](decks/Terms%20-%20Animation%20principles.html) · 16 slides · 34 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Keyframe | A stored value at a specific time. | in the book text |
-| Interpolation (its results are the in-betweens) | Computing the in-between values. | in the book text |
-| Clip | An authored animation: tracks of values over time. | in the book text |
-| Tween | Code-driven interpolation of a property over a duration. | in the book text |
-| Linear | Constant rate of change. | in the book text |
-| Step (discrete) | The value holds until the next key, then jumps. | in the book text |
-| Cubic | A smooth curve through the keys, with no corner at a key. | editor or docs |
-| Easing (ease-in-out is slow at both ends) | The speed curve of a change (ease-in slow start, ease-out slow end). | in the book text |
-| Ease-in | Slow start, then it speeds up. | in the glossary |
-| Ease-out | Fast start, then it slows to a stop. | in the glossary |
-| Timing and spacing | Timing is how long a move takes; spacing is how far it moves between frames. | video only |
-| Frame rate | Frames shown per second. | in the book text |
-| Playback speed scale | A multiplier on how fast a clip plays. | in the book text |
-| Loop | A clip that starts again from its first frame when it ends. | in the book text |
-| Loop seam | A visible jump where the last frame meets the first. | in the book text |
-| Cycle (walk, run) | One full stride that repeats; the first and last poses match. | in the book text |
-| Pose | A single held body position; animation is a series of them. | video only |
-| Silhouette | The solid outline of a pose; a clear action reads from the outline alone. | video only |
-| Weight and balance | Where the balance falls; stable when it sits over the feet. | video only |
-| Anticipation | A short wind-up that tells the player an action is coming. | video only |
-| Squash and stretch | Compress on impact, elongate at speed; shows elasticity and inertia. | video only |
-| Arcs | Limbs and thrown things move along curves, not straight lines. | outside source |
-| Follow-through, overlap | Parts keep moving after the body stops, each settling at its own time. | outside source |
-| Secondary motion | Extra movement the main action causes, such as a tail or hair, not keyed by hand. | outside source |
-| Rig and skeleton | The skeleton (a hierarchy of bones) plus the binding that makes the mesh follow it. | in the glossary |
-| Rest pose (bind pose) | The skeleton's default pose, the one the mesh is fitted to. | in the book text |
-| Skinning weights (also bone weights, vertex weights) | How strongly each vertex follows each bone. | in the book text |
-| Forward kinematics (FK) | Rotate joints parent-to-child to place the hand. | in the glossary |
-| Inverse kinematics (IK) | Give a target and the solver works out the joint angles. | in the book text |
-| Retargeting | Applying an animation made for one skeleton to a different one. | in the glossary |
-| Root motion | The clip moves the character through the world. | in the book text |
-| In-place | The clip stays on the spot; code does the travel. | in the book text |
-| Blend tree | Weighted mix of clips driven by parameters. | in the book text |
-| State machine | One active state; transitions fire on conditions. | in the book text |
-
 ## Art principles: concept art and character art
 
-[Open the deck](decks/Terms%20-%20Art%20principles%20and%20concept%20art.html) · 15 slides · 34 terms
+[Open the deck](decks/07%20Art%20principles%20and%20concept%20art.html) · 15 slides · 34 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -242,7 +275,7 @@ Total: 25 decks, 763 term entries.
 
 ## Blender: the interface and modeling terms
 
-[Open the deck](decks/Terms%20-%20Blender%20interface%20and%20modeling.html) · 16 slides · 30 terms
+[Open the deck](decks/08%20Blender%20interface%20and%20modeling.html) · 16 slides · 30 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -279,7 +312,7 @@ Total: 25 decks, 763 term entries.
 
 ## Blender to Godot: MCP, export and measuring a prop
 
-[Open the deck](decks/Terms%20-%20Blender%20to%20Godot.html) · 14 slides · 30 terms
+[Open the deck](decks/09%20Blender%20to%20Godot.html) · 14 slides · 30 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -314,197 +347,9 @@ Total: 25 decks, 763 term entries.
 | Version control | Software that records every version of a file and who changed it, and warns of clashes. | video only |
 | Naming conventions | Agreed rules for how files and objects are named. | video only |
 
-## Terms: Camera
-
-[Open the deck](decks/Terms%20-%20Camera.html) · 19 slides · 20 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Pan | Turn left or right on the spot; position unchanged. | in the glossary |
-| Tilt | Turn up or down on the spot; position unchanged. | in the glossary |
-| Roll | Spin around the viewing direction; the horizon tips. | in the glossary |
-| Dolly | Move the camera forward or backward along its view direction. | in the glossary |
-| Dolly in / dolly out (also dolly in/out) | Move the camera toward / away from the subject. Dolly in moves toward the subject, dolly out moves away. | in the glossary |
-| Truck | Move the camera left or right, still facing the same way. | in the glossary |
-| Pedestal | Move the camera straight up or down, still facing the same way. | in the glossary |
-| Zoom | Change the lens (field of view or focal length); the camera does not move. | in the glossary |
-| Dolly versus zoom | A dolly changes parallax (near and far shift against each other); a zoom only magnifies. | in the glossary |
-| Parallax | Nearer things shift more than farther things when the viewpoint moves. | in the glossary |
-| Focal length | Lens strength in millimetres; longer means narrower view and more magnification. | in the glossary |
-| Orbit | Move around a subject on a curved path while keeping it framed. | in the glossary |
-| Follow camera | Tracks a moving target, usually with smoothing. | in the glossary |
-| Smoothing (damping) (also smoothing/damping) | Spreads the camera's catch-up over time so it trails slightly. Same idea under both names: the camera eases toward its target instead of snapping. | in the glossary |
-| Deadzone | Screen region where the target can move without the camera moving. | in the glossary |
-| Look-ahead | Shifts framing toward the direction of travel. | in the glossary |
-| Screen shake | Brief, fading random offset of the camera for impact. | in the glossary |
-| Camera limits | Clamps that keep the view inside the level. | in the glossary |
-| Field of view (FOV) | The lens angle; wider shows more. | in the glossary |
-| Perspective / orthographic | Distant things shrink / size does not depend on distance. | in the glossary |
-
-## Game AI: decisions, generation and systems
-
-[Open the deck](decks/Terms%20-%20Game%20AI%20decisions%20and%20systems.html) · 16 slides · 33 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Finite state machine | A set of states with transitions; one is active. | in the book text |
-| Transition table | A list of every state, condition and next state. | in the glossary |
-| Flicker | Rapid back-and-forth switching between states. | in the book text |
-| Hysteresis | Different thresholds for switching on and off, to stop rapid switching. | in the book text |
-| Behavior tree | A tree of nodes that decides what an agent does each tick. | in the book text |
-| Tick | One update step; the tree is evaluated again from the root. | in the book text |
-| Success/failure/running | The three results a node can return; running means not finished, tick me again. | in the book text |
-| Blackboard | A shared memory of facts the AI reads and writes. | in the book text |
-| Condition and action | A condition asks a question; an action does the work and may keep running. | in the book text |
-| Selector (Also called a fallback) | Tries children in order until one succeeds. | in the book text |
-| Sequence | Runs children in order and stops at the first failure. | in the book text |
-| Utility AI | Scores every option and picks the highest. | in the glossary |
-| Weighted sum | Adding scores, each multiplied by an importance weight. | in the glossary |
-| GOAP | Goal-oriented action planning: search for actions that reach a goal. | in the glossary |
-| Precondition and effect | Precondition: what must be true before an action runs. Effect: what it changes. | in the glossary |
-| Reinforcement learning | Learning behaviour by trial and reward. | in the book text |
-| Reward | The number telling the agent how well it did. | in the book text |
-| Discount factor | How much future reward is worth compared to now. | in the book text |
-| Q-learning | Learning the value of each action in each state. | in the book text |
-| Epsilon-greedy | Take a random action with probability epsilon, otherwise the best known one. | in the book text |
-| Seed (Pseudo-random: looks random, computed from a seed) | A number that fixes a random sequence. | in the book text |
-| Coherent noise | Random values that change smoothly (Perlin, simplex). | in the book text |
-| Octave | One layer of noise at a set scale, added to others. | in the glossary |
-| Determinism | Same inputs and seed give the same output every run. | in the book text |
-| Heightmap | A grid with one height value per position. | in the book text |
-| Compute shader | A GPU program run over many cells at once, outside the drawing pipeline. | in the book text |
-| Validator | A check that tests generated content against rules. | in the book text |
-| Generate-and-test | Make content randomly, then reject what fails. | in the book text |
-| Constructive generation | Build content by rules that guarantee validity. | in the book text |
-| Safety margin | Extra room left so generated content never just barely passes. | in the book text |
-| Authority | The part of the system allowed to change a value. | in the book text |
-| RPC | A function one computer asks another computer to run. | in the book text |
-| Replication | Copying a value from the peer that owns it to the other peers. | in the book text |
-
-## Game AI: perception, movement and pathfinding
-
-[Open the deck](decks/Terms%20-%20Game%20AI%20movement%20and%20pathfinding.html) · 15 slides · 33 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Agent | A game character that senses and acts on its own. | outside source |
-| Sense, decide, act | The loop every system in Chapter 14 runs, once per tick. | in the book text |
-| Sight range | How far an NPC can see. | in the glossary |
-| Field-of-view cone | The angle across which the agent can see. | outside source |
-| Line of sight | A straight line to the target that nothing blocks. | in the book text |
-| Hearing (noise) radius | How far a noise carries to an agent. | outside source |
-| Last known position | Where the target was last seen, kept in memory. | in the book text |
-| Steering | Behaviours that adjust movement toward a goal. | in the glossary |
-| Velocity, max speed | Speed with a direction; max speed caps its size. | in the book text |
-| Seek | Steer toward a target. | in the glossary |
-| Flee | Steer away from a target. | in the glossary |
-| Arrive | Seek and slow down to stop at the target. | in the glossary |
-| Pursue | Steer toward where a moving target will be. | in the glossary |
-| Wander | Small random turns, so the path meanders. | outside source |
-| Separation | Steer away from close neighbours. | in the glossary |
-| Alignment | Steer to match neighbours' heading. | in the glossary |
-| Cohesion | Steer toward the neighbours' centre. | in the glossary |
-| Emergent behavior | Complex group behaviour from simple rules. | in the glossary |
-| Graph, edge, weight | Points (nodes) joined by edges, each with a cost. | outside source |
-| Grid (AStarGrid2D) | Cells marked solid or free; the light tool for grid games. | in the book text |
-| Navigation mesh | Polygons marking where agents can walk. | in the book text |
-| Waypoint | A point along a path. | in the glossary |
-| Breadth-first search | Expands outward one step at a time and ignores cost. | outside source |
-| Dijkstra | Pathfinding that expands by cost so far only, with no heuristic. | in the glossary |
-| Open and closed set | Open: found, not yet expanded. Closed: already expanded. | outside source |
-| A* | Pathfinding that picks the lowest f = g + h node first. | in the glossary |
-| f, g, h | Total estimated cost / cost so far / estimated cost to goal. | in the glossary |
-| Manhattan distance | Distance counted along grid axes only. | in the glossary |
-| Euclidean distance | Straight-line distance. | outside source |
-| Admissible heuristic | An estimate that never overestimates the true cost. | in the glossary |
-| NavigationAgent2D | Godot node that follows a navmesh path. | in the book text |
-| Path smoothing | Cut corners from a path wherever the straight line is clear. | outside source |
-| Local avoidance | Steering around nearby obstacles and agents. | in the glossary |
-
-## Game design A: what a game is
-
-[Open the deck](decks/Terms%20-%20Game%20design%20A.html) · 14 slides · 22 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Game | An activity that has all four: a goal, opposition, decisions and rules. | video only |
-| Goal | The objective the player works toward. | in the glossary |
-| Opposition | Obstacles the player must overcome; it makes a game fun and can frustrate. | video only |
-| Decisions | The ways the player can get past the opposition. | video only |
-| Rules | The framework that limits and governs the whole experience. | video only |
-| House rules | Rules a group changes for its own table; they change how the game plays. | video only |
-| Mechanic | A rule-governed action in the game. | in the book text |
-| Player verb | An action the player can take: jump, shoot, build. | in the glossary |
-| Core mechanic | The action players do over and over again. | video only |
-| Core loop | The repeated moment-to-moment cycle the player enjoys. | in the glossary |
-| Thematic feel | Mechanics alone can set the tone: what a thing does tells the player what it is. | video only |
-| Movement pattern | How a character moves gives it personality: a hop is a frog, a wave is a snake. | video only |
-| Types of fun (also Eight Kinds of Fun (Marc LeBlanc)) | "Fun" is too vague. Name the kind: fantasy, thrill, fellowship, mastery, exploration, creativity. | video only |
-| Target experience | The one specific experience everyone on the team aims at. | video only |
-| Appeal | The pull to keep playing; it differs by game and by player. | video only |
-| Art, design, engineering | They depend on each other; results are best when all three aim at the same target. | video only |
-| Space | The look, sound, lighting and physical setting; it shapes what fits in the game. | video only |
-| Components | The objects in the space that players use or meet: characters, weapons, vehicles. | video only |
-| Prototype | A simplified version made first to test whether the idea has appeal. | video only |
-| Play testing | Letting players challenge the design so it can be revisited and improved. | video only |
-| Clear progress | The player can see how close they are to the goal. | video only |
-| Climactic arc | Difficulty and tension build toward the goal's resolution. | video only |
-
-## Game design B: choices and challenge
-
-[Open the deck](decks/Terms%20-%20Game%20design%20B.html) · 14 slides · 19 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Meaningful play | The player acts and the game responds in a way that matters. | in the glossary |
-| Descriptive play | The player acts and sees the game respond: the bola hits, the ice shatters. | in the glossary |
-| Evaluative play | The player steps back and asks why this action matters to the whole game. | in the glossary |
-| Meaningful choice | A choice that changes what happens and that the player has to think about. | in the glossary |
-| Agency (autonomy) | The player takes control of how the game is played. | in the glossary |
-| Risk versus reward | A harder or riskier action pays more, and the player weighs the factors. | in the glossary |
-| Trade-off | Give up one thing to get another. | in the glossary |
-| Persistence | The player lives with the consequences of a choice for a set time. | in the glossary |
-| Situational choice | The same choice is better or worse depending on the situation the player is in. | in the glossary |
-| Unit differentiation (also orthogonal unit differentiation) | Each enemy type does something different, which forces the player to prioritise. | in the glossary |
-| Personalisation | Players build their own play style from the decisions they make. | in the glossary |
-| Frustration | Some is part of challenge; it has to be the kind the player can learn from. | in the glossary |
-| Difficulty | How hard the opposition is; it is separate from fairness. | in the glossary |
-| Fairness | Clear expectations and consistent design, so the player can learn from failing. | in the glossary |
-| Luck and skill | Luck: chance decides. Skill: the player's ability decides. Games mix the two. | in the glossary |
-| Balance | Every advantage has a disadvantage; no role starts with an unfair edge. | in the glossary |
-| Rock-paper-scissors | Each option beats one and loses to another, so no option wins everywhere. | in the glossary |
-| Downtime | Time a player waits with nothing to do. | in the glossary |
-| Probability | The odds of each result; extra rolls change them. | in the glossary |
-
-## Game design C: pacing and guidance
-
-[Open the deck](decks/Terms%20-%20Game%20design%20C.html) · 15 slides · 19 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Three pillars | A game rests on the player's role, communication and appeal. | in the glossary |
-| Player purpose | What the player does and why; the player, not the game, drives it forward. | in the glossary |
-| Communication | Showing the player the goal and how to reach it, with clues in the environment. | in the glossary |
-| Guiding the focus | Making clear what the player should concentrate on. | in the glossary |
-| Linear and nonlinear | Straight from start to end, or with alternate choices along the way. | in the glossary |
-| Side quest | A detour from the main storyline. | in the glossary |
-| Level design | Planning and building the spaces the player moves through. | in the glossary |
-| Teaching through levels | The first level lets the player try each skill, with no text. | in the glossary |
-| Design the middle first | Build the engaging middle levels, then the opening levels that lead there. | in the glossary |
-| Anticipation | Prepare the player for what comes next, such as a wind-up before an attack. | in the glossary |
-| Build-up | A sequence that raises tension toward an event: sound, sparks, camera shake. | in the glossary |
-| Logical events | Events behave sensibly and meet the player's unspoken expectations. | in the glossary |
-| Consistent rules | Even where physics is bent, it is bent the same way every time. | in the glossary |
-| Games can cheat | Hidden help the player does not notice, such as enemies told not to turn around. | in the glossary |
-| Dynamic | Many things happening at once, so play stays fresh. | in the glossary |
-| Progression | A natural rise in challenge; do not over-stimulate or under-stimulate. | in the glossary |
-| Pacing | Alternating intense and calm moments. | in the glossary |
-| Waves | A group of enemies sent together: many weak ones or a few strong ones. | in the glossary |
-| Spacing | Open areas to admire, or tight ones that feel claustrophobic; leave room for AI. | in the glossary |
-
 ## The game design document
 
-[Open the deck](decks/Terms%20-%20Game%20design%20document.html) · 16 slides · 34 terms
+[Open the deck](decks/10%20Game%20design%20document.html) · 16 slides · 34 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -543,130 +388,49 @@ Total: 25 decks, 763 term entries.
 | Invariant | A condition that must stay true throughout. | in the book text |
 | False pass | A test that passes though the behaviour is wrong. | in the book text |
 
-## How to make a trailer for your game
+## Shaders: foundations
 
-[Open the deck](decks/Terms%20-%20Game%20trailer.html) · 16 slides · 32 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Trailer | A short film that sells a game to a stranger. | outside source |
-| Teaser | An early look that hints and shows little. | outside source |
-| Gameplay video | Plain footage of play, made to cover, not sell. | outside source |
-| Pitch film | A 2 to 4 minute film on what you will build. | outside source |
-| Pitch | A short sales description of the game idea. | in the glossary |
-| Logline | The game in one sentence: who does what, and what is new. | outside source |
-| Tagline | A few memorable words that sit beside the title. | outside source |
-| Hook | The most distinctive thing the player does, said in one sentence. | outside source |
-| Key art | The one still image that stands for the game: title, character, idea. | outside source |
-| Thumbnail | The small preview image; it has to read at a glance. | outside source |
-| Beat structure | The order of parts: hook, establish, escalate, peak, title, button, call to action. | outside source |
-| Climax (peak) | The biggest payoff, placed on a strong beat after a quiet drop. | outside source |
-| Title card | A held card with the game's name, after the peak. | outside source |
-| Runtime | How long the film runs; a store trailer is typically 30 to 90 seconds. | outside source |
-| Frame rate | Frames shown per second. | in the glossary |
-| Resolution | Width and height in pixels. | in the glossary |
-| Pacing | How fast the cuts come; it follows how well the viewer understands the game. | outside source |
-| Cut on action | Cut while the motion is under way, so the eye carries across the cut. | outside source |
-| BPM | Beats per minute of the music; 60 divided by it is the seconds per beat. | outside source |
-| Cut on the beat | Place cuts on the music's beats so picture and sound lock together. | outside source |
-| Music drop | A quiet moment just before the peak, so the peak lands. | outside source |
-| Sound design | Mix so music sets the tone and the game's own hits punch through. | outside source |
-| Muted test | Check that the film still makes sense with the sound off. | outside source |
-| Accessibility | Captions for speech and no rapid flashing, so more people can watch. | outside source |
-| Call to action | One thing to do next: wishlist, play, or follow a link. | outside source |
-| Logo sting | A very short logo animation with a sound; better at the end than the start. | outside source |
-| Fixed frame rate | Rendering locked to a set number of frames a second so runs match. | in the book text |
-| Movie Maker mode | Godot's mode that records a run to a video file, frame by frame. | editor or docs |
-| Clean footage | Real play with debug clutter hidden and the HUD that explains a mechanic kept. | outside source |
-| Gameplay vs cinematic | Captured play from the real build; a cinematic must be the game's own and labelled. | outside source |
-| Honest trailer | Shows only what the game really does; planned features never appear. | outside source |
-| Viewer test | Show the cut, unexplained, to someone new and ask what the game is and what they do. | outside source |
-
-## Godot, Unity and Unreal: the differences
-
-[Open the deck](decks/Terms%20-%20Godot%20Unity%20Unreal.html) · 16 slides · 34 terms
+[Open the deck](decks/11%20Shader%20foundations.html) · 16 slides · 33 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
-| Scene, Level, Map (Godot scene · Unity Scene · Unreal Level) | A saved, reusable tree of objects. Unreal's word for the level file is Map. | in the book text |
-| Node, GameObject, Actor (Godot · Unity · Unreal) | One object in the scene. A GameObject does nothing until components are added. | in the book text |
-| Component (Godot picks a node type instead) | A piece of behaviour or data attached to a GameObject or an Actor. | in the book text |
-| Template | The master that copies come from: a Godot scene, a Unity Prefab, an Unreal Blueprint class. | in the book text |
-| Instance | One live copy made from a template. | in the book text |
-| Override | A change on one instance. In Unity, Apply pushes it into the Prefab and Revert drops it. | in the book text |
-| Data asset | Shared data kept as a file: Godot Resource, Unity ScriptableObject, Unreal Data Asset. | in the book text |
-| Signal | Godot's named event. Other nodes connect to it and run when it fires. | in the book text |
-| UnityEvent, C# event | Unity's events. A UnityEvent is wired in the Inspector, so reading code alone can miss it. | in the book text |
-| Event Dispatcher | Unreal's Blueprint form of a signal. One Call fires every bound event; C++ uses a delegate. | in the book text |
-| Autoload, Game Instance | Things that outlive a scene: Godot autoload, Unity DontDestroyOnLoad, Unreal Game Instance. | in the book text |
-| GDScript | Godot's own scripting language. Scripts are plain text files. | in the book text |
-| C# and MonoBehaviour | Unity's language. A MonoBehaviour is a component script, also plain text. | in the book text |
-| Blueprint graph | Unreal's visual scripting. The graph is a binary asset an agent cannot diff as text. | in the book text |
-| C++ in Unreal | Unreal's code route. Plain text, but it must be compiled before a change takes effect. | in the book text |
-| _process, _physics_process (Godot) | Once per frame, and at a fixed 60 times a second by default. | in the book text |
-| Update, FixedUpdate (Unity) | Once per frame, and at fixed 0.02 s steps, which is 50 a second by default. | in the book text |
-| Tick (Unreal) | Each Actor ticks every frame. Tick groups such as pre-physics order the work. | in the book text |
-| Input action (InputMap · Input System · Enhanced Input) | A named intent such as jump, bound to keys or buttons and kept apart from them. | in the book text |
-| Character body (CharacterBody2D · Rigidbody2D · Character) | The body you move on purpose: your script, or Unreal's movement component. | in the book text |
-| Trigger (Area2D · Is Trigger · Trigger volume) | A zone that reports overlaps instead of blocking, such as a pickup or a checkpoint. | in the book text |
-| Layer and mask (Godot) | Each object has a layer and a mask. A notices B if B's layer is in A's mask: one way. | in the book text |
-| Layer Collision Matrix (Unity) | One layer per GameObject. A project-wide grid says which pairs of layers collide. | in the book text |
-| Object Type, response (Unreal) | Block, Overlap or Ignore for every type. Both sides must agree before contact happens. | in the book text |
-| Up axis, handedness | Godot and Unity are Y-up, Unreal is Z-up. Unity and Unreal are left-handed, Godot is right-handed. | in the book text |
-| Units | In Godot and Unity 1 unit is 1 metre. In Unreal 1 unit is 1 centimetre. | in the book text |
-| Clip and player (AnimationPlayer · Animator · Sequence) | Keyed data played over time. Unity wraps even one clip in an Animator Controller. | in the book text |
-| Event key (Method track · Event · Notify) | A call placed on the timeline. An Anim Notify State has a begin and an end. | in the book text |
-| State machine (AnimationTree · Controller · Anim Blueprint) | States joined by transitions with rules. The current state picks the clip. | in the book text |
-| Shader and material (Shader code · Shader Graph · Material Editor) | Godot and Unity write shaders as code or graph. Unreal builds materials as node graphs. | in the book text |
-| Material parameter (uniform · Material property · parameter) | A named value that your code sets and the shader reads. | in the book text |
-| Particle system (GPUParticles · VFX Graph · Niagara) | Many small sprites simulated together. A one-shot burst spawns them all at once. | in the book text |
-| Build and export | Godot saves export presets, Unity 6 saves a build profile, Unreal packages and cooks the project. | in the book text |
-| Licence | Godot is MIT. Unity is proprietary. Unreal is source-available, not open source. | in the book text |
-
-## Godot: the editor, scenes, nodes, signals and movement
-
-[Open the deck](decks/Terms%20-%20Godot%20editor%20and%20scenes.html) · 16 slides · 34 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Scene dock, Remote tab | Lists the scene's nodes; the Remote tab lists the running game's. | in the book text |
-| FileSystem dock | Lists every file in the project, under res://. | editor or docs |
-| Inspector | The editor panel for viewing and editing properties. | in the glossary |
-| Node dock | Shows the selected node's signals and groups. | editor or docs |
-| 2D, 3D and Script views | Tabs along the top: 2D and 3D edit scenes, Script edits code. | editor or docs |
-| Output and Debugger | Bottom panels: Output shows printed text, Debugger shows errors. | editor or docs |
-| Project Settings | Project-wide values: physics rate, layer names, input actions, autoloads. | in the book text |
-| Run and Play buttons | Run Project (F5) starts the main scene; Run Current Scene starts the open one. | editor or docs |
-| Project | A folder with a project.godot file at its root; res:// means that folder. | in the book text |
-| Scene | A saved, reusable tree of nodes: a level, a character, a menu. | in the book text |
-| Node | The smallest building block: one object doing one job. | in the book text |
-| Script | Attaches behaviour to a node; GDScript here. | in the book text |
-| Scene tree | The live hierarchy of nodes in a running game. | in the book text |
-| Instance | One live copy of a saved scene; a change on one instance overrides the template. | in the book text |
-| _process | Runs once per rendered frame; the rate varies by machine. | in the book text |
-| _physics_process | Runs at a fixed rate, 60 times a second by default. | in the book text |
-| Input action | A named intent such as jump, bound to keys or buttons. | in the book text |
-| Just-pressed vs held | Just-pressed is true only on the tick a press began; held stays true while down. | in the book text |
-| Polling | Asking every tick whether something has happened. | in the book text |
-| Event-driven | Code runs only when something announces that it happened. | in the glossary |
-| Signal | A named event a node emits; other nodes connect to it. | in the book text |
-| Group | A named tag on nodes; one call reaches every node in it. | in the book text |
-| Autoload | A script or scene kept loaded across scene changes. | in the book text |
-| Resource | A typed data container nodes share, made by extending Resource. | in the book text |
-| Export preset, template | A preset is the recipe for one platform; the template is the prebuilt engine it packs your data into. | in the book text |
-| Area2D | Detects overlaps and can emit signals; never blocks or pushes. | in the book text |
-| StaticBody2D | Not moved by physics; others collide with it. | in the book text |
-| RigidBody2D | Simulated physics: you set forces or velocity, the engine moves it. | in the book text |
-| CharacterBody2D | Moved by your code; move_and_slide() slides it along what it hits. | in the book text |
-| Collision shape | The geometry physics uses, separate from the drawn sprite. | in the book text |
-| Collision layer | Where an object is: the layers it appears in. | in the book text |
-| Collision mask | What an object scans: it detects B only if B is in a layer it scans. | in the book text |
-| Bitmask | A number whose bits switch layers on or off; layer n has the value 2^(n−1). | in the book text |
-| Area snapshot | An Area's overlap list is updated once per physics step, so it can be a tick old. | in the book text |
+| Shader | A small program on the graphics processor, run many times at once. | in the book text |
+| Vertex shader | Runs per vertex; sets positions (waves, displacement). | in the book text |
+| Fragment (pixel) shader | Runs per pixel; sets colour (tint, glint). | in the book text |
+| Programmable stage | A pipeline step you write a shader for. | in the glossary |
+| Fixed-function | Old hardware steps that could be configured but not programmed. | in the glossary |
+| Rasterization | Turning triangles into fragments on the screen grid. | in the glossary |
+| Fragment | A candidate pixel colour produced by rasterization for one covered screen position. | in the glossary |
+| Varying | A value passed from the vertex stage to the fragment stage, interpolated on the way. | in the glossary |
+| Interpolation (shader) | Smoothly blending vertex values across a triangle's fragments. | in the glossary |
+| shader_type | First line of a shader: says what it draws, and so which functions you can write. | in the book text |
+| canvas_item | Godot shader type for 2D drawing: sprites, shapes, UI. | in the book text |
+| spatial | Godot shader type for 3D drawing: meshes. | in the book text |
+| Godot shading language | Based on GLSL but simplified; the ideas carry over between dialects. | in the book text |
+| Compile error | The shader fails to build and gives an error message; a headless run still exits 0. | in the book text |
+| UV | 2D coordinates mapping a surface to a texture, 0 to 1 across it. | in the book text |
+| SCREEN_UV | Godot built-in: the screen position of the current fragment, 0 to 1. | in the book text |
+| Vertex colour | Colour stored on each vertex; can blend textures or paint terrain by height. | video only |
+| TEXTURE | The default 2D texture the item was drawn with. | in the book text |
+| COLOR | Arrives as vertex colour times TEXTURE colour; what you leave in it is drawn. | in the book text |
+| TIME | Seconds since the engine started; repeats after 3,600 s. | in the book text |
+| Uniform (also called: shader parameter) | A value set from code, the same across a draw; how scripts steer a shader. | in the book text |
+| hint_range | Gives the Inspector a slider; does not clamp values set from code. | in the book text |
+| source_color | Marks a colour as sRGB data so it is decoded to linear for the maths. | in the book text |
+| Material | A shader plus its parameter values and textures. | in the book text |
+| ShaderMaterial | A material that uses a custom Shader program and holds its parameter values. | in the book text |
+| set_shader_parameter | Changes one uniform's value on a material, by name; a typo does nothing. | in the book text |
+| Shared material | One material used by many objects, so a change hits them all. | in the book text |
+| RGBA | Red, green, blue and alpha channels. | in the glossary |
+| Linear vs sRGB | sRGB is the encoding for images shown to people; linear values are proportional to light, the right space for maths. | in the book text |
+| Mix | Blend two values by a fraction; also called lerp. | in the glossary |
+| step(edge, x) | Gives 0 below the edge and 1 from the edge up: a hard switch. | editor or docs |
+| smoothstep(e0, e1, x) | Rises from 0 to 1 between two edges along a smooth S-curve. | editor or docs |
+| clamp(x, lo, hi) | Holds a value inside a minimum and a maximum. | editor or docs |
 
 ## Materials and textures
 
-[Open the deck](decks/Terms%20-%20Materials%20and%20textures.html) · 16 slides · 34 terms
+[Open the deck](decks/12%20Materials%20and%20textures.html) · 16 slides · 34 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -705,9 +469,46 @@ Total: 25 decks, 763 term entries.
 | Global illumination | Light that bounces off surfaces and lights others; Godot has several techniques. | in the book text |
 | Reflection probe | A point that captures the surroundings so shiny surfaces have something to reflect. | in the book text |
 
+## Shader verification
+
+[Open the deck](decks/13%20Shader%20verification.html) · 14 slides · 30 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Evidence ladder | Five kinds of proof, each stronger than the last. | in the book text |
+| Claim versus evidence | What is said works, versus a check that shows it. | in the book text |
+| Observed versus inferred | Seen in your own run, versus guessed from it. | in the glossary |
+| Compile error | The shader fails to build and prints an error. | in the glossary |
+| Headless mode | A run with no window, so no pixels are drawn. | in the book text |
+| Software renderer | Drawing on the CPU: same output on any machine. | in the glossary |
+| Controlled input | Every input fixed, so a run can be repeated. | in the book text |
+| Exposing input | Where right and wrong answers are far apart. | in the book text |
+| Bench scene | A scene made to be looked at, inputs fixed. | in the book text |
+| Test fixture | Fixed setup that a test starts from. | in the glossary |
+| Pinned clock | A fixed frame rate: every frame the same length. | in the book text |
+| Random seed | A fixed starting number so random results repeat. | in the glossary |
+| Frame counter | A fade that counts frames, not game seconds. | in the book text |
+| Assertion | A statement a test requires to be true. | in the glossary |
+| source_color | A hint: this texture holds colour, so decode it. | in the book text |
+| Flat normal texel | The pixel (128, 128, 255): a surface facing out. | in the book text |
+| Premultiplied alpha | Colour already multiplied by its alpha. | in the book text |
+| Golden image (also reference image) | A saved correct picture to compare renders with. | in the glossary |
+| Pixel diff | A count of the pixels where two images differ. | editor or docs |
+| Tolerance | The allowed gap between expected and actual. | in the book text |
+| Per-platform reference | One reference per platform, as they differ slightly. | in the book text |
+| False positive (also called a false pass) | A check passes though the thing is wrong. | in the glossary |
+| False negative (also called a false fail) | A check fails though the thing is right. | in the glossary |
+| CPU model | The spec written as arithmetic that runs headless. | in the book text |
+| Test oracle | The source of the right answer a test compares to. | in the book text |
+| Specification oracle | An oracle taken from the spec, not the code. | in the book text |
+| Mutation check | Break the code on purpose; the test must fail. | in the book text |
+| Test the test | A new check must fail on bad code, pass on good. | in the book text |
+| Uniform value check | Compare a shader input's value with the spec. | in the book text |
+| Scope violation | Changing something the brief said not to touch. | in the glossary |
+
 ## Particles and VFX
 
-[Open the deck](decks/Terms%20-%20Particles%20and%20VFX.html) · 16 slides · 35 terms
+[Open the deck](decks/14%20Particles%20and%20VFX.html) · 16 slides · 35 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -747,86 +548,357 @@ Total: 25 decks, 763 term entries.
 | Analogous colours | Neighbouring hues, used to tie an effect to the model that casts it. | video only |
 | Timing curve | Varying how fast an effect grows and slows, not a constant rate. | video only |
 
-## Shaders: foundations
+## Animation: principles and character animation
 
-[Open the deck](decks/Terms%20-%20Shader%20foundations.html) · 16 slides · 33 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Shader | A small program on the graphics processor, run many times at once. | in the book text |
-| Vertex shader | Runs per vertex; sets positions (waves, displacement). | in the book text |
-| Fragment (pixel) shader | Runs per pixel; sets colour (tint, glint). | in the book text |
-| Programmable stage | A pipeline step you write a shader for. | in the glossary |
-| Fixed-function | Old hardware steps that could be configured but not programmed. | in the glossary |
-| Rasterization | Turning triangles into fragments on the screen grid. | in the glossary |
-| Fragment | A candidate pixel colour produced by rasterization for one covered screen position. | in the glossary |
-| Varying | A value passed from the vertex stage to the fragment stage, interpolated on the way. | in the glossary |
-| Interpolation (shader) | Smoothly blending vertex values across a triangle's fragments. | in the glossary |
-| shader_type | First line of a shader: says what it draws, and so which functions you can write. | in the book text |
-| canvas_item | Godot shader type for 2D drawing: sprites, shapes, UI. | in the book text |
-| spatial | Godot shader type for 3D drawing: meshes. | in the book text |
-| Godot shading language | Based on GLSL but simplified; the ideas carry over between dialects. | in the book text |
-| Compile error | The shader fails to build and gives an error message; a headless run still exits 0. | in the book text |
-| UV | 2D coordinates mapping a surface to a texture, 0 to 1 across it. | in the book text |
-| SCREEN_UV | Godot built-in: the screen position of the current fragment, 0 to 1. | in the book text |
-| Vertex colour | Colour stored on each vertex; can blend textures or paint terrain by height. | video only |
-| TEXTURE | The default 2D texture the item was drawn with. | in the book text |
-| COLOR | Arrives as vertex colour times TEXTURE colour; what you leave in it is drawn. | in the book text |
-| TIME | Seconds since the engine started; repeats after 3,600 s. | in the book text |
-| Uniform (also called: shader parameter) | A value set from code, the same across a draw; how scripts steer a shader. | in the book text |
-| hint_range | Gives the Inspector a slider; does not clamp values set from code. | in the book text |
-| source_color | Marks a colour as sRGB data so it is decoded to linear for the maths. | in the book text |
-| Material | A shader plus its parameter values and textures. | in the book text |
-| ShaderMaterial | A material that uses a custom Shader program and holds its parameter values. | in the book text |
-| set_shader_parameter | Changes one uniform's value on a material, by name; a typo does nothing. | in the book text |
-| Shared material | One material used by many objects, so a change hits them all. | in the book text |
-| RGBA | Red, green, blue and alpha channels. | in the glossary |
-| Linear vs sRGB | sRGB is the encoding for images shown to people; linear values are proportional to light, the right space for maths. | in the book text |
-| Mix | Blend two values by a fraction; also called lerp. | in the glossary |
-| step(edge, x) | Gives 0 below the edge and 1 from the edge up: a hard switch. | editor or docs |
-| smoothstep(e0, e1, x) | Rises from 0 to 1 between two edges along a smooth S-curve. | editor or docs |
-| clamp(x, lo, hi) | Holds a value inside a minimum and a maximum. | editor or docs |
-
-## Shader verification
-
-[Open the deck](decks/Terms%20-%20Shader%20verification.html) · 14 slides · 30 terms
+[Open the deck](decks/15%20Animation%20principles.html) · 16 slides · 34 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
-| Evidence ladder | Five kinds of proof, each stronger than the last. | in the book text |
-| Claim versus evidence | What is said works, versus a check that shows it. | in the book text |
-| Observed versus inferred | Seen in your own run, versus guessed from it. | in the glossary |
-| Compile error | The shader fails to build and prints an error. | in the glossary |
-| Headless mode | A run with no window, so no pixels are drawn. | in the book text |
-| Software renderer | Drawing on the CPU: same output on any machine. | in the glossary |
-| Controlled input | Every input fixed, so a run can be repeated. | in the book text |
-| Exposing input | Where right and wrong answers are far apart. | in the book text |
-| Bench scene | A scene made to be looked at, inputs fixed. | in the book text |
-| Test fixture | Fixed setup that a test starts from. | in the glossary |
-| Pinned clock | A fixed frame rate: every frame the same length. | in the book text |
-| Random seed | A fixed starting number so random results repeat. | in the glossary |
-| Frame counter | A fade that counts frames, not game seconds. | in the book text |
-| Assertion | A statement a test requires to be true. | in the glossary |
-| source_color | A hint: this texture holds colour, so decode it. | in the book text |
-| Flat normal texel | The pixel (128, 128, 255): a surface facing out. | in the book text |
-| Premultiplied alpha | Colour already multiplied by its alpha. | in the book text |
-| Golden image (also reference image) | A saved correct picture to compare renders with. | in the glossary |
-| Pixel diff | A count of the pixels where two images differ. | editor or docs |
-| Tolerance | The allowed gap between expected and actual. | in the book text |
-| Per-platform reference | One reference per platform, as they differ slightly. | in the book text |
-| False positive (also called a false pass) | A check passes though the thing is wrong. | in the glossary |
-| False negative (also called a false fail) | A check fails though the thing is right. | in the glossary |
-| CPU model | The spec written as arithmetic that runs headless. | in the book text |
-| Test oracle | The source of the right answer a test compares to. | in the book text |
-| Specification oracle | An oracle taken from the spec, not the code. | in the book text |
-| Mutation check | Break the code on purpose; the test must fail. | in the book text |
-| Test the test | A new check must fail on bad code, pass on good. | in the book text |
-| Uniform value check | Compare a shader input's value with the spec. | in the book text |
-| Scope violation | Changing something the brief said not to touch. | in the glossary |
+| Keyframe | A stored value at a specific time. | in the book text |
+| Interpolation (its results are the in-betweens) | Computing the in-between values. | in the book text |
+| Clip | An authored animation: tracks of values over time. | in the book text |
+| Tween | Code-driven interpolation of a property over a duration. | in the book text |
+| Linear | Constant rate of change. | in the book text |
+| Step (discrete) | The value holds until the next key, then jumps. | in the book text |
+| Cubic | A smooth curve through the keys, with no corner at a key. | editor or docs |
+| Easing (ease-in-out is slow at both ends) | The speed curve of a change (ease-in slow start, ease-out slow end). | in the book text |
+| Ease-in | Slow start, then it speeds up. | in the glossary |
+| Ease-out | Fast start, then it slows to a stop. | in the glossary |
+| Timing and spacing | Timing is how long a move takes; spacing is how far it moves between frames. | video only |
+| Frame rate | Frames shown per second. | in the book text |
+| Playback speed scale | A multiplier on how fast a clip plays. | in the book text |
+| Loop | A clip that starts again from its first frame when it ends. | in the book text |
+| Loop seam | A visible jump where the last frame meets the first. | in the book text |
+| Cycle (walk, run) | One full stride that repeats; the first and last poses match. | in the book text |
+| Pose | A single held body position; animation is a series of them. | video only |
+| Silhouette | The solid outline of a pose; a clear action reads from the outline alone. | video only |
+| Weight and balance | Where the balance falls; stable when it sits over the feet. | video only |
+| Anticipation | A short wind-up that tells the player an action is coming. | video only |
+| Squash and stretch | Compress on impact, elongate at speed; shows elasticity and inertia. | video only |
+| Arcs | Limbs and thrown things move along curves, not straight lines. | outside source |
+| Follow-through, overlap | Parts keep moving after the body stops, each settling at its own time. | outside source |
+| Secondary motion | Extra movement the main action causes, such as a tail or hair, not keyed by hand. | outside source |
+| Rig and skeleton | The skeleton (a hierarchy of bones) plus the binding that makes the mesh follow it. | in the glossary |
+| Rest pose (bind pose) | The skeleton's default pose, the one the mesh is fitted to. | in the book text |
+| Skinning weights (also bone weights, vertex weights) | How strongly each vertex follows each bone. | in the book text |
+| Forward kinematics (FK) | Rotate joints parent-to-child to place the hand. | in the glossary |
+| Inverse kinematics (IK) | Give a target and the solver works out the joint angles. | in the book text |
+| Retargeting | Applying an animation made for one skeleton to a different one. | in the glossary |
+| Root motion | The clip moves the character through the world. | in the book text |
+| In-place | The clip stays on the spot; code does the travel. | in the book text |
+| Blend tree | Weighted mix of clips driven by parameters. | in the book text |
+| State machine | One active state; transitions fire on conditions. | in the book text |
+
+## Animation foundations
+
+[Open the deck](decks/16%20Animation%20foundations.html) · 14 slides · 33 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Animation resource | Stored animation data: a length plus tracks of keys. It does nothing until a player plays it. | in the book text |
+| AnimationPlayer | The node that plays animations by name. | in the book text |
+| AnimationLibrary | A named collection of animations that a player holds. | in the book text |
+| AnimatedSprite2D | A 2D node that plays a list of frames. Simpler than AnimationPlayer, which can key any property. | in the book text |
+| Track | One property's keyframes inside a clip, bound to a node path. | in the book text |
+| Key | One point on a track: a time, a value and an easing value. | in the book text |
+| Playhead | The marker for the current time on the timeline. | in the glossary |
+| Interpolation | How values are filled in between keys: nearest, linear or cubic. | in the book text |
+| Value track | Sets a property, such as rotation_degrees, to a value at each time. | in the book text |
+| Method track | Calls a function at chosen times. Does not fire when you scrub in the editor. | in the book text |
+| Bezier track | Fills a value in between keys along a hand-shaped curve. | in the book text |
+| Audio track | Plays a sound stream at a chosen time. | in the book text |
+| Loop mode | Whether a clip plays once, loops or ping-pongs. | in the glossary |
+| Loop seam | A jump where the last value meets the first on a loop. Test that they match. | in the book text |
+| Speed scale | A multiplier on how fast a clip plays. 0.5 is half speed. | in the glossary |
+| Autoplay | The animation a player starts by itself when its scene loads. | editor or docs |
+| animation_finished | A signal sent when a clip ends. A looping clip does not send it. | editor or docs |
+| Callback modes | Settings for when animation updates (idle or physics) and when method keys run (deferred or now). | in the book text |
+| Update mode | Per value track: update between keys (continuous), or only at the keys (discrete). | in the book text |
+| Tween | A value animated from code toward a target, then thrown away. For end values that come from gameplay. | in the book text |
+| Easing | The speed curve of a change: slow start (ease-in) or slow end (ease-out). | in the glossary |
+| Transition type | The family of curve a tween follows: linear, sine, quad, cubic, back, bounce and more. | editor or docs |
+| Kill a tween | Abort a tween where it is. It stops short of its end value. | editor or docs |
+| Skeleton | The hierarchy of bones. A child bone moves with its parent. | in the book text |
+| Rest pose | The skeleton's default pose, which you can return to at any time. | in the book text |
+| Inverse kinematics | Choose a target and compute the joint angles that reach it. | in the book text |
+| Pole target | A helper point that sets which way an elbow or knee bends. | in the glossary |
+| FABRIK | An IK solver that moves a chain back and forth between target and root until it fits. | outside source |
+| Look-at | Turn one bone to face a target. No chain is solved. | editor or docs |
+| SkeletonIK3D | The older built-in IK node. Marked Deprecated in the class reference. | in the book text |
+| skeleton_updated | A signal sent when the final pose, IK included, is ready to read. | in the book text |
+| Fixed frame rate | --fixed-fps n: every frame advances game time by exactly 1/n s. | in the book text |
+| Backend limit | Something a headless run cannot test, such as a captured mouse. It stays unverified. | in the book text |
+
+## Animation and interaction: state machines and blending
+
+[Open the deck](decks/17%20Animation%20and%20interaction.html) · 16 slides · 34 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| AnimationPlayer | Godot node that plays clips. | in the book text |
+| Loop | A clip that repeats. | in the book text |
+| OneShot | A blend-tree node that plays a clip once over whatever is below it, then returns. | in the book text |
+| Animation tree | Godot's graph of blends and state machines. | in the book text |
+| State | One named mode of a state machine, such as idle or run. | in the book text |
+| Transition | A connection from one state to another, with its own rule for when it fires and how long it blends. | in the book text |
+| Condition | A test on a parameter that must hold for a transition. | in the book text |
+| Advance mode | Enabled: only travel() uses the transition. Auto: it fires by itself when its condition or expression is true. | in the book text |
+| Travel | Ask the machine to go to a state by the shortest path of transitions; with no path it jumps there. | in the book text |
+| Priority | Which transition wins when several are true at once; in Godot the lower number is preferred. | in the book text |
+| Interrupt | A transition that cuts off the current state early. | in the glossary |
+| Exit-time transition (Godot: switch mode At End. Unity: Has Exit Time) | A transition that waits for the clip to reach a set point. | in the book text |
+| Cross-fade (also transition time, xfade_time) | Blend smoothly from one clip to the next over a short time. | in the book text |
+| get_current_node() | The playback's reading of the current state. During a cross-fade it already names the new state. | in the book text |
+| Blend tree | A graph of nodes that mix clips by numbers your code writes. | in the book text |
+| Blend space (BlendSpace1D, BlendSpace2D) | Clips placed on a line or a plane; a position between them mixes the nearest ones. | in the book text |
+| Parameter | A tunable number on the tree, addressed by a path; code drives the tree by writing it. | in the book text |
+| Property track | A track that animates any property, not just bones. | in the glossary |
+| Method track (Unity: Animation Event. Unreal: Anim Notify) | A track that calls a function when the playhead reaches a key. | in the book text |
+| Tween | Code-made animation of a value toward a target, then discarded; it can be killed halfway. | in the book text |
+| Startup | The windup frames before an attack can hit. | in the glossary |
+| Active | The frames in which an attack can hit. | in the glossary |
+| Recovery | The frames after an attack before the character can act. | in the glossary |
+| Hit list | The record of targets already hit so one swing hits each once. | in the glossary |
+| Sampling | Reading a value at one moment, so brief events between samples can be missed. | in the book text |
+| Intermittent fault | A bug that appears only sometimes. | in the glossary |
+| Input probe | A script that loads the real scene, presses only ordinary actions and records what happens. | in the book text |
+| Mutation check | Put the old broken version back and run the new test; it must fail. | in the book text |
+| Animator Controller | Unity asset holding an animation state machine. | in the book text |
+| Unity transition | Moves from one state to another over a set time. | in the book text |
+| Unity blend tree | Mixes several clips by a parameter value. | in the book text |
+| Animation Blueprint | Unreal asset holding an animation state machine and logic. | in the book text |
+| Transition rule | A small graph that outputs true or false; true lets the state change. | in the book text |
+| Conduit | A hub that joins many states to many with one set of transitions. | in the book text |
+
+## Terms: Camera
+
+[Open the deck](decks/18%20Camera.html) · 19 slides · 20 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Pan | Turn left or right on the spot; position unchanged. | in the glossary |
+| Tilt | Turn up or down on the spot; position unchanged. | in the glossary |
+| Roll | Spin around the viewing direction; the horizon tips. | in the glossary |
+| Dolly | Move the camera forward or backward along its view direction. | in the glossary |
+| Dolly in / dolly out (also dolly in/out) | Move the camera toward / away from the subject. Dolly in moves toward the subject, dolly out moves away. | in the glossary |
+| Truck | Move the camera left or right, still facing the same way. | in the glossary |
+| Pedestal | Move the camera straight up or down, still facing the same way. | in the glossary |
+| Zoom | Change the lens (field of view or focal length); the camera does not move. | in the glossary |
+| Dolly versus zoom | A dolly changes parallax (near and far shift against each other); a zoom only magnifies. | in the glossary |
+| Parallax | Nearer things shift more than farther things when the viewpoint moves. | in the glossary |
+| Focal length | Lens strength in millimetres; longer means narrower view and more magnification. | in the glossary |
+| Orbit | Move around a subject on a curved path while keeping it framed. | in the glossary |
+| Follow camera | Tracks a moving target, usually with smoothing. | in the glossary |
+| Smoothing (damping) (also smoothing/damping) | Spreads the camera's catch-up over time so it trails slightly. Same idea under both names: the camera eases toward its target instead of snapping. | in the glossary |
+| Deadzone | Screen region where the target can move without the camera moving. | in the glossary |
+| Look-ahead | Shifts framing toward the direction of travel. | in the glossary |
+| Screen shake | Brief, fading random offset of the camera for impact. | in the glossary |
+| Camera limits | Clamps that keep the view inside the level. | in the glossary |
+| Field of view (FOV) | The lens angle; wider shows more. | in the glossary |
+| Perspective / orthographic | Distant things shrink / size does not depend on distance. | in the glossary |
+
+## Game AI: perception, movement and pathfinding
+
+[Open the deck](decks/19%20Game%20AI%20perception%20and%20pathfinding.html) · 15 slides · 33 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Agent | A game character that senses and acts on its own. | outside source |
+| Sense, decide, act | The loop every system in Chapter 14 runs, once per tick. | in the book text |
+| Sight range | How far an NPC can see. | in the glossary |
+| Field-of-view cone | The angle across which the agent can see. | outside source |
+| Line of sight | A straight line to the target that nothing blocks. | in the book text |
+| Hearing (noise) radius | How far a noise carries to an agent. | outside source |
+| Last known position | Where the target was last seen, kept in memory. | in the book text |
+| Steering | Behaviours that adjust movement toward a goal. | in the glossary |
+| Velocity, max speed | Speed with a direction; max speed caps its size. | in the book text |
+| Seek | Steer toward a target. | in the glossary |
+| Flee | Steer away from a target. | in the glossary |
+| Arrive | Seek and slow down to stop at the target. | in the glossary |
+| Pursue | Steer toward where a moving target will be. | in the glossary |
+| Wander | Small random turns, so the path meanders. | outside source |
+| Separation | Steer away from close neighbours. | in the glossary |
+| Alignment | Steer to match neighbours' heading. | in the glossary |
+| Cohesion | Steer toward the neighbours' centre. | in the glossary |
+| Emergent behavior | Complex group behaviour from simple rules. | in the glossary |
+| Graph, edge, weight | Points (nodes) joined by edges, each with a cost. | outside source |
+| Grid (AStarGrid2D) | Cells marked solid or free; the light tool for grid games. | in the book text |
+| Navigation mesh | Polygons marking where agents can walk. | in the book text |
+| Waypoint | A point along a path. | in the glossary |
+| Breadth-first search | Expands outward one step at a time and ignores cost. | outside source |
+| Dijkstra | Pathfinding that expands by cost so far only, with no heuristic. | in the glossary |
+| Open and closed set | Open: found, not yet expanded. Closed: already expanded. | outside source |
+| A* | Pathfinding that picks the lowest f = g + h node first. | in the glossary |
+| f, g, h | Total estimated cost / cost so far / estimated cost to goal. | in the glossary |
+| Manhattan distance | Distance counted along grid axes only. | in the glossary |
+| Euclidean distance | Straight-line distance. | outside source |
+| Admissible heuristic | An estimate that never overestimates the true cost. | in the glossary |
+| NavigationAgent2D | Godot node that follows a navmesh path. | in the book text |
+| Path smoothing | Cut corners from a path wherever the straight line is clear. | outside source |
+| Local avoidance | Steering around nearby obstacles and agents. | in the glossary |
+
+## Game AI: decisions, generation and systems
+
+[Open the deck](decks/20%20Game%20AI%20decisions%20and%20systems.html) · 16 slides · 33 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Finite state machine | A set of states with transitions; one is active. | in the book text |
+| Transition table | A list of every state, condition and next state. | in the glossary |
+| Flicker | Rapid back-and-forth switching between states. | in the book text |
+| Hysteresis | Different thresholds for switching on and off, to stop rapid switching. | in the book text |
+| Behavior tree | A tree of nodes that decides what an agent does each tick. | in the book text |
+| Tick | One update step; the tree is evaluated again from the root. | in the book text |
+| Success/failure/running | The three results a node can return; running means not finished, tick me again. | in the book text |
+| Blackboard | A shared memory of facts the AI reads and writes. | in the book text |
+| Condition and action | A condition asks a question; an action does the work and may keep running. | in the book text |
+| Selector (Also called a fallback) | Tries children in order until one succeeds. | in the book text |
+| Sequence | Runs children in order and stops at the first failure. | in the book text |
+| Utility AI | Scores every option and picks the highest. | in the glossary |
+| Weighted sum | Adding scores, each multiplied by an importance weight. | in the glossary |
+| GOAP | Goal-oriented action planning: search for actions that reach a goal. | in the glossary |
+| Precondition and effect | Precondition: what must be true before an action runs. Effect: what it changes. | in the glossary |
+| Reinforcement learning | Learning behaviour by trial and reward. | in the book text |
+| Reward | The number telling the agent how well it did. | in the book text |
+| Discount factor | How much future reward is worth compared to now. | in the book text |
+| Q-learning | Learning the value of each action in each state. | in the book text |
+| Epsilon-greedy | Take a random action with probability epsilon, otherwise the best known one. | in the book text |
+| Seed (Pseudo-random: looks random, computed from a seed) | A number that fixes a random sequence. | in the book text |
+| Coherent noise | Random values that change smoothly (Perlin, simplex). | in the book text |
+| Octave | One layer of noise at a set scale, added to others. | in the glossary |
+| Determinism | Same inputs and seed give the same output every run. | in the book text |
+| Heightmap | A grid with one height value per position. | in the book text |
+| Compute shader | A GPU program run over many cells at once, outside the drawing pipeline. | in the book text |
+| Validator | A check that tests generated content against rules. | in the book text |
+| Generate-and-test | Make content randomly, then reject what fails. | in the book text |
+| Constructive generation | Build content by rules that guarantee validity. | in the book text |
+| Safety margin | Extra room left so generated content never just barely passes. | in the book text |
+| Authority | The part of the system allowed to change a value. | in the book text |
+| RPC | A function one computer asks another computer to run. | in the book text |
+| Replication | Copying a value from the peer that owns it to the other peers. | in the book text |
+
+## How to make a walkthrough film: important terms
+
+[Open the deck](decks/21%20Walkthrough%20film.html) · 14 slides · 32 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Walkthrough film | A narrated camera tour of a game or asset that shows what it does and says what it leaves out. | in the book text |
+| Central idea | The one sentence every shot must serve; a shot that does not serve it is cut. | video only |
+| Beat | One unit of the film: one picture, one idea, and the words spoken over it. | video only |
+| Beat sheet (also the shot list: one row per shot) | The film as a table: each beat's picture, words and length, in order. | video only |
+| Storyboard | Rough drawings of the key frames in order, made before anything is captured. | outside source |
+| Script | The words of the narration, written out and checked before anyone records them. | video only |
+| Voice-over | Narration heard over the pictures; the speaker is not shown in the shot. | video only |
+| Pacing | How long each beat lasts, set by the route to cover and the time the words need. | video only |
+| Shot | One continuous camera take, with a job and something it reveals that no earlier shot did. | video only |
+| Route | The planned path the camera travels through the scene, measured before any frame is rendered. | video only |
+| Waypoint | A point along the route where the camera passes, turns or stops. | in the glossary |
+| Establishing shot | A wide opening shot that shows where everything is before the close looks. | outside source |
+| Camera move | Pan, tilt, dolly, truck, orbit and the rest, defined in the 18 Camera deck. | in the glossary |
+| Route check | A script that steps every frame and measures speed, turn rate, roll and height. | video only |
+| Real-time capture | Recording the game as it runs live, so frame times vary from frame to frame. | video only |
+| Render | Computing each frame offline, as slowly as needed, then joining the frames into a film. | video only |
+| Fixed frame rate | Every frame lasts exactly 1/fps seconds of game time, whatever the machine does. | in the book text |
+| Deterministic capture | A capture that gives the same frames every take: fixed frame rate, same inputs, same route. | video only |
+| Frame rate | How many frames are shown each second. | in the glossary |
+| Frame count | Frame rate times duration: how many frames the film needs. | video only |
+| Resolution | The width and height of a frame in pixels. | in the glossary |
+| Aspect ratio | Width divided by height, such as 16:9 for a landscape film. | in the glossary |
+| Cut and transition | A cut jumps to the next shot; a transition, such as a dissolve, overlaps the two. | outside source |
+| B-roll | Extra footage laid over the main capture; the main footage carries the claim. | outside source |
+| Title card | A full-screen card with the film's name, shown briefly at the start and end. | video only |
+| Safe margins | The inner area, inset about 5% on each side, where text and logos must sit. | video only |
+| Captions | The narration as text, burned in or in a separate .srt file with start and end times. | video only |
+| Decibel (dB, dBFS) | Logarithmic loudness unit; in digital audio 0 dBFS is the maximum level. | in the glossary |
+| Loudness (LUFS) | How loud the whole film is on average, measured against a target window. | video only |
+| What it is not | A spoken and on-screen statement of what the film leaves out, placed in the first two shots. | video only |
+| Call to action | The last request to the viewer: one concrete thing to try, with a way to check it. | video only |
+| Claim versus evidence | A claim says what the film asserts; evidence is the capture or output on screen that backs it. | in the book text |
+
+## How to make a trailer for your game
+
+[Open the deck](decks/22%20Game%20trailer.html) · 16 slides · 32 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Trailer | A short film that sells a game to a stranger. | outside source |
+| Teaser | An early look that hints and shows little. | outside source |
+| Gameplay video | Plain footage of play, made to cover, not sell. | outside source |
+| Pitch film | A 2 to 4 minute film on what you will build. | outside source |
+| Pitch | A short sales description of the game idea. | in the glossary |
+| Logline | The game in one sentence: who does what, and what is new. | outside source |
+| Tagline | A few memorable words that sit beside the title. | outside source |
+| Hook | The most distinctive thing the player does, said in one sentence. | outside source |
+| Key art | The one still image that stands for the game: title, character, idea. | outside source |
+| Thumbnail | The small preview image; it has to read at a glance. | outside source |
+| Beat structure | The order of parts: hook, establish, escalate, peak, title, button, call to action. | outside source |
+| Climax (peak) | The biggest payoff, placed on a strong beat after a quiet drop. | outside source |
+| Title card | A held card with the game's name, after the peak. | outside source |
+| Runtime | How long the film runs; a store trailer is typically 30 to 90 seconds. | outside source |
+| Frame rate | Frames shown per second. | in the glossary |
+| Resolution | Width and height in pixels. | in the glossary |
+| Pacing | How fast the cuts come; it follows how well the viewer understands the game. | outside source |
+| Cut on action | Cut while the motion is under way, so the eye carries across the cut. | outside source |
+| BPM | Beats per minute of the music; 60 divided by it is the seconds per beat. | outside source |
+| Cut on the beat | Place cuts on the music's beats so picture and sound lock together. | outside source |
+| Music drop | A quiet moment just before the peak, so the peak lands. | outside source |
+| Sound design | Mix so music sets the tone and the game's own hits punch through. | outside source |
+| Muted test | Check that the film still makes sense with the sound off. | outside source |
+| Accessibility | Captions for speech and no rapid flashing, so more people can watch. | outside source |
+| Call to action | One thing to do next: wishlist, play, or follow a link. | outside source |
+| Logo sting | A very short logo animation with a sound; better at the end than the start. | outside source |
+| Fixed frame rate | Rendering locked to a set number of frames a second so runs match. | in the book text |
+| Movie Maker mode | Godot's mode that records a run to a video file, frame by frame. | editor or docs |
+| Clean footage | Real play with debug clutter hidden and the HUD that explains a mechanic kept. | outside source |
+| Gameplay vs cinematic | Captured play from the real build; a cinematic must be the game's own and labelled. | outside source |
+| Honest trailer | Shows only what the game really does; planned features never appear. | outside source |
+| Viewer test | Show the cut, unexplained, to someone new and ask what the game is and what they do. | outside source |
+
+## Godot, Unity and Unreal: the differences
+
+[Open the deck](decks/23%20Godot%20Unity%20Unreal%20comparison.html) · 16 slides · 34 terms
+
+| Term | Meaning | Tag |
+|---|---|---|
+| Scene, Level, Map (Godot scene · Unity Scene · Unreal Level) | A saved, reusable tree of objects. Unreal's word for the level file is Map. | in the book text |
+| Node, GameObject, Actor (Godot · Unity · Unreal) | One object in the scene. A GameObject does nothing until components are added. | in the book text |
+| Component (Godot picks a node type instead) | A piece of behaviour or data attached to a GameObject or an Actor. | in the book text |
+| Template | The master that copies come from: a Godot scene, a Unity Prefab, an Unreal Blueprint class. | in the book text |
+| Instance | One live copy made from a template. | in the book text |
+| Override | A change on one instance. In Unity, Apply pushes it into the Prefab and Revert drops it. | in the book text |
+| Data asset | Shared data kept as a file: Godot Resource, Unity ScriptableObject, Unreal Data Asset. | in the book text |
+| Signal | Godot's named event. Other nodes connect to it and run when it fires. | in the book text |
+| UnityEvent, C# event | Unity's events. A UnityEvent is wired in the Inspector, so reading code alone can miss it. | in the book text |
+| Event Dispatcher | Unreal's Blueprint form of a signal. One Call fires every bound event; C++ uses a delegate. | in the book text |
+| Autoload, Game Instance | Things that outlive a scene: Godot autoload, Unity DontDestroyOnLoad, Unreal Game Instance. | in the book text |
+| GDScript | Godot's own scripting language. Scripts are plain text files. | in the book text |
+| C# and MonoBehaviour | Unity's language. A MonoBehaviour is a component script, also plain text. | in the book text |
+| Blueprint graph | Unreal's visual scripting. The graph is a binary asset an agent cannot diff as text. | in the book text |
+| C++ in Unreal | Unreal's code route. Plain text, but it must be compiled before a change takes effect. | in the book text |
+| _process, _physics_process (Godot) | Once per frame, and at a fixed 60 times a second by default. | in the book text |
+| Update, FixedUpdate (Unity) | Once per frame, and at fixed 0.02 s steps, which is 50 a second by default. | in the book text |
+| Tick (Unreal) | Each Actor ticks every frame. Tick groups such as pre-physics order the work. | in the book text |
+| Input action (InputMap · Input System · Enhanced Input) | A named intent such as jump, bound to keys or buttons and kept apart from them. | in the book text |
+| Character body (CharacterBody2D · Rigidbody2D · Character) | The body you move on purpose: your script, or Unreal's movement component. | in the book text |
+| Trigger (Area2D · Is Trigger · Trigger volume) | A zone that reports overlaps instead of blocking, such as a pickup or a checkpoint. | in the book text |
+| Layer and mask (Godot) | Each object has a layer and a mask. A notices B if B's layer is in A's mask: one way. | in the book text |
+| Layer Collision Matrix (Unity) | One layer per GameObject. A project-wide grid says which pairs of layers collide. | in the book text |
+| Object Type, response (Unreal) | Block, Overlap or Ignore for every type. Both sides must agree before contact happens. | in the book text |
+| Up axis, handedness | Godot and Unity are Y-up, Unreal is Z-up. Unity and Unreal are left-handed, Godot is right-handed. | in the book text |
+| Units | In Godot and Unity 1 unit is 1 metre. In Unreal 1 unit is 1 centimetre. | in the book text |
+| Clip and player (AnimationPlayer · Animator · Sequence) | Keyed data played over time. Unity wraps even one clip in an Animator Controller. | in the book text |
+| Event key (Method track · Event · Notify) | A call placed on the timeline. An Anim Notify State has a begin and an end. | in the book text |
+| State machine (AnimationTree · Controller · Anim Blueprint) | States joined by transitions with rules. The current state picks the clip. | in the book text |
+| Shader and material (Shader code · Shader Graph · Material Editor) | Godot and Unity write shaders as code or graph. Unreal builds materials as node graphs. | in the book text |
+| Material parameter (uniform · Material property · parameter) | A named value that your code sets and the shader reads. | in the book text |
+| Particle system (GPUParticles · VFX Graph · Niagara) | Many small sprites simulated together. A one-shot burst spawns them all at once. | in the book text |
+| Build and export | Godot saves export presets, Unity 6 saves a build profile, Unreal packages and cooks the project. | in the book text |
+| Licence | Godot is MIT. Unity is proprietary. Unreal is source-available, not open source. | in the book text |
 
 ## The Unity editor interface
 
-[Open the deck](decks/Terms%20-%20Unity%20editor.html) · 17 slides · 32 terms
+[Open the deck](decks/24%20Unity%20editor%20interface.html) · 17 slides · 32 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -865,7 +937,7 @@ Total: 25 decks, 763 term entries.
 
 ## The Unreal Editor interface
 
-[Open the deck](decks/Terms%20-%20Unreal%20editor.html) · 16 slides · 32 terms
+[Open the deck](decks/25%20Unreal%20editor%20interface.html) · 16 slides · 32 terms
 
 | Term | Meaning | Tag |
 |---|---|---|
@@ -901,78 +973,6 @@ Total: 25 decks, 763 term entries.
 | Editor Preferences | Settings for you and your copy of the editor, not saved with the project. | editor or docs |
 | Plugins | Add-on modules you switch on or off per project; most need an editor restart. | editor or docs |
 | Build and Package | Package Project turns the project into a runnable game for one platform. | editor or docs |
-
-## Walker and the toolchain
-
-[Open the deck](decks/Terms%20-%20Walker%20and%20the%20toolchain.html) · 14 slides · 26 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Walker | The working method and its files: brief, build, playtest, inspect, revise, export. | in the book text |
-| Repository | A project folder with its full version history. | in the book text |
-| Commit | A saved snapshot in version history. | in the book text |
-| Diff | The exact lines that changed between two versions. | in the book text |
-| CLI and shell | You drive a program by typing commands; the shell (zsh, bash) reads them. | in the book text |
-| Flag | An option on a command, such as --headless. | in the book text |
-| Headless | Running with no window or display. | in the book text |
-| Exit code | A number a program returns; 0 means success. | in the book text |
-| Timeout | A limit after which a run is stopped. | in the book text |
-| Hang | A run that never finishes. | in the book text |
-| Import | Convert a source file into the form the engine uses. | in the book text |
-| Cache | Stored results reused to save time, which can also go stale. | in the book text |
-| Permission prompt | A question asking you to approve an action. | in the book text |
-| Allow rule | A saved permission letting a command run without asking. | in the book text |
-| Sandbox | A restricted environment where mistakes cannot reach the rest of the machine. | in the book text |
-| Instruction file | A standing file of project rules the agent reads, such as CLAUDE.md or AGENTS.md. | in the book text |
-| Spec | A written description of what must be built. | in the glossary |
-| Checkable instruction | An instruction written so a check can pass or fail. | in the glossary |
-| Claim versus evidence | A claim says what happened; evidence is proof that it did. | in the book text |
-| Regression test | A test that guards a behaviour that worked before. | in the book text |
-| Deterministic | The same inputs always give the same result. | in the book text |
-| Flaky | Passes sometimes and fails sometimes with no change. | in the glossary |
-| Game time | The simulation's clock, as opposed to the wall clock. | in the glossary |
-| Fixed frame rate | Rendering locked to a set number of frames a second so runs match. | in the book text |
-| Pinned time step | A constant step length forced on the simulation. | in the book text |
-| Text versus binary scene | Readable scene files diff cleanly; opaque ones do not. | in the book text |
-
-## How to make a walkthrough film: important terms
-
-[Open the deck](decks/Terms%20-%20Walkthrough%20film.html) · 14 slides · 32 terms
-
-| Term | Meaning | Tag |
-|---|---|---|
-| Walkthrough film | A narrated camera tour of a game or asset that shows what it does and says what it leaves out. | in the book text |
-| Central idea | The one sentence every shot must serve; a shot that does not serve it is cut. | video only |
-| Beat | One unit of the film: one picture, one idea, and the words spoken over it. | video only |
-| Beat sheet (also the shot list: one row per shot) | The film as a table: each beat's picture, words and length, in order. | video only |
-| Storyboard | Rough drawings of the key frames in order, made before anything is captured. | outside source |
-| Script | The words of the narration, written out and checked before anyone records them. | video only |
-| Voice-over | Narration heard over the pictures; the speaker is not shown in the shot. | video only |
-| Pacing | How long each beat lasts, set by the route to cover and the time the words need. | video only |
-| Shot | One continuous camera take, with a job and something it reveals that no earlier shot did. | video only |
-| Route | The planned path the camera travels through the scene, measured before any frame is rendered. | video only |
-| Waypoint | A point along the route where the camera passes, turns or stops. | in the glossary |
-| Establishing shot | A wide opening shot that shows where everything is before the close looks. | outside source |
-| Camera move | Pan, tilt, dolly, truck, orbit and the rest, defined in the Terms - Camera deck. | in the glossary |
-| Route check | A script that steps every frame and measures speed, turn rate, roll and height. | video only |
-| Real-time capture | Recording the game as it runs live, so frame times vary from frame to frame. | video only |
-| Render | Computing each frame offline, as slowly as needed, then joining the frames into a film. | video only |
-| Fixed frame rate | Every frame lasts exactly 1/fps seconds of game time, whatever the machine does. | in the book text |
-| Deterministic capture | A capture that gives the same frames every take: fixed frame rate, same inputs, same route. | video only |
-| Frame rate | How many frames are shown each second. | in the glossary |
-| Frame count | Frame rate times duration: how many frames the film needs. | video only |
-| Resolution | The width and height of a frame in pixels. | in the glossary |
-| Aspect ratio | Width divided by height, such as 16:9 for a landscape film. | in the glossary |
-| Cut and transition | A cut jumps to the next shot; a transition, such as a dissolve, overlaps the two. | outside source |
-| B-roll | Extra footage laid over the main capture; the main footage carries the claim. | outside source |
-| Title card | A full-screen card with the film's name, shown briefly at the start and end. | video only |
-| Safe margins | The inner area, inset about 5% on each side, where text and logos must sit. | video only |
-| Captions | The narration as text, burned in or in a separate .srt file with start and end times. | video only |
-| Decibel (dB, dBFS) | Logarithmic loudness unit; in digital audio 0 dBFS is the maximum level. | in the glossary |
-| Loudness (LUFS) | How loud the whole film is on average, measured against a target window. | video only |
-| What it is not | A spoken and on-screen statement of what the film leaves out, placed in the first two shots. | video only |
-| Call to action | The last request to the viewer: one concrete thing to try, with a way to check it. | video only |
-| Claim versus evidence | A claim says what the film asserts; evidence is the capture or output on screen that backs it. | in the book text |
 
 ---
 
@@ -1017,12 +1017,12 @@ Total: 25 decks, 763 term entries.
 | Animation window | The Unity editor interface | Where you key properties over time to make an Animation Clip. |
 | animation_finished | Animation foundations | A signal sent when a clip ends. A looping clip does not send it. |
 | AnimationLibrary | Animation foundations | A named collection of animations that a player holds. |
-| AnimationPlayer | Animation and interaction: state machines and blending | Godot node that plays clips. |
 | AnimationPlayer | Animation foundations | The node that plays animations by name. |
+| AnimationPlayer | Animation and interaction: state machines and blending | Godot node that plays clips. |
 | Animator Controller | Animation and interaction: state machines and blending | Unity asset holding an animation state machine. |
 | Animator window | The Unity editor interface | Where an Animator Controller's states and transitions are drawn and tested. |
-| Anticipation | Animation: principles and character animation | A short wind-up that tells the player an action is coming. |
 | Anticipation | Game design C: pacing and guidance | Prepare the player for what comes next, such as a wind-up before an attack. |
+| Anticipation | Animation: principles and character animation | A short wind-up that tells the player an action is coming. |
 | Appeal | Game design A: what a game is | The pull to keep playing; it differs by game and by player. |
 | Apply transforms | Blender: the interface and modeling terms | Bake position, rotation and scale into the mesh and reset them to neutral. |
 | Apply transforms | Blender to Godot: MCP, export and measuring a prop | Bake position, rotation and scale into the mesh and reset them to neutral. |
@@ -1060,8 +1060,8 @@ Total: 25 decks, 763 term entries.
 | Bitmask | Godot: the editor, scenes, nodes, signals and movement | A number whose bits switch layers on or off; layer n has the value 2^(n−1). |
 | Blackboard | Game AI: decisions, generation and systems | A shared memory of facts the AI reads and writes. |
 | Blend space | Animation and interaction: state machines and blending | Clips placed on a line or a plane; a position between them mixes the nearest ones. |
-| Blend tree | Animation and interaction: state machines and blending | A graph of nodes that mix clips by numbers your code writes. |
 | Blend tree | Animation: principles and character animation | Weighted mix of clips driven by parameters. |
+| Blend tree | Animation and interaction: state machines and blending | A graph of nodes that mix clips by numbers your code writes. |
 | Blueprint class | The Unreal Editor interface | Unreal's reusable object template, built visually or in code. |
 | Blueprint Editor | The Unreal Editor interface | Opens on a Blueprint class: Components, My Blueprint, a Viewport, an Event Graph and Details. |
 | Blueprint graph | Godot, Unity and Unreal: the differences | Unreal's visual scripting. The graph is a binary asset an agent cannot diff as text. |
@@ -1077,11 +1077,11 @@ Total: 25 decks, 763 term entries.
 | C# and MonoBehaviour | Godot, Unity and Unreal: the differences | Unity's language. A MonoBehaviour is a component script, also plain text. |
 | C++ in Unreal | Godot, Unity and Unreal: the differences | Unreal's code route. Plain text, but it must be compiled before a change takes effect. |
 | Cache | Walker and the toolchain | Stored results reused to save time, which can also go stale. |
-| Call to action | How to make a trailer for your game | One thing to do next: wishlist, play, or follow a link. |
 | Call to action | How to make a walkthrough film: important terms | The last request to the viewer: one concrete thing to try, with a way to check it. |
+| Call to action | How to make a trailer for your game | One thing to do next: wishlist, play, or follow a link. |
 | Callback modes | Animation foundations | Settings for when animation updates (idle or physics) and when method keys run (deferred or now). |
 | Camera limits | Terms: Camera | Clamps that keep the view inside the level. |
-| Camera move | How to make a walkthrough film: important terms | Pan, tilt, dolly, truck, orbit and the rest, defined in the Terms - Camera deck. |
+| Camera move | How to make a walkthrough film: important terms | Pan, tilt, dolly, truck, orbit and the rest, defined in the 18 Camera deck. |
 | canvas_item | Shaders: foundations | Godot shader type for 2D drawing: sprites, shapes, UI. |
 | Captions | How to make a walkthrough film: important terms | The narration as text, burned in or in a separate .srt file with start and end times. |
 | Central idea | How to make a walkthrough film: important terms | The one sentence every shot must serve; a shot that does not serve it is cut. |
@@ -1089,8 +1089,8 @@ Total: 25 decks, 763 term entries.
 | Character body | Godot, Unity and Unreal: the differences | The body you move on purpose: your script, or Unreal's movement component. |
 | CharacterBody2D | Godot: the editor, scenes, nodes, signals and movement | Moved by your code; move_and_slide() slides it along what it hits. |
 | Checkable instruction | Walker and the toolchain | An instruction written so a check can pass or fail. |
-| Claim versus evidence | Shader verification | What is said works, versus a check that shows it. |
 | Claim versus evidence | Walker and the toolchain | A claim says what happened; evidence is proof that it did. |
+| Claim versus evidence | Shader verification | What is said works, versus a check that shows it. |
 | Claim versus evidence | How to make a walkthrough film: important terms | A claim says what the film asserts; evidence is the capture or output on screen that backs it. |
 | Claim versus measurement | Blender to Godot: MCP, export and measuring a prop | A claim is what a name or script says; a measurement is what a test reads from the file. |
 | clamp(x, lo, hi) | Shaders: foundations | Holds a value inside a minimum and a maximum. |
@@ -1111,8 +1111,8 @@ Total: 25 decks, 763 term entries.
 | Collision layer | Godot: the editor, scenes, nodes, signals and movement | Where an object is: the layers it appears in. |
 | Collision mask | Godot: the editor, scenes, nodes, signals and movement | What an object scans: it detects B only if B is in a layer it scans. |
 | Collision preset | The Unreal Editor interface | A named bundle of responses, such as BlockAll, OverlapAll or NoCollision. |
-| Collision shape | Blender to Godot: MCP, export and measuring a prop | The simple shape physics uses, as opposed to the detailed mesh you see. |
 | Collision shape | Godot: the editor, scenes, nodes, signals and movement | The geometry physics uses, separate from the drawn sprite. |
+| Collision shape | Blender to Godot: MCP, export and measuring a prop | The simple shape physics uses, as opposed to the detailed mesh you see. |
 | COLOR | Shaders: foundations | Arrives as vertex colour times TEXTURE colour; what you leave in it is drawn. |
 | Colour coding | Particles and VFX | Colours that signal team, damage type or tone. |
 | Colour contrast | Art principles: concept art and character art | Strong colour or saturation differences. |
@@ -1181,8 +1181,8 @@ Total: 25 decks, 763 term entries.
 | Dynamic | Game design C: pacing and guidance | Many things happening at once, so play stays fresh. |
 | Ease-in | Animation: principles and character animation | Slow start, then it speeds up. |
 | Ease-out | Animation: principles and character animation | Fast start, then it slows to a stop. |
-| Easing | Animation foundations | The speed curve of a change: slow start (ease-in) or slow end (ease-out). |
 | Easing | Animation: principles and character animation | The speed curve of a change (ease-in slow start, ease-out slow end). |
+| Easing | Animation foundations | The speed curve of a change: slow start (ease-in) or slow end (ease-out). |
 | Edge | Blender: the interface and modeling terms | A line joining two vertices. |
 | Edit Mode | Blender: the interface and modeling terms | Work on the mesh itself: its vertices, edges and faces. |
 | Editor Preferences | The Unreal Editor interface | Settings for you and your copy of the editor, not saved with the project. |
@@ -1217,10 +1217,10 @@ Total: 25 decks, 763 term entries.
 | Field-of-view cone | Game AI: perception, movement and pathfinding | The angle across which the agent can see. |
 | FileSystem dock | Godot: the editor, scenes, nodes, signals and movement | Lists every file in the project, under res://. |
 | Finite state machine | Game AI: decisions, generation and systems | A set of states with transitions; one is active. |
-| Fixed frame rate | Animation foundations | --fixed-fps n: every frame advances game time by exactly 1/n s. |
-| Fixed frame rate | How to make a trailer for your game | Rendering locked to a set number of frames a second so runs match. |
 | Fixed frame rate | Walker and the toolchain | Rendering locked to a set number of frames a second so runs match. |
+| Fixed frame rate | Animation foundations | --fixed-fps n: every frame advances game time by exactly 1/n s. |
 | Fixed frame rate | How to make a walkthrough film: important terms | Every frame lasts exactly 1/fps seconds of game time, whatever the machine does. |
+| Fixed frame rate | How to make a trailer for your game | Rendering locked to a set number of frames a second so runs match. |
 | fixed_fps, interpolate | Particles and VFX | Update at a fixed rate; interpolate smooths motion between updates. |
 | Fixed-function | Shaders: foundations | Old hardware steps that could be configured but not programmed. |
 | Flag | Walker and the toolchain | An option on a command, such as --headless. |
@@ -1240,8 +1240,8 @@ Total: 25 decks, 763 term entries.
 | Frame counter | Shader verification | A fade that counts frames, not game seconds. |
 | Frame rate | 2D art and sound assets in the engine | Frames shown per second. |
 | Frame rate | Animation: principles and character animation | Frames shown per second. |
-| Frame rate | How to make a trailer for your game | Frames shown per second. |
 | Frame rate | How to make a walkthrough film: important terms | How many frames are shown each second. |
+| Frame rate | How to make a trailer for your game | Frames shown per second. |
 | Fringe (halo) | 2D art and sound assets in the engine | The halo of edge colour left around a cutout; fix_alpha_border removes it. |
 | Frustration | Game design B: choices and challenge | Some is part of challenge; it has to be the kind the player can learn from. |
 | Game | Game design A: what a game is | An activity that has all four: a goal, opposition, decisions and rules. |
@@ -1298,18 +1298,18 @@ Total: 25 decks, 763 term entries.
 | Import settings | 2D art and sound assets in the engine | Per-asset options controlling how the engine converts it, kept in the .import file. |
 | In-place | Animation: principles and character animation | The clip stays on the spot; code does the travel. |
 | Initial velocity | Particles and VFX | The speed and direction a particle starts with. |
-| Input action | Godot, Unity and Unreal: the differences | A named intent such as jump, bound to keys or buttons and kept apart from them. |
 | Input action | Godot: the editor, scenes, nodes, signals and movement | A named intent such as jump, bound to keys or buttons. |
+| Input action | Godot, Unity and Unreal: the differences | A named intent such as jump, bound to keys or buttons and kept apart from them. |
 | Input probe | Animation and interaction: state machines and blending | A script that loads the real scene, presses only ordinary actions and records what happens. |
 | Inspector | Godot: the editor, scenes, nodes, signals and movement | The editor panel for viewing and editing properties. |
 | Inspector | The Unity editor interface | Shows the components and settings of the selected object and lets you edit them. |
-| Instance | Godot, Unity and Unreal: the differences | One live copy made from a template. |
 | Instance | Godot: the editor, scenes, nodes, signals and movement | One live copy of a saved scene; a change on one instance overrides the template. |
+| Instance | Godot, Unity and Unreal: the differences | One live copy made from a template. |
 | Instruction file | Walker and the toolchain | A standing file of project rules the agent reads, such as CLAUDE.md or AGENTS.md. |
 | Integer scaling | 2D art and sound assets in the engine | Scaling by whole numbers so pixel art stays crisp. |
 | Intermittent fault | Animation and interaction: state machines and blending | A bug that appears only sometimes. |
-| Interpolation | Animation foundations | How values are filled in between keys: nearest, linear or cubic. |
 | Interpolation | Animation: principles and character animation | Computing the in-between values. |
+| Interpolation | Animation foundations | How values are filled in between keys: nearest, linear or cubic. |
 | Interpolation (shader) | Shaders: foundations | Smoothly blending vertex values across a triangle's fragments. |
 | Interrupt | Animation and interaction: state machines and blending | A transition that cuts off the current state early. |
 | Invariant | The game design document | A condition that must stay true throughout. |
@@ -1349,12 +1349,12 @@ Total: 25 decks, 763 term entries.
 | Logo sting | How to make a trailer for your game | A very short logo animation with a sound; better at the end than the start. |
 | Look-ahead | Terms: Camera | Shifts framing toward the direction of travel. |
 | Look-at | Animation foundations | Turn one bone to face a target. No chain is solved. |
-| Loop | Animation and interaction: state machines and blending | A clip that repeats. |
 | Loop | Animation: principles and character animation | A clip that starts again from its first frame when it ends. |
+| Loop | Animation and interaction: state machines and blending | A clip that repeats. |
 | Loop mode | Animation foundations | Whether a clip plays once, loops or ping-pongs. |
 | Loop point | 2D art and sound assets in the engine | Where a looping sound jumps back to; WAV has begin and end, Ogg only a start offset. |
-| Loop seam | Animation foundations | A jump where the last value meets the first on a loop. Test that they match. |
 | Loop seam | Animation: principles and character animation | A visible jump where the last frame meets the first. |
+| Loop seam | Animation foundations | A jump where the last value meets the first on a loop. Test that they match. |
 | Lossless vs lossy | 2D art and sound assets in the engine | Exact reconstruction versus smaller files with lost detail. |
 | Loudness (LUFS) | How to make a walkthrough film: important terms | How loud the whole film is on average, measured against a target window. |
 | Low-poly mesh | Art principles: concept art and character art | A simplified copy with far fewer polygons. |
@@ -1362,8 +1362,8 @@ Total: 25 decks, 763 term entries.
 | Main toolbar | The Unreal Editor interface | Save, mode switching, adding content, and the Play and Stop controls. |
 | Manhattan distance | Game AI: perception, movement and pathfinding | Distance counted along grid axes only. |
 | Map slot naming | Materials and textures | The agreed names for each texture slot, such as albedo, normal, roughness. |
-| Material | Materials and textures | A stack of textures and numbers that says how a surface looks. |
 | Material | Shaders: foundations | A shader plus its parameter values and textures. |
+| Material | Materials and textures | A stack of textures and numbers that says how a surface looks. |
 | Material Editor | The Unreal Editor interface | A node graph that builds a material; its result node takes Base Color and more. |
 | Material parameter | Godot, Unity and Unreal: the differences | A named value that your code sets and the shader reads. |
 | Material through export | Blender to Godot: MCP, export and measuring a prop | A named Blender material arrives under the same name; Blender-only nodes do not. |
@@ -1379,8 +1379,8 @@ Total: 25 decks, 763 term entries.
 | Mechanics constraint | Art principles: concept art and character art | A limit from rules and numbers, such as health. |
 | Mesh | Blender: the interface and modeling terms | The vertices, edges and faces that make a 3D shape; the chapter calls it mesh data. |
 | Metallic | Materials and textures | Whether the surface behaves like a metal: 0 is non-metal, 1 is metal. |
-| Method track | Animation and interaction: state machines and blending | A track that calls a function when the playhead reaches a key. |
 | Method track | Animation foundations | Calls a function at chosen times. Does not fire when you scrub in the editor. |
+| Method track | Animation and interaction: state machines and blending | A track that calls a function when the playhead reaches a key. |
 | Mipmap | Materials and textures | One of the pre-shrunk copies of a texture; without them, distant surfaces shimmer. |
 | Mipmaps | 2D art and sound assets in the engine | Pre-shrunk copies of a texture used when drawn small; about 33% more memory. |
 | Mirror modifier | Blender: the interface and modeling terms | Copies the mesh across an axis, so you model one half. |
@@ -1390,8 +1390,8 @@ Total: 25 decks, 763 term entries.
 | Movement pattern | Game design A: what a game is | How a character moves gives it personality: a hop is a frog, a wave is a snake. |
 | Movie Maker mode | How to make a trailer for your game | Godot's mode that records a run to a video file, frame by frame. |
 | Music drop | How to make a trailer for your game | A quiet moment just before the peak, so the peak lands. |
-| Mutation check | Animation and interaction: state machines and blending | Put the old broken version back and run the new test; it must fail. |
 | Mutation check | Shader verification | Break the code on purpose; the test must fail. |
+| Mutation check | Animation and interaction: state machines and blending | Put the old broken version back and run the new test; it must fail. |
 | Muted test | How to make a trailer for your game | Check that the film still makes sense with the sound off. |
 | Name suffix | Blender to Godot: MCP, export and measuring a prop | A tail on a mesh name, such as -convcolonly, that tells Godot to build collision. |
 | Naming conventions | Blender to Godot: MCP, export and measuring a prop | Agreed rules for how files and objects are named. |
@@ -1431,16 +1431,16 @@ Total: 25 decks, 763 term entries.
 | Override | Godot, Unity and Unreal: the differences | A change on one instance. In Unity, Apply pushes it into the Prefab and Revert drops it. |
 | Overrides dropdown | The Unity editor interface | Lists an instance's changes; Apply pushes one into the prefab, Revert drops it. |
 | Pacing | Game design C: pacing and guidance | Alternating intense and calm moments. |
-| Pacing | How to make a trailer for your game | How fast the cuts come; it follows how well the viewer understands the game. |
 | Pacing | How to make a walkthrough film: important terms | How long each beat lasts, set by the route to cover and the time the words need. |
+| Pacing | How to make a trailer for your game | How fast the cuts come; it follows how well the viewer understands the game. |
 | Package Manager | The Unity editor interface | The window (Window menu) that adds, updates and removes packages; the list is saved in Packages/manifest.json. |
 | Pan | Terms: Camera | Turn left or right on the spot; position unchanged. |
 | Parallax | Terms: Camera | Nearer things shift more than farther things when the viewpoint moves. |
 | Parameter | Animation and interaction: state machines and blending | A tunable number on the tree, addressed by a path; code drives the tree by writing it. |
 | Particle | Particles and VFX | One small short-lived sprite or mesh in an effect. |
 | Particle shader | Particles and VFX | A shader that sets each particle's properties in start() and process(). |
-| Particle system | Godot, Unity and Unreal: the differences | Many small sprites simulated together. A one-shot burst spawns them all at once. |
 | Particle system | Particles and VFX | The emitter plus the rules for its particles. |
+| Particle system | Godot, Unity and Unreal: the differences | Many small sprites simulated together. A one-shot burst spawns them all at once. |
 | ParticleProcessMaterial | Particles and VFX | The resource that holds a GPU particle system's rules for moving and changing. |
 | Path smoothing | Game AI: perception, movement and pathfinding | Cut corners from a path wherever the straight line is clear. |
 | PBR | Materials and textures | Physically based rendering: a few measured quantities per pixel, so a material holds up under any light. |
@@ -1520,9 +1520,9 @@ Total: 25 decks, 763 term entries.
 | Replication | Game AI: decisions, generation and systems | Copying a value from the peer that owns it to the other peers. |
 | Repository | Walker and the toolchain | A project folder with its full version history. |
 | Resolution | 2D art and sound assets in the engine | Width and height in pixels. |
-| Resolution | How to make a trailer for your game | Width and height in pixels. |
 | Resolution | Materials and textures | Width and height of a texture in pixels. |
 | Resolution | How to make a walkthrough film: important terms | The width and height of a frame in pixels. |
+| Resolution | How to make a trailer for your game | Width and height in pixels. |
 | Resource | Godot: the editor, scenes, nodes, signals and movement | A typed data container nodes share, made by extending Resource. |
 | Rest and high detail | Art principles: concept art and character art | Plain regions beside busy ones, so the busy part reads as important. |
 | Rest pose | Animation foundations | The skeleton's default pose, which you can return to at any time. |
@@ -1588,11 +1588,11 @@ Total: 25 decks, 763 term entries.
 | Shot | How to make a walkthrough film: important terms | One continuous camera take, with a job and something it reveals that no earlier shot did. |
 | Side quest | Game design C: pacing and guidance | A detour from the main storyline. |
 | Sight range | Game AI: perception, movement and pathfinding | How far an NPC can see. |
-| Signal | Godot, Unity and Unreal: the differences | Godot's named event. Other nodes connect to it and run when it fires. |
 | Signal | Godot: the editor, scenes, nodes, signals and movement | A named event a node emits; other nodes connect to it. |
+| Signal | Godot, Unity and Unreal: the differences | Godot's named event. Other nodes connect to it and run when it fires. |
 | Silhouette | 2D art and sound assets in the engine | The outline of an object; it should still read when filled black at game size. |
-| Silhouette | Animation: principles and character animation | The solid outline of a pose; a clear action reads from the outline alone. |
 | Silhouette | Art principles: concept art and character art | The outline of an object; it should still read when filled black at game size. |
+| Silhouette | Animation: principles and character animation | The solid outline of a pose; a clear action reads from the outline alone. |
 | Simulate | The Unreal Editor interface | Runs the level's logic and physics with no player; you keep the editor camera. |
 | Situational choice | Game design B: choices and challenge | The same choice is better or worse depending on the situation the player is in. |
 | Sixteen sections | The game design document | The fixed outline of a GDD, from metadata to open questions. |
@@ -1647,8 +1647,8 @@ Total: 25 decks, 763 term entries.
 | Texel | 2D art and sound assets in the engine | One pixel of a texture. |
 | Texel density | Materials and textures | Texels per unit of world size: texture pixels per metre. Should match across objects. |
 | Text versus binary scene | Walker and the toolchain | Readable scene files diff cleanly; opaque ones do not. |
-| texture | Particles and VFX | The image drawn for each particle. If null, 1 by 1 pixel squares. |
 | TEXTURE | Shaders: foundations | The default 2D texture the item was drawn with. |
+| texture | Particles and VFX | The image drawn for each particle. If null, 1 by 1 pixel squares. |
 | Texture atlas | 2D art and sound assets in the engine | Many small images packed into one big texture; a frame is a region of it. |
 | Texture baking | Art principles: concept art and character art | Sculpt detail stored as an image on the low-poly. |
 | Texture baking | Blender to Godot: MCP, export and measuring a prop | Moving the sculpt's fine detail into an image the low-poly mesh wears. |
@@ -1666,8 +1666,8 @@ Total: 25 decks, 763 term entries.
 | Timeout | Walker and the toolchain | A limit after which a run is stopped. |
 | Timing and spacing | Animation: principles and character animation | Timing is how long a move takes; spacing is how far it moves between frames. |
 | Timing curve | Particles and VFX | Varying how fast an effect grows and slows, not a constant rate. |
-| Title card | How to make a trailer for your game | A held card with the game's name, after the peak. |
 | Title card | How to make a walkthrough film: important terms | A full-screen card with the film's name, shown briefly at the start and end. |
+| Title card | How to make a trailer for your game | A held card with the game's name, after the peak. |
 | Tolerance | The game design document | The allowed difference between expected and actual. |
 | Tolerance | Shader verification | The allowed gap between expected and actual. |
 | Toolbar | The Unity editor interface | The top strip: transform tools, pivot and handle toggles, Play, Pause and Step. |
@@ -1686,9 +1686,9 @@ Total: 25 decks, 763 term entries.
 | Triangle count | Blender to Godot: MCP, export and measuring a prop | Engines budget by triangles; Blender shows faces; vertices split where UVs or normals differ. |
 | Trigger | Godot, Unity and Unreal: the differences | A zone that reports overlaps instead of blocking, such as a pickup or a checkpoint. |
 | Truck | Terms: Camera | Move the camera left or right, still facing the same way. |
-| Tween | Animation and interaction: state machines and blending | Code-made animation of a value toward a target, then discarded; it can be killed halfway. |
-| Tween | Animation foundations | A value animated from code toward a target, then thrown away. For end values that come from gameplay. |
 | Tween | Animation: principles and character animation | Code-driven interpolation of a property over a duration. |
+| Tween | Animation foundations | A value animated from code toward a target, then thrown away. For end values that come from gameplay. |
+| Tween | Animation and interaction: state machines and blending | Code-made animation of a value toward a target, then discarded; it can be killed halfway. |
 | Two-tone sketching | Art principles: concept art and character art | Sketching in two colours to avoid small detail. |
 | Types of fun | Game design A: what a game is | "Fun" is too vague. Name the kind: fantasy, thrill, fellowship, mastery, exploration, creativity. |
 | Uniform | Shaders: foundations | A value set from code, the same across a draw; how scripts steer a shader. |
@@ -1710,8 +1710,8 @@ Total: 25 decks, 763 term entries.
 | Update, FixedUpdate | Godot, Unity and Unreal: the differences | Once per frame, and at fixed 0.02 s steps, which is 50 a second by default. |
 | URP Lit maps | Materials and textures | Base, Metallic, Normal and Occlusion maps; smoothness comes from an alpha channel. |
 | Utility AI | Game AI: decisions, generation and systems | Scores every option and picks the highest. |
-| UV | Materials and textures | 2D coordinates that map each point of a surface to a spot on a texture. |
 | UV | Shaders: foundations | 2D coordinates mapping a surface to a texture, 0 to 1 across it. |
+| UV | Materials and textures | 2D coordinates that map each point of a surface to a spot on a texture. |
 | UV map | Blender: the interface and modeling terms | The flattened 2D layout of a mesh used to place a texture. |
 | UV map and unwrapping | Art principles: concept art and character art | Flat layout of a surface; unwrapping makes it. |
 | UV scale | Materials and textures | A multiplier on UVs that sets how often a texture repeats. |
