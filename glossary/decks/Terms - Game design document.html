@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The game design document | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: the game design document, the full thing">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="The game design document">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 5</p>
+      <h1 class="t-opening rise g2">The game design document</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for writing a GDD that others can build from and check</p>
+      <div class="speaker-notes" hidden><p>Deck 5 of the topic order. 34 terms. Tags: in the book text means a course chapter, mostly Chapter 5, uses and explains it (26 terms); in the glossary means a glossary row only (8 terms). Assignment 4 asks students to create a GDD with: the name of the game, concept, game flow, game elements and assets, main characters, story, gameplay (goal, mechanics, abilities and power-ups, levels and challenges, losing or restarting, player skills), graphics and styling with visual examples, music and sound effects, and a technical description. It is worth 5 points. This deck covers the sixteen-section structure, the IDs, the tags and the failure modes that Chapter 5 uses to check a GDD, which go beyond that list. Assignment 8, the pitch film, is where the short forms (brief and pitch) are used.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click. Game design decks A to C already cover design principles such as core loop and mechanic; here they appear briefly, as sections of the GDD.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="GDD, game brief and pitch">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">The documents</p>
+      <h2 class="t-chart">GDD, game brief and pitch</h2>
+      <div class="diagram build" data-build="docs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “What a GDD is for”; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>The 4,777 words is the recovered GDD of the 3D platformer in Chapter 5. The brief and pitch lengths are illustrative. Chapter 5 gives the brief and GDD definitions (from Walker); the pitch is a glossary row only. For Assignment 4 students write the GDD; Assignment 8 asks for a pitch film.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Reverse, draft and gates">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The documents</p>
+      <h2 class="t-chart">Reverse, draft and gates</h2>
+      <div class="diagram build" data-build="rev" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Gates, and who signs them”; “The Walker example”.</p>
+      <div class="speaker-notes" hidden><p>Tag counts in the reverse box are from the recovered 3D platformer GDD in Chapter 5 (107, 29, 30). Gates live in design/DESIGN-STATUS.json. The chapter says a recovered GDD should show all four gates unsigned, and that the agent never signs one.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The sixteen sections">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">What the design says</p>
+      <h2 class="t-chart">The sixteen sections</h2>
+      <div class="diagram build" data-build="sections" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Where Zelda came from”; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>The sixteen sections are from Forge, the Spring 2026 GDD prompt set, as listed in Chapter 5. Design pillar and core loop are glossary rows; the chapter names them as sections but does not define them. Game design C covers pillars in depth.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Goal to mechanic to test">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Linking with stable IDs</p>
+      <h2 class="t-chart">Goal to mechanic to test</h2>
+      <div class="diagram build" data-build="link" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Where Zelda came from” and “Acceptance criteria that a machine can check”.</p>
+      <div class="speaker-notes" hidden><p>The table is invented for the picture. Its shape follows the clawd GDD test row in Chapter 5: T-20, a setup, an action, an expected result, and the mechanic it links to (M-05). The four goals, five mechanics and six tests are illustrative. Counts and the untested mechanic are computed from the table.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Four tags for every claim">
+      <div class="rule"></div>
+      <span class="evidence">Computed; draft: illustrative</span>
+      <p class="eyebrow">Linking with stable IDs</p>
+      <h2 class="t-chart">Four tags for every claim</h2>
+      <div class="diagram build" data-build="tags" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Provenance tags”; “Our audit”.</p>
+      <div class="speaker-notes" hidden><p>107, 29 and 30 are the counts in the recovered 3D platformer GDD (Chapter 5). The chapter says at least nine claims in that GDD were wrong or unsupported, so a tag is a claim about evidence, not evidence: open the cited line. The draft bar is illustrative. [ASSUMPTION] is added by the draft command.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="No vision, mirages, the happy path">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Three failure modes</p>
+      <h2 class="t-chart">No vision, mirages, the happy path</h2>
+      <div class="diagram build" data-build="fm1" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Where Zelda came from”.</p>
+      <div class="speaker-notes" hidden><p>Three of Forge’s seven failure modes. The scatter uses seed 7 with the same twelve draws at two spreads. The four goals and the six checkpoint situations are illustrative; the six situations follow Chapter 5’s AC-01 checks.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Priority Inflation">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">A failure mode you can count</p>
+      <h2 class="t-chart">Priority Inflation</h2>
+      <div class="diagram build" data-build="infl" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “A recovered GDD in the course’s own example”.</p>
+      <div class="speaker-notes" hidden><p>Chapter 5: the clawd GDD tagged 8 of 15 features CORE, 53 percent, and could not get under 40 percent without removing the loop, so it logged open question Q-04 for the author. The second step is illustrative arithmetic only.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Reader, reasons, revisions">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Three more failure modes</p>
+      <h2 class="t-chart">Reader, reasons, revisions</h2>
+      <div class="diagram build" data-build="fm2" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Where Zelda came from”.</p>
+      <div class="speaker-notes" hidden><p>Novelist’s Trap, Completeness Fallacy and Stagnant Artifact are the last three of Forge’s seven. The sentences, the decision table and the version history are illustrative. Chapter 5’s real example of a confident wrong decision is D-02 in the clawd GDD.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Scope and what to do about too much">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Scope</p>
+      <h2 class="t-chart">Scope and what to do about too much</h2>
+      <div class="diagram build" data-build="scope" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Acceptance criteria that a machine can check”; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>The six items, three creep items and hours are illustrative. 94 plus 14, 12 and 10 is 130; cutting 12, deferring 10 and swapping 14 for 6 gives 100. The glossary defines scope, scope creep and cut, defer, swap; the chapter uses out of scope in AC-01 and the Walker brief.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Acceptance criterion, given-when-then, tolerance">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Testable claims</p>
+      <h2 class="t-chart">Acceptance criterion, given-when-then, tolerance</h2>
+      <div class="diagram build" data-build="crit" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Acceptance criteria that a machine can check”; “What we actually ran”; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>The numbers are the AC-01 checkpoint pad run in Chapter 5: 0.0015 m, 64 frames, 0.0882 m, 0.0898 m, 4 of 4 probe checks. The 0.35 m point is illustrative. The chapter also names the time box, in the engine’s own clock.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Direct write, invariants, false passes">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Testable claims</p>
+      <h2 class="t-chart">Direct write, invariants, false passes</h2>
+      <div class="diagram build" data-build="fix" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5, “Acceptance criteria that a machine can check”; Chapter 12; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>Chapter 5 labels criterion 5 a constructed fixture: a direct state write that tests the fall branch, not a fall a player makes. Fall speed is illustrative. The 21 pass lines with 2 skips come from the Chapter 12 audio session. Loosening, weakening a check so a failing result passes, is a glossary row.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5; glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>Reverse and draft, brief and GDD, observed and assumption, mechanic and PX goal.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions. Each chart is computed from the numbers used earlier in the deck.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a design document">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a design document</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 5.</p>
+      <div class="speaker-notes" hidden><p>Six checks. In Assignment 4, ask students to check their own GDD against these before submitting.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= The game design document, the full thing (Chapter 5 and the glossary) ================= */
+  var uid = 0, GREY = "#909090";
+  /* tag: book = a course chapter uses and explains it; gloss = glossary row only */
+  var T = {
+    gdd: { n: "GDD", tag: "book", m: "What the game is and how it plays, in enough detail to build it and test it" },
+    brief: { n: "Game brief", tag: "book", m: "What the player does, what success is, what can go wrong, what is out" },
+    pitch: { n: "Pitch", tag: "gloss", m: "A short sales description of the game idea" },
+    reverse: { n: "Reverse", tag: "book", m: "Recover a GDD from a game that already exists" },
+    draft: { n: "Draft", tag: "book", m: "Write a GDD from a new idea and mark what you assumed" },
+    gate: { n: "Gate", tag: "book", m: "A named sign-off after a design phase; only a person signs it" },
+    sixteen: { n: "Sixteen sections", tag: "book", m: "The fixed outline of a GDD, from metadata to open questions" },
+    pillar: { n: "Design pillar", tag: "gloss", m: "A core principle every decision must support" },
+    loop: { n: "Core loop", tag: "gloss", m: "The repeated moment-to-moment cycle the player enjoys" },
+    px: { n: "PX goal", tag: "book", m: "A feeling or experience the player should have, with an ID like PX-01" },
+    mech: { n: "Mechanic", tag: "gloss", m: "A rule-governed action in the game" },
+    sid: { n: "Stable ID", tag: "book", m: "A label that never changes, such as PX-01, M-01 or T-01" },
+    ltest: { n: "Linked test", tag: "book", m: "A test row that names the mechanic it checks" },
+    obs: { n: "[OBSERVED]", tag: "book", m: "The code does this; the tag names a file and line" },
+    inf: { n: "[INFERRED]", tag: "book", m: "The code strongly implies it; the evidence is stated" },
+    miss: { n: "[MISSING]", tag: "book", m: "The code cannot tell you this" },
+    assume: { n: "[ASSUMPTION]", tag: "book", m: "A gap the draft filled in; nobody saw it" },
+    ghost: { n: "Ghost Center", tag: "book", m: "No locked vision, so nothing anchors the decisions" },
+    mirage: { n: "Mechanic Mirage", tag: "book", m: "A PX goal that is really a feature described in disguise" },
+    void: { n: "Implementation Void", tag: "book", m: "A mechanic with only the happy path written down" },
+    infl: { n: "Priority Inflation", tag: "book", m: "More than 40% of the features tagged CORE" },
+    novel: { n: "Novelist's Trap", tag: "book", m: "Story written for a reader, not for an engineer" },
+    compl: { n: "Completeness Fallacy", tag: "book", m: "Decisions with no recorded reasoning" },
+    stag: { n: "Stagnant Artifact", tag: "book", m: "No version history; never revised after a prototype" },
+    scope: { n: "Scope", tag: "gloss", m: "Everything the project promises to include" },
+    oos: { n: "Out of scope", tag: "book", m: "A written list of what will not be built" },
+    creep: { n: "Scope creep", tag: "gloss", m: "Quiet growth of work beyond what was agreed" },
+    cds: { n: "Cut, defer, swap", tag: "gloss", m: "The three ways to handle too much scope: remove, postpone, replace" },
+    crit: { n: "Acceptance criterion", tag: "book", m: "A concrete condition that must be true for work to count as done" },
+    gwt: { n: "Given-when-then", tag: "gloss", m: "A format for a test: starting state, action, expected result" },
+    tol: { n: "Tolerance", tag: "book", m: "The allowed difference between expected and actual" },
+    dsw: { n: "Direct state write", tag: "book", m: "Setting a value in code instead of producing it through gameplay" },
+    inv: { n: "Invariant", tag: "book", m: "A condition that must stay true throughout" },
+    fpass: { n: "False pass", tag: "book", m: "A test that passes though the behaviour is wrong" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function fmt(v) { return d3.format(",")(v); }
+  function arrow(g, x1, y, x2, color, w) {
+    var p = g.append("path").attr("d", "M" + x1 + "," + y + " H" + x2 + " M" + x2 + "," + y + " l-14,-10 M" + x2 + "," + y + " l-14,10").attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", w || 4);
+    return p;
+  }
+
+  /* ---------- shared data ---------- */
+  var DOCWORDS = { gdd: 4777, brief: 600, pitch: 150 };       /* 4,777 is the recovered GDD in Chapter 5; the others are illustrative */
+  var TAGS = { obs: 107, inf: 29, miss: 30 };                  /* the recovered 3D platformer GDD, Chapter 5 */
+  var DRAFTTAGS = { obs: 14, inf: 6, miss: 4, assume: 26 };    /* illustrative draft */
+  var PXG = [["PX-01", "control"], ["PX-02", "reward"], ["PX-03", "recovery"], ["PX-04", "clarity"]];
+  var MEC = [["M-01", "jump", 0], ["M-02", "coins", 1], ["M-03", "shoot", 0], ["M-04", "checkpoint", 2], ["M-05", "task order", 3]];
+  var TST = [["T-20", "M-05"], ["T-21", "M-05"], ["T-22", "M-01"], ["T-23", "M-04"], ["T-24", "M-04"], ["T-25", "M-02"]];
+  function testsFor(mid) { return TST.filter(function (t) { return t[1] === mid; }).length; }
+  var UNTESTED = MEC.filter(function (m) { return testsFor(m[0]) === 0; }).map(function (m) { return m[0]; });
+  var INSCOPE = [["move and jump", 20], ["coins", 10], ["enemies", 16], ["checkpoint pad", 8], ["three levels", 30], ["menu", 10]];
+  var CREEPITEMS = [["extra boss", 14], ["skins", 12], ["day-night cycle", 10]];
+  var OUTLIST = ["multiplayer", "mobile port", "XR"], CAPHRS = 100;
+  var SWAPHRS = 6;
+  function scopeTotal(k) {
+    var t = d3.sum(INSCOPE, function (r) { return r[1]; });
+    if (k === 3) t += d3.sum(CREEPITEMS, function (r) { return r[1]; });
+    if (k >= 4) t += SWAPHRS;
+    return t;
+  }
+  var FEAT = 15, CORE0 = 8, CORE1 = 6, LIMIT = 0.4;
+
+  var MAPROWS = [
+    ["The documents", "GDD, game brief, pitch, reverse, draft, gate", "What each document is for, and how one is started"],
+    ["What the design says", "sixteen sections, design pillar, core loop, PX goal, mechanic, scope, out of scope, scope creep, cut/defer/swap", "The content a GDD commits to"],
+    ["Linking and checking", "stable ID, linked test, observed, inferred, missing, assumption, acceptance criterion, given-when-then, tolerance, direct state write, invariant, false pass", "How a claim points at evidence"],
+    ["Seven ways it goes wrong", "Ghost Center, Mechanic Mirage, Implementation Void, Priority Inflation, Novelist's Trap, Completeness Fallacy, Stagnant Artifact", "The failure modes a review looks for"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Thirty-four game design document terms in four groups", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from Chapter 5 and the glossary. A GDD is a promise other people, and agents, can build from and check.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 118, h); });
+    g.append("path").attr("d", "M0,128 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 140 + i * 138, row = g.append("g");
+      box(row, 0, y, 1400, 128, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 129).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 50, r[0], 20, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 38, r[1], 52, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 38, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. GDD, brief, pitch ---------- */
+  var DOCS = [["GDD", "gdd", INK, "Reader: engineer and tester. Purpose: build it, check it."], ["Brief", "brief", RED, "Reader: the team. Purpose: agree the task and its limits."], ["Pitch", "pitch", GREY, "Reader: someone to persuade. Purpose: make them want it."]];
+  function renderDocs(el, k, anim) {
+    var svg = svgFor(el, W, H, "A pitch, a brief and a GDD differ in length and purpose", "Three horizontal bars drawn to scale: the GDD at 4,777 words, the brief at about 600 and the pitch at about 150, each with its reader and purpose.");
+    var ey = base(svg, [{ id: "gdd", s: 1 }, { id: "brief", s: 2 }, { id: "pitch", s: 3 }], k, anim, ["Brief", "short: task, success, limits"], ["GDD", "long: build it, check it"]);
+    var d = svg.append("g");
+    lab(d, 0, 30, "THREE DOCUMENTS, DRAWN TO LENGTH");
+    DOCS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 50 + i * 150, g = d.append("g"), words = DOCWORDS[r[1]], w = Math.max(words / DOCWORDS.gdd * 500, 12);
+      cap(g, 0, y + 26, r[0], { weight: 700, size: 26 });
+      bar(g, 0, y + 40, w, 36, r[2], A(anim, k, i + 1), 0);
+      fade(cap(g, w + 12, y + 68, fmt(words) + " words", { size: 24, weight: 700 }), A(anim, k, i + 1), 600);
+      fade(cap(g, 0, y + 112, r[3], { size: 24, fill: MUTED }), A(anim, k, i + 1), 300);
+    });
+    if (k >= 3) cap(d, 0, 520, "The GDD is about " + Math.round(DOCWORDS.gdd / DOCWORDS.brief) + " times the brief and " + Math.round(DOCWORDS.gdd / DOCWORDS.pitch) + " times the pitch.", { size: 26, weight: 700, fill: RED });
+    if (k >= 1) cap(d, 0, 560, "Brief and pitch lengths are illustrative.", { size: 24, fill: MUTED });
+    note(svg, ey, ["", "A GDD develops decisions until an engineer can implement them and a tester can check them.", "A brief is shorter. It says what the player does, what success is, what can go wrong and what is out.", "A pitch is shortest. It sells the idea. It does not have to be buildable yet."][k]);
+  }
+
+  /* ---------- 2. reverse, draft, gate ---------- */
+  function renderRev(el, k, anim) {
+    var svg = svgFor(el, W, H, "Reverse recovers a GDD from a game, draft writes one from an idea, gates need a person", "Two arrows into a GDD: from game files with observed tags, and from an idea with assumption tags. Then four phase gates, unsigned in a silent run and signed one by one by a person.");
+    var ey = base(svg, [{ id: "reverse", s: 1 }, { id: "draft", s: 2 }, { id: "gate", s: 3 }], k, anim, ["Reverse", "start from the game"], ["Draft", "start from the idea"]);
+    var d = svg.append("g");
+    if (k <= 2) {
+      var panel = function (y0, title, s1, s2, lines, fresh) {
+        var g = d.append("g"); lab(g, 0, y0, title);
+        box(g, 0, y0 + 20, 230, 140, { stroke: INK, sw: 3 }); cap(g, 115, y0 + 86, s1, { anchor: "middle", weight: 700, size: 26 }); cap(g, 115, y0 + 122, s2, { anchor: "middle", size: 24, fill: MUTED });
+        var ar = arrow(g, 240, y0 + 90, 470, INK, 4); if (fresh && anim) drawIn(ar, 0, 700);
+        var out = g.append("g");
+        box(out, 480, y0 + 20, 280, 140, { stroke: RED, sw: 3 }); cap(out, 496, y0 + 54, "GDD", { weight: 700, size: 26 });
+        lines.forEach(function (l, i) { cap(out, 496, y0 + 88 + i * 28, l, { size: 24, fill: i === lines.length - 1 && lines.length === 2 ? MUTED : INK }); });
+        if (fresh) fade(out, anim, 600);
+      };
+      panel(30, "REVERSE: GAME → GDD", "game files", "scripts, scenes", ["[OBSERVED]  " + TAGS.obs, "[INFERRED]  " + TAGS.inf, "[MISSING]  " + TAGS.miss], k === 1);
+      if (k >= 2) panel(270, "DRAFT: IDEA → GDD", "an idea", "no files yet", ["[ASSUMPTION]", "every gap labelled"], k === 2);
+      cap(d, 0, 508, k === 1 ? "A reverse pass can only say what the code shows." : "A draft must label every guess it makes.", { size: 24, weight: 700 });
+      cap(d, 0, 544, k === 1 ? "Counts are from the recovered 3D platformer GDD." : "Both end in the same sixteen sections.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "FOUR PHASES, FOUR GATES");
+      var PH = ["Vision", "Systems", "World", "Scope"];
+      PH.forEach(function (p, i) {
+        var x = i * 195; box(d, x, 44, 170, 56, { stroke: INK, sw: 2.5 }); cap(d, x + 85, 82, p, { size: 26, weight: 700, anchor: "middle" });
+        if (i < 3) d.append("path").attr("d", "M" + (x + 172) + ",72 H" + (x + 193)).attr("stroke", INK).attr("stroke-width", 3);
+      });
+      lab(d, 0, 160, "SILENT RUN: ALL UNSIGNED");
+      lab(d, 0, 300, "A PERSON ANSWERS: SIGNED IN ORDER");
+      var cb = cap(d, 0, 444, "", { size: 26, weight: 700, fill: RED });
+      var cb_ = d.append("g"), ca_ = d.append("g");
+      PH.forEach(function (p, i) { ca_.append("circle").attr("cx", i * 195 + 85).attr("cy", 214).attr("r", 24).attr("fill", "#FFFFFF").attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "6 5"); });
+      run(d, 3600, function (t) {
+        cb_.selectAll("*").remove(); var n = Math.min(4, Math.floor(t * 4.001));
+        PH.forEach(function (p, i) {
+          var x = i * 195 + 85, on = i < n;
+          cb_.append("circle").attr("cx", x).attr("cy", 354).attr("r", 24).attr("fill", on ? RED : "#FFFFFF").attr("stroke", on ? RED : GREY).attr("stroke-width", 3).attr("stroke-dasharray", on ? null : "6 5");
+          if (on) check(cb_, x, 354, 11, "#FFFFFF");
+        });
+        cb.text("signed: " + n + " of 4");
+      }, anim);
+      cap(d, 0, 544, "The agent asks, a person answers, the agent records.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Reverse starts from a game that exists. Every claim needs a tag that says how it is known.", "Draft starts from an idea. What the agent filled in carries an assumption tag.", "A gate is a sign-off after vision, systems, world and scope. The agent never signs one."][k]);
+  }
+
+  /* ---------- 3. sixteen sections, pillar, core loop ---------- */
+  var SECS = ["Metadata", "Vision summary", "Pillars", "Core loop", "PX goals", "Mechanics", "Systems", "Progression", "World", "Narrative", "Characters", "Feature list", "Out of scope", "Technical requirements", "Risks", "Open questions"];
+  function renderSections(el, k, anim) {
+    var svg = svgFor(el, W, H, "A GDD has sixteen sections that fill in one by one", "A four by four grid of the sixteen sections, filling in one after another, with the pillars tile and the core loop tile picked out in turn.");
+    var ey = base(svg, [{ id: "sixteen", s: 1 }, { id: "pillar", s: 2 }, { id: "loop", s: 3 }], k, anim, ["Design pillar", "a principle that guides choices"], ["Core loop", "what the player repeats"]);
+    var d = svg.append("g");
+    lab(d, 0, 30, "A GDD, SECTION BY SECTION");
+    SECS.forEach(function (s, i) {
+      var c = i % 4, r = Math.floor(i / 4), x = c * 193, y = 44 + r * 118, g = d.append("g"), hi = (k === 2 && i === 2) || (k === 3 && i === 3);
+      var f = g.append("rect").attr("x", x).attr("y", y).attr("width", 181).attr("height", 109).attr("fill", hi ? TINT : "#EDEDED").attr("opacity", k >= 2 || (k === 1 && !anim) ? 1 : 0);
+      if (k === 1 && anim) f.transition().delay(i * 250).duration(300).attr("opacity", 1);
+      box(g, x, y, 180, 108, { stroke: hi ? RED : (k >= 1 ? INK : FAMILIAR), sw: hi ? 5 : 2, fill: "none" });
+      cap(g, x + 12, y + 32, (i < 9 ? "0" : "") + (i + 1), { size: 24, weight: 700, fill: hi ? RED : MUTED });
+      wrap(g, x + 12, y + 64, s, 12, { size: 24, lh: 28, weight: hi ? 700 : 400, fill: hi ? RED : INK });
+    });
+    var cnt = cap(d, 0, 550, "", { size: 26, weight: 700, fill: RED });
+    if (k === 0) cnt.text("0 of 16 sections filled"); else run(d, 4200, function (t) { cnt.text(Math.round(t * 16) + " of 16 sections filled"); }, k === 1 && anim);
+    note(svg, ey, ["", "Sixteen sections, always in this order. A tester can find any decision by its section.", "Pillars: the few principles that every later section must support.", "Core loop: the cycle the player repeats. Everything else hangs off it."][k]);
+  }
+
+  /* ---------- 4. PX goal, mechanic, stable ID, linked test ---------- */
+  function renderLink(el, k, anim) {
+    var svg = svgFor(el, W, H, "Stable IDs link a player-experience goal to a mechanic to a test", "A graph in three columns. Four goals on the left, five mechanics in the middle, six tests on the right, joined by lines computed from a small table. One mechanic has no test.");
+    var ey = base(svg, [{ id: "px", s: 1 }, { id: "mech", s: 2 }, { id: "sid", s: 3 }, { id: "ltest", s: 4 }], k, anim, ["PX goal", "what the player should feel"], ["Mechanic", "what the player can do"]);
+    var d = svg.append("g"), PXY = function (i) { return 60 + i * 130; }, MY = function (i) { return 50 + i * 100; }, TY = function (i) { return 44 + i * 84; };
+    var showId = k >= 3, pxx = 0, pxw = 190, mx = 290, mw = 230, tx = 650, tw = 110;
+    if (k >= 1) lab(d, pxx, 24, "GOALS");
+    if (k >= 2) lab(d, mx, 24, "MECHANICS");
+    if (k >= 4) lab(d, tx, 24, "TESTS");
+    var edges = d.append("g");
+    if (k >= 2) MEC.forEach(function (m, i) { var e = edges.append("path").attr("d", "M" + mx + "," + (MY(i) + 28) + " L" + (pxx + pxw) + "," + (PXY(m[2]) + 28)).attr("stroke", INK).attr("stroke-width", 2).attr("fill", "none"); if (A(anim, k, 2)) fade(e, true, 400); });
+    if (k >= 4) TST.forEach(function (t, i) { var mi = MEC.findIndex(function (m) { return m[0] === t[1]; }); var e = edges.append("path").attr("d", "M" + tx + "," + (TY(i) + 28) + " L" + (mx + mw) + "," + (MY(mi) + 28)).attr("stroke", INK).attr("stroke-width", 2).attr("fill", "none"); if (A(anim, k, 4)) fade(e, true, 300 + i * 120); });
+    function node(x, y, w, label, id, stroke, sw, on) {
+      var g = d.append("g"); box(g, x, y, w, 56, { stroke: stroke, sw: sw });
+      var t = cap(g, x + 12, y + 36, (showId && id ? id + " " : "") + label, { size: 24, weight: 700, fill: stroke === RED ? RED : INK });
+      if (on) fade(g, true, 0);
+      return g;
+    }
+    if (k >= 1) PXG.forEach(function (p, i) { node(pxx, PXY(i), pxw, p[1], p[0], INK, 2.5, A(anim, k, 1)); });
+    if (k >= 2) MEC.forEach(function (m, i) { var no = k >= 4 && testsFor(m[0]) === 0; node(mx, MY(i), mw, m[1], m[0], no ? RED : INK, no ? 4 : 2.5, A(anim, k, 2)); if (no) cap(d, mx, MY(i) + 84, "no test", { size: 24, weight: 700, fill: RED }); });
+    if (k >= 4) TST.forEach(function (t, i) { node(tx, TY(i), tw, "", t[0], INK, 2.5, A(anim, k, 4)); });
+    var capt = ["", PXG.length + " goals, each in plain words.", MEC.length + " mechanics serve the " + PXG.length + " goals. Every goal has at least " + d3.min(PXG, function (p) { return MEC.filter(function (m) { return m[2] === PXG.indexOf(p); }).length; }) + ".", "Goals, mechanics and tests now carry IDs that never change.", TST.length + " tests cover " + (MEC.length - UNTESTED.length) + " of " + MEC.length + " mechanics. No test for " + UNTESTED.join(", ") + "."][k];
+    cap(d, 0, 556, capt, { size: 24, weight: 700, fill: k === 4 ? RED : INK });
+    note(svg, ey, ["", "A PX goal says what the player should feel, in words a non-programmer can check.", "A mechanic is an action the rules govern. Each one should serve a goal.", "A stable ID names each piece once, so a ticket, a test and a playtest note point at the same thing.", "Each test row names its mechanic. A mechanic with no linked test shows up as a gap."][k]);
+  }
+
+  /* ---------- 5. provenance tags ---------- */
+  var TAGCOL = { obs: INK, inf: GREY, miss: FAMILIAR, assume: RED };
+  function renderTags(el, k, anim) {
+    var svg = svgFor(el, W, H, "Every claim carries a tag: observed, inferred, missing or assumption", "A stacked bar of 166 tagged claims from a recovered GDD, 107 observed, 29 inferred and 30 missing, then a second bar for a draft with 26 assumptions out of 50.");
+    var ey = base(svg, [{ id: "obs", s: 1 }, { id: "inf", s: 2 }, { id: "miss", s: 3 }, { id: "assume", s: 4 }], k, anim, ["[OBSERVED]", "the code does this"], ["[ASSUMPTION]", "the draft filled a gap"]);
+    var d = svg.append("g"), total = TAGS.obs + TAGS.inf + TAGS.miss, BW = 700;
+    lab(d, 0, 30, "REVERSE: 3D PLATFORMER");
+    var x = 0;
+    [["obs", "OBSERVED", 1], ["inf", "INFERRED", 2], ["miss", "MISSING", 3]].forEach(function (s, i) {
+      if (s[2] > k) return; var w = TAGS[s[0]] / total * BW, v = TAGS[s[0]], y = 130 + i * 36;
+      bar(d, x, 46, w, 50, TAGCOL[s[0]], A(anim, k, s[2]), 0); x += w;
+      var row = d.append("g");
+      row.append("rect").attr("x", 0).attr("y", y - 20).attr("width", 22).attr("height", 22).attr("fill", TAGCOL[s[0]]).attr("stroke", INK).attr("stroke-width", 1.5);
+      cap(row, 34, y, "[" + s[1] + "]  " + v + " of " + total + " (" + Math.round(v / total * 100) + "%)", { size: 24, weight: 700 });
+      fade(row, A(anim, k, s[2]), 200);
+    });
+    if (k >= 4) {
+      var tot2 = DRAFTTAGS.obs + DRAFTTAGS.inf + DRAFTTAGS.miss + DRAFTTAGS.assume;
+      lab(d, 0, 290, "DRAFT: ILLUSTRATIVE");
+      var x2 = 0;
+      ["obs", "inf", "miss", "assume"].forEach(function (id, i) {
+        var w = DRAFTTAGS[id] / tot2 * BW; bar(d, x2, 306, w, 50, TAGCOL[id], A(anim, k, 4), i * 150); x2 += w;
+        var y = 400 + i * 36, v = DRAFTTAGS[id], nm = { obs: "OBSERVED", inf: "INFERRED", miss: "MISSING", assume: "ASSUMPTION" }[id];
+        var row = d.append("g"); row.append("rect").attr("x", 0).attr("y", y - 20).attr("width", 22).attr("height", 22).attr("fill", TAGCOL[id]).attr("stroke", INK).attr("stroke-width", 1.5);
+        cap(row, 34, y, "[" + nm + "]  " + v + " of " + tot2 + " (" + Math.round(v / tot2 * 100) + "%)", { size: 24, weight: id === "assume" ? 700 : 400, fill: id === "assume" ? RED : INK });
+        fade(row, A(anim, k, 4), 300 + i * 150);
+      });
+    }
+    note(svg, ey, ["", "Observed: the code does it, and the tag cites a file and line. A tag is a claim, not evidence. Open the line.", "Inferred: the code implies it, with the evidence stated.", "Missing: the code cannot say. For example the target player, or the win condition.", "Assumption: a draft's own filling of a gap. In a draft it is the largest share to watch."][k]);
+  }
+
+  /* ---------- 6. Ghost Center, Mechanic Mirage, Implementation Void ---------- */
+  var GOALS = [["Add a rope swing", true], ["Player feels clever", false], ["Build a skill tree", true], ["Player feels safe to fail", false]];
+  var SIT = ["walk onto the pad", "walk onto it again", "reset before the pad", "reset after the pad", "fall below y = −12", "old checks still pass"];
+  function renderFM1(el, k, anim) {
+    var svg = svgFor(el, W, H, "Three failure modes: no locked vision, goals that are features, only the happy path", "Decisions scattered with no vision and clustered with one. Four goals tested for hidden features. Six situations of a checkpoint pad written down one by one.");
+    var ey = base(svg, [{ id: "ghost", s: 1 }, { id: "mirage", s: 2 }, { id: "void", s: 3 }], k, anim, ["Ghost Center", "no vision to aim at"], ["Implementation Void", "only the happy path"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      var r = rng(7), P = d3.range(12).map(function () { return [(r() * 2 - 1), (r() * 2 - 1)]; });
+      var SPR = [165, 52], mean = SPR.map(function (s) { return d3.mean(P, function (p) { return Math.hypot(p[0] * s, p[1] * s); }); });
+      lab(d, 0, 30, "NO VISION"); lab(d, 400, 30, "VISION LOCKED");
+      [0, 1].forEach(function (j) {
+        var cx = j * 400 + 180, cy = 230;
+        box(d, j * 400, 50, 360, 360, { stroke: FAMILIAR });
+        if (j) d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", 12).attr("fill", RED); else d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", 12).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "5 4");
+        var dots = d.append("g");
+        dots.selectAll("circle").data(P).enter().append("circle").attr("r", 9).attr("fill", INK);
+        run(dots, 2400, function (t) { dots.selectAll("circle").attr("cx", function (p) { return cx + p[0] * SPR[j] * t; }).attr("cy", function (p) { return cy + p[1] * SPR[j] * t; }); }, k === 1 && anim);
+        cap(d, j * 400, 452, "average miss: " + mean[j].toFixed(0) + " px", { size: 26, weight: 700, fill: j ? INK : RED });
+      });
+      cap(d, 0, 500, "Twelve decisions, same draws. Only the vision differs.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "FOUR PX GOALS, TESTED");
+      GOALS.forEach(function (gl, i) {
+        var y = 50 + i * 80, g = d.append("g"); box(g, 0, y, 740, 62, { stroke: gl[1] ? RED : INK, sw: 2.5 });
+        cap(g, 16, y + 40, "“" + gl[0] + "”", { size: 24, weight: 700 }); cap(g, 724, y + 40, gl[1] ? "feature in disguise" : "an experience", { size: 24, weight: 700, anchor: "end", fill: gl[1] ? RED : INK });
+        fade(g, A(anim, k, 2), i * 350);
+      });
+      cap(d, 0, 420, GOALS.filter(function (g) { return g[1]; }).length + " of " + GOALS.length + " goals are mirages.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 466, "Test: can you say it without naming a feature?", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "M-04 CHECKPOINT PAD: WHAT IS WRITTEN");
+      var rows = d.append("g"), cnt = cap(d, 0, 482, "", { size: 26, weight: 700 });
+      run(d, 3600, function (t) {
+        var n = Math.min(SIT.length, 1 + Math.floor(t * 5.999)); rows.selectAll("*").remove();
+        SIT.forEach(function (s, i) {
+          var y = 50 + i * 62, on = i < n, g = rows.append("g"); box(g, 0, y, 740, 52, { stroke: on ? INK : RED, sw: on ? 2 : 2.5 });
+          cap(g, 16, y + 35, s, { size: 24, weight: on ? 700 : 400, fill: on ? INK : MUTED }); cap(g, 724, y + 35, on ? "written" : "not written", { size: 24, weight: 700, anchor: "end", fill: on ? INK : RED });
+        });
+        cnt.text(n + " of " + SIT.length + " situations written").attr("fill", n === SIT.length ? INK : RED);
+      }, anim);
+      cap(d, 0, 526, "A happy path is only the first row.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "With no locked vision, every decision drifts. The same twelve decisions land far from the centre.", "A mirage names a feature where a feeling should be, so nobody can tell if the goal is met.", "Mechanics need the unhappy cases too. Here only one of six situations is written until the criterion lists the rest."][k]);
+  }
+
+  /* ---------- 7. Priority Inflation ---------- */
+  function renderInfl(el, k, anim) {
+    var svg = svgFor(el, W, H, "Priority Inflation: more than 40% of features tagged CORE", "Fifteen feature tiles. Eight are tagged CORE, 53 percent, above a 40 percent line. Demoting two leaves six, exactly 40 percent.");
+    var ey = base(svg, [{ id: "infl", s: 1 }], k, anim, ["CORE tag", "the game cannot do without it"], ["Not core", "can be cut or deferred"]);
+    var d = svg.append("g"), n = k >= 2 ? CORE1 : CORE0;
+    lab(d, 0, 30, "FIFTEEN FEATURES");
+    d3.range(FEAT).forEach(function (i) {
+      var c = i % 5, r = Math.floor(i / 5), x = c * 155, y = 44 + r * 100, core = k >= 1 && i < n, g = d.append("g");
+      var was = k >= 2 && (i >= CORE1 && i < CORE0);
+      box(g, x, y, 140, 88, { stroke: core ? RED : (was ? RED : (k >= 1 ? INK : FAMILIAR)), sw: 2.5, fill: core ? RED : "#FFFFFF" });
+      cap(g, x + 70, y + 36, "F-" + (i < 9 ? "0" : "") + (i + 1), { size: 26, weight: 700, anchor: "middle", fill: core ? "#FFFFFF" : INK });
+      if (k >= 1) cap(g, x + 70, y + 70, core ? "CORE" : (was ? "demoted" : "later"), { size: 24, weight: 700, anchor: "middle", fill: core ? "#FFFFFF" : (was ? RED : MUTED) });
+      if (k === 1 && anim) fade(g, true, i < CORE0 ? i * 160 : 0);
+    });
+    if (k >= 1) {
+      lab(d, 0, 364, "SHARE TAGGED CORE");
+      box(d, 0, 378, 700, 40, { stroke: INK, sw: 2 });
+      var fill = d.append("rect").attr("x", 1).attr("y", 379).attr("height", 38).attr("fill", RED), lblx = cap(d, 0, 492, "", { size: 28, weight: 700 }), ver = cap(d, 0, 534, "", { size: 24, weight: 700 });
+      d.append("path").attr("d", "M" + (700 * LIMIT) + ",368 V430").attr("stroke", INK).attr("stroke-width", 4).attr("stroke-dasharray", "8 6");
+      cap(d, 700 * LIMIT, 458, "40% limit", { size: 24, weight: 700, anchor: "middle" });
+      var from = k === 2 ? CORE0 / FEAT : 0, to = n / FEAT;
+      run(d, 1600, function (t) {
+        var s = from + (to - from) * t; fill.attr("width", Math.max(0, 698 * s));
+        var shown = k === 1 ? Math.round(s * FEAT) : (t < 1 ? Math.round(s * FEAT) : n);
+        lblx.text(shown + " of " + FEAT + " = " + (s * 100).toFixed(1) + "%");
+        var over = s > LIMIT + 1e-9; ver.text(over ? "More than 40%: priority inflation" : "Not more than 40%: passes").attr("fill", over ? RED : INK); fill.attr("fill", over ? RED : INK);
+      }, anim);
+    } else cap(d, 0, 420, "Click or press → to tag the features.", { size: 24, fill: MUTED });
+    note(svg, ey, ["", "When more than 40% of features are CORE, nothing is really core. Eight of fifteen is 53%.", "Demote two features and six remain: exactly 40%, which is not more than the limit. Illustrative arithmetic."][k]);
+  }
+
+  /* ---------- 8. Novelist's Trap, Completeness Fallacy, Stagnant Artifact ---------- */
+  var CARDS = [["STORY FOR A READER", [["The ruins sigh with old grief.", false], ["Hope glows in the dust.", false], ["The pad glows green when stood on.", true]]], ["SPEC FOR AN ENGINEER", [["Stand on the pad: the respawn point moves.", true], ["Reset returns the player within 0.2 m.", true], ["Falling below y = −12 triggers reset.", true]]]];
+  var DECS = [["D-01 pick Jolt", "reason: 4.6 default"], ["D-02 layer names", null], ["D-03 120 ticks", "reason: project setting"], ["D-04 pad size", null], ["D-05 gravity 22", null], ["D-06 one pad only", null]];
+  var VERS = { revised: [1, 3, 4, 6, 8, 10], stagnant: [1] }, PROTO = 5;
+  function renderFM2(el, k, anim) {
+    var svg = svgFor(el, W, H, "Three more failure modes: prose for a reader, decisions with no reasons, a document never revised", "Two cards of sentences with a buildable mark, a table of six decisions of which two give a reason, and two version timelines around a prototype.");
+    var ey = base(svg, [{ id: "novel", s: 1 }, { id: "compl", s: 2 }, { id: "stag", s: 3 }], k, anim, ["Completeness Fallacy", "decisions, no reasons"], ["Stagnant Artifact", "no versions, no revisions"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      CARDS.forEach(function (c, j) {
+        var x = j * 400; lab(d, x, 30, c[0]);
+        c[1].forEach(function (s, i) {
+          var y = 50 + i * 100, g = d.append("g"); box(g, x, y, 360, 90, { stroke: s[1] ? INK : RED, sw: 2.5 });
+          wrap(g, x + 12, y + 34, s[0], 24, { size: 24, lh: 28 });
+          if (s[1]) check(g, x + 332, y + 66, 12, INK); else cross(g, x + 332, y + 66, 10, RED);
+          fade(g, A(anim, k, 1), j * 200 + i * 350);
+        });
+        var good = c[1].filter(function (s) { return s[1]; }).length;
+        cap(d, x, 380, "buildable: " + good + " of " + c[1].length, { size: 26, weight: 700, fill: j ? INK : RED });
+      });
+      cap(d, 0, 430, "Illustrative sentences. An engineer can only build the marked ones.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SIX DECISIONS");
+      DECS.forEach(function (r, i) {
+        var y = 44 + i * 62, g = d.append("g"); box(g, 0, y, 740, 54, { stroke: r[1] ? INK : RED, sw: 2 });
+        cap(g, 14, y + 36, r[0], { size: 24, weight: 700 }); cap(g, 726, y + 36, r[1] || "no reason recorded", { size: 24, anchor: "end", weight: r[1] ? 400 : 700, fill: r[1] ? INK : RED });
+        fade(g, A(anim, k, 2), i * 250);
+      });
+      var w = DECS.filter(function (r) { return r[1]; }).length;
+      cap(d, 0, 470, w + " of " + DECS.length + " decisions say why.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 512, "Illustrative table.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "VERSIONS OVER TEN WEEKS");
+      var X = function (w_) { return 130 + w_ * 62; };
+      d.append("path").attr("d", "M" + X(0) + ",320 H" + X(10)).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      [0, 5, 10].forEach(function (w_) { cap(d, X(w_), 356, String(w_), { size: 24, anchor: "middle", fill: MUTED }); });
+      cap(d, X(5), 392, "week", { size: 24, anchor: "middle", fill: MUTED });
+      d.append("path").attr("d", "M" + X(PROTO) + ",70 V320").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      cap(d, X(PROTO), 62, "prototype built", { size: 24, weight: 700, fill: RED, anchor: "middle" });
+      cap(d, 0, 140, "revised", { size: 24, weight: 700 }); cap(d, 0, 250, "stagnant", { size: 24, weight: 700, fill: RED });
+      var dots = d.append("g");
+      run(d, 3000, function (t) {
+        dots.selectAll("*").remove();
+        [["revised", 126], ["stagnant", 236]].forEach(function (s) {
+          VERS[s[0]].forEach(function (w_) { if (w_ / 10 <= t + 1e-9) dots.append("circle").attr("cx", X(w_)).attr("cy", s[1] + 6).attr("r", 13).attr("fill", s[0] === "stagnant" ? RED : INK); });
+        });
+      }, A(anim, k, 3));
+      [["revised", 126], ["stagnant", 236]].forEach(function (s) { d.append("path").attr("d", "M" + X(0) + "," + (s[1] + 6) + " H" + X(10)).attr("stroke", FAMILIAR).attr("stroke-width", 1.5).lower(); });
+      var after = function (s) { return VERS[s].filter(function (w_) { return w_ > PROTO; }).length; };
+      cap(d, 0, 444, "versions after the prototype: " + after("revised") + " and " + after("stagnant"), { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 486, "Illustrative history.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A story written for a reader gives an engineer little to build. Keep the parts a build can use.", "Record why each decision was made, or the next person cannot tell a choice from an accident.", "A GDD is a living record. After a prototype is built it must be revised, with a version history."][k]);
+  }
+
+  /* ---------- 9. scope, out of scope, creep, cut/defer/swap ---------- */
+  function renderScope(el, k, anim) {
+    var svg = svgFor(el, W, H, "Scope is what you promise; out of scope says what you will not build", "A list of six in-scope items totalling 94 hours of a 100 hour capacity, an out-of-scope list, three creep items pushing the total to 130, and a cut, a deferral and a swap bringing it back to 100.");
+    var ey = base(svg, [{ id: "scope", s: 1 }, { id: "oos", s: 2 }, { id: "creep", s: 3 }, { id: "cds", s: 4 }], k, anim, ["Scope creep", "growth nobody agreed to"], ["Out of scope", "excluded on purpose"]);
+    var d = svg.append("g"), SC = 12;
+    lab(d, 0, 30, k >= 3 ? "ITEMS AND HOURS" : "IN SCOPE: ITEMS AND HOURS");
+    function row(i, name, h, fill, status, an, delay) {
+      var y = 44 + i * 38, g = d.append("g");
+      cap(g, 0, y + 24, name, { size: 24, weight: status ? 400 : 700, fill: status ? MUTED : INK });
+      if (h > 0) { bar(g, 250, y + 2, h * SC, 28, fill, an, delay); cap(g, 250 + h * SC + 10, y + 24, h + " h", { size: 24, weight: 700 }); }
+      if (status) cap(g, 250, y + 24, status, { size: 24, weight: 700, fill: RED });
+      return g;
+    }
+    INSCOPE.forEach(function (r, i) { row(i, r[0], r[1], INK, null, A(anim, k, 1), i * 120); });
+    if (k >= 3) {
+      CREEPITEMS.forEach(function (r, i) {
+        var name = r[0], h = r[1], st = null;
+        if (k >= 4) { if (i === 0) { name = "mini-boss (swap)"; h = SWAPHRS; } else if (i === 1) { h = 0; st = "cut"; } else { h = 0; st = "deferred"; } }
+        row(6 + i, name, h, RED, st, A(anim, k, 3) || A(anim, k, 4), i * 150);
+      });
+    }
+    if (k >= 2) {
+      var g = d.append("g"), y = 44 + 9 * 38 + 6; box(g, 0, y, 740, 46, { stroke: RED, sw: 3 }); cap(g, 14, y + 32, "OUT OF SCOPE: " + OUTLIST.join(", "), { size: 24, weight: 700, fill: RED }); fade(g, A(anim, k, 2), 0);
+    }
+    var scl = 700 / 130, tot = scopeTotal(k), prev = k >= 3 ? scopeTotal(k - 1) : tot;
+    lab(d, 0, 470, "HOURS USED OF " + CAPHRS);
+    box(d, 0, 482, 700, 30, { stroke: INK, sw: 2 });
+    var f = d.append("rect").attr("x", 1).attr("y", 483).attr("height", 28), tt = cap(d, 0, 546, "", { size: 26, weight: 700 });
+    d.append("path").attr("d", "M" + (CAPHRS * scl) + ",474 V520").attr("stroke", INK).attr("stroke-width", 4).attr("stroke-dasharray", "8 6");
+    run(d, 1400, function (t) { var v = prev + (tot - prev) * t; f.attr("width", v * scl - 2).attr("fill", v > CAPHRS ? RED : INK); tt.text(Math.round(v) + " of " + CAPHRS + " hours").attr("fill", v > CAPHRS ? RED : INK); }, anim && k >= 3);
+    note(svg, ey, ["", "Scope is everything the project promises. Here: six items, 94 hours of a 100 hour plan.", "The out-of-scope list is written down, so a request for multiplayer has an answer.", "Creep: three items slip in with no decision. 130 hours against 100.", "Cut skins, defer the day-night cycle, swap the boss for a mini-boss. Back to 100."][k]);
+  }
+
+  /* ---------- 10. acceptance criterion, given-when-then, tolerance ---------- */
+  var AC = [["1 pad on the floor", 1.5, 1.5, "m", "ge"], ["2 reset, before pad", 0.0015, 0.2, "m", "le"], ["3 reach the pad", 64, 600, "frames", "le"], ["4 reset, after pad", 0.0882, 0.2, "m", "le"], ["5 fall returns", 0.0898, 0.2, "m", "le"], ["6 old probes pass", 4, 4, "checks", "ge"]];
+  function acPass(r) { return r[4] === "le" ? r[1] <= r[2] : r[1] >= r[2]; }
+  function renderCrit(el, k, anim) {
+    var svg = svgFor(el, W, H, "An acceptance criterion names a quantity, a limit and a time box", "Six measured checks against their limits; a given, when, then box for the reset check; and a ring of 0.2 metres with a passing point inside it and a failing point outside.");
+    var ey = base(svg, [{ id: "crit", s: 1 }, { id: "gwt", s: 2 }, { id: "tol", s: 3 }], k, anim, ["Criterion", "can be checked by a stranger"], ["Wish", "“should feel responsive”"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "AC-01 CHECKPOINT PAD: SIX CHECKS");
+      AC.forEach(function (r, i) {
+        var y = 44 + i * 64, g = d.append("g"), ok = acPass(r); box(g, 0, y, 740, 54, { stroke: ok ? INK : RED, sw: 2 });
+        cap(g, 14, y + 36, r[0], { size: 24, weight: 700 });
+        cap(g, 680, y + 36, r[1] + (r[4] === "le" ? " ≤ " : " ≥ ") + r[2] + " " + r[3], { size: 24, anchor: "end" });
+        if (ok) check(g, 712, y + 30, 10, RED); else cross(g, 712, y + 28, 10, RED);
+        fade(g, A(anim, k, 1), i * 300);
+      });
+      var np = AC.filter(acPass).length;
+      cap(d, 0, 470, np + " of " + AC.length + " checks pass.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 512, "Values from the Chapter 5 run.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "CHECK 4, WRITTEN AS GIVEN, WHEN, THEN");
+      [["GIVEN", "the pad has been activated and the player stands elsewhere"], ["WHEN", "the reset action is held for 5 frames"], ["THEN", "the player is within 0.2 m of the pad's respawn point"]].forEach(function (r, i) {
+        var y = 44 + i * 140, g = d.append("g"); box(g, 0, y, 740, 120, { stroke: i === 2 ? RED : INK, sw: 3 });
+        lab(g, 16, y + 34, r[0], { fill: i === 2 ? RED : MUTED }); wrap(g, 16, y + 72, r[1], 52, { size: 24, lh: 30, weight: 700, fill: INK });
+        if (i < 2) g.append("path").attr("d", "M370," + (y + 122) + " V" + (y + 138) + " m-8,-10 l8,10 l8,-10").attr("stroke", INK).attr("stroke-width", 3).attr("fill", "none");
+        fade(g, A(anim, k, 2), i * 450);
+      });
+      cap(d, 0, 500, "Measured: " + AC[3][1] + " m. Limit: " + AC[3][2] + " m. " + (acPass(AC[3]) ? "Pass." : "Fail."), { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "TOP VIEW, 0.2 M LIMIT");
+      var cx = 380, cy = 200, S = 400, rr = 0.2 * S;
+      d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", rr).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", 7).attr("fill", INK);
+      cap(d, cx, cy + rr + 30, "0.2 m", { size: 24, weight: 700, fill: RED, anchor: "middle" });
+      var pts = [[AC[3][1], 0.5, "pass", INK], [0.35, -0.6, "fail", RED]];
+      pts.forEach(function (p, i) {
+        var px = cx + p[0] * S * Math.cos(p[1]), py = cy + p[0] * S * Math.sin(p[1]), g = d.append("g");
+        g.append("circle").attr("cx", px).attr("cy", py).attr("r", 10).attr("fill", p[3]);
+        cap(g, px + 18, py + (i ? -10 : 28), p[0] + " m: " + p[2], { size: 24, weight: 700, fill: p[3] });
+        fade(g, A(anim, k, 3), i * 500);
+      });
+      lab(d, 0, 400, "TIME BOX: 600 FRAMES AT 60 FPS");
+      box(d, 0, 416, 700, 34, { stroke: INK, sw: 2 });
+      var tb = d.append("rect").attr("x", 1).attr("y", 417).attr("height", 32).attr("width", 700 * 64 / 600 - 2).attr("fill", RED); if (A(anim, k, 3)) tb.attr("width", 0).transition().delay(900).duration(800).attr("width", 700 * 64 / 600 - 2);
+      cap(d, 0, 500, "reached the pad in " + AC[2][1] + " frames = " + (AC[2][1] / 60).toFixed(2) + " s of " + (AC[2][2] / 60).toFixed(0) + " s", { size: 24, weight: 700 });
+      cap(d, 0, 540, "The 0.35 m point is illustrative.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A stranger could write the test without asking: a quantity and unit, a limit, a time box, how the state is reached.", "Given a starting state, when an action, then an expected result. One test, three parts.", "A tolerance is the allowed gap. The time box counts engine frames, not seconds on a wall clock."][k]);
+  }
+
+  /* ---------- 11. direct state write, invariant, false pass ---------- */
+  var INVS = ["movement", "jump", "projectile created", "reset", "a coin collected"];
+  var FAKE = [8, 17];
+  function renderFix(el, k, anim) {
+    var svg = svgFor(el, W, H, "A direct write skips play, invariants must hold, and a skip that prints pass is a false pass", "A frame chart of a fall by play against a direct write, five invariants checked, and twenty-one pass lines of which two are skips.");
+    var ey = base(svg, [{ id: "dsw", s: 1 }, { id: "inv", s: 2 }, { id: "fpass", s: 3 }], k, anim, ["False pass", "passes, behaviour wrong"], ["Direct state write", "sets the value, skips play"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "PLAYER HEIGHT BY FRAME");
+      var X = function (f) { return 90 + f * 52; }, Y = function (v) { return 60 + (-5 - v) * 30; };
+      d.append("path").attr("d", "M" + X(0) + "," + Y(-14) + " V" + Y(-5) + " M" + X(0) + "," + Y(-14) + " H" + X(12)).attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("fill", "none");
+      d.append("path").attr("d", "M" + X(0) + "," + Y(-12) + " H" + X(12)).attr("stroke", INK).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+      cap(d, 0, Y(-12) + 8, "−12 m", { size: 24, weight: 700 });
+      [0, 6, 12].forEach(function (f) { cap(d, X(f), 360, String(f), { size: 24, anchor: "middle", fill: MUTED }); }); cap(d, X(6), 396, "frame", { size: 24, anchor: "middle", fill: MUTED });
+      var V0 = -5.9, V = 0.7, fcross = Math.ceil((12 + V0) / V);
+      var play = [[0, V0], [fcross, V0 - V * fcross], [fcross + 2, V0]].filter(function (p) { return p[0] <= 12; });
+      var write = [[0, V0], [0, -13], [2, V0]];
+      var line = d3.line().x(function (p) { return X(p[0]); }).y(function (p) { return Y(p[1]); });
+      var p1 = d.append("path").attr("d", line(play)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4), p2 = d.append("path").attr("d", line(write)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      if (A(anim, k, 1)) { drawIn(p1, 0, 1800); drawIn(p2, 900, 900); }
+      cap(d, 0, 436, "by play: reaches −12 m at frame " + fcross, { size: 24, weight: 700 });
+      cap(d, 0, 476, "by write: −13 m at frame 0, back by frame 2", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 520, "The write skips " + fcross + " frames of falling.", { size: 24, fill: MUTED });
+      cap(d, 0, 556, "Fall speed is illustrative.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "MUST NOT CHANGE: THE OLD PROBES");
+      INVS.forEach(function (s, i) {
+        var y = 44 + i * 70, g = d.append("g"); box(g, 0, y, 740, 58, { stroke: INK, sw: 2 }); cap(g, 14, y + 38, s, { size: 24, weight: 700 });
+        var ck = check(g, 700, y + 32, 12, RED); if (A(anim, k, 2)) { drawIn(ck, i * 350, 400); }
+      });
+      cap(d, 0, 450, INVS.length + " of " + INVS.length + " still hold.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 494, "A change that breaks one of these fails, whatever else it adds.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "PASS LINES PRINTED: 21");
+      var cells = d.append("g");
+      d3.range(21).forEach(function (i) {
+        var x = (i % 7) * 108, y = 44 + Math.floor(i / 7) * 100, fake = FAKE.indexOf(i) >= 0, g = cells.append("g");
+        var r = g.append("rect").attr("x", x).attr("y", y).attr("width", 92).attr("height", 84).attr("fill", INK);
+        var c1 = check(g, x + 46, y + 40, 16, "#FFFFFF");
+        if (fake) {
+          var r2 = g.append("g"); r2.append("rect").attr("x", x).attr("y", y).attr("width", 92).attr("height", 84).attr("fill", RED); cap(r2, x + 46, y + 52, "skip", { size: 26, weight: 700, anchor: "middle", fill: "#FFFFFF" });
+          if (A(anim, k, 3)) r2.attr("opacity", 0).transition().delay(1800).duration(500).attr("opacity", 1); else r2.attr("opacity", 1);
+        }
+        if (A(anim, k, 3)) { r.attr("opacity", 0).transition().delay(i * 70).duration(200).attr("opacity", 1); c1.attr("opacity", 0).transition().delay(i * 70).duration(200).attr("opacity", 1); }
+      });
+      cap(d, 0, 400, "really tested: " + (21 - FAKE.length) + " of 21", { size: 26, weight: 700 });
+      cap(d, 0, 440, FAKE.length + " were skips that printed PASS.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 486, "Numbers from the Chapter 12 audio session.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A direct write puts the game in a state and tests what follows. It does not prove a player can get there.", "Invariants are the existing checks that must still pass. The new feature does not get to break the old.", "A skip that prints pass is a false pass. Weakening a check to get one is called loosening."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the GDD chapter", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Reverse", "Starts from a game that exists"], ["Draft", "Starts from an idea, and labels its guesses"]],
+      [["Brief", "Short: task, success, limits"], ["GDD", "Long: detailed enough to build and test"]],
+      [["[OBSERVED]", "The code does this; a file and line show it"], ["[ASSUMPTION]", "A gap the draft filled in; no source"]],
+      [["Mechanic", "What the player can do"], ["PX goal", "What the player should feel"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function docBox(g, x, y, s, red) { box(g, x, y, 110, 80, { stroke: red ? RED : INK, sw: 3 }); cap(g, x + 55, y + 50, s, { size: 26, weight: 700, anchor: "middle", fill: red ? RED : INK }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        docBox(LG, 0, 200, "game", false); docBox(RG, 0, 200, "idea", false); docBox(LG, 220, 200, "GDD", true); docBox(RG, 220, 200, "GDD", true);
+        [LG, RG].forEach(function (G) { var e = 110 + 100 * t; arrow(G, 120, 240, Math.max(e, 140), INK, 4); });
+        cap(LG, 0, 330, "tags: OBSERVED", { size: 24, fill: MUTED }); cap(RG, 0, 330, "tags: ASSUMPTION", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var wB = DOCWORDS.brief / DOCWORDS.gdd * 320 * t, wG = 320 * t;
+        LG.append("rect").attr("x", 0).attr("y", 220).attr("width", Math.max(wB, 2)).attr("height", 44).attr("fill", RED); RG.append("rect").attr("x", 0).attr("y", 220).attr("width", Math.max(wG, 2)).attr("height", 44).attr("fill", INK);
+        cap(LG, 0, 310, "about " + fmt(DOCWORDS.brief) + " words", { size: 24, fill: MUTED }); cap(RG, 0, 310, fmt(DOCWORDS.gdd) + " words", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        box(LG, 0, 180, 340, 120, { stroke: INK, sw: 3 }); mono(LG, 16, 222, "player.gd:36", { size: 24 }); mono(LG, 16, 262, "falls below y = −12", { size: 24 }); if (t > 0.4) check(LG, 300, 222, 14, RED);
+        box(RG, 0, 180, 340, 120, { stroke: GREY, sw: 3 }); RG.select("rect").attr("stroke-dasharray", "8 6"); cap(RG, 170, 254, "?", { size: 64, weight: 700, anchor: "middle", fill: t > 0.4 ? RED : GREY }); cap(RG, 170, 290, "no file, no line", { size: 24, anchor: "middle", fill: MUTED });
+      } else {
+        box(LG, 0, 200, 340, 80, { stroke: INK, sw: 3 }); cap(LG, 170, 252, "jump, shoot", { size: 28, weight: 700, anchor: "middle" });
+        box(RG, 0, 200, 340, 80, { stroke: RED, sw: 3 }); cap(RG, 170, 252, "feels in control", { size: 28, weight: 700, anchor: "middle", fill: RED });
+        LG.attr("opacity", 0.3 + 0.7 * t); RG.attr("opacity", 0.3 + 0.7 * t);
+        cap(LG, 0, 330, "an action", { size: 24, fill: MUTED }); cap(RG, 0, 330, "an experience", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.99); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 2600, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the GDD complete", x: "Fill all sixteen sections and tag every claim: observed, inferred, missing or assumption" },
+    { v: "don't make everything a priority", x: "Tag no more than 40% of features CORE: at most 6 of 15" },
+    { v: "the checkpoint should respond well", x: "Return the player within 0.2 m of the respawn point within 2 frames at --fixed-fps 60" },
+    { v: "say what we are not doing", x: "Write an out-of-scope list, then cut, defer or swap until the plan fits 100 hours" },
+    { v: "make sure every mechanic is tested", x: "Give each test an ID and name its mechanic; list any mechanic with no test" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague design requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      var tot = TAGS.obs + TAGS.inf + TAGS.miss, x0 = 14;
+      ["obs", "inf", "miss"].forEach(function (id, i) { var w = TAGS[id] / tot * 610; bar(p, x0, 30, w, 44, TAGCOL[id], anim, i * 300); x0 += w; });
+      ["obs", "inf", "miss"].forEach(function (id, i) { var nm = { obs: "observed", inf: "inferred", miss: "missing" }[id]; p.append("rect").attr("x", 14).attr("y", 108 + i * 44).attr("width", 22).attr("height", 22).attr("fill", TAGCOL[id]).attr("stroke", INK).attr("stroke-width", 1.5); cap(p, 48, 128 + i * 44, nm + " " + TAGS[id] + " (" + Math.round(TAGS[id] / tot * 100) + "%)", { size: 24, weight: 700 }); });
+      nt = "every one of " + tot + " claims has a tag";
+    } else if (k === 2) {
+      var sc = 560 / 100; [[CORE0, "all 8 tagged CORE: 53%", "#C4C4C4"], [CORE1, "6 tagged CORE: 40%", RED]].forEach(function (r, i) { var s = r[0] / FEAT * 100; cap(p, 14, 70 + i * 100, (i ? "after demoting two" : "before") + ": " + s.toFixed(0) + "%", { size: 24 }); bar(p, 14, 84 + i * 100, s * sc, 40, r[2], anim, i * 400); });
+      p.append("path").attr("d", "M" + (14 + 40 * sc) + ",60 V250").attr("stroke", INK).attr("stroke-width", 3).attr("stroke-dasharray", "8 6"); cap(p, 14 + 40 * sc + 8, 270, "40%", { size: 24, weight: 700 });
+      nt = "6 of 15 is not more than 40%";
+    } else if (k === 3) {
+      var s3 = 560 / 0.4;
+      cap(p, 14, 80, "measured: " + AC[4][1] + " m", { size: 24 }); bar(p, 14, 94, AC[4][1] * s3, 40, RED, anim, 0);
+      cap(p, 14, 200, "limit: " + AC[4][2] + " m", { size: 24 }); bar(p, 14, 214, AC[4][2] * s3, 40, "#C4C4C4", anim, 400);
+      nt = "measured " + AC[4][1] + " m is under the " + AC[4][2] + " m limit";
+    } else if (k === 4) {
+      var s4 = 560 / 130; [[scopeTotal(3), "with creep", RED], [scopeTotal(4), "after cut, defer, swap", "#C4C4C4"]].forEach(function (r, i) { cap(p, 14, 80 + i * 100, r[1] + ": " + r[0] + " h", { size: 24 }); bar(p, 14, 94 + i * 100, r[0] * s4, 40, r[2], anim, i * 400); });
+      p.append("path").attr("d", "M" + (14 + CAPHRS * s4) + ",60 V250").attr("stroke", INK).attr("stroke-width", 3).attr("stroke-dasharray", "8 6"); cap(p, 14 + CAPHRS * s4 + 8, 270, "100", { size: 24, weight: 700 });
+      nt = (scopeTotal(3) - scopeTotal(4)) + " hours removed";
+    } else {
+      MEC.forEach(function (m, i) { var n = testsFor(m[0]), y = 30 + i * 52; cap(p, 14, y + 24, m[0], { size: 24, weight: 700, fill: n ? INK : RED }); d3.range(Math.max(n, 0)).forEach(function (j) { var b = p.append("rect").attr("x", 110 + j * 70).attr("y", y).attr("width", 60).attr("height", 32).attr("fill", INK); if (anim) b.attr("opacity", 0).transition().delay(i * 150 + j * 100).duration(250).attr("opacity", 1); }); if (!n) cap(p, 110, y + 24, "no test", { size: 24, weight: 700, fill: RED }); });
+      nt = TST.length + " tests, " + UNTESTED.length + " untested mechanic: " + UNTESTED.join(", ");
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is the vision locked before the other sections are filled?",
+    "Does every claim carry a tag, and did I open the cited line?",
+    "Does each goal link to a mechanic, and each mechanic to a test?",
+    "Are no more than 40% of the features tagged CORE?",
+    "Does the out-of-scope list say what will not be built?",
+    "Could a stranger test each criterion: unit, limit, time box?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a design document", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it complete”, but “every claim tagged, every test linked”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, docs: { steps: 3, render: renderDocs }, rev: { steps: 3, render: renderRev },
+    sections: { steps: 3, render: renderSections }, link: { steps: 4, render: renderLink }, tags: { steps: 4, render: renderTags },
+    fm1: { steps: 3, render: renderFM1 }, infl: { steps: 2, render: renderInfl }, fm2: { steps: 3, render: renderFM2 },
+    scope: { steps: 4, render: renderScope }, crit: { steps: 3, render: renderCrit }, fix: { steps: 3, render: renderFix },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

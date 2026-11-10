@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shader verification | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Shader verification">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Shader verification: how to check a shader change">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 8</p>
+      <h1 class="t-opening rise g2">Shader verification: how to check a shader change</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for proving a shader change does what it should, and for knowing what a headless run cannot show</p>
+      <div class="speaker-notes" hidden><p>Deck 6c of the topic order, third of three on shaders. 30 terms. Tags: in the book text means a chapter uses and explains it; in the glossary means a glossary row only; editor or docs means only official documentation. General toolchain terms (headless, claim versus evidence, pinned time step) are covered in the Walker and the toolchain deck, so they appear here only as they apply to shaders.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8; glossary, Shader verification; glossary, Toolchain; glossary, Agent workflow terms: verification.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The ladder: which rung is the claim on?">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Where a claim stands</p>
+      <h2 class="t-chart">The ladder: which rung is the claim on?</h2>
+      <div class="diagram build" data-build="ladder" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “The ladder of evidence for a shader change”; Chapter 6, mutation run; glossary, Shader verification.</p>
+      <div class="speaker-notes" hidden><p>Five rungs from Chapter 8, “The ladder of evidence for a shader change”. The missing-semicolon result is from Chapter 6: 11 checks and 25 of 25 passed while the log said SHADER ERROR.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Headless shows values, not how it looks">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Where a claim stands</p>
+      <h2 class="t-chart">Headless shows values, not how it looks</h2>
+      <div class="diagram build" data-build="head" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “The ladder of evidence” and “What we did not do”; glossary, Shader verification.</p>
+      <div class="speaker-notes" hidden><p>The four renders are a seeded simulation: two software renders match, two GPU renders differ by up to 1 per pixel. Chapter 8 says rung 5, what the GPU drew, needs a person with a display. The 7 bench checks are from the chapter’s run.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Controlled inputs, the bench and its fixture">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Inputs you fix</p>
+      <h2 class="t-chart">Controlled inputs, the bench and its fixture</h2>
+      <div class="diagram build" data-build="ctrl" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “Five families of plausible-but-incorrect change” and “The CPU model and the bench”; glossary, Shader verification; glossary, Agent workflow terms.</p>
+      <div class="speaker-notes" hidden><p>Alpha chart: right = alpha, doubled = alpha squared over black (Chapter 8, alpha convention). The largest gap is searched over 101 inputs. Model hex values follow Chapter 8’s table: body #dd775b, eyes #000000, flash #25354a.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Pin the clock and the seed">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Inputs you fix</p>
+      <h2 class="t-chart">Pin the clock and the seed</h2>
+      <div class="diagram build" data-build="pin" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “Controlled inputs in a headless Godot run”; Chapter 0, time trap; glossary, Shader verification; glossary, Toolchain.</p>
+      <div class="speaker-notes" hidden><p>Free-run frame rates are drawn from a seeded generator between 120 and 170 fps; Chapter 0 measured about 145. 33 frames is the seeded change’s fade length (Chapter 8). Max gaps are computed against the line 1 − t/0.55.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Colour or data: the decode changes the number">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Reading the output</p>
+      <h2 class="t-chart">Colour or data: the decode changes the number</h2>
+      <div class="diagram build" data-build="colour" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “Five families”, families 2 and 3; Chapter 7, “Colour versus data”; glossary, Shader verification.</p>
+      <div class="speaker-notes" hidden><p>Texel 128 decodes to 0.502 as data and 0.216 as sRGB colour. The flat normal (128,128,255) decoded as sRGB tilts 38.8° and lights at 0.779, matching Chapter 7 and Chapter 8. White at alpha 0.5 over black: 0.5 once, 0.25 twice.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Golden image, pixel diff and tolerance">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Reading the output</p>
+      <h2 class="t-chart">Golden image, pixel diff and tolerance</h2>
+      <div class="diagram build" data-build="golden" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Shader verification (golden image, reference image, per-platform reference); Chapter 8, Unity and Unreal comparisons; Unity Graphics Test Framework manual.</p>
+      <div class="speaker-notes" hidden><p>Two 16 × 16 images from a seeded generator: noise of up to 2 per pixel plus a 3 × 3 defect of +45. Drag the slider to change the tolerance; counts are computed from the 256 pixels. Pixel diff is not in the chapters; the idea is image comparison against a reference in Chapter 8’s Unity and Unreal sections.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Loose or tight: false passes and false fails">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Reading the output</p>
+      <h2 class="t-chart">Loose or tight: false passes and false fails</h2>
+      <div class="diagram build" data-build="fals" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Shader verification (false positive, false negative); Chapter 8, “Test the spec, not the implementation”.</p>
+      <div class="speaker-notes" hidden><p>30 good and 30 bad renders from a seeded generator, scored by their largest pixel difference. The numbers are illustrative; the counts are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Model, oracle and specification oracle">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Checks on the checker</p>
+      <h2 class="t-chart">Model, oracle and specification oracle</h2>
+      <div class="diagram build" data-build="oracle" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “Test the spec, not the implementation, and then test the test” and “The CPU model and the bench”; glossary, Shader verification.</p>
+      <div class="speaker-notes" hidden><p>Versions A, B and C of the fade, run against an oracle copied from the code and one taken from the spec. Chapter 8: the agent’s test expected 0.5 and got 0.969697 on the seeded change; here 1 − 1/33 = 0.9697.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Break it on purpose, test the test, check the diff">
+      <div class="rule"></div>
+      <span class="evidence">Computed; file list illustrative</span>
+      <p class="eyebrow">Checks on the checker</p>
+      <h2 class="t-chart">Break it on purpose, test the test, check the diff</h2>
+      <div class="diagram build" data-build="mut" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “Test the test” and Prompt 2; Chapter 6, mutation run; Chapter 4, mutation check; glossary, “Compress, read and tell apart”.</p>
+      <div class="speaker-notes" hidden><p>Oracle errors at 144 fps (0.0369 good, 0.569 seeded) are the chapter’s measured values; tolerances are computed. The semicolon result is Chapter 6. The file list in the diff is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8; Chapter 7; glossary, Shader verification.</p>
+      <div class="speaker-notes" hidden><p>Claim and evidence, false pass and false fail, frame count and game time, source_color and hint_normal.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8; glossary, Shader verification.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions. The sampled pixel values in the first chart are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a shader change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a shader change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 8, “What a pass proves” and “What it does not prove”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Shader verification (Chapter 8, with Chapter 6 and 7 facts) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = a chapter uses and explains it; gloss = glossary row only; editor = official docs only */
+  var T = {
+    ladder: { n: "Evidence ladder", tag: "book", m: "Five kinds of proof, each stronger than the last" },
+    claim: { n: "Claim versus evidence", tag: "book", m: "What is said works, versus a check that shows it" },
+    observed: { n: "Observed versus inferred", tag: "gloss", m: "Seen in your own run, versus guessed from it" },
+    compile: { n: "Compile error", tag: "gloss", m: "The shader fails to build and prints an error" },
+    headless: { n: "Headless mode", tag: "book", m: "A run with no window, so no pixels are drawn" },
+    swr: { n: "Software renderer", tag: "gloss", m: "Drawing on the CPU: same output on any machine" },
+    ctrl: { n: "Controlled input", tag: "book", m: "Every input fixed, so a run can be repeated" },
+    expose: { n: "Exposing input", tag: "book", m: "Where right and wrong answers are far apart" },
+    bench: { n: "Bench scene", tag: "book", m: "A scene made to be looked at, inputs fixed" },
+    fixture: { n: "Test fixture", tag: "gloss", m: "Fixed setup that a test starts from" },
+    pinned: { n: "Pinned clock", tag: "book", m: "A fixed frame rate: every frame the same length" },
+    seed: { n: "Random seed", tag: "gloss", m: "A fixed starting number so random results repeat" },
+    fcount: { n: "Frame counter", tag: "book", m: "A fade that counts frames, not game seconds" },
+    assertion: { n: "Assertion", tag: "gloss", m: "A statement a test requires to be true" },
+    srcc: { n: "source_color", tag: "book", m: "A hint: this texture holds colour, so decode it" },
+    flat: { n: "Flat normal texel", tag: "book", m: "The pixel (128, 128, 255): a surface facing out" },
+    premul: { n: "Premultiplied alpha", tag: "book", m: "Colour already multiplied by its alpha" },
+    golden: { n: "Golden image", tag: "gloss", alias: "also: reference image", m: "A saved correct picture to compare renders with" },
+    pixdiff: { n: "Pixel diff", tag: "editor", m: "A count of the pixels where two images differ" },
+    tol: { n: "Tolerance", tag: "book", m: "The allowed gap between expected and actual" },
+    perplat: { n: "Per-platform reference", tag: "book", m: "One reference per platform, as they differ slightly" },
+    fpos: { n: "False positive", tag: "gloss", alias: "also called a false pass", m: "A check passes though the thing is wrong" },
+    fneg: { n: "False negative", tag: "gloss", alias: "also called a false fail", m: "A check fails though the thing is right" },
+    cpu: { n: "CPU model", tag: "book", m: "The spec written as arithmetic that runs headless" },
+    oracle: { n: "Test oracle", tag: "book", m: "The source of the right answer a test compares to" },
+    specor: { n: "Specification oracle", tag: "book", m: "An oracle taken from the spec, not the code" },
+    mut: { n: "Mutation check", tag: "book", m: "Break the code on purpose; the test must fail" },
+    ttt: { n: "Test the test", tag: "book", m: "A new check must fail on bad code, pass on good" },
+    uni: { n: "Uniform value check", tag: "book", m: "Compare a shader input's value with the spec" },
+    scope: { n: "Scope violation", tag: "gloss", m: "Changing something the brief said not to touch" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function arrowHead(g, x, y, ang, s, col) {
+    var a = ang * DEG, p = [[0, 0], [-s, -s * 0.5], [-s, s * 0.5]].map(function (q) { return [x + q[0] * Math.cos(a) - q[1] * Math.sin(a), y + q[0] * Math.sin(a) + q[1] * Math.cos(a)]; });
+    g.append("path").attr("d", "M" + p.map(function (q) { return q.join(","); }).join("L") + "Z").attr("fill", col);
+  }
+
+  /* ---------- shared numbers ---------- */
+  function srgb2lin(c) { c = c / 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  function hex2(n) { return ("0" + Math.round(n + 1e-9).toString(16)).slice(-2); }
+  function hexOf(c) { return "#" + c.map(hex2).join(""); }
+  function mixc(a, b, t) { return a.map(function (v, i) { return v + (b[i] - v) * t; }); }
+  function rgbStr(c) { return "rgb(" + c.map(function (v) { return Math.round(v); }).join(",") + ")"; }
+  var BODY_C = [221, 119, 91], EYE_C = [0, 0, 0], FLASH_C = [37, 53, 74], CREAM = "#F6F3EC", SPEC = 0.55;
+  /* the frame-counted fade of the seeded change, against the spec line 1 - t/0.55 */
+  function counterRun(fps) {
+    var N = Math.floor(SPEC * fps + 1e-9), gap = 0, pts = [];
+    for (var n = 1; n <= N; n++) {
+      var t = n / fps, f = Math.max(0, 1 - n / 33), id = Math.max(0, 1 - t / SPEC);
+      gap = Math.max(gap, Math.abs(f - id)); pts.push([t, f, id]);
+    }
+    return { fps: fps, N: N, gap: gap, tol: 1 / (fps * SPEC), pts: pts, ok: gap <= 1 / (fps * SPEC) + 1e-9 };
+  }
+  /* 16 x 16 grey images */
+  var NPX = 16;
+  function mkGold() {
+    var a = [];
+    for (var y = 0; y < NPX; y++) for (var x = 0; x < NPX; x++) {
+      var v = 40 + x * 6 + y * 3, d = Math.hypot(x - 8.5, y - 7.5);
+      if (d < 4.2) v = 210 - d * 8;
+      a.push(Math.round(v));
+    }
+    return a;
+  }
+  function addNoise(g, seed, amp) {
+    var r = rng(seed);
+    return g.map(function (v) { return Math.max(0, Math.min(255, v + Math.floor(r() * (2 * amp + 1)) - amp)); });
+  }
+  var GOLD = mkGold(), DEFECT = [];
+  var NEWR = addNoise(GOLD, 11, 2);
+  for (var dy = 10; dy < 13; dy++) for (var dx = 3; dx < 6; dx++) { NEWR[dy * NPX + dx] = Math.min(255, GOLD[dy * NPX + dx] + 45); DEFECT.push(dy * NPX + dx); }
+  function diffOf(a, b) { return a.map(function (v, i) { return Math.abs(v - b[i]); }); }
+  var DIFF = diffOf(NEWR, GOLD);
+  function countOver(D, t) { return D.filter(function (v) { return v > t; }).length; }
+  function defectOver(t) { return DEFECT.filter(function (i) { return DIFF[i] > t; }).length; }
+  function fnv(a) { var h = 2166136261; a.forEach(function (v) { h ^= v; h = Math.imul(h, 16777619) >>> 0; }); return ("00000000" + h.toString(16)).slice(-8); }
+  function gridImg(g, x, y, cell, arr, colorFn) {
+    var gg = g.append("g").attr("transform", "translate(" + x + "," + y + ")");
+    arr.forEach(function (v, i) { gg.append("rect").attr("x", (i % NPX) * cell).attr("y", Math.floor(i / NPX) * cell).attr("width", cell).attr("height", cell).attr("fill", colorFn(v, i)); });
+    gg.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", NPX * cell).attr("height", NPX * cell).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+    return gg;
+  }
+  function grayFn(v) { var s = Math.round(v); return "rgb(" + s + "," + s + "," + s + ")"; }
+  /* strip plot data for the tolerance trade-off: max pixel difference of 30 good and 30 bad renders */
+  var GOODM = [], BADM = [];
+  (function () {
+    var r = rng(77);
+    for (var i = 0; i < 30; i++) { GOODM.push(Math.floor(1 + 7 * r() * r() * 1.6 + r() * 2)); }
+    for (var j = 0; j < 30; j++) { BADM.push(Math.floor(3 + 12 * Math.pow(r(), 0.85))); }
+  })();
+  function fpCount(th) { return BADM.filter(function (v) { return v <= th; }).length; }
+  function fnCount(th) { return GOODM.filter(function (v) { return v > th; }).length; }
+
+  var MAPROWS = [
+    ["Where a claim stands", "evidence ladder, claim versus evidence, observed versus inferred, compile error, headless mode, software renderer", "What a check can and cannot show"],
+    ["Inputs you fix", "controlled input, exposing input, bench scene, test fixture, pinned clock, random seed, frame counter", "Making a run repeatable and revealing"],
+    ["Reading the output", "golden image, pixel diff, tolerance, per-platform reference, false positive, false negative, source_color, flat normal texel, premultiplied alpha", "Comparing pixels and values"],
+    ["Checks on the checker", "CPU model, test oracle, specification oracle, assertion, mutation check, test the test, uniform value check, scope violation", "Trusting the test itself"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of shader-verification terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "30 terms from Chapter 8 and the glossary. Every one is about proving a shader change does what it should, and saying what proof is missing.", 100, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1050];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 126, row = g.append("g");
+      box(row, 0, y, 1400, 114, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 115).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 20, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 36, r[1], 58, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 36, r[2], 26, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 470, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. The ladder ---------- */
+  var RUNGS = [["1. Parse", "headless: yes"], ["2. Contract", "headless: yes"], ["3. Driver", "headless: yes"], ["4. Model", "headless: yes"], ["5. Observation", "headless: no"]];
+  function renderLadder(el, k, anim) {
+    var svg = svgFor(el, W, H, "A claim stands on one rung of the evidence ladder", "Five rungs from parse to observation. Only the top rung needs a person with a screen. A broken shader can pass a green suite.");
+    var ey = base(svg, [{ id: "ladder", s: 1 }, { id: "claim", s: 2 }, { id: "observed", s: 3 }, { id: "compile", s: 4 }], k, anim, ["Claim", "“It compiles.”"], ["Evidence", "0 SHADER ERROR lines in the log"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    lab(d, 0, 30, "THE LADDER FOR A SHADER CHANGE");
+    RUNGS.forEach(function (r, i) {
+      var y = 38 + (4 - i) * 58, g = d.append("g"), hi = (kk === 2 || kk === 4) && i === 0;
+      var obs = kk === 3, top = i === 4;
+      box(g, 0, y, 740, 50, { stroke: hi ? RED : (obs && top ? RED : INK), sw: hi || (obs && top) ? 3 : 2, fill: obs && !top ? INK : "#FFFFFF" });
+      cap(g, 14, y + 34, r[0], { size: 26, weight: 700, fill: obs && !top ? "#FFFFFF" : (hi ? RED : INK) });
+      var right = obs ? (top ? "not observed" : "observed") : r[1];
+      cap(g, 726, y + 34, right, { size: 24, anchor: "end", fill: obs ? (top ? RED : "#FFFFFF") : (top ? RED : MUTED), weight: obs ? 700 : 400 });
+      if (an && i === 0 && kk === 2) fade(g, true, 0);
+    });
+    var by = 350;
+    if (kk === 1) { cap(d, 0, by, "Each rung proves something the rung below cannot.", { size: 24, weight: 700 }); cap(d, 0, by + 38, "Four rungs run headless. The top one needs a screen and a person.", { size: 24, fill: MUTED }); }
+    if (kk === 2) { cap(d, 0, by, "Claim: “it compiles”. Evidence: 0 SHADER ERROR lines.", { size: 24, weight: 700, fill: RED }); cap(d, 0, by + 38, "That is rung 1. It says nothing about rungs 2 to 5.", { size: 24, fill: MUTED }); }
+    if (kk === 3) { cap(d, 0, by, "Rungs 1 to 4 were run and printed. Rung 5 was inferred", { size: 24, weight: 700 }); cap(d, 0, by + 38, "from Godot's definition of COLOR. Nobody saw the pixels.", { size: 24, weight: 700, fill: RED }); }
+    if (kk === 4) {
+      var lg = d.append("g"); box(lg, 0, by - 26, 740, 128, { stroke: INK, sw: 2 });
+      mono(lg, 14, by + 8, "SHADER ERROR: Expected a ';'.", { size: 24, fill: RED, weight: 700 });
+      mono(lg, 14, by + 44, "test_flash.gd: exit 0, 11 checks pass", { size: 24 });
+      mono(lg, 14, by + 80, "test_game.gd: 25 of 25 pass", { size: 24 });
+      fade(lg, an, 0);
+      cap(d, 0, by + 138, "One missing semicolon, and the suite stayed green.", { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Five rungs. Each proves something the rung below cannot. Say which rung a claim stands on.", "“It compiles” is a claim. Zero SHADER ERROR lines is the evidence, and it proves rung 1 only.", "Observed means it happened in a run you can show. A guess from the documentation is inferred.", "In Chapter 6 a shader with one semicolon removed passed every check. Only the log showed the error."][k]);
+  }
+
+  /* ---------- 2. Headless and software renderer ---------- */
+  function renderHead(el, k, anim) {
+    var svg = svgFor(el, W, H, "A headless run checks values; only a screen shows how it looks", "Two panels: what a headless run can print, and what only a GPU draws. Then four renders of one image: two on the CPU that match and two on GPUs that differ in the last digit.");
+    var ey = base(svg, [{ id: "headless", s: 1 }, { id: "swr", s: 2 }], k, anim, ["Headless mode", "checks values and logic"], ["Software renderer", "CPU pixels, same on any machine"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk === 1) {
+      lab(d, 0, 30, "HEADLESS (NO WINDOW)");
+      box(d, 0, 40, 360, 330, { stroke: INK, sw: 3 }); lab(d, 14, 78, "CAN PRINT", { fill: INK });
+      var mid = hexOf(mixc(BODY_C, FLASH_C, 0.5));
+      ["uniform list: 1 item", "flash_amount each frame", "CPU model: " + mid, "bench built: 7 checks"].forEach(function (s, i) { var g = d.append("g"); cap(g, 14, 126 + i * 58, s, { size: 24 }); check(g, 330, 118 + i * 58, 11, INK); fade(g, an, i * 250); });
+      lab(d, 400, 30, "GPU DRAWS PIXELS", { fill: RED });
+      box(d, 400, 40, 360, 330, { stroke: RED, sw: 3 }); lab(d, 414, 78, "CANNOT SHOW", { fill: RED });
+      ["body pixel colour", "eye pixel colour", "does it look right"].forEach(function (s, i) { var g = d.append("g"); cap(g, 414, 126 + i * 58, s, { size: 24 }); cross(g, 730, 118 + i * 58, 9, RED); fade(g, an, 700 + i * 250); });
+      cap(d, 0, 430, "A dummy renderer draws nothing. The numbers are real;", { size: 24, weight: 700 });
+      cap(d, 0, 468, "the picture needs a person at a display.", { size: 24, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "ONE SHADER, FOUR RENDERS");
+      var A_ = GOLD, B_ = GOLD, GA = addNoise(GOLD, 5, 1), GB = addNoise(GOLD, 6, 1);
+      var R = [["software A", A_], ["software B", B_], ["GPU A", GA], ["GPU B", GB]], ha = fnv(A_);
+      R.forEach(function (r, i) {
+        var x = i * 200, g = d.append("g");
+        gridImg(g, x, 44, 10, r[1], grayFn);
+        cap(g, x + 80, 252, r[0], { size: 24, anchor: "middle", weight: 700 });
+        mono(g, x + 80, 292, fnv(r[1]), { size: 24, anchor: "middle" });
+        var df = countOver(diffOf(r[1], A_), 0);
+        cap(g, x + 80, 332, df ? df + " px differ" : "same as A", { size: 24, anchor: "middle", fill: df ? RED : INK, weight: 700 });
+        fade(g, an, i * 300);
+      });
+      cap(d, 0, 400, "A software renderer draws on the CPU: identical pixels everywhere.", { size: 24 });
+      cap(d, 0, 438, "Two GPUs can differ in the last digit: compare with a tolerance.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Headless means no window. It can print values and logic. It cannot judge how the shader looks on a GPU.", "A software renderer draws on the CPU, so its output is identical on every machine. GPUs may differ slightly."][k]);
+  }
+
+  /* ---------- 3. Controlled input, exposing input, bench, fixture ---------- */
+  function clawd(g, x, y, s, amt, label) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") scale(" + s + ")");
+    c.append("rect").attr("x", 0).attr("y", 0).attr("width", 200).attr("height", 150).attr("fill", CREAM).attr("stroke", FAMILIAR).attr("stroke-width", 2 / s);
+    c.append("rect").attr("x", 40).attr("y", 30).attr("width", 120).attr("height", 90).attr("fill", rgbStr(mixc(BODY_C, FLASH_C, amt)));
+    [68, 112].forEach(function (ex) { c.append("rect").attr("x", ex).attr("y", 52).attr("width", 20).attr("height", 28).attr("fill", rgbStr(mixc(EYE_C, FLASH_C, amt))); });
+    return c;
+  }
+  function renderCtrl(el, k, anim) {
+    var svg = svgFor(el, W, H, "Fix the inputs, and choose ones where right and wrong differ", "A chart of right and doubled alpha over black, with the gap largest at half alpha. Then a bench of three Clawds and a list of what its fixture fixes.");
+    var ey = base(svg, [{ id: "ctrl", s: 1 }, { id: "expose", s: 2 }, { id: "bench", s: 3 }, { id: "fixture", s: 4 }], k, anim, ["Bench scene", "looked at by a person"], ["Test fixture", "setup a test starts from"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk <= 2) {
+      lab(d, 0, 30, "OUTPUT OVER BLACK, BY ALPHA");
+      var x0 = 70, y0 = 370, w = 640, h = 290, X = function (a) { return x0 + a * w; }, Y = function (v) { return y0 - v * h; };
+      d.append("path").attr("d", "M" + x0 + "," + (y0 - h) + " V" + y0 + " H" + (x0 + w)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      [0, 0.5, 1].forEach(function (a) { cap(d, X(a), y0 + 30, a.toFixed(1), { size: 24, anchor: "middle" }); });
+      cap(d, x0 - 10, y0 + 6, "0", { size: 24, anchor: "end" }); cap(d, x0 - 10, y0 - h + 8, "1", { size: 24, anchor: "end" });
+      cap(d, X(0.5), y0 + 62, "input: alpha", { size: 24, anchor: "middle", fill: MUTED });
+      var pts = d3.range(0, 1.0001, 0.02), line = d3.line().x(function (a) { return X(a); });
+      d.append("path").attr("d", line.y(function (a) { return Y(a); })(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+      var wp = d.append("path").attr("d", line.y(function (a) { return Y(a * a); })(pts)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      if (an && kk === 1) drawIn(wp, 0, 900);
+      cap(d, X(0.04), Y(0.9), "right: alpha", { size: 24, weight: 700 }); cap(d, X(0.04), Y(0.9) + 32, "applied twice: alpha × alpha", { size: 24, weight: 700, fill: RED });
+      if (kk >= 2) {
+        var best = 0, ba = 0; d3.range(0, 1.0001, 0.01).forEach(function (a) { var gp = a - a * a; if (gp > best + 1e-12) { best = gp; ba = a; } });
+        var g2 = d.append("g");
+        g2.append("path").attr("d", "M" + X(ba) + "," + Y(ba) + " V" + Y(ba * ba)).attr("stroke", INK).attr("stroke-width", 6);
+        [0, 1].forEach(function (a) { g2.append("circle").attr("cx", X(a)).attr("cy", Y(a)).attr("r", 10).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+        cap(g2, X(0) + 22, Y(0) - 14, "gap 0: hidden", { size: 24 }); cap(g2, X(1) - 18, Y(1) + 36, "gap 0: hidden", { size: 24, anchor: "end" });
+        cap(g2, X(ba) + 18, (Y(ba) + Y(ba * ba)) / 2 + 8, "gap " + best.toFixed(2), { size: 24, weight: 700, fill: RED });
+        fade(g2, an && kk === 2, 0);
+        cap(d, 0, 460, "Largest gap at alpha = " + ba.toFixed(2) + " (searched 101 inputs).", { size: 24, weight: 700, fill: RED });
+        cap(d, 0, 498, "At alpha 0 or 1 the bug cannot show.", { size: 24, fill: MUTED });
+      } else { cap(d, 0, 460, "Every input is fixed. Only alpha is changed, one value at a time.", { size: 24, weight: 700 }); }
+    } else if (kk === 3) {
+      lab(d, 0, 30, "THE BENCH: THREE CLAWDS, FIXED flash_amount");
+      [0, 0.5, 1].forEach(function (a, i) {
+        var x = i * 270, g = d.append("g"); clawd(g, x, 50, 1.2, a);
+        cap(g, x + 120, 270, "flash_amount " + a.toFixed(1), { size: 24, anchor: "middle", weight: 700 });
+        mono(g, x + 120, 312, "body " + hexOf(mixc(BODY_C, FLASH_C, a)), { size: 24, anchor: "middle" });
+        mono(g, x + 120, 348, "eyes " + hexOf(mixc(EYE_C, FLASH_C, a)), { size: 24, anchor: "middle" });
+        fade(g, an, i * 300);
+      });
+      cap(d, 0, 420, "Hex values are the CPU model of the spec: mix(vertex, flash, amount).", { size: 24 });
+      cap(d, 0, 458, "A person samples the screenshot and compares with them.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "WHAT THE FIXTURE FIXES");
+      [0, 0.5, 1].forEach(function (a, i) { clawd(d, i * 270, 40, 0.8, a); });
+      var items = ["three copies, flash_amount 0.0, 0.5, 1.0", "background fixed at #f6f3ec", "no timers and no input", "7 headless checks pass, none reads a pixel"];
+      items.forEach(function (s, i) { var g = d.append("g"); check(g, 16, 238 + i * 54 - 8, 11, RED); cap(g, 44, 238 + i * 54, s, { size: 24, weight: i === 3 ? 700 : 400 }); fade(g, an, i * 250); });
+      cap(d, 0, 500, "The fixture makes the run repeat. It does not judge the look.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A controlled input fixes everything but the value under test, so the run repeats.", "An exposing input is where right and wrong differ most. At alpha 0 or 1 both give the same pixel.", "A bench is a scene made to be looked at: fixed inputs, a screenshot, a colour picker.", "The fixture is the fixed setup. A test can check it was built right; only a person checks what it shows."][k]);
+  }
+
+  /* ---------- 4. Pinned clock, seed, frame counter, assertion ---------- */
+  function renderPin(el, k, anim) {
+    var svg = svgFor(el, W, H, "Pin the clock and the seed; then a counter is testable", "Bars of how long 33 frames take, free-running against pinned. Then three random sequences. Then a frame counter fading as frames pass, and the check at three frame rates.");
+    var ey = base(svg, [{ id: "pinned", s: 1 }, { id: "seed", s: 2 }, { id: "fcount", s: 3 }, { id: "assertion", s: 4 }], k, anim, ["Frame counter", "counts frames"], ["Game time", "counts seconds of the game"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk === 1) {
+      lab(d, 0, 30, "HOW LONG DID 33 FRAMES TAKE? (SECONDS)");
+      var r = rng(145), sc = 560 / 0.6;
+      for (var i = 0; i < 6; i++) {
+        var pinned = i >= 3, fps = pinned ? 60 : 120 + r() * 50, secs = 33 / fps, y = 50 + i * 62 + (pinned ? 20 : 0), g = d.append("g");
+        cap(g, 0, y + 32, pinned ? "pinned " + (i - 2) : "free " + (i + 1), { size: 24, weight: 700, fill: pinned ? INK : RED });
+        bar(g, 140, y + 8, secs * sc, 36, pinned ? INK : RED, an, i * 150);
+        cap(g, 140 + secs * sc + 12, y + 34, secs.toFixed(2) + " s", { size: 24, weight: 700 });
+      }
+      cap(d, 0, 470, "Free-running: the same 33 frames take a different time each run.", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 508, "Pinned at --fixed-fps 60: always 33 / 60 = 0.55 s.", { size: 24, weight: 700 });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "TWELVE RANDOM VALUES PER RUN");
+      var rows = [["seed 7375, run 1", rng(7375)], ["seed 7375, run 2", rng(7375)], ["different seed, run 3", rng(91)]], first = null;
+      rows.forEach(function (rw, i) {
+        var vals = d3.range(12).map(function () { return rw[1](); }), y = 50 + i * 150, g = d.append("g");
+        if (!first) first = vals;
+        var same = vals.every(function (v, j) { return v === first[j]; });
+        cap(g, 0, y + 20, rw[0] + (i ? (same ? ": same as run 1" : ": differs from run 1") : ""), { size: 24, weight: 700, fill: i && !same ? RED : INK });
+        vals.forEach(function (v, j) { bar(g, j * 60, y + 100 - v * 70, 44, v * 70, same ? INK : RED, an, j * 40); });
+      });
+    } else {
+      var lx = 70, ly = 360, lw = 640, lh = 280, X = function (t) { return lx + t / SPEC * lw; }, Y = function (v) { return ly - v * lh; };
+      lab(d, 0, 30, kk === 3 ? "FRAME COUNTER AT 60 FPS: flash = 1 − n / 33" : "COUNTER (RED) AGAINST SPEC LINE (BLACK)");
+      if (kk === 3) {
+        d.append("path").attr("d", "M" + lx + "," + (ly - lh) + " V" + ly + " H" + (lx + lw)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+        cap(d, lx - 10, ly + 6, "0", { size: 24, anchor: "end" }); cap(d, lx - 10, ly - lh + 8, "1", { size: 24, anchor: "end" });
+        cap(d, X(0), ly + 30, "0 s", { size: 24, anchor: "middle" }); cap(d, X(SPEC), ly + 30, "0.55 s", { size: 24, anchor: "end" });
+        d.append("path").attr("d", "M" + X(0) + "," + Y(1) + " L" + X(SPEC) + "," + Y(0)).attr("stroke", INK).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+        var dots = d.append("g"), t1 = cap(d, 0, 430, "", { size: 26, weight: 700 }), t2 = cap(d, 0, 468, "", { size: 24 });
+        var c60 = counterRun(60);
+        run(d, 3600, function (t) {
+          var n = Math.round(t * 33); dots.selectAll("*").remove();
+          c60.pts.slice(0, n).forEach(function (p) { dots.append("circle").attr("cx", X(p[0])).attr("cy", Y(p[1])).attr("r", 6).attr("fill", RED); });
+          t1.text("frame n = " + n + " · t = n / 60 = " + (n / 60).toFixed(3) + " s"); t2.text("flash = 1 − " + n + " / 33 = " + Math.max(0, 1 - n / 33).toFixed(3));
+        }, an);
+        cap(d, 0, 520, "33 frames last 1.10 s at 30 fps, 0.55 s at 60, 0.23 s at 144.", { size: 24, fill: RED, weight: 700 });
+      } else {
+        [30, 60, 144].forEach(function (fps, i) {
+          var c = counterRun(fps), y = 28 + i * 172, g = d.append("g"), pw = 560, ph = 110, px = 130, PX = function (t) { return px + t / SPEC * pw; }, PY = function (v) { return y + 20 + ph - v * ph; };
+          cap(g, 0, y + 80, fps + " fps", { size: 24, weight: 700 });
+          g.append("path").attr("d", "M" + px + "," + (y + 20) + " V" + (y + 20 + ph) + " H" + (px + pw)).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+          g.append("path").attr("d", "M" + PX(0) + "," + PY(1) + " L" + PX(SPEC) + "," + PY(0)).attr("stroke", INK).attr("stroke-width", 3);
+          c.pts.forEach(function (p) { g.append("circle").attr("cx", PX(p[0])).attr("cy", PY(p[1])).attr("r", fps > 100 ? 3 : 5).attr("fill", RED); });
+          cap(g, px, y + 20 + ph + 38, "max gap " + c.gap.toFixed(3) + ", tolerance " + c.tol.toFixed(3) + ": " + (c.ok ? "PASS" : "FAIL"), { size: 24, weight: 700, fill: c.ok ? INK : RED });
+          fade(g, an, i * 400);
+        });
+      }
+    }
+    note(svg, ey, ["", "Pinning the clock gives every frame the same length, so the run repeats. Free-running, it does not.", "A random seed does the same for random values: same seed, same sequence.", "A frame counter measures frames, not seconds. At exactly 60 fps it matches the spec line.", "The assertion is: flash stays within one frame of the line. It holds at 60 fps and fails at 30 and 144."][k]);
+  }
+
+  /* ---------- 5. Colour space ---------- */
+  function renderColour(el, k, anim) {
+    var svg = svgFor(el, W, H, "Colour or data? The decode changes the number", "A decode curve with the texel 128 read two ways. Then a flat normal tilting 38.8 degrees when decoded wrongly. Then white at half alpha over black, blended once and twice.");
+    var ey = base(svg, [{ id: "srcc", s: 1 }, { id: "flat", s: 2 }, { id: "premul", s: 3 }], k, anim, ["source_color", "decode this texture as colour"], ["hint_normal", "keep it as data: a normal map"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk === 1) {
+      lab(d, 0, 30, "ONE STORED VALUE, TWO READINGS");
+      var x0 = 70, y0 = 360, w = 640, h = 290, X = function (c) { return x0 + c / 255 * w; }, Y = function (v) { return y0 - v * h; };
+      d.append("path").attr("d", "M" + x0 + "," + (y0 - h) + " V" + y0 + " H" + (x0 + w)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      cap(d, X(0), y0 + 30, "0", { size: 24, anchor: "middle" }); cap(d, X(255), y0 + 30, "255", { size: 24, anchor: "end" }); cap(d, x0 - 10, y0 - h + 8, "1", { size: 24, anchor: "end" });
+      var pts = d3.range(0, 256, 5).concat([255]), ln = d3.line().x(function (c) { return X(c); });
+      d.append("path").attr("d", ln.y(function (c) { return Y(c / 255); })(pts)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      var cp = d.append("path").attr("d", ln.y(function (c) { return Y(srgb2lin(c)); })(pts)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      if (an) drawIn(cp, 0, 900);
+      var dv = 128 / 255, cv = srgb2lin(128);
+      d.append("path").attr("d", "M" + X(128) + "," + y0 + " V" + Y(dv)).attr("stroke", INK).attr("stroke-width", 2).attr("stroke-dasharray", "4 4");
+      [[dv, INK], [cv, RED]].forEach(function (p) { d.append("circle").attr("cx", X(128)).attr("cy", Y(p[0])).attr("r", 9).attr("fill", p[1]); });
+      cap(d, X(128) - 20, Y(dv) - 14, "as data: " + dv.toFixed(3), { size: 24, weight: 700, anchor: "end" });
+      cap(d, X(128) + 20, Y(cv) + 34, "as colour: " + cv.toFixed(3), { size: 24, weight: 700, fill: RED });
+      cap(d, X(128) + 8, y0 + 62, "stored 128 of 255", { size: 24, anchor: "middle", fill: MUTED });
+      cap(d, 0, 470, "A colour texture is sRGB-encoded; the renderer must decode it.", { size: 24 });
+      cap(d, 0, 508, "Data such as a normal must be read as it is stored.", { size: 24, fill: MUTED });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "FLAT NORMAL (128,128,255), LIT FROM ABOVE");
+      function dec(f) { var nx = f(128) * 2 - 1, nz = f(255) * 2 - 1, len = Math.hypot(nx, nx, nz); return { lit: nz / len, tilt: Math.acos(nz / len) / DEG }; }
+      var P = [["READ LINEARLY", dec(function (c) { return c / 255; }), INK], ["DECODED AS sRGB", dec(srgb2lin), RED]];
+      P.forEach(function (p, i) {
+        var cx = 190 + i * 380, g = d.append("g");
+        lab(g, cx, 62, p[0], { anchor: "middle", fill: p[2] });
+        [-80, 0, 80].forEach(function (lx) { g.append("path").attr("d", "M" + (cx + lx) + ",100 V160").attr("stroke", GREY).attr("stroke-width", 3); arrowHead(g, cx + lx, 160, 90, 12, GREY); });
+        var s = g.append("g").attr("transform", "translate(" + cx + ",300)");
+        var body = s.append("g");
+        body.append("path").attr("d", "M-110,0 H110").attr("stroke", INK).attr("stroke-width", 5);
+        body.append("path").attr("d", "M0,0 V-110").attr("stroke", p[2]).attr("stroke-width", 5); arrowHead(body, 0, -110, -90, 14, p[2]);
+        run(g, 1400, function (t) { body.attr("transform", "rotate(" + (-p[1].tilt * t) + ")"); }, an && i === 1);
+        if (!(an && i === 1)) body.attr("transform", "rotate(" + (-p[1].tilt) + ")");
+        cap(g, cx, 370, "tilt " + p[1].tilt.toFixed(1) + "°", { size: 24, anchor: "middle", weight: 700, fill: p[2] });
+        cap(g, cx, 406, "lit at " + p[1].lit.toFixed(3), { size: 24, anchor: "middle", weight: 700, fill: p[2] });
+        g.append("rect").attr("x", cx - 60).attr("y", 424).attr("width", 120).attr("height", 40).attr("fill", grayFn(p[1].lit * 255)).attr("stroke", INK).attr("stroke-width", 2);
+      });
+      cap(d, 0, 516, "A flat surface should light at 1.000. The wrong decode lights it at 0.779.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 30, "WHITE AT ALPHA 0.5 OVER BLACK");
+      var al = 0.5, once = 1 * al + 0 * (1 - al), twice = (1 * al) * al + 0 * (1 - al);
+      [["blend_mix, colour as is", once, INK, "result " + once.toFixed(2)], ["RGB × alpha, then blend_mix", twice, RED, "result " + twice.toFixed(2)]].forEach(function (p, i) {
+        var x = i * 400, g = d.append("g");
+        g.append("rect").attr("x", x).attr("y", 50).attr("width", 340).attr("height", 200).attr("fill", "#000000");
+        g.append("rect").attr("x", x + 70).attr("y", 80).attr("width", 200).attr("height", 140).attr("fill", grayFn(p[1] * 255));
+        g.append("rect").attr("x", x + 0.5).attr("y", 50.5).attr("width", 340).attr("height", 200).attr("fill", "none").attr("stroke", p[2]).attr("stroke-width", 3);
+        cap(g, x + 170, 296, p[0], { size: 24, anchor: "middle", weight: 700, fill: p[2] }); cap(g, x + 170, 336, p[3], { size: 26, anchor: "middle", weight: 700, fill: p[2] });
+        fade(g, an, i * 400);
+      });
+      cap(d, 0, 420, "Alpha is applied once by the blend. Doing it in the colour too", { size: 24 });
+      cap(d, 0, 458, "applies it twice: half the brightness it should have.", { size: 24 });
+      cap(d, 0, 506, "blend_premul_alpha is the mode that expects premultiplied colour.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "The source_color hint says a texture holds colour, so Godot decodes it. A normal map must not get it.", "Decode the flat normal texel as sRGB and the surface tilts 38.8°, lit at 0.779 instead of 1.0.", "Premultiplied colour is already multiplied by alpha. With blend_mix, alpha then applies twice."][k]);
+  }
+
+  /* ---------- 6. Golden image, pixel diff, tolerance, per-platform ---------- */
+  function renderGolden(el, k, anim) {
+    var svg = svgFor(el, W, H, "Compare a new render with the golden image, pixel by pixel", "Two 16 by 16 images and their per-pixel difference, with a tolerance slider that changes how many pixels count as different. Then three platforms checked against one reference and against their own.");
+    var ey = base(svg, [{ id: "golden", s: 1 }, { id: "pixdiff", s: 2 }, { id: "tol", s: 3 }, { id: "perplat", s: 4 }], k, anim, ["Golden image", "the saved correct picture"], ["Pixel diff", "where a new render departs"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk <= 3) {
+      var C = 14, xs = [0, 268, 536];
+      lab(d, 0, 30, "16 × 16 IMAGES: GOLDEN, NEW RENDER, DIFFERENCE");
+      gridImg(d, xs[0], 40, C, GOLD, grayFn); cap(d, xs[0] + 112, 292, "golden", { size: 24, anchor: "middle", weight: 700 });
+      if (kk === 1) {
+        d.append("rect").attr("x", xs[1] + 0.5).attr("y", 40.5).attr("width", 224).attr("height", 224).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+        cap(d, xs[1] + 112, 160, "next render", { size: 24, anchor: "middle", fill: MUTED });
+        cap(d, 0, 360, "Saved once, after a person checked it. Every later render", { size: 24 });
+        cap(d, 0, 398, "is compared with it. A reference image is the same idea.", { size: 24, fill: MUTED });
+      } else {
+        gridImg(d, xs[1], 40, C, NEWR, grayFn); cap(d, xs[1] + 112, 292, "new render", { size: 24, anchor: "middle", weight: 700 });
+        var dg = d.append("g"), lbl = cap(d, xs[2] + 112, 292, "diff map", { size: 24, anchor: "middle", weight: 700 });
+        var dyn = d.append("g"), tolG = d.append("g");
+        function update(t) {
+          dg.selectAll("*").remove(); dyn.selectAll("*").remove();
+          gridImg(dg, xs[2], 40, C, DIFF, function (v) { return v > t ? RED : (v > 0 ? "#DDDDDD" : "#FFFFFF"); });
+          var c = countOver(DIFF, t), dc = defectOver(t);
+          cap(dyn, 0, 340, "tolerance " + t + " (of 255 per pixel)", { size: 24, weight: 700 });
+          cap(dyn, 0, 378, "pixels over tolerance: " + c + " of 256", { size: 26, weight: 700, fill: c ? RED : INK });
+          cap(dyn, 0, 416, "of the 9 real-defect pixels, flagged: " + dc, { size: 24, fill: dc === 9 ? INK : RED, weight: 700 });
+        }
+        if (kk === 2) update(0);
+        else {
+          var tx = 0, tw = 740, ty = 500, TX = function (t) { return tx + t / 48 * tw; };
+          tolG.append("rect").attr("x", tx).attr("y", ty - 4).attr("width", tw).attr("height", 8).attr("fill", FAMILIAR);
+          var hnd = tolG.append("circle").attr("cy", ty).attr("r", 16).attr("fill", RED).attr("stroke", INK).attr("stroke-width", 3).style("cursor", "ew-resize");
+          cap(tolG, 0, ty + 44, "0", { size: 24 }); cap(tolG, tw, ty + 44, "48", { size: 24, anchor: "end" }); cap(tolG, tw / 2, ty + 44, "drag to change the tolerance", { size: 24, anchor: "middle", fill: MUTED });
+          function setT(t) { t = Math.max(0, Math.min(48, Math.round(t))); hnd.attr("cx", TX(t)); update(t); }
+          var hit = tolG.append("rect").attr("x", tx - 20).attr("y", ty - 30).attr("width", tw + 40).attr("height", 60).attr("fill", "transparent").style("cursor", "ew-resize").style("touch-action", "none");
+          function pos(ev) { var r = svg.node().getBoundingClientRect(), s = r.width / 1400; return (ev.clientX - r.left) / s; }
+          hit.on("click", function (ev) { ev.stopPropagation(); });
+          hit.on("pointerdown", function (ev) { ev.stopPropagation(); hit.node().setPointerCapture(ev.pointerId); hit.attr("data-drag", 1); setT((pos(ev) - tx) / tw * 48); });
+          hit.on("pointermove", function (ev) { if (hit.attr("data-drag")) setT((pos(ev) - tx) / tw * 48); });
+          hit.on("pointerup", function (ev) { hit.attr("data-drag", null); });
+          if (an) run(tolG, 5200, function (t) { setT(kf(t, [0, 12, 46, 2])); }, true); else setT(2);
+        }
+      }
+    } else {
+      lab(d, 0, 30, "PIXELS DIFFERING FROM A'S GOLDEN (OF 256)");
+      var plats = [["platform A", GOLD], ["platform B", addNoise(GOLD, 21, 1)], ["platform C", addNoise(GOLD, 33, 1)]];
+      plats.forEach(function (p, i) {
+        var y = 56 + i * 140, g = d.append("g"), c = countOver(diffOf(p[1], GOLD), 0), sc = 460 / 256;
+        cap(g, 0, y + 24, p[0], { size: 24, weight: 700 });
+        bar(g, 200, y + 2, Math.max(c * sc, 4), 30, c ? RED : INK, an, i * 300); cap(g, 200 + Math.max(c * sc, 4) + 12, y + 28, c + " px vs A's golden", { size: 24, weight: 700, fill: c ? RED : INK });
+        bar(g, 200, y + 52, 4, 30, INK, an, i * 300 + 200); cap(g, 216, y + 78, "0 px vs its own reference", { size: 24 });
+        fade(g, an, i * 300);
+      });
+      cap(d, 0, 500, "Same shader, three platforms. Each needs its own reference.", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "A golden image is the saved correct output. New renders are compared with it.", "A pixel diff counts the pixels where two images differ. At tolerance 0 even tiny noise is counted.", "A tolerance ignores small differences. Too low flags noise; too high hides the 3 × 3 defect.", "Different platforms differ slightly, so each keeps its own reference image."][k]);
+  }
+
+  /* ---------- 7. False positive / false negative ---------- */
+  function renderFalse(el, k, anim) {
+    var svg = svgFor(el, W, H, "Where you set the tolerance decides which mistake you make", "A strip of 30 good and 30 bad renders by their largest pixel difference, with a threshold line. Bad renders under the line are false passes; good renders over it are false fails.");
+    var ey = base(svg, [{ id: "fpos", s: 1 }, { id: "fneg", s: 2 }], k, anim, ["Tolerance too loose", "lets a real bug through"], ["Tolerance too tight", "rejects good renders"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    lab(d, 0, 30, "LARGEST PIXEL DIFFERENCE, 30 GOOD, 30 BAD");
+    var x0 = 30, xw = 700, X = function (v) { return x0 + v / 16 * xw; };
+    var gy = 130, by = 250, dyn = d.append("g"), ln = d.append("g");
+    cap(d, 0, 120, "good renders", { size: 24, weight: 700 }); cap(d, 0, 316, "bad renders", { size: 24, weight: 700, fill: RED });
+    function strip(arr, y, col, isBad) {
+      var cnt = {};
+      arr.forEach(function (v, i) { var key = v; cnt[key] = (cnt[key] || 0) + 1; var yy = y - (cnt[key] - 1) * 20; dyn.append("circle").attr("cx", X(v)).attr("cy", yy).attr("r", 8).attr("fill", col); });
+    }
+    strip(GOODM, 250, INK, false); strip(BADM, 396, RED, true);
+    d.append("path").attr("d", "M" + x0 + ",276 H" + (x0 + xw)).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    d.append("path").attr("d", "M" + x0 + ",420 H" + (x0 + xw)).attr("stroke", INK).attr("stroke-width", 2);
+    [0, 4, 8, 12, 16].forEach(function (v) { cap(d, X(v), 456, "" + v, { size: 24, anchor: "middle" }); });
+    cap(d, X(8), 492, "tolerance (largest pixel difference allowed)", { size: 24, anchor: "middle", fill: MUTED });
+    function setT(th) {
+      ln.selectAll("*").remove();
+      ln.append("path").attr("d", "M" + X(th + 0.5) + ",72 V420").attr("stroke", INK).attr("stroke-width", 4).attr("stroke-dasharray", "10 6");
+      var fp = fpCount(th), fn = fnCount(th);
+      cap(ln, X(th + 0.5), 64, "tolerance " + th, { size: 24, weight: 700, anchor: th > 11 ? "end" : "start" });
+      cap(ln, 0, 540, "false passes: " + fp + " of 30 · false fails: " + fn + " of 30", { size: 26, weight: 700, fill: RED });
+    }
+    var best = 0, bv = 1e9; d3.range(0, 17).forEach(function (th) { var s = fpCount(th) + fnCount(th); if (s < bv) { bv = s; best = th; } });
+    if (kk === 1) setT(14); else if (kk === 2) setT(1);
+    else { if (an) run(ln, 5000, function (t) { setT(Math.round(kf(t, [0, 16, best]))); }, true); else setT(best); }
+    note(svg, ey, ["", "Loose tolerance: bad renders slip under the line and pass. The check is wrong, and green.", "Tight tolerance: good renders trip the line and fail. The check is wrong, and red.", "Sweep it: false passes rise, false fails fall. Best here is " + best + " (" + bv + " wrong of 60). Both mistakes can be zero only if the groups do not overlap."][Math.min(k, 3)]);
+  }
+
+  /* ---------- 8. CPU model, oracle, specification oracle ---------- */
+  function flashSim(ver, fps) {
+    /* returns flash value at frame n (1-based) for each code version */
+    return function (n) { var t = n / fps; return ver === "C" ? Math.max(0, 1 - n / 33) : Math.max(0, 1 - t / SPEC); };
+  }
+  function renderOracle(el, k, anim) {
+    var svg = svgFor(el, W, H, "A model of the spec gives the answer a test compares against", "A table of model colours. Then a test and its oracle. Then three versions of the code run against an oracle copied from the code and an oracle taken from the spec.");
+    var ey = base(svg, [{ id: "cpu", s: 1 }, { id: "oracle", s: 2 }, { id: "specor", s: 3 }], k, anim, ["Spec oracle", "the written rule is the answer"], ["Implementation oracle", "the code's own formula is the answer"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk === 1) {
+      lab(d, 0, 30, "CPU MODEL OF THE SPEC: mix(vertex, flash, amount)");
+      [["body", BODY_C], ["eyes", EYE_C]].forEach(function (p, r) {
+        cap(d, 0, 112 + r * 150, p[0], { size: 26, weight: 700 });
+        [0, 0.5, 1].forEach(function (a, i) {
+          var c = mixc(p[1], FLASH_C, a), x = 170 + i * 200, g = d.append("g");
+          g.append("rect").attr("x", x).attr("y", 76 + r * 150).attr("width", 150).attr("height", 70).attr("fill", rgbStr(c)).attr("stroke", INK).attr("stroke-width", 2);
+          mono(g, x + 75, 176 + r * 150, hexOf(c), { size: 24, anchor: "middle" });
+          if (r === 0) cap(g, x + 75, 66, "amount " + a.toFixed(1), { size: 24, anchor: "middle", fill: MUTED });
+          fade(g, an, (r * 3 + i) * 150);
+        });
+      });
+      cap(d, 0, 420, "The model is the spec as arithmetic. It says what the GPU should", { size: 24 }); cap(d, 0, 458, "draw. It cannot say what the GPU did.", { size: 24, fill: RED, weight: 700 });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "A TEST COMPARES OUTPUT WITH AN ORACLE");
+      box(d, 0, 60, 220, 90, { stroke: INK, sw: 3 }); cap(d, 110, 112, "output", { size: 26, weight: 700, anchor: "middle" });
+      box(d, 520, 60, 220, 90, { stroke: RED, sw: 3 }); cap(d, 630, 112, "oracle", { size: 26, weight: 700, anchor: "middle", fill: RED });
+      d.append("path").attr("d", "M230,105 H510").attr("stroke", INK).attr("stroke-width", 4); cap(d, 370, 92, "equal?", { size: 24, anchor: "middle", weight: 700 });
+      cap(d, 0, 230, "Where the oracle comes from:", { size: 26, weight: 700 });
+      var o1 = d.append("g"), o2 = d.append("g");
+      box(o1, 0, 260, 360, 120, { stroke: INK, sw: 2 }); cap(o1, 14, 300, "the spec", { size: 24, weight: 700 }); mono(o1, 14, 344, "1 − t / 0.55", { size: 26 });
+      box(o2, 380, 260, 360, 120, { stroke: RED, sw: 2 }); cap(o2, 394, 300, "the code", { size: 24, weight: 700, fill: RED }); mono(o2, 394, 344, "retry_remaining / 0.55", { size: 24 });
+      fade(o1, an, 300); fade(o2, an, 600);
+      cap(d, 0, 450, "Only the first survives a refactor of the code.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 30, "THREE VERSIONS OF THE FADE, TWO ORACLES");
+      var cols = [350, 560], heads = ["code’s own formula", "spec at 30 fps"];
+      heads.forEach(function (h, i) { cap(d, cols[i] + 90, 60, h, { size: 24, weight: 700, anchor: "middle", fill: i ? INK : RED }); });
+      var rr = 0.275;
+      function implOracle(v) { var got = v === "A" ? rr / SPEC : v === "B" ? 1.0 : 1 - 1 / 33; return { ok: Math.abs(got - 0.5) < 1e-6, got: got }; }
+      function specOracle(v) { var f = flashSim(v, 30), gap = 0; for (var n = 1; n <= 16; n++) gap = Math.max(gap, Math.abs(f(n) - Math.max(0, 1 - (n / 30) / SPEC))); return { ok: gap <= 1 / (30 * SPEC) + 1e-9, got: gap }; }
+      [["A: Chapter 6 code", "A"], ["B: right, own clock", "B"], ["C: frame counter", "C"]].forEach(function (r, i) {
+        var y = 80 + i * 110, g = d.append("g"); cap(g, 0, y + 50, r[0], { size: 24, weight: 700 });
+        [implOracle(r[1]), specOracle(r[1])].forEach(function (res, j) {
+          var x = cols[j]; box(g, x, y, 180, 84, { stroke: res.ok ? INK : RED, sw: 3 });
+          cap(g, x + 90, y + 38, res.ok ? "PASS" : "FAIL", { size: 26, weight: 700, anchor: "middle", fill: res.ok ? INK : RED });
+          cap(g, x + 90, y + 70, j ? "gap " + res.got.toFixed(3) : "got " + res.got.toFixed(3), { size: 24, anchor: "middle", fill: MUTED });
+        });
+        fade(g, an, i * 400);
+      });
+      cap(d, 0, 430, "B is correct, yet the code-copy oracle rejects it.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 468, "The spec oracle passes A and B, and fails only C.", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "A CPU model writes the spec as arithmetic: the colours the screen should show, runnable headless.", "An oracle is whatever the test compares against. It can be the spec or a copy of the code.", "A specification oracle uses the written line 1 − t / 0.55. A code-copy oracle fails a correct refactor."][k]);
+  }
+
+  /* ---------- 9. Mutation, test the test, uniform value, scope ---------- */
+  var MUTS = [
+    ["original", function (a) { return mixc(BODY_C, FLASH_C, a); }],
+    ["swap mix inputs", function (a) { return mixc(FLASH_C, BODY_C, a); }],
+    ["ignore the flash", function (a) { return BODY_C.slice(); }],
+    ["amount × 0.9", function (a) { return mixc(BODY_C, FLASH_C, a * 0.9); }]
+  ];
+  function killed(f, a) { var m = mixc(BODY_C, FLASH_C, a), o = f(a); return Math.max(Math.abs(m[0] - o[0]), Math.abs(m[1] - o[1]), Math.abs(m[2] - o[2])) > 1; }
+  var FILES = [["tests/verify_flash_spec.gd", 64, 0], ["tests/flash_model.gd", 38, 0], ["tests/flash_bench.tscn", 29, 0], ["tests/test_flash_bench.gd", 31, 0], ["BENCH.md", 22, 0], ["player.gd", 3, 1], ["clawd_flash.gdshader", 2, 2]];
+  function inScope(f) { return f[0].indexOf("tests/") === 0 || f[0] === "BENCH.md"; }
+  var OR_ERR = { 30: 1 / 60 / SPEC, 60: 1 / 60 / SPEC, 144: 0.0369 }, OR_BAD = { 30: 0.515, 60: 1 / 60 / SPEC, 144: 0.569 };
+  function renderMut(el, k, anim) {
+    var svg = svgFor(el, W, H, "Break the code on purpose; test the test; check what the diff touched", "A shader line mutated so its test goes from pass to fail, and a grid of mutants against inputs. Then the oracle run on good and bad code. Then uniform checks against three mutants. Then a diff with files outside the brief.", false);
+    var ey = base(svg, [{ id: "mut", s: 1 }, { id: "ttt", s: 2 }, { id: "uni", s: 3 }, { id: "scope", s: 4 }], k, anim, ["Mutation check", "breaks the code on purpose"], ["Test the test", "runs it on good and bad code"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), an = anim && k >= 1;
+    if (kk === 1) {
+      lab(d, 0, 30, "ONE MUTATION: THE TEST AT amount 0.0 MUST FAIL");
+      var top = d.append("g");
+      function drawTop(m) {
+        top.selectAll("*").remove();
+        var out = m ? mixc(FLASH_C, BODY_C, 0) : mixc(BODY_C, FLASH_C, 0), bad = killed(m ? MUTS[1][1] : MUTS[0][1], 0);
+        mono(top, 0, 70, m ? "out = mix(flash, vertex, amount)" : "out = mix(vertex, flash, amount)", { size: 24, fill: m ? RED : INK, weight: m ? 700 : 400 });
+        top.append("rect").attr("x", 500).attr("y", 40).attr("width", 90).attr("height", 40).attr("fill", rgbStr(out)).attr("stroke", INK).attr("stroke-width", 2);
+        cap(top, 740, 70, bad ? "FAIL" : "PASS", { size: 28, weight: 700, anchor: "end", fill: bad ? RED : INK });
+        cap(top, 0, 112, "test at amount 0.0 expects " + hexOf(BODY_C) + ", gets " + hexOf(out), { size: 24, fill: MUTED });
+      }
+      run(top, 3000, function (t) { drawTop(t > 0.5 ? 1 : 0); }, an); if (!an) drawTop(1);
+      var gx = [300, 440, 580], gy = 170;
+      ["0.0", "0.5", "1.0"].forEach(function (s, i) { cap(d, gx[i] + 60, gy, s, { size: 24, anchor: "middle", weight: 700, fill: MUTED }); });
+      cap(d, 0, gy, "amount", { size: 24, weight: 700, fill: MUTED });
+      var caught = [0, 0, 0, 0], all = 0, only = 0;
+      MUTS.forEach(function (m, r) {
+        var g = d.append("g"), y = gy + 18 + r * 58;
+        cap(g, 0, y + 34, m[0], { size: 24, weight: r ? 400 : 700 });
+        [0, 0.5, 1].forEach(function (a, i) { var kd = killed(m[1], a); if (kd) caught[r]++; if (kd && i === 1) only = only + (r ? 1 : 0);
+          box(g, gx[i], y, 120, 46, { stroke: kd ? RED : INK, sw: 2, fill: kd ? TINT : "#FFFFFF" }); cap(g, gx[i] + 60, y + 32, kd ? "FAIL" : "pass", { size: 24, anchor: "middle", weight: 700, fill: kd ? RED : INK }); });
+        if (r && caught[r]) all++;
+        fade(g, an, 1200 + r * 250);
+      });
+      cap(d, 0, 470, "With all three inputs, " + all + " of 3 mutants are caught.", { size: 24, weight: 700 });
+      cap(d, 0, 508, "With amount 0.5 only, " + only + " of 3: the swap survives.", { size: 24, weight: 700, fill: RED });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "KNOWN-GOOD / KNOWN-BAD: ERROR VS TOLERANCE");
+      var hx = [310, 460, 610];
+      [30, 60, 144].forEach(function (f, i) { cap(d, hx[i] + 65, 66, f + " fps", { size: 24, weight: 700, anchor: "middle", fill: MUTED }); });
+      var rows = [["known-good, oracle v1", OR_ERR, function (f) { return Math.max(1 / f, 1 / 60) / SPEC; }, false], ["known-good, oracle v2", OR_ERR, function (f) { return (1 / f + 1 / 60) / SPEC; }, false], ["seeded change, v2", OR_BAD, function (f) { return (1 / f + 1 / 60) / SPEC; }, true]];
+      rows.forEach(function (r, i) {
+        var y = 84 + i * 104, g = d.append("g"); cap(g, 0, y + 54, r[0], { size: 24, weight: 700 });
+        [30, 60, 144].forEach(function (f, j) {
+          var e = r[1][f], tl = r[2](f), ok = e <= tl + 1e-9, bad = r[3] ? ok : !ok;
+          box(g, hx[j], y, 130, 84, { stroke: bad ? RED : INK, sw: 3, fill: bad ? TINT : "#FFFFFF" });
+          cap(g, hx[j] + 65, y + 36, ok ? "PASS" : "FAIL", { size: 26, weight: 700, anchor: "middle", fill: bad ? RED : INK });
+          cap(g, hx[j] + 65, y + 70, e.toFixed(3).replace("0.", ".") + (ok ? " ≤ " : " > ") + tl.toFixed(3).replace("0.", "."), { size: 24, anchor: "middle", fill: MUTED });
+        });
+        fade(g, an, i * 400);
+      });
+      cap(d, 0, 430, "Known-good code must pass; known-bad must fail.", { size: 24, weight: 700 });
+      cap(d, 0, 468, "Oracle v1 failed good code at 144 fps: the test was wrong.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 506, "v2 allows one frame plus one physics tick. Red marks a wrong verdict.", { size: 24, fill: MUTED });
+    } else if (kk === 3) {
+      lab(d, 0, 30, "CHECKS ON THREE BROKEN SHADERS (FAIL = CAUGHT)");
+      var MS = [["original", true, 0.0], ["missing ;", false, 0.0], ["default 0.5", true, 0.5]], cx = [320, 470, 620];
+      MS.forEach(function (m, i) { cap(d, cx[i] + 65, 66, m[0], { size: 24, weight: 700, anchor: "middle", fill: i ? RED : INK }); });
+      var TS = [["set, then get", function (m) { return true; }], ["uniform list not empty", function (m) { return m[1]; }], ["log has no SHADER ERROR", function (m) { return m[1]; }], ["default equals the spec", function (m) { return m[2] === 0; }]];
+      TS.forEach(function (t, r) {
+        var y = 84 + r * 78, g = d.append("g"); cap(g, 0, y + 34, t[0], { size: 24, weight: 700 });
+        MS.forEach(function (m, i) { var ok = t[1](m); box(g, cx[i], y, 130, 52, { stroke: ok ? INK : RED, sw: 2, fill: ok ? "#FFFFFF" : TINT }); cap(g, cx[i] + 65, y + 36, ok ? "ok" : "FAIL", { size: 24, anchor: "middle", weight: 700, fill: ok ? INK : RED }); });
+        fade(g, an, r * 250);
+      });
+      cap(d, 0, 430, "Set-then-get passes every shader, even the broken one:", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 468, "a value round-trips whether or not the shader parsed.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 506, "Each other check catches a different break.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "DIFF OF THE EVIDENCE STAGE: " + FILES.length + " FILES CHANGED");
+      var outF = 0, outL = 0;
+      FILES.forEach(function (f, i) {
+        var ok = inScope(f), y = 40 + i * 50, g = d.append("g");
+        if (!ok) { outF++; outL += f[1] + f[2]; box(g, 0, y, 740, 44, { stroke: RED, sw: 2, fill: TINT }); }
+        if (ok) check(g, 20, y + 20, 9, INK); else cross(g, 20, y + 22, 8, RED);
+        mono(g, 48, y + 31, f[0], { size: 24, fill: ok ? INK : RED, weight: ok ? 400 : 700 });
+        mono(g, 730, y + 31, "+" + f[1] + " −" + f[2], { size: 24, anchor: "end", fill: ok ? MUTED : RED });
+        fade(g, an, i * 150);
+      });
+      cap(d, 0, 430, "Outside the brief: " + outF + " files, " + outL + " changed lines.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 468, "Brief: do not edit the shader, player.gd or existing tests.", { size: 24 });
+      cap(d, 0, 506, "File list and line counts are illustrative.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Break the shader on purpose. If the test still passes, the test cannot see that break.", "A new check must fail on a known-bad version and pass on a known-good one, or it proves nothing.", "A uniform value check reads a shader input's value and compares it to the spec. Pick checks that can fail.", "Check git diff against the brief. A change to a file it ruled out is a scope violation, even if it works."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from shader verification", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Claim", "“It compiles”"], ["Evidence", "A check that shows it"]],
+      [["False pass", "Check passes, thing is wrong"], ["False fail", "Check fails, thing is right"]],
+      [["Frame count", "33 frames, any rate"], ["Game time", "0.55 s, any rate"]],
+      [["source_color", "Decode as colour"], ["hint_normal", "Keep as data"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        LG.append("rect").attr("x", 20).attr("y", 200).attr("width", 300).attr("height", 80).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(LG, 170, 250, "“it compiles”", { size: 28, anchor: "middle", weight: 700 });
+        RG.append("rect").attr("x", 20).attr("y", 200).attr("width", 300).attr("height", 80).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); mono(RG, 40, 250, "SHADER ERROR: 0", { size: 26, weight: 700 }); if (t > 0.4) check(RG, 300, 236, 16, RED);
+        cap(LG, 20, 330, "a statement", { size: 24, fill: MUTED }); cap(RG, 20, 330, "output you can read", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var th = 6;
+        [[LG, 4,"bad render, difference 4", true], [RG, 9, "good render, difference 9", false]].forEach(function (p, j) {
+          var g = p[0]; g.append("path").attr("d", "M20,300 H320").attr("stroke", INK).attr("stroke-width", 2); g.append("path").attr("d", "M" + (20 + th * 20) + ",160 V300").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+          var x = 20 + p[1] * 20 * Math.min(1, t * 1.5); g.append("circle").attr("cx", x).attr("cy", 250).attr("r", 14).attr("fill", p[3] ? RED : INK);
+          cap(g, 20, 336, p[2], { size: 24, fill: MUTED }); if (t > 0.7) cap(g, 170, 200, j ? "FAIL" : "PASS", { size: 28, weight: 700, anchor: "middle", fill: RED });
+        });
+      } else if (i === 2) {
+        var sc = 280 / 1.2;
+        [30, 60, 144].forEach(function (f, j) {
+          var y = 150 + j * 60, a = 33 / f;
+          LG.append("rect").attr("x", 20).attr("y", y).attr("width", 280 * t).attr("height", 34).attr("fill", INK); cap(LG, 20, y + 58, "", { size: 24 });
+          RG.append("rect").attr("x", 20).attr("y", y).attr("width", Math.min(0.55, 0.55 * t) * sc).attr("height", 34).attr("fill", RED);
+          if (t > 0.6) { cap(LG, 308, y + 26, "33 frames", { size: 24 }); cap(RG, 20 + 0.55 * sc + 10, y + 26, "0.55 s", { size: 24 }); }
+          cap(LG, 20, y - 8, f + " fps", { size: 24, fill: MUTED });
+        });
+        cap(LG, 20, 360, "seconds taken: 1.10, 0.55, 0.23", { size: 24, fill: MUTED }); cap(RG, 20, 360, "seconds: 0.55 at every rate", { size: 24, fill: MUTED });
+      } else {
+        function bw(g, v, col, lb) { g.append("rect").attr("x", 20).attr("y", 200).attr("width", 300 * v * t).attr("height", 50).attr("fill", col); cap(g, 20, 290, lb, { size: 24, fill: MUTED }); if (t > 0.7) cap(g, 20 + 300 * v + 12, 236, v.toFixed(3), { size: 26, weight: 700 }); }
+        bw(LG, srgb2lin(128), RED, "stored 128, decoded as colour"); bw(RG, 128 / 255, INK, "stored 128, kept as data");
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "check the shader looks right", x: "Sample body and eye pixels on the bench at 0.0, 0.5, 1.0; each within 1 of the model" },
+    { v: "make sure the fade is the right length", x: "Run the spec check at --fixed-fps 30, 60 and 144; error within a frame plus a physics tick" },
+    { v: "check the test is any good", x: "Run it on known-good code (must pass) and known-bad code (must fail)" },
+    { v: "ignore tiny differences", x: "Count pixels over a tolerance of 2 of 255, so noise passes and a 3 × 3 defect fails" },
+    { v: "make sure it only touched the flash", x: "Run git diff --stat; any path outside the brief's list is a scope violation" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests about a shader turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 340, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      [0, 0.5, 1].forEach(function (a, i) {
+        var m = mixc(BODY_C, FLASH_C, a), seen = m.slice(); seen[2] += (i === 1 ? -0.5 : 0); var y = 20 + i * 100, g2 = p.append("g");
+        cap(g2, 14, y + 56, a.toFixed(1), { size: 26, weight: 700 });
+        g2.append("rect").attr("x", 76).attr("y", y + 14).attr("width", 50).attr("height", 50).attr("fill", rgbStr(m)).attr("stroke", INK).attr("stroke-width", 2);
+        mono(g2, 140, y + 48, hexOf(m), { size: 24 });
+        g2.append("rect").attr("x", 300).attr("y", y + 14).attr("width", 50).attr("height", 50).attr("fill", rgbStr(seen)).attr("stroke", INK).attr("stroke-width", 2);
+        mono(g2, 364, y + 48, hexOf(seen), { size: 24 }); cap(g2, 600, y + 48, "ok", { size: 26, weight: 700, anchor: "end" });
+        fade(g2, anim, i * 350);
+      });
+      nt = "model, then a sample (illustrative), within 1 step";
+    } else if (k === 2) {
+      [30, 60, 144].forEach(function (f, i) {
+        var e = OR_ERR[f], tl = (1 / f + 1 / 60) / SPEC, y = 40 + i * 98, sc = 480 / 0.1, g2 = p.append("g");
+        cap(g2, 14, y + 24, f + " fps", { size: 24, weight: 700 });
+        bar(g2, 110, y + 4, e * sc, 28, INK, anim, i * 250);
+        g2.append("path").attr("d", "M" + (110 + tl * sc) + "," + (y - 4) + " V" + (y + 40)).attr("stroke", RED).attr("stroke-width", 4);
+        cap(g2, 110, y + 66, "error " + e.toFixed(3) + ", tolerance " + tl.toFixed(3), { size: 24 });
+      });
+      nt = "bar: error; red line: tolerance (good code)";
+    } else if (k === 3) {
+      var sc3 = 480 / 0.6;
+      [["known-good", 0.0369, INK], ["seeded (bad)", 0.569, RED]].forEach(function (r, i) {
+        var y = 70 + i * 130, g2 = p.append("g");
+        cap(g2, 14, y, r[0] + ": error at 144 fps", { size: 24, weight: 700 });
+        bar(g2, 14, y + 18, r[1] * sc3, 40, r[2], anim, i * 400); cap(g2, 14 + r[1] * sc3 + 10, y + 48, r[1].toFixed(3), { size: 24, weight: 700, fill: r[2] });
+      });
+      var tl3 = (1 / 144 + 1 / 60) / SPEC; p.append("path").attr("d", "M" + (14 + tl3 * sc3) + ",100 V300").attr("stroke", RED).attr("stroke-width", 4); cap(p, 14 + tl3 * sc3 + 12, 296, "tolerance " + tl3.toFixed(3), { size: 24, fill: RED, weight: 700 });
+      nt = "good code under the line, bad code far over it";
+    } else if (k === 4) {
+      var ax = 60, ay = 290, aw = 540, ah = 230, TX = function (t) { return ax + t / 8 * aw; }, TY = function (c) { return ay - c / 256 * ah; };
+      p.append("path").attr("d", "M" + ax + "," + (ay - ah) + " V" + ay + " H" + (ax + aw)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      var pts4 = d3.range(0, 9).map(function (t) { return [t, countOver(DIFF, t)]; });
+      var pl = p.append("path").attr("d", d3.line().x(function (q) { return TX(q[0]); }).y(function (q) { return TY(q[1]); })(pts4)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4); if (anim) drawIn(pl, 0, 900);
+      cap(p, ax, ay + 32, "0", { size: 24, anchor: "middle" }); cap(p, ax + aw, ay + 32, "8", { size: 24, anchor: "end" }); cap(p, ax + aw / 2, ay + 32, "tolerance", { size: 24, anchor: "middle", fill: MUTED });
+      cap(p, TX(0) + 14, TY(pts4[0][1]) + 6, pts4[0][1] + " px at 0", { size: 24, weight: 700, fill: RED });
+      cap(p, TX(2) + 14, TY(pts4[2][1]) - 12, pts4[2][1] + " px at 2: the defect", { size: 24, weight: 700 });
+      nt = "pixels over tolerance (of 256), computed";
+    } else {
+      var inL = d3.sum(FILES.filter(inScope), function (f) { return f[1] + f[2]; }), outL2 = d3.sum(FILES.filter(function (f) { return !inScope(f); }), function (f) { return f[1] + f[2]; }), sc5 = 480 / inL;
+      [["inside the brief", inL, INK], ["outside the brief", outL2, RED]].forEach(function (r, i) {
+        var y = 70 + i * 130, g2 = p.append("g");
+        cap(g2, 14, y, r[0] + ": " + r[1] + " lines", { size: 24, weight: 700, fill: r[2] });
+        bar(g2, 14, y + 18, Math.max(r[1] * sc5, 6), 44, r[2], anim, i * 400);
+      });
+      nt = "changed lines by path (illustrative)";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Which rung of the ladder is my claim standing on?",
+    "Are the inputs fixed: clock, seed and bench?",
+    "Does my input separate the right answer from the wrong one?",
+    "Does my tolerance catch the bug and still pass good code?",
+    "Did I run the test on known-good and known-bad code?",
+    "What can a headless run not show, and who looks at the screen?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a shader change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “check the shader”, but “three pixels within 1 of the model”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, ladder: { steps: 4, render: renderLadder }, head: { steps: 2, render: renderHead },
+    ctrl: { steps: 4, render: renderCtrl }, pin: { steps: 4, render: renderPin }, colour: { steps: 3, render: renderColour },
+    golden: { steps: 4, render: renderGolden }, fals: { steps: 3, render: renderFalse }, oracle: { steps: 3, render: renderOracle },
+    mut: { steps: 4, render: renderMut }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

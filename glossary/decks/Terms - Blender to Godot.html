@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blender to Godot: MCP, export and measuring a prop | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Blender to Godot, MCP, export and measuring a prop">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Blender to Godot">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 3</p>
+      <h1 class="t-opening rise g2">Blender to Godot</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">MCP, export and measuring a prop</p>
+      <div class="speaker-notes" hidden><p>Deck 4b of the topic order, the second of two Blender decks (4a covers modeling). 30 terms. Tags: in the book text means Chapter 3 uses and explains it; in the glossary means a glossary row only; video only means it comes from the Riot series (episodes 3 to 5). Counts: 21 book, 5 glossary, 4 video.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3; glossary, 3D assets and Blender; glossary, Agent workflow terms: MCP fundamentals; Riot series episodes 3 to 5.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="MCP: an agent calls a tool inside Blender">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Driving Blender</p>
+      <h2 class="t-chart">MCP: an agent calls a tool inside Blender</h2>
+      <div class="diagram build" data-build="mcp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “1. Two ways for an agent to drive Blender”; glossary, Agent workflow terms: MCP fundamentals (MCP, Tool).</p>
+      <div class="speaker-notes" hidden><p>Tool names are from the community MCP for Blender project as listed in Chapter 3. The MCP route was documented but not run in the chapter.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="bpy scripts, headless Blender and the exit code">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Driving Blender</p>
+      <h2 class="t-chart">bpy scripts, headless Blender and the exit code</h2>
+      <div class="diagram build" data-build="script" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “The script route”; glossary, 3D assets and Blender (bpy, Background mode).</p>
+      <div class="speaker-notes" hidden><p>The two exit codes (0 and 1) are the result Chapter 3 reports for raise ValueError run both ways. The script shown is a shape, not the chapter script.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Units, up axis and axis conversion">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Units, axes and transforms</p>
+      <h2 class="t-chart">Units, up axis and axis conversion</h2>
+      <div class="diagram build" data-build="axes" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “2. Units” and “3. Axes”; glossary, 3D assets and Blender (Unit).</p>
+      <div class="speaker-notes" hidden><p>The 2.1 m capsule and the 1.8 m post are from Chapter 3. The matrix is Rx(−90°), computed from the angle at each frame: (x, y, z) becomes (x, z, −y).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Apply transforms, node scale and origin">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Units, axes and transforms</p>
+      <h2 class="t-chart">Apply transforms, node scale and origin</h2>
+      <div class="diagram build" data-build="xform" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “4. Apply transforms”; glossary, 3D assets and Blender (Origin, Pivot, Apply transforms, Node scale).</p>
+      <div class="speaker-notes" hidden><p>The 0.1, 0.9, 0.1 scale on a 2 m cube is Chapter 3’s no_apply build. The ball with a sphere collider is a conceptual illustration, not from the chapter.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Measure the prop: dimensions, bounding box, claim">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Proving it</p>
+      <h2 class="t-chart">Measure the prop: dimensions, bounding box, claim</h2>
+      <div class="diagram build" data-build="measure" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “4. Apply transforms” and “The question”; glossary, 3D assets and Blender (Bounding box, Extents).</p>
+      <div class="speaker-notes" hidden><p>Stale dimensions: 2.0 before view_layer.update(), 1.8 after, as in Chapter 3. The box is the min and max of 12 side-view vertices of the post; its 0.78 by 1.8 matches the chapter’s Godot AABB.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="glTF, GLB, materials and the import file">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Export and import</p>
+      <h2 class="t-chart">glTF, GLB, materials and the import file</h2>
+      <div class="diagram build" data-build="gltf" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, sections 5 and 6; glossary, 3D assets and Blender (glTF, GLB).</p>
+      <div class="speaker-notes" hidden><p>File layout is the general glTF shape. The .import lines are from the Walker enemy model, as quoted in Chapter 3.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Name suffixes, collision shapes, convex and concave">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Export and import</p>
+      <h2 class="t-chart">Name suffixes, collision shapes, convex and concave</h2>
+      <div class="diagram build" data-build="coll" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “7. Collision decided at import time”; glossary, 3D assets and Blender (Convex, Concave, Collision shape versus visual mesh).</p>
+      <div class="speaker-notes" hidden><p>Pennant points are counted on a 1 cm grid inside the shape. The model gives 572 for the box (as in the chapter) and 52 for the hull; the chapter’s physics sampling found 55.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Triangle budget, sculpt to low-poly, baking and LOD">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Budget</p>
+      <h2 class="t-chart">Triangle budget, sculpt to low-poly, baking and LOD</h2>
+      <div class="diagram build" data-build="budget" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, 3D assets and Blender (Triangle count, LOD, Popping); Riot series, episode 3 (high-poly sculpt, low-poly mesh, texture baking).</p>
+      <div class="speaker-notes" hidden><p>Triangle counts for the post are computed from face counts, assuming a capped 8-sided pole. The 2,000,000 sculpt and the LOD distances are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Script as source, version control and naming">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Keeping it repeatable</p>
+      <h2 class="t-chart">Script as source, version control and naming</h2>
+      <div class="diagram build" data-build="order" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “Ship It”; Riot series, episode 5 (version control, naming conventions).</p>
+      <div class="speaker-notes" hidden><p>Chapter 3: rerunning the final script gave a byte-identical .glb. Version control and naming conventions are from Riot episode 5.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3; glossary, 3D assets and Blender.</p>
+      <div class="speaker-notes" hidden><p>Scale and size, MCP route and script route, visual mesh and collision shape, concave and convex.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions. Numbers come from the chapter’s three builds and the post geometry; the 100-triangle budget is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust an imported model">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust an imported model</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “Verify”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Blender to Godot: MCP, export and measuring a prop (Chapter 3) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 3 uses and explains it; gloss = glossary row only; video = Riot series only */
+  var T = {
+    mcp: { n: "MCP", tag: "book", m: "A standard way for an AI app to call tools in another program such as Blender" },
+    tool: { n: "MCP tool", tag: "book", m: "A named action the agent may call, with typed arguments" },
+    server: { n: "MCP server and add-on", tag: "book", m: "A relay the agent starts; an add-on inside Blender receives its calls" },
+    bpy: { n: "bpy", tag: "book", m: "Blender's Python module; scripts and MCP tools both drive it" },
+    headless: { n: "Headless Blender", tag: "book", alias: "also: background mode (-b)", m: "Running Blender with no window, from the command line" },
+    pyexit: { n: "--python-exit-code", tag: "book", m: "A flag that makes a script error end Blender with exit code 1, not 0" },
+    unit: { n: "Unit", tag: "book", m: "The length one coordinate step stands for, usually a metre" },
+    uscale: { n: "Unit scale", tag: "book", m: "The factor from Blender units to metres; 1.0 means 1 unit is 1 m" },
+    upaxis: { n: "Up axis", tag: "book", alias: "Godot's forward is −Z", m: "Which axis points up: Z in Blender, Y in glTF and Godot" },
+    axisconv: { n: "Axis conversion", tag: "book", m: "The exporter's +Y Up option turns Blender's Z extent into Godot's Y" },
+    applyT: { n: "Apply transforms", tag: "book", m: "Bake position, rotation and scale into the mesh and reset them to neutral" },
+    nodescale: { n: "Node scale", tag: "book", m: "A scale left on the node instead of baked into the mesh" },
+    origin: { n: "Origin and pivot", tag: "gloss", m: "The point position and rotation are measured from; the pivot is what it rotates and scales around" },
+    dims: { n: "Dimensions", tag: "book", m: "An object's size in metres on each axis, as Blender reports it" },
+    bbox: { n: "Bounding box", tag: "gloss", alias: "its half-sizes are the extents", m: "The smallest axis-aligned box that holds an object" },
+    claim: { n: "Claim versus measurement", tag: "book", m: "A claim is what a name or script says; a measurement is what a test reads from the file" },
+    gltf: { n: "glTF", tag: "book", m: "An open 3D format; the preferred exchange format for engines" },
+    glb: { n: "GLB", tag: "book", m: "glTF packed into a single binary file" },
+    mat: { n: "Material through export", tag: "book", m: "A named Blender material arrives under the same name; Blender-only nodes do not" },
+    importfile: { n: "Import file (.import)", tag: "book", m: "The text file beside a model whose settings decide what Godot builds" },
+    suffix: { n: "Name suffix", tag: "book", m: "A tail on a mesh name, such as -convcolonly, that tells Godot to build collision" },
+    colshape: { n: "Collision shape", tag: "book", m: "The simple shape physics uses, as opposed to the detailed mesh you see" },
+    convex: { n: "Convex and concave", tag: "gloss", m: "Convex has no dents: a line between two inside points stays inside. Concave has a hollow" },
+    tri: { n: "Triangle count", tag: "gloss", alias: "not face count or vertex count", m: "Engines budget by triangles; Blender shows faces; vertices split where UVs or normals differ" },
+    hilo: { n: "High-poly and low-poly", tag: "video", m: "A very detailed sculpt, and the cheap copy of it that the engine runs" },
+    bake: { n: "Texture baking", tag: "video", m: "Moving the sculpt's fine detail into an image the low-poly mesh wears" },
+    lod: { n: "LOD", tag: "gloss", m: "Level of detail: cheaper versions of a model swapped in at distance" },
+    srcscript: { n: "Script as source", tag: "book", m: "The script that built the asset is what you commit and rerun; the .glb is its output" },
+    vcs: { n: "Version control", tag: "video", m: "Software that records every version of a file and who changed it, and warns of clashes" },
+    naming: { n: "Naming conventions", tag: "video", m: "Agreed rules for how files and objects are named" }
+  };
+
+  function note(svg, ey, text) {
+    if (!text) return;
+    var n = Math.ceil(text.length / 44);
+    if (ey + 36 + (n - 1) * 36 + 10 > 590) return;
+    wrap(svg.append("g"), 800, ey + 36, text, 44, { size: 28, lh: 36, fill: INK });
+  }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function ln(g, x1, y1, x2, y2, c, w, dash) { var p = g.append("path").attr("d", "M" + x1 + "," + y1 + " L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 3).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function arrow(g, x1, y1, x2, y2, c, w) {
+    var a = Math.atan2(y2 - y1, x2 - x1), h = 14;
+    ln(g, x1, y1, x2, y2, c, w || 3);
+    g.append("path").attr("d", "M" + x2 + "," + y2 + " L" + (x2 - h * Math.cos(a - 0.45)) + "," + (y2 - h * Math.sin(a - 0.45)) + " L" + (x2 - h * Math.cos(a + 0.45)) + "," + (y2 - h * Math.sin(a + 0.45)) + "Z").attr("fill", c || INK);
+  }
+  function f2(v) { var a = Math.abs(v) < 0.005 ? 0 : v; return (a < 0 ? "−" : " ") + Math.abs(a).toFixed(2); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  /* ---------- the checkpoint post (Chapter 3): side view, x across, z up, metres ---------- */
+  var PEN = { x0: 0.08, x1: 0.48, z0: 1.55, z1: 1.8 };
+  var POSTV = [[-0.3, 0], [0.3, 0], [0.3, 0.1], [-0.3, 0.1], [-0.08, 0.1], [0.08, 0.1], [0.08, 1.8], [-0.08, 1.8], [0.08, 1.8], [0.48, 1.8], [0.48, 1.55], [0.08, 1.55]];
+  function postShapes(g, ox, fy, s, fill) {
+    function r(x0, z0, x1, z1, f) { g.append("rect").attr("x", ox + x0 * s).attr("y", fy - z1 * s).attr("width", (x1 - x0) * s).attr("height", (z1 - z0) * s).attr("fill", f).attr("stroke", INK).attr("stroke-width", 2); }
+    r(-0.3, 0, 0.3, 0.1, fill || "#C4C4C4"); r(-0.08, 0.1, 0.08, 1.8, fill || "#C4C4C4"); r(PEN.x0, PEN.z0, PEN.x1, PEN.z1, TINT);
+  }
+  function triPrism(n) { return n * 2 + 2 * (n - 2); }
+  var TRI = { base: 6 * 2, pole: triPrism(8), pen: 2 }; TRI.total = TRI.base + TRI.pole + TRI.pen; TRI.col = 6 * 2;
+  /* collider half-width at height z: a box (top = 0.3) or the tapered hull (top = 0.08) */
+  function hullHalf(z, top) { return 0.3 + (top - 0.3) * z / 1.8; }
+  function pennantInside(top) {
+    var n = 0, tot = 0;
+    for (var i = 8; i <= 48; i++) for (var j = 155; j <= 180; j++) { tot++; if (i / 100 < hullHalf(j / 100, top) - 1e-9) n++; }
+    return [n, tot];
+  }
+  function pip(p, poly) {
+    var x = p[0], y = p[1], c = false;
+    for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      var xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  }
+  function outsideFrac(a, b, poly) {
+    var out = 0, N = 200;
+    for (var i = 0; i <= N; i++) { var t = i / N; if (!pip([lerp(a[0], b[0], t), lerp(a[1], b[1], t)], poly)) out++; }
+    return out / (N + 1);
+  }
+  var UPOLY = [[40, 60], [320, 60], [320, 300], [240, 300], [240, 150], [120, 150], [120, 300], [40, 300]];
+  var HEX = [[60, 100], [190, 60], [320, 100], [320, 260], [190, 300], [60, 260]];
+
+  var MAPROWS = [
+    ["Driving Blender", "MCP, MCP tool, MCP server and add-on, bpy, headless Blender, --python-exit-code", "How an agent runs Blender, and how you see a run fail"],
+    ["Units, axes and transforms", "unit, unit scale, up axis, axis conversion, apply transforms, node scale, origin and pivot", "Why a model arrives lying down, or the wrong size"],
+    ["Export, import and collision", "glTF, GLB, material through export, import file, name suffix, collision shape, convex and concave", "How a model and its collider reach Godot"],
+    ["Measuring and budget", "dimensions, bounding box, claim versus measurement, triangle count, high-poly and low-poly, texture baking, LOD, script as source, version control, naming conventions", "How you prove the result, keep it cheap and repeat it"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of Blender to Godot terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "30 terms from Chapter 3 and the glossary. Every one is about getting a model from Blender into Godot, and proving it arrived intact.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1030];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 130, h); });
+    g.append("path").attr("d", "M0,144 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    var y = 158;
+    MAPROWS.forEach(function (r, i) {
+      var tw = wrap(svg.append("g").attr("opacity", 0), 0, 0, r[1], 56, { size: 24, lh: 30 }), h = Math.max(96, tw.node().__h + 40);
+      tw.node().parentNode.remove();
+      if (i + 1 <= k) {
+        var row = g.append("g");
+        box(row, 0, y, 1400, h, { stroke: FAMILIAR });
+        row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", h + 1).attr("fill", RED);
+        wrap(row, cx[0] + 28, y + 40, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+        wrap(row, cx[1] + 18, y + 34, r[1], 56, { size: 24, lh: 30, fill: INK });
+        wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+        if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+      }
+      y += h + 10;
+    });
+    if (k === 0) cap(g, 0, 440, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. MCP, tool, server ---------- */
+  function renderMcp(el, k, anim) {
+    var svg = svgFor(el, W, H, "An agent calls a tool through an MCP server and Blender replies", "Three boxes: coding agent, MCP server, Blender with an add-on. A request travels to Blender and a result comes back. Then the list of tools the server offers.");
+    var ey = base(svg, [{ id: "mcp", s: 1 }, { id: "tool", s: 2 }, { id: "server", s: 3 }], k, anim, ["MCP route", "a live window; the agent makes tool calls"], ["Script route", "a .py file Blender runs with no window"]);
+    var d = svg.append("g");
+    lab(d, 0, 30, "THE MCP ROUTE");
+    ln(d, 190, 110, 570, 110, GREY, 3);
+    var packet = d.append("circle").attr("r", 12).attr("cy", 110).attr("fill", RED), msg = cap(d, 380, 215, "", { size: 24, anchor: "middle", weight: 700, fill: RED });
+    [["Coding agent", "", 0, INK], ["MCP server", "", 285, k >= 3 ? RED : GREY], ["Blender", "+ add-on", 570, INK]].forEach(function (n) {
+      box(d, n[2], 60, 190, 100, { stroke: n[3], sw: k >= 3 && n[0] === "MCP server" ? 4 : 3 });
+      cap(d, n[2] + 95, n[1] ? 100 : 118, n[0], { size: 24, anchor: "middle", weight: 700 });
+      if (n[1]) cap(d, n[2] + 95, 134, n[1], { size: 24, anchor: "middle" });
+    });
+    run(d, 3400, function (t) {
+      var go = t < 0.5, u = go ? t / 0.5 : (1 - t) / 0.5;
+      packet.attr("cx", 190 + 380 * d3.easeCubicInOut(u));
+      msg.text(go ? "execute_blender_code" : "result: size (0.2, 0.2, 1.8)");
+    }, k === 1 && anim);
+    if (k === 1) {
+      lab(d, 0, 262, "ONE CALL, TWO MESSAGES");
+      var m1 = d.append("g"), m2 = d.append("g");
+      cap(m1, 0, 312, "1   The agent sends a request.", { size: 26 }); cap(m2, 0, 362, "2   Blender runs it and sends back a result.", { size: 26 });
+      fade(m1, A(anim, k, 1), 200); fade(m2, A(anim, k, 1), 1800);
+      cap(d, 0, 430, "The same message types work for any program that offers tools.", { size: 24, fill: MUTED });
+    }
+    if (k >= 2) {
+      lab(d, 0, 262, "TOOLS THE SERVER OFFERS");
+      [["get_scene_info", "what is in the scene"], ["get_object_info", "size and position of one object"], ["execute_blender_code", "run Python (bpy) in Blender"], ["export_scene", "write a .glb or .fbx file"]].forEach(function (r, i) {
+        var g = d.append("g"), y = 304 + i * 46;
+        mono(g, 0, y, r[0], { weight: i === 2 ? 700 : 400, fill: i === 2 ? RED : INK }); cap(g, 340, y, r[1], { size: 24 });
+        fade(g, A(anim, k, 2), i * 200);
+      });
+    }
+    if (k >= 3) { var g3 = d.append("g"); wrap(g3, 0, 524, "The socket has no login and no encryption: keep the port on localhost.", 56, { size: 24, lh: 30, weight: 700, fill: RED }); fade(g3, A(anim, k, 3), 0); }
+    note(svg, ey, ["", "Both sides follow one agreed set of message rules.", "Each tool is a named action with typed arguments.", "The server relays calls to the add-on over a local socket."][k]);
+  }
+
+  /* ---------- 2. bpy, headless, exit code ---------- */
+  function renderScript(el, k, anim) {
+    var svg = svgFor(el, W, H, "A bpy script run headless, and the flag that makes failure visible", "A short bpy script, then the command that runs it with no window, then the same failing script run with and without the exit-code flag.");
+    var ey = base(svg, [{ id: "bpy", s: 1 }, { id: "headless", s: 2 }, { id: "pyexit", s: 3 }], k, anim, ["--python-exit-code 1", "a script error ends the run with exit 1"], ["Plain run", "a script error can still exit 0"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "A BPY SCRIPT");
+      d.append("rect").attr("x", 0.5).attr("y", 60.5).attr("width", 740).attr("height", 270).attr("fill", INK);
+      ["import bpy", "bpy.ops.mesh.primitive_cube_add(size=2)", "obj = bpy.context.object", "obj.scale = (0.1, 0.1, 0.9)", "bpy.ops.export_scene.gltf(filepath=\"post.glb\")"].forEach(function (l, i) {
+        var g = d.append("g"); mono(g, 20, 112 + i * 52, l, { fill: i === 0 ? "#FBE7EA" : "#FFFFFF", weight: i === 0 ? 700 : 400 }); fade(g, A(anim, k, 1), i * 350);
+      });
+      cap(d, 0, 390, "The same calls the MCP tools make, kept in a file.", { size: 26, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "RUN IT WITH NO WINDOW");
+      d.append("rect").attr("x", 0.5).attr("y", 60.5).attr("width", 740).attr("height", 120).attr("fill", INK);
+      mono(d, 20, 110, "% Blender -b --factory-startup", { fill: "#FFFFFF" }); mono(d, 20, 154, "    --python build_post.py", { fill: "#FFFFFF" });
+      [["-b", "runs in the background, no window"], ["--factory-startup", "skips your startup.blend"], ["--python", "runs the script"]].forEach(function (r, i) {
+        var g = d.append("g"), y = 250 + i * 56; mono(g, 0, y, r[0], { weight: 700, fill: RED }); cap(g, 270, y, r[1], { size: 24 }); fade(g, A(anim, k, 2), i * 300);
+      });
+      cap(d, 0, 450, "A script can run, and be rerun, without anyone watching a screen.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "SAME SCRIPT, WHICH RAISES ValueError");
+      [["Blender -b --python bad.py", "exit code 0", "the error is printed, the run says success", GREY, false], ["Blender -b --python-exit-code 1 --python bad.py", "exit code 1", "the run reports failure", RED, true]].forEach(function (r, i) {
+        var g = d.append("g"), y = 70 + i * 170;
+        box(g, 0, y, 740, 150, { stroke: r[3], sw: 3 });
+        mono(g, 16, y + 40, r[0], { size: 24 }); cap(g, 16, y + 92, r[1], { size: 32, weight: 700, fill: r[3] === RED ? RED : INK }); cap(g, 16, y + 130, r[2], { size: 24, fill: MUTED });
+        if (r[4]) cross(g, 690, y + 75, 20, RED); else check(g, 690, y + 75, 20, GREY);
+        fade(g, A(anim, k, 3), i * 500);
+      });
+      cap(d, 0, 450, "Chapter 3 ran raise ValueError both ways: exit codes 0 and 1.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "bpy is the Python module that controls Blender.", "Headless: no window, so a script can run it and read the output.", "Add the flag, or a broken script looks like a pass."][k]);
+  }
+
+  /* ---------- 3. unit, unit scale, up axis, axis conversion ---------- */
+  function gizmo(g, x, y, ups, third, fwd) {
+    arrow(g, x, y, x + 140, y, INK, 4); cap(g, x + 154, y + 8, "X", { size: 24, weight: 700 });
+    arrow(g, x, y, x, y - 200, RED, 4); cap(g, x, y - 214, ups, { size: 24, weight: 700, fill: RED, anchor: "middle" });
+    var dx = third[0], dy = third[1];
+    arrow(g, x, y, x + dx, y + dy, INK, 4); cap(g, x + dx + (dx < 0 ? -14 : 14), y + dy + (dy > 0 ? 28 : -12), third[2], { size: 24, weight: 700, anchor: dx < 0 ? "end" : "start" });
+    if (fwd) { ln(g, x, y, x - dx, y - dy, GREY, 3, "6 6"); cap(g, x - dx, y - dy - 14, fwd, { size: 24, anchor: "middle", fill: MUTED }); }
+  }
+  function renderAxes(el, k, anim) {
+    var svg = svgFor(el, W, H, "Units are metres; Blender's Z-up becomes Godot's Y-up on export", "A ruler with a robot capsule and the post, then one mesh at two unit scales, then Blender's and Godot's axes, then a column rotating from lying down to upright with the rotation matrix computed.");
+    var ey = base(svg, [{ id: "unit", s: 1 }, { id: "uscale", s: 2 }, { id: "upaxis", s: 3 }, { id: "axisconv", s: 4 }], k, anim, ["Unit", "the length of one coordinate step"], ["Unit scale", "the factor that turns units into metres"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "1 UNIT = 1 METRE");
+      var s = 200, fy = 540;
+      ln(d, 0, fy, 760, fy, INK, 3); ln(d, 40, fy, 40, fy - 2.1 * s, INK, 3);
+      [0, 1, 2].forEach(function (m) { ln(d, 40, fy - m * s, 70, fy - m * s, INK, 3); cap(d, 80, fy - m * s + (m ? 8 : -10), m + " m", { size: 24 }); });
+      var cg = d.append("g"); cg.append("rect").attr("x", 170).attr("y", fy - 2.1 * s).attr("width", 0.8 * s).attr("height", 2.1 * s).attr("rx", 0.4 * s).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+      cap(cg, 250, fy - 2.1 * s - 14, "robot capsule 2.1 m", { size: 24, anchor: "middle", weight: 700 });
+      var pg = d.append("g"); postShapes(pg, 520, fy, s); cap(pg, 520, fy - 1.8 * s - 14, "post 1.8 m", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      fade(pg, A(anim, k, 1), 400); fade(cg, A(anim, k, 1), 0);
+    } else if (k === 2) {
+      lab(d, 0, 30, "A MESH 1.8 UNITS TALL, TWO UNIT SCALES");
+      var sc = 200, fy2 = 520;
+      ln(d, 0, fy2, 760, fy2, INK, 3);
+      [[1.0, 200, "unit scale 1.0"], [0.01, 520, "unit scale 0.01"]].forEach(function (r, i) {
+        var h = 1.8 * r[0] * sc, g = d.append("g"), b = g.append("rect").attr("x", r[1] - 30).attr("y", fy2 - h).attr("width", 60).attr("height", h).attr("fill", i ? RED : INK);
+        var t = cap(g, r[1], fy2 - h - 14, (1.8 * r[0]).toFixed(i ? 3 : 1) + " m", { size: 26, weight: 700, anchor: "middle", fill: i ? RED : INK });
+        cap(g, r[1], fy2 + 36, r[2], { size: 24, anchor: "middle" });
+        cap(g, r[1], 90, "1.8 × " + r[0] + " =", { size: 24, anchor: "middle", fill: MUTED });
+        if (A(anim, k, 2)) b.attr("y", fy2).attr("height", 0).transition().delay(i * 300).duration(900).attr("y", fy2 - h).attr("height", h);
+      });
+    } else if (k === 3) {
+      lab(d, 0, 30, "WHICH WAY IS UP");
+      cap(d, 200, 100, "Blender", { size: 28, weight: 700, anchor: "middle" }); cap(d, 560, 100, "Godot", { size: 28, weight: 700, anchor: "middle" });
+      gizmo(d, 160, 400, "Z up", [90, -70, "Y"], null);
+      gizmo(d, 520, 400, "Y up", [-90, 70, "Z"], "−Z forward");
+      cap(d, 0, 560, "Both are right-handed.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "ROTATE Z-UP TO Y-UP");
+      var s4 = 200, ox = 300, fy4 = 450, w = 0.2, hh = 1.8;
+      ln(d, 0, fy4, 760, fy4, FAMILIAR, 2);
+      arrow(d, 40, fy4, 40, fy4 - 330, INK, 3); cap(d, 56, fy4 - 306, "Y up", { size: 24, weight: 700 });
+      var poly = d.append("path").attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3), mat = [d.append("g"), d.append("g"), d.append("g")];
+      var out = mono(d, 0, 515, "", { size: 24, weight: 700 }), hd = mono(d, 480, 44, "", { size: 24, weight: 700, fill: RED });
+      var rows = d.append("g");
+      run(d, 3200, function (t) {
+        var th = -90 * DEG * d3.easeCubicInOut(t), c = Math.cos(th), sn = Math.sin(th);
+        var P = [[-w / 2, 0], [w / 2, 0], [w / 2, hh], [-w / 2, hh]].map(function (p) { var yp = p[0] * c - p[1] * sn, zp = p[0] * sn + p[1] * c; return (ox + zp * s4) + "," + (fy4 - yp * s4); });
+        poly.attr("d", "M" + P.join("L") + "Z");
+        rows.selectAll("*").remove();
+        var M = [[1, 0, 0], [0, c, -sn], [0, sn, c]];
+        hd.text("Rx(" + (th / DEG).toFixed(0) + "°)");
+        M.forEach(function (r, i) { mono(rows, 480, 80 + i * 32, "[" + f2(r[0]) + " " + f2(r[1]) + " " + f2(r[2]) + "]", { size: 24 }); });
+        var gy = Math.abs(c) * w + Math.abs(sn) * hh, gz = Math.abs(sn) * w + Math.abs(c) * hh;
+        out.text("Godot box: (" + w.toFixed(2) + ", " + gy.toFixed(2) + ", " + gz.toFixed(2) + ")");
+      }, k === 4 && anim);
+      cap(d, 0, 552, "Blender's box was (0.20, 0.20, 1.80): the 1.8 moves from Z to Y.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "One unit is one metre in Blender, glTF and Godot.", "The same mesh is 1.8 m or 1.8 cm, depending on this one number.", "Blender is Z-up. glTF and Godot are Y-up.", "Export with +Y Up and the column stands."][k]);
+  }
+
+  /* ---------- 4. apply transforms, node scale, origin ---------- */
+  function renderXform(el, k, anim) {
+    var svg = svgFor(el, W, H, "Apply scale into the mesh, or the node keeps it; the origin decides where the prop sits", "A 2 m cube scaled into a column, with the scale then baked into the vertices. A sphere collider against a squashed ball. Two posts, one with its origin at the base and one at the centre.");
+    var ey = base(svg, [{ id: "applyT", s: 1 }, { id: "nodescale", s: 2 }, { id: "origin", s: 3 }], k, anim, ["Scale", "the multiplier on an object"], ["Size", "the real dimensions in metres"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "APPLY SCALE");
+      var s = 150, cx = 190, fy = 500;
+      var dash = d.append("rect").attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      d.append("rect").attr("x", cx - 0.1 * s).attr("y", fy - 1.8 * s).attr("width", 0.2 * s).attr("height", 1.8 * s).attr("fill", "#C4C4C4").attr("stroke", INK).attr("stroke-width", 2);
+      var head = lab(d, 380, 60, "", { fill: RED }), l0 = lab(d, 380, 110, "MESH DATA (M)"), r1 = mono(d, 380, 145, "");
+      lab(d, 380, 210, "OBJECT SCALE"); var r2 = mono(d, 380, 245, "");
+      lab(d, 380, 310, "DRAWN SIZE = MESH × SCALE"); var r3 = mono(d, 380, 345, "", { fill: RED, weight: 700 });
+      run(d, 2600, function (t) {
+        var u = d3.easeCubicInOut(t), mw = lerp(2, 0.2, u), mh = lerp(2, 1.8, u), sx = lerp(0.1, 1, u), sy = lerp(0.9, 1, u);
+        dash.attr("x", cx - mw * s / 2).attr("y", fy - mh * s).attr("width", mw * s).attr("height", mh * s);
+        head.text(t < 0.5 ? "BEFORE APPLY" : "AFTER APPLY");
+        r1.text(mw.toFixed(2) + " × " + mh.toFixed(2) + " × " + mw.toFixed(2));
+        r2.text(sx.toFixed(2) + " × " + sy.toFixed(2) + " × " + sx.toFixed(2));
+        r3.text((mw * sx).toFixed(2) + " × " + (mh * sy).toFixed(2) + " × " + (mw * sx).toFixed(2));
+      }, A(anim, k, 1));
+      cap(d, 380, 440, "The drawn size never changes; where the scale lives does.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SCALE LEFT ON THE NODE");
+      var s2 = 130, cx2 = 220, cy2 = 300;
+      d.append("circle").attr("cx", cx2).attr("cy", cy2).attr("r", s2).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      var el_ = d.append("ellipse").attr("cx", cx2).attr("cy", cy2).attr("rx", s2).attr("fill", "#C4C4C4").attr("stroke", INK).attr("stroke-width", 2);
+      var t1 = cap(d, 400, 150, "", { size: 24, weight: 700 }), t2 = cap(d, 400, 300, "", { size: 24, weight: 700, fill: RED });
+      cap(d, cx2, 500, "dashed: sphere collider", { size: 24, anchor: "middle", fill: RED }); cap(d, cx2, 535, "grey: the ball you see", { size: 24, anchor: "middle" });
+      run(d, 2400, function (t) {
+        var sy = lerp(1, 0.4, d3.easeCubicInOut(t));
+        el_.attr("ry", sy * s2);
+        t1.text("node scale (1.0, " + sy.toFixed(1) + ")");
+        t2.text("collider sticks out " + (1 - sy).toFixed(1) + " m");
+      }, A(anim, k, 2));
+      wrap(d, 400, 340, "A sphere has one radius. It cannot follow a stretched mesh.", 28, { size: 24, lh: 30, fill: BODY });
+    } else {
+      lab(d, 0, 30, "WHERE THE ORIGIN SITS");
+      var s3 = 130, fy3 = 380;
+      ln(d, 0, fy3, 760, fy3, INK, 3);
+      var g1 = d.append("g"), g2 = d.append("g");
+      postShapes(g1, 140, fy3, s3);
+      postShapes(g2, 520, fy3 + 0.9 * s3, s3);
+      [140, 520].forEach(function (x) { d.append("circle").attr("cx", x).attr("cy", fy3).attr("r", 10).attr("fill", RED).attr("stroke", "#FFFFFF").attr("stroke-width", 2); });
+      cap(d, 140, 545, "origin at the base", { size: 24, anchor: "middle", weight: 700 }); cap(d, 520, 545, "origin at the centre", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      cap(d, 610, 440, "sinks " + (1.8 / 2).toFixed(1) + " m", { size: 26, weight: 700, fill: RED });
+      if (A(anim, k, 3)) { g2.attr("transform", "translate(0,-" + 0.9 * s3 + ")").transition().duration(1000).attr("transform", "translate(0,0)"); }
+    }
+    note(svg, ey, ["", "Apply moves the scale into the vertices; the node's scale returns to 1.", "A scale left on the node reaches everything built from the mesh.", "Put the origin where the prop meets the floor."][k]);
+  }
+
+  /* ---------- 5. dimensions, bounding box, claim versus measurement ---------- */
+  var VAR3 = [["good", [0.2, 1.8, 0.2], [1, 1, 1]], ["no_yup", [0.2, 0.2, 1.8], [1, 1, 1]], ["no_apply", [2, 2, 2], [0.1, 0.9, 0.1]]];
+  function renderMeasure(el, k, anim) {
+    var svg = svgFor(el, W, H, "Measure the prop: dimensions, a bounding box from vertices, then claim against evidence", "Two Blender prints of dimensions, stale then fresh. Then a bounding box growing around the post's vertices. Then three imported variants checked against the claimed 0.2 by 1.8 by 0.2 metres.");
+    var ey = base(svg, [{ id: "dims", s: 1 }, { id: "bbox", s: 2 }, { id: "claim", s: 3 }], k, anim, ["Claimed", "the script or the name says 1.8 m"], ["Measured", "a test read 1.8 m from the file"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "obj.dimensions AFTER SETTING SCALE");
+      var mesh = [2, 2, 2], scl = [0.1, 0.1, 0.9], fresh = mesh.map(function (m, i) { return m * scl[i]; }), stale = mesh;
+      mono(d, 0, 90, "obj.scale = (0.1, 0.1, 0.9)");
+      mono(d, 0, 150, "print(obj.dimensions)"); mono(d, 0, 190, "(" + stale.map(function (v) { return v.toFixed(1); }).join(", ") + ")  stale", { fill: RED, weight: 700 });
+      mono(d, 0, 260, "bpy.context.view_layer.update()");
+      mono(d, 0, 320, "print(obj.dimensions)"); mono(d, 0, 360, "(" + fresh.map(function (v) { return v.toFixed(1); }).join(", ") + ")  fresh", { weight: 700 });
+      var sc = 80, fy = 470;
+      [[stale[2], 560, GREY, "stale"], [fresh[2], 670, INK, "fresh"]].forEach(function (r, i) {
+        var g = d.append("g"), b = g.append("rect").attr("x", r[1] - 30).attr("y", fy - r[0] * sc).attr("width", 60).attr("height", r[0] * sc).attr("fill", r[2]);
+        cap(g, r[1], fy - r[0] * sc - 12, r[0].toFixed(1), { size: 24, weight: 700, anchor: "middle" }); cap(g, r[1], fy + 30, r[3], { size: 24, anchor: "middle" });
+        if (A(anim, k, 1)) b.attr("y", fy).attr("height", 0).transition().delay(300 + i * 400).duration(700).attr("y", fy - r[0] * sc).attr("height", r[0] * sc);
+      });
+      cap(d, 620, 545, "Z size in metres", { size: 24, fill: MUTED, anchor: "middle" });
+    } else if (k === 2) {
+      lab(d, 0, 30, "BOX GROWS AROUND THE VERTICES");
+      var s = 240, ox = 250, fy2 = 540, N = POSTV.length;
+      ln(d, 0, fy2, 420, fy2, FAMILIAR, 2);
+      postShapes(d, ox, fy2, s, "#F6F6F6");
+      var bx = d.append("rect").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6"), dots = d.append("g");
+      var r1 = mono(d, 440, 120, ""), r2 = mono(d, 440, 160, ""), r3 = mono(d, 440, 230, "", { weight: 700, fill: RED }), r4 = mono(d, 440, 270, "", { weight: 700 });
+      run(d, 3200, function (t) {
+        var n = Math.max(1, Math.ceil(t * N)), sub = POSTV.slice(0, n);
+        var x0 = d3.min(sub, function (p) { return p[0]; }), x1 = d3.max(sub, function (p) { return p[0]; }), z0 = d3.min(sub, function (p) { return p[1]; }), z1 = d3.max(sub, function (p) { return p[1]; });
+        bx.attr("x", ox + x0 * s).attr("y", fy2 - z1 * s).attr("width", (x1 - x0) * s).attr("height", (z1 - z0) * s);
+        dots.selectAll("*").remove();
+        POSTV.forEach(function (p, i) { dots.append("circle").attr("cx", ox + p[0] * s).attr("cy", fy2 - p[1] * s).attr("r", 7).attr("fill", i < n ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2); });
+        r1.text("x: " + f2(x0) + " to " + f2(x1).trim()); r2.text("z: " + f2(z0) + " to " + f2(z1).trim());
+        r3.text("size " + (x1 - x0).toFixed(2) + " × " + (z1 - z0).toFixed(2)); r4.text("half " + ((x1 - x0) / 2).toFixed(2) + " × " + ((z1 - z0) / 2).toFixed(2));
+      }, A(anim, k, 2));
+      cap(d, 440, 330, "12 vertices of the post's side view.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "CLAIMED 0.2 × 1.8 × 0.2 M, 1 CM TOLERANCE");
+      var claim = [0.2, 1.8, 0.2];
+      lab(d, 140, 90, "MEASURED SIZE", { fill: MUTED }); lab(d, 380, 90, "NODE SCALE", { fill: MUTED }); lab(d, 630, 90, "VERDICT", { fill: MUTED });
+      VAR3.forEach(function (v, i) {
+        var g = d.append("g"), y = 140 + i * 90, okSize = v[1].every(function (m, j) { return Math.abs(m - claim[j]) <= 0.01; }), okScale = v[2].every(function (m) { return m === 1; }), ok = okSize && okScale;
+        box(g, 0, y - 36, 740, 70, { stroke: ok ? INK : RED, sw: 2 });
+        mono(g, 12, y + 8, v[0], { weight: 700 }); mono(g, 140, y + 8, "(" + v[1].map(function (n) { return n.toFixed(1); }).join(", ") + ")", { fill: okSize ? INK : RED, weight: okSize ? 400 : 700 });
+        mono(g, 380, y + 8, "(" + v[2].map(function (n) { return n.toFixed(1); }).join(", ") + ")", { fill: okScale ? INK : RED, weight: okScale ? 400 : 700 });
+        if (ok) { check(g, 662, y - 2, 14, INK); cap(g, 684, y + 8, "pass", { size: 24, weight: 700 }); } else { cross(g, 662, y - 2, 12, RED); cap(g, 684, y + 8, "fail", { size: 24, weight: 700, fill: RED }); }
+        fade(g, A(anim, k, 3), i * 450);
+      });
+      wrap(d, 0, 450, "no_apply is drawn at the right size, so only the scale check catches it.", 56, { size: 24, lh: 30, fill: BODY });
+      cap(d, 0, 520, "Values from Chapter 3's three builds of the same column.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Dimensions is stale until the scene refreshes; read it after update.", "The box is the min and max of the vertices, nothing else.", "A name is a claim. Only the number read from the file is evidence."][k]);
+  }
+
+  /* ---------- 6. glTF, GLB, material, import file ---------- */
+  function renderGltf(el, k, anim) {
+    var svg = svgFor(el, W, H, "glTF is a JSON scene plus data; GLB packs it into one file; names and settings cross over", "A file tree for a glTF export, the same pieces packed into one GLB, a material name travelling from Blender to Godot, and the lines of a Godot import file.");
+    var ey = base(svg, [{ id: "gltf", s: 1 }, { id: "glb", s: 2 }, { id: "mat", s: 3 }, { id: "importfile", s: 4 }], k, anim, ["glTF", "scene text plus separate data files"], ["GLB", "everything inside one binary file"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "WHAT A .GLTF EXPORT WRITES");
+      [["checkpoint_post.gltf", 700, 0], ["├ nodes: names, scale", 400, 1], ["├ meshes", 400, 1], ["└ materials", 400, 1], ["checkpoint_post.bin", 700, 0], ["└ vertex data", 400, 1], ["loose images (textures)", 700, 0]].forEach(function (r, i) {
+        var g = d.append("g"); mono(g, r[2] ? 24 : 0, 86 + i * 56, r[0], { weight: r[1] === 700 ? 700 : 400, fill: r[1] === 700 ? INK : BODY }); fade(g, A(anim, k, 1), i * 200);
+      });
+      cap(d, 0, 520, "Three kinds of file to keep together.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "PACKED INTO ONE FILE");
+      var B = d.append("rect").attr("x", 200.5).attr("y", 80.5).attr("width", 360).attr("height", 320).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      cap(d, 380, 70, "checkpoint_post.glb", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      ["scene text", "vertex data", "images"].forEach(function (s, i) {
+        var g = d.append("g"); box(g, 230, 120 + i * 90, 300, 66, { stroke: INK, sw: 2 }); cap(g, 380, 162 + i * 90, s, { size: 24, anchor: "middle" });
+        if (A(anim, k, 2)) g.attr("transform", "translate(-210,0)").transition().delay(i * 300).duration(900).ease(d3.easeCubicInOut).attr("transform", "translate(0,0)");
+      });
+      wrap(d, 0, 450, "One file, no loose textures: use .glb for a small prop. Use .gltf when Git should show scene changes.", 56, { size: 24, lh: 30, fill: BODY });
+    } else if (k === 3) {
+      lab(d, 0, 30, "NAMES CARRY THROUGH");
+      ["BLENDER", "GLTF", "GODOT"].forEach(function (h, i) { lab(d, [0, 270, 500][i], 80, h); });
+      [["PostMetal", "PostMetal", "StandardMaterial3D", true], ["FlagCloth", "FlagCloth", "StandardMaterial3D", true], ["Blender-only node", "does not cross", "not imported", false]].forEach(function (r, i) {
+        var g = d.append("g"), y = 110 + i * 110, c = r[3] ? INK : RED;
+        box(g, 0, y, 220, 70, { stroke: INK, sw: 2 }); cap(g, 110, y + 44, r[0], { size: 24, anchor: "middle", weight: 700 });
+        arrow(g, 224, y + 35, 262, y + 35, c, 3); box(g, 270, y, 210, 70, { stroke: c, sw: 2 }); cap(g, 375, y + 44, r[1], { size: 24, anchor: "middle", fill: c });
+        arrow(g, 484, y + 35, 494, y + 35, c, 3); box(g, 500, y, 260, 70, { stroke: c, sw: 2 }); cap(g, 630, y + 44, r[2], { size: 24, anchor: "middle", fill: c });
+        fade(g, A(anim, k, 3), i * 400);
+      });
+      wrap(d, 0, 470, "In Godot the resource name is still PostMetal, so a test can check it.", 56, { size: 24, lh: 30, fill: BODY });
+    } else {
+      lab(d, 0, 30, "THE .IMPORT FILE, [PARAMS]");
+      ["nodes/root_type=\"\"", "nodes/root_scale=1.0", "nodes/apply_root_scale=false", "nodes/use_name_suffixes=false", "nodes/use_node_type_suffixes=false", "meshes/generate_lods=true", "materials/extract=0"].forEach(function (l, i) {
+        var g = d.append("g"), hot = i === 4; mono(g, 0, 80 + i * 42, l, { weight: hot ? 700 : 400, fill: hot ? RED : INK }); if (hot) cap(g, 520, 80 + i * 42, "← decides", { size: 24, fill: RED, weight: 700 });
+        fade(g, A(anim, k, 4), i * 150);
+      });
+      cap(d, 0, 440, "Demo model imports: false. A fresh import in Godot 4.7.2: true.", { size: 24, weight: 700 });
+      cap(d, 0, 480, "Copy the demo's file, and Godot ignores your name hints.", { size: 24, fill: RED });
+    }
+    note(svg, ey, ["", "glTF is the exchange format: readable scene, data beside it.", "GLB is the same content in one file.", "A named material arrives as a named material.", "Settings in the file decide what Godot builds."][k]);
+  }
+
+  /* ---------- 7. suffix, collision shape, convex ---------- */
+  function renderColl(el, k, anim) {
+    var svg = svgFor(el, W, H, "A name suffix makes Godot build collision; a simple hull beats the visual mesh; convex shapes have no dents", "A table of name suffixes and what Godot builds. Then a box collider morphing into a tapered hull while the count of pennant points inside it falls. Then a convex and a concave shape with a line test.");
+    var ey = base(svg, [{ id: "suffix", s: 1 }, { id: "colshape", s: 2 }, { id: "convex", s: 3 }], k, anim, ["Visual mesh", "what you see, 42 triangles"], ["Collision shape", "what physics uses, 12 triangles"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "SUFFIX ON A MESH NAME");
+      [["-col", "keeps the mesh, adds concave collision"], ["-convcol", "keeps the mesh, adds convex collision"], ["-colonly", "removes the mesh, makes a concave body"], ["-convcolonly", "removes the mesh, makes a convex body"], ["-noimp", "removes the node"]].forEach(function (r, i) {
+        var g = d.append("g"), hot = i === 3; mono(g, 0, 76 + i * 44, r[0], { weight: hot ? 700 : 400, fill: hot ? RED : INK }); cap(g, 220, 76 + i * 44, r[1], { size: 24, weight: hot ? 700 : 400, fill: hot ? RED : BODY });
+        fade(g, A(anim, k, 1), i * 150);
+      });
+      var f = d.append("g"); mono(f, 0, 340, "use_node_type_suffixes = true", { weight: 700 }); cap(f, 0, 372, "→ StaticBody3D with a convex shape", { size: 24 }); fade(f, A(anim, k, 1), 1000);
+      var f2_ = d.append("g"); mono(f2_, 0, 430, "use_node_type_suffixes = false", { weight: 700, fill: RED }); cap(f2_, 0, 462, "→ a visible box, and no collision at all", { size: 24, fill: RED, weight: 700 }); fade(f2_, A(anim, k, 1), 1800);
+    } else if (k === 2) {
+      lab(d, 0, 30, "BOX COLLIDER BECOMES A HULL");
+      var s = 270, ox = 190, fy = 555;
+      ln(d, 0, fy, 420, fy, FAMILIAR, 2);
+      var hull = d.append("path").attr("fill", TINT).attr("fill-opacity", 0.55).attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      postShapes(d, ox, fy, s, "#C4C4C4");
+      var c1 = mono(d, 440, 120, "", { size: 24, weight: 700, fill: RED }), c2 = mono(d, 440, 160, "", { size: 24 }), c3 = cap(d, 440, 230, "", { size: 24, weight: 700 });
+      run(d, 3200, function (t) {
+        var top = lerp(0.3, 0.08, d3.easeCubicInOut(t)), P = [[-0.3, 0], [0.3, 0], [top, 1.8], [-top, 1.8]].map(function (p) { return (ox + p[0] * s) + "," + (fy - p[1] * s); });
+        hull.attr("d", "M" + P.join("L") + "Z");
+        var r = pennantInside(top);
+        c1.text(r[0] + " of " + d3.format(",")(r[1])); c2.text("top half-width " + top.toFixed(2) + " m"); c3.text(top > 0.29 ? "box collider" : top < 0.09 ? "tapered hull" : "tapering");
+      }, A(anim, k, 2));
+      wrap(d, 440, 300, "Pennant points inside the collider. The goal is 0.", 28, { size: 24, lh: 30, fill: BODY });
+      wrap(d, 440, 400, "Chapter 3's physics sampling found 572 for the box and 55 for the hull.", 28, { size: 24, lh: 30, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "CAN A LINE LEAVE THE SHAPE?");
+      var hullPts = d3.polygonHull(UPOLY);
+      var gA = d.append("g").attr("transform", "translate(0,60)"), gB = d.append("g").attr("transform", "translate(400,60)");
+      gA.append("path").attr("d", "M" + UPOLY.join("L") + "Z").attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3);
+      gA.append("path").attr("d", "M" + hullPts.join("L") + "Z").attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      gB.append("path").attr("d", "M" + HEX.join("L") + "Z").attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3);
+      var pa = [[80, 250], [280, 250]], pb = [[110, 150], [280, 240]], fa = outsideFrac(pa[0], pa[1], UPOLY), fb = outsideFrac(pb[0], pb[1], HEX);
+      [[gA, pa, RED, fa], [gB, pb, INK, fb]].forEach(function (r, i) {
+        var l = ln(r[0], r[1][0][0], r[1][0][1], r[1][1][0], r[1][1][1], r[2], 5); if (A(anim, k, 3)) drawIn(l, 400, 900);
+        r[1].forEach(function (p) { r[0].append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 9).attr("fill", INK); });
+        cap(r[0], i ? 190 : 180, 370, i ? "convex" : "concave", { size: 28, weight: 700, anchor: "middle", fill: i ? INK : RED });
+        cap(r[0], i ? 190 : 180, 410, (r[3] * 100).toFixed(0) + "% of the line is outside", { size: 24, anchor: "middle" });
+      });
+      cap(d, 0, 560, "Dashed: the convex hull, the tightest convex shape round the dent.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A name can turn a mesh into collision, if the setting is on.", "A simple hull is cheaper than the mesh, and you shape it.", "Convex is cheap for physics. Concave is exact and costly."][k]);
+  }
+
+  /* ---------- 8. triangle count, high-poly and low-poly, baking, LOD ---------- */
+  function renderBudget(el, k, anim) {
+    var svg = svgFor(el, W, H, "Triangle budgets: count triangles, sculpt high and run low, bake the detail, swap levels at distance", "Four tallies of one box, a log-scale comparison of a sculpt and the post, a bumpy surface baked into an image strip, and a level-of-detail step chart as the post moves away.");
+    var ey = base(svg, [{ id: "tri", s: 1 }, { id: "hilo", s: 2 }, { id: "bake", s: 3 }, { id: "lod", s: 4 }], k, anim, ["Face count", "what Blender shows"], ["Triangle count", "what the engine budgets"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "ONE BOX: THE POST'S BASE");
+      var vv = 8, ff = 6, tt = ff * 2, gv = vv * 3;
+      [["vertices", vv], ["faces", ff], ["triangles", tt], ["GPU vertices", gv]].forEach(function (r, i) {
+        var g = d.append("g"), y = 80 + i * 70; cap(g, 0, y + 30, r[0], { size: 24, weight: 700 });
+        bar(g, 220, y + 6, r[1] * 20, 36, i === 2 ? RED : INK, A(anim, k, 1), i * 250); cap(g, 220 + r[1] * 20 + 10, y + 34, "" + r[1], { size: 26, weight: 700 });
+      });
+      wrap(d, 0, 400, "Whole post: base " + TRI.base + " + pole " + TRI.pole + " + pennant " + TRI.pen + " = " + TRI.total + " triangles.", 56, { size: 26, lh: 32, weight: 700, fill: RED });
+      cap(d, 0, 480, "A capped, 8-sided pole. A corner splits in three on the GPU.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "TRIANGLES, LOG SCALE");
+      var hi = 2000000, lo = TRI.total, lw = function (n) { return Math.log10(n) / Math.log10(hi) * 480; };
+      [["high-poly sculpt", hi, GREY], ["low-poly post", lo, RED]].forEach(function (r, i) {
+        var g = d.append("g"), y = 90 + i * 130; cap(g, 0, y, r[0], { size: 24, weight: 700 }); bar(g, 0, y + 16, lw(r[1]), 44, r[2], A(anim, k, 2), i * 400); cap(g, lw(r[1]) + 12, y + 50, d3.format(",")(r[1]), { size: 26, weight: 700 });
+      });
+      cap(d, 0, 400, "About " + d3.format(",")(Math.round(hi / lo)) + " times fewer.", { size: 28, weight: 700, fill: RED });
+      cap(d, 0, 450, "The sculpt's size is an illustrative round number.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "DETAIL MOVES INTO AN IMAGE");
+      var N = 80, bump = function (x) { return 0.5 + 0.5 * Math.sin(x * 14) * Math.cos(x * 5); };
+      var pts = d3.range(N).map(function (i) { var x = i / (N - 1); return [x * 300, 170 - 50 * bump(x)]; });
+      d.append("path").attr("d", "M" + pts.join("L")).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 150, 270, "high-poly: " + N + " points", { size: 24, anchor: "middle", weight: 700 });
+      arrow(d, 330, 150, 420, 150, RED, 4); cap(d, 375, 130, "bake", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      ln(d, 440, 170, 740, 170, INK, 3); cap(d, 590, 270, "low-poly: 2 points", { size: 24, anchor: "middle", weight: 700 });
+      var cells = 20, cw = 300 / cells, gg = d.append("g");
+      d3.range(cells).forEach(function (i) { var h = bump((i + 0.5) / cells), c = Math.round(60 + 170 * h); var r = gg.append("rect").attr("x", 440 + i * cw).attr("y", 330).attr("width", cw).attr("height", 60).attr("fill", "rgb(" + c + "," + c + "," + c + ")"); if (A(anim, k, 3)) r.attr("opacity", 0).transition().delay(i * 60).duration(200).attr("opacity", 1); });
+      d.append("rect").attr("x", 440.5).attr("y", 330.5).attr("width", 300).attr("height", 60).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      cap(d, 590, 440, "baked image: " + cells + " values", { size: 24, anchor: "middle" });
+      cap(d, 0, 520, "The cheap mesh wears the expensive surface.", { size: 26, weight: 700 });
+    } else {
+      lab(d, 0, 30, "ONE POST, MOVING AWAY (ILLUSTRATIVE LEVELS)");
+      var x0 = 30, mpx = 17, base_ = 330, L = [TRI.total, Math.round(TRI.total / 2), Math.round(TRI.total / 4)], cut = [0, 10, 25, 40], hs = 5;
+      L.forEach(function (n, i) { d.append("rect").attr("x", x0 + cut[i] * mpx).attr("y", base_ - n * hs).attr("width", (cut[i + 1] - cut[i]) * mpx).attr("height", n * hs).attr("fill", i === 0 ? "#C4C4C4" : i === 1 ? "#E3E3E3" : "#F6F6F6").attr("stroke", INK).attr("stroke-width", 2); cap(d, x0 + (cut[i] + cut[i + 1]) / 2 * mpx, base_ - n * hs - 12, "LOD " + i + ": " + n, { size: 24, anchor: "middle", weight: 700 }); });
+      ln(d, x0, base_, x0 + 40 * mpx, base_, INK, 3);
+      cut.forEach(function (c) { cap(d, x0 + c * mpx, base_ + 34, c + " m", { size: 24, anchor: "middle" }); });
+      var mk = d.append("circle").attr("r", 12).attr("cy", base_ + 66).attr("fill", RED), rd = cap(d, 0, 490, "", { size: 26, weight: 700 });
+      run(d, 4200, function (t) {
+        var m = t * 40, i = m < 10 ? 0 : m < 25 ? 1 : 2; mk.attr("cx", x0 + m * mpx); rd.text("at " + m.toFixed(0) + " m: LOD " + i + ", " + L[i] + " triangles");
+      }, A(anim, k, 4));
+      cap(d, 0, 540, "Where a level switches, the mesh can visibly jump: popping.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "", "", ""][k]);
+  }
+
+  /* ---------- 9. script as source, version control, naming ---------- */
+  function renderOrder(el, k, anim) {
+    var svg = svgFor(el, W, H, "Keep the script, version it, and name things so tools can read them", "A script feeding headless Blender and producing a GLB; a text diff beside a binary diff; four file names checked against a naming rule.");
+    var ey = base(svg, [{ id: "srcscript", s: 1 }, { id: "vcs", s: 2 }, { id: "naming", s: 3 }], k, anim, ["Source", "the script you review and rerun"], ["Build product", "the .glb it writes"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "SCRIPT IN, MODEL OUT");
+      [["build_post.py", 0, 230, INK], ["Blender -b", 290, 170, GREY], ["post.glb", 520, 220, RED]].forEach(function (b, i) {
+        var g = d.append("g"); box(g, b[1], 90, b[2], 80, { stroke: b[3], sw: 3 }); cap(g, b[1] + b[2] / 2, 140, b[0], { size: 24, anchor: "middle", weight: 700, fill: b[3] === RED ? RED : INK }); fade(g, A(anim, k, 1), i * 400);
+      });
+      var a1 = d.append("g"); arrow(a1, 236, 130, 284, 130, INK, 3); arrow(a1, 466, 130, 514, 130, INK, 3); fade(a1, A(anim, k, 1), 500);
+      [1, 2].forEach(function (r, i) { var g = d.append("g"); cap(g, 0, 270 + i * 50, "run " + r + " → post.glb, same bytes", { size: 26 }); check(g, 480, 262 + i * 50, 14, RED); fade(g, A(anim, k, 1), 1200 + i * 500); });
+      wrap(d, 0, 420, "The chapter reran the final script and git status showed no change. Commit the script and the .glb.", 56, { size: 24, lh: 30, fill: BODY });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SAME EDIT, TWO FILE TYPES");
+      box(d, 0, 70, 350, 220, { stroke: GREY, sw: 3 }); cap(d, 14, 108, ".blend (binary)", { size: 24, weight: 700 });
+      var g1 = d.append("g"); mono(g1, 14, 190, "Binary files"); mono(g1, 14, 230, "differ", {}); fade(g1, A(anim, k, 2), 300);
+      box(d, 390, 70, 350, 220, { stroke: INK, sw: 3 }); cap(d, 404, 108, ".py (text)", { size: 24, weight: 700 });
+      var g2 = d.append("g"); mono(g2, 404, 170, "  pole.radius = 0.08", {}); mono(g2, 404, 210, "- top = 1.7", { fill: RED, weight: 700 }); mono(g2, 404, 250, "+ top = 1.8", { fill: RED, weight: 700 }); fade(g2, A(anim, k, 2), 300);
+      wrap(d, 0, 360, "A version history keeps every version, shows who changed it, and warns when two people clash.", 56, { size: 24, lh: 30, fill: BODY });
+      cap(d, 0, 470, "A diff you can read needs text: the script.", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "RULE: prop_ + lowercase words + .glb");
+      var re = /^prop_[a-z]+(_[a-z]+)*\.glb$/;
+      ["prop_checkpoint_post.glb", "post final NEW (2).glb", "Cube.003", "prop_pennant_flag.glb"].forEach(function (nm, i) {
+        var g = d.append("g"), y = 100 + i * 70, ok = re.test(nm);
+        box(g, 0, y - 34, 740, 56, { stroke: ok ? INK : RED, sw: 2 }); mono(g, 14, y + 4, nm, {});
+        if (ok) { check(g, 580, y - 6, 12, INK); cap(g, 604, y + 4, "ok", { size: 24, weight: 700 }); } else { cross(g, 580, y - 6, 11, RED); cap(g, 604, y + 4, "rename", { size: 24, weight: 700, fill: RED }); }
+        fade(g, A(anim, k, 3), i * 350);
+      });
+      wrap(d, 0, 430, "Godot's -convcolonly suffix is a naming convention too: the importer reads it.", 56, { size: 24, lh: 30, fill: BODY });
+    }
+    note(svg, ey, ["", "The script is the source of truth; the .glb is its output.", "Text can be diffed and merged. A .blend cannot.", "A rule for names lets tools and people find things."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the Blender to Godot pipeline", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Scale", "A multiplier on the object"], ["Size", "The real dimensions in metres"]],
+      [["MCP route", "A transcript of tool calls"], ["Script route", "A file you can diff and rerun"]],
+      [["Visual mesh", "The detailed shape you see"], ["Collision shape", "The simple shape physics uses"]],
+      [["Concave", "Has a hollow; a line can leave it"], ["Convex", "No dents; a line stays inside"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 500, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(20,0)"), RG = R.append("g").attr("transform", "translate(20,0)");
+      if (i === 0) {
+        var s = 120, fy = 440, v = 2 * (1 - 0.1 * t);
+        LG.append("rect").attr("x", 40).attr("y", fy - 2 * s).attr("width", 150).attr("height", 2 * s).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+        LG.append("rect").attr("x", 40).attr("y", fy - v * s).attr("width", 150).attr("height", v * s).attr("fill", "#C4C4C4").attr("stroke", INK).attr("stroke-width", 2);
+        cap(LG, 230, 200, "× 0.9", { size: 36, weight: 700, fill: RED }); cap(LG, 230, 250, "mesh 2.0 m", { size: 24, fill: MUTED });
+        RG.append("rect").attr("x", 40).attr("y", fy - 1.8 * s).attr("width", 150).attr("height", 1.8 * s).attr("fill", "#C4C4C4").attr("stroke", INK).attr("stroke-width", 2);
+        cap(RG, 230, 200, "1.8 m", { size: 36, weight: 700 }); cap(RG, 230, 250, "measured", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        box(LG, 0, 110, 620, 260, { stroke: GREY, sw: 3 }); box(RG, 0, 110, 620, 260, { stroke: INK, sw: 3 });
+        ["get_scene_info", "execute_blender_code", "export_scene"].forEach(function (s, j) { if (t > j / 3.2) mono(LG, 20, 170 + j * 70, "→ " + s, { size: 24 }); });
+        ["import bpy", "build_post(...)", "export_gltf(...)"].forEach(function (s, j) { if (t > j / 3.2) mono(RG, 20, 170 + j * 70, s, { size: 24 }); });
+        if (t > 0.9) { cap(LG, 20, 410, "no file records how", { size: 24, fill: RED }); cap(RG, 20, 410, "rerun: same .glb", { size: 24, fill: RED }); }
+      } else if (i === 2) {
+        var s3 = 130, fy3 = 440;
+        postShapes(LG, 170, fy3, s3);
+        var P = [[-0.3, 0], [0.3, 0], [0.3, 1.8], [-0.3, 1.8]].map(function (p) { return (170 + p[0] * s3) + "," + (fy3 - p[1] * s3); });
+        RG.append("path").attr("d", "M" + P.join("L") + "Z").attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+        postShapes(RG, 170, fy3, s3, "none"); RG.selectAll("rect").attr("opacity", 0.15);
+        cap(LG, 360, 250, Math.round(TRI.total * Math.min(1, t * 1.4)) + " triangles", { size: 26, weight: 700 }); cap(RG, 360, 250, Math.round(TRI.col * Math.min(1, t * 1.4)) + " triangles", { size: 26, weight: 700, fill: RED });
+      } else {
+        var sA = d3.polygonHull(UPOLY), pa = [[80, 250], [280, 250]], pb = [[110, 150], [280, 240]];
+        var ga = LG.append("g").attr("transform", "translate(0,60) scale(1.45)"), gb = RG.append("g").attr("transform", "translate(0,60) scale(1.45)");
+        ga.attr("transform", "translate(0,60) scale(0.9)"); gb.attr("transform", "translate(0,60) scale(0.9)");
+        ga.append("path").attr("d", "M" + UPOLY.join("L") + "Z").attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3);
+        gb.append("path").attr("d", "M" + HEX.join("L") + "Z").attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3);
+        var ea = [pa[0][0] + (pa[1][0] - pa[0][0]) * t, pa[0][1]], eb = [pb[0][0] + (pb[1][0] - pb[0][0]) * t, pb[0][1] + (pb[1][1] - pb[0][1]) * t];
+        ln(ga, pa[0][0], pa[0][1], ea[0], ea[1], RED, 5); ln(gb, pb[0][0], pb[0][1], eb[0], eb[1], INK, 5);
+        pa.concat([]).forEach(function (p) { ga.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 9).attr("fill", INK); });
+        pb.forEach(function (p) { gb.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 9).attr("fill", INK); });
+        cap(LG, 0, 440, (outsideFrac(pa[0], pa[1], UPOLY) * 100).toFixed(0) + "% of the line is outside", { size: 24, fill: RED }); cap(RG, 0, 440, (outsideFrac(pb[0], pb[1], HEX) * 100).toFixed(0) + "% of the line is outside", { size: 24 });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 640, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the prop the right size", x: "Keep unit scale at 1.0, apply scale, and require the mesh to measure 0.2 × 1.8 × 0.2 m within 1 cm" },
+    { v: "it's lying on its side", x: "Export with +Y Up on, then check that Blender's Z extent shows up as Godot's Y" },
+    { v: "make the collision work", x: "Name a simple mesh Collision-convcolonly and turn use_node_type_suffixes on" },
+    { v: "keep it cheap", x: "Keep the post under 100 triangles (the visual mesh is 42, the collider 12)" },
+    { v: "keep the flag out of the collider", x: "Sample the pennant on a 1 cm grid and require 0 points inside the collider" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests about a Blender export turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction checks.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION CHECKS", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      var sc = 400 / 2.2, x0 = 150;
+      cap(p, 14, 30, "height in Godot's Y, claim 1.8 m", { size: 24, fill: MUTED });
+      VAR3.forEach(function (v, i) {
+        var y = 70 + i * 74, ok = Math.abs(v[1][1] - 1.8) <= 0.01;
+        mono(p, 14, y + 26, v[0], { size: 24 }); bar(p, x0, y, v[1][1] * sc, 36, ok ? INK : RED, anim, i * 300); cap(p, x0 + v[1][1] * sc + 10, y + 28, v[1][1].toFixed(1) + (ok ? " ok" : " fail"), { size: 24, weight: 700, fill: ok ? INK : RED });
+      });
+      ln(p, x0 + 1.8 * sc, 56, x0 + 1.8 * sc, 292, RED, 2, "6 6");
+      nt = "only one of three matches the claim";
+    } else if (k === 2) {
+      var bl = [0.2, 0.2, 1.8], gd = [0.2, 1.8, 0.2], sc2 = 150 / 1.8, base2 = 250;
+      ["x", "y", "z"].forEach(function (ax, i) {
+        var cx = 110 + i * 190;
+        [[bl[i], -34, "#C4C4C4"], [gd[i], 34, RED]].forEach(function (r, j) {
+          var b = p.append("rect").attr("x", cx + r[1] - 30).attr("y", base2 - r[0] * sc2).attr("width", 60).attr("height", r[0] * sc2).attr("fill", r[2]);
+          if (anim) b.attr("y", base2).attr("height", 0).transition().delay(i * 150 + j * 300).duration(700).attr("y", base2 - r[0] * sc2).attr("height", r[0] * sc2);
+        });
+        cap(p, cx, base2 + 30, ax, { size: 24, anchor: "middle", weight: 700 });
+      });
+      cap(p, 14, 30, "grey is Blender; red is Godot", { size: 24, fill: MUTED });
+      nt = "the 1.8 moves from the z group to the y group";
+    } else if (k === 3) {
+      [["suffix setting true", 1, "StaticBody3D, convex shape"], ["suffix setting false", 0, "visible box, no collision"]].forEach(function (r, i) {
+        var y = 40 + i * 120, g2 = p.append("g");
+        cap(g2, 14, y + 26, r[0], { size: 24, weight: 700 });
+        box(g2, 14, y + 44, 120, 50, { stroke: r[1] ? INK : RED, sw: 3 }); if (r[1]) bar(g2, 16, y + 46, 116, 46, INK, anim, i * 400);
+        cap(g2, 150, y + 78, r[1] + " collider: " + r[2], { size: 24, fill: r[1] ? INK : RED, weight: 700 });
+      });
+      nt = "the same mesh, one setting apart";
+    } else if (k === 4) {
+      var sc4 = 480 / 100;
+      [["visual mesh", TRI.total, INK], ["collider", TRI.col, "#C4C4C4"]].forEach(function (r, i) {
+        var y = 70 + i * 90; cap(p, 14, y, r[0], { size: 24 }); bar(p, 14, y + 12, r[1] * sc4, 38, r[2], anim, i * 400); cap(p, 14 + r[1] * sc4 + 10, y + 42, "" + r[1], { size: 24, weight: 700 });
+      });
+      ln(p, 14 + 100 * sc4, 40, 14 + 100 * sc4, 250, RED, 3, "6 6"); cap(p, 14 + 100 * sc4 - 8, 270, "budget 100", { size: 24, anchor: "end", fill: RED, weight: 700 });
+      nt = "42 of 100: inside the (illustrative) budget";
+    } else {
+      var box_ = pennantInside(0.3), hull = pennantInside(0.08), sc5 = 440 / box_[1];
+      [["box", box_[0], RED], ["hull", hull[0], "#C4C4C4"], ["goal", 0, INK]].forEach(function (r, i) {
+        var y = 40 + i * 80; mono(p, 14, y + 28, r[0], { size: 24 }); bar(p, 110, y + 4, Math.max(r[1] * sc5, 4), 36, r[2], anim, i * 400); cap(p, 110 + Math.max(r[1] * sc5, 4) + 10, y + 32, r[1] + " of " + d3.format(",")(box_[1]), { size: 24, weight: 700 });
+      });
+      nt = "points inside, counted on a 1 cm grid";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is unit scale 1.0, so one unit is one metre?",
+    "Did I apply rotation and scale, so every node's scale is 1?",
+    "Is the model Y-up in Godot, with Blender's Z on Godot's Y?",
+    "Do the measured dimensions match the claim, within 1 cm?",
+    "Is the collider a simple separate mesh, and did its suffix take effect?",
+    "Is the script committed, and does a script error end the run non-zero?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust an imported model", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it the right size”, but “0.2 × 1.8 × 0.2 m, scale 1”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, mcp: { steps: 3, render: renderMcp }, script: { steps: 3, render: renderScript },
+    axes: { steps: 4, render: renderAxes }, xform: { steps: 3, render: renderXform }, measure: { steps: 3, render: renderMeasure },
+    gltf: { steps: 4, render: renderGltf }, coll: { steps: 3, render: renderColl }, budget: { steps: 4, render: renderBudget },
+    order: { steps: 3, render: renderOrder }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

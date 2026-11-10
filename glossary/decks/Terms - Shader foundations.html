@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shaders: foundations | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Shaders, foundations and the Godot shading language">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Shaders: foundations">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 6</p>
+      <h1 class="t-opening rise g2">Shaders: foundations</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">The Godot shading language, and how a script steers a shader</p>
+      <div class="speaker-notes" hidden><p>Deck 6a of the topic order, first of three on shaders (6b textures and materials, 6c verification). 33 terms. Tags: in the book text means the chapters use and explain it; in the glossary means a glossary row only; editor or docs means defined only by the Godot shading language reference; video only means only the Riot series defines it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-three terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-three terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6; glossary, Shaders and materials and glossary, Shader foundations; Riot series episode 5 (vertex colour).</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Shader, vertex shader, fragment shader">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a shader is</p>
+      <h2 class="t-chart">Shader, vertex shader, fragment shader</h2>
+      <div class="diagram build" data-build="what" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “A shader is a small program the GPU runs many times at once”; glossary, Shaders and materials; glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Grid of 24 by 16 pixels: colour is computed from position. Vertex wave: 70 px amplitude, phase 0.8 per vertex. Disc: pixels whose centres are within 7 cells of the middle.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The pipeline: two stages you write, two built in">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a shader is</p>
+      <h2 class="t-chart">The pipeline: two stages you write, two built in</h2>
+      <div class="diagram build" data-build="pipe" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Stage list is the standard four; the glossary rows are Programmable stage, Fixed-function and Rasterization. The triangle and its covered cells are computed by testing cell centres.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Fragment, varying, interpolation">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a shader is</p>
+      <h2 class="t-chart">Fragment, varying, interpolation</h2>
+      <div class="diagram build" data-build="interp" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Shaders and materials; glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Weights are barycentric coordinates of each cell centre in the triangle; colour = weighted sum of the three corner colours.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="shader_type, canvas_item, spatial">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The Godot language</p>
+      <h2 class="t-chart">shader_type, canvas_item, spatial</h2>
+      <div class="diagram build" data-build="lang" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “Shader types and processor functions”; glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>The six types and their draws are from the chapter table. Corner coordinates in the demos are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The Godot shading language and compile errors">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">The Godot language</p>
+      <h2 class="t-chart">The Godot shading language and compile errors</h2>
+      <div class="diagram build" data-build="err" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “How Godot compiles your shader, and what a headless run can see”; glossary, Shader verification (Compile error).</p>
+      <div class="speaker-notes" hidden><p>The scan checks that each code line ends with a semicolon, brace or closing brace. The log, empty uniform list and exit code 0 are the chapter’s headless findings.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="UV and SCREEN_UV">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The Godot language</p>
+      <h2 class="t-chart">UV and SCREEN_UV</h2>
+      <div class="diagram build" data-build="uv" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “Inside a canvas_item shader”; glossary, Shaders and materials; glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>The 8 by 8 texture is illustrative. UV and SCREEN_UV values are computed from the probe position.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Vertex colour, TEXTURE, COLOR, TIME">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The Godot language</p>
+      <h2 class="t-chart">Vertex colour, TEXTURE, COLOR, TIME</h2>
+      <div class="diagram build" data-build="builtins" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “Inside a canvas_item shader”; glossary, Shader foundations; Riot series episode 5, Technical Art (vertex colour).</p>
+      <div class="speaker-notes" hidden><p>Terrain heights are illustrative. Products are computed channel by channel. Clawd’s body colour is #dd775b from Chapter 6.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Uniform, hint_range, source_color">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Steering from code</p>
+      <h2 class="t-chart">Uniform, hint_range, source_color</h2>
+      <div class="diagram build" data-build="uni" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “Uniforms and hints”; Chapter 7 (sRGB); glossary, Shaders and materials; glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Colours are Clawd’s body #dd775b and ink #25354a from Chapter 6. The chapter reports that 7.0 set from code was stored as 7.0 in a headless run on 4.7.2.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Material, ShaderMaterial, set_shader_parameter">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Steering from code</p>
+      <h2 class="t-chart">Material, ShaderMaterial, set_shader_parameter</h2>
+      <div class="diagram build" data-build="mat" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “Uniforms and hints”; glossary, Shaders and materials; glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Shared-material behaviour is from the ShaderMaterial reference as quoted in Chapter 6. The sprite colours are computed with mix.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="RGBA, linear and sRGB">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Colour and curves</p>
+      <h2 class="t-chart">RGBA, linear and sRGB</h2>
+      <div class="diagram build" data-build="rgba" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Shader foundations; Chapter 7, “sRGB and linear”; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>sRGB to linear uses the standard piecewise formula; 0.5 encoded is 0.214 linear (Chapter 7 gives 0.502 as 0.216).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="mix, step, smoothstep, clamp">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Colour and curves</p>
+      <h2 class="t-chart">mix, step, smoothstep, clamp</h2>
+      <div class="diagram build" data-build="curves" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Shader foundations; Godot shading language reference (step, smoothstep, clamp).</p>
+      <div class="speaker-notes" hidden><p>Each curve is drawn from its formula: smoothstep is t · t · (3 − 2t) with t = clamp((x − e0) / (e1 − e0), 0, 1).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6; glossary, Shaders and materials and glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Vertex and fragment shader, uniform and varying, shader and material, hint_range and clamp.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 6 and 7; glossary, Shaders and materials and glossary, Shader foundations.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions, each with a computed chart.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust an agent’s shader">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust an agent’s shader</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, “How Godot compiles your shader, and what a headless run can see”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Shaders: foundations and the Godot shading language (Chapter 6) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = chapters/*.md use and explain it; gloss = glossary row only; editor = Godot docs only; video = Riot video only */
+  var T = {
+    shader: { n: "Shader", tag: "book", m: "A small program on the graphics processor, run many times at once" },
+    vshader: { n: "Vertex shader", tag: "book", m: "Runs per vertex; sets positions (waves, displacement)" },
+    fshader: { n: "Fragment (pixel) shader", tag: "book", m: "Runs per pixel; sets colour (tint, glint)" },
+    prog: { n: "Programmable stage", tag: "gloss", m: "A pipeline step you write a shader for" },
+    fixed: { n: "Fixed-function", tag: "gloss", m: "Old hardware steps that could be configured but not programmed" },
+    raster: { n: "Rasterization", tag: "gloss", m: "Turning triangles into fragments on the screen grid" },
+    frag: { n: "Fragment", tag: "gloss", m: "A candidate pixel colour produced by rasterization for one covered screen position" },
+    varying: { n: "Varying", tag: "gloss", m: "A value passed from the vertex stage to the fragment stage, interpolated on the way" },
+    interp: { n: "Interpolation (shader)", tag: "gloss", m: "Smoothly blending vertex values across a triangle's fragments" },
+    stype: { n: "shader_type", tag: "book", m: "First line of a shader: says what it draws, and so which functions you can write" },
+    cnv: { n: "canvas_item", tag: "book", m: "Godot shader type for 2D drawing: sprites, shapes, UI" },
+    spat: { n: "spatial", tag: "book", m: "Godot shader type for 3D drawing: meshes" },
+    gsl: { n: "Godot shading language", tag: "book", m: "Based on GLSL but simplified; the ideas carry over between dialects" },
+    cerr: { n: "Compile error", tag: "book", m: "The shader fails to build and gives an error message; a headless run still exits 0" },
+    uv: { n: "UV", tag: "book", m: "2D coordinates mapping a surface to a texture, 0 to 1 across it" },
+    suv: { n: "SCREEN_UV", tag: "book", m: "Godot built-in: the screen position of the current fragment, 0 to 1" },
+    vcol: { n: "Vertex colour", tag: "video", m: "Colour stored on each vertex; can blend textures or paint terrain by height" },
+    tex: { n: "TEXTURE", tag: "book", m: "The default 2D texture the item was drawn with" },
+    color: { n: "COLOR", tag: "book", m: "Arrives as vertex colour times TEXTURE colour; what you leave in it is drawn" },
+    time: { n: "TIME", tag: "book", m: "Seconds since the engine started; repeats after 3,600 s" },
+    uniform: { n: "Uniform", tag: "book", alias: "also called: shader parameter", m: "A value set from code, the same across a draw; how scripts steer a shader" },
+    hrange: { n: "hint_range", tag: "book", m: "Gives the Inspector a slider; does not clamp values set from code" },
+    srcol: { n: "source_color", tag: "book", m: "Marks a colour as sRGB data so it is decoded to linear for the maths" },
+    mat: { n: "Material", tag: "book", m: "A shader plus its parameter values and textures" },
+    smat: { n: "ShaderMaterial", tag: "book", m: "A material that uses a custom Shader program and holds its parameter values" },
+    setp: { n: "set_shader_parameter", tag: "book", m: "Changes one uniform's value on a material, by name; a typo does nothing" },
+    shared: { n: "Shared material", tag: "book", m: "One material used by many objects, so a change hits them all" },
+    rgba: { n: "RGBA", tag: "gloss", m: "Red, green, blue and alpha channels" },
+    linsrgb: { n: "Linear vs sRGB", tag: "book", m: "sRGB is the encoding for images shown to people; linear values are proportional to light, the right space for maths" },
+    mix: { n: "Mix", tag: "gloss", m: "Blend two values by a fraction; also called lerp" },
+    step: { n: "step(edge, x)", tag: "editor", m: "Gives 0 below the edge and 1 from the edge up: a hard switch" },
+    sstep: { n: "smoothstep(e0, e1, x)", tag: "editor", m: "Rises from 0 to 1 between two edges along a smooth S-curve" },
+    clampf: { n: "clamp(x, lo, hi)", tag: "editor", m: "Holds a value inside a minimum and a maximum" }
+  };
+
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 28, text, 46, { size: 26, lh: 32, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+
+  /* ---------- maths used by the shaders (all computed) ---------- */
+  var DARK = [42, 26, 14], REDC = [200, 16, 46], WHITE = [255, 255, 255], BODYC = [221, 119, 91], INKC = [37, 53, 74], EYEC = [0, 0, 0];
+  function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+  function mix1(a, b, t) { return a + (b - a) * t; }
+  function mix3(a, b, t) { return [mix1(a[0], b[0], t), mix1(a[1], b[1], t), mix1(a[2], b[2], t)]; }
+  function sstepf(e0, e1, x) { var t = clamp01((x - e0) / (e1 - e0)); return t * t * (3 - 2 * t); }
+  function toLin(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  function toSrgb(l) { return l <= 0.0031308 ? l * 12.92 : 1.055 * Math.pow(l, 1 / 2.4) - 0.055; }
+  function rgbS(c) { return "rgb(" + c.map(function (v) { return Math.round(Math.max(0, Math.min(255, v))); }).join(",") + ")"; }
+  function triple(c) { return "(" + c.map(function (v) { return Math.round(v); }).join(", ") + ")"; }
+  function bary(p, a, b, c) {
+    var d = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
+    var l1 = ((b[1] - c[1]) * (p[0] - c[0]) + (c[0] - b[0]) * (p[1] - c[1])) / d;
+    var l2 = ((c[1] - a[1]) * (p[0] - c[0]) + (a[0] - c[0]) * (p[1] - c[1])) / d;
+    return [l1, l2, 1 - l1 - l2];
+  }
+  var TRI = [[4.0, 2.5], [20.5, 5.5], [9.0, 14.0]], GX = 20, GY = 50, GC = 24, GR = 16, CS = 26;
+  function triCells() {
+    var out = [];
+    for (var j = 0; j < GR; j++) for (var i = 0; i < GC; i++) {
+      var w = bary([i + 0.5, j + 0.5], TRI[0], TRI[1], TRI[2]);
+      if (w[0] >= 0 && w[1] >= 0 && w[2] >= 0) out.push({ i: i, j: j, w: w });
+    }
+    return out;
+  }
+  /* a grid of cells; fillfn(i,j) returns a colour string or null; returns the rect selections in row-major order */
+  function cellGrid(g, x0, y0, cols, rows, cs, fillfn) {
+    var out = [];
+    for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) {
+      var f = fillfn(i, j); if (f === null) continue;
+      var r = g.append("rect").attr("x", x0 + i * cs).attr("y", y0 + j * cs).attr("width", cs - 2).attr("height", cs - 2).attr("fill", f);
+      out.push({ i: i, j: j, sel: r });
+    }
+    return out;
+  }
+  function shade(u, v) { return mix3(mix3(DARK, REDC, u), WHITE, v * 0.7); }
+  /* a 8 x 8 texture: two tones with one red tile */
+  function texTile(a, b) { return (a === 5 && b === 2) ? REDC : ((a + b) % 2 === 0 ? [42, 26, 14] : [227, 227, 227]); }
+  function texName(a, b) { return (a === 5 && b === 2) ? "red" : ((a + b) % 2 === 0 ? "dark" : "light"); }
+  function triPath(cx, cy, sc) { return "M" + (GX + TRI[0][0] * sc) + "," + (GY + TRI[0][1] * sc) + "L" + (GX + TRI[1][0] * sc) + "," + (GY + TRI[1][1] * sc) + "L" + (GX + TRI[2][0] * sc) + "," + (GY + TRI[2][1] * sc) + "Z"; }
+
+  /* ---------- map ---------- */
+  var MAPROWS = [
+    ["What a shader is", "shader, vertex shader, fragment shader, programmable stage, fixed-function, rasterization, fragment, varying, interpolation", "Where the program runs and what it works on"],
+    ["The Godot language", "Godot shading language, shader_type, canvas_item, spatial, compile error, UV, SCREEN_UV, vertex colour, TEXTURE, COLOR, TIME", "What you write, and what Godot gives you to read"],
+    ["Steering from code", "uniform, hint_range, source_color, material, ShaderMaterial, set_shader_parameter, shared material", "How a script sets values the shader uses"],
+    ["Colour and curves", "RGBA, linear vs sRGB, mix, step, smoothstep, clamp", "The numbers a fragment shader turns into a colour"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of shader terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "33 terms from Chapter 6 and the glossary. Every one is about a small program that decides where things land and what colour each pixel gets.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. shader, vertex shader, fragment shader ---------- */
+  function renderWhat(el, k, anim) {
+    var svg = svgFor(el, W, H, "A shader runs once per pixel and once per vertex", "A 24 by 16 grid of pixels coloured by one function of position, then a row of nine vertices displaced by a sine wave, then a disc of pixels coloured one at a time.");
+    var ey = base(svg, [{ id: "shader", s: 1 }, { id: "vshader", s: 2 }, { id: "fshader", s: 3 }], k, anim, ["Vertex shader", "runs per vertex, sets positions"], ["Fragment shader", "runs per pixel, sets colour"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 26, k === 0 ? "A GRID OF 24 × 16 PIXELS" : "ONE PROGRAM, ONE RUN PER PIXEL");
+      var cg = d.append("g");
+      var cs = cellGrid(cg, GX, GY, GC, GR, CS, function (i, j) { return k === 0 ? "#F6F6F6" : rgbS(shade((i + 0.5) / GC, (j + 0.5) / GR)); });
+      if (k === 1) {
+        var ord = shuffle(d3.range(cs.length), rng(5)), N = cs.length;
+        var rank = []; ord.forEach(function (o, r) { rank[o] = r; });
+        var rg = d.append("g");
+        run(rg, 2600, function (t) { cs.forEach(function (c, n) { c.sel.attr("opacity", rank[n] < t * N + 0.5 ? 1 : 0); }); }, anim);
+        cap(d, 0, 506, "color = f(u, v): " + cs.length + " cells, " + cs.length + " runs of one program", { size: 26, weight: 700 });
+        cap(d, 0, 544, "No run reads another run's result.", { size: 24, fill: MUTED });
+      } else cap(d, 0, 506, "Each cell will get a colour from its own position.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 26, "ONE RUN PER VERTEX: 9 VERTICES, 9 RUNS");
+      var NV = 9, sx = function (i) { return 60 + i * 80; }, by = 250, amp = 70;
+      d.append("path").attr("d", "M" + sx(0) + "," + by + "H" + sx(NV - 1)).attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      d3.range(NV).forEach(function (i) { d.append("circle").attr("cx", sx(i)).attr("cy", by).attr("r", 8).attr("fill", "#FFFFFF").attr("stroke", GREY).attr("stroke-width", 2); });
+      var line = d.append("path").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      var dots = d3.range(NV).map(function (i) { return d.append("circle").attr("cx", sx(i)).attr("r", 11).attr("fill", RED); });
+      var ro = cap(d, 0, 460, "", { size: 26, weight: 700 });
+      cap(d, 0, 506, "VERTEX.y = base − 70 · sin(TIME + 0.8 · i)", { size: 24, family: MONO });
+      cap(d, 0, 544, "Positions change; no pixel colour is decided here.", { size: 24, fill: MUTED });
+      var vg = d.append("g");
+      run(vg, 6000, function (t) {
+        var TT = t * 4 * Math.PI, ys = d3.range(NV).map(function (i) { return by - amp * Math.sin(TT + 0.8 * i); });
+        line.attr("d", d3.line()(ys.map(function (y, i) { return [sx(i), y]; })));
+        dots.forEach(function (c, i) { c.attr("cy", ys[i]); });
+        ro.text("vertex 4 is " + sgn(by - ys[4], 1) + " px from its base");
+      }, anim);
+    } else {
+      lab(d, 0, 26, "ONE RUN PER PIXEL THE MESH COVERS");
+      var cov = [], cx0 = 11.5, cy0 = 7.5, rad = 7;
+      for (var j = 0; j < GR; j++) for (var i = 0; i < GC; i++) if (Math.hypot(i + 0.5 - cx0 - 0.5, j + 0.5 - cy0 - 0.5) <= rad) cov.push([i, j]);
+      cellGrid(d, GX, GY, GC, GR, CS, function () { return "#F6F6F6"; });
+      var glint = function (u, v) { return Math.max(0, 1 - Math.abs((u + v) / 2 - 0.5) * 6); };
+      var col = function (i, j) { var u = (i + 0.5) / GC, v = (j + 0.5) / GR; return mix3(BODYC, WHITE, glint(u, v) * 0.85); };
+      var fills = cov.map(function (c) { return d.append("rect").attr("x", GX + c[0] * CS).attr("y", GY + c[1] * CS).attr("width", CS - 2).attr("height", CS - 2).attr("fill", rgbS(col(c[0], c[1]))); });
+      var cur = d.append("rect").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4).attr("width", CS - 2).attr("height", CS - 2);
+      var r1 = cap(d, 0, 506, "", { size: 24, weight: 700 }), r2 = cap(d, 0, 544, "", { size: 24, fill: MUTED });
+      var fg = d.append("g"), NN = cov.length;
+      run(fg, 4500, function (t) {
+        var idx = Math.min(NN - 1, Math.floor(t * NN));
+        fills.forEach(function (f, n) { f.attr("opacity", n <= idx ? 1 : 0); });
+        var c = cov[idx]; cur.attr("x", GX + c[0] * CS).attr("y", GY + c[1] * CS);
+        r1.text("pixel (" + c[0] + ", " + c[1] + "): u = " + ((c[0] + 0.5) / GC).toFixed(2) + ", v = " + ((c[1] + 0.5) / GR).toFixed(2));
+        r2.text("color = " + triple(col(c[0], c[1])) + " (" + (idx + 1) + " of " + NN + " pixels)");
+      }, anim);
+    }
+    note(svg, ey, ["", "A shader is one small program. The graphics processor runs it once for every pixel, all at once.", "The vertex shader runs per vertex and decides where each corner lands.", "The fragment shader runs for each pixel the mesh covers and decides its colour."][k]);
+  }
+
+  /* ---------- 2. pipeline: programmable stage, fixed-function, rasterization ---------- */
+  function renderPipe(el, k, anim) {
+    var svg = svgFor(el, W, H, "The pipeline has two stages you program and two that are built in", "Four stages one under another: vertex shader, rasterization, fragment shader, blending. Then a triangle turned into the grid cells it covers.");
+    var ey = base(svg, [{ id: "prog", s: 1 }, { id: "fixed", s: 2 }, { id: "raster", s: 3 }], k, anim, ["Programmable stage", "you write the shader"], ["Fixed-function", "built in; you configure it"]);
+    var d = svg.append("g");
+    if (k <= 2) {
+      lab(d, 0, 26, "ONE TRIANGLE'S JOURNEY");
+      var ST = [["Vertex shader", "you write it", true], ["Rasterization", "built in", false], ["Fragment shader", "you write it", true], ["Blending, depth test", "built in, configurable", false]];
+      ST.forEach(function (s, i) {
+        var y = 50 + i * 118, on = k === 0 ? false : (k === 1 ? s[2] : !s[2]);
+        box(d, 60, y, 690, 76, { stroke: on ? RED : FAMILIAR, sw: on ? 4 : 1.5, fill: on ? TINT : "#FFFFFF" });
+        cap(d, 80, y + 48, s[0], { size: 26, weight: 700, fill: on ? RED : INK });
+        cap(d, 730, y + 48, s[1], { size: 24, anchor: "end", fill: on ? RED : MUTED });
+        if (i < 3) { d.append("path").attr("d", "M405," + (y + 78) + " V" + (y + 116)).attr("stroke", INK).attr("stroke-width", 3); d.append("path").attr("d", "M397," + (y + 106) + " L405," + (y + 116) + " L413," + (y + 106)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); }
+      });
+      var dot = d.append("circle").attr("cx", 30).attr("r", 12).attr("fill", RED).attr("cy", 88), dg = d.append("g");
+      run(dg, 4000, function (t) { dot.attr("cy", 88 + t * 354); }, anim);
+      cap(d, 0, 540, k === 1 ? "2 of 4 stages are yours: the two shaders." : (k === 2 ? "2 of 4 are built in. You set options, not code." : "Click to light up the stages you write."), { size: 24, fill: k ? INK : MUTED, weight: k ? 700 : 400 });
+    } else {
+      lab(d, 0, 26, "RASTERIZATION: COVERED CELLS");
+      var cov = triCells(), set = {}; cov.forEach(function (c) { set[c.i + "," + c.j] = 1; });
+      var cs = cellGrid(d, GX, GY, GC, GR, CS, function (i, j) { return set[i + "," + j] ? "#F4B6C0" : "#F6F6F6"; });
+      var on = cs.filter(function (c) { return set[c.i + "," + c.j]; });
+      d.append("path").attr("d", triPath(0, 0, CS)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      var rg = d.append("g");
+      run(rg, 2200, function (t) { on.forEach(function (c) { c.sel.attr("opacity", (c.j / GR) <= t ? 1 : 0.12); }); }, anim);
+      cap(d, 0, 506, cov.length + " of " + (GC * GR) + " cell centres are inside: " + cov.length + " fragments", { size: 26, weight: 700 });
+      cap(d, 0, 544, "The vertex shader gave 3 corners; rasterization gives the cells.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Two stages are programmable: a shader replaces them. They are the vertex and the fragment stage.", "Rasterization and blending are fixed-function: built in, with options but no code.", "Rasterization turns the triangle into the screen cells whose centres it covers."][k]);
+  }
+
+  /* ---------- 3. fragment, varying, interpolation ---------- */
+  function renderInterp(el, k, anim) {
+    var svg = svgFor(el, W, H, "A varying is set at the vertices and interpolated across the fragments", "A triangle's covered cells shown as fragments, then red, green and blue values at its corners, then every cell coloured by blending the three.");
+    var ey = base(svg, [{ id: "frag", s: 1 }, { id: "varying", s: 2 }, { id: "interp", s: 3 }], k, anim, ["Uniform", "same for the whole draw"], ["Varying", "changes across the triangle"]);
+    var d = svg.append("g"), cov = triCells(), VC = [[255, 0, 0], [0, 190, 0], [0, 70, 255]];
+    lab(d, 0, 26, k === 1 ? "EACH COVERED CELL IS A FRAGMENT" : (k === 2 ? "THE VERTEX STAGE WRITES A VALUE AT EACH CORNER" : "INTERPOLATION FILLS THE FRAGMENTS"));
+    var set = {}; cov.forEach(function (c) { set[c.i + "," + c.j] = c; });
+    var cs = cellGrid(d, GX, GY, GC, GR, CS, function (i, j) { return set[i + "," + j] ? (k === 1 ? "#C4C4C4" : (k === 2 ? "#F6F6F6" : rgbS(VC[0].map(function (_, ch) { var w = set[i + "," + j].w; return w[0] * VC[0][ch] + w[1] * VC[1][ch] + w[2] * VC[2][ch]; }))) ) : "#F6F6F6"; });
+    var on = cs.filter(function (c) { return set[c.i + "," + c.j]; });
+    d.append("path").attr("d", triPath(0, 0, CS)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+    var rg = d.append("g");
+    if (k === 1 && anim) run(rg, 1800, function (t) { on.forEach(function (c) { c.sel.attr("opacity", (c.i + c.j) / (GC + GR) <= t ? 1 : 0.1); }); }, true);
+    if (k === 3) run(rg, 2400, function (t) { on.forEach(function (c) { c.sel.attr("opacity", (c.i + c.j) / (GC + GR) <= t ? 1 : 0.05); }); }, anim);
+    var lbl = [["v0", -44, -12], ["v1", 18, 8], ["v2", -20, 44]];
+    if (k >= 2) {
+      TRI.forEach(function (p, i) {
+        d.append("circle").attr("cx", GX + p[0] * CS).attr("cy", GY + p[1] * CS).attr("r", 15).attr("fill", rgbS(VC[i])).attr("stroke", INK).attr("stroke-width", 3);
+        cap(d, GX + p[0] * CS + lbl[i][1], GY + p[1] * CS + lbl[i][2], lbl[i][0], { size: 24, weight: 700 });
+      });
+    }
+    if (k === 1) cap(d, 0, 506, cov.length + " fragments, each waiting for a colour", { size: 26, weight: 700 });
+    if (k === 2) { cap(d, 0, 506, "v0 = " + triple(VC[0]) + "   v1 = " + triple(VC[1]), { size: 24, weight: 700 }); cap(d, 0, 544, "v2 = " + triple(VC[2]) + "   one varying, three values", { size: 24, fill: MUTED }); }
+    if (k === 3) {
+      var best = null, bd = 1e9; cov.forEach(function (c) { var dd = Math.hypot(c.i + 0.5 - 13, c.j + 0.5 - 6.5); if (dd < bd) { bd = dd; best = c; } });
+      d.append("rect").attr("x", GX + best.i * CS - 2).attr("y", GY + best.j * CS - 2).attr("width", CS + 2).attr("height", CS + 2).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+      var col = [0, 1, 2].map(function (ch) { return best.w[0] * VC[0][ch] + best.w[1] * VC[1][ch] + best.w[2] * VC[2][ch]; });
+      cap(d, 0, 506, "outlined cell: weights " + best.w.map(function (x) { return x.toFixed(2); }).join(", "), { size: 24, weight: 700 });
+      cap(d, 0, 544, "colour = " + triple(col) + " (weights sum to " + d3.sum(best.w).toFixed(2) + ")", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Rasterization hands the fragment stage one candidate pixel for each covered cell.", "A varying carries a value from the vertex stage to the fragment stage. Here: a colour at each corner.", "Each fragment gets a blend of the corner values, weighted by how near the corner is."][k]);
+  }
+
+  /* ---------- 4. shader_type, canvas_item, spatial ---------- */
+  function renderLang(el, k, anim) {
+    var svg = svgFor(el, W, H, "shader_type picks what a shader draws; canvas_item is 2D and spatial is 3D", "A table of six shader types, then a 2D quad whose corner is measured in pixels, then a rotating 3D cube whose corner has three coordinates.");
+    var ey = base(svg, [{ id: "stype", s: 1 }, { id: "cnv", s: 2 }, { id: "spat", s: 3 }], k, anim, ["canvas_item", "2D: sprites, shapes, UI"], ["spatial", "3D meshes"]);
+    var d = svg.append("g");
+    var TY = [["spatial", "3D meshes"], ["canvas_item", "2D: sprites, shapes, UI"], ["particles", "per-particle data"], ["sky", "the sky"], ["fog", "volumetric fog"], ["texture_blit", "blits to a texture"]];
+    lab(d, 0, 24, "SIX SHADER TYPES (GODOT 4.7)");
+    TY.forEach(function (r, i) {
+      var y = 68 + i * 36, hl = (k === 2 && r[0] === "canvas_item") || (k === 3 && r[0] === "spatial");
+      if (hl) d.append("rect").attr("x", 0).attr("y", y - 27).attr("width", 740).attr("height", 34).attr("fill", TINT);
+      mono(d, 12, y, r[0], { size: 24, weight: hl ? 700 : 400, fill: hl ? RED : INK }); cap(d, 250, y, r[1], { size: 24, fill: hl ? RED : BODY });
+    });
+    var py = 290;
+    if (k <= 1) {
+      d.append("rect").attr("x", 0.5).attr("y", py + 0.5).attr("width", 740).attr("height", 200).attr("fill", INK);
+      var CODE = ["shader_type canvas_item;", "void fragment() {", "  COLOR = vec4(UV, 0.3, 1.0);", "}"];
+      CODE.forEach(function (l, i) {
+        if (i === 0 && k === 1) d.append("rect").attr("x", 10).attr("y", py + 16).attr("width", 380).attr("height", 38).attr("fill", RED);
+        mono(d, 24, py + 44 + i * 40, l, { fill: "#FFFFFF", weight: i === 0 && k === 1 ? 700 : 400 });
+      });
+      cap(d, 0, py + 250, k === 1 ? "Every Godot shader starts with this line." : "A shader file: the type line, then processor functions.", { size: 24, fill: k ? INK : MUTED, weight: k ? 700 : 400 });
+    } else {
+      box(d, 0, py, 380, 230, { stroke: INK, sw: 2.5 });
+      var fl = ["vertex()", "fragment()", "light()"], fd = ["vertices", "pixels", "each light"];
+      fl.forEach(function (f, i) { mono(d, 420, py + 50 + i * 50, f, { size: 24, weight: 700 }); cap(d, 580, py + 50 + i * 50, fd[i], { size: 24, fill: MUTED }); });
+      cap(d, 420, py + 210, "functions you can write", { size: 24, fill: MUTED });
+      var rg = d.append("g"), ro = mono(d, 0, py + 266, "", { size: 24, weight: 700 });
+      if (k === 2) {
+        var q = d.append("rect").attr("y", py + 70).attr("width", 130).attr("height", 90).attr("fill", RED);
+        run(rg, 4000, function (t) { var x = 20 + 220 * (0.5 - 0.5 * Math.cos(t * 2 * Math.PI)); q.attr("x", x); ro.text("VERTEX = (" + Math.round(x) + ", 70) px, in the box"); }, anim);
+        cap(d, 190, py + 214, "2D canvas", { size: 24, anchor: "middle", fill: MUTED });
+      } else {
+        var V = [], E = [], cx = 190, cy = py + 100;
+        for (var a = 0; a < 8; a++) V.push([(a & 1) ? 1 : -1, (a & 2) ? 1 : -1, (a & 4) ? 1 : -1]);
+        for (var a2 = 0; a2 < 8; a2++) for (var b = a2 + 1; b < 8; b++) { var x = a2 ^ b; if (x === 1 || x === 2 || x === 4) E.push([a2, b]); }
+        var edges = E.map(function () { return d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3); });
+        var proj = function (v, th) {
+          var x2 = v[0] * Math.cos(th) + v[2] * Math.sin(th), z2 = -v[0] * Math.sin(th) + v[2] * Math.cos(th), tl = 0.5;
+          var y3 = v[1] * Math.cos(tl) - z2 * Math.sin(tl), z3 = v[1] * Math.sin(tl) + z2 * Math.cos(tl), s = 52 * 5 / (5 + z3);
+          return { x: cx + x2 * s, y: cy + y3 * s, p: [x2, y3, z3] };
+        };
+        run(rg, 6000, function (t) { var th = t * 2 * Math.PI, P = V.map(function (v) { return proj(v, th); });
+          E.forEach(function (e, i) { edges[i].attr("d", "M" + P[e[0]].x + "," + P[e[0]].y + "L" + P[e[1]].x + "," + P[e[1]].y); });
+          ro.text("VERTEX = (" + P[7].p.map(function (v) { return v.toFixed(2); }).join(", ") + ")"); }, anim);
+        cap(d, 190, py + 214, "3D space", { size: 24, anchor: "middle", fill: MUTED });
+      }
+    }
+    note(svg, ey, ["", "A shader_type line comes first. It decides what the program draws and which functions exist.", "canvas_item shaders draw 2D things. A corner is two numbers, in pixels.", "spatial shaders draw 3D meshes. A corner is three numbers."][k]);
+  }
+
+  /* ---------- 5. Godot shading language, compile error ---------- */
+  function renderErr(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Godot shading language is GLSL-like, and one missing semicolon is a compile error", "A five-line shader with notes, then the same shader with a semicolon removed and the error log that follows, then the three facts the run still reports.");
+    var ey = base(svg, [{ id: "gsl", s: 1 }, { id: "cerr", s: 2 }], k, anim, ["Compile error", "the shader is rejected"], ["Wrong look", "it builds, but looks wrong"]);
+    var d = svg.append("g");
+    var L = ["shader_type canvas_item;", "uniform float amount = 0.5;", "void fragment() {", k >= 2 ? "  COLOR.rgb *= amount" : "  COLOR.rgb *= amount;", "}"];
+    var lint = function (ls) { for (var i = 0; i < ls.length; i++) { var s = ls[i].trim(); if (s && !/[;{}]$/.test(s)) return i + 1; } return 0; };
+    var bad = lint(L);
+    lab(d, 0, 26, k === 1 ? "A GODOT SHADER, LINE BY LINE" : "THE SAME SHADER, ONE SEMICOLON DELETED");
+    d.append("rect").attr("x", 0.5).attr("y", 44.5).attr("width", 740).attr("height", 260).attr("fill", INK);
+    var AN = ["what it draws", "set from code", "runs per pixel", "built-in COLOR", ""];
+    L.forEach(function (l, i) {
+      var y = 90 + i * 48;
+      if (bad === i + 1) d.append("rect").attr("x", 0).attr("y", y - 30).attr("width", 740).attr("height", 42).attr("fill", RED).attr("opacity", 0.55);
+      mono(d, 14, y, String(i + 1), { fill: GREY }); mono(d, 52, y, l, { fill: "#FFFFFF" });
+      if (k === 1 && AN[i]) cap(d, 470, y, AN[i], { size: 24, fill: "#FBE7EA" });
+    });
+    if (k === 1) {
+      cap(d, 0, 350, "Types like float and vec4 and uniform come from GLSL.", { size: 24 });
+      cap(d, 0, 386, "COLOR and fragment() are Godot's own names.", { size: 24 });
+      cap(d, 0, 422, "The ideas carry over to other shader dialects.", { size: 24, fill: MUTED });
+    } else {
+      var rows = [["log", "SHADER ERROR: Expected a ';'."], ["uniform list", "[ ]  (empty: it did not parse)"], ["run exit code", "0  (the run did not fail)"]];
+      cap(d, 0, 344, "line " + bad + " does not end in ; (found by scanning each line)", { size: 24, weight: 700, fill: RED });
+      rows.forEach(function (r, i) {
+        if (k === 2 && i > 0) return;
+        var g = d.append("g"); cap(g, 0, 396 + i * 48, r[0], { size: 24, fill: MUTED, weight: 700 }); mono(g, 210, 396 + i * 48, r[1], { size: 24, weight: 700, fill: i === 2 ? RED : INK });
+        fade(g, A(anim, k, i === 0 ? 2 : 3), i * 300);
+      });
+    }
+    note(svg, ey, ["", "The Godot shading language is based on GLSL but simplified. Same ideas, a smaller dialect.", "A compile error means the shader failed to build. In a headless run the exit code is still 0.", "Nothing failed the run. Only the log line, or an empty uniform list, shows the shader broke."][k]);
+  }
+
+  /* ---------- 6. UV, SCREEN_UV ---------- */
+  function renderUV(el, k, anim) {
+    var svg = svgFor(el, W, H, "UV maps a surface to a texture; SCREEN_UV is the position on the screen", "A texture of eight by eight tiles on a quad with a probe moving over it and its UV values read out, then two quads at different places that share UV values but have different SCREEN_UV.");
+    var ey = base(svg, [{ id: "uv", s: 1 }, { id: "suv", s: 2 }], k, anim, ["UV", "position on the surface"], ["SCREEN_UV", "position on the screen"]);
+    var d = svg.append("g");
+    function drawQuad(g, x0, y0, s) { for (var b = 0; b < 8; b++) for (var a = 0; a < 8; a++) g.append("rect").attr("x", x0 + a * s / 8).attr("y", y0 + b * s / 8).attr("width", s / 8).attr("height", s / 8).attr("fill", rgbS(texTile(a, b))); g.append("rect").attr("x", x0).attr("y", y0).attr("width", s).attr("height", s).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); }
+    var uvAt = function (t) { return [0.5 + 0.42 * Math.sin(t * 2 * Math.PI), 0.5 + 0.42 * Math.sin(t * 4 * Math.PI + 0.8)]; };
+    var rg = d.append("g");
+    if (k <= 1) {
+      lab(d, 0, 26, "A QUAD WITH AN 8 × 8 TEXTURE");
+      drawQuad(d, 40, 70, 320); cap(d, 40, 62, "(0, 0)", { size: 24, fill: MUTED }); cap(d, 360, 428, "(1, 1)", { size: 24, anchor: "end", fill: MUTED });
+      var pr = d.append("circle").attr("r", 11).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 5);
+      var l1 = cap(d, 410, 130, "", { size: 26, weight: 700 }), l2 = cap(d, 410, 176, "", { size: 26, weight: 700 }), l3 = cap(d, 410, 222, "", { size: 24 }), l4 = cap(d, 410, 262, "", { size: 24 });
+      cap(d, 410, 330, "u runs left to right,", { size: 24, fill: MUTED }); cap(d, 410, 362, "v runs top to bottom,", { size: 24, fill: MUTED }); cap(d, 410, 394, "both from 0 to 1.", { size: 24, fill: MUTED });
+      run(rg, 6000, function (t) { var p = uvAt(t), a = Math.floor(p[0] * 8), b = Math.floor(p[1] * 8); pr.attr("cx", 40 + p[0] * 320).attr("cy", 70 + p[1] * 320);
+        l1.text("u = " + p[0].toFixed(2)); l2.text("v = " + p[1].toFixed(2)); l3.text("tile (" + a + ", " + b + ")"); l4.text("texel colour: " + texName(a, b)); }, anim && k === 1);
+      if (k === 0) { pr.attr("cx", 200).attr("cy", 230); }
+      cap(d, 0, 520, "Same UV on any size of quad reads the same texel.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 26, "TWO QUADS, ONE SCREEN");
+      d.append("rect").attr("x", 20.5).attr("y", 40.5).attr("width", 700).attr("height", 400).attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 2);
+      var QA = [60, 70], QB = [440, 170], qs = 220;
+      var gA = d.append("g"), gB = d.append("g"); drawQuad(gA, 20 + QA[0], 40 + QA[1] - 0, qs); drawQuad(gB, 20 + QB[0] - 0, 40 + QB[1] - 0, qs);
+      var pa = d.append("circle").attr("r", 10).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 5), pb = d.append("circle").attr("r", 10).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 5);
+      var r1 = cap(d, 0, 486, "", { size: 24, weight: 700 }), r2 = cap(d, 0, 522, "", { size: 24 }), r3 = cap(d, 0, 558, "", { size: 24 });
+      run(rg, 6000, function (t) { var p = uvAt(t);
+        var ax = QA[0] + p[0] * qs, ay = QA[1] + p[1] * qs, bx = QB[0] + p[0] * qs, by = QB[1] + p[1] * qs;
+        pa.attr("cx", 20 + ax).attr("cy", 40 + ay); pb.attr("cx", 20 + bx).attr("cy", 40 + by);
+        r1.text("UV on both quads: (" + p[0].toFixed(2) + ", " + p[1].toFixed(2) + ")");
+        r2.text("SCREEN_UV, left probe: (" + (ax / 700).toFixed(2) + ", " + (ay / 400).toFixed(2) + ")");
+        r3.text("SCREEN_UV, right probe: (" + (bx / 700).toFixed(2) + ", " + (by / 400).toFixed(2) + ")"); }, anim);
+    }
+    note(svg, ey, ["", "UV says where on the surface a pixel is. It runs 0 to 1 across the surface, whatever its size.", "SCREEN_UV says where on the screen it is. Two quads share UV values but not SCREEN_UV values."][k]);
+  }
+
+  /* ---------- 7. vertex colour, TEXTURE, COLOR, TIME ---------- */
+  function renderBuiltins(el, k, anim) {
+    var svg = svgFor(el, W, H, "COLOR is vertex colour times TEXTURE; TIME animates", "Terrain heights turned into vertex colours, a texture read at a UV, the product of vertex colour and texture colour, and a colour driven by a sine of TIME.");
+    var ey = base(svg, [{ id: "vcol", s: 1 }, { id: "tex", s: 2 }, { id: "color", s: 3 }, { id: "time", s: 4 }], k, anim, ["COLOR", "what leaves the fragment"], ["TEXTURE", "the image bound to the item"]);
+    var d = svg.append("g"), rg = d.append("g");
+    if (k <= 1) {
+      lab(d, 0, 26, "VERTEX COLOUR FROM HEIGHT (HEIGHTS ILLUSTRATIVE)");
+      var H5 = [0.15, 0.35, 0.9, 0.6, 0.2], LOW = [60, 120, 70], HIGH = [225, 225, 225];
+      var xs = H5.map(function (h, i) { return 60 + i * 160; }), ys = H5.map(function (h) { return 450 - h * 330; });
+      var cols = H5.map(function (h) { return mix3(LOW, HIGH, h); }), gid = "vg" + (uid++);
+      var df = svg.append("defs"), lg = df.append("linearGradient").attr("id", gid).attr("x1", 60).attr("x2", 700).attr("y1", 0).attr("y2", 0).attr("gradientUnits", "userSpaceOnUse");
+      cols.forEach(function (c, i) { lg.append("stop").attr("offset", (i / 4)).attr("stop-color", rgbS(c)); });
+      var poly = d.append("path").attr("d", "M" + xs[0] + ",450 " + xs.map(function (x, i) { return "L" + x + "," + ys[i]; }).join(" ") + " L" + xs[4] + ",450 Z").attr("fill", "url(#" + gid + ")").attr("stroke", INK).attr("stroke-width", 3);
+      var dots = xs.map(function (x, i) { var g = d.append("g"); g.append("circle").attr("cx", x).attr("cy", ys[i]).attr("r", 16).attr("fill", rgbS(cols[i])).attr("stroke", INK).attr("stroke-width", 4); cap(g, x, 492, "h " + H5[i].toFixed(2), { size: 24, anchor: "middle" }); return g; });
+      cap(d, 0, 540, "colour = mix(green, grey, height), stored on each vertex", { size: 24, fill: MUTED });
+      run(rg, 2500, function (t) { poly.attr("opacity", clamp01(t * 3 - 1)); dots.forEach(function (g, i) { g.attr("opacity", clamp01(t * 6 - i * 0.8)); }); }, anim && k === 1);
+      if (k === 0) { poly.attr("opacity", 1); }
+    } else if (k === 2) {
+      lab(d, 0, 26, "A SPRITE READS A TEXTURE AT ITS UV");
+      var tc = function (a, b) { return mix3(BODYC, INKC, (a + b) / 6); };
+      for (var b = 0; b < 4; b++) for (var a = 0; a < 4; a++) { d.append("rect").attr("x", 40 + a * 60).attr("y", 90 + b * 60).attr("width", 58).attr("height", 58).attr("fill", rgbS(tc(a, b))); }
+      d.append("rect").attr("x", 40).attr("y", 90).attr("width", 240).attr("height", 240).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 160, 372, "TEXTURE", { size: 24, anchor: "middle", weight: 700 }); cap(d, 560, 372, "sprite on screen", { size: 24, anchor: "middle", weight: 700 });
+      for (var b2 = 0; b2 < 4; b2++) for (var a3 = 0; a3 < 4; a3++) { d.append("rect").attr("x", 440 + a3 * 30).attr("y", 150 + b2 * 30).attr("width", 28).attr("height", 28).attr("fill", rgbS(tc(a3, b2))); }
+      d.append("rect").attr("x", 440).attr("y", 150).attr("width", 120).attr("height", 120).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      var line = d.append("path").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "6 5").attr("fill", "none"), pt = d.append("circle").attr("r", 9).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 4);
+      var rd = cap(d, 0, 430, "", { size: 24, weight: 700 }), rd2 = cap(d, 0, 468, "", { size: 24 });
+      run(rg, 5000, function (t) { var u = 0.5 + 0.42 * Math.sin(t * 2 * Math.PI), v = 0.5 + 0.42 * Math.sin(t * 4 * Math.PI + 0.8), a = Math.min(3, Math.floor(u * 4)), b = Math.min(3, Math.floor(v * 4));
+        pt.attr("cx", 440 + u * 120).attr("cy", 150 + v * 120); line.attr("d", "M" + (440 + u * 120) + "," + (150 + v * 120) + "L" + (40 + a * 60 + 29) + "," + (90 + b * 60 + 29));
+        rd.text("texture(TEXTURE, UV) at UV (" + u.toFixed(2) + ", " + v.toFixed(2) + ")"); rd2.text("reads texel (" + a + ", " + b + ") = " + triple(tc(a, b))); }, anim);
+      cap(d, 0, 520, "Illustrative 4 × 4 texture; the colours are computed from the texel index.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 26, "VERTEX COLOUR", {}); lab(d, 250, 26, "TEXTURE"); lab(d, 440, 26, "= COLOR");
+      var ROWS = [
+        ["sprite with an image", WHITE, [221, 119, 91], false],
+        ["Clawd: draw_rect, no image", BODYC, WHITE, false],
+        ["texture(TEXTURE, UV) only", BODYC, WHITE, true]
+      ];
+      ROWS.forEach(function (r, i) {
+        var y = 56 + i * 150, g = d.append("g"), res = r[3] ? r[2] : [r[1][0] * r[2][0] / 255, r[1][1] * r[2][1] / 255, r[1][2] * r[2][2] / 255];
+        g.append("rect").attr("x", 0).attr("y", y).attr("width", 110).attr("height", 64).attr("fill", rgbS(r[1])).attr("stroke", r[3] ? GREY : INK).attr("stroke-width", 3).attr("stroke-dasharray", r[3] ? "6 5" : null);
+        cap(g, 150, y + 44, "×", { size: 34, anchor: "middle", weight: 700 });
+        g.append("rect").attr("x", 190).attr("y", y).attr("width", 110).attr("height", 64).attr("fill", rgbS(r[2])).attr("stroke", INK).attr("stroke-width", 3);
+        cap(g, 340, y + 44, "=", { size: 34, anchor: "middle", weight: 700 });
+        g.append("rect").attr("x", 380).attr("y", y).attr("width", 110).attr("height", 64).attr("fill", rgbS(res)).attr("stroke", r[3] ? RED : INK).attr("stroke-width", 4);
+        cap(g, 510, y + 42, triple(res), { size: 24, weight: 700, fill: r[3] ? RED : INK });
+        cap(g, 0, y + 106, r[0] + (r[3] ? ": colour dropped" : ""), { size: 24, fill: r[3] ? RED : MUTED, weight: r[3] ? 700 : 400 });
+        fade(g, A(anim, k, 3), i * 350);
+      });
+    } else {
+      lab(d, 0, 26, "TIME DRIVES A COLOUR: MIX = 0.5 + 0.5 · SIN(2 · TIME)");
+      var px = function (tt) { return 50 + tt / 10 * 640; }, py = function (v) { return 260 - v * 190; };
+      d.append("rect").attr("x", 50.5).attr("y", py(1) - 0.5).attr("width", 640).attr("height", 190).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      var pts = d3.range(0, 10.001, 0.05).map(function (tt) { return [px(tt), py(0.5 + 0.5 * Math.sin(2 * tt))]; });
+      d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 44, py(1) + 8, "1", { size: 24, anchor: "end", fill: MUTED }); cap(d, 44, py(0) + 8, "0", { size: 24, anchor: "end", fill: MUTED });
+      cap(d, 50, 300, "TIME 0 s", { size: 24, fill: MUTED }); cap(d, 690, 300, "10 s", { size: 24, anchor: "end", fill: MUTED });
+      var cur = d.append("path").attr("stroke", RED).attr("stroke-width", 3), mk = d.append("circle").attr("r", 10).attr("fill", RED);
+      var sw = d.append("rect").attr("x", 0).attr("y", 340).attr("width", 140).attr("height", 70).attr("stroke", INK).attr("stroke-width", 3);
+      var r1 = cap(d, 170, 366, "", { size: 26, weight: 700 }), r2 = cap(d, 170, 404, "", { size: 24 });
+      cap(d, 0, 470, "TIME wraps back to 0 after 3,600 s (one hour).", { size: 24, fill: MUTED });
+      cap(d, 0, 508, "It is not the time since your event.", { size: 24, fill: MUTED });
+      run(rg, 7000, function (t) { var tt = t * 10, v = 0.5 + 0.5 * Math.sin(2 * tt); cur.attr("d", "M" + px(tt) + "," + py(1) + "V" + py(0)); mk.attr("cx", px(tt)).attr("cy", py(v));
+        sw.attr("fill", rgbS(mix3(INKC, BODYC, v))); r1.text("TIME = " + tt.toFixed(1) + " s"); r2.text("mix amount " + v.toFixed(2) + " → " + triple(mix3(INKC, BODYC, v))); }, anim);
+    }
+    note(svg, ey, ["", "Vertex colour is stored on each corner and blended across the face, like a varying.", "TEXTURE is the image the item was drawn with. texture(TEXTURE, UV) reads it at one UV.", "COLOR arrives as vertex colour times TEXTURE. Start from COLOR and you keep Clawd's colours.", "TIME is a clock for animation. A flash after a failure still needs code that knows when it began."][k]);
+  }
+
+  /* ---------- 8. uniform, hint_range, source_color ---------- */
+  function renderUni(el, k, anim) {
+    var svg = svgFor(el, W, H, "A uniform is set from code; hint_range does not clamp it; source_color decodes sRGB", "A small sprite whose colour is mixed toward ink by one uniform, then a slider limited to 0 to 1 beside a code value of 7.0 with the resulting colour channel, then five sRGB values and their linear values.");
+    var ey = base(svg, [{ id: "uniform", s: 1 }, { id: "hrange", s: 2 }, { id: "srcol", s: 3 }], k, anim, ["hint_range", "slider in the editor"], ["clamp", "limits the value in code"]);
+    var d = svg.append("g"), rg = d.append("g");
+    if (k <= 1) {
+      lab(d, 0, 26, "uniform float flash_amount = 0.0;  (illustrative sprite)");
+      var PIX = ["000000000000", "011111111110", "011211121110", "011111111110", "011111111110", "011111111110", "001001001001", "001001001001"];
+      var cells = [];
+      PIX.forEach(function (row, j) { for (var i = 0; i < 12; i++) { if (row[i] === "0") continue; cells.push({ i: i, j: j, eye: row[i] === "2" }); } });
+      var cs = 34, sel = cells.map(function (c) { return d.append("rect").attr("x", 20 + c.i * cs).attr("y", 56 + c.j * cs).attr("width", cs - 1).attr("height", cs - 1); });
+      var tr = d.append("rect").attr("x", 20).attr("y", 372).attr("width", 408).attr("height", 12).attr("fill", FAMILIAR), th = d.append("circle").attr("cy", 378).attr("r", 15).attr("fill", RED).attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 20, 420, "0.0", { size: 24, fill: MUTED }); cap(d, 428, 420, "1.0", { size: 24, anchor: "end", fill: MUTED });
+      var r1 = cap(d, 0, 470, "", { size: 26, weight: 700 }), r2 = cap(d, 0, 506, "", { size: 24 }), r3 = cap(d, 0, 542, "", { size: 24 });
+      var paint = function (t) {
+        var a = k === 0 ? 0 : kf(t, [0, 1, 0.5]);
+        sel.forEach(function (s, n) { s.attr("fill", rgbS(mix3(cells[n].eye ? EYEC : BODYC, INKC, a))); });
+        th.attr("cx", 20 + a * 408);
+        r1.text("flash_amount = " + a.toFixed(2)); r2.text("body " + triple(mix3(BODYC, INKC, a)));
+        r3.text("eye " + triple(mix3(EYEC, INKC, a)) + ", the same value everywhere");
+      };
+      run(rg, 5000, paint, anim && k === 1); if (k === 0) paint(0);
+      cap(d, 480, 130, "GDScript sets it:", { size: 24, fill: MUTED }); mono(d, 480, 170, "amount = 0.5", { size: 24 });
+      cap(d, 480, 230, "Every pixel", { size: 24, fill: MUTED }); cap(d, 480, 262, "sees the same", { size: 24, fill: MUTED }); cap(d, 480, 294, "number.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 26, "INSPECTOR SLIDER VERSUS A VALUE SET FROM CODE");
+      var sx = function (v) { return 40 + v / 8 * 640; };
+      var drawTrack = function (y, lbl) {
+        cap(d, 0, y - 20, lbl, { size: 24, weight: 700 });
+        d.append("rect").attr("x", sx(0)).attr("y", y).attr("width", sx(8) - sx(0)).attr("height", 12).attr("fill", FAMILIAR);
+        d.append("rect").attr("x", sx(0)).attr("y", y).attr("width", sx(1) - sx(0)).attr("height", 12).attr("fill", INK);
+        [0, 1, 7].forEach(function (v) { cap(d, sx(v), y + 52, String(v), { size: 24, anchor: "middle", fill: MUTED }); });
+      };
+      drawTrack(100, "slider with hint_range(0.0, 1.0): stops at 1.0"); drawTrack(260, "code sets flash_amount = 7.0");
+      var h1 = d.append("circle").attr("cy", 106).attr("r", 15).attr("fill", RED).attr("stroke", INK).attr("stroke-width", 3), h2 = d.append("circle").attr("cy", 266).attr("r", 15).attr("fill", RED).attr("stroke", INK).attr("stroke-width", 3);
+      var r1 = cap(d, 0, 400, "", { size: 26, weight: 700 }), r2 = cap(d, 0, 438, "", { size: 24 }), r3 = cap(d, 0, 476, "", { size: 24, fill: MUTED });
+      run(rg, 3500, function (t) { var v1 = Math.min(1, t * 8), v2 = t * 7; h1.attr("cx", sx(v1)); h2.attr("cx", sx(v2)); var red = BODYC[0] + v2 * (INKC[0] - BODYC[0]);
+        r1.text("stored value: " + v2.toFixed(1) + (v2 > 1 ? "  (past the hint)" : ""));
+        r2.text("body red = 221 + " + v2.toFixed(1) + " · (37 − 221) = " + Math.round(red));
+        r3.text(red < 0 ? "outside 0 to 255: the hint did not stop it" : "inside 0 to 255 so far"); }, anim);
+      cap(d, 0, 530, "Enforce the range in code, for example with clampf.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 26, "SRGB VALUE → LINEAR VALUE (WHAT source_color DOES)");
+      var V5 = [0.1, 0.25, 0.5, 0.75, 0.9], sc = 380;
+      V5.forEach(function (v, i) {
+        var y = 56 + i * 100, g = d.append("g"), lin = toLin(v);
+        cap(g, 0, y + 22, "sRGB " + v.toFixed(2), { size: 24, weight: 700 });
+        bar(g, 190, y, v * sc, 28, "#C4C4C4", A(anim, k, 3), i * 150);
+        bar(g, 190, y + 36, lin * sc, 28, RED, A(anim, k, 3), i * 150 + 200);
+        cap(g, 190 + v * sc + 12, y + 22, v.toFixed(2), { size: 24, fill: MUTED });
+        cap(g, 190 + lin * sc + 12, y + 58, "linear " + lin.toFixed(3), { size: 24, weight: 700, fill: RED });
+      });
+    }
+    note(svg, ey, ["", "A uniform is a number the script sets once. Every pixel of the draw reads the same value.", "hint_range shapes the editor slider only. A value set from code is stored as given.", "A colour you pick is sRGB. source_color tells Godot so it is decoded to linear before the maths."][k]);
+  }
+
+  /* ---------- 9. material, ShaderMaterial, set_shader_parameter, shared material ---------- */
+  function renderMat(el, k, anim) {
+    var svg = svgFor(el, W, H, "A shader is the program; a ShaderMaterial holds the values; a typo in the name does nothing", "One shader feeding two materials with different values, then two set_shader_parameter calls where the misspelled name matches nothing, then three sprites where two share a material and one has its own.");
+    var ey = base(svg, [{ id: "mat", s: 1 }, { id: "smat", s: 1 }, { id: "setp", s: 2 }, { id: "shared", s: 3 }], k, anim, ["Material", "the shader plus its values"], ["Shader", "the program, no values"]);
+    var d = svg.append("g"), rg = d.append("g");
+    var amountColor = function (a) { return rgbS(mix3(BODYC, INKC, a)); };
+    if (k <= 1) {
+      lab(d, 0, 26, "ONE SHADER, TWO MATERIALS");
+      box(d, 0, 140, 190, 200, { stroke: INK, sw: 3 }); cap(d, 95, 180, "Shader", { size: 26, weight: 700, anchor: "middle" }); mono(d, 95, 226, "flash.", { size: 24, anchor: "middle" }); mono(d, 95, 258, "gdshader", { size: 24, anchor: "middle" }); cap(d, 95, 310, "the program", { size: 24, anchor: "middle", fill: MUTED });
+      var MA = [["ShaderMaterial A", 0.0, 60], ["ShaderMaterial B", 1.0, 230]];
+      MA.forEach(function (m, i) {
+        var y = m[2], g = d.append("g");
+        d.append("path").attr("d", "M190," + (240) + " C260," + (240) + " 260," + (y + 70) + " 330," + (y + 70)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        box(g, 330, y, 400, 140, { stroke: RED, sw: 3 }); cap(g, 346, y + 36, m[0], { size: 24, weight: 700, fill: RED });
+        mono(g, 346, y + 74, "flash_amount = " + m[1].toFixed(1), { size: 24 });
+        g.append("rect").attr("x", 346).attr("y", y + 92).attr("width", 70).attr("height", 34).attr("fill", amountColor(m[1])).attr("stroke", INK).attr("stroke-width", 2);
+        cap(g, 430, y + 118, triple(mix3(BODYC, INKC, m[1])), { size: 24 });
+        fade(g, A(anim, k, 1), i * 400);
+      });
+      cap(d, 0, 420, "Same program, different values: two different looks.", { size: 24, weight: 700 });
+      cap(d, 0, 458, "Colours computed with mix(body, ink, flash_amount).", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 26, "NAMES ARE STRINGS, MATCHED AT RUN TIME");
+      var UL = ["flash_amount", "flash_color"]; mono(d, 0, 76, "uniforms: [" + UL.join(", ") + "]", { size: 24, fill: MUTED });
+      var CALLS = ["flash_amout", "flash_amount"];
+      CALLS.forEach(function (c, i) {
+        var y = 150 + i * 190, g = d.append("g"), ok = UL.indexOf(c) >= 0;
+        box(g, 0, y, 740, 150, { stroke: ok ? INK : RED, sw: 3 });
+        mono(g, 16, y + 44, "mat.set_shader_parameter(", { size: 24 }); mono(g, 32, y + 80, "\"" + c + "\", 1.0)", { size: 24, weight: 700, fill: ok ? INK : RED });
+        cap(g, 16, y + 124, ok ? "match: flash_amount becomes 1.0" : "no match: no error, flash_amount stays 0.0", { size: 24, weight: 700, fill: ok ? INK : RED });
+        g.append("rect").attr("x", 640).attr("y", y + 20).attr("width", 80).attr("height", 50).attr("fill", amountColor(ok ? 1 : 0)).attr("stroke", INK).attr("stroke-width", 2);
+        fade(g, A(anim, k, 2), i * 450);
+      });
+    } else {
+      lab(d, 0, 26, "SET ONE MATERIAL, EVERY NODE THAT SHARES IT CHANGES");
+      var SP = [["A", true], ["B", true], ["C", false]], sw = [];
+      SP.forEach(function (s, i) { var x = 50 + i * 240; sw.push(d.append("rect").attr("x", x).attr("y", 110).attr("width", 170).attr("height", 150).attr("stroke", INK).attr("stroke-width", 3)); cap(d, x + 85, 300, "node " + s[0], { size: 24, anchor: "middle", weight: 700 }); });
+      d.append("path").attr("d", "M50,330 H220 M50,330 V316 M220,330 V316 M290,330 H460 M290,330 V316 M460,330 V316 M135,330 V356 M375,330 V356").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      cap(d, 255, 396, "one shared material", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      d.append("path").attr("d", "M530,330 H700 M530,330 V316 M700,330 V316 M615,330 V356").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 615, 396, "its own copy", { size: 24, anchor: "middle", weight: 700 });
+      var r1 = cap(d, 0, 470, "", { size: 26, weight: 700 }), r2 = cap(d, 0, 508, "", { size: 24, fill: MUTED });
+      run(rg, 3500, function (t) { var a = kf(t, [0, 1, 1]); sw.forEach(function (s, i) { s.attr("fill", amountColor(SP[i][1] ? a : 0)); });
+        r1.text("shared material: flash_amount = " + a.toFixed(2) + " on nodes A and B"); r2.text("node C keeps 0.00 because it has a duplicated material"); }, anim);
+    }
+    note(svg, ey, ["", "A Shader is only the program. A ShaderMaterial pairs it with parameter values, so one shader can have many looks.", "set_shader_parameter finds the uniform by its name. A misspelled name is a silent no-op.", "Nodes sharing one material all change together. Give a node its own copy to differ."][k]);
+  }
+
+  /* ---------- 10. RGBA, linear vs sRGB ---------- */
+  function renderRgba(el, k, anim) {
+    var svg = svgFor(el, W, H, "RGBA is four channels; sRGB values must be decoded to linear for the maths", "A colour swatch over a checkerboard with four channel bars while alpha changes, then the sRGB to linear curve with a probe and a halfway mix of black and white.");
+    var ey = base(svg, [{ id: "rgba", s: 1 }, { id: "linsrgb", s: 2 }], k, anim, ["RGBA", "four channels, alpha is opacity"], ["Linear vs sRGB", "light maths vs display encoding"]);
+    var d = svg.append("g"), rg = d.append("g");
+    if (k <= 1) {
+      lab(d, 0, 26, "CLAWD'S BODY COLOUR WITH ALPHA FALLING AND RISING");
+      for (var j = 0; j < 8; j++) for (var i = 0; i < 12; i++) d.append("rect").attr("x", 20 + i * 36).attr("y", 50 + j * 36).attr("width", 36).attr("height", 36).attr("fill", (i + j) % 2 ? "#FFFFFF" : "#E3E3E3");
+      var sw = d.append("rect").attr("x", 56).attr("y", 86).attr("width", 360).attr("height", 216).attr("fill", rgbS(BODYC));
+      var CH = [["R", BODYC[0] / 255], ["G", BODYC[1] / 255], ["B", BODYC[2] / 255], ["A", 1]], bars = [], txts = [];
+      CH.forEach(function (c, i) { var y = 70 + i * 62; cap(d, 470, y + 26, c[0], { size: 26, weight: 700 }); d.append("rect").attr("x", 510).attr("y", y).attr("width", 130).attr("height", 30).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+        bars.push(d.append("rect").attr("x", 510).attr("y", y).attr("height", 30).attr("fill", i === 3 ? RED : INK)); txts.push(cap(d, 650, y + 26, "", { size: 24 })); });
+      var r1 = cap(d, 0, 400, "", { size: 26, weight: 700 }), r2 = cap(d, 0, 440, "out = α · colour + (1 − α) · white", { size: 24, fill: MUTED });
+      var paint = function (t) { var al = kf(t, [1, 0.2, 1, 0.5]); sw.attr("opacity", al);
+        CH.forEach(function (c, i) { var v = i === 3 ? al : c[1]; bars[i].attr("width", 130 * v); txts[i].text(v.toFixed(2)); });
+        r1.text("α = " + al.toFixed(2) + ": red channel over white = " + Math.round(al * BODYC[0] + (1 - al) * 255)); };
+      if (k === 0) paint(0.99 * 0 + 1); else run(rg, 5000, paint, anim);
+      if (k === 1 && !anim) paint(1);
+    } else {
+      lab(d, 0, 26, "ENCODED (SRGB) VALUE → LINEAR VALUE");
+      var X0 = 70, Y0 = 380, PW = 380, PH = 330;
+      d.append("rect").attr("x", X0 + 0.5).attr("y", Y0 - PH + 0.5).attr("width", PW).attr("height", PH).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      d.append("path").attr("d", "M" + X0 + "," + Y0 + "L" + (X0 + PW) + "," + (Y0 - PH)).attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      var cv = d3.range(0, 1.0001, 0.01).map(function (x) { return [X0 + x * PW, Y0 - toLin(x) * PH]; });
+      d.append("path").attr("d", d3.line()(cv)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+      cap(d, X0 - 10, Y0 + 8, "0", { size: 24, anchor: "end", fill: MUTED }); cap(d, X0 - 10, Y0 - PH + 8, "1", { size: 24, anchor: "end", fill: MUTED });
+      cap(d, X0, Y0 + 34, "sRGB 0", { size: 24, fill: MUTED }); cap(d, X0 + PW, Y0 + 34, "1", { size: 24, anchor: "end", fill: MUTED });
+      var mk = d.append("circle").attr("r", 10).attr("fill", RED), gx = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 2).attr("stroke-dasharray", "5 5");
+      var r1 = cap(d, 500, 120, "", { size: 26, weight: 700 }), r2 = cap(d, 500, 160, "", { size: 26, weight: 700, fill: RED });
+      wrap(d, 500, 220, "Half way up the encoded scale is only about a fifth of the light.", 24, { size: 24, lh: 30, fill: MUTED });
+      var half = toSrgb(0.5);
+      cap(d, 500, 340, "A 50% light mix of", { size: 24 }); cap(d, 500, 370, "black and white is", { size: 24 }); cap(d, 500, 400, "encoded as " + half.toFixed(3), { size: 24, weight: 700 });
+      run(rg, 4500, function (t) { var x = kf(t, [0, 0.5, 1, 0.5]), y = toLin(x); mk.attr("cx", X0 + x * PW).attr("cy", Y0 - y * PH); gx.attr("d", "M" + (X0 + x * PW) + "," + Y0 + "V" + (Y0 - y * PH) + "H" + X0);
+        r1.text("sRGB " + x.toFixed(2)); r2.text("linear " + y.toFixed(3)); }, anim);
+    }
+    note(svg, ey, ["", "RGBA is the colour plus an alpha channel. Alpha 1 is solid and alpha 0 is see-through.", "sRGB spaces its steps for eyes. Light adds up in linear, so colours are decoded before the maths."][k]);
+  }
+
+  /* ---------- 11. mix, step, smoothstep, clamp ---------- */
+  var FN = [
+    { k: "mix", f: function (x) { return 0.2 + 0.7 * x; }, s: "mix(0.2, 0.9, x)" },
+    { k: "step", f: function (x) { return x < 0.5 ? 0 : 1; }, s: "step(0.5, x)" },
+    { k: "smoothstep", f: function (x) { return sstepf(0.25, 0.75, x); }, s: "smoothstep(0.25, 0.75, x)" },
+    { k: "clamp", f: function (x) { return Math.max(0.1, Math.min(0.9, 1.6 * x - 0.3)); }, s: "clamp(1.6 * x - 0.3, 0.1, 0.9)" }
+  ];
+  function renderCurves(el, k, anim) {
+    var svg = svgFor(el, W, H, "mix, step, smoothstep and clamp drawn from their formulas", "A plot of each function in turn with a probe moving along it and the output shown as a dark to red strip.");
+    var ey = base(svg, [{ id: "mix", s: 1 }, { id: "step", s: 2 }, { id: "sstep", s: 3 }, { id: "clampf", s: 4 }], k, anim, ["step", "hard switch at the edge"], ["smoothstep", "smooth S-curve between edges"]);
+    var d = svg.append("g"), rg = d.append("g");
+    var PX = function (x) { return 70 + x * 560; }, PY = function (v) { return 380 - (v + 0.3) / 1.6 * 340; };
+    lab(d, 0, 26, k === 0 ? "FOUR SHAPING FUNCTIONS, x FROM 0 TO 1" : "OUTPUT = " + FN[k - 1].s.toUpperCase().replace("X", "x"));
+    d.append("rect").attr("x", PX(0) + 0.5).attr("y", PY(1.3) + 0.5).attr("width", 560).attr("height", PY(-0.3) - PY(1.3)).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    [0, 1].forEach(function (v) { d.append("path").attr("d", "M" + PX(0) + "," + PY(v) + "H" + PX(1)).attr("stroke", FAMILIAR).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6"); cap(d, 58, PY(v) + 8, String(v), { size: 24, anchor: "end", fill: MUTED }); });
+    cap(d, PX(0), 414, "x = 0", { size: 24, fill: MUTED }); cap(d, PX(1), 414, "1", { size: 24, anchor: "end", fill: MUTED });
+    var line = function (fn) { return d3.line()(d3.range(0, 1.0001, 1 / 560).map(function (x) { return [PX(x), PY(fn(x))]; })); };
+    FN.forEach(function (F, i) { if (i < k - 1) d.append("path").attr("d", line(F.f)).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 3); });
+    if (k === 0) { cap(d, 70, 470, "Click or press → to draw them one at a time.", { size: 24, fill: MUTED }); return note(svg, ey, ""); }
+    var F = FN[k - 1];
+    if (k === 4) d.append("path").attr("d", line(function (x) { return 1.6 * x - 0.3; })).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+    d.append("path").attr("d", line(F.f)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+    for (var s = 0; s < 56; s++) { var xm = (s + 0.5) / 56; d.append("rect").attr("x", PX(0) + s * 10).attr("y", 428).attr("width", 10).attr("height", 30).attr("fill", rgbS(mix3(DARK, REDC, clamp01(F.f(xm))))); }
+    cap(d, 0, 452, "colour", { size: 24, fill: MUTED, anchor: "start" });
+    var pt = d.append("circle").attr("r", 11).attr("fill", RED).attr("stroke", "#FFFFFF").attr("stroke-width", 3), tick = d.append("path").attr("stroke", INK).attr("stroke-width", 4);
+    mono(d, 0, 506, F.s, { size: 24, weight: 700 });
+    var ro = cap(d, 0, 544, "", { size: 26, weight: 700 });
+    run(rg, 5000, function (t) { var x = kf(t, [0, 1, 0.62]), y = F.f(x); pt.attr("cx", PX(x)).attr("cy", PY(y)); tick.attr("d", "M" + PX(x) + ",424V462");
+      ro.text("x = " + x.toFixed(2) + " → " + y.toFixed(2)); }, anim);
+    note(svg, ey, ["", "mix blends two values by a fraction. At 0 you get the first, at 1 the second, a straight line between.", "step is a switch: 0 until the edge, 1 after. No in-between values at all.", "smoothstep is the switch with a ramp: the same 0 to 1, eased between the two edges.", "clamp holds a value inside a range. The dashed line is the input; the red line is the result."][k]);
+  }
+
+  /* ---------- look-alike pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the shader terms", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Vertex shader", "Runs per vertex and moves corners"], ["Fragment shader", "Runs per pixel and sets colour"]],
+      [["Uniform", "One value for the whole draw"], ["Varying", "A value that changes across the face"]],
+      [["Shader", "The program; it holds no values"], ["Material", "The shader plus its values"]],
+      [["hint_range", "Shapes the slider; no clamping"], ["clamp", "Limits the value in the code"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 480, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(40,0)"), RG = R.append("g").attr("transform", "translate(40,0)");
+      if (i === 0) {
+        var pts = d3.range(7).map(function (j) { return [j * 90 + 10, 250 - 60 * Math.sin(t * 2 * Math.PI + 0.9 * j)]; });
+        LG.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); pts.forEach(function (p) { LG.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 11).attr("fill", RED); });
+        cap(LG, 0, 380, "7 corners move", { size: 24, fill: MUTED });
+        d3.range(7).forEach(function (j) { d3.range(3).forEach(function (m) { RG.append("rect").attr("x", j * 90 + 10 - 38).attr("y", 190 + m * 50).attr("width", 80).attr("height", 46).attr("fill", rgbS(mix3(DARK, REDC, clamp01(0.5 + 0.5 * Math.sin(t * 2 * Math.PI + 0.9 * j + m))))); }); });
+        cap(RG, 0, 380, "21 pixels change colour", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        d3.range(7).forEach(function (j) { LG.append("rect").attr("x", j * 90 - 28).attr("y", 190).attr("width", 80).attr("height", 120).attr("fill", rgbS(mix3(DARK, REDC, t))); RG.append("rect").attr("x", j * 90 - 28).attr("y", 190).attr("width", 80).attr("height", 120).attr("fill", rgbS(mix3(DARK, REDC, j / 6))); });
+        cap(LG, 0, 350, "amount = " + t.toFixed(2) + " in every cell", { size: 24, fill: MUTED }); cap(RG, 0, 350, "0.00 on the left to 1.00 on the right", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        LG.append("rect").attr("x", 20).attr("y", 190).attr("width", 300).attr("height", 150).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        mono(LG, 36, 250, "flash.gdshader", { size: 24, weight: 700 }); cap(LG, 36, 296, "code only", { size: 24, fill: MUTED });
+        var a = t;
+        RG.append("rect").attr("x", 20).attr("y", 190).attr("width", 300).attr("height", 150).attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 3);
+        mono(RG, 36, 240, "flash.gdshader", { size: 24 }); mono(RG, 36, 276, "flash_amount " + a.toFixed(2), { size: 24, weight: 700 });
+        RG.append("rect").attr("x", 36).attr("y", 292).attr("width", 80).attr("height", 34).attr("fill", rgbS(mix3(BODYC, INKC, a)));
+      } else {
+        var sx = function (v) { return 10 + v / 2 * 560; };
+        [["hint", 150], ["clamp", 150]].forEach(function (z, jj) {
+          var g = jj ? RG : LG, v = 1.5 * t, shown = jj ? Math.min(1, v) : v;
+          g.append("rect").attr("x", sx(0)).attr("y", 220).attr("width", sx(2) - sx(0)).attr("height", 14).attr("fill", FAMILIAR); g.append("rect").attr("x", sx(0)).attr("y", 220).attr("width", sx(1) - sx(0)).attr("height", 14).attr("fill", INK);
+          g.append("circle").attr("cx", sx(shown)).attr("cy", 227).attr("r", 16).attr("fill", RED).attr("stroke", INK).attr("stroke-width", 3);
+          cap(g, sx(0), 280, "0", { size: 24, fill: MUTED }); cap(g, sx(1), 280, "1", { size: 24, anchor: "middle", fill: MUTED }); cap(g, sx(2), 280, "2", { size: 24, anchor: "end", fill: MUTED });
+          cap(g, 0, 350, (jj ? "after clamp: " : "value set from code: ") + shown.toFixed(2), { size: 24, weight: 700 });
+        });
+      }
+    }
+    if (k === 0) { draw(0, 0.3); cap(svg.append("g"), 0, 560, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 4000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the edge glow smoothly", x: "Use smoothstep(0.3, 0.7, d): the edge goes from 0 to 1 between d = 0.3 and d = 0.7" },
+    { v: "make the flag wave", x: "In vertex(): VERTEX.y += 20.0 * sin(TIME * 3.0 + VERTEX.x * 0.05)" },
+    { v: "tint it halfway", x: "COLOR.rgb = mix(COLOR.rgb, flash_color.rgb, 0.5): body (221,119,91) becomes (129,86,83)" },
+    { v: "let the script control it", x: "uniform float flash_amount : hint_range(0.0, 1.0); clampf the value before set_shader_parameter" },
+    { v: "the colours look washed out", x: "Mark colour uniforms source_color so sRGB values decode to linear before the maths" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests to an agent turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    var pg = p.append("g");
+    if (k === 1) {
+      var X = function (x) { return 40 + x * 560; }, Y = function (v) { return 260 - v * 220; };
+      pg.append("path").attr("d", d3.line()(d3.range(0, 1.0001, 0.005).map(function (x) { return [X(x), Y(x < 0.5 ? 0 : 1)]; }))).attr("fill", "none").attr("stroke", "#C4C4C4").attr("stroke-width", 4);
+      var sm = pg.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+      run(pg, 1800, function (t) { sm.attr("d", d3.line()(d3.range(0, t * 1.0001 + 0.0001, 0.005).map(function (x) { return [X(x), Y(sstepf(0.3, 0.7, x))]; }))); }, anim);
+      cap(p, 60, 70, "grey: step", { size: 24, fill: MUTED }); cap(p, 60, 100, "red: smoothstep", { size: 24, fill: RED, weight: 700 }); nt = "same edge, no jaggy jump";
+    } else if (k === 2) {
+      var X2 = function (x) { return 20 + x / 200 * 600; }, Y2 = function (v) { return 150 - v * 4; };
+      [[0, "#C4C4C4"], [0.5, RED]].forEach(function (c) { pg.append("path").attr("d", d3.line()(d3.range(0, 200.1, 1).map(function (x) { return [X2(x), Y2(20 * Math.sin(3 * c[0] + 0.05 * x))]; }))).attr("fill", "none").attr("stroke", c[1]).attr("stroke-width", 4); });
+      cap(p, 20, 270, "grey: TIME = 0 s   red: TIME = 0.5 s", { size: 24, fill: MUTED }); nt = "peaks move by 3 · 0.5 / 0.05 = 30 px";
+    } else if (k === 3) {
+      var Y3 = [221, 119, 91], Z3 = [37, 53, 74], Ch = ["R", "G", "B"];
+      Ch.forEach(function (c, i) { var y = 30 + i * 90, a = Y3[i], b = mix1(Y3[i], Z3[i], 0.5); cap(pg, 10, y + 26, c, { size: 24, weight: 700 }); bar(pg, 50, y, a / 255 * 360, 30, "#C4C4C4", anim, i * 200); bar(pg, 50, y + 38, b / 255 * 360, 30, RED, anim, i * 200 + 250); cap(pg, 50 + a / 255 * 360 + 10, y + 26, String(a), { size: 24, fill: MUTED }); cap(pg, 50 + b / 255 * 360 + 10, y + 64, b.toFixed(1).replace(".0", ""), { size: 24, weight: 700, fill: RED }); });
+      nt = "halfway: 129, 86, 82.5 (rounds to 83)";
+    } else if (k === 4) {
+      var sc = 120, rows = [["value from code: 1.5", 1.5, "#C4C4C4"], ["after clampf: 1.0", 1.0, RED]];
+      rows.forEach(function (r, i) { var y = 60 + i * 100; cap(pg, 14, y - 8, r[0], { size: 24 }); bar(pg, 14, y, r[1] * 300, 40, r[2], anim, i * 400); });
+      pg.append("path").attr("d", "M" + (14 + 300) + ",40 V220").attr("stroke", INK).attr("stroke-width", 3).attr("stroke-dasharray", "6 6"); cap(pg, 330, 250, "hint_range end: 1.0", { size: 24, fill: MUTED });
+      nt = "the hint alone leaves 1.5 as 1.5";
+    } else {
+      var rowsC = [["sRGB value", 0.5, "#C4C4C4"], ["decoded to linear", toLin(0.5), RED]];
+      rowsC.forEach(function (r, i) { var y = 70 + i * 100; cap(pg, 14, y - 10, r[0], { size: 24 }); bar(pg, 14, y, r[1] * 560, 40, r[2], anim, i * 400); cap(pg, 14 + r[1] * 560 + 10, y + 30, r[1].toFixed(3), { size: 24, weight: 700, fill: i ? RED : MUTED }); });
+      cap(pg, 14, 250, "0.5 used as if linear is far too bright", { size: 24, fill: MUTED }); nt = "0.5 encoded is 0.214 of the light";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Does this run per vertex or per pixel?",
+    "Does it compile, with no SHADER ERROR in the log?",
+    "Is each uniform spelled the same in code and shader?",
+    "Is the range enforced in code, not only by hint_range?",
+    "Are colours marked source_color, with the maths in linear?",
+    "Which rules does a machine prove, and which need my eyes?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust an agent's shader", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it glow”, but “smoothstep(0.3, 0.7, d)”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, what: { steps: 3, render: renderWhat }, pipe: { steps: 3, render: renderPipe },
+    interp: { steps: 3, render: renderInterp }, lang: { steps: 3, render: renderLang }, err: { steps: 3, render: renderErr },
+    uv: { steps: 2, render: renderUV }, builtins: { steps: 4, render: renderBuiltins }, uni: { steps: 3, render: renderUni },
+    mat: { steps: 3, render: renderMat }, rgba: { steps: 2, render: renderRgba }, curves: { steps: 4, render: renderCurves },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>
