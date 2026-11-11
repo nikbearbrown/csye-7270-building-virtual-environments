@@ -47,8 +47,8 @@ The one failure existed before A6: `base.tscn: 3 Light3D nodes (got 4)`. The tes
 ./scripts/run-test.sh test_landing_dust_events.gd 60
 ```
 - Mode: pinned 60 fps (no audio is involved, so not realtime).
-- Written by the agent (commit 7913e763). It loads the real `base.tscn` and presses the real Space and D keys with `Input.parse_input_event`, through the InputMap → `PlayerController` → body → `landed` → trigger script. It never calls the trigger function directly.
-- Headless, the particles' lifetime cannot be read from `emitting`, so the test reads the `finished` signal, which fires when a burst ends (see the CLAUDE.md correction, commit 52fd9549).
+- Written by the agent (commit cb911e6e). It loads the real `base.tscn` and presses the real Space and D keys with `Input.parse_input_event`, through the InputMap → `PlayerController` → body → `landed` → trigger script. It never calls the trigger function directly.
+- Headless, the particles' lifetime cannot be read from `emitting`, so the test reads the `finished` signal, which fires when a burst ends (see the CLAUDE.md correction, commit ba7d1711).
 
 | # | Assertion | Brief rule it covers |
 |---|---|---|
