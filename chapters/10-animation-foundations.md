@@ -123,6 +123,8 @@ A loop seam is a testable fact, not only a visual one. For a looping clip, the v
 
 ### Skeletons and IK
 
+A **rig** is a skeleton of connected bones together with the skinning that attaches the picture or mesh to it: moving a bone moves the parts attached to it. Animation then changes the bones' poses instead of swapping in a new drawing for each pose, which is the difference from a sprite sheet.
+
 **2D.** A [`Skeleton2D`](https://docs.godotengine.org/en/stable/tutorials/animation/2d_skeletons.html) holds a hierarchy of `Bone2D` nodes. A `Polygon2D` is skinned to those bones with painted weights: "Points in white have a full weight assigned, while points in black are not influenced by the bone." The rest pose is "the default pose for a skeleton, you can come back to it anytime you want." 2D IK and constraints live in `SkeletonModificationStack2D`, which the class reference marks **Experimental**.
 
 **3D.** A `Skeleton3D` holds bone poses that animation tracks write. In Godot 4.x, procedural changes layered on top of animation are nodes that inherit [`SkeletonModifier3D`](https://docs.godotengine.org/en/stable/classes/class_skeletonmodifier3d.html). Two rules in its documentation matter for testing. First, "if there is an AnimationMixer, a modification always performs after playback process of the AnimationMixer." Second, a modified pose is read "at the moment" the modifier's `modification_processed` signal fires. On the skeleton itself, [`skeleton_updated`](https://docs.godotengine.org/en/stable/classes/class_skeleton3d.html) is emitted "when the final pose has been calculated … This means that all SkeletonModifier3D processing is complete."

@@ -30,6 +30,8 @@ The image viewer shows you none of that. So what has to happen between "the mode
 
 An image model reads your prompt. Godot reads the file the model gives back, and the two readers want different things. The model responds to mood words: "menacing", "retro", "crisp". Godot responds to numbers: pixel dimensions, an alpha channel, a frame grid, a loop point in samples. A prompt made only of mood words produces a picture. A prompt that carries the engine's numbers produces something you can check.
 
+Some plain definitions first. A **texture** is image data that something is drawn with, and a **sprite** is a 2D picture, or one frame of one, drawn as an object in the game. An image's **resolution** is its width and height in pixels, and its **aspect ratio** is its width divided by its height.
+
 Put each constraint in the prompt, and decide before you generate how you will check it once the file is in Godot:
 
 | Constraint | Put it in the prompt as | Check it in Godot as |

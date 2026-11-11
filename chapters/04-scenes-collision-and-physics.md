@@ -125,6 +125,8 @@ A headless test that counts frames has to pin this clock. Pass `--fixed-fps 60` 
 
 ### Four collision objects, and one way around them
 
+A **collider** is a collision shape: the geometry the physics engine uses to decide whether two things touch. A solid collider blocks other objects. A detection area also uses a shape but only reports the overlap, which is why it is called a **trigger area**.
+
 The [physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) defines four node types. Every Walker example in this chapter uses at least one of them:
 
 | Type | What the engine does with it | Where you meet it |

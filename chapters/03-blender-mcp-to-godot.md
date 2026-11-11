@@ -78,6 +78,8 @@ Blender is right-handed with +Z up. glTF is right-handed with "+Y as up, +Z as f
 
 ### 4. Apply transforms: the object's scale versus the mesh's size
 
+A **mesh** is the shape of a 3D model: points called **vertices**, joined by edges into faces, which a game draws as triangles. An object's **origin** is the point its position and rotation are measured from, and its **pivot** is the point it rotates and scales around. A door that should swing on its hinge needs its pivot on the hinge edge, and a crate whose origin is at its centre sinks halfway into a floor placed at height zero.
+
 A Blender object has a transform (location, rotation, scale) and mesh data (vertices). Make a pole by adding a 2 m cube and scaling it to (0.1, 0.1, 0.9), and the vertices still describe a 2 m cube; only the object's scale makes it look like a pole. The glTF exporter writes that scale onto the node, and Godot shows a `MeshInstance3D` with a non-unit scale (the `no_apply` line). Godot's physics documentation says to "avoid translating, rotating, or scaling CollisionShapes to benefit from the physics engine's internal optimizations" ([Collision shapes (3D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html)), and its export guidance recommends applying "the object transform in the 3D modeling software before exporting".
 
 In Blender this is **Object > Apply > Rotation & Scale**; in a script, `bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)`, whose operator description reads "Apply the object's transformation to its data." Afterwards the scale is (1, 1, 1) and the vertices carry the real size. A Godot test can check both halves: unit scale on every node, and the right size in metres.
@@ -106,6 +108,8 @@ materials/extract=0
 _subresources={}
 gltf/naming_version=2
 ```
+
+In that block, `meshes/generate_lods=true` asks Godot to build **level of detail (LOD)** versions of each mesh on import. LOD keeps several versions of a mesh with fewer and fewer triangles and draws a simpler one when the camera is far away, which saves rendering cost.
 
 `_subresources` stores per-node and per-material choices from the Advanced Import Settings dialog (the player's `.import` is 348,820 bytes because it stores settings for every animation slice). The two `use_*_suffixes` lines are **false** in both of the demo's model imports. A fresh import in Godot 4.7.2 sets both to **true**. Copy the demo's `.import` as a template and Godot ignores every naming hint in your model.
 

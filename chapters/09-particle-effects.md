@@ -18,6 +18,8 @@ This chapter's question is how you separate **visual intent** (what the effect i
 
 ### A particle system is a birth–life–death loop, not a picture
 
+A **particle** is one short-lived point, a small sprite or mesh, that the effect creates, moves and removes. An **emitter** is the thing that creates particles, which in Godot is the particle node itself. A **particle system** is the emitter plus the rules for its particles: the whole effect.
+
 William Reeves named the technique in 1983. His paper presents its application to "the wall of fire element from the Genesis Demo sequence" of *Star Trek II: The Wrath of Khan*, and describes a fuzzy object as a cloud of primitives that, over time, are generated into the system, move and change form, and die from it ([Reeves 1983](https://doi.org/10.1145/357318.357320); [SIGGRAPH history archive](https://history.siggraph.org/learning/particle-systems-a-technique-for-modeling-a-class-of-fuzzy-objects-by-reeves/)). Every engine in this course still runs that loop. What differs is where the loop runs (CPU or GPU), who writes the per-particle rules (a material full of checkboxes or a shader), and what you can observe without looking at the screen.
 
 In Godot, keep three parts separate — in your head and in your prompts:

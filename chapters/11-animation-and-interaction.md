@@ -67,6 +67,8 @@ Blends handle *how much* of each motion. They suit continuous input. They are th
 
 ### The state machine, as machinery
 
+A **state machine** is in one state at a time and moves between states along **transitions** that you define. Each state is one situation of the character, such as idle, run, jump or fall.
+
 An [`AnimationNodeStateMachine`](https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachine.html) "contains multiple AnimationRootNodes representing animation states, connected in a graph. State transitions can be configured to happen automatically or via code, using a shortest-path algorithm." Every machine also has built-in `Start` and `End` nodes; the tree we built in the binary exposed parameters for both. Each connection is an [`AnimationNodeStateMachineTransition`](https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachinetransition.html):
 
 | Setting | Values (4.7.2 default in bold) | What it decides |

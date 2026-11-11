@@ -14,6 +14,8 @@ And a sharper version of the question, which this chapter's record forced: **whe
 
 ## Ideas you need
 
+Two words recur. A **trigger** is whatever makes a sound start: game logic reacting to an event, such as a hit being scored or the player entering an area. A **trigger area** is a detection area that reports overlap without blocking, which is one common way to produce that event.
+
 ### Three player nodes, one question: where is the listener?
 
 Godot plays sound through **stream player** nodes. Each takes an `AudioStream` resource (the sound data) and sends its output to an audio bus.
@@ -44,6 +46,8 @@ Three consequences to check in any agent's work:
 - **A WAV is not stored uncompressed by default.** Its import compression defaults to QOA. The rhythm game's metronome WAV has `compress/mode=2` in its `.import` file. If you generate a precise tone, what plays is whatever the import mode decodes.
 - **Looping is an import setting.** The rhythm game's song imports with `loop=false`. Flip it and the song never ends, so "song finished" never arrives.
 - **The BPM in an Ogg import drives nothing.** The song imports with `bpm=116.0`; the game keeps its tempo in `Conductor.bpm`. When an agent "sets the BPM", ask which one.
+
+A **one-shot** sound plays from start to end once each time it is triggered. A **loop** returns to its loop point and keeps playing until it is stopped, so a looping sound never reports that it has finished.
 
 ### Buses: where levels live
 

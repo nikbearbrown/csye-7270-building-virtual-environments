@@ -22,9 +22,13 @@ Walker's GDD skill speaks as **Zelda**, a senior-designer persona. It is an adap
 
 **Sixteen sections.** Metadata, vision summary, pillars, core loop, player-experience (PX) goals, mechanics, systems, progression, world, narrative, characters, feature list, out of scope, technical requirements, risks, and open questions.
 
+Two of those sections need plain words. **Design pillars** are the few short statements of what the game must be and feel like, such as "fast restarts", that every decision is judged against. The **core loop** is the short cycle of player actions repeated most often, for example enter a room, fight, and collect a reward.
+
 **Stable IDs.** Every PX goal, mechanic, system, feature, risk, and test gets an ID (`PX-01`, `M-01`, `S-01`, `F-01`, `R-01`, `T-01`) so a ticket, a test, and a playtest note can point at the same thing.
 
 **Seven failure modes.** Forge's critique command audits a GDD for the Ghost Center (no locked vision), the Mechanic Mirage (PX goals that are feature descriptions in disguise), the Implementation Void (mechanics with only a happy path), Priority Inflation (more than 40% of features tagged CORE), the Novelist's Trap (story written for a reader, not an engineer), the Completeness Fallacy (decisions with no recorded reasoning), and the Stagnant Artifact (no version history, never revised after a prototype).
+
+A **prototype** is a quick build made to answer one design question; it may be thrown away. A **vertical slice** is a thin piece of the game built to near-final quality across art, sound, interface and rules, to show what the whole game would be like.
 
 ### Gates, and who signs them
 

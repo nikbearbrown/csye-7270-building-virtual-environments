@@ -39,6 +39,8 @@ At the level you need for this chapter, a Godot frame spends time in four places
 3. **Render submission on the CPU** — culling, sorting, building draw commands.
 4. **GPU work** — the draws, fill rate, overdraw, shaders, post-processing.
 
+A **draw call** is one command from the CPU asking the GPU to draw something. Many small draw calls can keep the CPU busy even when the GPU has little to do, which is why drawing many copies of one mesh in a single call is cheaper.
+
 A frame is **CPU-bound** when 1–3 set its length and **GPU-bound** when 4 does. The fixes are different: cutting draw calls does nothing for a frame that is waiting on a GDScript loop, and rewriting the loop does nothing for a frame waiting on the GPU.
 
 ### The Performance singleton, and what its numbers actually are

@@ -65,6 +65,8 @@ The processor functions, in Godot's words ([Introduction to shaders](https://doc
 - `fragment()` "runs for every pixel covered by the mesh".
 - `light()` "runs for every pixel and for every light".
 
+A **vertex** is one corner point of a shape, so `vertex()` runs once for each corner. A **fragment** is the candidate colour for one screen position that the shape covers, so `fragment()` runs once for each one and decides its colour.
+
 Chapter 9 uses `particles`, and Chapter 7 sits on top of `spatial`. This chapter stays in `canvas_item`, because the Walker example is 2D.
 
 ### Inside a `canvas_item` shader
