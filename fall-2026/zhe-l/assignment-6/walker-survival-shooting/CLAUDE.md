@@ -43,6 +43,7 @@
 
 ### Headless facts (observed on this machine, Godot 4.7.2 `--headless`)
 - A headless run uses a dummy renderer: it draws no particles and runs no GPU particle process. Node state (emitting, one_shot, amount_ratio, visibility, instance counts) is observable; the look is not. (2026-11-10: `DisplayServer.get_name()` = `headless`, `RenderingServer.get_rendering_device()` = null, adapter name empty; `emitting`, `one_shot`, `amount_ratio` and `visible` read back; a one-shot node's `emitting` turned false after its lifetime; `capture_aabb()` returned an empty AABB.)
+- Correction (2026-11-11): that `emitting` observation used `explosiveness` 0. A one-shot's `emitting` turns false once it has emitted every particle, not when they die: with `explosiveness` 1.0 (both Effect A emitters) it reads true on the `restart()` frame and false from the next frame on. The end of a burst is the `finished` signal, one lifetime after the last `restart()` (Dust: 96 physics frames at 60). Found by the Step 3 agent, confirmed by a probe on `effects/landing_dust.tscn`.
 - A GPU effect's headless CPU price is near zero by construction. (2026-11-10: 60 headless frames with a 24-particle `GPUParticles3D` took 1 ms of wall time.)
 - Frame strips come from a windowed Movie Maker run, which I start.
 - `--fixed-fps` pins each frame's `delta`; physics runs at the default 60 ticks per second (no `physics_ticks_per_second` in `godot/project.godot`). (Kept from Assignment 5.)
