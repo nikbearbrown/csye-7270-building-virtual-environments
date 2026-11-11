@@ -40,3 +40,55 @@ The one failure existed before A6: `base.tscn: 3 Light3D nodes (got 4)`. The tes
 ## Fixture captures (preview scene)
 - r0: `captures/landing_dust/r0/`, four sets: bright / dark background × full fade / retrigger. Commands and the reading are in TUNING.md.
 - PNG numbering starts at `frame00000000.png` and matches the preview script's frame count: triggered at frame 10, the picture first changes on frame 11.
+
+## Effect A: state test `test_landing_dust_events.gd` (Step 3)
+
+```bash
+./scripts/run-test.sh test_landing_dust_events.gd 60
+```
+- Mode: pinned 60 fps (no audio is involved, so not realtime).
+- Written by the agent (commit 7913e763). It loads the real `base.tscn` and presses the real Space and D keys with `Input.parse_input_event`, through the InputMap → `PlayerController` → body → `landed` → trigger script. It never calls the trigger function directly.
+- Headless, the particles' lifetime cannot be read from `emitting`, so the test reads the `finished` signal, which fires when a burst ends (see the CLAUDE.md correction, commit 52fd9549).
+
+| # | Assertion | Brief rule it covers |
+|---|---|---|
+| 1 | 60 frames after load: no `landed`, no burst finished, the effect did not move | Never otherwise, including on scene load |
+| 2 | First landing: both emitters triggered on the landing frame, the effect at the feet, y ≈ 0.25 | Fires on every landing, at the landing point |
+| 3 | Take-off and flight: the feet rose above 0.75 m (a real jump), the effect did not move, no burst finished | Never otherwise |
+| 4 | The second landing is 68 frames (1.133 s) after the first, inside Dust's lifetime of 96 frames | Sets up the retrigger case |
+| 5 | Exactly 2 `landed`; the second landing 0.525 m from the first; the effect moved to the new feet; both emitters triggered again | Plays again at the new landing point; both emitters replay |
+| 6 | The first Dust burst is cleared without finishing; Dust finishes exactly once, one lifetime after the second landing; GroundRing finishes once after each landing | Must use `restart()`, not just `emitting = true` |
+| 7 | 120 frames standing afterwards: no `landed`, no burst finished, the effect did not move | Never otherwise |
+
+### First run: 23 passed, 4 failed (exit 1)
+- All 4 failures are one problem: **the dust fired on scene load**.
+- Cause: on physics frame 1, Jolt's first `move_and_slide()` leaves the player 2.7 mm inside the floor (y = 0.247278) with `is_on_floor()` false; on frame 2 it is pushed back to y = 0.250177, on the floor, which counted as "coming back to the floor from the air".
+- This is exactly the "fires on scene load" the brief forbids, and the test caught it. The agent did not fix it on its own; it stopped and waited for my approval.
+- The fix (my choice): a `_has_touched_floor` member in `humanoid.gd`; a landing counts only after the body has been on the floor once. The test's assertions were not changed.
+
+### After the fix: 27 passed, 0 failed (exit 0)
+- Log: `logs/test_landing_dust_events_60fps.log`.
+
+### Mutation: `restart()` replaced by `emitting = true` (done by the agent, not kept)
+- Result: 22 passed, 5 failed. The extra failure is assertion 6: `Dust finished exactly once, at physics frame 282 +/- 2 (Dust finishes [])`.
+- So with only `emitting = true`, a Dust burst that is still alive is not started again, and the test catches it. `restart()` was restored afterwards.
+
+### Existing tests (after Step 3, rerun by Claude)
+| Test | FPS | Result |
+|---|---|---|
+| `a3_asset_check.gd` | 60 | 55 passed |
+| `screen_glow_check.gd` | 30 / 60 / 144 | 24 passed each |
+| `normal_map_check.gd` | 60 | 2 passed |
+| `test_materials.gd` | 60 | **168 passed, 1 failed** (the known light count, same as the baseline) |
+| `test_landing_dust_config.gd` | 60 | 157 passed |
+
+- During the agent's runs, a Jolt warning (the physics job system exceeded its maximum number of jobs) appeared in two `screen_glow_check` logs; the tests still passed. Claude's rerun of every test, plus 3 more `screen_glow_check` runs at 60 fps, did not show it again; it looks intermittent.
+
+### What this test proves and does not prove
+- **Proves (headless):** the real key → brain → body → `landed` → trigger chain works; each jump landing fires once, at the feet; load, take-off, flight and standing do not fire; a second landing inside the lifetime clears the first burst and restarts both emitters.
+- **Cannot prove (headless draws nothing):** that the old dust really vanishes on screen, or that at most 25 particles are on screen; height, spread, colour and fade; frame 10 versus frame 11. Those need the frame strips.
+- **Flat floor only:** stairs, ramps and walking off a ledge are not tested.
+
+### What I saw in the game (2026-11-11, editor F5)
+- On landing there is dust and the ring; no false trigger at the start.
+- Not checked: whether it reads clearly from the normal camera, stairs and ledges, and whether the dust suddenly vanishes when the camera turns (`visibility_aabb`).

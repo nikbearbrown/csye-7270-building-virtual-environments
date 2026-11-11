@@ -80,6 +80,26 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 
 ---
 
+### 2026-11-10 to 2026-11-11 — A6 Step 3: wiring Effect A to the landing, and testing its state
+
+- **Date and what I was working on:** 2026-11-10 to 11-11. A6 Step 3: having the agent propose a plan first, and after my approval wire Effect A to the player's landings and write a state test driven by real keys.
+- **I tried / expected:** Following the assignment's "plan first, implement after approval", in two invocations: a plan session with read-only tools, then `claude -p --resume` on the same session, with edit tools, after I approved. I expected the test to pass at once.
+- **What happened:**
+  - Plan session: `success`, 17 turns, about USD 1.03, no permission denials, no file changed. The plan had three steps: the `landed` signal in `humanoid.gd`, the trigger script in `base.tscn`, and a new state test (7 assertions, each tied to a brief rule). It said on its own that `humanoid.gd` would get one more member and one small function, and asked me to confirm.
+  - The assignment says to approve one step at a time; I chose to approve all three at once.
+  - First implementation: all three steps were done, but the new test gave 23 passed, 4 failed. On physics frame 1, Jolt leaves the player 2.7 mm inside the floor, and on frame 2 pushes it back onto the floor, which counted as a landing: **the dust fired on scene load**, exactly what my brief forbids. The agent did not fix it on its own; it proposed two fixes and waited for my choice.
+  - With a headless probe, the agent found that because this effect has `explosiveness = 1`, `emitting` turns false on the frame after `restart()`, so the CLAUDE.md headless fact was not accurate. Claude confirmed this with its own probe: the end of a burst is the `finished` signal.
+  - After I chose `_has_touched_floor`: 27 passed, 0 failed. The agent temporarily replaced `restart()` with `emitting = true` and 5 checks failed, so the test tells the two apart; `restart()` was restored.
+  - Every existing test matched the baseline: 55 / 24×3 / 2 / 168 passed 1 failed / 157. A Jolt warning appeared once in two logs during the agent's runs; Claude's repeated reruns did not show it again.
+  - I ran each approval command twice. The second `>` overwrote the output file, so `session-3-impl.jsonl` and `session-3-fix.jsonl` hold only the repeated runs (the agent answering "already done"). The two runs that really changed code are in Claude Code's own full local transcript (about 1.7 MB, over the assignment's ~1 MB limit), so what is posted is the labelled excerpt `session-3-excerpt.md`.
+  - I pressed F5 in the editor and played: on landing there is dust and the ring, and no false trigger at the start.
+- **What I did:** Ran the plan session and the resumed sessions; approved all three steps at once (including `_was_on_floor`, with English comments); chose `_has_touched_floor` of the two fixes; played the game to look at the landing effect and the start.
+- **What Claude or another person contributed:** The plan, the three steps, the fix and the test were written by another Claude Code session (Opus 5.5) from prompt-3 and my two approvals. Claude Code (Opus 5.5) in my main session prepared prompt-3.txt (identical to the assignment text) and the two approval messages (written in English from my decisions), checked the keys, speed and timing the plan relied on, read the result events and the diff, reran every test itself and found the Jolt warning to be intermittent, confirmed the `emitting` behaviour with a probe and corrected the course CLAUDE.md, built the excerpt from the full local transcript, replaced the local paths, and wrote TEST-REPORT's Step 3 section.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `walker-survival-shooting/prompt-3.txt`, `approve-3.txt`, `approve-3b.txt`, `session-3-plan.jsonl`, `session-3-impl.jsonl`, `session-3-fix.jsonl`, `session-3-excerpt.md`; `godot/characters/human/humanoid/humanoid.gd`, `godot/effects/landing_dust_trigger.gd`, `godot/base.tscn`, `godot/tests/test_landing_dust_events.gd`, `logs/test_landing_dust_events_60fps.log` (agent output unedited 7913e763); the `CLAUDE.md` correction (52fd9549); TEST-REPORT's Step 3 section. Not yet checked in the game: whether it reads clearly from the normal camera, stairs and ledges, and whether it suddenly vanishes when the camera turns. Next: Step 4, tuning Effect A (the "grey cloud" look I want).
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -88,3 +108,4 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 | 2026-11-10 | Add the A6 CHANGE-BRIEF (both effects' intent, settings, rules, strip predictions, predicted failures, budgets and short answers), committed before the first agent prompt |
 | 2026-11-10 | A6 Step 1: the agent's CLAUDE.md draft (unedited), prompt-1, the session transcript (local paths replaced), and my review (a separate commit) |
 | 2026-11-10 | A6 Step 2: Effect A as built by the agent (scene, configuration test, preview scene; unedited), prompt-2, the session transcript (local paths replaced), the fixed seed on the preview's instance, the r0 strips, my first verdict and Claude's reading (TUNING), and the two mutations (TEST-REPORT) |
+| 2026-11-11 | A6 Step 3: Effect A wired to the landing by the agent (`landed` signal, trigger script, state test; unedited), prompt-3 and the two approvals, the session transcripts and the implementation excerpt (local paths replaced), the CLAUDE.md headless-fact correction, TEST-REPORT's Step 3 section, and my "What I understand now" for Step 2 |
