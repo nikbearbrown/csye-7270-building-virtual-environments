@@ -24,6 +24,9 @@ const INTERACTABLE_GROUP := &"interactables"  # Everything you can press F at (n
 # ============================================================
 ## Emitted after the tablet state changes. Later power-on/off sounds, the slide-in animation and the raise animation listen to it.
 signal tablet_hold_changed(old_hold: TabletHold, new_hold: TabletHold)
+## Emitted once on the physics frame the body comes back to the floor from the air (is_on_floor() goes false -> true). Notify-only: it changes nothing.
+## The landing dust (effects/landing_dust_trigger.gd) listens to it and replays the dust at the feet.
+signal landed
 
 # ============================================================
 # Exported variables (@export): feel parameters shown in the Inspector and tuned there
@@ -47,6 +50,11 @@ var _tablet_shown_hold := TabletHold.NONE  # Which state's slot the tablet is mo
 var _tablet_move_from := Transform3D.IDENTITY  # The start of this move: the tablet's position and rotation when the move began
 var _tablet_move_progress := TABLET_MOVE_DONE  # How far this move has gone: TABLET_MOVE_START = just started, TABLET_MOVE_DONE = arrived
 var _tablet_screen_lit := false #Tracks whether the screen is in the lit state
+# Last physics frame's floor state, only for the landed notification. It starts true: a body placed on the floor has not "landed" on scene load
+var _was_on_floor := true
+# Whether the body has stood on the floor at least once, only for the landed notification. Until then nothing counts as "coming back":
+# on scene load the first move can leave the body just inside the floor (not on it) for one frame before it is pushed out onto it
+var _has_touched_floor := false
 
 # ============================================================
 # Node references (@onready): child nodes used in the scene
@@ -92,7 +100,19 @@ func apply_intent(intent: CharacterIntent, delta: float) -> void:
 	else:
 		_update_facing(wish, delta)  # Normally: with movement input, the facing turns gradually toward the move direction
 	move_and_slide()  # Built into CharacterBody3D: moves by velocity, slides along walls, stops on landing
+	_notify_landing()  # Now that the move has updated is_on_floor(), we tell the listeners if this frame is a landing
 	_update_visual(delta)  # Finally, show the new state on the visuals
+
+
+## apply_intent() calls this right after move_and_slide(), once per physics frame. If the body was in the air last frame
+## and is on the floor now, we emit landed once. Notify-only: it reads the floor state and changes no movement or state.
+func _notify_landing() -> void:
+	var on_floor := is_on_floor()  # First we read where the move just left us: on the floor or in the air
+	# If we have stood on the floor before, are on it now, and were in the air last frame, we have come back to the floor: this frame is the landing
+	if _has_touched_floor and on_floor and not _was_on_floor:
+		landed.emit()  # So we announce it once; the landing dust hears it and plays at the feet
+	_was_on_floor = on_floor  # Then we remember this frame's state, so next frame standing still does not count as landing again
+	_has_touched_floor = _has_touched_floor or on_floor  # And once we have stood on the floor, later landings count; the first touch on load does not
 
 
 ## Turns the character facing (_facing_yaw) smoothly toward direction at turn_speed_degrees.
