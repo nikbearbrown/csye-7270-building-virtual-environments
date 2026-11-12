@@ -91,3 +91,46 @@ Decided (2026-11-11): change the intent first, then tune. The new intent is 6–
   - My view on two of these points (2026-11-12): **the capsule hiding the dust** does not matter. First, it is smoke, and smoke being hidden by a solid object is normal; my design document also says there is no special demand for technical perfection, so in practice the hiding is fine. **The colour:** I really cannot see much difference between the beige and a neutral grey. So the colour intent goes back to "low-saturation, slightly warm grey"; see the 2026-11-12 revision in CHANGE-BRIEF.
 - **Strips:** `captures/landing_dust/r0/`, `captures/landing_dust/r1/`
 - **Commits:** 9799850d (r1 strips), c1ef8d69 (the kept change: scene, test limit 0.10 → 0.30 m, brief revision, the two prompts). Configuration test 157 passed, state test 27 passed.
+
+---
+
+## Effect B: dust under the ceiling light
+
+### r0 — 2026-11-12 — the version the agent built, untuned
+
+- **What I looked at:** `previews/light_dust_preview.tscn`, windowed, 2048 × 1152, with the `hold` switch (the lights stay on after frame 10; commit 7c2ccb03).
+- **Strips:** `captures/light_dust/r0/dark/`, `captures/light_dust/r0/bright/`, each keeping the 12 frames the brief lists (9, 10, 11, 40, 46, 54, 57, 61, 66, 69, 71, 90). Fixture captures.
+- **Random seed:** the preview's instance has a fixed seed (seed 7270, set by the agent); the effect scene itself does not.
+- **Note:** Effect B is not wired into the game yet (`base.tscn` does not contain it), so it cannot be seen with F5 in the editor; everything in this section is the preview scene.
+
+#### My first verdict (written before Claude read anything)
+(2026-11-12, what I said to Claude)
+
+The dust being small is fine; these elements should not steal the scene. But the dust should vary in size. The 0.006–0.012 range is still too small; I suggest trying 0.003 as the maximum.
+
+(My addition after Claude asked which end 0.003 was meant for)
+
+I mean 0.003–0.03.
+
+#### Claude's reading (after my verdict above)
+(Claude Code / Opus 5.5, 2026-11-12, reading the two fixture capture sets in `captures/light_dust/r0/`. Method: crop the area under the light and enlarge it 2×; then take frame 61, lights on with the dust hidden, as the base and subtract each frame from it, counting only the pixel changes the dust causes.)
+
+- **Frame 9:** lights off, no dust, as expected.
+- **Frame 10:** the wall is already lit, but there is no dust yet (0 pixels changed against frame 61). The dust is one frame behind the light and appears on frame 11, as the brief's "10 / 11" says.
+- **Frame 11:** the dust is full as soon as it appears: about 119 changed pixels on the dark background, close to the 115 of frame 40, one second after the lights come on; it does not build up from few. So in 4.7.2 `restart()` **does** run preprocess again, and the brief's "Unconfirmed" item on this is now confirmed by the picture.
+- **Frame 40:** about the same count as frame 11; about 213 pixels differ between frames 11 and 40, so the specks have moved and changed brightness, without piling up, as expected.
+- **Frames 46 / 54 (paused):** the two frames are identical pixel for pixel (0 pixels differ); the dust is frozen, as expected.
+- **Frame 57 (after unpausing):** about 106 pixels differ from frame 54; the dust drifts and changes again, as expected.
+- **Frame 61 (hidden):** the light is on and the dust cannot be seen (frame 57 has about 109 pixels of dust against it), as expected.
+- **Frame 66 (shown again):** full at once (about 115), as expected; frame 69 is a stable spread too.
+- **Frames 71 / 90 (after lights off):** identical pixel for pixel to frame 9; no specks left behind, as expected.
+- **Look:**
+  - The dust is a scatter of cool-white specks of 1–2 pixels around the light patch of ceiling light 1; they all look about the same size.
+  - Of the 150 particles only a few dozen points can be seen: on the dark background about 115 pixels change per frame, of which only 15–30 differ by more than 40 in brightness; on the bright background only about 40 pixels change.
+  - The twinkling cannot be seen in a single frame; that it changes can only be inferred from the changes between frames.
+- **Backgrounds:** the "dark background" is in fact the brightest patch, on the wall behind ceiling light 1, not a dark one; the "bright background" set shows even fewer specks. The names of the two sets are the opposite of what the brief means, so the backgrounds need to be found again in the running game.
+- **Against my verdict:** I said "small is fine, it should not steal the scene", and on screen it is indeed restrained. I said "it should vary in size", and on screen there is indeed no visible difference in size: the largest is only 2 times the smallest (0.006–0.012 m), and at that distance they are all 1–2 pixels.
+
+#### What to change next round (my decision)
+Speck size to 0.003–0.03 m (my words above). Following the assignment's order, Step 3 comes first (wire Effect B into the game and write the state test), and this change is made in Step 4.
+Claude's note: this changes a size range, which may need both the quad size and `scale_min` / `scale_max`; before then it has to be settled whether that counts as "one setting".
