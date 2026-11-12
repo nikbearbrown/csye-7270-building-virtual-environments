@@ -103,4 +103,20 @@ Strips come from windowed Movie Maker runs of the pin scenarios with `--debug-co
 
 ## Revisions
 
-(None yet.)
+### 2026-11-10 — phase table from the measured ticks; a second clock found
+
+The pin (`a9b4bc1`, `logs/pin/`) measured the wolf's phases at **31, 22 and 36 ticks**, not 30, 21 and 36. Cause, confirmed by the agent with the same double arithmetic: `wolf.gd:59` subtracts 1/60 per tick and switches only at exactly 0; after 30 steps from 0.5 (and 21 from 0.35) the timer is still about 1e-16 above zero, so GROWL and LUNGE end one tick late; 0.6 lands just below zero and is clamped, so RECOVER is on time. The hitbox is on for 23 ticks (31–53), because switching it off is deferred one tick. By this brief's own rule the table follows the measurement before any key is written. The phase table is now:
+
+| Phase | State | Frames | Key at | Rig pose at the key |
+|---|---|---|---|---|
+| start | GROWL entered | 0 | 0 | neutral |
+| startup | GROWL | 0–31 | 25 | crouch (values unchanged) |
+| startup end | GROWL → LUNGE | 31 | 31 | crouch held |
+| active | LUNGE | 31–53 | 37 | stretch (values unchanged) |
+| active end | LUNGE → RECOVER | 53 | 53 | stretch held |
+| recovery | RECOVER | 53–89 | 65 | overshoot (values unchanged) |
+| end | RECOVER → PATROL | 89 | 89 | neutral |
+
+Clip length 89/60 s (1.4833 s); key times are frames / 60, compared to 1e-6. A growl interrupt jumps the clip to frame 53. Transitions as before.
+
+**A second clock in today's game.** After the killing hit, `wolf.gd:150` removes the wolf with a `create_timer` that runs on the process (frame) clock, not the physics tick: the removal lands on physics tick 79 at 60 fps and tick 80 at 30 and 144 fps. Gameplay never reads it after death, so it stays as it is; the pin stops before it and the test prints it, unpinned. Both AnimationPlayers stay on the physics callback.
