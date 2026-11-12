@@ -297,3 +297,7 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
 - **Setting:** `Dust` `draw_pass_1` QuadMesh `size` (0.08, 0.08) → **(0.32, 0.32)**, in the `Dust` settings table above. Kept by me after r1 (see TUNING.md, revision r1).
 - **Height check:** with this change the configuration test's height limit becomes the revised intent's 0.30 m (was 0.10 m), as the 2026-11-11 revision said. The quad top is now 0.04 + 0.32 × 1.2 / 2 = 0.232 m. The test measures the quad top, which is an upper bound on the visible top edge.
 - **Not changed yet:** amount, emission ring radius, colour, opacity ramp, emitter height. Each is a later revision of its own.
+
+### 2026-11-12 — Effect A colour intent back to "low-saturation, slightly warm grey"
+- **Replaces** "Colour: neutral grey, without the clearly warm brown it has now" in the 2026-11-11 revision. The dust colour's intent is back to a low-saturation grey with a slight warmth, base RGB still (0.48, 0.45, 0.40), so the scene and the configuration test do not change.
+- **Why:** in the game I cannot see much difference between the beige and a neutral grey. Claude adds: in the r1 comparison the agent said the dust is seen mainly through this slight warmth, not through a difference in brightness; a neutral grey of the same brightness might be harder to see on the grey-blue floor (not verified with a capture).
