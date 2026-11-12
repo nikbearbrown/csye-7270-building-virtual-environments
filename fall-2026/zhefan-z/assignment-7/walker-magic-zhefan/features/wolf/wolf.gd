@@ -20,6 +20,9 @@ const CLIPS := {
 	State.PATROL: &"patrol", State.GROWL: &"lunge", State.LUNGE: &"lunge", State.RECOVER: &"lunge", State.DEAD: &"dead",
 }
 
+## The first frame of the recovery section of `lunge` (CHANGE-BRIEF revision 2026-11-10 phase table).
+const RECOVER_FRAME := 53
+
 const MAX_HP := 2
 const PATROL_SPEED := 45.0
 const SIGHT_X := 120.0          # sees the player this far ahead (and behind, see _sees_player)
@@ -143,13 +146,18 @@ func _play(clip: StringName) -> void:
 	anim.seek(0.0, true)
 
 
-## Called by a fireball. A dead wolf ignores further hits.
+## Called by a fireball. A dead wolf ignores further hits. A hit that leaves HP during GROWL cancels the lunge: the wolf
+## goes straight to RECOVER and the clip jumps to the recovery section (CHANGE-BRIEF "Behaviour change"). Hits in
+## LUNGE, RECOVER and PATROL change only HP; the last HP kills in every phase.
 func take_damage(amount: int) -> void:
 	if dead:
 		return
 	hp -= amount
 	_flash()
 	if hp > 0:
+		if state == State.GROWL:
+			_enter(State.RECOVER)
+			anim.seek(RECOVER_FRAME / 60.0, true)
 		return
 	dead = true
 	state = State.DEAD
