@@ -16,7 +16,7 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 const EFFECT_SCENE := "res://effects/light_dust.tscn"  # The effect scene under test
 const EPS := 0.0001  # How close two floats must be to count as equal
 
-const AMOUNT := 150  # amount; also the brief's peak particle count
+const AMOUNT := 90  # amount; also the brief's peak particle count
 const LIFETIME := 6.0  # lifetime, seconds
 const LIFETIME_RANDOMNESS := 0.5  # lifetime_randomness (on the ParticleProcessMaterial)
 const BOX_EXTENTS := Vector3(0.9, 0.8, 0.6)  # emission_box_extents: half sizes, so the full box is 1.80 x 1.60 x 1.20 m
@@ -97,7 +97,7 @@ func _check_root(root: Node) -> GPUParticles3D:
 
 ## Called by _init(). Reads back the settings the table puts on the GPUParticles3D node itself.
 func _check_node(p: GPUParticles3D) -> void:
-	_check("amount = %d (got %d)" % [AMOUNT, p.amount], p.amount == AMOUNT)  # 150 specks, which is also the peak count
+	_check("amount = %d (got %d)" % [AMOUNT, p.amount], p.amount == AMOUNT)  # 90 specks, which is also the peak count
 	_near("lifetime", p.lifetime, LIFETIME)  # Each speck lives up to 6 s
 	_check("one_shot is off", not p.one_shot)  # A steady stream while the light is on, not a burst
 	_near("explosiveness", p.explosiveness, 0.0)  # Births spread evenly over the lifetime, so the box never empties and refills at once

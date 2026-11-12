@@ -315,3 +315,6 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
   - The particle peak and the cost prediction (150, ≤ 0.3 ms) need a new estimate; Step 7 measures it.
   - The emission box centre moves from under light 1 to the middle of the room, so the position of `LightDust` in `base.tscn` (now (0, 1.45, −3.2)) has to follow, or an emission offset in the process material is used; this is decided in that round.
   - The strip's backgrounds and preview camera need choosing again, since the dust is no longer only under light 1.
+
+### 2026-11-12 — Effect B, kept revision r1: `amount`
+- **Setting:** `LightDust` `amount` 150 → **90**, in the Effect B settings table above. Kept by me after r1 (see TUNING.md, Effect B revision r1). The particle peak is now 90.
