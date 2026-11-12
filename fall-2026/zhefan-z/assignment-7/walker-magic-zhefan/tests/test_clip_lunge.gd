@@ -1,7 +1,7 @@
 extends SceneTree
 ## Assignment 7 read-back of clip 2, the wolf lunge rig (CHANGE-BRIEF Clip 2, the revision of 2026-11-10 and Tests).
 ## Loads features/wolf/wolf.tscn (not added to the tree, so nothing plays) and reads back: every track of patrol, lunge
-## and dead resolves to a real node and property (anim_checks.gd track_problems); lunge's key times equal the revised
+## and dead resolves to a real node and property (the assignment's track_problems(); key types in key_problems()); lunge's key times equal the revised
 ## table's frames / 60 to 1e-6, its length 89/60, LOOP_NONE, its poses and easing; the rig's structure, regions,
 ## pivots and material; and that each part draws exactly where the whole Sprite2D draws the lunge image at rest.
 ## From fall-2026/zhefan-z/assignment-7/:
@@ -81,10 +81,10 @@ func run() -> void:
 	var names := Array(ap.get_animation_list())
 	check("clips-patrol-lunge-dead", names.size() == 3 and ["patrol", "lunge", "dead"].all(func(n: String) -> bool:
 		return n in names), {"clips": names})
-	var problems := []
-	for n: String in names:
-		problems.append_array(AnimChecks.track_problems(ap, ap.get_animation(n)))
+	var problems := AnimChecks.track_problems(ap)
 	check("every-track-resolves-to-a-real-node-and-property", problems.is_empty(), {"problems": problems})
+	var key_problems := AnimChecks.key_problems(ap)
+	check("every-key-in-range-increasing-and-typed", key_problems.is_empty(), {"problems": key_problems})
 
 	var lunge := ap.get_animation("lunge")
 	check("lunge-length-89-over-60-loop-none", absf(lunge.length - 89.0 / 60.0) < EPS

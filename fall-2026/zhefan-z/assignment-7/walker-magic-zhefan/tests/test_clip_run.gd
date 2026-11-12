@@ -1,7 +1,7 @@
 extends SceneTree
 ## Assignment 7 read-back of clip 1, the mage run cycle, and the player's other clips (CHANGE-BRIEF Clip 1 and Tests).
 ## Loads features/player/player.tscn (not added to the tree, so nothing plays) and reads every clip back key by key:
-## every track resolves (anim_checks.gd track_problems, branching on track type); every clip name present; each clip
+## every track resolves (the assignment's track_problems() in anim_checks.gd; key types in key_problems()); every clip name present; each clip
 ## keys Sprite2D texture, hframes and frame, discrete; run's frame keys 0 and 1 at 0 and 0.125 s, length 0.25,
 ## LOOP_LINEAR, the seam rule; every frame key below hframes * vframes; the sheet's size, cells and import settings.
 ## From fall-2026/zhefan-z/assignment-7/:
@@ -87,7 +87,6 @@ func run() -> void:
 	var out_of_range := []
 	for n: String in names:
 		var anim := ap.get_animation(n)
-		problems.append_array(AnimChecks.track_problems(ap, anim))
 		var paths := []
 		for i in anim.get_track_count():
 			paths.append(str(anim.track_get_path(i)))
@@ -107,7 +106,10 @@ func run() -> void:
 				var f: Variant = anim.track_get_key_value(fi, k)
 				if typeof(f) != TYPE_INT or f < 0 or f >= cells:
 					out_of_range.append({"clip": n, "frame": f, "cells": cells})
+	problems = AnimChecks.track_problems(ap)
 	check("every-track-resolves", problems.is_empty(), {"problems": problems})
+	var key_problems := AnimChecks.key_problems(ap)
+	check("every-key-in-range-increasing-and-typed", key_problems.is_empty(), {"problems": key_problems})
 	check("each-clip-keys-texture-hframes-frame", wrong_tracks.is_empty(), {"expected": TRACKS, "wrong": wrong_tracks})
 	check("each-clip-texture", wrong_texture.is_empty(), {"expected": CLIP_TEXTURE, "wrong": wrong_texture})
 	check("every-track-discrete", not_discrete.is_empty(), {"not_discrete": not_discrete})
