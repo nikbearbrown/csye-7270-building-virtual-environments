@@ -1,0 +1,41 @@
+Read CLAUDE.md first. CHANGE-BRIEF.md is the contract. Never edit
+anything under shaders/. Never push. Commit messages name the author, no
+Co-Authored-By.
+
+Part 0 — commit my notes: TUNING.md (first look) and prompt-3.txt, as
+"First look at both clips (mine, committed by Claude Code at my
+request)". If the track_problems() swap from my last message isn't
+committed yet, do it first as I asked there.
+
+Part 1 — wire the clips, no behaviour change.
+- player.gd: _set_state() and the FAIL path call the AnimationPlayer
+  (play the state's clip; fail_pit for a pit fall) and stop writing
+  sprite.texture. Re-entering RUN restarts the cycle at frame 0. Keep
+  flip_h in code.
+- wolf.gd: _enter() and the DEAD path play patrol, lunge (on GROWL entry
+  only; LUNGE and RECOVER leave it running) and dead, and stop writing
+  sprite.texture. _apply_facing() sets Facing.scale.x and keeps
+  sprite.flip_h for the whole sprite. Give Facing the wolf's duplicated
+  flash material so the white flash reaches the rig.
+- tests/test_anim_structure.gd, the state-machine structure test the
+  brief lists: every Player.State and wolf state maps to an existing
+  clip; autoplay empty; both players on the physics callback; no script
+  writes a property a clip keys (scan the source); exactly one
+  AnimationPlayer drives each sprite node.
+- Run the pin check at 30, 60 and 144, both read-backs, the structure
+  test and every earlier suite through ./scripts/run-test.sh. The pin
+  must pass unchanged. If all pass, commit as "Wire clips into both state
+  machines, structure test; pin unchanged (agent, unedited)".
+
+Part 2 — the behaviour change, kept apart from any re-pin.
+- wolf.gd take_damage(): a non-lethal hit during GROWL cancels the
+  lunge: the wolf enters RECOVER and the clip jumps to frame 53 (53/60
+  s). LUNGE, RECOVER and PATROL hits are unchanged; death still wins.
+- Run the pin check at 60. It must fail only in hit_growl; show the
+  first differing tick and fields, and confirm the other 7 scenarios
+  pass. Do not re-pin.
+- Commit as "Growl hit cancels the lunge; pin now differs only in
+  hit_growl, not re-pinned (agent, approved in CHANGE-BRIEF)".
+
+Part 3 — give me the commands to play it (main scene, windowed,
+1280x720, normal speed and --time-scale 0.25), and stop.
