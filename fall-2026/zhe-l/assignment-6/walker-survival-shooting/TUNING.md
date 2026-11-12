@@ -159,4 +159,5 @@ Claude's note: this changes a size range, which may need both the quad size and 
 - **Second pass:** amount 3000 → 900, colour (0.78, 0.86, 1.0) → (0.39, 0.43, 0.5). Claude changed them first without committing; I looked in the game. My words: "OK, go do the records."
 - **Third pass:** amount 900 → 1300. My words: "Let's make it 1300 after all."
 - **Strips:** `captures/light_dust/redesign/` (the 3000 version), `captures/light_dust/redesign-2/` (the final version: 1300, half brightness)
-- **Commits:** 1adc819d (first pass), 3f2d0cc1 (first-pass strip), 33d3fd5a (second pass); the third pass is in the commit that adds this line.
+- **Commits:** 1adc819d (first pass), 3f2d0cc1 (first-pass strip), 33d3fd5a (second pass); 3d894168 (third pass), a7c7be27 (final strip).
+- **Claude's reading of the final strip `redesign-2/`** (subtracting frame 61): the timing is unchanged and correct (nothing at frame 10, full at once at 11 and 66, frames 46 / 54 identical, frames 71 / 90 identical to frame 9). The dust changes about 360–430 pixels on the dark background and 950–1020 on the bright one, against 4700 / 7700 for the 3000 version; no pixel changes by more than 46 in brightness (81 / 115 before), so the specks are faint and soft rather than bright points.
