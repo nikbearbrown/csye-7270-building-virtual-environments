@@ -279,4 +279,16 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
 ---
 
 ## Revision history
-(no revisions yet)
+
+### 2026-11-11 — Effect A intent changed to "grey cloud puffs" (before Step 4)
+- **Why:** in the r0 frame strips and in the game, the dust I saw was a scatter of small dots and did not read clearly. What I want is puffs of dust that look like small grey clouds (see the r0 section of TUNING.md). The old intent capped the dust at "0.10 m including the quads (ankle height only)" and used 5–10 cm quads, which cannot make cloud puffs, so the intent changes first and the tuning starts after.
+- **These intent items are replaced (the rest of the intent is unchanged):**
+  - **Height:** at most about 0.30 m, mid-calf, measured to the **visible top edge** of the dust cloud. Replaces "including the quads, the height stays within 0.10 m above the floor (ankle height only)".
+  - **Size of one puff:** about 0.18–0.25 m across when it is most visible, a little bigger than a fist, with a soft outline.
+  - **Number of puffs:** about 6–8 per landing. Neighbouring puffs may partly overlap, with small gaps between puffs.
+  - **Colour:** neutral grey, without the clearly warm brown it has now. On the base's grey-blue floor, it is enough that the outline of the puffs can be seen. Replaces the dust's "low-saturation grey-brown, base RGB (0.48, 0.45, 0.40)".
+  - **Timing:** still most visible at about 0.15 s and fully gone at 1.6 s. New: at 0.7 s a few faint grey puffs can still be seen, and after that they slowly clear away.
+  - **Ground ring:** keep its current size and spread timing; it stays a thin, faint ring. If on screen it draws the eye more than the dust cloud, make it fainter.
+- **Unchanged:** the overall diameter of about 0.90 m, the two layers (`Dust` + `GroundRing`), the ground ring's colour, the restart retrigger rule, `local_coords`, the event and every testable rule.
+- **The settings tables:** the values in the "Settings" tables above stay as they are for now. Step 4 changes one setting at a time; each change that is kept gets its own dated revision here, with that setting's old and new value, and the matching expected value in the configuration test changes with it.
+- **Configuration check affected:** "Dust top including quads = 0.088 m <= 0.10 m" was written from the old intent. It is changed to the new 0.30 m limit only once the first revision that changes the height or the quad size is kept; it is not loosened in advance to make a test pass.
