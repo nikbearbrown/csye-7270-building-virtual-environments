@@ -16,23 +16,24 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 const EFFECT_SCENE := "res://effects/light_dust.tscn"  # The effect scene under test
 const EPS := 0.0001  # How close two floats must be to count as equal
 
-const AMOUNT := 90  # amount; also the brief's peak particle count
+const AMOUNT := 3000  # amount; also the brief's peak particle count (redesign 2026-11-12: the whole room)
 const LIFETIME := 6.0  # lifetime, seconds
 const LIFETIME_RANDOMNESS := 0.5  # lifetime_randomness (on the ParticleProcessMaterial)
-const BOX_EXTENTS := Vector3(0.9, 0.8, 0.6)  # emission_box_extents: half sizes, so the full box is 1.80 x 1.60 x 1.20 m
-const BOX_FULL_SIZE := Vector3(1.80, 1.60, 1.20)  # The intent's full box size, checked against the extents
+const BOX_EXTENTS := Vector3(7.0, 1.3, 4.5)  # emission_box_extents: half sizes, so the full box is 14 x 2.6 x 9 m (the whole room)
+const BOX_FULL_SIZE := Vector3(14.0, 2.6, 9.0)  # The intent's full box size, checked against the extents
+const BOX_OFFSET := Vector3(0.0, 0.15, 3.2)  # emission_shape_offset: moves the box from the node at (0, 1.45, -3.2) to the room centre (0, 1.6, 0)
 const SPREAD := 180.0  # spread, degrees: "direction random"
 const VELOCITY := Vector2(0.01, 0.04)  # initial_velocity_min / max, m/s
 const TURBULENCE_STRENGTH := 1.0  # turbulence_noise_strength
 const TURBULENCE_SCALE := 4.0  # turbulence_noise_scale
 const TURBULENCE_INFLUENCE := Vector2(0.02, 0.06)  # turbulence_influence_min / max
-const SCALE := Vector2(0.5, 1.0)  # scale_min / max
+const SCALE := Vector2(0.1, 1.0)  # scale_min / max
 const COLOR := Color(0.78, 0.86, 1.0)  # color: the fixed cool white
 # color_ramp opacity keys as a fraction of life -> opacity: several rises and falls, so each speck twinkles
 const OPACITY_KEYS := [[0.0, 0.0], [0.10, 0.6], [0.25, 0.15], [0.40, 0.9], [0.55, 0.2], [0.70, 0.7], [0.85, 0.1], [1.0, 0.0]]
-const QUAD := Vector2(0.012, 0.012)  # draw_pass_1 QuadMesh size, metres
-const SPECK_SIZE := Vector2(0.006, 0.012)  # Scale against the character: each speck's quad is 0.006-0.012 m across
-const AABB_BOX := AABB(Vector3(-1.1, -1.0, -0.8), Vector3(2.2, 2.0, 1.6))  # visibility_aabb
+const QUAD := Vector2(0.03, 0.03)  # draw_pass_1 QuadMesh size, metres
+const SPECK_SIZE := Vector2(0.003, 0.03)  # Scale against the character: each speck's quad is 0.003-0.03 m across
+const AABB_BOX := AABB(Vector3(-7.3, -1.45, -1.6), Vector3(14.6, 3.2, 9.6))  # visibility_aabb: the offset box plus 0.3 m on every side
 const PREPROCESS := 6.0  # preprocess, seconds
 
 # Every property name this test reads, by class: checked against this engine's ClassDB before any value is read
@@ -42,7 +43,7 @@ const PROPERTY_NAMES := {
 	"ParticleProcessMaterial": ["lifetime_randomness", "emission_shape", "emission_box_extents", "direction", "spread", "flatness",
 		"initial_velocity_min", "initial_velocity_max", "gravity", "turbulence_enabled", "turbulence_noise_strength",
 		"turbulence_noise_scale", "turbulence_influence_min", "turbulence_influence_max", "scale_min", "scale_max",
-		"color", "color_ramp"],
+		"color", "color_ramp", "emission_shape_offset"],
 	"QuadMesh": ["size", "material"],
 	"StandardMaterial3D": ["shading_mode", "transparency", "blend_mode", "vertex_color_use_as_albedo", "billboard_mode",
 		"billboard_keep_scale", "albedo_texture"],
@@ -107,7 +108,7 @@ func _check_node(p: GPUParticles3D) -> void:
 	_check("cast_shadow is OFF", p.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)  # The node casts no shadow
 	# Not in the brief: the light state decides when it runs, so the scene file starts it off and the listener starts it (restart()) when the lights are on
 	_check("emitting is off in the scene file (added, not in the brief)", not p.emitting)
-	var emission_box := AABB(-BOX_EXTENTS, BOX_EXTENTS * 2.0)  # The emission box in the emitter's own space, centred on the node
+	var emission_box := AABB(BOX_OFFSET - BOX_EXTENTS, BOX_EXTENTS * 2.0)  # The emission box in the emitter's own space, moved by the shape offset
 	_check("visibility_aabb encloses the emission box", p.visibility_aabb.encloses(emission_box))  # One size larger, because turbulence carries specks out of the box
 
 
@@ -119,7 +120,8 @@ func _check_process(p: GPUParticles3D) -> void:
 	_near("lifetime_randomness", pm.lifetime_randomness, LIFETIME_RANDOMNESS)  # Lives cut by up to half at random, so the specks twinkle out of step
 	_check("emission_shape is BOX (got %d)" % pm.emission_shape, pm.emission_shape == ParticleProcessMaterial.EMISSION_SHAPE_BOX)  # Spawn anywhere inside a box
 	_vec("emission_box_extents", pm.emission_box_extents, BOX_EXTENTS)  # Half sizes of the box ...
-	_vec("emission box full size", pm.emission_box_extents * 2.0, BOX_FULL_SIZE)  # ... so the full box is the intent's 1.80 x 1.60 x 1.20 m
+	_vec("emission box full size", pm.emission_box_extents * 2.0, BOX_FULL_SIZE)  # ... so the full box is the intent's 14 x 2.6 x 9 m
+	_vec("emission_shape_offset", pm.emission_shape_offset, BOX_OFFSET)  # The box is centred on the room, not on the node
 	_near("spread", pm.spread, SPREAD)  # 180 degrees: any direction from the base direction, so the direction is random
 	# Not in the brief by name: flatness 0 keeps the spread a full sphere (1 would flatten it into a plane)
 	_near("flatness (added, not in the brief)", pm.flatness, 0.0)
@@ -148,15 +150,15 @@ func _check_draw(p: GPUParticles3D) -> void:
 	var mesh := p.draw_pass_1 as QuadMesh  # Each speck is drawn as this quad
 	if not _check("draw_pass_1 is a QuadMesh (got %s)" % [p.draw_pass_1.get_class() if p.draw_pass_1 else "null"], mesh != null):  # If not, we say what it is instead
 		return
-	_vec2("QuadMesh size", mesh.size, QUAD)  # 12 mm quads
+	_vec2("QuadMesh size", mesh.size, QUAD)  # 30 mm quads
 	var pm := p.process_material as ParticleProcessMaterial  # For the scale pair, to work out the smallest and largest speck
 	if pm != null:  # If it is there, we check the brief's speck size against the character
-		_near("smallest speck (quad x scale_min, m)", mesh.size.x * pm.scale_min, SPECK_SIZE.x)  # 6 mm, about 1/267 of the character's 1.6 m
-		_near("largest speck (quad x scale_max, m)", mesh.size.x * pm.scale_max, SPECK_SIZE.y)  # 12 mm, about 1/133
+		_near("smallest speck (quad x scale_min, m)", mesh.size.x * pm.scale_min, SPECK_SIZE.x)  # 3 mm, about 1/533 of the character's 1.6 m
+		_near("largest speck (quad x scale_max, m)", mesh.size.x * pm.scale_max, SPECK_SIZE.y)  # 30 mm, about 1/53
 	var mat := mesh.material as StandardMaterial3D  # The draw material sits on the quad mesh
 	if not _check("draw material is a StandardMaterial3D", mat != null):  # If not, there are no switches to read
 		return
-	_check("shading_mode is UNSHADED", mat.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED)  # Not lit in the first version; the light state alone shows and hides it
+	_check("shading_mode is PER_PIXEL (lit)", mat.shading_mode == BaseMaterial3D.SHADING_MODE_PER_PIXEL)  # Lit by the ceiling lights (redesign 2026-11-12): bright near a light, faint far from it
 	_check("blend_mode is ADD", mat.blend_mode == BaseMaterial3D.BLEND_MODE_ADD)  # Additive: each speck adds light to what is behind it; a feature Effect A does not use
 	_check("transparency is ALPHA", mat.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA)  # Without this the opacity ramp would not fade anything
 	_check("vertex_color_use_as_albedo is on", mat.vertex_color_use_as_albedo)  # Without this the particle colour and ramp would not reach the quad

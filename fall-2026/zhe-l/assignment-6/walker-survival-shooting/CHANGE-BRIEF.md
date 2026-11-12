@@ -318,3 +318,17 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
 
 ### 2026-11-12 — Effect B, kept revision r1: `amount`
 - **Setting:** `LightDust` `amount` 150 → **90**, in the Effect B settings table above. Kept by me after r1 (see TUNING.md, Effect B revision r1). The particle peak is now 90.
+
+### 2026-11-12 — Effect B redesign: settings for "the whole room, lit by the lights"
+- **Why:** the Effect B intent revision above (whole room, lit, sparser, specks 0.003–0.03 m). I am fairly sure of these changes and asked for them to be made at once rather than one setting per tuning round; if the result is bad in the game, they are reverted. So this is a redesign of the settings table, not a tuning revision. Applied by Claude Code (the review session), not by a prompted agent.
+- **Settings changed in the Effect B table** (old → new):
+  - `amount`: 90 → **3000** (about 9 per cubic metre over the 330 m³ box; a first value, to be judged in the game; the lit material makes far specks faint, so it is sparser than the 26 per cubic metre of the small box);
+  - `emission_box_extents`: (0.9, 0.8, 0.6) → **(7, 1.3, 4.5)**, so the full box is 14 × 2.6 × 9 m;
+  - new: `emission_shape_offset` **(0, 0.15, 3.2)**, which moves the box from the `LightDust` node at (0, 1.45, −3.2) in `base.tscn` to the room centre (0, 1.6, 0); the node itself does not move, so `base.tscn` and the state test do not change;
+  - `scale_min` / `scale_max`: 0.5 / 1.0 → **0.1 / 1.0**;
+  - `draw_pass_1` QuadMesh size: 0.012 → **0.03** m, so the specks are 0.003–0.03 m;
+  - draw material `shading_mode`: unshaded → **per-pixel (lit)**; blend stays ADD;
+  - `visibility_aabb`: (−1.1, −1, −0.8, 2.2, 2, 1.6) → **(−7.3, −1.45, −1.6, 14.6, 3.2, 9.6)**, the offset box plus 0.3 m on every side for turbulence.
+- **Unchanged:** lifetime 6 s, lifetime_randomness 0.5, preprocess 6 s, velocity, turbulence, colour, the opacity ramp, ADD, billboard, the round texture, `local_coords` off, no shadow.
+- **Tests:** the configuration test's expected values follow this table (110 passed, one new check for the offset); the state test reads `amount` at load, so it did not change (41 passed). Every other test kept its baseline count.
+- **Particle peak and price:** the peak is now 3000, not 150; the brief's price prediction (≤ 0.3 ms GPU) is for the old effect and is re-measured in Step 7 and Use It.
