@@ -14,7 +14,7 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 # ============================================================
 const EFFECT_SCENE := "res://effects/landing_dust.tscn"  # The effect scene under test
 const EPS := 0.0001  # How close two floats must be to count as equal
-const FLOOR_LIMIT := 0.10  # Scale against the character: including the quads, the dust stays within 0.10 m above the floor
+const FLOOR_LIMIT := 0.30  # Scale against the character: including the quads, the dust stays within 0.30 m above the floor (mid-calf; brief revision 2026-11-11, applied when r1 was kept on 2026-11-12; was 0.10, ankle height)
 const RING_FINAL_DIAMETER := 0.90  # Scale against the character: the ground wave's final outer diameter
 
 # The Dust table
@@ -33,7 +33,7 @@ const DUST_SCALE_CURVE := Vector2(0.6, 1.0)  # scale_curve: 0.6 at birth -> 1.0 
 const DUST_COLOR := Color(0.48, 0.45, 0.40)  # color
 # color_ramp opacity keys in seconds -> opacity; the ramp is read over each particle's life, so we divide the seconds by the lifetime
 const DUST_OPACITY_KEYS := [[0.0, 0.0], [0.15, 0.6], [0.8, 0.15], [1.6, 0.0]]
-const DUST_QUAD := Vector2(0.08, 0.08)  # draw_pass_1 QuadMesh size, metres
+const DUST_QUAD := Vector2(0.32, 0.32)  # draw_pass_1 QuadMesh size, metres (Step 4 r1: 0.08 -> 0.32, for cloud puffs)
 const DUST_HEIGHT := 0.04  # The emitter sits 0.04 m above the landing point
 const DUST_AABB := AABB(Vector3(-0.6, -0.1, -0.6), Vector3(1.2, 0.3, 1.2))  # visibility_aabb
 
@@ -156,7 +156,7 @@ func _check_dust(dust: GPUParticles3D) -> void:
 			_color("Dust ramp rgb at %.2f s stays white" % key[0], Color(c.r, c.g, c.b), Color.WHITE)  # Its colour stays white, so the hue stays the dust colour
 	var mesh := _quad_of(dust, "Dust")  # The draw mesh; null if it is not a QuadMesh
 	if mesh != null:  # If it is there, we check its size and its material
-		_vec2("Dust QuadMesh size", mesh.size, DUST_QUAD)  # 8 cm quads
+		_vec2("Dust QuadMesh size", mesh.size, DUST_QUAD)  # 32 cm quads
 		var mat := _material_of(mesh, "Dust")  # The draw material on the quad; null if it is not a StandardMaterial3D
 		if mat != null:  # If it is there, we check the switches the brief names
 			_check_draw_switches(mat, "Dust", BaseMaterial3D.BILLBOARD_PARTICLES)  # Unshaded, alpha, vertex colour, billboard PARTICLES
@@ -276,7 +276,7 @@ func _check_derived(dust: GPUParticles3D, ring: GPUParticles3D) -> void:
 		curve_max = maxf(curve_max, curve.sample(i / 100.0))  # And keep the largest size factor we meet (1.0 at death for this curve)
 	# Top of the highest quad: emitter height + half of the largest quad (quad size x scale_max x the curve's largest value); flatness 1 means no speck rises above the emitter
 	var top := dust.position.y + mesh.size.y * pm.scale_max * curve_max * 0.5
-	_check("Dust top including quads = %.3f m <= %.2f m (ankle height)" % [top, FLOOR_LIMIT], top <= FLOOR_LIMIT + EPS)  # The brief's 0.10 m limit
+	_check("Dust top including quads = %.3f m <= %.2f m (mid-calf)" % [top, FLOOR_LIMIT], top <= FLOOR_LIMIT + EPS)  # The brief's 0.30 m limit; the quad top is an upper bound on the visible top edge
 	var ring_pm := ring.process_material as ParticleProcessMaterial  # The ring's process material, for its final scale
 	var ring_mesh := ring.draw_pass_1 as QuadMesh  # The ring's quad, for its size
 	if ring_pm == null or ring_mesh == null or not (ring_pm.scale_curve is CurveTexture):  # If any part is missing, the checks above already failed

@@ -292,3 +292,8 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
 - **Unchanged:** the overall diameter of about 0.90 m, the two layers (`Dust` + `GroundRing`), the ground ring's colour, the restart retrigger rule, `local_coords`, the event and every testable rule.
 - **The settings tables:** the values in the "Settings" tables above stay as they are for now. Step 4 changes one setting at a time; each change that is kept gets its own dated revision here, with that setting's old and new value, and the matching expected value in the configuration test changes with it.
 - **Configuration check affected:** "Dust top including quads = 0.088 m <= 0.10 m" was written from the old intent. It is changed to the new 0.30 m limit only once the first revision that changes the height or the quad size is kept; it is not loosened in advance to make a test pass.
+
+### 2026-11-12 — Effect A, kept revision r1: `Dust` quad size
+- **Setting:** `Dust` `draw_pass_1` QuadMesh `size` (0.08, 0.08) → **(0.32, 0.32)**, in the `Dust` settings table above. Kept by me after r1 (see TUNING.md, revision r1).
+- **Height check:** with this change the configuration test's height limit becomes the revised intent's 0.30 m (was 0.10 m), as the 2026-11-11 revision said. The quad top is now 0.04 + 0.32 × 1.2 / 2 = 0.232 m. The test measures the quad top, which is an upper bound on the visible top edge.
+- **Not changed yet:** amount, emission ring radius, colour, opacity ramp, emitter height. Each is a later revision of its own.
