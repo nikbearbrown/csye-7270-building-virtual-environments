@@ -11,7 +11,8 @@ extends Node3D  # Root-node script of the preview scene light_dust_preview.tscn
 ## The preview stands in for the wall switch: it calls CeilingLights.set_lights_on() at frames 10 and 70, as a press of F would.
 ## It also stands in for the effect's listener, which is not written yet: it listens to lights_changed, queries is_lights_on() once at start,
 ## and shows / hides / restart()s the emitter. That listener code is preview-only; nothing here is wired into gameplay.
-## Command-line switches after "--": "dark" (the default) views the wall behind ceiling light 1, "bright" views a lit wall.
+## Command-line switches after "--": "dark" (the default) views the wall behind ceiling light 1, "bright" views a lit wall,
+## "hold" keeps the lights on after frame 10 and skips the later steps, for looking at the dust by eye (not for the strip).
 ## The preview's instance of the effect has use_fixed_seed on (seed 7270, set in light_dust_preview.tscn), so capture rounds can be compared.
 
 # ============================================================
@@ -42,6 +43,9 @@ const ARM_LENGTH := 2.2  # player.tscn SpringArm3D spring_length: the camera sit
 @export var bright_yaw_degrees := -90.0  # Facing +X, toward the east wall
 ## Camera pitch of the in-game rig, degrees (negative = looking down). Level, because the dust hangs at head height (0.65-2.25 m).
 @export_range(-70.0, 60.0) var view_pitch_degrees := 0.0
+## For looking by eye only (review addition, 2026-11-12): when on, only the frame-10 lights-on step runs and the lights stay on
+## until the window is closed. Off by default, so the capture timing above is unchanged.
+@export var hold_after_lights_on := false
 
 # ============================================================
 # Node references (@onready): nodes used in the scene
@@ -81,6 +85,8 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if _frame == LIGHTS_ON_FRAME:  # If this is frame 10, we press the switch: the lights come on, and lights_changed starts the dust
 		_ceiling_lights.set_lights_on(true)
+	elif hold_after_lights_on:  # If we are only looking by eye, we skip every later step, so the lights stay on and the dust keeps drifting
+		pass
 	elif _frame == PAUSE_FRAME:  # If this is frame 45, we pause the tree; the dust should freeze in place
 		get_tree().paused = true
 	elif _frame == UNPAUSE_FRAME:  # If this is frame 55, we let it run again; the dust should drift and twinkle again
@@ -131,10 +137,12 @@ func _third_person_view(feet: Vector3, yaw_degrees: float) -> Transform3D:
 	return pivot * Transform3D(Basis.IDENTITY, Vector3(ARM_SIDE, 0.0, ARM_LENGTH))  # The end of the arm, in the world: this is where the camera sits and how it faces
 
 
-## Called by _ready(). Reads the user arguments after "--": "dark" or "bright" picks the background.
+## Called by _ready(). Reads the user arguments after "--": "dark" or "bright" picks the background; "hold" keeps the lights on.
 func _read_command_line() -> void:
 	var args := OS.get_cmdline_user_args()  # Only the arguments after "--"; Godot's own arguments are not in here
 	if args.has("dark"):  # If "dark" is given, we view the wall behind ceiling light 1
 		background = Background.DARK
 	if args.has("bright"):  # If "bright" is given, we view the lit wall
 		background = Background.BRIGHT
+	if args.has("hold"):  # If "hold" is given, we keep the lights on after frame 10, so the dust can be watched for as long as we like
+		hold_after_lights_on = true
