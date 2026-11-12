@@ -16,7 +16,7 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 const EFFECT_SCENE := "res://effects/light_dust.tscn"  # The effect scene under test
 const EPS := 0.0001  # How close two floats must be to count as equal
 
-const AMOUNT := 3000  # amount; also the brief's peak particle count (redesign 2026-11-12: the whole room)
+const AMOUNT := 900  # amount; also the brief's peak particle count (redesign 2026-11-12: the whole room; 3000 -> 900 after my look in the game)
 const LIFETIME := 6.0  # lifetime, seconds
 const LIFETIME_RANDOMNESS := 0.5  # lifetime_randomness (on the ParticleProcessMaterial)
 const BOX_EXTENTS := Vector3(7.0, 1.3, 4.5)  # emission_box_extents: half sizes, so the full box is 14 x 2.6 x 9 m (the whole room)
@@ -28,7 +28,7 @@ const TURBULENCE_STRENGTH := 1.0  # turbulence_noise_strength
 const TURBULENCE_SCALE := 4.0  # turbulence_noise_scale
 const TURBULENCE_INFLUENCE := Vector2(0.02, 0.06)  # turbulence_influence_min / max
 const SCALE := Vector2(0.1, 1.0)  # scale_min / max
-const COLOR := Color(0.78, 0.86, 1.0)  # color: the fixed cool white
+const COLOR := Color(0.39, 0.43, 0.5)  # color: the cool white at half brightness (redesign 2026-11-12, after my look in the game)
 # color_ramp opacity keys as a fraction of life -> opacity: several rises and falls, so each speck twinkles
 const OPACITY_KEYS := [[0.0, 0.0], [0.10, 0.6], [0.25, 0.15], [0.40, 0.9], [0.55, 0.2], [0.70, 0.7], [0.85, 0.1], [1.0, 0.0]]
 const QUAD := Vector2(0.03, 0.03)  # draw_pass_1 QuadMesh size, metres

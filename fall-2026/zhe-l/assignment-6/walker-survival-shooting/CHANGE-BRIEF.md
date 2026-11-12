@@ -332,3 +332,10 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
 - **Unchanged:** lifetime 6 s, lifetime_randomness 0.5, preprocess 6 s, velocity, turbulence, colour, the opacity ramp, ADD, billboard, the round texture, `local_coords` off, no shadow.
 - **Tests:** the configuration test's expected values follow this table (110 passed, one new check for the offset); the state test reads `amount` at load, so it did not change (41 passed). Every other test kept its baseline count.
 - **Particle peak and price:** the peak is now 3000, not 150; the brief's price prediction (≤ 0.3 ms GPU) is for the old effect and is re-measured in Step 7 and Use It.
+
+### 2026-11-12 — Effect B redesign, second pass after my look in the game: `amount` and `color`
+- **Why:** with the redesign above I looked at the strip and in the game: "still too dense" and "too bright, halve the brightness". I asked for 900 particles and half the brightness, looked at them in the game, and approved ("OK, go do the records").
+- **Settings changed in the Effect B table** (old → new):
+  - `amount`: 3000 → **900** (about 2.7 per cubic metre over the 330 m³ box); the particle peak is now 900;
+  - `color`: (0.78, 0.86, 1.0) → **(0.39, 0.43, 0.5)**, the same cool white at half brightness. With ADD blending, half the colour adds half the light. This replaces the intent's "fixed cool white (0.78, 0.86, 1.0)"; the hue does not change.
+- **Tests:** the configuration test's expected values follow (110 passed); the state test reads `amount` at load (41 passed); every other test kept its baseline count.
