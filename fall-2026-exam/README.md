@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-The Fall 2026 exam is **entirely multiple-answer** and tests the **high-level concepts of the whole course**: what a shader is, what a material is, how a collider differs from a trigger, how a sprite sheet differs from a rig, what a state machine is for, what a frame budget is, and how an agent's claim differs from evidence. It is worth 100 points: **20 questions x 5 points.** There are no cases, no code to read and no shader code to write or change. This folder holds two full **practice exams**, each with its answer key in a **separate file**. The practice exams are practice only: the real exam uses different questions.
+The Fall 2026 exam is **entirely multiple-answer** and tests the **high-level concepts of the whole course**: what a shader is, what a material is, how a collider differs from a trigger area, how a sprite sheet differs from a rig, what a state machine is for, what a frame budget is, and how an agent's claim differs from evidence. It is worth 100 points: **20 questions x 5 points.** There are no cases, no code to read and no shader code to write or change. This folder holds two full **practice exams**, each with its answer key in a **separate file**. The practice exams are practice only: the real exam uses different questions.
 
 ## What the exam tests
 
@@ -29,7 +29,7 @@ Every practice exam has one question on each of these topics, so each one is a s
 | 5 | Chapter 3: 3D assets from Blender to Godot |
 | 6 | Chapter 3: Driving Blender with an agent (MCP and scripts) |
 | 7 | Chapter 4: Nodes, scenes, signals and groups |
-| 8 | Chapter 4: Collision (colliders, triggers, layers and masks) |
+| 8 | Chapter 4: Collision (colliders, trigger areas, layers and masks) |
 | 9 | Chapter 5: Game design documents and requirements |
 | 10 | Chapter 6: Shaders |
 | 11 | Chapter 7: Materials (material, shader, texture) |

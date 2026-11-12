@@ -115,7 +115,7 @@ For each pair, make a card with a definition, deciding question, original exampl
 | Script / MCP connection | Is it a saved file you can rerun, or a live conversation with an open program? |
 | Node / scene / instance | Is it one job, a saved tree of nodes, or one use of a saved scene? |
 | Signal / group | Is it a message that something happened, or a tag used to call many nodes? |
-| Collider / trigger | Does it block, or only report an overlap? |
+| Collider / trigger area | Does it block, or only report an overlap? |
 | Collision layer / collision mask | Is it what this object is, or what this object looks for? |
 | Texture / material / shader | Is it image data, a bundle of settings and textures, or the program that draws? |
 | Vertex part / pixel part of a shader | Does it run once per corner (position), or once per covered pixel (colour)? |

@@ -116,7 +116,7 @@ Example pairs. Every term below is used and explained in the book text; where th
 | Script / MCP connection | Is it a saved file you can rerun, or a live conversation with an open program? | 3 |
 | Node / scene / instance | Is it one job, a saved tree of nodes, or one use of a saved scene? | 4 |
 | Signal / group | Is it a message that something happened, or a tag used to call many nodes? | 4 |
-| Collider / trigger | Does it block, or only report an overlap? | 4 |
+| Collider / trigger area | Does it block, or only report an overlap? | 4 |
 | Collision layer / collision mask | Is it what this object is, or what this object looks for? | 4 |
 | Design document / brief | Is it the detailed record builders and testers work from, or the short statement of the idea? | 5 |
 | Texture / material / shader | Is it image data, a bundle of settings and textures, or the program that draws? | 6, 7 |
@@ -149,7 +149,7 @@ Make cards in both directions: definition -> term, and term -> "which descriptio
 6. Decide every statement. An unchecked box counts as "false".
 
 ### Review wrong answers
-For every missed statement, log the deciding word and a one-line rule (for example, "a trigger reports overlap; it does not block"). Star the confident errors and re-test them 2-3 days later [7]. Always review with the correct answer in front of you; practice with corrective feedback works best [1].
+For every missed statement, log the deciding word and a one-line rule (for example, "a trigger area reports overlap; it does not block"). Star the confident errors and re-test them 2-3 days later [7]. Always review with the correct answer in front of you; practice with corrective feedback works best [1].
 
 ## 5. Common mistakes and fixes
 | Mistake | Fix |

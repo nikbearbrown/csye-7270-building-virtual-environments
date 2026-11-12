@@ -92,10 +92,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: Godot's physics is tuned for metres; a prop at the wrong scale can become a wall that cannot be climbed or a step that is not noticed.
 - **D. TRUE.** Blender treats Z as up while glTF and Godot treat Y as up, so the exporter turns the model's height onto the other axis.
   - Why: Blender is Z-up, glTF and Godot are Y-up, and the exporter converts.
-- **E. FALSE.** A prop that arrives in Godot lying on its side was exported at the wrong size.
-  - Why: Lying on its side is an up-direction (axis) problem; size is a separate matter.
+- **E. FALSE.** A door whose pivot is at its centre swings on its hinge when it is rotated.
+  - Why: The pivot is the point an object rotates and scales around, so a door that should swing on its hinge needs its pivot on the hinge edge.
 
-*Covered in:* Ch 3, 'Units: a metre is a metre, until it is not', 'Axes: Blender is Z-up; glTF and Godot are Y-up' and 'glTF is the interchange format': all three tools use metres; Blender is Z-up while glTF and Godot are Y-up and the exporter converts; glTF 2.0 is Godot's recommended 3D format; a prop at the wrong scale is 'a wall the robot cannot climb or a step it does not notice'.
+*Covered in:* Ch 3, 'Units: a metre is a metre, until it is not', 'Axes: Blender is Z-up; glTF and Godot are Y-up' and 'glTF is the interchange format': all three tools use metres; Blender is Z-up while glTF and Godot are Y-up and the exporter converts; glTF 2.0 is Godot's recommended 3D format; a prop at the wrong scale is 'a wall the robot cannot climb or a step it does not notice'; and, for the statements added on 2026-11-11, Ch 3, 'Apply transforms' (the plain definitions of mesh, vertex, origin and pivot) and 'The scene importer's own settings' (level of detail).
 
 ## 6. Chapter 3: Driving Blender with an agent (MCP and scripts)
 
@@ -135,7 +135,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 *Covered in:* Ch 4, 'The scene tree: what is actually running' (the saved scene and the running tree are not the same thing; scripts add nodes at run time), 'Nodes and scenes: composition you can save' (instancing, edit-time and run-time instances, instance overrides, ownership: who creates it, who frees it) and 'Signals: who tells whom' (react without referencing one another; 'No object reaches into another').
 
-## 8. Chapter 4: Collision (colliders, triggers, layers and masks)
+## 8. Chapter 4: Collision (colliders, trigger areas, layers and masks)
 
 **A 2D platformer has a stone floor, a crate that should tumble when pushed, and a hero steered by the player's own code. Check each statement that is true.**  *(5 points)*
 
@@ -147,12 +147,12 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: The debug option makes collision shapes visible in the running project, so you can see where they sit against the art.
 - **C. FALSE.** A body that the physics engine moves, like the crate, is steered best by having your code overwrite its position every frame.
   - Why: Changing such a body's position or velocity very often may lead to unpredictable behaviour; you give it forces or a starting velocity and the engine moves it.
-- **D. TRUE.** A solid fixed body, like the floor, is never moved by the physics engine, but other bodies collide with it.
-  - Why: A static body is not moved by the physics engine and others collide with it.
+- **D. TRUE.** A solid collider blocks other objects, while a detection area also uses a shape but only reports the overlap, which is why it is called a trigger area.
+  - Why: That is the chapter's plain definition of a collider and a trigger area.
 - **E. TRUE.** A body you move yourself, like the hero, gets collision detection but not simulated physics, so your code decides how it moves.
   - Why: A character body has collision detection but no physics; you move it yourself.
 
-*Covered in:* Ch 4, 'Four collision objects, and one way around them' (fixed body: 'not moved by the physics engine'; physics body: you set forces or velocity and the engine moves it, and rewriting its transform very often 'may lead to unpredictable behaviors'; character body: 'collision detection, but no physics', you move it), 'The art is not the collider' ('Change the art and nothing moves the capsule') and 'Use It' (showing collision shapes in the running project).
+*Covered in:* Ch 4, 'Four collision objects, and one way around them' (fixed body: 'not moved by the physics engine'; physics body: you set forces or velocity and the engine moves it, and rewriting its transform very often 'may lead to unpredictable behaviors'; character body: 'collision detection, but no physics', you move it), 'The art is not the collider' ('Change the art and nothing moves the capsule') and 'Use It' (showing collision shapes in the running project); and, for the statements added on 2026-11-11, Ch 4, 'Four collision objects, and one way around them' (the plain definitions of collider and trigger area).
 
 ## 9. Chapter 5: Game design documents and requirements
 
@@ -168,10 +168,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: An 'observed' claim is checked by reading the code it cites.
 - **D. FALSE.** Numbers the agent finds in the code, such as a jump speed, show the values the team has approved for the final design.
   - Why: Numbers found in code are observed tuning, not approved design.
-- **E. FALSE.** Once every claim in the recovered document carries a tag, the design stages count as signed off.
-  - Why: A recovered document is not an approval; a person signs each stage, the agent does not.
+- **E. FALSE.** The core loop is the long path from the game's title screen to its final level.
+  - Why: The core loop is the short cycle of player actions repeated most often, for example enter a room, fight and collect a reward.
 
-*Covered in:* Ch 5, 'Provenance tags': [OBSERVED] = the code does this, [INFERRED] = the code strongly implies it, [MISSING] = the code cannot tell you; 'Sprites do not prove a mechanic... a TODO is not a design decision'; numbers found in code are 'observed tuning, not approved design'; 'A tag is a claim about evidence. It is not evidence. The only way to know an [OBSERVED] tag is right is to open the cited line.' Also 'Gates, and who signs them' (a human signs; the agent never signs a gate) and the audit table of nine wrong claims.
+*Covered in:* Ch 5, 'Provenance tags': [OBSERVED] = the code does this, [INFERRED] = the code strongly implies it, [MISSING] = the code cannot tell you; 'Sprites do not prove a mechanic... a TODO is not a design decision'; numbers found in code are 'observed tuning, not approved design'; 'A tag is a claim about evidence. It is not evidence. The only way to know an [OBSERVED] tag is right is to open the cited line.' Also 'Gates, and who signs them' (a human signs; the agent never signs a gate) and the audit table of nine wrong claims; and, for the statements added on 2026-11-11, Ch 5, after the list of sixteen sections (the plain definitions of design pillars, core loop, prototype and vertical slice).
 
 ## 10. Chapter 6: Shaders
 
@@ -187,10 +187,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: The corner part sets positions, so moving a corner moves the drawing.
 - **D. FALSE.** The graphics processor runs a shader's pixel part for one pixel at a time, in order, finishing each before starting the next.
   - Why: A shader is run over many pixels in parallel, many times at once.
-- **E. FALSE.** The part of a shader that colours pixels runs once for the whole shape, so every pixel of the shape gets the same result.
-  - Why: The pixel part runs for every pixel the shape covers, and each run can give a different colour.
+- **E. FALSE.** The fragment part of a shader runs once for each corner point of a shape, and the vertex part runs once for each screen position the shape covers.
+  - Why: Swapped: vertex() runs once for each corner point and fragment() runs once for each screen position the shape covers.
 
-*Covered in:* Ch 6, 'Shader types and processor functions' (six shader types, e.g. one for 3D meshes, one for 2D sprites, shapes and UI, one for the sky; vertex part 'runs over all the vertices in the mesh and sets their positions', fragment part 'runs for every pixel covered by the mesh', light part 'runs for every pixel and for every light') and 'A shader is a small program the GPU runs many times at once' (once per vertex, once per pixel covered, optionally once per pixel per light, 'in parallel'); 'Inside a canvas_item shader' (move the vertex position and the drawing moves).
+*Covered in:* Ch 6, 'Shader types and processor functions' (six shader types, e.g. one for 3D meshes, one for 2D sprites, shapes and UI, one for the sky; vertex part 'runs over all the vertices in the mesh and sets their positions', fragment part 'runs for every pixel covered by the mesh', light part 'runs for every pixel and for every light') and 'A shader is a small program the GPU runs many times at once' (once per vertex, once per pixel covered, optionally once per pixel per light, 'in parallel'); 'Inside a canvas_item shader' (move the vertex position and the drawing moves); and, for the statements added on 2026-11-11, Ch 6, 'Shader types and processor functions' (the plain definitions of vertex and fragment).
 
 ## 11. Chapter 7: Materials (material, shader, texture)
 
@@ -274,8 +274,8 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 **True: A, C, D** (3 of 5)
 
-- **A. TRUE.** Skinning attaches the character's visible surface to the bones, with weights saying how strongly each bone moves each part of the surface.
-  - Why: A surface is skinned to the bones with painted weights, from full influence to none.
+- **A. TRUE.** A rig is a skeleton of connected bones together with the skinning that attaches the character's picture or mesh to it, so moving a bone moves the parts attached to it.
+  - Why: That is the chapter's plain definition of a rig.
 - **B. FALSE.** A skeleton's rest pose is the pose at the end of the most recent animation that played on it.
   - Why: The rest pose is the skeleton's default pose, which you can return to at any time.
 - **C. TRUE.** Inverse kinematics pulls the end of a chain of bones, such as a hand at the end of an arm, toward a target position.
@@ -285,7 +285,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 - **E. FALSE.** Inverse kinematics blends two animation clips together according to a continuous value such as the character's speed.
   - Why: Blending clips by a value is a blend; inverse kinematics pulls bones toward a target.
 
-*Covered in:* Ch 10, 'Skeletons and IK' (a hierarchy of bones; a surface skinned to the bones with painted weights, where full weight means full influence; the rest pose is the default pose; procedural changes layered on top of animation always run after the animation's playback) and the walker-3d-ik example, where mouse-moved targets make the solvers pull the head and arms toward them.
+*Covered in:* Ch 10, 'Skeletons and IK' (a hierarchy of bones; a surface skinned to the bones with painted weights, where full weight means full influence; the rest pose is the default pose; procedural changes layered on top of animation always run after the animation's playback) and the walker-3d-ik example, where mouse-moved targets make the solvers pull the head and arms toward them; and, for the statements added on 2026-11-11, Ch 10, 'Skeletons and IK' (the plain definition of a rig).
 
 ## 16. Chapter 11: State machines and blending
 
@@ -295,8 +295,8 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 - **A. TRUE.** A transition between two states can include a short cross-fade, so the pose changes smoothly instead of cutting at once.
   - Why: Each transition can carry a cross-fade length; without one the change is a cut.
-- **B. FALSE.** Root motion is the setting that decides how long a transition between two states takes.
-  - Why: The length of a transition's cross-fade is a transition setting; root motion is about where movement comes from.
+- **B. FALSE.** A transition is one situation of the character, such as idle or jump, and a state is the connection that says when the character may change.
+  - Why: Swapped: a state is one situation of the character, and a transition is the connection along which it moves from one state to another.
 - **C. FALSE.** A blend of clips driven by speed is the right tool for a jump that must play its takeoff once started, even if the player lets go of the button.
   - Why: Blends suit continuous input; a character that must commit to a jump needs states.
 - **D. TRUE.** With root motion, the forward movement of the body comes from the animation itself, as in a lunge that carries the character ahead.
@@ -304,7 +304,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 - **E. TRUE.** Using root motion hands control of the character's movement to the animation, so tests of that movement become tests of animation data.
   - Why: Root motion hands movement authority to the animation, which changes what a movement test is really testing.
 
-*Covered in:* Ch 11, 'Root motion' (some clips move the root as part of the animation, such as a lunge or a vault; it hands movement authority to the animation, so movement tests become tests of animation data), 'The state machine, as machinery' (a transition has a cross-fade length) and 'BlendSpace: continuous input, continuous pose' (blends suit continuous input and are the wrong tool when the character must commit, such as a jump that has started).
+*Covered in:* Ch 11, 'Root motion' (some clips move the root as part of the animation, such as a lunge or a vault; it hands movement authority to the animation, so movement tests become tests of animation data), 'The state machine, as machinery' (a transition has a cross-fade length) and 'BlendSpace: continuous input, continuous pose' (blends suit continuous input and are the wrong tool when the character must commit, such as a jump that has started); and, for the statements added on 2026-11-11, Ch 11, 'The state machine, as machinery' (the plain definitions of state machine and transition).
 
 ## 17. Chapter 12: Audio and triggers
 
@@ -314,8 +314,8 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 - **A. FALSE.** A player that can play only one sound at a time layers each new sound on top of the old one, so every rapid hit stays audible.
   - Why: A new sound cuts off the oldest, so fast hits sound like one hit that keeps restarting.
-- **B. TRUE.** Game logic usually decides when a sound plays, by reacting to an event such as a hit being scored.
-  - Why: Cues are triggered from game events, not by the audio system itself.
+- **B. TRUE.** A trigger is game logic reacting to an event, such as a hit being scored or the player entering an area, and it is what makes a sound start.
+  - Why: That is the chapter's plain definition of a trigger.
 - **C. FALSE.** When the game is paused, sound players keep playing as normal, so a pause menu's click needs no special setup.
   - Why: Players pause with the game; a pause-menu sound needs a player that keeps running.
 - **D. FALSE.** If a sound player reports that it is playing, that shows players will hear the sound.
@@ -323,7 +323,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 - **E. FALSE.** A sound set to loop still announces that it has finished each time it reaches its end.
   - Why: A looping sound never reports finishing, because it never ends on its own.
 
-*Covered in:* Ch 12, 'Triggers: signals decide when, not the audio system' (game logic decides when, usually through a signal); 'Polyphony, restart and pause' (one voice by default so a new play cuts off the oldest; the finished notice never fires for a looping stream; players pause with the tree); 'The question' (a playing flag proves only that a flag was true at one instant, not that anyone hears it); 'Import' (looping is an import setting; flip it and the song never ends).
+*Covered in:* Ch 12, 'Triggers: signals decide when, not the audio system' (game logic decides when, usually through a signal); 'Polyphony, restart and pause' (one voice by default so a new play cuts off the oldest; the finished notice never fires for a looping stream; players pause with the tree); 'The question' (a playing flag proves only that a flag was true at one instant, not that anyone hears it); 'Import' (looping is an import setting; flip it and the song never ends); and, for the statements added on 2026-11-11, Ch 12, 'Ideas you need' (trigger and trigger area) and the import section (one-shot and loop).
 
 ## 18. Chapter 13: Profiling and optimization
 
@@ -339,10 +339,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: Recording can slow a project significantly; timing is done with the profiler off.
 - **D. TRUE.** Optimization should always be guided by measurement: profile, find the bottleneck, change that one thing, then measure again.
   - Why: The profile, identify, optimize, repeat loop is the discipline stated for optimization.
-- **E. TRUE.** Repeating a measurement shows how much a result varies, because other work on the machine can change it, so a single run is weak evidence.
-  - Why: Identical code gave very different times between runs; one run is an anecdote.
+- **E. TRUE.** A draw call is one command from the main processor asking the graphics processor to draw something, and many small ones can keep the main processor busy even when the graphics processor has little to do.
+  - Why: That is the chapter's plain definition of a draw call and why many small ones cost the main processor.
 
-*Covered in:* Ch 13, 'Frame time is the unit' (always use profiling and timing to guide your efforts, in a loop), 'The human-with-a-screen tools' (the profiler must be started by hand because recording can slow the project; time with it off), 'Headless timing' (draw calls and GPU times read 0 headless), 'My verification' (variance is the machine; one run is an anecdote) and 'Mobile and XR constraints' (a desktop CPU measurement offers a ratio, a hypothesis to test on the device).
+*Covered in:* Ch 13, 'Frame time is the unit' (always use profiling and timing to guide your efforts, in a loop), 'The human-with-a-screen tools' (the profiler must be started by hand because recording can slow the project; time with it off), 'Headless timing' (draw calls and GPU times read 0 headless), 'My verification' (variance is the machine; one run is an anecdote) and 'Mobile and XR constraints' (a desktop CPU measurement offers a ratio, a hypothesis to test on the device); and, for the statements added on 2026-11-11, Ch 13, 'Where a frame's time goes' (the plain definition of a draw call).
 
 ## 19. Chapter 14: How game characters decide (state machines, behavior trees)
 

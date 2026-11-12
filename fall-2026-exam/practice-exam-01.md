@@ -42,7 +42,7 @@ Name: ______________________
 **4.** A student asks an image generator for a game sprite and then has to use the result in a 2D game.  *(5 points)*
 
 - [ ] A. To get a character facing both ways, it is better to generate one facing direction and flip it in the game, since generators often draw 'left' and 'right' the same.
-- [ ] B. A prompt made of mood words such as menacing and crisp is enough to give a file that can be checked for size and frame layout.
+- [ ] B. A sprite is image data that something is drawn with, and a texture is a 2D picture drawn as an object in the game.
 - [ ] C. A request that asks the generator for a transparent background often gets a painted checkerboard, so a plain solid background that is removed afterwards works better.
 - [ ] D. A generated image that looks like finished game art in a picture viewer has already met the engine's needs for size, background and frame layout.
 - [ ] E. A tool that cuts an image into equal grid cells always works correctly, even on a picture where the generator placed the creatures freely.
@@ -51,7 +51,7 @@ Name: ______________________
 
 - [ ] A. Stretching the cube changes the object's scale, but the mesh's own vertices still describe the original cube until the transform is applied.
 - [ ] B. If the pole looks the right size in the running game, its transform must already have been applied.
-- [ ] C. Applying the transform is best left until after the model has been imported into Godot.
+- [ ] C. A mesh is the picture wrapped around a 3D model, and its vertices are the pixels of that picture.
 - [ ] D. A collision shape generated from a mesh that carries a stretched scale inherits that scale, which is one reason to apply the transform before export.
 - [ ] E. Applying the transform before export changes how the pole looks in the game, making it thinner or thicker.
 
@@ -73,24 +73,24 @@ Name: ______________________
 
 **8.** A coin in a 2D Godot game should add to the score when the player touches it, but the player should walk straight through it. Check each statement that is true.  *(5 points)*
 
-- [ ] A. A trigger is an area that reports when something overlaps it and never blocks or pushes.
+- [ ] A. A trigger area is a detection area that reports when something overlaps it and never blocks or pushes.
 - [ ] B. The coin should be a solid collider, so the player is stopped by it and the score changes on touch.
-- [ ] C. A trigger works from the coin's picture, so it needs no collision shape.
+- [ ] C. A trigger area works from the coin's picture, so it needs no collision shape.
 - [ ] D. The shape the physics engine uses is always the same as the picture the player sees.
 - [ ] E. A collider is a shape the physics engine uses to detect contact, and a solid one blocks other objects.
 
-**9.** A team is writing requirements for a new checkpoint feature in a 3D Godot world, and for a phone version of that world. They want each requirement to be checkable and honest. Check each statement that is true.  *(5 points)*
+**9.** A team is writing requirements for a new checkpoint feature in a 3D Godot world, and for a phone version of that world, and is deciding what to build first. They want each requirement to be checkable and honest. Check each statement that is true.  *(5 points)*
 
 - [ ] A. A requirement for a new feature should leave out existing behaviour, so that the requirement stays short and focused.
 - [ ] B. Touch simulated with a mouse on a desktop is enough to call the phone version verified.
 - [ ] C. A requirement is checkable when a stranger could write its test without having to ask the author what was meant.
 - [ ] D. A scripted test cannot press a game's controls, so a feature's requirement has to be judged by a person playing.
-- [ ] E. When a scripted test of the feature passes, that shows players can see the feature and will understand it.
+- [ ] E. A vertical slice is a quick build made to answer one design question, and it may be thrown away.
 
 **10.** A technical artist is learning what a shader is. Check each statement that is true.  *(5 points)*
 
 - [ ] A. When a shader decides one pixel's colour, it can look at the colour its neighbouring pixel ended up with.
-- [ ] B. One part of a shader decides where each corner of a shape lands, and another decides the colour of each pixel the shape covers.
+- [ ] B. The vertex part of a shader decides where each corner point of a shape lands, and the fragment part decides the colour for each screen position the shape covers.
 - [ ] C. A shader is a small program that runs on the graphics processor, not the main processor.
 - [ ] D. A shader is where the game's rules, such as the score, are written.
 - [ ] E. A shader runs once for the whole image, from start to finish.
@@ -125,7 +125,7 @@ Name: ______________________
 - [ ] B. Lifetime is the number of particles born in one emission cycle.
 - [ ] C. Smoke that keeps rising suits a continuous effect, in which new particles keep being born at a steady pace.
 - [ ] D. A one-shot effect plays a single emission cycle and then stops.
-- [ ] E. In a burst, all of the particles are born together at the start instead of being spread out over time.
+- [ ] E. An emitter is the thing that creates particles, which in Godot is the particle node itself.
 
 **15.** A 2D team is deciding how to animate a character. Check each statement that is true.  *(5 points)*
 
@@ -143,13 +143,13 @@ Name: ______________________
 - [ ] D. A transition can be set to wait until the current animation has finished before the next state begins.
 - [ ] E. A state machine is the way to mix two clips together by a continuous number such as speed.
 
-**17.** A developer is learning when to use a plain sound player and when to use one that gives a sound a place in the world. Check each statement that is true.  *(5 points)*
+**17.** A developer is learning when to use a plain sound player and when to use one that gives a sound a place in the world, and what makes a sound start. Check each statement that is true.  *(5 points)*
 
 - [ ] A. Positional sound is only possible in 3D games, because distance needs three dimensions.
 - [ ] B. Any sound player attached to a moving enemy gets quieter with distance, because it belongs to the enemy.
 - [ ] C. A positional player makes a sound quieter as the listener gets farther from the place the sound comes from.
 - [ ] D. Background music and interface clicks suit a plain player, because their loudness should never depend on where the camera is.
-- [ ] E. A 3D positional sound can only be heard if the developer adds a listener object to the scene by hand.
+- [ ] E. A trigger is a sound that plays once, and a one-shot is the game logic that starts it.
 
 **18.** A team wants its Godot game to run at 60 frames per second. Check each statement that is true.  *(5 points)*
 
@@ -157,7 +157,7 @@ Name: ______________________
 - [ ] B. Frames per second counts how many frames are drawn each second, and frame time is how long each frame takes.
 - [ ] C. An optimization is justified when it is faster by enough to matter against the frame budget on the hardware the game targets.
 - [ ] D. A frame budget is the longest time one frame may take and still meet the target frame rate.
-- [ ] E. "It is faster" is a good enough reason by itself to make an optimization change.
+- [ ] E. Drawing many small objects in separate draw calls is cheaper for the main processor than drawing many copies of one mesh in a single call.
 
 **19.** A guard that patrols, chases and searches has its brain built as a finite state machine. Check each statement that is true.  *(5 points)*
 

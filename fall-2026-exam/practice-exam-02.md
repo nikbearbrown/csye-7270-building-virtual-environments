@@ -53,7 +53,7 @@ Name: ______________________
 - [ ] B. glTF is an interchange format for moving a 3D model between tools, and Godot recommends it for importing models.
 - [ ] C. Godot's physics works the same at any scale, so the size of an imported prop changes how it looks but not how it plays.
 - [ ] D. Blender treats Z as up while glTF and Godot treat Y as up, so the exporter turns the model's height onto the other axis.
-- [ ] E. A prop that arrives in Godot lying on its side was exported at the wrong size.
+- [ ] E. A door whose pivot is at its centre swings on its hinge when it is rotated.
 
 **6.** A coding agent reports that it built a prop in Blender and exported it for a Godot game. Check each statement that is true about what to verify afterwards.  *(5 points)*
 
@@ -76,7 +76,7 @@ Name: ______________________
 - [ ] A. If the hero's artwork is swapped for a wider picture, its collision shape resizes itself to match the new art.
 - [ ] B. Turning on the display of collision shapes while the game runs lets you compare them with what is drawn.
 - [ ] C. A body that the physics engine moves, like the crate, is steered best by having your code overwrite its position every frame.
-- [ ] D. A solid fixed body, like the floor, is never moved by the physics engine, but other bodies collide with it.
+- [ ] D. A solid collider blocks other objects, while a detection area also uses a shape but only reports the overlap, which is why it is called a trigger area.
 - [ ] E. A body you move yourself, like the hero, gets collision detection but not simulated physics, so your code decides how it moves.
 
 **9.** A coding agent reads an existing Godot project and writes a design document for the game that is already there, marking each claim with how it is known. Check each statement that is true.  *(5 points)*
@@ -85,7 +85,7 @@ Name: ______________________
 - [ ] B. A claim marked 'observed' is meant to be something the code actually does, and one marked 'missing' is something the code cannot tell you.
 - [ ] C. To check a claim marked 'observed', the student opens the code it points to and reads it.
 - [ ] D. Numbers the agent finds in the code, such as a jump speed, show the values the team has approved for the final design.
-- [ ] E. Once every claim in the recovered document carries a tag, the design stages count as signed off.
+- [ ] E. The core loop is the long path from the game's title screen to its final level.
 
 **10.** A student is comparing the different jobs a shader can do in a Godot game. Check each statement that is true.  *(5 points)*
 
@@ -93,7 +93,7 @@ Name: ______________________
 - [ ] B. There are different kinds of shader for different jobs, for example one for 3D models, one for 2D sprites and interface, and one for the sky.
 - [ ] C. Changing where a shape's corners land in a shader does not move the drawing, which can only be moved by the game's own code.
 - [ ] D. The graphics processor runs a shader's pixel part for one pixel at a time, in order, finishing each before starting the next.
-- [ ] E. The part of a shader that colours pixels runs once for the whole shape, so every pixel of the shape gets the same result.
+- [ ] E. The fragment part of a shader runs once for each corner point of a shape, and the vertex part runs once for each screen position the shape covers.
 
 **11.** Ten identical crates in a 3D level use one shared material. A designer wants a single crate to glow red when it is hit. Check each statement that is true about materials.  *(5 points)*
 
@@ -129,7 +129,7 @@ Name: ______________________
 
 **15.** A character has a skeleton of bones with its visible surface attached to them. A designer wants the character's hand to reach toward a target while an animation plays. Check each statement that is true.  *(5 points)*
 
-- [ ] A. Skinning attaches the character's visible surface to the bones, with weights saying how strongly each bone moves each part of the surface.
+- [ ] A. A rig is a skeleton of connected bones together with the skinning that attaches the character's picture or mesh to it, so moving a bone moves the parts attached to it.
 - [ ] B. A skeleton's rest pose is the pose at the end of the most recent animation that played on it.
 - [ ] C. Inverse kinematics pulls the end of a chain of bones, such as a hand at the end of an arm, toward a target position.
 - [ ] D. Inverse kinematics is applied on top of the animation, adjusting the pose that the animation has already produced.
@@ -138,7 +138,7 @@ Name: ______________________
 **16.** A designer adds a lunge attack in which the character's body moves forward as part of the animation, and wants smooth changes between the character's states. Check each statement that is true.  *(5 points)*
 
 - [ ] A. A transition between two states can include a short cross-fade, so the pose changes smoothly instead of cutting at once.
-- [ ] B. Root motion is the setting that decides how long a transition between two states takes.
+- [ ] B. A transition is one situation of the character, such as idle or jump, and a state is the connection that says when the character may change.
 - [ ] C. A blend of clips driven by speed is the right tool for a jump that must play its takeoff once started, even if the player lets go of the button.
 - [ ] D. With root motion, the forward movement of the body comes from the animation itself, as in a lunge that carries the character ahead.
 - [ ] E. Using root motion hands control of the character's movement to the animation, so tests of that movement become tests of animation data.
@@ -146,7 +146,7 @@ Name: ______________________
 **17.** A rhythm game plays a short click when the player hits a note well, over a looping background song. Check each statement that is true.  *(5 points)*
 
 - [ ] A. A player that can play only one sound at a time layers each new sound on top of the old one, so every rapid hit stays audible.
-- [ ] B. Game logic usually decides when a sound plays, by reacting to an event such as a hit being scored.
+- [ ] B. A trigger is game logic reacting to an event, such as a hit being scored or the player entering an area, and it is what makes a sound start.
 - [ ] C. When the game is paused, sound players keep playing as normal, so a pause menu's click needs no special setup.
 - [ ] D. If a sound player reports that it is playing, that shows players will hear the sound.
 - [ ] E. A sound set to loop still announces that it has finished each time it reaches its end.
@@ -157,7 +157,7 @@ Name: ______________________
 - [ ] B. A timing taken in a headless run (no display) leaves out the graphics processor's work, so it cannot show whether drawing is the problem.
 - [ ] C. Turning on a profiler slows the game while it records, so time the game with it off and use the profiler to find where the time went.
 - [ ] D. Optimization should always be guided by measurement: profile, find the bottleneck, change that one thing, then measure again.
-- [ ] E. Repeating a measurement shows how much a result varies, because other work on the machine can change it, so a single run is weak evidence.
+- [ ] E. A draw call is one command from the main processor asking the graphics processor to draw something, and many small ones can keep the main processor busy even when the graphics processor has little to do.
 
 **19.** An enemy chases the player if it can see them, otherwise searches where it last saw them, otherwise patrols, and its brain is a behavior tree. Check each statement that is true.  *(5 points)*
 

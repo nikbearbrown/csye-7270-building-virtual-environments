@@ -67,8 +67,8 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 - **A. TRUE.** To get a character facing both ways, it is better to generate one facing direction and flip it in the game, since generators often draw 'left' and 'right' the same.
   - Why: The chapter says to generate one facing direction and flip it at runtime.
-- **B. FALSE.** A prompt made of mood words such as menacing and crisp is enough to give a file that can be checked for size and frame layout.
-  - Why: The engine responds to numbers such as size and frame count; mood words give a picture, not a checkable file.
+- **B. FALSE.** A sprite is image data that something is drawn with, and a texture is a 2D picture drawn as an object in the game.
+  - Why: Swapped: a texture is image data that something is drawn with, and a sprite is a 2D picture, or one frame of one, drawn as an object in the game.
 - **C. TRUE.** A request that asks the generator for a transparent background often gets a painted checkerboard, so a plain solid background that is removed afterwards works better.
   - Why: Generators tend to paint a checkerboard rather than real transparency.
 - **D. FALSE.** A generated image that looks like finished game art in a picture viewer has already met the engine's needs for size, background and frame layout.
@@ -76,7 +76,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 - **E. FALSE.** A tool that cuts an image into equal grid cells always works correctly, even on a picture where the generator placed the creatures freely.
   - Why: A freely laid-out image is not a grid; the cutting tool still reports success while cutting the creatures in pieces.
 
-*Covered in:* Ch 2, idea 1 'A prompt is a specification, and the engine reads the result' (mood words versus the engine's numbers; solid background, never 'transparent'; one facing direction, flipped at runtime, because 'facing left' and 'right' often come out identical; the constraint table), 'The question' (an image viewer shows none of the engine's questions) and 'The Walker asset helpers' (the grid assumption fails on a freely laid-out image).
+*Covered in:* Ch 2, idea 1 'A prompt is a specification, and the engine reads the result' (mood words versus the engine's numbers; solid background, never 'transparent'; one facing direction, flipped at runtime, because 'facing left' and 'right' often come out identical; the constraint table), 'The question' (an image viewer shows none of the engine's questions) and 'The Walker asset helpers' (the grid assumption fails on a freely laid-out image); and, for the statements added on 2026-11-11, Ch 2, idea 1 'A prompt is a specification, and the engine reads the result' (the plain definitions of texture, sprite, resolution and aspect ratio).
 
 ## 5. Chapter 3: 3D assets from Blender to Godot
 
@@ -88,14 +88,14 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: A Blender object has a transform and separate mesh data; scaling the object leaves the vertices describing the cube.
 - **B. FALSE.** If the pole looks the right size in the running game, its transform must already have been applied.
   - Why: A pole with an unapplied scale can look identical in game; the mesh is then a cube wearing a scale.
-- **C. FALSE.** Applying the transform is best left until after the model has been imported into Godot.
-  - Why: The advice is to apply the object transform in the modeling software before exporting.
+- **C. FALSE.** A mesh is the picture wrapped around a 3D model, and its vertices are the pixels of that picture.
+  - Why: A mesh is the shape of a 3D model: points called vertices, joined by edges into faces.
 - **D. TRUE.** A collision shape generated from a mesh that carries a stretched scale inherits that scale, which is one reason to apply the transform before export.
   - Why: Anything generated from the mesh inherits the scale, and Godot's guidance is to avoid scaling collision shapes.
 - **E. FALSE.** Applying the transform before export changes how the pole looks in the game, making it thinner or thicker.
   - Why: Applying moves the stretch into the vertices and resets the scale; the look does not change.
 
-*Covered in:* Ch 3, 'Apply transforms: the object's scale versus the mesh's size' and 'The question' (the no_apply case): the object has a transform and mesh data; a pole made from a scaled 2 m cube still has cube vertices; the drawn size can look right while the node carries a non-unit scale; 'anything generated from that mesh inherits the scale'; apply the transform in the modeling software before exporting.
+*Covered in:* Ch 3, 'Apply transforms: the object's scale versus the mesh's size' and 'The question' (the no_apply case): the object has a transform and mesh data; a pole made from a scaled 2 m cube still has cube vertices; the drawn size can look right while the node carries a non-unit scale; 'anything generated from that mesh inherits the scale'; apply the transform in the modeling software before exporting; and, for the statements added on 2026-11-11, Ch 3, 'Apply transforms' (the plain definitions of mesh, vertex, origin and pivot) and 'The scene importer's own settings' (level of detail).
 
 ## 6. Chapter 3: Driving Blender with an agent (MCP and scripts)
 
@@ -135,28 +135,28 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 *Covered in:* Ch 4, 'Nodes and scenes: composition you can save' and 'Signals: who tells whom'.
 
-## 8. Chapter 4: Collision (colliders, triggers, layers and masks)
+## 8. Chapter 4: Collision (colliders, trigger areas, layers and masks)
 
 **A coin in a 2D Godot game should add to the score when the player touches it, but the player should walk straight through it. Check each statement that is true.**  *(5 points)*
 
 **True: A, E** (2 of 5)
 
-- **A. TRUE.** A trigger is an area that reports when something overlaps it and never blocks or pushes.
-  - Why: A detection area reports overlaps and never blocks or pushes.
+- **A. TRUE.** A trigger area is a detection area that reports when something overlaps it and never blocks or pushes.
+  - Why: A detection area uses a shape but only reports the overlap, which is why it is called a trigger area.
 - **B. FALSE.** The coin should be a solid collider, so the player is stopped by it and the score changes on touch.
   - Why: A solid collider would stop the player; the coin needs a non-blocking trigger.
-- **C. FALSE.** A trigger works from the coin's picture, so it needs no collision shape.
-  - Why: A trigger still needs a shape; the picture is not the collider.
+- **C. FALSE.** A trigger area works from the coin's picture, so it needs no collision shape.
+  - Why: A trigger area uses a collision shape like any collider; the picture is not the collider.
 - **D. FALSE.** The shape the physics engine uses is always the same as the picture the player sees.
   - Why: Nothing ties the collision shape to the art except the author's care.
 - **E. TRUE.** A collider is a shape the physics engine uses to detect contact, and a solid one blocks other objects.
   - Why: A collision shape is geometry the physics engine uses; a solid body blocks.
 
-*Covered in:* Ch 4, 'Four collision objects' (a detection area reports overlaps, never blocks or pushes) and 'The art is not the collider'.
+*Covered in:* Ch 4, 'Four collision objects' (a detection area reports overlaps, never blocks or pushes) and 'The art is not the collider'; and, for the statements added on 2026-11-11, Ch 4, 'Four collision objects, and one way around them' (the plain definitions of collider and trigger area).
 
 ## 9. Chapter 5: Game design documents and requirements
 
-**A team is writing requirements for a new checkpoint feature in a 3D Godot world, and for a phone version of that world. They want each requirement to be checkable and honest. Check each statement that is true.**  *(5 points)*
+**A team is writing requirements for a new checkpoint feature in a 3D Godot world, and for a phone version of that world, and is deciding what to build first. They want each requirement to be checkable and honest. Check each statement that is true.**  *(5 points)*
 
 **True: C** (1 of 5)
 
@@ -168,10 +168,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: This is the chapter's test for a requirement a machine can check.
 - **D. FALSE.** A scripted test cannot press a game's controls, so a feature's requirement has to be judged by a person playing.
   - Why: Scripted input can drive the game's ordinary controls; machine-checkable criteria are the point.
-- **E. FALSE.** When a scripted test of the feature passes, that shows players can see the feature and will understand it.
-  - Why: A pass shows the written criterion was met in that run, not that the feature is visible, understandable or fun.
+- **E. FALSE.** A vertical slice is a quick build made to answer one design question, and it may be thrown away.
+  - Why: That describes a prototype. A vertical slice is a thin piece of the game built to near-final quality across art, sound, interface and rules.
 
-*Covered in:* Ch 5, 'Acceptance criteria that a machine can check' (testable when a stranger could write the test without asking; name the quantity and unit, a tolerance, a time box, how the state is reached, what must not change, and what is out of scope), 'What a pass proves' under Verify (a pass does not prove the pad is visible, understandable, fair or worth having), and 'Scoping mobile, networked, and XR versions of a world' ('Mouse-emulated touch is not a phone'; name what stays unverified).
+*Covered in:* Ch 5, 'Acceptance criteria that a machine can check' (testable when a stranger could write the test without asking; name the quantity and unit, a tolerance, a time box, how the state is reached, what must not change, and what is out of scope), 'What a pass proves' under Verify (a pass does not prove the pad is visible, understandable, fair or worth having), and 'Scoping mobile, networked, and XR versions of a world' ('Mouse-emulated touch is not a phone'; name what stays unverified); and, for the statements added on 2026-11-11, Ch 5, after the list of sixteen sections (the plain definitions of design pillars, core loop, prototype and vertical slice).
 
 ## 10. Chapter 6: Shaders
 
@@ -181,8 +181,8 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 - **A. FALSE.** When a shader decides one pixel's colour, it can look at the colour its neighbouring pixel ended up with.
   - Why: Each run is independent; a pixel cannot ask its neighbour.
-- **B. TRUE.** One part of a shader decides where each corner of a shape lands, and another decides the colour of each pixel the shape covers.
-  - Why: The vertex part and the per-pixel part.
+- **B. TRUE.** The vertex part of a shader decides where each corner point of a shape lands, and the fragment part decides the colour for each screen position the shape covers.
+  - Why: The vertex function runs once for each corner point and the fragment function once for each screen position the shape covers.
 - **C. TRUE.** A shader is a small program that runs on the graphics processor, not the main processor.
   - Why: The chapter's first definition.
 - **D. FALSE.** A shader is where the game's rules, such as the score, are written.
@@ -190,7 +190,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 - **E. FALSE.** A shader runs once for the whole image, from start to finish.
   - Why: It runs many times at once, once per vertex or pixel.
 
-*Covered in:* Ch 6, 'A shader is a small program the GPU runs many times at once' and 'Shader types and processor functions'.
+*Covered in:* Ch 6, 'A shader is a small program the GPU runs many times at once' and 'Shader types and processor functions'; and, for the statements added on 2026-11-11, Ch 6, 'Shader types and processor functions' (the plain definitions of vertex and fragment).
 
 ## 11. Chapter 7: Materials (material, shader, texture)
 
@@ -263,10 +263,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: A looping effect with births spread evenly over the cycle is the continuous kind; the chapter uses smoke as its example.
 - **D. TRUE.** A one-shot effect plays a single emission cycle and then stops.
   - Why: One-shot means only one emission cycle occurs.
-- **E. TRUE.** In a burst, all of the particles are born together at the start instead of being spread out over time.
-  - Why: A burst is the case where every particle is emitted at the start of the cycle.
+- **E. TRUE.** An emitter is the thing that creates particles, which in Godot is the particle node itself.
+  - Why: That is the chapter's plain definition of an emitter.
 
-*Covered in:* Ch 9, 'The timing model: one emission cycle' (lifetime is how long each particle lives and the length of one cycle; the amount is the number emitted per cycle; a spread of zero births evenly across the cycle and full explosiveness emits all at the start, which is a burst; one-shot means only one cycle; at most the set number are alive) and the mention of smoke already rising when a level loads.
+*Covered in:* Ch 9, 'The timing model: one emission cycle' (lifetime is how long each particle lives and the length of one cycle; the amount is the number emitted per cycle; a spread of zero births evenly across the cycle and full explosiveness emits all at the start, which is a burst; one-shot means only one cycle; at most the set number are alive) and the mention of smoke already rising when a level loads; and, for the statements added on 2026-11-11, Ch 9, 'A particle system is a birth-life-death loop, not a picture' (the plain definitions of particle, emitter and particle system).
 
 ## 15. Chapter 10: Animation foundations (sprite sheets, rigs, keyframes, inverse kinematics)
 
@@ -308,7 +308,7 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
 
 ## 17. Chapter 12: Audio and triggers
 
-**A developer is learning when to use a plain sound player and when to use one that gives a sound a place in the world. Check each statement that is true.**  *(5 points)*
+**A developer is learning when to use a plain sound player and when to use one that gives a sound a place in the world, and what makes a sound start. Check each statement that is true.**  *(5 points)*
 
 **True: C, D** (2 of 5)
 
@@ -320,10 +320,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: Positional players attenuate with distance to the listener.
 - **D. TRUE.** Background music and interface clicks suit a plain player, because their loudness should never depend on where the camera is.
   - Why: The plain player is for music and interface sounds and does not use position.
-- **E. FALSE.** A 3D positional sound can only be heard if the developer adds a listener object to the scene by hand.
-  - Why: By default the current camera acts as the listener.
+- **E. FALSE.** A trigger is a sound that plays once, and a one-shot is the game logic that starts it.
+  - Why: Swapped: a trigger is whatever makes a sound start, and a one-shot is a sound that plays from start to end once each time it is triggered.
 
-*Covered in:* Ch 12, 'Three player nodes, one question: where is the listener?': the plain player is for music and interface sounds and 'does not' use position; the 2D player is 'attenuated with distance to the listener'; the 3D player is attenuated and panned relative to the current camera or a listener node; 'Choose by asking where the listener is'.
+*Covered in:* Ch 12, 'Three player nodes, one question: where is the listener?': the plain player is for music and interface sounds and 'does not' use position; the 2D player is 'attenuated with distance to the listener'; the 3D player is attenuated and panned relative to the current camera or a listener node; 'Choose by asking where the listener is'; and, for the statements added on 2026-11-11, Ch 12, 'Ideas you need' (trigger and trigger area) and the import section (one-shot and loop).
 
 ## 18. Chapter 13: Profiling and optimization
 
@@ -339,10 +339,10 @@ Each statement is scored on its own, 1 point. Under every statement is the reaso
   - Why: The chapter's own test.
 - **D. TRUE.** A frame budget is the longest time one frame may take and still meet the target frame rate.
   - Why: Budget per frame is 1000 divided by the target rate.
-- **E. FALSE.** "It is faster" is a good enough reason by itself to make an optimization change.
-  - Why: The chapter says 'faster' is not a justification.
+- **E. FALSE.** Drawing many small objects in separate draw calls is cheaper for the main processor than drawing many copies of one mesh in a single call.
+  - Why: Drawing many copies of one mesh in a single draw call is cheaper, because many small draw calls can keep the main processor busy even when the graphics processor has little to do.
 
-*Covered in:* Ch 13, 'Frame time is the unit; frames per second is the headline' and the chapter opening.
+*Covered in:* Ch 13, 'Frame time is the unit; frames per second is the headline' and the chapter opening; and, for the statements added on 2026-11-11, Ch 13, 'Where a frame's time goes' (the plain definition of a draw call).
 
 ## 19. Chapter 14: How game characters decide (state machines, behavior trees)
 
