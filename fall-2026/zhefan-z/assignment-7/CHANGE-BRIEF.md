@@ -1,0 +1,106 @@
+# CHANGE-BRIEF — Assignment 7: a mage run cycle and a wolf lunge rig
+
+Author: Zhefan Zhang (zhefan-z). Original version, 2026-11-10. Dated revisions go at the end. The A6 brief is in history at `7672d5a`. My decisions here: both clips, the run rate, the lunge's amplitude and the per-phase interrupt rule; claude.ai compiled the file from those decisions and the code facts. Paths are relative to `walker-magic-zhefan/` (`res://`).
+
+Engine: Godot 4.7.2-stable, Forward+, 2D, viewport 640×360 at 2× (1280×720). Physics 60 ticks/s (engine default; `project.godot` sets none).
+
+## Objectives
+
+Four ideas this change shows, each with a test: **tracks of keys** (every clip is read back key by key), **one authority** (one AnimationPlayer per sprite; the state machine only calls `play()`), **two clocks** (animation on the physics tick, the same tick gameplay reads), **feel designed in frames** (the lunge is a phase table before it is keys).
+
+## Facts from the code
+
+| Fact | Reference |
+|---|---|
+| Player states `IDLE, RUN, RISE, FALL, CAST, HURT, FAIL, WIN`, one static image each; `_set_state()` sets `sprite.texture` and `flip_h`; a fall into the pit shows the FALL image in FAIL | `features/player/player.gd:15–25, 130–133, 177–178` |
+| RUN shows only `mage_run_contact.png`; `mage_run_passing.png` (A2 key pose) is unused | `player.gd:19`, A2 CHARACTER-SHEET revision |
+| Player state is chosen in `_physics_process` → `_update_state()` | `player.gd:58, 116–127` |
+| Wolf states `PATROL, GROWL, LUNGE, RECOVER, DEAD`; `_timer` counts down per physics tick; GROWL 0.5 s standing, LUNGE 0.35 s at 220 px/s with `LungeHitbox.monitoring` on, RECOVER 0.6 s standing | `features/wolf/wolf.gd:11–28, 58–96` |
+| Wolf images 80×40, Sprite2D `offset (-40, -38)`, not centred; the art faces right; facing is `sprite.flip_h`; `_flash()` sets a `flash` uniform on the sprite's own material | `wolf.gd:120–126, 150–155`, `wolf.tscn:21–25` |
+| `take_damage()` flashes and lowers HP; it never changes the wolf's state unless HP reaches 0 | `wolf.gd:130–147` |
+| Mage images 62×69, Sprite2D `offset (-31, -67)`, not centred | `player.tscn:21–25` |
+
+## Clip 1 — mage run cycle (sprite, loops, player state machine)
+
+- **Route:** Sprite2D with an AnimationPlayer frame track.
+- **Source:** my own Assignment 2 sprites, `assets/sprites/mage/mage_run_contact.png` and `mage_run_passing.png` (provenance in `walker-magic-zhefan/SOURCES.md`, Assignment 2). The originals stay committed and unchanged.
+- **Sheet and slicing:** `assets/sprites/mage/mage_run_sheet.png`, 124×69, written by a committed tool script from the two originals side by side. Cell 62×69, grid `hframes = 2`, `vframes = 1`, frame order `0 = contact, 1 = passing`. Claude slices from these numbers, not from the image.
+- **Cycle spec:** 8 fps; keys `frame 0` at 0.000 s and `frame 1` at 0.125 s; length 0.250 s; `LOOP_LINEAR`; update mode **discrete**. Seam rule (frame track): no duplicate across the wrap, and the gap from the last key to the length (0.125 s) equals the key interval.
+- **Registration:** both cells share the A2 canvas and the feet anchor at `offset (-31, -67)`; the frame strip shows any drift.
+- **One authority:** the player's AnimationPlayer owns `texture`, `hframes` and `frame` of `Sprite2D` for every state. Each state has a clip (`idle, run, rise, fall, cast, hurt, fail, fail_pit, win`; single-key clips except `run`); `_set_state()` only calls `play()` and keeps setting `flip_h`. `autoplay` is empty.
+- **Clock:** `callback_mode_process = ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS`, the tick `_update_state()` runs on. Every RUN entry starts the cycle at frame 0.
+
+## Clip 2 — wolf lunge (cutout rig, committing action, wolf state machine)
+
+- **Route:** cutout rig keyed as resource text in the wolf scene (or baked by a headless script to a committed `.tres`).
+- **Source:** my own Assignment 2 sprite `assets/sprites/wolf/wolf_lunge.png`, unchanged. The parts use `region_rect` on that texture: **Rear** (hindquarters, tail) and **Front** (shoulders, head), overlapping by a few pixels so no seam opens when they rotate. No new image file.
+- **Rig:** `Facing` (Node2D; code sets only `scale.x = facing`) → `Rig` (Node2D at the feet; keyed `position`, `scale`) → `RearPivot` at the hip and `FrontPivot` at the shoulder (Node2D; keyed `rotation`) → the two part Sprite2Ds. The existing `Sprite2D` stays for PATROL and DEAD (run and down images). The white flash reaches every visible part (shared material on `Facing`, parts using the parent material). The agent measures the hip and shoulder from the image and lists them.
+- **Amplitude (my choice: clear):** in the growl the body crouches low and pulls back; in the lunge it stretches out far; in the recovery it settles back.
+
+**Phase table** (frames at 60 fps; the wolf's timers are physics ticks):
+
+| Phase | State | Frames | Key at | Rig pose at the key | Transition into it |
+|---|---|---|---|---|---|
+| start | GROWL entered | 0 | 0 | neutral | — |
+| startup | GROWL | 0–30 | 24 | crouch: `Rig.scale (1.08, 0.86)`, `Rig.position.x −4`, `FrontPivot.rotation +10°` (head down) | ease in |
+| startup end | GROWL → LUNGE | 30 | 30 | crouch held | — |
+| active | LUNGE | 30–51 | 36 | stretch: `Rig.scale (1.22, 0.84)`, `Rig.position.x +3`, `FrontPivot −12°`, `RearPivot +8°` | fast, accelerating |
+| active end | LUNGE → RECOVER | 51 | 51 | stretch held | — |
+| recovery | RECOVER | 51–87 | 63 | overshoot: `Rig.scale (0.94, 1.06)`, pivots 0° | ease out |
+| end | RECOVER → PATROL | 87 | 87 | neutral | settle |
+
+- One clip, `lunge`, length 87/60 = 1.45 s, `LOOP_NONE`, keys at the frames above divided by 60. Claude lists each key time beside its source frame.
+- GROWL entry plays `lunge` from 0. The hitbox stays in code (`wolf.gd` LUNGE), not on a track; no method tracks.
+- **Clock:** `callback_mode_process = PHYSICS`, the tick the wolf's timers and hitbox run on, so the clip's frame n is the wolf's tick n.
+- The pin test measures the real tick count of each phase; if the timers give 31 or 37 ticks instead of 30 or 36, the table is revised to the measured counts before any key is written.
+
+## Behaviour change — per-phase interrupts (my decision)
+
+| Phase | A fireball hit, today | After this change |
+|---|---|---|
+| startup (GROWL) | flash, HP −1, the lunge still comes | flash, HP −1, **the lunge is cancelled**: the wolf goes straight to RECOVER, and the clip jumps to the recovery section (frame 51) |
+| active (LUNGE) | flash, HP −1, the lunge continues | unchanged: a committed lunge can't be stopped |
+| recovery, patrol | flash, HP −1 | unchanged |
+| any phase, last HP | DEAD | unchanged: death wins over every phase |
+
+This is the only gameplay change. It is made after the pin and re-pinned only after I play it.
+
+## Pin first
+
+Before any change, a pin test records today's behaviour from real input (`Input.parse_input_event`, never `action_press`) through the real game loop, at 30, 60 and 144 fps: per physics tick, the player's state, position and velocity, and the wolf's state, position, HP and hitbox `monitoring`, for scripted runs (walk and stop, jump, cast, take a lunge, hit the wolf during each phase). The trace is committed as the pin. Wiring the clips must leave it identical; the interrupt change must change it only in the growl-hit scenario, and that is re-pinned in its own commit after play.
+
+## Tests
+
+| Test | What it proves |
+|---|---|
+| Pin (`tests/test_pin_behaviour.gd`) | behaviour unchanged by the clips; changed only as the interrupt rule says |
+| Read-back, run (`tests/test_clip_run.gd`) | every track resolves; frame keys 0 and 1 at 0 and 0.125 s; length 0.25; `LOOP_LINEAR`; discrete; every frame key < `hframes × vframes` |
+| Read-back, lunge (`tests/test_clip_lunge.gd`) | every track resolves to a real node and property; key times equal the table's frames / 60; length 1.45; `LOOP_NONE` |
+| State-machine structure (`tests/test_anim_structure.gd`) | every player state has its clip and `play()` uses it; `autoplay` empty; both AnimationPlayers on the physics callback; no code writes `texture`, `hframes`, `frame` or a rig transform the clips own |
+| Edges (`tests/test_anim_edges.gd`) | hits on the first and last GROWL tick (cancel), the first LUNGE tick (no cancel), the last LUNGE tick, the first RECOVER tick; a killing hit in each phase; Esc mid-lunge freezes the clip and the wolf on the same tick and resumes aligned; RUN → jump → land restarts the cycle at frame 0; the same at 30, 60 and 144 fps |
+| Earlier suites | the 13 suites in `logs/baseline-before/` unchanged |
+
+## Boundaries
+
+Unchanged: collision, movement, input, damage, every timing in `tuning.gd` and `wolf.gd`, the fireball and both A6 effects, the hurt tint shader and its driver, the A3 prop room, existing tests and their expectations, `shaders/`, `project.godot`, the original sprite PNGs.
+
+## Watching and evidence
+
+Strips come from windowed Movie Maker runs of the pin scenarios with `--debug-collisions`, so frame N of a strip is log line N (fixture captures). A debug-only overlay in the capture harness shows the wolf's phase and tick over its head; the game itself has no overlay. Claude's reading of a strip is a claim; my verdict comes from play at 1280×720 and at `--time-scale 0.25`. Mutations run in a `git worktree`: `loop = true` instead of `loop_mode` (Godot 3), a continuous frame track, a frame key of 2, a track path to a missing node.
+
+## Predicted failures
+
+| # | Failure | What it would look like | Check |
+|---|---|---|---|
+| F1 | Godot 3 `loop = true` | the run plays once and stops | read-back `loop_mode`; mutation |
+| F2 | frame track left continuous | the run flickers or holds the wrong cell between keys | read-back update mode; mutation |
+| F3 | sheet sliced 1×2 or a frame key past the last cell | wrong cell, no error | frame-range check; mutation |
+| F4 | two authorities: code still sets `sprite.texture` | a state's image flips back for one tick | structure test; pin trace |
+| F5 | facing flip and a keyed `scale` on the same node | the wolf faces the wrong way mid-lunge | `Facing` and `Rig` are separate nodes; strip of a leftward lunge |
+| F6 | part seam opens when Front rotates | a gap in the wolf's back at the stretch | strip frame 36; my eyes |
+| F7 | clip on the idle tick while timers run on physics | key and state drift apart at 144 fps | callback mode in the structure test; 144 fps edges |
+| F8 | the growl interrupt leaves the hitbox armed | a cancelled wolf still hurts | edges test reads `monitoring` |
+
+## Revisions
+
+(None yet.)
