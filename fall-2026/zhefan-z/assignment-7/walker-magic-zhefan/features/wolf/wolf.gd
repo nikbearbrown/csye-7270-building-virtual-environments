@@ -1,8 +1,9 @@
 class_name Wolf
 extends CharacterBody2D
-## One wolf, one static image per state: patrol (run), growl telegraph (lunge image, standing),
-## lunge (lunge image, moving, hitbox on), recover (run image, standing), dead (down image).
-## 2 HP; each hit flashes white; on death: flash, down image, then removed (no corpse).
+## One wolf. Its AnimationPlayer (features/wolf/wolf.tscn) shows each state: patrol (run image), growl, lunge and
+## recover (one clip, `lunge`, started on GROWL entry and left running through LUNGE and RECOVER: the cutout rig under
+## Facing), dead (down image). Code never writes what the clips key; it keeps the facing (Facing.scale.x, the whole
+## sprite's flip_h) and the hitbox. 2 HP; each hit flashes white; on death: flash, down image, then removed (no corpse).
 
 ## SFX-WOLF-DOWN listens to this. Emitted once: `dead` is set before it, and the body leaves the
 ## enemy layer with set_deferred, so a second fireball in the same frame is ignored.
@@ -13,6 +14,11 @@ enum State { PATROL, GROWL, LUNGE, RECOVER, DEAD }
 const TEX_RUN := preload("res://assets/sprites/wolf/wolf_run.png")
 const TEX_LUNGE := preload("res://assets/sprites/wolf/wolf_lunge.png")
 const TEX_DOWN := preload("res://assets/sprites/wolf/wolf_down.png")
+
+## The clip each state shows. GROWL starts `lunge`; LUNGE and RECOVER leave it running (CHANGE-BRIEF Clip 2).
+const CLIPS := {
+	State.PATROL: &"patrol", State.GROWL: &"lunge", State.LUNGE: &"lunge", State.RECOVER: &"lunge", State.DEAD: &"dead",
+}
 
 const MAX_HP := 2
 const PATROL_SPEED := 45.0
@@ -43,6 +49,8 @@ var _hit_this_lunge := false
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var body_shape: CollisionShape2D = $CollisionShape2D
 @onready var lunge_hitbox: Area2D = $LungeHitbox
+@onready var facing_node: Node2D = $Facing
+@onready var anim: AnimationPlayer = $AnimationPlayer
 
 
 func _ready() -> void:
@@ -52,7 +60,8 @@ func _ready() -> void:
 	lunge_hitbox.collision_mask = 1 << 1   # player
 	lunge_hitbox.monitoring = false
 	sprite.material = sprite.material.duplicate()
-	_show(TEX_RUN)
+	facing_node.material = sprite.material   # one flash material for the whole sprite and every rig part
+	_play(CLIPS[State.PATROL])
 
 
 func _physics_process(delta: float) -> void:
@@ -96,19 +105,17 @@ func _enter(next: State) -> void:
 	state = next
 	match next:
 		State.PATROL:
-			_show(TEX_RUN)
+			_play(CLIPS[State.PATROL])
 		State.GROWL:
 			_timer = GROWL_TIME
-			_show(TEX_LUNGE)
+			_play(CLIPS[State.GROWL])
 		State.LUNGE:
 			_timer = LUNGE_TIME
 			_hit_this_lunge = false
 			lunge_hitbox.monitoring = true
-			_show(TEX_LUNGE)
 		State.RECOVER:
 			_timer = RECOVER_TIME
 			lunge_hitbox.set_deferred("monitoring", false)
-			_show(TEX_RUN)
 
 
 func _sees_player() -> bool:
@@ -125,12 +132,15 @@ func _face_target() -> void:
 
 func _apply_facing() -> void:
 	sprite.flip_h = facing < 0        # the art faces right
+	facing_node.scale.x = facing
 	body_shape.position.x = 8.0 * facing
 	lunge_hitbox.position.x = 8.0 * facing
 
 
-func _show(tex: Texture2D) -> void:
-	sprite.texture = tex
+## From the clip's first frame, applied at once, on the physics callback from then on.
+func _play(clip: StringName) -> void:
+	anim.play(clip)
+	anim.seek(0.0, true)
 
 
 ## Called by a fireball. A dead wolf ignores further hits.
@@ -145,7 +155,7 @@ func take_damage(amount: int) -> void:
 	state = State.DEAD
 	set_deferred("collision_layer", 0)
 	lunge_hitbox.set_deferred("monitoring", false)
-	_show(TEX_DOWN)
+	_play(CLIPS[State.DEAD])
 	defeated.emit()
 	await get_tree().create_timer(DOWN_TIME, false).timeout
 	queue_free()

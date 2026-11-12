@@ -1,6 +1,8 @@
 class_name Player
 extends CharacterBody2D
-## The mage. One static image per state, swapped when the state changes (no animation).
+## The mage. One clip per state on the AnimationPlayer (features/player/player.tscn), started when the state changes;
+## RUN is the two-frame cycle, the others hold one image (CHANGE-BRIEF Clip 1). Code never writes the sprite's texture,
+## hframes or frame: the clips own them. Code keeps flip_h and the blink (`visible`).
 ## Facing follows movement. Art and collision line up per CHARACTER-SHEET: the sprite's anchor
 ## (canvas 31,67) is the body origin at the feet, and the 14x44 rectangle spans canvas x 24-38, y 23-67.
 
@@ -14,9 +16,17 @@ signal cleared
 
 enum State { IDLE, RUN, RISE, FALL, CAST, HURT, FAIL, WIN }
 
+## The clip each state plays; a pit fall plays "fail_pit" (the fall image) instead of "fail".
+const CLIPS := {
+	State.IDLE: &"idle", State.RUN: &"run", State.RISE: &"rise", State.FALL: &"fall",
+	State.CAST: &"cast", State.HURT: &"hurt", State.FAIL: &"fail", State.WIN: &"win",
+}
+
+## The image each state's clip shows. Read only (tests compare the sprite with it); nothing writes it to the sprite.
+## tests/test_anim_structure.gd checks that it equals each clip's texture key.
 const TEXTURES := {
 	State.IDLE: preload("res://assets/sprites/mage/mage_idle.png"),
-	State.RUN: preload("res://assets/sprites/mage/mage_run_contact.png"),
+	State.RUN: preload("res://assets/sprites/mage/mage_run_sheet.png"),
 	State.RISE: preload("res://assets/sprites/mage/mage_rise.png"),
 	State.FALL: preload("res://assets/sprites/mage/mage_fall.png"),
 	State.CAST: preload("res://assets/sprites/mage/mage_cast.png"),
@@ -49,6 +59,7 @@ var _cast_hold := 0.0
 var _hurt_hold := 0.0
 
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var anim: AnimationPlayer = $AnimationPlayer
 
 
 func _ready() -> void:
@@ -127,10 +138,20 @@ func _update_state() -> void:
 	_set_state(next)
 
 
+## Starts the state's clip when the state changes (so every RUN entry starts the cycle at frame 0); otherwise the
+## clip keeps playing. flip_h stays in code.
 func _set_state(next: State) -> void:
+	var entering: bool = next != state or anim.assigned_animation != CLIPS[next]
 	state = next
-	sprite.texture = TEXTURES[next]
+	if entering:
+		_play(CLIPS[next])
 	sprite.flip_h = facing < 0
+
+
+## From the clip's first frame, applied at once (as the texture write was), on the physics callback from then on.
+func _play(clip: StringName) -> void:
+	anim.play(clip)
+	anim.seek(0.0, true)
 
 
 ## Reached the exit: win image, input stops. A second call is a no-op.
@@ -175,7 +196,7 @@ func fail(reason: String, by_pit := false) -> void:
 	sprite.visible = true
 	set_physics_process(false)
 	state = State.FAIL
-	sprite.texture = TEXTURES[State.FALL if by_pit else State.FAIL]
+	_play(&"fail_pit" if by_pit else CLIPS[State.FAIL])
 	sprite.flip_h = facing < 0
 	failed.emit(reason)
 
