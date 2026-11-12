@@ -339,3 +339,8 @@ preprocess is a simulation start-up setting, and `local_coords` is a coordinate-
   - `amount`: 3000 → **900** (about 2.7 per cubic metre over the 330 m³ box); the particle peak is now 900;
   - `color`: (0.78, 0.86, 1.0) → **(0.39, 0.43, 0.5)**, the same cool white at half brightness. With ADD blending, half the colour adds half the light. This replaces the intent's "fixed cool white (0.78, 0.86, 1.0)"; the hue does not change.
 - **Tests:** the configuration test's expected values follow (110 passed); the state test reads `amount` at load (41 passed); every other test kept its baseline count.
+
+### 2026-11-12 — Effect B redesign, third pass: `amount` 900 → 1300
+- **Why:** after the second pass I decided: "Let's make it 1300 after all."
+- **Setting:** `amount` 900 → **1300** (about 3.9 per cubic metre over the 330 m³ box); the particle peak is now 1300. The colour stays at half brightness.
+- **Tests:** the configuration test's expected value follows (110 passed); state test 41 passed; every other test kept its baseline count.

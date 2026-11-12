@@ -16,7 +16,7 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 const EFFECT_SCENE := "res://effects/light_dust.tscn"  # The effect scene under test
 const EPS := 0.0001  # How close two floats must be to count as equal
 
-const AMOUNT := 900  # amount; also the brief's peak particle count (redesign 2026-11-12: the whole room; 3000 -> 900 after my look in the game)
+const AMOUNT := 1300  # amount; also the brief's peak particle count (redesign 2026-11-12: the whole room; 3000 -> 900 -> 1300, my choices after looking in the game)
 const LIFETIME := 6.0  # lifetime, seconds
 const LIFETIME_RANDOMNESS := 0.5  # lifetime_randomness (on the ParticleProcessMaterial)
 const BOX_EXTENTS := Vector3(7.0, 1.3, 4.5)  # emission_box_extents: half sizes, so the full box is 14 x 2.6 x 9 m (the whole room)
