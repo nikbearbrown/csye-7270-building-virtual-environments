@@ -9,7 +9,7 @@ Godot 4.7.2-stable (`ed1daf0bf`), Forward+ (Vulkan), Windows, Git Bash, RTX 5060
 | Baseline | 13 earlier suites, 19 runs, 0 failures | `2276069` |
 | Pin recorded before any change | `tests/test_pin_behaviour.gd`: 8 scenarios (walk and stop, jump, cast, take a lunge, hit in GROWL, LUNGE, RECOVER, kill), every physics tick: player state, position, velocity; wolf state, position, HP, hitbox `monitoring`; real input via `Input.parse_input_event`. 16 checks / 0 failures at 30, 60, 144 | `a9b4bc1` |
 | Clips added, not wired | pin unchanged at 30, 60, 144 | `72e8d21` |
-| Clips wired into both state machines | pin unchanged at 30, 60, 144 | `33d78ae` |
+| Clips wired into both state machines | pin unchanged at 30, 60, 144 (run reported in the session; the pin logs committed there date from `72e8d21`) | `33d78ae` |
 | Behaviour change: growl hit cancels the lunge | pin differs only in `hit_growl` and `kill`, both from tick 24 (GROWL → RECOVER); not re-pinned | `72f37b8` |
 | Played by me, accepted | see Human checks | — |
 | Re-pinned in its own commit | only `hit_growl.json` and `kill.json` changed; the other six byte-identical; 16/16 at 30, 60, 144 | `ff71bbb` |
@@ -57,7 +57,7 @@ Two alignment bugs, both fixed visually only (`272fb39`): the edges test found t
 | a7-4 | lunge track to a missing node | `track_problems()`: no node at `FrontPivotX` | 1 |
 | a7-5 | growl cancel removed from `wolf.gd` | `test_anim_edges` (both growl hits: the lunge continues, hitbox armed 23 ticks) | 1 |
 
-None printed an error from the game: a7-2 to a7-4 would play silently wrong. Logs: `logs/mutation-a7-*_60fps.log`.
+None printed an error in a 600-frame headless run of the game without input; that run never plays the lunge or reaches the run's bad frame, so whether a7-2 to a7-4 would play silently wrong in a real lunge or run is not shown. The tests are what catch them. Logs: `logs/mutation-a7-*_60fps.log`.
 
 ## Earlier suites
 
