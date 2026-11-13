@@ -98,6 +98,51 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 - **What I understand now / still do not understand:**
 - **Evidence and next step:** `walker-survival-shooting/prompt-3.txt`, `approve-3.txt`, `approve-3b.txt`, `session-3-plan.jsonl`, `session-3-impl.jsonl`, `session-3-fix.jsonl`, `session-3-excerpt.md`; `godot/characters/human/humanoid/humanoid.gd`, `godot/effects/landing_dust_trigger.gd`, `godot/base.tscn`, `godot/tests/test_landing_dust_events.gd`, `logs/test_landing_dust_events_60fps.log` (agent output unedited cb911e6e); the `CLAUDE.md` correction (ba7d1711); TEST-REPORT's Step 3 section. Not yet checked in the game: whether it reads clearly from the normal camera, stairs and ledges, and whether it suddenly vanishes when the camera turns. Next: Step 4, tuning Effect A (the "grey cloud" look I want).
 
+### 2026-11-11 to 2026-11-12 — A6 Step 4: tuning Effect A toward grey cloud puffs, and stopping at r1
+
+- **Date and what I was working on:** 2026-11-11 to 2026-11-12. Tuning Effect A after I said the dust read as dots, not the grey cloud puffs I want.
+- **I tried / expected:** I expected to change one number. Because the brief capped the dust at the ankle (0.10 m) with 5–10 cm quads, I first wrote a dated intent revision (6–8 neutral-grey puffs, 0.18–0.25 m, top edge ≤ 0.30 m, still visible at 0.7 s) and then ran the loop interactively.
+- **What happened:**
+  - The agent took my "start" (meant as "start reading and proposing") as permission for everything: it changed the `Dust` quad 0.08 → 0.32 and the test's expected value, ran the test, and only then sent its reading and prediction (edit 07:56:36 UTC, prediction 07:57:19 UTC). It also read the prompt from `prompt-4-r1.txt` instead of my pasting it.
+  - The test then failed one check, "Dust top 0.232 m ≤ 0.10 m". The agent left it failing on purpose, because the brief revision said the limit changes to 0.30 m only once the round is kept.
+  - r1: bigger and longer-lasting puffs (frame 30 still visible), but they read as a broken ring of warm smudges around the feet, cut flat by the floor and partly hidden by the capsule.
+- **What I did:** approved the change after the fact and recorded that in TUNING; kept r1 after looking in the game; raised the test's height limit to 0.30 m with a dated brief revision; stopped tuning Effect A at r1 ("what lands is a human, not a mech; the dust does not need to be big"); recorded where my verdict differs from Claude's reading (warm tint, capsule hiding, puffs not separate, flat bottoms); moved the colour intent back to "low-saturation, slightly warm grey" because I could not see the difference and Claude noted the warmth is what makes it visible on the grey-blue floor.
+- **What Claude or another person contributed:** Claude Code (Opus 5.5, main session) wrote the intent revision from my answers, filled the Step 4 prompts, read the agent's transcript and caught the edit-before-approval, trimmed the strips, checked the agent's numbers, wrote and translated TUNING and the brief revisions, and committed. The reading, proposal, edit and comparison came from another Claude Code session (Opus 5.5).
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `CHANGE-BRIEF.md` revisions of 2026-11-11 and 2026-11-12; `TUNING.md` Effect A r1; `captures/landing_dust/r1/`; `prompt-4-r1.txt`, `prompt-4-r1-compare.txt`; commits e121aede, 9799850d, c1ef8d69, c8f2ab0c, 4fe7dbf4. Next: Effect B.
+
+### 2026-11-12 — A6 Step 5: building Effect B, wiring it to the lights, one tuning round, and a redesign
+
+- **Date and what I was working on:** 2026-11-12. The dust under ceiling light 1: build, look, wire, tune.
+- **I tried / expected:** the same Steps 2–4 as Effect A.
+- **What happened:**
+  - Build: the agent built the scene, a configuration test (108 passed) and a preview. I ran it inside the same interactive window as Step 4, so there is no separate `session-5.jsonl`; the record is in that session's local transcript.
+  - With F5 I saw no dust at all: the effect was not in the game yet, only in the preview. The preview turned the lights off after a moment, so I could not look long; Claude added a `hold` switch to the preview.
+  - My first verdict: small is fine, but the specks should vary in size (I meant 0.003–0.03 m; my first wording "0.003 as the maximum" was ambiguous). A temporary look at 90 particles instead of 150: "At 150, anyone would think a nuclear war had broken out."
+  - Wiring: the agent proposed first this time. Claude asked for three changes (no hard-coded amount in the state test, exactly one `restart()` per lights-on, a note that Effect A's preview now also shows the light dust). The agent also noticed the preview would show two copies of the dust and switched it to drive the real instance. State test 41 passed.
+  - A recapture into `r0-wired/` produced no files at first: Movie Maker does not create missing folders and says nothing; Claude created them and I recaptured. r0-wired was pixel-identical to r0.
+  - r1: amount 150 → 90, proposed and predicted by the agent, approved by me; the strip matched the prediction.
+  - I then wanted the dust through the whole room and lit by the lights, and asked for it all at once. To keep the one-setting rule for tuning rounds, this became a dated brief redesign applied at once by Claude Code: box 14 × 2.6 × 9 m via `emission_shape_offset`, lit per pixel, specks 0.003–0.03 m, 3000 particles. Still too dense and too bright: I said "set it to 50" while it was 3000, which was ambiguous; I then chose 900 with half brightness, looked, and finally 1300.
+- **What I did:** approved the wiring with changes, approved r1, decided every redesign value after looking in the game, and asked that the records be done only after I had seen the result.
+- **What Claude or another person contributed:** The build, the wiring and r1's reading, proposal, edit and prediction were done by another Claude Code session (Opus 5.5) from my prompts and approvals. Claude Code (Opus 5.5, main session) reviewed each step, wrote the approval texts from my decisions, added the preview's `hold` switch, made the temporary 90 look, applied the redesign and its passes, updated the configuration test's expected values to the revised brief, reran every test after each change, compared r1 with the prediction, and wrote and translated the brief, TUNING and TEST-REPORT entries.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `godot/effects/light_dust.tscn`, `light_dust_listener.gd`, `godot/tests/test_light_dust_config.gd`, `test_light_dust_state.gd`, `godot/previews/light_dust_preview.*`; `prompt-5.txt`, `prompt-5-wire.txt`, `approve-5-wire.txt`, `prompt-5-r1.txt`, `prompt-5-r1-compare.txt`; `captures/light_dust/r0/`, `r0-wired/`, `r1/`, `redesign/`, `redesign-2/`; CHANGE-BRIEF revisions of 2026-11-12; TUNING Effect B. Next: Step 6.
+
+### 2026-11-12 — A6 Steps 6 and 7, and Use It: the process shader, the headless price, my playtest and the GPU price
+
+- **Date and what I was working on:** 2026-11-12. Reading the generated process shader, pricing both effects, and checking them in the running game.
+- **I tried / expected:** a quick editor conversion, an agent-written cost script, and a GPU reading in the Visual Profiler.
+- **What happened:**
+  - Step 6: at first the editor's FileSystem dock did not show `effects/light_dust.tscn` (two editors were open on the same project); after closing one and looking in the `effects` folder I found it, converted a unique copy of Effect B's process material, and saved `godot/shaders/particles_generated.gdshader`.
+  - Step 7: the agent's script measured an empty scene 0.004 ms, the game scene 0.311 ms, Effect A 0.317 ms, Effect B 0.336 ms and an added 10,000-CPU-particle control 1.88 ms per frame. The control shows the script is not measuring itself; both GPU effects are within the noise, as expected headless.
+  - Use It: my first written observations were hedged ("should"), and Claude took them for predictions; they were what I saw by eye, phrased with my usual uncertainty, and are recorded as observations with that note. I raised that Effect A's `visibility_aabb` was not enlarged with its quads; Claude's numbers confirmed it (top 0.23 m and 0.68 m out against a 0.2 m / 0.6 m box), so it is a known limitation and the next step.
+  - The vsync key F10 did nothing (on Windows F10 is the system menu key); it was moved to V. With V, FPS went from 144 to about 1350.
+  - The Visual Profiler graph mixed the lights going on and off with the effects, so Claude wrote `godot/debug/gpu_price.gd` to read the same engine GPU timing with only the effect changing: Effect B +0.017 ms, Effect A +0.001 ms GPU, both inside budget.
+- **What I did:** made the shader conversion and answered the shader question in my own words; played and wrote down what I saw; took the profiler screenshot and the FPS reading; ran the GPU helper.
+- **What Claude or another person contributed:** Claude Code (Opus 5.5, main session) wrote the Step 7 prompt (the assignment text) and checked the agent's result; found the shader line numbers and explained them; wrote the vsync key and the GPU helper; ran the helper twice to read the numbers (I had run it once, but its output was in my own terminal); and wrote and translated the TEST-REPORT sections. The cost script was written by another Claude Code session (Opus 5.5).
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `godot/shaders/particles_generated.gdshader` (5e977e83); TEST-REPORT "The process shader", "Headless CPU price", "Use It", "GPU price and FPS"; `godot/tests/cost_effects.gd`, `logs/cost_effects_60fps.log`, `prompt-7.txt`; `godot/debug/vsync_toggle.gd`, `godot/debug/gpu_price.gd`, `logs/gpu_price.log`. Next: README, the film, the tag and the fresh-clone check.
+
 ---
 
 ## GitHub pushes
