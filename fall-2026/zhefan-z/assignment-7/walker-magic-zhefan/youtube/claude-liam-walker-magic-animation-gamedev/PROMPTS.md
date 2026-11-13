@@ -1,0 +1,10 @@
+# PROMPTS — the prompts on screen and the prompt that made this film
+
+## On screen
+
+- **B00 — Reconstructed prompt** (not a saved chat; written for the film from what the assignment did): "Please use Walker to convert my game design document about a fire mage and a cave wolf into two animation clips: a run cycle that loops and a lunge that commits — each pinned first, keyed as data in the scene files, read back by tests and checked tick by tick against the game." The output lines under it are real results (clip settings from the scene files; test counts from the logs).
+- **B29 — Suggested prompt** (for the viewer): "Please use Walker to add in-between frames to my mage's run so the planted foot stops sliding. First predict, in pixels, how far the body moves while one cell is held at 110 px/s and 10 fps; then measure the foot in a windowed Movie Maker strip, and show the behaviour pin still matches tick for tick." It targets the limitation the film names (the sliding foot, FRICTIONAL.md "Still open"), asks for a prediction first, and keeps the pin as the check that gameplay did not move.
+
+## The film's own prompt
+
+`prompt-6-film.txt` (committed at f860fed), Part 2, from the author: read the installed Brutalist godot-gamedev skill and make one landscape explainer for Assignment 7 with the walker modifier; about 5 to 6 minutes with real engine footage first; eight sections (before/after; in-play scripted-input footage at real speed and ×0.25; the two clips with the Muybridge references and the onion skin; pin first; edges and verification; the run-cycle story; beyond the requirements; verdict with limitations, contributions and the revision); every number from the sources; fixtures labelled; the walker opening and summary, Verdict → Your Turn → regular outro; Liam's narration; 4K with the skill's quality checks; MP3 and MP4 out of git. The build was delegated by the parent Claude Code session with the documents' known inaccuracies listed (FACTCHECK.md "Corrections"); this film does not commit.
