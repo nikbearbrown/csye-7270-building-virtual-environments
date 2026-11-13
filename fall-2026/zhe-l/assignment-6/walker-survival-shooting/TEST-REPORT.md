@@ -104,3 +104,21 @@ The one failure existed before A6: `base.tscn: 3 Light3D nodes (got 4)`. The tes
   - Scale: line 242 picks a value between `scale_min` and `scale_max` at birth; lines 456–463 apply it to the particle's transform. Effect B has no `scale_curve`, so this shader has no scale-over-life sampling; one generated from Effect A would.
   - A line tied to a brief setting: line 261 picks a random birth position inside the box, `... * emission_box_extents`, which is the brief's `emission_box_extents = (7, 1.3, 4.5)` (14 × 2.6 × 9 m); line 263 adds `emission_shape_offset`, the brief's (0, 0.15, 3.2).
 - **My answer (which brief settings live in this shader, and which belong to the draw step):** This particle process shader handles each particle's birth position, velocity, turbulence, size range, colour and opacity over its age, and the lifetime randomness. The drawing is done by draw_pass_1's QuadMesh and its material: the 0.03 m base quad, the round fading texture, additive blending, per-pixel lighting and facing the camera; the final speck size is that quad multiplied by the scale value from the shader. The particle count amount, the base lifetime and the preprocess time are set on the GPUParticles3D node and are not part of this shader.
+
+## Headless CPU price (Step 7)
+```bash
+./scripts/run-test.sh cost_effects.gd 60 300
+```
+- Script `godot/tests/cost_effects.gd`, written by the agent from `prompt-7.txt` (adapted from the chapter's Example 09), committed unedited. 60 warm-up frames, 300 timed frames, 3 repeats per case, run round-robin, pinned at 60 fps. Log: `logs/cost_effects_60fps.log`, no `SCRIPT ERROR` / `SHADER ERROR`.
+
+| Case | Mean ms / frame | Repeat means | Per-frame sd |
+|---|---|---|---|
+| 1 empty scene (the control) | 0.0041 | 0.0028–0.0048 | 0.0015 |
+| 2 `base.tscn`, both effects off | 0.3110 | 0.3025–0.3153 | 0.0561 |
+| 3 Effect A, one burst alive on every timed frame | 0.3167 | 0.3134–0.3209 | 0.0670 |
+| 4 Effect B, lights on, emitting (1300) | 0.3356 | 0.3215–0.3619 | 0.0686 |
+| 5 added control: one `CPUParticles3D` of 10,000 | 1.8764 | 1.8417–1.9375 | 0.1000 |
+
+- **Reading the control:** the empty scene reads 0.004 ms and the game scene 0.31 ms, and the added 10,000-CPU-particle case reads 1.88 ms. So the script does see CPU work; it is not measuring itself (the chapter's 6.90 ms-for-everything failure did not happen: `--fixed-fps` stops the headless frame from sleeping).
+- **The effects:** Effect A adds 0.006 ms and Effect B 0.025 ms over the game scene with both off, both inside the noise (the widest repeat-means range, 0.013 / 0.041 ms). This is expected: both are `GPUParticles3D`, and a headless run uses a dummy renderer, so the GPU simulation, preprocess and drawing never run. What is left is the CPU's share (node processing, the listener and trigger scripts), which is near zero by construction. It matches the brief's prediction of "within 0.05 ms" for both.
+- **Limit:** case 3 keeps a burst alive by emitting `Player.landed` itself rather than through input; that is enough for a price, and the real input path is covered by the state test. The budgets are GPU time and are compared in Use It, on the RTX 5070 Ti Laptop GPU.
