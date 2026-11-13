@@ -64,4 +64,9 @@ Every upgrade is visual only: the pin passes 8/8 at 30, 60 and 144 fps after eac
 
 ## Film
 
-(Link, filename and SHA-256 added after the final render.)
+*Keys on the Tick: A Run Cycle and a Wolf Lunge*, about 6:15, 3840×2160, 30 fps, narrated by Liam (AI).
+
+- Link: https://drive.google.com/file/d/1oc7IkXeZJKSzBW5NfGxx9UoAIhihSnLg/view?usp=sharing
+- File: `claude-liam-walker-magic-animation-gamedev.mp4` (77,177,746 bytes)
+- SHA-256: `7f4874b987db96eaf0b495cf8fb4c108d038e09c3fc9a3c06c9123ba6e182f4a`
+- Game source shown: `f860fed`. In-play footage is real engine output from scripted input (a windowed Movie Maker capture at 60 fps, one frame per physics tick); harness images are labelled fixture captures. Film records: `walker-magic-zhefan/youtube/claude-liam-walker-magic-animation-gamedev/`. The MP4 is not in git.
