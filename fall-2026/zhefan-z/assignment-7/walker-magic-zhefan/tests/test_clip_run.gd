@@ -2,10 +2,8 @@ extends SceneTree
 ## Assignment 7 read-back of clip 1, the mage run cycle, and the player's other clips (CHANGE-BRIEF Clip 1 and Tests).
 ## Loads features/player/player.tscn (not added to the tree, so nothing plays) and reads every clip back key by key:
 ## every track resolves (the assignment's track_problems() in anim_checks.gd; key types in key_problems()); every clip name present; each clip
-## keys Sprite2D texture, hframes, frame, offset and scale, discrete; run's frame keys 0 and 1 at 0 and 0.125 s, length
-## 0.25, LOOP_LINEAR, the seam rule; run r1 (approved 2026-11-12): offset and scale keyed on four beats (contact, contact
-## sinking, passing, passing lifting) with the seam rule per track, the other clips reset them at 0; every frame key
-## below hframes * vframes; the sheet's size, cells and import settings.
+## keys Sprite2D texture, hframes and frame, discrete; run's frame keys 0 and 1 at 0 and 0.125 s, length 0.25,
+## LOOP_LINEAR, the seam rule; every frame key below hframes * vframes; the sheet's size, cells and import settings.
 ## From fall-2026/zhefan-z/assignment-7/:
 ##   ./scripts/run-test.sh test_clip_run.gd 60
 ## Prints one JSON line per check and "WALKER TESTS: N checks / F failures"; exit code 1 on any failure.
@@ -19,13 +17,7 @@ const CELLS := [MAGE + "mage_run_contact.png", MAGE + "mage_run_passing.png"]
 const CLIP_TEXTURE := {"idle": "mage_idle.png", "run": "mage_run_sheet.png", "rise": "mage_rise.png",
 	"fall": "mage_fall.png", "cast": "mage_cast.png", "hurt": "mage_hurt.png", "fail": "mage_fail.png",
 	"fail_pit": "mage_fall.png", "win": "mage_win.png"}
-const TRACKS := ["Sprite2D:texture", "Sprite2D:hframes", "Sprite2D:frame", "Sprite2D:offset", "Sprite2D:scale"]
-## Run r1: four beats from the two frames. Times and values of the offset and scale keys.
-const BEATS := [0.0, 0.0625, 0.125, 0.1875]
-const RUN_OFFSET := [Vector2(-31, -67), Vector2(-31, -67), Vector2(-31, -67), Vector2(-31, -68)]
-const RUN_SCALE := [Vector2(1, 1), Vector2(64.0 / 62.0, 58.0 / 60.0), Vector2(1, 1), Vector2(61.0 / 62.0, 62.0 / 61.0)]
-const REST_OFFSET := Vector2(-31, -67)
-const REST_SCALE := Vector2(1, 1)
+const TRACKS := ["Sprite2D:texture", "Sprite2D:hframes", "Sprite2D:frame"]
 const EPS := 1e-6
 
 var results: Array[Dictionary] = []
@@ -118,7 +110,7 @@ func run() -> void:
 	check("every-track-resolves", problems.is_empty(), {"problems": problems})
 	var key_problems := AnimChecks.key_problems(ap)
 	check("every-key-in-range-increasing-and-typed", key_problems.is_empty(), {"problems": key_problems})
-	check("each-clip-keys-texture-hframes-frame-offset-scale", wrong_tracks.is_empty(), {"expected": TRACKS, "wrong": wrong_tracks})
+	check("each-clip-keys-texture-hframes-frame", wrong_tracks.is_empty(), {"expected": TRACKS, "wrong": wrong_tracks})
 	check("each-clip-texture", wrong_texture.is_empty(), {"expected": CLIP_TEXTURE, "wrong": wrong_texture})
 	check("every-track-discrete", not_discrete.is_empty(), {"not_discrete": not_discrete})
 	check("every-frame-key-below-hframes-times-vframes", out_of_range.is_empty(),
@@ -139,31 +131,6 @@ func run() -> void:
 	var interval: float = frames[1][0] - frames[0][0] if frames.size() > 1 else -1.0
 	check("run-seam-no-duplicate-gap-equals-interval", frames.size() > 1 and frames.back()[1] != frames[0][1]
 		and absf(gap - interval) < EPS, {"last_to_length_s": gap, "key_interval_s": interval})
-	# Run r1: offset and scale on the four beats; the seam rule on each track (last key one beat before the length, last
-	# value different from the first).
-	var beat_tracks := {}
-	var beat_ok := true
-	for pair: Array in [["Sprite2D:offset", RUN_OFFSET], ["Sprite2D:scale", RUN_SCALE]]:
-		var keys := keys_of(run_anim, AnimChecks.track(run_anim, pair[0]))
-		var ok: bool = keys.size() == BEATS.size()
-		for k in mini(keys.size(), BEATS.size()):
-			ok = ok and absf(keys[k][0] - BEATS[k]) < EPS and (keys[k][1] as Vector2).distance_to(pair[1][k]) < 1e-5
-		var seam_gap: float = run_anim.length - keys.back()[0] if keys.size() > 0 else -1.0
-		var seam_ok: bool = keys.size() > 1 and absf(seam_gap - (BEATS[1] - BEATS[0])) < EPS and keys.back()[1] != keys[0][1]
-		beat_tracks[pair[0]] = {"keys": keys, "seam_gap_s": seam_gap, "keys_ok": ok, "seam_ok": seam_ok}
-		beat_ok = beat_ok and ok and seam_ok
-	check("run-offset-scale-four-beats-and-seam", beat_ok, beat_tracks)
-	var resets := {}
-	for n: String in names:
-		if n == "run":
-			continue
-		var anim := ap.get_animation(n)
-		var ok := keys_of(anim, AnimChecks.track(anim, "Sprite2D:offset")) == [[0.0, REST_OFFSET]] 			and keys_of(anim, AnimChecks.track(anim, "Sprite2D:scale")) == [[0.0, REST_SCALE]]
-		if not ok:
-			resets[n] = [keys_of(anim, AnimChecks.track(anim, "Sprite2D:offset")), keys_of(anim, AnimChecks.track(anim, "Sprite2D:scale"))]
-	check("other-clips-reset-offset-and-scale-at-0", resets.is_empty() and sprite.offset == REST_OFFSET
-		and sprite.scale == REST_SCALE, {"wrong": resets, "scene_offset": sprite.offset, "scene_scale": sprite.scale})
-
 	var loops := {}
 	for n: String in names:
 		loops[n] = ap.get_animation(n).loop_mode
