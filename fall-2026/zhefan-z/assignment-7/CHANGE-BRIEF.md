@@ -120,3 +120,9 @@ The pin (`a9b4bc1`, `logs/pin/`) measured the wolf's phases at **31, 22 and 36 t
 Clip length 89/60 s (1.4833 s); key times are frames / 60, compared to 1e-6. A growl interrupt jumps the clip to frame 53. Transitions as before.
 
 **A second clock in today's game.** After the killing hit, `wolf.gd:150` removes the wolf with a `create_timer` that runs on the process (frame) clock, not the physics tick: the removal lands on physics tick 79 at 60 fps and tick 80 at 30 and 144 fps. Gameplay never reads it after death, so it stays as it is; the pin stops before it and the test prints it, unpinned. Both AnimationPlayers stay on the physics callback.
+
+### 2026-11-12 — run cycle replaced after play; growl window recorded
+
+After r1 was reverted in play (`TUNING.md`), clip 1 now uses a 4-frame sheet: `assets/sprites/mage/mage_run_cycle_sheet.png`, 248×69, cell 62×69, `hframes = 4`, frame order contact, down, passing, up; drawn by Gemini (app, model shown as 4 Hydrogen) from my prompt v3 with my contact A as the only reference, cleaned by `tools/clean_run_cycle.py` onto my A2 palette. Provenance under Assignment 2's rules: the raw JPEG, both references and the prompt are committed (`design/a7/`, `design/IMAGE-PROMPTS-from-chat.md`). Cycle spec: keys at 0, 0.1, 0.2, 0.3 s, length 0.4 s, 10 fps (6 ticks per frame at 60 Hz), `LOOP_LINEAR`, discrete; seam: no duplicate across the wrap, last-key-to-length gap 0.1 s equals the key interval. My two A2 run frames stay committed and unchanged.
+
+The growl-cancel timings are unchanged by my decision: the reachable window from sight distance is the first 12 of 31 growl ticks (0.2 s), measured with real clicks (`tests/probe_growl_cancel.gd`).
