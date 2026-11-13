@@ -92,3 +92,15 @@ The one failure existed before A6: `base.tscn: 3 Light3D nodes (got 4)`. The tes
 ### What I saw in the game (2026-11-11, editor F5)
 - On landing there is dust and the ring; no false trigger at the start.
 - Not checked: whether it reads clearly from the normal camera, stairs and ledges, and whether the dust suddenly vanishes when the camera turns (`visibility_aabb`).
+
+## The process shader (Step 6)
+- File: `godot/shaders/particles_generated.gdshader` (471 lines). In the editor I copied Effect B's `ParticleProcessMaterial` onto a scratch `GPUParticles3D`, made it unique, used "Convert to ShaderMaterial", and saved the generated code here; it is unedited and nothing in the game uses it (commit 5e977e83).
+- Line references (found by Claude, checked by me):
+  - `shader_type particles;`: line 3.
+  - `start()`: line 311 (runs once when each particle is born); `process()`: line 364 (runs every frame).
+  - Initial velocity from its minimum and maximum: line 231, `mix(initial_linear_velocity_min, initial_linear_velocity_max, rand_from_seed(alt_seed))`; line 353 multiplies it onto the random direction that `spread` decides.
+  - Gravity changing velocity: line 397 `force = gravity;`, line 410 `USERDATA1.xyz += force * DELTA;` (both effects have zero gravity, so in practice it changes nothing).
+  - Colour over life: line 253 `parameters.color *= texture(color_ramp, vec2(lifetime));`, written back at line 446 `COLOR = params.color;`.
+  - Scale: line 242 picks a value between `scale_min` and `scale_max` at birth; lines 456–463 apply it to the particle's transform. Effect B has no `scale_curve`, so this shader has no scale-over-life sampling; one generated from Effect A would.
+  - A line tied to a brief setting: line 261 picks a random birth position inside the box, `... * emission_box_extents`, which is the brief's `emission_box_extents = (7, 1.3, 4.5)` (14 × 2.6 × 9 m); line 263 adds `emission_shape_offset`, the brief's (0, 0.15, 3.2).
+- **My answer (which brief settings live in this shader, and which belong to the draw step):** This particle process shader handles each particle's birth position, velocity, turbulence, size range, colour and opacity over its age, and the lifetime randomness. The drawing is done by draw_pass_1's QuadMesh and its material: the 0.03 m base quad, the round fading texture, additive blending, per-pixel lighting and facing the camera; the final speck size is that quad multiplied by the scale value from the shader. The particle count amount, the base lifetime and the preprocess time are set on the GPUParticles3D node and are not part of this shader.
