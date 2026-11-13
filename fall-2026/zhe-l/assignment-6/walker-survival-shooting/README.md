@@ -64,4 +64,9 @@ godot_console --path godot res://previews/light_dust_preview.tscn --write-movie 
 - The game has no pause feature yet (the pause rule is tested by setting `get_tree().paused`), and no playable combat or extraction yet.
 
 ## Explainer film
-- To be added: title, media link, file name and SHA-256, and the game-source revision shown.
+- **Title:** claude-liam-walker-survival-shooting-a6-gamedev (Brutalist `godot-gamedev`, walker mode; narrated by Liam, local Kokoro `am_onyx`; 9 min 02 s, 3840x2160, 30 fps)
+- **Media link:** https://youtu.be/c6TBDmbKgz4 (the MP4 is not in GitHub)
+- **File / SHA-256:** `claude-liam-walker-survival-shooting-a6-gamedev.mp4`, `0a03b5aae834d03b407366428209bb0db74df008ac1babe19de8dcf79b495310`
+- **Game-source revision shown in the film:** `1828bb6b` (the last commit that touches `godot/`; the code itself last changed in `3d38e45d`, and `1828bb6b` only added editor `.uid` files). Later commits change no game file.
+- **Engine images in the film:** the fixture frame strips in `captures/` (labelled FIXTURE), and two new native-4K captures of the unmodified project made with scripted key input on an isolated copy (Effect A from the player camera; Effect B from a film camera added by the capture script, with pause and hide set from code). All are labelled on screen; difference images are labelled as computed analysis.
+- **Film sources and evidence:** `youtube/claude-liam-walker-survival-shooting-a6-gamedev/`: beat sheet, narration script and prompts (`PROMPTS.md`), shot list, fact check (every claim with its source), capture record and the capture script with its logs and input logs (`capture/`), evidence ledger (`gamedev-evidence.json`), type and visual QC reports, build steps and the film's own scripts. Media (clips, narration audio, figures) are not uploaded. Local paths in these records are replaced by placeholders such as `<film-work>`, `<course-repo>` and `<brutalist.art>`.

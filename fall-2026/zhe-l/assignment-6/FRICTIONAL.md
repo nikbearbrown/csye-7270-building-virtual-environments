@@ -143,6 +143,21 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 - **What I understand now / still do not understand:**
 - **Evidence and next step:** `godot/shaders/particles_generated.gdshader` (b9fb4ab1); TEST-REPORT "The process shader", "Headless CPU price", "Use It", "GPU price and FPS"; `godot/tests/cost_effects.gd`, `logs/cost_effects_60fps.log`, `prompt-7.txt`; `godot/debug/vsync_toggle.gd`, `godot/debug/gpu_price.gd`, `logs/gpu_price.log`. Next: README, the film, the tag and the fresh-clone check.
 
+### 2026-11-12 — The A6 explainer film
+
+- **Date and what I was working on:** 2026-11-12. The required Brutalist `godot-gamedev` explainer (walker mode), made by a separate Claude Code session started from my main session.
+- **I tried / expected:** a film built only from real engine output (the committed fixture strips plus new captures of the running game), every claim traced to my records, rendered in 4K, which I watch before anything is committed.
+- **What happened:**
+  - Captures were made on an isolated `git archive` copy of `1828bb6b`, never in this repository, with scripted key input. The first landing take ran the camera into a wall and was not used; the first lights take could not detect the switch area and a stray Godot process kept running until it was stopped; a player-camera lights take showed no visible dust 8 m away. The used Effect B take has a film camera added by the capture script near ceiling light 1; pause and hide are set from code. All are labelled in the film.
+  - The capture windows kept taking my mouse; I asked for no more windowed runs without telling me first. No further captures were needed.
+  - Effect B's specks are 1-2 px, so the film shows computed difference images (frame minus the same view with the dust hidden) beside the raw frames, labelled as computed.
+  - The toolkit's type check flagged game pixels and a title ending in "m" as text problems; the figures were changed (no labels burned onto game tiles, a different crop, a reworded title) rather than exempting them.
+  - I watched the 1080p preview, then the 4K film was rendered: 9 min 02 s, SHA-256 `0a03b5aa…b495310`, uploaded by me to YouTube (https://youtu.be/c6TBDmbKgz4).
+- **What I did:** watched the 1080p preview (same content as the 4K film), uploaded the 4K film to YouTube, gave the link.
+- **What Claude or another person contributed:** Claude Code (Opus 5.5, film session) wrote the capture script, ran the captures, made the figures, the beat sheet and the narration text from my records, generated the narration locally with Kokoro, rendered and checked the film, and wrote the records in `walker-survival-shooting/youtube/claude-liam-walker-survival-shooting-a6-gamedev/` and the README film section.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** README "Explainer film"; `youtube/claude-liam-walker-survival-shooting-a6-gamedev/` (`FACTCHECK.md`, `CAPTURE.md`, `capture/`, `gamedev-evidence.json`). Next: the tag `zhe-l-a6`, the fresh-clone check and the Canvas ZIP.
+
 ---
 
 ## GitHub pushes
@@ -155,3 +170,4 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 | 2026-11-10 | A6 Step 2: Effect A as built by the agent (scene, configuration test, preview scene; unedited), prompt-2, the session transcript (local paths replaced), the fixed seed on the preview's instance, the r0 strips, my first verdict and Claude's reading (TUNING), and the two mutations (TEST-REPORT) |
 | 2026-11-11 | A6 Step 3: Effect A wired to the landing by the agent (`landed` signal, trigger script, state test; unedited), prompt-3 and the two approvals, the session transcripts and the implementation excerpt (local paths replaced), the CLAUDE.md headless-fact correction, TEST-REPORT's Step 3 section, and my "What I understand now" for Step 2 |
 | 2026-11-12 | A6 Steps 4-7 and Use It: Effect A r1 (agent edit before my approval, approved afterwards; kept) and stop; Effect B build, preview hold switch, wiring with its listener and state test, r0-wired, r1 (amount 150 -> 90, kept), and the whole-room redesign (3000 -> 900 -> 1300, half brightness) with dated brief revisions; the generated process shader and my answer; the headless cost script; the vsync key V and the GPU helper; Use It observations and the GPU price; README, SOURCES, FRICTIONAL entries and the Step 4-5 session excerpt |
+| 2026-11-12 | A6 explainer film: README film section (title, YouTube link, file name, SHA-256, game-source revision 1828bb6b) and the film records in `walker-survival-shooting/youtube/claude-liam-walker-survival-shooting-a6-gamedev/` (no media), and this FRICTIONAL entry |
