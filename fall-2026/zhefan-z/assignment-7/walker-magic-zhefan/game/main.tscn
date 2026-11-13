@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://game/main.gd" id="1_main"]
 [ext_resource type="Texture2D" path="res://assets/sprites/env/cave_bg.png" id="2_bg"]
@@ -11,6 +11,8 @@
 [ext_resource type="Script" path="res://ui/hud.gd" id="9_hud"]
 [ext_resource type="Script" path="res://game/session_input.gd" id="10_input"]
 [ext_resource type="Script" path="res://audio/audio_director.gd" id="11_audio"]
+[ext_resource type="PackedScene" path="res://effects/cave_lights.tscn" id="12_lights"]
+[ext_resource type="PackedScene" path="res://effects/embers.tscn" id="13_embers"]
 
 [sub_resource type="RectangleShape2D" id="Shape_pit"]
 size = Vector2(60, 100)
@@ -33,6 +35,14 @@ layer = -10
 [node name="CaveBG" type="Sprite2D" parent="Background"]
 texture = ExtResource("2_bg")
 centered = false
+
+[node name="Darken" type="CanvasModulate" parent="Background"]
+color = Color(0.55, 0.53, 0.64, 1)
+
+[node name="CaveLights" parent="Background" instance=ExtResource("12_lights")]
+
+[node name="Darken" type="CanvasModulate" parent="."]
+color = Color(0.66, 0.64, 0.74, 1)
 
 [node name="Level" type="Node2D" parent="."]
 
@@ -86,6 +96,8 @@ position = Vector2(1288, 0)
 
 [node name="Shape" type="CollisionShape2D" parent="Level/WallRight"]
 shape = SubResource("Shape_wall2")
+
+[node name="Embers" parent="." instance=ExtResource("13_embers")]
 
 [node name="Player" parent="." instance=ExtResource("5_player")]
 position = Vector2(60, 327)
