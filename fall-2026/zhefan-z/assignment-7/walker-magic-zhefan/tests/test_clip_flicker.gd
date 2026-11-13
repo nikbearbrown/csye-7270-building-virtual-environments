@@ -16,6 +16,10 @@ const LIGHTS := ["TorchLeft", "TorchRight"]
 const PROPS := ["energy", "texture_scale"]
 const GAME_DIRS := ["res://features", "res://game", "res://ui", "res://audio", "res://effects"]
 const EPS := 1e-6
+## The rate the flicker keys are written on: hundredths of a second (every key time is a multiple of 0.01 s), so
+## 100 fps; step 0.01 and key times compared to half a frame period (0.005 s), never ==.
+const FPS := 100.0
+var TOL := AnimChecks.half_frame(FPS)
 
 var results: Array[Dictionary] = []
 var failures := 0
@@ -71,6 +75,15 @@ func run() -> void:
 
 	var anim := ap.get_animation("flicker")
 	check("flicker-loops-linear", anim.loop_mode == Animation.LOOP_LINEAR, {"loop_mode": anim.loop_mode, "length": anim.length})
+	var steps := AnimChecks.step_problems(ap, FPS)
+	var off_grid := []
+	for i in anim.get_track_count():
+		for k in anim.track_get_key_count(i):
+			var t := anim.track_get_key_time(i, k)
+			if absf(t - roundf(t * FPS) / FPS) > TOL * 0.02:
+				off_grid.append([str(anim.track_get_path(i)), t])
+	check("flicker-step-one-frame-period-0.01-keys-on-that-grid", steps.is_empty() and off_grid.is_empty(),
+		{"fps": FPS, "step": anim.step, "wrong_step": steps, "keys_off_the_0.01_s_grid": off_grid})
 	var expected_paths := []
 	for l: String in LIGHTS:
 		for p: String in PROPS:
@@ -90,7 +103,7 @@ func run() -> void:
 		var v0: float = anim.value_track_interpolate(i, 0.0)
 		var vl: float = anim.value_track_interpolate(i, anim.length)
 		seam[path] = {"first_key_s": first_t, "last_key_s": snappedf(last_t, 1e-6), "value_at_0": v0,
-			"value_at_length": vl, "ok": absf(first_t) < EPS and absf(last_t - anim.length) < 1e-5 and absf(v0 - vl) < EPS}
+			"value_at_length": vl, "ok": absf(first_t) < TOL and absf(last_t - anim.length) < TOL and absf(v0 - vl) < EPS}
 		var vals := []
 		var gaps := []
 		for k in n:

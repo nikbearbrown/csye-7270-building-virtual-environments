@@ -27,6 +27,9 @@ const CLIP_TEXTURE := {"idle": "mage_idle.png", "run": "mage_run_cycle_sheet.png
 	"fail_pit": "mage_fall.png", "win": "mage_win.png"}
 const TRACKS := ["Sprite2D:texture", "Sprite2D:hframes", "Sprite2D:frame"]
 const EPS := 1e-6
+## The brief's rate for every player clip: 10 fps. Key times are compared to half a frame period (0.05 s), never ==.
+const FPS := 10.0
+var TOL := AnimChecks.half_frame(FPS)
 
 var results: Array[Dictionary] = []
 var failures := 0
@@ -98,7 +101,8 @@ func run() -> void:
 		var paths := []
 		for i in anim.get_track_count():
 			paths.append(str(anim.track_get_path(i)))
-			if anim.value_track_get_update_mode(i) != Animation.UPDATE_DISCRETE:
+			if anim.track_get_type(i) != Animation.TYPE_VALUE \
+					or anim.value_track_get_update_mode(i) != Animation.UPDATE_DISCRETE:
 				not_discrete.append("%s %s" % [n, anim.track_get_path(i)])
 		if paths != TRACKS:
 			wrong_tracks[n] = paths
@@ -121,6 +125,8 @@ func run() -> void:
 	check("each-clip-keys-texture-hframes-frame", wrong_tracks.is_empty(), {"expected": TRACKS, "wrong": wrong_tracks})
 	check("each-clip-texture", wrong_texture.is_empty(), {"expected": CLIP_TEXTURE, "wrong": wrong_texture})
 	check("every-track-discrete", not_discrete.is_empty(), {"not_discrete": not_discrete})
+	var steps := AnimChecks.step_problems(ap, FPS)
+	check("every-clip-step-one-frame-period-0.1", steps.is_empty(), {"fps": FPS, "wrong_step": steps})
 	check("every-frame-key-below-hframes-times-vframes", out_of_range.is_empty(),
 		{"out_of_range": out_of_range, "vframes": sprite.vframes})
 
@@ -129,8 +135,9 @@ func run() -> void:
 	var frames := keys_of(run_anim, run_fi)
 	var keys_ok := frames.size() == RUN_KEYS.size()
 	for k in mini(frames.size(), RUN_KEYS.size()):
-		keys_ok = keys_ok and absf(frames[k][0] - RUN_KEYS[k][0]) < EPS and frames[k][1] == RUN_KEYS[k][1]
-	check("run-frame-keys-0-1-2-3-at-0-0.1-0.2-0.3", keys_ok, {"frame_keys": frames, "expected": RUN_KEYS})
+		keys_ok = keys_ok and absf(frames[k][0] - RUN_KEYS[k][0]) < TOL and frames[k][1] == RUN_KEYS[k][1]
+	check("run-frame-keys-0-1-2-3-at-0-0.1-0.2-0.3", keys_ok, {"frame_keys": frames, "expected": RUN_KEYS,
+		"tolerance_s": TOL})
 	check("run-length-0.4-loop-linear", absf(run_anim.length - 0.4) < EPS and run_anim.loop_mode == Animation.LOOP_LINEAR,
 		{"length": run_anim.length, "loop_mode": run_anim.loop_mode})
 	var run_hi := AnimChecks.track(run_anim, "Sprite2D:hframes")
@@ -139,7 +146,7 @@ func run() -> void:
 	var gap: float = run_anim.length - frames.back()[0] if frames.size() > 0 else -1.0
 	var interval: float = frames[1][0] - frames[0][0] if frames.size() > 1 else -1.0
 	check("run-seam-no-duplicate-gap-equals-interval", frames.size() > 1 and frames.back()[1] != frames[0][1]
-		and absf(gap - interval) < EPS, {"last_to_length_s": gap, "key_interval_s": interval})
+		and absf(gap - interval) < TOL, {"last_to_length_s": gap, "key_interval_s": interval, "tolerance_s": TOL})
 	var loops := {}
 	for n: String in names:
 		loops[n] = ap.get_animation(n).loop_mode

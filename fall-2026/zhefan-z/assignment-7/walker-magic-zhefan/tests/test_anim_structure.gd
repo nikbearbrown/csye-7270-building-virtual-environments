@@ -107,14 +107,14 @@ func run() -> void:
 	for s: int in [Player.State.IDLE, Player.State.RUN, Player.State.RISE, Player.State.FALL, Player.State.CAST,
 			Player.State.HURT, Player.State.WIN]:
 		player._set_state(s)
-		p_played[Player.State.keys()[s]] = [str(pap.assigned_animation), player.sprite.texture == Player.TEXTURES[s]]
+		p_played[Player.State.keys()[s]] = [str(pap.current_animation), player.sprite.texture == Player.TEXTURES[s]]
 	player.fail("structure", true)
-	p_played["FAIL (pit)"] = [str(pap.assigned_animation), player.sprite.texture == Player.TEXTURES[Player.State.FALL]]
+	p_played["FAIL (pit)"] = [str(pap.current_animation), player.sprite.texture == Player.TEXTURES[Player.State.FALL]]
 	var player2: Player = load("res://features/player/player.tscn").instantiate()
 	root.add_child(player2)
 	player2.set_physics_process(false)
 	player2.fail("structure")
-	p_played["FAIL"] = [str(player2.anim.assigned_animation), player2.sprite.texture == Player.TEXTURES[Player.State.FAIL]]
+	p_played["FAIL"] = [str(player2.anim.current_animation), player2.sprite.texture == Player.TEXTURES[Player.State.FAIL]]
 	var p_ok := p_played.keys().all(func(k: String) -> bool:
 		var want: String = "fail_pit" if k == "FAIL (pit)" else str(Player.CLIPS[Player.State[k]])
 		return p_played[k][0] == want and p_played[k][1])
@@ -151,21 +151,21 @@ func run() -> void:
 			w_missing.append(Wolf.State.keys()[s])
 	check("every-wolf-state-has-a-clip", w_missing.is_empty() and Wolf.CLIPS.size() == Wolf.State.size(),
 		{"clips": Wolf.CLIPS, "missing": w_missing})
-	var w_played := {"ready": str(wap.assigned_animation)}
+	var w_played := {"ready": str(wap.current_animation)}
 	wolf._enter(Wolf.State.GROWL)
 	wap.seek(0.3, true)
-	w_played["GROWL"] = str(wap.assigned_animation)
+	w_played["GROWL"] = str(wap.current_animation)
 	wolf._enter(Wolf.State.LUNGE)
 	var after_lunge := wap.current_animation_position
 	wolf._enter(Wolf.State.RECOVER)
 	var after_recover := wap.current_animation_position
-	w_played["LUNGE"] = str(wap.assigned_animation)
+	w_played["LUNGE"] = str(wap.current_animation)
 	wolf._enter(Wolf.State.PATROL)
-	w_played["PATROL"] = str(wap.assigned_animation)
+	w_played["PATROL"] = str(wap.current_animation)
 	var patrol_tex := wolf.sprite.texture == Wolf.TEX_RUN
 	wolf.hp = 1
 	wolf.take_damage(1)
-	w_played["DEAD"] = str(wap.assigned_animation)
+	w_played["DEAD"] = str(wap.current_animation)
 	check("wolf-enter-and-death-play-the-state-clip", w_played == {"ready": "patrol", "GROWL": "lunge", "LUNGE": "lunge",
 		"PATROL": "patrol", "DEAD": "dead"} and absf(after_lunge - 0.3) < 1e-6 and absf(after_recover - 0.3) < 1e-6
 		and patrol_tex and wolf.sprite.texture == Wolf.TEX_DOWN, {"clips": w_played,

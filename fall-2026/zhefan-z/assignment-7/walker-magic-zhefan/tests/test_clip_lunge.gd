@@ -2,7 +2,7 @@ extends SceneTree
 ## Assignment 7 read-back of clip 2, the wolf lunge rig (CHANGE-BRIEF Clip 2, the revision of 2026-11-10 and Tests).
 ## Loads features/wolf/wolf.tscn (not added to the tree, so nothing plays) and reads back: every track of patrol, lunge
 ## and dead resolves to a real node and property (the assignment's track_problems(); key types in key_problems()); lunge's key times equal the revised
-## table's frames / 60 to 1e-6, its length 89/60, LOOP_NONE, its poses and easing; the rig's structure, regions,
+## table's frames / 60 to half a frame period (1/120 s), every clip's step 1/60, its length 89/60, LOOP_NONE, its poses and easing; the rig's structure, regions,
 ## pivots and material; and that each part draws exactly where the whole Sprite2D draws the lunge image at rest.
 ## From fall-2026/zhefan-z/assignment-7/:
 ##   ./scripts/run-test.sh test_clip_lunge.gd 60
@@ -14,6 +14,9 @@ const AnimChecks := preload("res://tests/anim_checks.gd")
 const SCENE := "res://features/wolf/wolf.tscn"
 const LUNGE_PNG := "res://assets/sprites/wolf/wolf_lunge.png"
 const EPS := 1e-6
+## The brief's rate for every wolf clip: 60 fps. Key times are compared to half a frame period, never ==.
+const FPS := 60.0
+var TOL := AnimChecks.half_frame(FPS)
 ## Revised phase table (CHANGE-BRIEF revision 2026-11-10): key frames and the rig pose at each.
 const FRAMES := [0, 25, 31, 37, 53, 65, 89]
 const POSES := {
@@ -103,7 +106,7 @@ func run() -> void:
 		var is_rot := path.ends_with(":rotation")
 		for k in FRAMES.size():
 			var t := lunge.track_get_key_time(i, k)
-			if absf(t - FRAMES[k] / 60.0) > EPS:
+			if absf(t - FRAMES[k] / 60.0) > TOL:
 				time_errors["%s@%d" % [path, FRAMES[k]]] = t
 			var v: Variant = lunge.track_get_key_value(i, k)
 			var got: Variant = rad_to_deg(v) if is_rot else v
@@ -112,7 +115,10 @@ func run() -> void:
 		if path == "Facing/Rig:scale":
 			for k in FRAMES.size():
 				table.append("frame %d -> %.6f s (key %.9f)" % [FRAMES[k], FRAMES[k] / 60.0, lunge.track_get_key_time(i, k)])
-	check("lunge-key-times-equal-frames-over-60", time_errors.is_empty(), {"frames": FRAMES, "errors": time_errors})
+	check("lunge-key-times-equal-frames-over-60", time_errors.is_empty(), {"frames": FRAMES, "errors": time_errors,
+		"tolerance_s": TOL})
+	var steps := AnimChecks.step_problems(ap, FPS)
+	check("every-clip-step-one-frame-period-1-60", steps.is_empty(), {"fps": FPS, "wrong_step": steps})
 	check("lunge-poses-match-table", pose_errors.is_empty(), {"errors": pose_errors})
 	observe("lunge-key-times", {"table": table})
 
@@ -142,7 +148,8 @@ func run() -> void:
 		var anim := ap.get_animation(n)
 		for p: String in ["Sprite2D:visible", "Facing:visible"]:
 			var i := AnimChecks.track(anim, p)
-			if i < 0 or anim.value_track_get_update_mode(i) != Animation.UPDATE_DISCRETE or anim.track_get_key_time(i, 0) != 0.0:
+			if i < 0 or anim.value_track_get_update_mode(i) != Animation.UPDATE_DISCRETE \
+					or absf(anim.track_get_key_time(i, 0)) > TOL:
 				return false
 		return true)
 	check("visibility-patrol-dead-sprite-lunge-rig", vis.get("patrol") == [true, false] and vis.get("dead") == [true, false]

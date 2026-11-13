@@ -1,11 +1,13 @@
 extends RefCounted
 ## Shared read-back helpers for the A7 clip tests (tests/test_clip_run.gd, tests/test_clip_lunge.gd). Not a test.
-## track_problems() is the assignment's function, verbatim. key_problems() holds my extra checks.
+## track_problems() is the published assignment function, verbatim (with its root_node null check). key_problems(),
+## step_problems() and half_frame() hold my extra checks.
 
 
 static func track_problems(player: AnimationPlayer) -> Array[String]:
 	var problems: Array[String] = []
-	var root := player.get_node(player.root_node)
+	var root := player.get_node_or_null(player.root_node)
+	if root == null: problems.append("root_node %s resolves to nothing" % player.root_node); return problems
 	for clip_name in player.get_animation_list():
 		var clip := player.get_animation(clip_name)
 		for t in clip.get_track_count():
@@ -63,6 +65,21 @@ static func key_problems(player: AnimationPlayer) -> Array[String]:
 					out.append("%s: key %d is %s, property is %s" % [tag, k, type_string(typeof(v)),
 						type_string(typeof(current))])
 	return out
+
+
+## Clips of `player` whose `step` is not one frame period at `fps` (is_equal_approx(clip.step, 1.0 / fps)).
+static func step_problems(player: AnimationPlayer, fps: float) -> Dictionary:
+	var out := {}
+	for clip_name in player.get_animation_list():
+		var clip := player.get_animation(clip_name)
+		if not is_equal_approx(clip.step, 1.0 / fps):
+			out[str(clip_name)] = clip.step
+	return out
+
+
+## Key-time tolerance: half a frame period at `fps`. Key times are 32-bit floats; never compare them with ==.
+static func half_frame(fps: float) -> float:
+	return 0.5 / fps
 
 
 ## Index of the value track at `path` in `anim`, or -1.
