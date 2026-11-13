@@ -7,9 +7,9 @@ Prediction, attempts, obstacles, changes, results and the next test, from my ses
 | My prediction (brief) | Result |
 |---|---|
 | The wolf's phases are 30 / 21 / 36 ticks | **Wrong**: the pin measured 31 / 22 / 36 (floating-point timer); the table and keys follow the measurement |
-| The growl-cancel change alters only the `hit_growl` pin | **Wrong**: `kill` also hits during GROWL; the pin caught it, and the agent refused to commit my message claiming otherwise |
+| The growl-cancel change alters only the `hit_growl` pin | **Wrong**: `kill` also hits during GROWL; the pin caught it, and the agent held the commit and asked me rather than use my message claiming otherwise |
 | F1: a Godot 3 `loop = true` makes the run play once | **Did not occur**: Godot 4.7.2 maps it to `loop_mode = 1` (mutation a7-1) |
-| F6: the waist seam opens when the front part rotates | **Did not occur**: no gap in my play or at 8× |
+| F6: the waist seam opens when the front part rotates | **Did not occur**: no gap in my play or in the game strip at 4× |
 | Wiring the clips changes no behaviour | **Held**: pin identical at 30, 60, 144 |
 
 ## Struggle and revision: the run cycle
@@ -33,13 +33,13 @@ This took most of the time, and I learned the most from it.
 
 **The growl window is 0.2 s.** In play, the cancel seemed not to work. The agent's probe with real clicks showed the rule works, but the fireball's 20-tick flight leaves only the first 12 growl ticks. I kept the timings and recorded it as a design finding.
 
-**Edges found two alignment bugs** that the read-backs could not see: a cancel drew clip frame 54 instead of 53, and a growl after a one-tick patrol started one frame late. Both fixed without changing behaviour; the second fix was checked by removing it and watching the test fail.
+**Two alignment bugs** the read-backs could not see: the edges test found that a cancel drew clip frame 54 instead of 53, and the windowed lunge capture's tick log showed a growl after a one-tick patrol starting one frame late. Both fixed without changing behaviour; the edges test was extended to the second and checked by removing the fix and watching it fail.
 
 **Silent integer keys, twice.** The agent wrote 0° and 1.0 as integers on float properties, first in the wolf clip and again in the light clip; its own key-type check caught both.
 
 **Visual upgrades "not noticeable".** My first look at the torches, embers and afterimage: too subtle. The agent listed old and new values, measured the result and lightened the darkening so the mage stayed readable; then they were clearly visible.
 
-**Process slips.** The agent amended one local commit (the first CLAUDE.md draft was 122 lines); it briefly ran a script and kept one backup one folder above the assignment root during the mutation run, then removed them. I let the agent make the commits I asked for, each labelled with who wrote the content; it never pushed.
+**Process slips.** The agent amended one local commit (the first CLAUDE.md draft was 122 lines); during the mutation run it kept one temporary backup one folder above the assignment root for a few seconds and ran its mutation script from its own temporary folder outside the repository; nothing was left behind. I let the agent make the commits I asked for, each labelled with who wrote the content; it never pushed.
 
 ## Human and AI contributions
 

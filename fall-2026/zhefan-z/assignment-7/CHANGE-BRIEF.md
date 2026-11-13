@@ -134,3 +134,7 @@ Found by the edges test (`272fb39`), visual only, pin still 8/8 at 30, 60, 144:
 - **A growl cancel showed clip frame 54 on the hit tick, not 53.** The hit is handled before the wolf's physics step and the clip then advances once in that tick. The cancel now seeks to frame 52, so the hit tick shows 53, as a normal RECOVER entry does.
 - **A growl right after a one-tick PATROL started at clip frame 1.** Both AnimationPlayers now run before their owner's script (`process_physics_priority = -1` in the scene files), so a newly started clip is never advanced on its first tick. With the setting removed, the edges check fails (frame 1 on tick 170).
 - **Failure F1 does not occur on Godot 4.7.2:** a clip written with the Godot 3 `loop = true` loads with `loop_mode = 1` (linear) and still loops (mutation a7-1). The read-back still checks `loop_mode`.
+
+### 2026-11-12 — correction to the revision above
+
+The second alignment bug (a growl after a one-tick PATROL starting at clip frame 1) was found in the windowed lunge capture's tick log, not by the edges test; the edges test was then extended to cover it and verified by removing the fix. Line references in this commit: the timer is `wolf.gd:71`, the removal timer `wolf.gd:170` (they were lines 59 and 150 before A7).

@@ -13,11 +13,12 @@ Godot 4.7.2-stable (`ed1daf0bf`), Forward+ (Vulkan), Windows, Git Bash, RTX 5060
 | Behaviour change: growl hit cancels the lunge | pin differs only in `hit_growl` and `kill`, both from tick 24 (GROWL → RECOVER); not re-pinned | `72f37b8` |
 | Played by me, accepted | see Human checks | — |
 | Re-pinned in its own commit | only `hit_growl.json` and `kill.json` changed; the other six byte-identical; 16/16 at 30, 60, 144 | `ff71bbb` |
-| Every later visual change | pin 16/16 at 30, 60, 144 after each | `32eed66`, `a1b6f44`, `7a9a65e`, `272fb39` |
+| Run r2, before the re-pin | pin at 60: 14/16, only the two known differences | `32eed66` |
+| Every later visual change | pin 16/16 at 30, 60, 144 after each | `a1b6f44`, `7a9a65e`, `272fb39` |
 
 The prediction in my brief that only `hit_growl` would change was wrong: `kill` also hits the wolf during GROWL, so its second fireball now misses. The pin found it.
 
-**Measured, not assumed:** the pin measured the wolf's phases at 31 / 22 / 36 ticks, not 30 / 21 / 36: `wolf.gd:59` subtracts 1/60 per tick and switches only at exactly 0, and after 30 steps from 0.5 (21 from 0.35) the timer is still about 1e-16 above zero. The phase table and every key follow the measurement (brief revision 2026-11-10).
+**Measured, not assumed:** the pin measured the wolf's phases at 31 / 22 / 36 ticks, not 30 / 21 / 36: `wolf.gd:71` subtracts 1/60 per tick and switches only at exactly 0, and after 30 steps from 0.5 (21 from 0.35) the timer is still about 1e-16 above zero. The phase table and every key follow the measurement (brief revision 2026-11-10).
 
 ## Clip read-backs and structure
 
@@ -28,7 +29,7 @@ The prediction in my brief that only `hit_growl` would change was wrong: `kill` 
 | `test_clip_flicker.gd` | `track_problems()`; continuous-track seam (value at 0 = value at length) per track; `LOOP_LINEAR`; energy swing 20–32 %, scale 6–9 %; nothing else keys or writes the lights | 11 / 0 |
 | `test_anim_structure.gd` | every player and wolf state maps to an existing clip; `autoplay` empty; both players on the physics callback; a source scan: no script writes a property a clip keys; one AnimationPlayer per sprite; RUN re-entry restarts at frame 0 | 11 / 0 |
 
-Silent failures these caught: rotation keys of 0° and light keys of 1.0 written as integers on float properties (key-type check, twice); a missing reset would have left the mage squashed after r1 (reset keys added, then r1 reverted).
+Silent failures these caught: rotation keys of 0° and light keys of 1.0 written as integers on float properties (key-type check, twice).
 
 ## Edges at the phase boundaries
 
@@ -42,9 +43,9 @@ Silent failures these caught: rotation keys of 0° and light keys of 1.0 written
 | killing hit in GROWL, LUNGE, RECOVER | DEAD, `dead` clip, hitbox off from the next tick |
 | real Esc mid-lunge | position, state and clip freeze on the same tick and resume tick for tick |
 | RUN → jump → land → RUN | cycle restarts at frame 0 |
-| clip frame = phase tick | on all 119 ticks of both growls |
+| clip frame = phase tick | on all 119 lunge-clip ticks (a full growl, lunge and recovery plus a second growl) |
 
-It found two alignment bugs, both fixed visually only (`272fb39`): a cancel drew frame 54 on the hit tick (now seeks 52), and a growl after a one-tick PATROL started at frame 1 (both players now run first, `process_physics_priority = -1`; with it removed the check fails on tick 170). `test_afterimage.gd`: 6 / 0 at 30, 60, 144 (ghosts only during LUNGE, every 3 ticks, gone after 0.25–0.267 s).
+Two alignment bugs, both fixed visually only (`272fb39`): the edges test found that a cancel drew frame 54 on the hit tick (now seeks 52); the windowed lunge capture's tick log showed that a growl after a one-tick PATROL started at frame 1 (both players now run first, `process_physics_priority = -1`), and the edges test was extended to cover it: with the fix removed it fails on tick 170. `test_afterimage.gd`: 6 / 0 at 30, 60, 144 (ghosts only during LUNGE, every 3 ticks, gone after 0.25–0.267 s).
 
 ## Mutations (each in a temporary `git worktree`, removed)
 
@@ -64,7 +65,7 @@ All 13, at their baseline counts and 0 failures, after every commit above: playe
 
 ## Two clocks
 
-Both AnimationPlayers: `callback_mode_process = PHYSICS`, the tick gameplay reads, and they run before their owner's script. No gameplay fact is keyed on a track (the hitbox stays in `wolf.gd`), no method tracks, no AnimationTree, no AnimatedSprite2D. One frame-clock timer remains in today's game: the wolf's removal after death (`wolf.gd:150`) lands on physics tick 79 at 60 fps and 80 at 30 and 144 (`captures/figures/two_clocks.png`); gameplay never reads it.
+Both AnimationPlayers: `callback_mode_process = PHYSICS`, the tick gameplay reads, and they run before their owner's script. No gameplay fact is keyed on a track (the hitbox stays in `wolf.gd`), no method tracks, no AnimationTree, no AnimatedSprite2D. One frame-clock timer remains in today's game: the wolf's removal after death (`wolf.gd:170`) lands on physics tick 79 at 60 fps and 80 at 30 and 144 (`captures/figures/two_clocks.png`); gameplay never reads it.
 
 ## Strips and play
 
@@ -76,7 +77,7 @@ Both AnimationPlayers: `callback_mode_process = PHYSICS`, the tick gameplay read
 | `captures/lunge/game-r0/` (left and right) | logged rig values equal the phase table at growl + 0, 25, 31, 37, 53, 65; PATROL at +89 | the stretch and the dash work together; white flash reaches the rig; the left-facing wolf is right |
 | `captures/look/` | torches, embers, afterimage, hurt tint, trail, impact after the darkening | r0 not noticeable; r1 **clearly visible: kept** |
 
-Claude against me: Claude estimated a 2.6–3.3 px step at the waist seam; I saw none, and neither did it at 8× in the game strip. Claude read the r1 bob as matching its prediction exactly; I rejected it in play.
+Claude against me: Claude estimated a 2.6–3.3 px step at the waist seam; I saw none, and neither did it at 4× in the game strip. Claude read the r1 bob as matching its prediction exactly; I rejected it in play.
 
 ## Human checks
 
