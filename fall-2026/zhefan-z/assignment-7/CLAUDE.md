@@ -15,7 +15,8 @@ Sheet `assets/sprites/mage/mage_run_cycle_sheet.png`, 248×69, cell 62×69, `hfr
 (CHANGE-BRIEF revision "run cycle replaced after play"). Clip `run`: keys 0, 0.1, 0.2, 0.3 s, length 0.4, 10 fps,
 `step` 0.1, `LOOP_LINEAR`, discrete. Nine state clips (`idle, run, rise, fall, cast, hurt, fail, fail_pit, win`) in the
 same player. Driven by `features/player/player.gd`: `_update_state()` → `_set_state()`, which calls `play()` and sets
-`flip_h`; `TEXTURES` is a read-only table of what each clip shows, read by three earlier tests (`tests/test_player.gd`).
+`flip_h`; `TEXTURES` is a read-only table of what each clip shows, read by `tests/test_player.gd`, `test_flow.gd:89`
+and `test_wolf.gd:111, 145`.
 
 **Clip 2, wolf lunge** — the committing action. Route: cutout rig keyed as resource text in `features/wolf/wolf.tscn`:
 `Facing → Rig → RearPivot (−11, −22) / FrontPivot (15, −22)`, parts are `region_rect`s (0, 0, 40, 40) and (36, 0, 44, 40)
@@ -51,8 +52,8 @@ fireball_trail 20 at 30, 60, 144. Shared clip checks: `tests/anim_checks.gd`.
 
 Confirmed on this machine (Godot 4.7.2) unless marked.
 
-- Earlier: `get_shader_uniform_list()` needs the main loop; a shader-only uniform rename raises no error (A5 at
-  `2b68e0a`); `--fixed-fps` is not in the command-line args; headless runs no GPU particle process (A6).
+- Earlier: `get_shader_uniform_list()` needs the main loop; a shader-only rename raises no error (A5, `2b68e0a`);
+  `--fixed-fps` is not in the command-line args; headless runs no GPU particle process (A6).
 - A headless run advances clips and reads their structure. It draws nothing, so whether the motion reads is not
   observable here.
 - Key times are 32-bit floats; compare them with a tolerance.
@@ -75,28 +76,28 @@ Exactly one node writes to each animated node. Never add a second writer to a no
 - Mage `Sprite2D` `texture`, `hframes`, `frame`: the player's AnimationPlayer. `player.gd` only calls `play()` and sets
   `flip_h` and `visible` (blink); its `material` uniform `intensity` belongs to the HurtTint driver.
 - Wolf `Sprite2D` `texture` and `visible`, `Facing.visible`, `Rig` position and scale, both pivots' rotation: the wolf's
-  AnimationPlayer. `wolf.gd` only calls `play()` and `seek()` and sets `Facing.scale.x`; its flash uniform is `_flash()`'s.
+  AnimationPlayer. `wolf.gd` only calls `play()` and `seek()` and sets `Facing.scale.x` and `sprite.flip_h` (`wolf.gd:137`; no clip keys `flip_h`); its flash
+  uniform is `_flash()`'s.
 - Torch `energy` and `texture_scale`: the CaveLights AnimationPlayer. Lunge ghosts: `lunge_afterimage.gd`, which reads
   the wolf and writes only its own ghost nodes. `tests/test_anim_structure.gd` and `test_clip_flicker.gd` check this.
-
 ## Godot 4 names
 
 Use Godot 4.7 names, never Godot 3: `loop_mode` (`Animation.LOOP_NONE / LOOP_LINEAR`), not `loop`; `speed_scale`, not
 `playback_speed`; `AnimatedSprite2D.sprite_frames` and `play()`, not `frames` and `playing`; `callback_mode_process`, not
 `playback_process_mode`. Set `Animation.step` to one frame period at the brief's rate. If unsure a property exists, check
 it headless with `ClassDB.class_get_property_list()` and report misses.
-
 ## Input
 
 Tests use `Input.parse_input_event` (`tests/test_pin_behaviour.gd`); `Input.action_press` never reaches `_input`.
-
 ## Two clocks
 
-Every clip player uses `ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS`, the tick gameplay reads (`player.gd`
-`_physics_process`, the wolf's `_timer` at `wolf.gd:71`, its hitbox in `_enter()`), so the largest disagreement is 0 s.
-No gameplay fact is keyed on a track; no method tracks; no AnimationTree; no AnimatedSprite2D. Process-clock code: the
-camera (`game/main.gd`), the hurt-tint driver, and the wolf's flash and removal timers (removal at `wolf.gd:170`: tick 79
-at 60 fps, 80 at 30 and 144). Compare clip frame n with physics tick n, never with summed frame time.
+The mage and wolf players use `ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS`, the tick gameplay reads (`player.gd`
+`_physics_process`, the wolf's `_timer` at `wolf.gd:71`); the clips never move between ticks. The torch player (`Flicker`,
+`effects/cave_lights.tscn:92`) stays on the default process clock: nothing in gameplay reads it. Largest disagreement,
+measured (`tests/probe_two_clocks.gd`, 30/60/144): the hitbox is read on clip frames 32–53 against the active section 31–52,
+because it is switched on in `_enter()` and off with `set_deferred`, so 1/60 s ≈ 0.0167 s.
+No gameplay fact keyed on a track, no method tracks, no AnimationTree, no AnimatedSprite2D. Process-clock code: camera,
+hurt-tint driver, the wolf's flash and removal timers (`wolf.gd:170`: tick 79 at 60 fps, 80 at 30 and 144).
 
 ## Commits
 Commit only what the human asks for. Every message says what was checked and who wrote the content, e.g. "(agent,
@@ -109,10 +110,10 @@ start a new session stating what is done and what is not.
 
 ## Out of scope
 Collision, movement, input, damage, every timing in `tuning.gd` and `wolf.gd`, the fireball and both A6 effects, the hurt
-tint, the A3 prop room, `project.godot`, the original sprite PNGs and the Gemini raw files (`CHANGE-BRIEF.md`, Boundaries).
+tint, the A3 prop room, `project.godot` and the original sprite PNGs (`CHANGE-BRIEF.md:83`); also the raw files in `design/a7/`.
 The only gameplay change is the growl interrupt, re-pinned after play (`ff71bbb`). Existing tests are not edited, weakened
-or deleted. The capture overlays are debug-only and live in the capture harnesses under `tests/`.
+or deleted (the 13 earlier suites in the baseline; A7 tests evolve with the brief). The capture overlays are debug-only and live in the capture harnesses under `tests/`.
 
 ## Unconfirmed
-- Test headers still name the A5/A6 folders (`tests/test_fireball_impact.gd:5`). The desktop app writes no session
-  `.jsonl`, so the result-event check is replaced by reading each session's final report.
+- Test headers still name the A5/A6 folders (`tests/test_fireball_impact.gd:5`). Session transcripts are `.jsonl` files under
+  `C:\Users\lenovo\.claude\projects\E--7270-csye-7270-course-fall-2026-zhefan-z-assignment-7\`; read the last result event.
