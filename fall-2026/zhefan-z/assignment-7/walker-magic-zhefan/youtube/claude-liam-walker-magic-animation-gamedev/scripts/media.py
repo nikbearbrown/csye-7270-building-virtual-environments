@@ -497,7 +497,8 @@ def build():
          ('a7-3 · run frame key 4, past the last cell', 'test_clip_run · frame range and frame keys', '2 failures'),
          ('a7-4 · lunge track to a missing node', 'track_problems(): no node at FrontPivotX', '2 failures'),
          ('a7-5 · growl cancel removed', 'test_anim_edges: the lunge continues, hitbox armed 23 ticks', '2 failures')],
-        [1300, 1556, 600], 'None printed an error from the game: a7-2 to a7-4 would play silently wrong.',
+        [1300, 1556, 600], 'No mutation printed a game error in a 600-frame headless run without input; that run never plays the lunge '
+        'or reaches the run’s bad frame. The tests are what catch them.',
         'logs/mutation-a7-1-…-5-*_60fps.log · TEST-REPORT.md → Mutations'),
         {'card': 'media/B19.png', 'source': 'logs/mutation-a7-*_60fps.log'})
 
