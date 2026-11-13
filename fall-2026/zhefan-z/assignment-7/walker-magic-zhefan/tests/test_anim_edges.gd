@@ -11,6 +11,8 @@ extends SceneTree
 ## run of the game; the fireball must arrive exactly on the target tick.
 ## Cases: hits on the first and last GROWL tick (cancel: RECOVER on the hit tick, the clip in the recovery section,
 ## the hitbox never armed); on the first and last LUNGE tick (no cancel); on the first RECOVER tick (only HP changes);
+## at every phase boundary of the lunge clip (GROWL start at 0, GROWL -> LUNGE at 31, LUNGE -> RECOVER at 53,
+## RECOVER -> PATROL at 89), a hit one tick before, on and one tick after it, each with the brief's rule for its phase;
 ## a killing hit in GROWL, LUNGE and RECOVER (DEAD, the dead clip, hitbox off from the next tick); a real Esc mid-lunge
 ## (the wolf's position, state and clip position freeze on the same tick and resume aligned); RUN -> jump -> land -> RUN
 ## restarts the run cycle at frame 0; the clip frame equals the wolf's phase tick on every tick of the lunge clip,
@@ -69,6 +71,7 @@ class FrameProbe extends Node:
 var results: Array[Dictionary] = []
 var failures := 0
 var runs_made := 0
+var found_cache := {}
 
 
 func _initialize() -> void:
@@ -185,6 +188,16 @@ func hit_ticks(rows: Array) -> Array:
 ## Finds a cast (even tick, aim offset) whose fireball hits on `target`, after the `prefix` events. Returns
 ## {"events", "rows"} of the run that hit, or {} if none did.
 func cast_for(target: int, prefix: Array, length: int) -> Dictionary:
+	# A search already made for the same target (the boundary cases repeat some of the cases above) is reused.
+	var memo_key := str([target, prefix, length])
+	if found_cache.has(memo_key):
+		return found_cache[memo_key]
+	var result: Dictionary = await _cast_search(target, prefix, length)
+	found_cache[memo_key] = result
+	return result
+
+
+func _cast_search(target: int, prefix: Array, length: int) -> Dictionary:
 	var tried := {}
 	for aim: Array in AIM:
 		var c := (target - 20) & ~1
@@ -292,6 +305,50 @@ func run() -> void:
 			base.merge({"states_as_reference": same_states, "positions_as_reference": same_x, "clip_as_reference": same_clip})
 			var id := "%s-hit-only-hp" % c[0] if c[2] == "RECOVER" else "%s-hit-no-cancel" % c[0]
 			check(id, hit_ok and same_states and same_x and same_clip, base)
+
+	# Every phase boundary of the lunge clip, a hit one tick before, on and one tick after it (CHANGE-BRIEF per-phase
+	# interrupts). Boundary b is the first tick of the new phase, g0 + b. A hit on tick h is resolved before the wolf's
+	# update that tick, so the interrupt follows the phase the wolf ended tick h - 1 in: "on" the boundary is still the
+	# phase before it. Expected phase and rule per case are written out here from the brief, not read from the run.
+	var boundaries := [["growl-start", 0, g0, ["PATROL", "PATROL", "GROWL"]],
+		["growl-to-lunge", 31, l0, ["GROWL", "GROWL", "LUNGE"]],
+		["lunge-to-recover", 53, r0, ["LUNGE", "LUNGE", "RECOVER"]],
+		["recover-to-patrol", 89, p0, ["RECOVER", "RECOVER", "PATROL"]]]
+	var rule_of := {"GROWL": "cancel", "LUNGE": "no-cancel", "RECOVER": "hp-only", "PATROL": "hp-only"}
+	for bd: Array in boundaries:
+		for side: int in [-1, 0, 1]:
+			var where: String = ["before", "on", "after"][side + 1]
+			var h: int = bd[2] + side
+			var want_phase: String = bd[3][side + 1]
+			var rule: String = rule_of[want_phase]
+			var id := "boundary-%s-%s-%s" % [bd[0], where, rule]
+			var found: Dictionary = await cast_for(h, [], length)
+			if found.is_empty():
+				check(id, false, {"target_tick": h, "boundary_frame": bd[1]})
+				continue
+			var hr: Array = found.rows
+			var base := {"boundary_frame": bd[1], "boundary_tick": bd[2], "hit_tick": h, "hit_clip_frame": h - g0,
+				"cast_tick": found.cast_tick, "aim": found.aim, "phase_when_hit": hr[h - 1].w_state,
+				"expected_phase": want_phase, "state_on_hit_tick": hr[h].w_state, "hp": hr[h].w_hp}
+			var hit_ok: bool = bd[2] - g0 == bd[1] and hr[h - 1].w_state == want_phase and hr[h].w_hp == 1 \
+				and hit_ticks(hr) == [h]
+			if rule == "cancel":
+				var next_patrol := first_row(hr, "PATROL", h)
+				var armed := hr.slice(g0, next_patrol).filter(func(r: Dictionary) -> bool: return r.w_mon).size()
+				var lunged := hr.slice(h, next_patrol).filter(func(r: Dictionary) -> bool: return r.w_state == "LUNGE").size()
+				base.merge({"clip_frame_on_hit_tick": frame_of(hr[h].w_pos), "clip": hr[h].w_clip,
+					"armed_ticks": armed, "lunge_ticks_after_hit": lunged, "wolf": runs(hr.slice(g0, next_patrol + 1))})
+				check(id, hit_ok and hr[h].w_state == "RECOVER" and hr[h].w_clip == "lunge"
+					and frame_of(hr[h].w_pos) == RECOVER_FRAME and armed == 0 and lunged == 0, base)
+			else:
+				var same_states := states(hr) == states(rows)
+				var same_x := range(length).all(func(t: int) -> bool: return absf(hr[t].w_x - rows[t].w_x) < 0.01)
+				var same_clip := range(length).all(func(t: int) -> bool:
+					return hr[t].w_clip == rows[t].w_clip and absf(hr[t].w_pos - rows[t].w_pos) < 1e-4)
+				var same_mon := range(length).all(func(t: int) -> bool: return hr[t].w_mon == rows[t].w_mon)
+				base.merge({"states_as_reference": same_states, "positions_as_reference": same_x,
+					"clip_as_reference": same_clip, "hitbox_as_reference": same_mon})
+				check(id, hit_ok and same_states and same_x and same_clip and same_mon, base)
 
 	# Killing hits: a first hit in PATROL (cast at tick 10) leaves 1 HP, then the second lands in the phase.
 	var prefix := [["cast", 10, [0.0, 0.0]]]
