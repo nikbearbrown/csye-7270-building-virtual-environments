@@ -43,7 +43,7 @@ This took most of the time, and I learned the most from it.
 
 ## Human and AI contributions
 
-- **Mine:** both clips and their look (8 fps, clear crouch and stretch, later 10 fps for r2), the per-phase interrupt rule, keeping the 0.2 s window, every first look and every verdict in the running game (run r0, r1 rejected, r2 kept; visual upgrades r0 rejected, r1 kept), generating the run images in Gemini, accepting the re-pin after play.
+- **Mine:** both clips and their look (8 fps, clear crouch and stretch, later 10 fps for r2), the per-phase interrupt rule, keeping the 0.2 s window, every first look and every verdict in the running game (run r0, r1 rejected, r2 kept; visual upgrades r0 rejected, r1 kept), generating the run images in Gemini, accepting the re-pin after play, two reviews of the agent's CLAUDE.md draft, and the human checks (five-wrap cycle, an interrupt in each phase, registration, darkest and lightest art).
 - **Claude Code:** CLAUDE.md drafts, the pin, the clips and rig, read-backs, structure, edges and afterimage tests, the probes and capture harnesses, the cleanup tools, the visual upgrades, mutations, figures, measurements, predictions and comparisons.
 - **claude.ai (chat):** planning, commands, the brief and its revisions from my decisions, the Gemini prompts, and these documents.
 

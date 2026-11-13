@@ -92,10 +92,10 @@ Tests use `Input.parse_input_event` (`tests/test_pin_behaviour.gd`); `Input.acti
 ## Two clocks
 
 The mage and wolf players use `ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS`, the tick gameplay reads (`player.gd`
-`_physics_process`, the wolf's `_timer` at `wolf.gd:71`); the clips never move between ticks. The torch player (`Flicker`,
+`_physics_process`, the wolf's `_timer` at `wolf.gd:71`); the lunge clip never moves between ticks (measured). The torch player (`Flicker`,
 `effects/cave_lights.tscn:92`) stays on the default process clock: nothing in gameplay reads it. Largest disagreement,
-measured (`tests/probe_two_clocks.gd`, 30/60/144): the hitbox is read on clip frames 32–53 against the active section 31–52,
-because it is switched on in `_enter()` and off with `set_deferred`, so 1/60 s ≈ 0.0167 s.
+measured (`tests/probe_two_clocks.gd`, 30/60/144): the overlap check in `wolf.gd`'s LUNGE branch first runs the tick
+after LUNGE starts and last on the tick it switches to RECOVER: clip frames 32–53 against the active 31–52, so 1/60 s.
 No gameplay fact keyed on a track, no method tracks, no AnimationTree, no AnimatedSprite2D. Process-clock code: camera,
 hurt-tint driver, the wolf's flash and removal timers (`wolf.gd:170`: tick 79 at 60 fps, 80 at 30 and 144).
 
@@ -116,4 +116,4 @@ or deleted (the 13 earlier suites in the baseline; A7 tests evolve with the brie
 
 ## Unconfirmed
 - Test headers still name the A5/A6 folders (`tests/test_fireball_impact.gd:5`). Session transcripts are `.jsonl` files under
-  `C:\Users\lenovo\.claude\projects\E--7270-csye-7270-course-fall-2026-zhefan-z-assignment-7\`; read the last result event.
+  `C:\Users\lenovo\.claude\projects\E--7270-csye-7270-course-fall-2026-zhefan-z-assignment-7\`; read the last assistant message.

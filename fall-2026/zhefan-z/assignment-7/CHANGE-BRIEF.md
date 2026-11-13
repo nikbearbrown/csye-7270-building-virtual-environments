@@ -138,3 +138,60 @@ Found by the edges test (`272fb39`), visual only, pin still 8/8 at 30, 60, 144:
 ### 2026-11-12 — correction to the revision above
 
 The second alignment bug (a growl after a one-tick PATROL starting at clip frame 1) was found in the windowed lunge capture's tick log, not by the edges test; the edges test was then extended to cover it and verified by removing the fix. Line references in this commit: the timer is `wolf.gd:71`, the removal timer `wolf.gd:170` (they were lines 59 and 150 before A7).
+
+### 2026-11-13 — the brief in the published structure
+
+This revision restates the contract in the structure the assignment asks for. Where it repeats earlier revisions, the earlier text and its dates stand; nothing above is edited.
+
+**The two clips.**
+
+| | Clip 1: run cycle | Clip 2: wolf lunge |
+|---|---|---|
+| Communicates | the mage is moving under the player's control; speed and direction | the wolf is about to strike (crouch), is striking (stretch, afterimage), and is open (settle) |
+| Why the player needs it | to read her own motion in a game with no other movement feedback | to read when to dodge and when the wolf is punishable |
+| Object | the mage's `Sprite2D` (`features/player/player.tscn`) | the wolf's rig `Facing → Rig → pivots → parts` (`features/wolf/wolf.tscn`) |
+| Route, and why | Sprite2D + AnimationPlayer frame track: one AnimationPlayer and the player's state machine drive every mage image, and the AnimationPlayer read-back sees it | cutout rig keyed as resource text: the phase table becomes exact key times and every key is a reviewable diff |
+| Authority, and what it reads | the player's AnimationPlayer; `player.gd` `_set_state()` calls `play()` from the state chosen in `_update_state()` | the wolf's AnimationPlayer; `wolf.gd` `_enter()` plays on GROWL entry and `take_damage()` seeks on a growl cancel |
+| Cycle or committing | cycle | committing action |
+
+**The sheet.** Clip 1: `assets/sprites/mage/mage_run_cycle_sheet.png`, generated with the Gemini app (model shown as "4 Hydrogen") on 2026-11-12 from prompt v3 (`design/IMAGE-PROMPTS-from-chat.md`) with my A2 contact sprite as the only reference; output under Google's Terms of Service and Generative AI Additional Terms; checked 2026-11-13. Original as downloaded: `design/a7/mage_run_cycle_gemini_raw.jpg`. Cell 62×69, grid 4 × 1 (`hframes = 4`, `vframes = 1`), frame order 0 contact, 1 down, 2 passing, 3 up. Credits: `assets/sprites/mage/ATTRIBUTION.md`. Clip 2 uses my A2 `assets/sprites/wolf/wolf_lunge.png` (80×40), unchanged, as two `region_rect`s.
+
+**The cycle spec (clip 1).** 4 frames at 10 fps; `Animation.LOOP_LINEAR`; `Animation.step` 0.1. Seam rule for a frame track: no duplicate across the wrap, and the gap from the last key (0.3 s) to the length (0.4 s) equals the key interval (0.1 s).
+
+**The phase table (clip 2).** At 60 fps, the wolf's physics tick; `Animation.step` = 1/60 s.
+
+| Phase | Frames (begins on) | What the player may do | What the game reads |
+|---|---|---|---|
+| Startup (GROWL) | 0–30 (0) | move, jump, cast; a non-lethal hit cancels the lunge (RECOVER, clip to frame 53) | hitbox off |
+| Active (LUNGE) | 31–52 (31) | dodge or jump over; a hit lands but does not cancel | hitbox `monitoring` on (31–53; read on 32–53) |
+| Recovery (RECOVER) | 53–88 (53) | punish freely; the wolf stands | hitbox off from 54 |
+
+A hit on the first tick of a phase is handled before the wolf's update that tick, so it follows the phase before (edges test).
+
+**The state machine.**
+
+| Object | State | Clip | Entered when |
+|---|---|---|---|
+| mage | IDLE / RUN | `idle` / `run` (re-entry restarts at frame 0) | on floor, \|velocity.x\| < 5 / ≥ 5 |
+| mage | RISE / FALL | `rise` / `fall` | airborne, velocity.y < 0 / ≥ 0 |
+| mage | CAST / HURT | `cast` / `hurt` | cast hold / hurt hold active |
+| mage | FAIL / WIN | `fail` or `fail_pit` / `win` | hit at 0 HP or pit / exit reached |
+| wolf | PATROL | `patrol` | start; RECOVER timer ends |
+| wolf | GROWL → LUNGE → RECOVER | `lunge` (one clip, 89 frames) | player in sight → timer → timer; a GROWL hit jumps to RECOVER |
+| wolf | DEAD | `dead` | HP reaches 0, from any phase |
+
+No AnimationTree. **Two clocks:** both clip players `ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS`, run before their owners (`process_physics_priority = -1`); no AnimatedSprite2D; the torch flicker player stays on the process clock and nothing reads it. Gameplay reads the hitbox on the physics tick, in the overlap check inside `wolf.gd`'s LUNGE branch, which first runs on the tick after LUNGE starts and last on the tick it switches to RECOVER: clip frames 32–53 against the active 31–52, a measured largest disagreement of 1/60 s. (`monitoring` itself is on for 31–53 because it is switched off with `set_deferred`.)
+
+**Evidence split.** Read-backs: tracks, key times (half-frame tolerance), step, loop mode, update mode, frame range. Pins: behaviour and the phase timings. Edges: an interrupt one tick before, on and after every phase boundary. Strips (fixtures and real renders): the lunge at each boundary, the run's seam and registration. My eyes in the running game: the cycle over five wraps, the three phases and an interrupt in each, both clips over the darkest and lightest art.
+
+**Short answers** *(mine, translated from my Chinese)*.
+
+1. **Routes.** The run uses Sprite2D + an AnimationPlayer frame track; the lunge is a cutout rig keyed as resource text. The AnimationPlayer read-back sees every track's node and property path, exact key times, `loop_mode`, and a frame track's update mode and range; with AnimatedSprite2D the animation lives in a separate SpriteFrames resource that the AnimationPlayer read-back cannot see.
+2. **Continuous frame track.** Between two keys the sprite sweeps through every intermediate frame number, because `frame` is an integer and continuous updates interpolate between keys and round; the motion scrambles or flickers.
+3. **Step.** 1/60 s for the lunge, written at 60 fps; 0.1 s for the run at 10 fps. Left at the default 1/30 s, editor snapping puts keys on a 30 fps grid, so odd-frame times shift and no longer meet the 60 Hz phase boundaries.
+4. **One authority.** The mage's `Sprite2D` frame belongs to her AnimationPlayer; the wolf's pivots belong to its AnimationPlayer; the state machines only call `play()`. Other writers in the project: the old `_set_state()` texture writes (replaced), and facing (`flip_h`, `Facing.scale.x`) if it were ever keyed; the hurt tint writes a shader parameter, not these properties.
+5. **Two clocks.** Both AnimationPlayers and the hitbox run on the physics tick, so the clip and gameplay advance together; but gameplay reads the hitbox in the overlap check inside the LUNGE branch, which first runs on the tick after LUNGE starts and last on the tick it switches to RECOVER, so it reads one tick later than the clip's active section: the largest disagreement is 1/60 s. *(I first wrote 0 s; corrected to the measurement from `tests/probe_two_clocks.gd`.)*
+6. **Seam.** No duplicate frame at the ends, and the gap from the last key (frame 3 at 0.3 s) to the length (0.4 s) equals the frame interval (0.1 s). A duplicated frame 0 at 0.4 s would show frame 0 for twice as long every loop: a visible hitch in the step.
+7. **Imported rig.** Not used.
+
+**The four ideas** *(mine, translated)*. A clip is a timeline of keys on named node properties; a track resolves its target from a NodePath string at run time, so a wrong path or a missing property is skipped with no error and no change on screen. One authority means each animated property is written by exactly one player; with two, they overwrite each other every frame and the picture twitches or falls out of step. The two clocks are the variable-rate process clock and the fixed-step physics clock; my state machines, the hitbox and both clip players run on the physics clock. Designing feel in frames means splitting an action into startup, active and recovery frame counts and shaping how it reads and how predictable it is through those counts, not by dragging keys by eye.
