@@ -94,7 +94,7 @@ The one failure existed before A6: `base.tscn: 3 Light3D nodes (got 4)`. The tes
 - Not checked: whether it reads clearly from the normal camera, stairs and ledges, and whether the dust suddenly vanishes when the camera turns (`visibility_aabb`).
 
 ## The process shader (Step 6)
-- File: `godot/shaders/particles_generated.gdshader` (471 lines). In the editor I copied Effect B's `ParticleProcessMaterial` onto a scratch `GPUParticles3D`, made it unique, used "Convert to ShaderMaterial", and saved the generated code here; it is unedited and nothing in the game uses it (commit 5e977e83).
+- File: `godot/shaders/particles_generated.gdshader` (471 lines). In the editor I copied Effect B's `ParticleProcessMaterial` onto a scratch `GPUParticles3D`, made it unique, used "Convert to ShaderMaterial", and saved the generated code here; it is unedited and nothing in the game uses it (commit b9fb4ab1).
 - Line references (found by Claude, checked by me):
   - `shader_type particles;`: line 3.
   - `start()`: line 311 (runs once when each particle is born); `process()`: line 364 (runs every frame).

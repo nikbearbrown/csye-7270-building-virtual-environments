@@ -109,7 +109,7 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 - **What I did:** approved the change after the fact and recorded that in TUNING; kept r1 after looking in the game; raised the test's height limit to 0.30 m with a dated brief revision; stopped tuning Effect A at r1 ("what lands is a human, not a mech; the dust does not need to be big"); recorded where my verdict differs from Claude's reading (warm tint, capsule hiding, puffs not separate, flat bottoms); moved the colour intent back to "low-saturation, slightly warm grey" because I could not see the difference and Claude noted the warmth is what makes it visible on the grey-blue floor.
 - **What Claude or another person contributed:** Claude Code (Opus 5.5, main session) wrote the intent revision from my answers, filled the Step 4 prompts, read the agent's transcript and caught the edit-before-approval, trimmed the strips, checked the agent's numbers, wrote and translated TUNING and the brief revisions, and committed. The reading, proposal, edit and comparison came from another Claude Code session (Opus 5.5).
 - **What I understand now / still do not understand:**
-- **Evidence and next step:** `CHANGE-BRIEF.md` revisions of 2026-11-11 and 2026-11-12; `TUNING.md` Effect A r1; `captures/landing_dust/r1/`; `prompt-4-r1.txt`, `prompt-4-r1-compare.txt`; commits e121aede, 9799850d, c1ef8d69, c8f2ab0c, 4fe7dbf4. Next: Effect B.
+- **Evidence and next step:** `CHANGE-BRIEF.md` revisions of 2026-11-11 and 2026-11-12; `TUNING.md` Effect A r1; `captures/landing_dust/r1/`; `prompt-4-r1.txt`, `prompt-4-r1-compare.txt`; commits 72ff99f2, 1c33c296, 4b8da654, 3b32a827, f02acce2. Next: Effect B.
 
 ### 2026-11-12 — A6 Step 5: building Effect B, wiring it to the lights, one tuning round, and a redesign
 
@@ -141,7 +141,7 @@ My Assignment 5 log is in `../assignment-5/FRICTIONAL.md`.
 - **What I did:** made the shader conversion and answered the shader question in my own words; played and wrote down what I saw; took the profiler screenshot and the FPS reading; ran the GPU helper.
 - **What Claude or another person contributed:** Claude Code (Opus 5.5, main session) wrote the Step 7 prompt (the assignment text) and checked the agent's result; found the shader line numbers and explained them; wrote the vsync key and the GPU helper; ran the helper twice to read the numbers (I had run it once, but its output was in my own terminal); and wrote and translated the TEST-REPORT sections. The cost script was written by another Claude Code session (Opus 5.5).
 - **What I understand now / still do not understand:**
-- **Evidence and next step:** `godot/shaders/particles_generated.gdshader` (5e977e83); TEST-REPORT "The process shader", "Headless CPU price", "Use It", "GPU price and FPS"; `godot/tests/cost_effects.gd`, `logs/cost_effects_60fps.log`, `prompt-7.txt`; `godot/debug/vsync_toggle.gd`, `godot/debug/gpu_price.gd`, `logs/gpu_price.log`. Next: README, the film, the tag and the fresh-clone check.
+- **Evidence and next step:** `godot/shaders/particles_generated.gdshader` (b9fb4ab1); TEST-REPORT "The process shader", "Headless CPU price", "Use It", "GPU price and FPS"; `godot/tests/cost_effects.gd`, `logs/cost_effects_60fps.log`, `prompt-7.txt`; `godot/debug/vsync_toggle.gd`, `godot/debug/gpu_price.gd`, `logs/gpu_price.log`. Next: README, the film, the tag and the fresh-clone check.
 
 ---
 

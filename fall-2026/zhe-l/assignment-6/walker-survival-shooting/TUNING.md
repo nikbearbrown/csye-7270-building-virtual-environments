@@ -56,7 +56,7 @@ Frame-by-frame comparison with my predictions in CHANGE-BRIEF: not written yet.
 #### What to change next round (my decision)
 Not decided yet. Claude pointed out that the cloud-like look I want conflicts with the brief's "no higher than the ankle (0.10 m)" rule, so it would be a change of intent, not only of values, recorded as a dated revision of CHANGE-BRIEF; Claude suggested making it in Step 4 (tuning).
 
-Decided (2026-11-11): change the intent first, then tune. The new intent is 6–8 neutral-grey puffs, each 0.18–0.25 m across, visible top edge no higher than 0.30 m, with a few faint grey puffs still visible at 0.7 s. It is in CHANGE-BRIEF's revision history (commit e121aede).
+Decided (2026-11-11): change the intent first, then tune. The new intent is 6–8 neutral-grey puffs, each 0.18–0.25 m across, visible top edge no higher than 0.30 m, with a few faint grey puffs still visible at 0.7 s. It is in CHANGE-BRIEF's revision history (commit 72ff99f2).
 
 ---
 
@@ -90,7 +90,7 @@ Decided (2026-11-11): change the intent first, then tune. The new intent is 6–
 - **Tuning of Effect A stops here (my decision, 2026-11-12).** What Claude pointed out and I did not tune further: in r1 the colour is still warm (the brief's intent says neutral grey); 24 patches go round the feet in a ring and 6–8 puffs cannot be told apart; the lower half of each puff is cut off in a straight line by the floor; the far side is hidden by the capsule. In the running game I do not see these as problems, so I stop on my in-game judgement. This differs from Claude's reading of the strips and is recorded here.
   - My view on two of these points (2026-11-12): **the capsule hiding the dust** does not matter. First, it is smoke, and smoke being hidden by a solid object is normal; my design document also says there is no special demand for technical perfection, so in practice the hiding is fine. **The colour:** I really cannot see much difference between the beige and a neutral grey. So the colour intent goes back to "low-saturation, slightly warm grey"; see the 2026-11-12 revision in CHANGE-BRIEF.
 - **Strips:** `captures/landing_dust/r0/`, `captures/landing_dust/r1/`
-- **Commits:** 9799850d (r1 strips), c1ef8d69 (the kept change: scene, test limit 0.10 → 0.30 m, brief revision, the two prompts). Configuration test 157 passed, state test 27 passed.
+- **Commits:** 1c33c296 (r1 strips), 4b8da654 (the kept change: scene, test limit 0.10 → 0.30 m, brief revision, the two prompts). Configuration test 157 passed, state test 27 passed.
 
 ---
 
@@ -98,7 +98,7 @@ Decided (2026-11-11): change the intent first, then tune. The new intent is 6–
 
 ### r0 — 2026-11-12 — the version the agent built, untuned
 
-- **What I looked at:** `previews/light_dust_preview.tscn`, windowed, 2048 × 1152, with the `hold` switch (the lights stay on after frame 10; commit 7c2ccb03).
+- **What I looked at:** `previews/light_dust_preview.tscn`, windowed, 2048 × 1152, with the `hold` switch (the lights stay on after frame 10; commit 868e66b8).
 - **Strips:** `captures/light_dust/r0/dark/`, `captures/light_dust/r0/bright/`, each keeping the 12 frames the brief lists (9, 10, 11, 40, 46, 54, 57, 61, 66, 69, 71, 90). Fixture captures.
 - **Random seed:** the preview's instance has a fixed seed (seed 7270, set by the agent); the effect scene itself does not.
 - **Note:** Effect B is not wired into the game yet (`base.tscn` does not contain it), so it cannot be seen with F5 in the editor; everything in this section is the preview scene.
@@ -137,7 +137,7 @@ Claude's note: this changes a size range, which may need both the quad size and 
 - (After Claude's reading, 2026-11-12, I looked at the preview again with `-- dark hold`; my words) I ran it and looked; I'm fairly satisfied with the effect, but it is too dense. I think the dust should be a little sparser.
   Claude's note: so Step 4 also changes the density (amount); density and size are two rounds, one setting each.
 - A look, not a revision: Claude changed `amount` from 150 to 90 temporarily, without committing, and I watched the preview with `-- dark hold`. My words: "Much better. Make it 90. I'm very happy with it." And: "At 150, anyone would think a nuclear war had broken out. Make it 90; dust that dense makes the air feel strange." Claude then set it back to 150. The real change (150 → 90) is made in Step 4 by the agent, through the loop: prediction, my approval, the scene and the test's expected value, recapture, comparison, my verdict in the game.
-- After Effect B was wired into the game (2026-11-12) I also saw that I have to get close to the light to see any particles, and asked for the effect to be wider and lit by the lights. This became the dated Effect B intent revision in CHANGE-BRIEF (commit 41ec7891).
+- After Effect B was wired into the game (2026-11-12) I also saw that I have to get close to the light to see any particles, and asked for the effect to be wider and lit by the lights. This became the dated Effect B intent revision in CHANGE-BRIEF (commit b2c7280a).
 
 ### 2026-11-12 — Effect B, revision r1
 - **What I saw (running game, window 2048 × 1152):** the dust is far too dense; at 150 anyone would think a nuclear war had broken out, and dust that dense makes the air feel strange. I also have to get close to the light to see any particles.
@@ -153,11 +153,11 @@ Claude's note: this changes a size range, which may need both the quad size and 
 
 ### 2026-11-12 — Effect B, redesign (not a tuning round)
 - **Why not one setting per round:** I was fairly sure of the remaining changes (the whole room, lit by the lights, specks 0.003–0.03 m) and asked for them to be made at once, to be reverted if the result was bad. So the intent and the settings table were revised in CHANGE-BRIEF first, and Claude Code (the review session, not an agent) applied them at once.
-- **First pass (commit 1adc819d):** emission box 14 × 2.6 × 9 m (moved to the room centre with `emission_shape_offset`), amount 3000, lit per pixel, specks 0.003–0.03 m, `visibility_aabb` enlarged to match. Strip: `captures/light_dust/redesign/`.
+- **First pass (commit eeaaae0c):** emission box 14 × 2.6 × 9 m (moved to the room centre with `emission_shape_offset`), amount 3000, lit per pixel, specks 0.003–0.03 m, `visibility_aabb` enlarged to match. Strip: `captures/light_dust/redesign/`.
   - Claude's reading of this strip (subtracting frame 61 from each frame): the timing is all correct (nothing at frame 10, full at once at 11, the paused frames identical, identical to frame 9 after lights off); the pixels changed by the dust went from about 70 in r1 to about 4700–5300 on the dark background and 6700–7700 on the bright one, more than 50 times as many.
   - I looked at the strip and in the game. My words: "Two points: it's still too dense; set it straight to 50. Second, it's too bright; halve the brightness." Claude asked whether "50" meant 50 particles or half (it was 3000 then); I answered: "Cut it straight down to 900. Then halve the brightness. Change it first so I can run the game and see; once I approve, do the tedious records."
 - **Second pass:** amount 3000 → 900, colour (0.78, 0.86, 1.0) → (0.39, 0.43, 0.5). Claude changed them first without committing; I looked in the game. My words: "OK, go do the records."
 - **Third pass:** amount 900 → 1300. My words: "Let's make it 1300 after all."
 - **Strips:** `captures/light_dust/redesign/` (the 3000 version), `captures/light_dust/redesign-2/` (the final version: 1300, half brightness)
-- **Commits:** 1adc819d (first pass), 3f2d0cc1 (first-pass strip), 33d3fd5a (second pass); 3d894168 (third pass), a7c7be27 (final strip).
+- **Commits:** eeaaae0c (first pass), cff8bebd (first-pass strip), ff2b9ec8 (second pass); c1536ca1 (third pass), fc1fc66e (final strip).
 - **Claude's reading of the final strip `redesign-2/`** (subtracting frame 61): the timing is unchanged and correct (nothing at frame 10, full at once at 11 and 66, frames 46 / 54 identical, frames 71 / 90 identical to frame 9). The dust changes about 360–430 pixels on the dark background and 950–1020 on the bright one, against 4700 / 7700 for the 3000 version; no pixel changes by more than 46 in brightness (81 / 115 before), so the specks are faint and soft rather than bright points.
