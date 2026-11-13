@@ -222,3 +222,16 @@ Solid flat bright green background (#00FF00), no shadows on the background, no t
 
 ### CHAR-RUN-CONTACT-B v2 (rejected; same foot forward)
 Drafted by Claude in claude.ai, sent unchanged by me. The prompt text and the raw output are not in this repository yet: to paste here.
+
+### CHAR-RUN-CYCLE v3 (4-frame run cycle; not yet judged)
+Drafted by Claude in claude.ai, sent unchanged by me on 2026-11-12 in the Gemini app, model shown as 4 Hydrogen (mode: everyday help). Attached: `design/a7/a7-ref-mage_run_contact.png` only. Raw output, saved unchanged: `design/a7/mage_run_cycle_gemini_raw.jpg` (3168x1344 JPEG). Cleaned by `tools/clean_run_cycle.py` into `assets/sprites/mage/mage_run_cycle_sheet.png` (248x69, hframes 4).
+```
+Pixel art sprite sheet for a 2D side-scrolling game: a 4-frame RUN CYCLE of the character in the attached image, facing right, in ONE horizontal row, evenly spaced, all four frames the same size and standing on the same ground line. Use the attached image only to know what she looks like: blue witch hat, white twin tails with red bows, red eyes, brown robe, dark boots, wooden staff with a red gem. Keep her colours, outline and pixel size. Draw four NEW poses; do not copy the attached pose.
+
+Frame 1 (contact): front foot just touching the ground far in front, back foot pushing off far behind, body at normal height.
+Frame 2 (down): front foot now under the body carrying the weight, knees bent, body lowest.
+Frame 3 (passing): the back leg swings forward past the supporting leg, body rising.
+Frame 4 (up): pushing off, both feet off the ground or nearly, body highest, the swinging leg reaching forward for the next step.
+
+Each frame must clearly differ from the others in leg position. Solid flat bright green background (#00FF00), no text, no frame numbers, no borders, no shadows.
+```

@@ -26,7 +26,7 @@ const CLIPS := {
 ## tests/test_anim_structure.gd checks that it equals each clip's texture key.
 const TEXTURES := {
 	State.IDLE: preload("res://assets/sprites/mage/mage_idle.png"),
-	State.RUN: preload("res://assets/sprites/mage/mage_run_sheet.png"),
+	State.RUN: preload("res://assets/sprites/mage/mage_run_cycle_sheet.png"),
 	State.RISE: preload("res://assets/sprites/mage/mage_rise.png"),
 	State.FALL: preload("res://assets/sprites/mage/mage_fall.png"),
 	State.CAST: preload("res://assets/sprites/mage/mage_cast.png"),

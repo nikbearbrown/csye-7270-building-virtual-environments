@@ -132,8 +132,12 @@ func run() -> void:
 	var kept := player3.anim.current_animation_position
 	player3._set_state(Player.State.RISE)
 	player3._set_state(Player.State.RUN)
-	check("run-reentry-restarts-at-frame-0", mid_frame == 1 and kept > 0.19 and player3.anim.current_animation_position == 0.0
-		and player3.sprite.frame == 0, {"frame_at_0.2s": mid_frame, "position_while_still_running": kept,
+	# The frame the run clip itself keys at 0.2 s (not a hardcoded value), so this holds for any run cycle.
+	var run_anim := player3.anim.get_animation("run")
+	var keyed_mid: int = run_anim.value_track_interpolate(AnimChecks.track(run_anim, "Sprite2D:frame"), 0.2)
+	check("run-reentry-restarts-at-frame-0", mid_frame == keyed_mid and mid_frame != 0 and kept > 0.19
+		and player3.anim.current_animation_position == 0.0 and player3.sprite.frame == 0,
+		{"frame_at_0.2s": mid_frame, "keyed_frame_at_0.2s": keyed_mid, "position_while_still_running": kept,
 		"position_after_reentry": player3.anim.current_animation_position, "frame_after_reentry": player3.sprite.frame})
 
 	# --- Wolf ---

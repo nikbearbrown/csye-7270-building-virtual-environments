@@ -2,8 +2,10 @@ extends SceneTree
 ## Assignment 7 read-back of clip 1, the mage run cycle, and the player's other clips (CHANGE-BRIEF Clip 1 and Tests).
 ## Loads features/player/player.tscn (not added to the tree, so nothing plays) and reads every clip back key by key:
 ## every track resolves (the assignment's track_problems() in anim_checks.gd; key types in key_problems()); every clip name present; each clip
-## keys Sprite2D texture, hframes and frame, discrete; run's frame keys 0 and 1 at 0 and 0.125 s, length 0.25,
-## LOOP_LINEAR, the seam rule; every frame key below hframes * vframes; the sheet's size, cells and import settings.
+## keys Sprite2D texture, hframes and frame, discrete; every frame key below hframes * vframes. Run r2 (approved
+## 2026-11-12): the Gemini 4-frame sheet mage_run_cycle_sheet.png (248x69, hframes 4) at 10 fps, frame keys 0-3 at 0,
+## 0.1, 0.2, 0.3 s, length 0.4, LOOP_LINEAR, the seam rule; the sheet's size, palette (the A2 mage sprites' colours
+## only), ground rows per cell, imported pixels and import settings.
 ## From fall-2026/zhefan-z/assignment-7/:
 ##   ./scripts/run-test.sh test_clip_run.gd 60
 ## Prints one JSON line per check and "WALKER TESTS: N checks / F failures"; exit code 1 on any failure.
@@ -12,9 +14,15 @@ extends SceneTree
 const AnimChecks := preload("res://tests/anim_checks.gd")
 const SCENE := "res://features/player/player.tscn"
 const MAGE := "res://assets/sprites/mage/"
-const SHEET := MAGE + "mage_run_sheet.png"
-const CELLS := [MAGE + "mage_run_contact.png", MAGE + "mage_run_passing.png"]
-const CLIP_TEXTURE := {"idle": "mage_idle.png", "run": "mage_run_sheet.png", "rise": "mage_rise.png",
+const SHEET := MAGE + "mage_run_cycle_sheet.png"
+const CELLS := [MAGE + "mage_run_contact.png", MAGE + "mage_run_passing.png"]   # import settings to match
+const A2_SPRITES := ["mage_idle", "mage_run_contact", "mage_run_passing", "mage_rise", "mage_fall", "mage_cast",
+	"mage_hurt", "mage_fail", "mage_win"]
+const RUN_KEYS := [[0.0, 0], [0.1, 1], [0.2, 2], [0.3, 3]]
+## Lowest opaque row of each cell, from tools/clean_run_cycle.py: frames 1-3 on the ground row 66 (anchor 31, 67);
+## frame 4 ("up") airborne, 2 px above it.
+const CELL_LOWEST_ROW := [66, 66, 66, 64]
+const CLIP_TEXTURE := {"idle": "mage_idle.png", "run": "mage_run_cycle_sheet.png", "rise": "mage_rise.png",
 	"fall": "mage_fall.png", "cast": "mage_cast.png", "hurt": "mage_hurt.png", "fail": "mage_fail.png",
 	"fail_pit": "mage_fall.png", "win": "mage_win.png"}
 const TRACKS := ["Sprite2D:texture", "Sprite2D:hframes", "Sprite2D:frame"]
@@ -119,13 +127,14 @@ func run() -> void:
 	var run_anim := ap.get_animation("run")
 	var run_fi := AnimChecks.track(run_anim, "Sprite2D:frame")
 	var frames := keys_of(run_anim, run_fi)
-	check("run-frame-keys-0-at-0-and-1-at-0.125", frames.size() == 2
-		and absf(frames[0][0]) < EPS and frames[0][1] == 0 and absf(frames[1][0] - 0.125) < EPS and frames[1][1] == 1,
-		{"frame_keys": frames})
-	check("run-length-0.25-loop-linear", absf(run_anim.length - 0.25) < EPS and run_anim.loop_mode == Animation.LOOP_LINEAR,
+	var keys_ok := frames.size() == RUN_KEYS.size()
+	for k in mini(frames.size(), RUN_KEYS.size()):
+		keys_ok = keys_ok and absf(frames[k][0] - RUN_KEYS[k][0]) < EPS and frames[k][1] == RUN_KEYS[k][1]
+	check("run-frame-keys-0-1-2-3-at-0-0.1-0.2-0.3", keys_ok, {"frame_keys": frames, "expected": RUN_KEYS})
+	check("run-length-0.4-loop-linear", absf(run_anim.length - 0.4) < EPS and run_anim.loop_mode == Animation.LOOP_LINEAR,
 		{"length": run_anim.length, "loop_mode": run_anim.loop_mode})
 	var run_hi := AnimChecks.track(run_anim, "Sprite2D:hframes")
-	check("run-sheet-hframes-2", keys_of(run_anim, run_hi) == [[0.0, 2]] and sprite.vframes == 1,
+	check("run-sheet-hframes-4", keys_of(run_anim, run_hi) == [[0.0, 4]] and sprite.vframes == 1,
 		{"hframes_keys": keys_of(run_anim, run_hi), "vframes": sprite.vframes})
 	var gap: float = run_anim.length - frames.back()[0] if frames.size() > 0 else -1.0
 	var interval: float = frames[1][0] - frames[0][0] if frames.size() > 1 else -1.0
@@ -137,32 +146,40 @@ func run() -> void:
 	check("only-run-loops", loops.keys().all(func(n: String) -> bool:
 		return loops[n] == (Animation.LOOP_LINEAR if n == "run" else Animation.LOOP_NONE)), {"loop_mode": loops})
 
-	# The sheet: size, slicing and both cells equal to the A2 originals (registration unchanged). The PNG files are
-	# compared exactly; the imported textures on every visible pixel (alpha everywhere, colour where alpha > 0), because
-	# the import's fix_alpha_border rewrites the colour of transparent pixels next to opaque ones.
+	# The sheet: size; only the A2 mage sprites' colours; each cell's lowest row (feet on the ground, frame 4 airborne);
+	# the imported texture equal to the PNG on every visible pixel (the import's fix_alpha_border only recolours
+	# transparent pixels).
+	var palette := {}
+	for s_name: String in A2_SPRITES:
+		var img := Image.load_from_file(ProjectSettings.globalize_path(MAGE + s_name + ".png"))
+		img.convert(Image.FORMAT_RGBA8)
+		for y in img.get_height():
+			for x in img.get_width():
+				var c := img.get_pixel(x, y)
+				if c.a8 > 0:
+					palette[c.to_html(false)] = true
 	var sheet_raw := Image.load_from_file(ProjectSettings.globalize_path(SHEET))
 	var sheet_img: Image = (load(SHEET) as Texture2D).get_image()
 	for img: Image in [sheet_raw, sheet_img]:
 		img.convert(Image.FORMAT_RGBA8)
-	var raw_mism := [0, 0]
-	var visible_mism := [0, 0]
-	for c in CELLS.size():
-		var src := Image.load_from_file(ProjectSettings.globalize_path(CELLS[c]))
-		var src_img: Image = (load(CELLS[c]) as Texture2D).get_image()
-		for img: Image in [src, src_img]:
-			img.convert(Image.FORMAT_RGBA8)
-		for y in 69:
-			for x in 62:
-				if sheet_raw.get_pixel(62 * c + x, y) != src.get_pixel(x, y):
-					raw_mism[c] += 1
-				var a := sheet_img.get_pixel(62 * c + x, y)
-				var b := src_img.get_pixel(x, y)
-				if a.a8 != b.a8 or (b.a8 > 0 and a != b):
-					visible_mism[c] += 1
-	check("sheet-124x69-cells-equal-originals", sheet_raw.get_size() == Vector2i(124, 69)
-		and sheet_img.get_size() == Vector2i(124, 69) and raw_mism == [0, 0] and visible_mism == [0, 0],
-		{"size": sheet_img.get_size(), "cell": Vector2i(124 / 2, 69), "png_mismatched_pixels_per_cell": raw_mism,
-		"imported_visible_mismatches_per_cell": visible_mism})
+	var off_palette := 0
+	var visible_mism := 0
+	var lowest := [-1, -1, -1, -1]
+	for y in sheet_raw.get_height():
+		for x in sheet_raw.get_width():
+			var a := sheet_raw.get_pixel(x, y)
+			var b := sheet_img.get_pixel(x, y)
+			if a.a8 != b.a8 or (a.a8 > 0 and a != b):
+				visible_mism += 1
+			if a.a8 > 0:
+				if not palette.has(a.to_html(false)):
+					off_palette += 1
+				lowest[x / 62] = maxi(lowest[x / 62], y)
+	check("sheet-248x69-a2-palette-feet-rows-imported-equal", sheet_raw.get_size() == Vector2i(248, 69)
+		and sheet_img.get_size() == Vector2i(248, 69) and off_palette == 0 and visible_mism == 0
+		and lowest == CELL_LOWEST_ROW, {"size": sheet_img.get_size(), "cell": Vector2i(248 / 4, 69),
+		"a2_palette_colours": palette.size(), "off_palette_px": off_palette, "imported_visible_mismatches": visible_mism,
+		"lowest_row_per_cell": lowest, "expected": CELL_LOWEST_ROW})
 	var sheet_params := params_of(SHEET + ".import")
 	check("sheet-import-settings-match-run-frames", not sheet_params.is_empty()
 		and sheet_params == params_of(CELLS[0] + ".import") and sheet_params == params_of(CELLS[1] + ".import"),
