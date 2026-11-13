@@ -3,7 +3,8 @@ extends SceneTree
 ## Checks: the assignment's track_problems() (and key_problems()); only energy and texture_scale of the two
 ## PointLight2Ds are keyed, continuous; LOOP_LINEAR and autoplay; the continuous-track seam rule per track (first key at
 ## 0, last key at the length, value at 0 equal to the value at the length); each light's scene value equals its clip
-## value at 0; the flicker stays subtle; nothing else keys the lights (every AnimationPlayer in the main scene) and no
+## value at 0; the flicker is clearly visible but bounded (r1, 2026-11-12: energy swings at least 20 % and at most
+## 32 % around the scene value, texture_scale at least 6 % and at most 9 %) and irregular; nothing else keys the lights (every AnimationPlayer in the main scene) and no
 ## game script writes their energy or texture_scale; both CanvasModulates in place.
 ## From fall-2026/zhefan-z/assignment-7/:
 ##   ./scripts/run-test.sh test_clip_flicker.gd 60
@@ -104,7 +105,7 @@ func run() -> void:
 	check("seam-rule-value-at-0-equals-value-at-length", seam.values().all(func(s: Dictionary) -> bool: return s.ok), seam)
 
 	var rest := {}
-	var subtle := true
+	var visible_bounded := true
 	for l: String in LIGHTS:
 		var light: PointLight2D = lights.get_node(l)
 		for p: String in PROPS:
@@ -113,11 +114,12 @@ func run() -> void:
 			rest[path] = [light.get(p), at0]
 			var r: Dictionary = ranges[path]
 			var base: float = light.get(p)
-			var limit := 0.25 if p == "energy" else 0.05   # subtle: energy within 25 %, glow size within 5 %
-			subtle = subtle and r.min >= base * (1.0 - limit) - EPS and r.max <= base * (1.0 + limit) + EPS
+			var limit := 0.32 if p == "energy" else 0.09   # at most this far from the scene value
+			var reach := 0.2 if p == "energy" else 0.06    # and at least this far both ways: clearly visible
+			visible_bounded = visible_bounded and r.min >= base * (1.0 - limit) - EPS and r.max <= base * (1.0 + limit) + EPS 				and r.min <= base * (1.0 - reach) + EPS and r.max >= base * (1.0 + reach) - EPS
 	check("scene-values-equal-clip-at-0", rest.values().all(func(v: Array) -> bool: return absf(v[0] - v[1]) < EPS), rest)
 	var irregular := ranges.values().all(func(r: Dictionary) -> bool: return r.key_gaps_s.max() - r.key_gaps_s.min() > 0.05)
-	check("flicker-subtle-and-irregular", subtle and irregular, {"ranges": ranges})
+	check("flicker-visible-bounded-and-irregular", visible_bounded and irregular, {"ranges": ranges})
 	lights.free()
 
 	# Nothing else keys the lights; no game script writes their energy or texture_scale.

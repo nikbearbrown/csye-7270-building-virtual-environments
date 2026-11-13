@@ -3,8 +3,8 @@ extends SceneTree
 ## The real game loop with the pin's take_lunge setup (player 780, wolf 860, no input), 180 physics ticks: the wolf
 ## growls, lunges into the player, recovers, and does it again. Every ghost is recorded as it enters the level and
 ## as it leaves the tree. Checks: ghosts appear only on LUNGE ticks, on the first LUNGE tick and every 3 ticks after;
-## each holds both rig parts at their pose; it starts tinted at alpha 0.4 and is gone about 0.15 s later (process
-## clock, within one frame plus one tick); none is left at the end; the wolf's states match the take_lunge pin.
+## each holds both rig parts at their pose; it starts tinted warm orange at alpha 0.6 and is gone about 0.25 s later
+## (r1, 2026-11-12; process clock, within one frame plus one tick); none is left at the end; the wolf's states match the take_lunge pin.
 ## From fall-2026/zhefan-z/assignment-7/, at 30, 60 and 144 fps:
 ##   ./scripts/run-test.sh test_afterimage.gd 60
 ## Prints one JSON line per check and "WALKER TESTS: N checks / F failures"; exit code 1 on any failure.
@@ -12,9 +12,9 @@ extends SceneTree
 const GROUND_TOP := 327.0
 const LENGTH := 180
 const INTERVAL := 3
-const ALPHA := 0.4
-const LIFE := 0.15
-const TINT := Color(0.55, 0.85, 1.0)
+const ALPHA := 0.6
+const LIFE := 0.25
+const TINT := Color(1.0, 0.55, 0.2)
 
 
 class Clock extends Node:
@@ -111,12 +111,12 @@ func run() -> void:
 	check("ghosts-only-in-lunge-every-3-ticks", spawned == expected and outside.is_empty() and not expected.is_empty(),
 		{"spawn_ticks": spawned, "expected": expected, "outside_lunge": outside})
 	check("ghost-holds-the-rig-pose", ghosts.all(func(g: Dictionary) -> bool: return g.pose_ok), {"ghosts": ghosts.size()})
-	check("ghost-tinted-at-40-percent", ghosts.all(func(g: Dictionary) -> bool:
+	check("ghost-tinted-orange-at-60-percent", ghosts.all(func(g: Dictionary) -> bool:
 		return absf(g.alpha - ALPHA) < 0.01 and (g.tint as Color).is_equal_approx(TINT)),
 		{"alphas": ghosts.map(func(g: Dictionary) -> float: return snappedf(g.alpha, 0.001)).slice(0, 3), "tint": TINT})
 	var lives := ghosts.map(func(g: Dictionary) -> float: return g.t_out - g.t_in if g.t_out >= 0.0 else -1.0)
 	var tol := frame_s + 1.0 / 60.0 + 1e-4
-	check("ghost-gone-after-about-0.15s", not lives.is_empty() and lives.all(func(l: float) -> bool:
+	check("ghost-gone-after-about-0.25s", not lives.is_empty() and lives.all(func(l: float) -> bool:
 		return l >= LIFE - 1e-4 and l <= LIFE + tol),
 		{"life_min_s": snappedf(lives.min(), 0.0001), "life_max_s": snappedf(lives.max(), 0.0001), "tolerance_s": snappedf(tol, 0.0001),
 		"fps": roundi(1.0 / frame_s)})

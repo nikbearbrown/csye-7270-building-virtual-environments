@@ -56,7 +56,9 @@ func to_window(viewport_point: Vector2) -> Vector2:
 	return root.get_final_transform() * viewport_point
 
 
+## Also moves the OS cursor there (no-op headless), so a real mouse resting over the window cannot override the aim.
 func motion(screen: Vector2) -> void:
+	Input.warp_mouse(to_window(screen))
 	var ev := InputEventMouseMotion.new()
 	ev.position = to_window(screen)
 	ev.global_position = ev.position
