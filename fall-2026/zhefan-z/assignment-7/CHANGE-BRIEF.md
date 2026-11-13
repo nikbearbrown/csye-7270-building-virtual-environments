@@ -126,3 +126,11 @@ Clip length 89/60 s (1.4833 s); key times are frames / 60, compared to 1e-6. A g
 After r1 was reverted in play (`TUNING.md`), clip 1 now uses a 4-frame sheet: `assets/sprites/mage/mage_run_cycle_sheet.png`, 248×69, cell 62×69, `hframes = 4`, frame order contact, down, passing, up; drawn by Gemini (app, model shown as 4 Hydrogen) from my prompt v3 with my contact A as the only reference, cleaned by `tools/clean_run_cycle.py` onto my A2 palette. Provenance under Assignment 2's rules: the raw JPEG, both references and the prompt are committed (`design/a7/`, `design/IMAGE-PROMPTS-from-chat.md`). Cycle spec: keys at 0, 0.1, 0.2, 0.3 s, length 0.4 s, 10 fps (6 ticks per frame at 60 Hz), `LOOP_LINEAR`, discrete; seam: no duplicate across the wrap, last-key-to-length gap 0.1 s equals the key interval. My two A2 run frames stay committed and unchanged.
 
 The growl-cancel timings are unchanged by my decision: the reachable window from sight distance is the first 12 of 31 growl ticks (0.2 s), measured with real clicks (`tests/probe_growl_cancel.gd`).
+
+### 2026-11-12 — two clip-alignment fixes from the edges test; F1 does not occur
+
+Found by the edges test (`272fb39`), visual only, pin still 8/8 at 30, 60, 144:
+
+- **A growl cancel showed clip frame 54 on the hit tick, not 53.** The hit is handled before the wolf's physics step and the clip then advances once in that tick. The cancel now seeks to frame 52, so the hit tick shows 53, as a normal RECOVER entry does.
+- **A growl right after a one-tick PATROL started at clip frame 1.** Both AnimationPlayers now run before their owner's script (`process_physics_priority = -1` in the scene files), so a newly started clip is never advanced on its first tick. With the setting removed, the edges check fails (frame 1 on tick 170).
+- **Failure F1 does not occur on Godot 4.7.2:** a clip written with the Godot 3 `loop = true` loads with `loop_mode = 1` (linear) and still loops (mutation a7-1). The read-back still checks `loop_mode`.
