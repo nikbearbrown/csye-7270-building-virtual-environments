@@ -1,0 +1,62 @@
+Read CLAUDE.md first. Never edit anything under shaders/. Never push.
+Commit messages name the author, no Co-Authored-By. Do not change any
+gameplay behaviour in this prompt.
+
+Part 0 — commit my notes: TUNING.md (visual upgrades r0 -> r1),
+prompt-5.txt, and captures/run/game-r2-ticks/, as "TUNING: visual
+upgrades after play; r2 tick log (mine, committed by Claude Code at my
+request)".
+
+Part 1 — edges at the phase boundaries: tests/test_anim_edges.gd, real
+input through the real game loop (time the casts so the fireball
+arrives on the target tick), at 30, 60 and 144 fps:
+- a hit on the first and on the last GROWL tick: cancel, RECOVER on that
+  tick, clip at frame 53, hitbox never armed;
+- a hit on the first LUNGE tick and on the last LUNGE tick: no cancel;
+- a hit on the first RECOVER tick: no change but HP;
+- a killing hit in each of GROWL, LUNGE and RECOVER: DEAD, dead clip,
+  hitbox off from the next tick;
+- real Esc mid-lunge: the wolf's position, state and the clip position
+  freeze on the same tick and resume aligned;
+- RUN -> jump -> land -> RUN restarts the run cycle at frame 0;
+- the clip frame equals the wolf's phase tick on every LUNGE tick.
+
+Part 2 — mutations, each in a temporary git worktree, removed after:
+(1) the run clip written with Godot 3 "loop = true" instead of loop_mode;
+(2) the run frame track left continuous; (3) a run frame key of 4 (past
+the last cell); (4) a lunge track path to a node that doesn't exist;
+(5) the growl cancel removed from wolf.gd. For each, run the test that
+should catch it through ./scripts/run-test.sh, show exit code and the
+failing check, and say whether the game would still load and play
+silently wrong. Save each log as logs/mutation-a7-<n>-<name>_60fps.log.
+
+Part 3 — the lunge in the real game: a windowed Movie Maker capture of
+take_lunge and of a leftward lunge, --fixed-fps 60, --debug-collisions,
+with a debug-only overlay in the capture harness showing the wolf's
+phase and phase tick over its head (the game itself gets no overlay).
+Keep the frames at growl start + 0, 25, 31, 37, 53, 65, 89 into
+captures/lunge/game-r0/, with the tick log, and say for each frame
+whether the pose matches the phase table.
+
+Part 4 — motion reference: download from Wikimedia Commons one public-
+domain Eadweard Muybridge "Animal Locomotion" (1887) plate of a dog
+running or leaping, and one of a person running. Commit the originals as
+downloaded under design/a7/reference/ with a SOURCES note (URL, plate,
+author, date, public-domain status). If the network is not available,
+say so and skip.
+
+Part 5 — figures for the README and the film, generated from the logs,
+saved under captures/figures/ as PNGs:
+- pin timeline: hit_growl before and after the change (wolf state lane,
+  hitbox lane, hit tick), the other scenarios marked unchanged;
+- growl window: 31 growl ticks, 20-tick fireball travel, the 12-tick
+  window;
+- two clocks: the wolf's removal tick at 30 / 60 / 144 fps;
+- onion skin of the lunge's key poses from Part 3, with the phase table
+  under it;
+- run cycle: r0 two frames vs r2 four frames.
+
+Run every test through ./scripts/run-test.sh (pin, edges and
+afterimage at 30, 60, 144; all read-backs and the structure test; every
+earlier suite). If all pass, commit as "Edges, mutations, lunge strip,
+motion reference, figures (agent, unedited)". Report, and stop.
