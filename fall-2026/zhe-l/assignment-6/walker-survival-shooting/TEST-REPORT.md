@@ -135,3 +135,17 @@ The one failure existed before A6: `base.tscn: 3 Light3D nodes (got 4)`. The tes
 8. **Effect B, edge of screen (HUMAN CHECK):** the visibility box grew with the room and has a margin; ordinary camera turns show no clear problem; whether it never pops at the room's edges I cannot say for sure yet.
 9–11. **GPU price, FPS:** to be filled from the Visual Profiler.
 12. **Claude against me:** I found nothing that clearly conflicts with Claude's records. One thing to note: the strip set called the "dark background" actually has a very bright light patch, so the two set names cannot be taken as the darkest and lightest places in the game. (My disagreements with Claude are recorded in TUNING, Effect A: the warm tint, the capsule hiding the dust, 6–8 puffs not separate, the cut-off bottoms; in the game I do not see them as problems.)
+
+### GPU price and FPS (Use It, HUMAN CHECK)
+- **GPU:** NVIDIA GeForce RTX 5070 Ti Laptop GPU (the discrete GPU; named in the Visual Profiler and the startup line `Using Device #0`). Display refresh rate 144 Hz.
+- **Visual Profiler (editor F5, my screenshot):** one selected frame (12619): the whole viewport render about 2.03 ms GPU; "Update GPU particles" 0.01 ms GPU. In the frame-time graph, lights off and lights on differ much more than any effect (three shadowed omni lights), so the effects' own share could not be read from that graph.
+- **Effect on / off with the lights kept on:** `godot/debug/gpu_price.gd` (a helper Claude wrote; windowed, vsync off, 300 frames per state after 120 warm-up frames) reads the same engine measurement, `RenderingServer.viewport_get_measured_render_time_gpu`. I ran it once; Claude ran it twice more to read the numbers (`logs/gpu_price.log`):
+
+| State (lights on) | Run 1 mean GPU ms | Run 2 mean GPU ms |
+|---|---|---|
+| Effect B shown (1300 particles) | 0.540 | 0.542 |
+| Effect B hidden | 0.522 | 0.525 |
+| Effect B shown + Effect A bursting | 0.542 | 0.542 |
+
+- **Against the budget:** Effect B adds about **0.017–0.018 ms** GPU (budget ≤ 0.3 ms); Effect A adds about **0.000–0.001 ms** (budget ≤ 0.2 ms). Both are well inside their budgets. The helper's total (about 0.54 ms) is lower than the profiler frame (2.03 ms); the profiler frame was taken in a different moment and view during an editor run, so only differences inside one run are compared.
+- **FPS (vsync debug key V):** with vsync on, the Monitors FPS reads 144 (the refresh rate). Pressing V prints `[vsync] off` and FPS rises to about 1350; pressing V again prints `[vsync] on` and it returns to 144. So the comparison is not capped by the compositor. I did not record separate FPS values with each effect off and on; the GPU time above is the primary number.
