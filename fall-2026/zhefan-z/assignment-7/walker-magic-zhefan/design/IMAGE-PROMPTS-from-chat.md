@@ -203,3 +203,22 @@ Pixel art sprite for a 2D side-scrolling game: a defeated cave wolf collapsed on
 ```
 Pixel art sprite sheet for a 2D side-scrolling game, two separate small images side by side: on the left, a fireball projectile flying to the right, a round bright yellow-white core inside orange flames with a short flame trail behind it; on the right, a small fire burst explosion for when it hits, orange and red flames spreading out from the center. Clean pixel art with a dark outline, warm colors only: no green, no yellow-green. Solid flat bright green background (#00FF00), no text, no other objects.
 ```
+
+## Assignment 7 — run cycle, contact B (Gemini app)
+
+> Added on 2026-11-12. Generated on 2026-11-12 in the Gemini app, model shown as 4 Hydrogen (mode: everyday help). Generating this frame was my decision. Both prompts (v1, v2) were drafted by Claude in claude.ai and sent unchanged by me.
+> Attached, in this order: `design/a7/a7-ref-mage_run_contact.png` and `design/a7/a7-ref-mage_run_passing.png` (8x nearest-neighbour copies of the A2 sprites `mage_run_contact.png` and `mage_run_passing.png` on #00FF00, 496x552).
+> Raw output of v1, saved unchanged: `design/a7/mage_run_contact_b_gemini_raw.jpg` (2048x2048 JPEG). Cleaned once to check it (the cleaned sprite and the cleaning script were not kept). After v2, I dropped Gemini for this frame.
+
+### CHAR-RUN-CONTACT-B v1 (rejected; same foot forward, only the trailing leg was lifted)
+Drafted by Claude in claude.ai, sent unchanged by me.
+```
+Pixel art sprite for a 2D side-scrolling game. Use the two attached images as the exact character reference: same girl, same witch hat, white twin tails with red bows, red eyes, robe, boots, staff, same colours, same pixel size and same outline style. The first image is her running "contact" pose with one leg forward; the second is her "passing" pose.
+
+Draw the OTHER contact pose of the same run cycle: facing right, the opposite leg now reaches forward and touches the ground, the other leg trails behind. The far leg (the one further from the viewer) is the forward leg, so draw it slightly darker and partly behind the near leg at the hips. Body, head, hat, hair, arms and staff stay exactly as in the first image. Same framing and same height on the canvas as the first image, feet on the same ground line.
+
+Solid flat bright green background (#00FF00), no shadows on the background, no text, no border.
+```
+
+### CHAR-RUN-CONTACT-B v2 (rejected; same foot forward)
+Drafted by Claude in claude.ai, sent unchanged by me. The prompt text and the raw output are not in this repository yet: to paste here.
