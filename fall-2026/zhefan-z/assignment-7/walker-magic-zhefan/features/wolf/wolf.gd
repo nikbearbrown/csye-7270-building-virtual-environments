@@ -157,7 +157,9 @@ func take_damage(amount: int) -> void:
 	if hp > 0:
 		if state == State.GROWL:
 			_enter(State.RECOVER)
-			anim.seek(RECOVER_FRAME / 60.0, true)
+			# The hit is resolved before this tick's update, and the clip advances one frame in that update: seeking one
+			# frame early makes the hit tick show frame 53, as a normal RECOVER entry does (tests/test_anim_edges.gd).
+			anim.seek((RECOVER_FRAME - 1) / 60.0, true)
 		return
 	dead = true
 	state = State.DEAD
