@@ -1,6 +1,6 @@
 # FRICTIONAL — Assignment 7
 
-Prediction, attempts, obstacles, changes, results and the next test, from my session of 2026-11-10 to 2026-11-12. Organized by claude.ai (chat) from what happened; every entry is something that happened and that I checked. "Agent" means Claude Code (desktop app, Opus 5.5, manual permissions). Tuning details are in `TUNING.md`.
+Prediction, attempts, obstacles, changes, results and the next test, from my sessions of 2026-11-10 to 2026-11-14. Organized by claude.ai (chat) from what happened; every entry is something that happened and that I checked. "Agent" means Claude Code (desktop app, Opus 5.5, manual permissions). Tuning details are in `TUNING.md`.
 
 ## Predictions and what happened
 
@@ -40,6 +40,12 @@ This took most of the time, and I learned the most from it.
 **Visual upgrades "not noticeable".** My first look at the torches, embers and afterimage: too subtle. The agent listed old and new values, measured the result and lightened the darkening so the mage stayed readable; then they were clearly visible.
 
 **An interrupted session.** The film update's build agent stopped on an expired login (HTTP 401) while exporting the 4K master; its last export was refused and no new film was written. Following the resume rule, the next session did not continue it: it checked the snapshot against `ad7935f`, checked the new capture's three hits (GROWL cancelled, LUNGE not, RECOVER HP only), reran every test (all passing), found the refusal was the process being killed (the same ffmpeg command succeeded alone in 16 s), and finished the film in a new session (`b3c8963`).
+
+**Agent mistakes I caught** (with claude.ai on my side; mistakes the tests or the agent itself caught are in TEST-REPORT and the entries above):
+- The agent wrote its own `track_problems()` "from the description" instead of the published function; I had it replaced with the published text verbatim (`a87ed0a`, then the published version with the `root_node` check, `b1422ca`).
+- The agent's CLAUDE.md draft (`9115352`) was stale by the time I reviewed it: a two-frame run, a 1.45 s lunge, unmeasured phases listed as unconfirmed; my reviews corrected it (`2a53662`, `ac56796`, `ad7935f`).
+- The agent read run r1 as matching its prediction on every beat; I rejected r1 in play because the feet still twitched (`TUNING.md`, r1).
+- The agent's first visual upgrades matched its values; I found them not noticeable in play, which drove r1 (`TUNING.md`).
 
 **Process slips.** The agent amended one local commit (the first CLAUDE.md draft was 122 lines); during the mutation run it kept one temporary backup one folder above the assignment root for a few seconds and ran its mutation script from its own temporary folder outside the repository; nothing was left behind. I let the agent make the commits I asked for, each labelled with who wrote the content; it never pushed.
 

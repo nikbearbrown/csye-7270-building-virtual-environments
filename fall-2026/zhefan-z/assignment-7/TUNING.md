@@ -27,7 +27,7 @@ My decision: keep the timings; the window is 0.2 s, recorded as a design finding
 
 **r1:** four beats from the same two frames: discrete `Sprite2D.offset` and `scale` tracks for a 2 px sink and a 2 px lift with light squash and stretch, plus reset keys in the other eight clips. Claude's prediction: hat rows 268 / 270 / 267 / 265 across the four beats. Its comparison of `captures/run/game-r1/`: all four rows exactly as predicted, no shimmer within a held beat. **My verdict (game, 1280×720): reverted** — it still looks like the feet twitch (`fc096c9`, reverted in `338c8bf`).
 
-**r2:** a new 4-frame run cycle drawn by Gemini in one image (prompt v3 in `design/IMAGE-PROMPTS-from-chat.md`), cleaned by `tools/clean_run_cycle.py` onto my A2 palette at the A2 size, torsos aligned to contact A, ground line kept. Claude's reading: the same character (hat 25–26 px, 13–14 A2 colours, ±4 % pixels); frame 1 is nearly contact A; frames 2–4 are new poses; frame 4 is airborne and doesn't reach for the next step; no single frame rate stops the foot sliding. Clip at 10 fps (6 ticks per frame at 60 Hz); measured per-frame ticks 6/6/6/7 on entry and 5/6/6/7 per loop after, because the clip wraps on the tick it reaches 0.4 s. **My verdict (game, 1280×720): kept — it looks much better** (`32eed66`).
+**r2:** a new 4-frame run cycle drawn by Gemini in one image (prompt v3 in `design/IMAGE-PROMPTS-from-chat.md`), cleaned by `tools/clean_run_cycle.py` onto my A2 palette at the A2 size, torsos aligned to contact A, ground line kept. Claude's reading: the same character (hat 25–26 px, 13–14 A2 colours, ±4 % pixels); frame 1 is nearly contact A; frames 2–4 are new poses; frame 4 is airborne and doesn't reach for the next step; no single frame rate stops the foot sliding. Clip at 10 fps (6 ticks per frame at 60 Hz); measured per-frame ticks 6/6/6/7 on entry and 5/6/6/7 per loop after, because the clip wraps on the tick it reaches 0.4 s. **My verdict (game, 1280×720): kept** — in play it now reads as running, where r0's two frames read as twitching (`32eed66`). The two strips compared: `captures/run/game-r0/` (two frames, 1 px hop, the foot sliding 13–15 px and snapping back) and `captures/run/game-r2-seam/` (four cells, six clean wraps, torso within 0.84 px).
 
 ## 2026-11-12 — Visual upgrades r0 → r1 (observation-driven)
 
@@ -38,3 +38,9 @@ My decision: keep the timings; the window is 0.2 s, recorded as a design finding
 **Claude's comparison** (`captures/look/`): the left wall's mean colour around the torch went from (39, 39, 44) to (92, 58, 44); the right pool is weaker because that rock is darker; about five ghosts trail the lunge but read amber-brown, not bright orange, because the tint multiplies the grey fur; the robe-to-cave contrast rose from 2.57 to 3.07, above the 2.74 before A7. Pin still 8/8 at 30, 60, 144.
 
 **My verdict (game, 1280×720): clearly visible now. Kept** (`7a9a65e`).
+
+## 2026-11-14 — Wolf lunge strip, my reading at each phase boundary
+
+Strip: `captures/lunge/game-r0/` (real Movie Maker render at 60 fps, characters placed by a harness, so a fixture), growl start + 0, 25, 31, 37, 53, 65, 89, left- and right-facing. Claude's reading (`272fb39`): the logged rig values equal the phase table at + 0, 25, 31, 37, 53 and 65; at + 89 the wolf is in PATROL.
+
+**My reading** *(translated from my Chinese)*: at frames 25 and 31 the crouch and pull-back are visible; at 37 and 53 the stretch and the forward dash are visible; at 65 the overshoot shows, and at 89 the wolf is back to patrolling. The three phases read as distinct, matching the phase table. No change made.

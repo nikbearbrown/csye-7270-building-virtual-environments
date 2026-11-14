@@ -199,3 +199,11 @@ No AnimationTree. **Two clocks:** both clip players `ANIMATION_CALLBACK_MODE_PRO
 ### 2026-11-13 — note on the four ideas
 
 My answer that a track to a missing property "is skipped with no error and no change on screen" is my understanding, not a measurement: no run here played a broken clip. What was measured is that the read-back catches it (M1 and the earlier a7-4 exit 1).
+
+### 2026-11-14 — why the published structure arrived late; presentation rule; the frame strip
+
+**Timing.** The full assignment text appeared on Canvas on 2026-11-13. Before that, the page showed the instructor's revision notes, and this brief's original (`2cc97d0`, committed before the first prompt) was written to them. The revision of 2026-11-13 restates the contract in the published structure; nothing above it was edited.
+
+**Boundaries, added rule.** Presentation code may read game state; it never writes it (`player.gd` and `wolf.gd` only call `play()` / `seek()` and set facing; `lunge_afterimage.gd` reads the wolf and writes only its ghosts).
+
+**The frame strip.** Preview background: the real cave level from `game/main.tscn` (the lunge is captured in the game itself through a harness that places the two characters, so it is labelled a fixture). Trigger frame: the tick the wolf enters GROWL. Frames read: growl start + 0, 25, 31, 37, 53, 65 and 89, one per key and phase boundary of the phase table, for a left-facing and a right-facing lunge (`captures/lunge/game-r0/`). Each should show: 0 neutral; 25 the crouch; 31 the crouch held at the GROWL → LUNGE boundary; 37 the stretch with the dash under way; 53 the stretch held at LUNGE → RECOVER; 65 the overshoot; 89 the wolf back in PATROL. Captured at 60 fps, not 30, because the phase table is in the wolf's 60 Hz physics ticks: at 60 fps strip frame n is tick n, while at 30 fps the boundaries at odd ticks (25, 31, 37, 53, 65, 89) fall between frames.

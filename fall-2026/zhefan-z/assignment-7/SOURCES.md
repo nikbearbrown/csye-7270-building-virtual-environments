@@ -19,7 +19,7 @@ Earlier assets and their sources are in `walker-magic-zhefan/SOURCES.md` (Assign
 ## Tools and models
 
 - **Godot Engine 4.7.2-stable** (`ed1daf0bf`), Forward+.
-- **Claude Code** desktop app, model **Opus 5.5**, through my Northeastern Claude Enterprise seat, manual permissions. Prompts: `prompt-1.txt` to `prompt-5.txt`, `prompt-6-film.txt`, `prompt-7-submit.txt`, `prompt-8.txt`, `prompt-9-film.txt`, and the messages recorded in `FRICTIONAL.md`. It made the commits I asked for, each labelled with who wrote the content.
+- **Claude Code** desktop app, model **Opus 5.5**, through my Northeastern Claude Enterprise seat, manual permissions. Prompts: `prompt-1.txt` to `prompt-5.txt`, `prompt-6-film.txt`, `prompt-7-submit.txt`, `prompt-8.txt`, `prompt-9-film.txt`, `prompt-10-submit.txt`, the final audit request, and the messages recorded in `FRICTIONAL.md`. It made the commits I asked for, each labelled with who wrote the content.
 - **claude.ai** (chat, Opus 5.5): planning, commands, the brief and the Gemini prompts, these documents.
 - **Gemini app** ("4 Hydrogen"): the run-cycle images.
 

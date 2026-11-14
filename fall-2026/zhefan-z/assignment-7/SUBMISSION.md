@@ -3,7 +3,7 @@ Student: Zhefan Zhang (zhefan-z)
 Project name: walker-magic (folder `walker-magic-zhefan`)
 GitHub repository URL: https://github.com/nikbearbrown/csye-7270-building-virtual-environments — branch `zhefan-z/assignment-7`, folder `fall-2026/zhefan-z/assignment-7`
 Git tag and submitted commit SHA: no tag, per the instructor (2026-10-09; the course repository is shared, so per-student tags are not used); the submitted commit SHA is in the Canvas note, because a commit cannot contain its own SHA
-Game-source revision shown in the film: ad7935f (later commits add only film records, documents, re-run logs and my review flag; game source unchanged)
+Game-source revision shown in the film: ad7935f (later commits add only film records, documents, re-run logs, one real-input test of the state-machine transitions and my review flag; no game script or scene changed)
 Godot version, renderer, and operating system: Godot 4.7.2-stable (official build ed1daf0bf), Forward+ (Vulkan), Windows
 Sprite clip: route, node, scene, frame rate: Sprite2D with an AnimationPlayer frame track; the mage's `Sprite2D`; `features/player/player.tscn`; 10 fps (`step` 0.1), 4 frames, `LOOP_LINEAR`
 Rig clip: route, rig source, node, scene, frame rate: cutout rig keyed as resource text; parts are two `region_rect`s of my A2 `assets/sprites/wolf/wolf_lunge.png` on hip and shoulder pivots; `Facing > Rig > RearPivot / FrontPivot`; `features/wolf/wolf.tscn`; 60 fps (`step` 1/60), 89 frames, `LOOP_NONE`
