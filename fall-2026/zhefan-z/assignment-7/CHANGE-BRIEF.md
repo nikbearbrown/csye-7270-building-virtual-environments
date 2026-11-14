@@ -195,3 +195,7 @@ No AnimationTree. **Two clocks:** both clip players `ANIMATION_CALLBACK_MODE_PRO
 7. **Imported rig.** Not used.
 
 **The four ideas** *(mine, translated)*. A clip is a timeline of keys on named node properties; a track resolves its target from a NodePath string at run time, so a wrong path or a missing property is skipped with no error and no change on screen. One authority means each animated property is written by exactly one player; with two, they overwrite each other every frame and the picture twitches or falls out of step. The two clocks are the variable-rate process clock and the fixed-step physics clock; my state machines, the hitbox and both clip players run on the physics clock. Designing feel in frames means splitting an action into startup, active and recovery frame counts and shaping how it reads and how predictable it is through those counts, not by dragging keys by eye.
+
+### 2026-11-13 — note on the four ideas
+
+My answer that a track to a missing property "is skipped with no error and no change on screen" is my understanding, not a measurement: no run here played a broken clip. What was measured is that the read-back catches it (M1 and the earlier a7-4 exit 1).

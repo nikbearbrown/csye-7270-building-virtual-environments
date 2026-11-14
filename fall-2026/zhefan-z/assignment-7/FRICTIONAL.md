@@ -39,11 +39,13 @@ This took most of the time, and I learned the most from it.
 
 **Visual upgrades "not noticeable".** My first look at the torches, embers and afterimage: too subtle. The agent listed old and new values, measured the result and lightened the darkening so the mage stayed readable; then they were clearly visible.
 
+**An interrupted session.** The film update's build agent stopped on an expired login (HTTP 401) while exporting the 4K master; its last export was refused and no new film was written. Following the resume rule, the next session did not continue it: it checked the snapshot against `ad7935f`, checked the new capture's three hits (GROWL cancelled, LUNGE not, RECOVER HP only), reran every test (all passing), found the refusal was the process being killed (the same ffmpeg command succeeded alone in 16 s), and finished the film in a new session (`b3c8963`).
+
 **Process slips.** The agent amended one local commit (the first CLAUDE.md draft was 122 lines); during the mutation run it kept one temporary backup one folder above the assignment root for a few seconds and ran its mutation script from its own temporary folder outside the repository; nothing was left behind. I let the agent make the commits I asked for, each labelled with who wrote the content; it never pushed.
 
 ## Human and AI contributions
 
-- **Mine:** both clips and their look (8 fps, clear crouch and stretch, later 10 fps for r2), the per-phase interrupt rule, keeping the 0.2 s window, every first look and every verdict in the running game (run r0, r1 rejected, r2 kept; visual upgrades r0 rejected, r1 kept), generating the run images in Gemini, accepting the re-pin after play, two reviews of the agent's CLAUDE.md draft, and the human checks (five-wrap cycle, an interrupt in each phase, registration, darkest and lightest art).
+- **Mine:** both clips and their look (8 fps, clear crouch and stretch, later 10 fps for r2), the per-phase interrupt rule, keeping the 0.2 s window, every first look and every verdict in the running game (run r0, r1 rejected, r2 kept; visual upgrades r0 rejected, r1 kept), generating the run images in Gemini, accepting the re-pin after play, three reviews of the agent's CLAUDE.md draft, and the human checks (five-wrap cycle, an interrupt in each phase, registration, darkest and lightest art).
 - **Claude Code:** CLAUDE.md drafts, the pin, the clips and rig, read-backs, structure, edges and afterimage tests, the probes and capture harnesses, the cleanup tools, the visual upgrades, mutations, figures, measurements, predictions and comparisons.
 - **claude.ai (chat):** planning, commands, the brief and its revisions from my decisions, the Gemini prompts, and these documents.
 

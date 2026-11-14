@@ -10,7 +10,7 @@ Paths: game files (`tests/`, `effects/`, `features/`, `tools/`, `design/`) are r
 
 ## Evidence at a glance
 
-**8** behaviour pin scenarios compared tick by tick at **30, 60 and 144 fps** · **7** new suites · **13** earlier suites unchanged · the **four published mutations**, each from a worktree (three caught, the empty-cache reimport shown safe), plus four more · edges: an interrupt **one tick before, on and after every phase boundary** (25 / 0 at three rates) · the phase table measured from the game (31 / 22 / 36 ticks) · every visual upgrade added with the pin still **8/8**.
+**8** behaviour pin scenarios compared tick by tick at **30, 60 and 144 fps** · **7** new suites · **13** earlier suites unchanged · the **four published mutations**, each from a worktree (three caught, the empty-cache reimport shown safe), plus four more distinct ones (a7-1, a7-2, a7-4, a7-5; a7-3 is M3) · edges: an interrupt **one tick before, on and after every phase boundary** (25 / 0 at three rates) · the phase table measured from the game (31 / 22 / 36 ticks) · every visual upgrade added with the pin still **8/8**.
 
 | Rubric criterion (of 60) | Where the evidence is |
 |---|---|
@@ -18,7 +18,7 @@ Paths: game files (`tests/`, `effects/`, `features/`, `tools/`, `design/`) are r
 | **The animation set (12)** | Run: Sprite2D + AnimationPlayer frame track, sheet credited (`assets/sprites/mage/ATTRIBUTION.md`, original in `design/a7/`), slicing 62×69, 4 × 1, read back by `test_clip_run.gd` (17/0). Lunge: cutout rig keyed as resource text, read back by `test_clip_lunge.gd` (18/0) with the published `track_problems()`. Seam by track type; the lunge keyed at every phase boundary |
 | **State machine and authority (10)** | `test_anim_structure.gd` (11/0) asserts the state table against the scenes; one authority per animated node, named in `CLAUDE.md` ("One authority") and the brief; current clip read through `current_animation` |
 | **Edges, re-pins and verification (10)** | `test_anim_edges.gd` (25/0 at 30, 60, 144); mutations M1–M4 (`logs/mutation-a7-M*`); the behaviour change apart (`72f37b8`) and re-pinned after play in its own commit (`ff71bbb`) |
-| **Feel and readability (8)** | real-render lunge strip read at each phase boundary (`captures/lunge/game-r0/`); observation-driven revisions with predictions, two strips and my verdicts (`TUNING.md`: run r0 → r1 reverted → r2 kept; visual upgrades r0 → r1 kept); my checks: the three phases read as distinct, the cycle wraps cleanly over five wraps |
+| **Feel and readability (8)** | lunge strip from a real Movie Maker render (fixture harness) read at each phase boundary (`captures/lunge/game-r0/`); observation-driven revisions with predictions, two strips and my verdicts (`TUNING.md`: run r0 → r1 reverted → r2 kept; visual upgrades r0 → r1 kept); my checks: the three phases read as distinct, the cycle wraps cleanly over five wraps |
 | **Film (10)** | see Film below |
 
 ## The two clips
@@ -52,7 +52,7 @@ Every upgrade is visual only: the pin passes 8/8 at 30, 60 and 144 fps after eac
 - Open `walker-magic-zhefan/project.godot` in Godot 4.7.2 and press F5. Controls: A/D or arrows to walk, Space/W/Up to jump, left mouse to cast, Esc to pause, R to restart, M and N to mute.
 - Tests, from this folder in Git Bash, after `godot --headless --path walker-magic-zhefan --import` once:
   - `./scripts/run-test.sh test_pin_behaviour.gd 60` (also 30 and 144; `PIN_MODE=record` re-records)
-  - `./scripts/run-test.sh test_anim_edges.gd 60` (also 30, 144), `test_afterimage.gd` (30, 60, 144), `tests/probe_two_clocks.gd` (30, 60, 144)
+  - `./scripts/run-test.sh test_anim_edges.gd 60` (also 30, 144), `test_afterimage.gd` (30, 60, 144), `probe_two_clocks.gd` (30, 60, 144)
   - `./scripts/run-test.sh test_clip_run.gd 60`, `test_clip_lunge.gd`, `test_clip_flicker.gd`, `test_anim_structure.gd`
   - the thirteen earlier suites as listed in `CLAUDE.md`
 - Documents: `CHANGE-BRIEF.md` (spec and dated revisions), `TUNING.md` (every observation, prediction, comparison and verdict), `TEST-REPORT.md`, `FRICTIONAL.md`, `SOURCES.md`.
@@ -65,9 +65,9 @@ Every upgrade is visual only: the pin passes 8/8 at 30, 60 and 144 fps after eac
 
 ## Film
 
-*Keys on the Tick: A Run Cycle and a Wolf Lunge*, about 6:15, 3840×2160, 30 fps, narrated by Liam (AI).
+*Keys on the Tick: A Run Cycle and a Wolf Lunge*, 7:04 (423.97 s), 3840×2160, 30 fps, narrated by Liam (AI).
 
-- Link: https://drive.google.com/file/d/1oc7IkXeZJKSzBW5NfGxx9UoAIhihSnLg/view?usp=sharing
-- File: `claude-liam-walker-magic-animation-gamedev.mp4` (77,177,746 bytes)
-- SHA-256: `7f4874b987db96eaf0b495cf8fb4c108d038e09c3fc9a3c06c9123ba6e182f4a`
-- Game source shown: `f860fed`. In-play footage is real engine output from scripted input (a windowed Movie Maker capture at 60 fps, one frame per physics tick); harness images are labelled fixture captures. Film records: `walker-magic-zhefan/youtube/claude-liam-walker-magic-animation-gamedev/`. The MP4 is not in git.
+- Link: https://drive.google.com/file/d/1ZD-VaK9MqkZEuoNGwoeR9ahmcZ6mAe_c/view?usp=sharing
+- File: `claude-liam-walker-magic-animation-gamedev.mp4` (100,811,931 bytes)
+- SHA-256: `bdc0517771ce55dbc753eb4e608d333ce290f34edbb2e77b126bf4c7301ee016`
+- Game source shown: `ad7935f`; film records `b3c8963`. In-play footage is real engine output from scripted input (windowed Movie Maker at 60 fps, one frame per physics tick), including a hit in each phase of the lunge; harness images are labelled fixture captures. Records: `walker-magic-zhefan/youtube/claude-liam-walker-magic-animation-gamedev/`. The MP4 is not in git.
