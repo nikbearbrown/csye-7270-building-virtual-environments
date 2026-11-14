@@ -1,12 +1,14 @@
 """Phase 2b: build every card slot and fill the Remotion props, using measured narration.
 
 Adapted from the Assignment 6 film's media.py. Images of the game are either frames of the scripted-input capture
-(capture/run-01, real engine output) or the author's committed captures in captures/ (fixture captures from capture
+(capture/run-02, real engine output) or the author's committed captures in captures/ (fixture captures from capture
 harnesses and preview scenes that place the characters; not played gameplay), enlarged with nearest-neighbour scaling.
 Figures from captures/figures/ (tools/make_figures.py, drawn from the logs) are scaled to fit. Figures on cards come
-from the named source documents and logs; code comes verbatim from the snapshot of the build shown (f860fed). The
+from the named source documents and logs; code comes verbatim from the snapshot of the build shown (ad7935f); lines of the author's
+documents are checked equal to the files at ad7935f (git show). The
 gameplay beats themselves are built by footage.py.
 """
+import hashlib
 import json
 
 import numpy as np
@@ -14,7 +16,8 @@ from PIL import Image, ImageDraw
 
 import cards
 from cards import F, wrap, text_block, SAFE_L, SAFE_R, DARK, DARK_TEXT, DARK_MUTED, DARK_HI
-from common import (REEL, GAME, A7, CAPS, LOGS, BUILD, FPS, SNAPSHOT, CAPTURE_FRAMES, INK, INK_SOFT, SPARK, BORDER,
+from common import (REEL, GAME, A7, CAPS, LOGS, BUILD, BUILD_FULL, CAPTURE, FPS, SNAPSHOT, CAPTURE_FRAMES, INK, INK_SOFT,
+                    SPARK, BORDER, run,
                     load_json, save_json, render_frames, source_lines, sha256, capture_rows)
 
 MEDIA = REEL / 'media'
@@ -22,7 +25,7 @@ EV = REEL / 'evidence'
 SRC = SNAPSHOT or GAME
 FIG = CAPS / 'figures'
 
-PLAY = 'Scripted input · real engine output · capture/run-01'
+PLAY = 'Scripted input · real engine output · capture/run-02'
 FIXTURE = 'Fixture capture · a capture harness places the characters; not played gameplay'
 FIGLABEL = 'Figure from the logs (tools/make_figures.py)'
 RESULTS = 'Recorded results — not a render'
@@ -219,126 +222,214 @@ def mage_crop(row, top=250, bottom=334, left=33, right=33):
     return play(row['f']).crop((sx - left, top, sx + right, bottom))
 
 
+def wolf_crop(row, half=140, top=200, bottom=345):
+    sx = int(round(row['wx'] - row['cam_x'] + 320))
+    return play(row['f']).crop((sx - half, top, sx + half, bottom))
+
+
+# ---------------------------------------------------------------- documents and source panels
+DOCS = {'brief': 'CHANGE-BRIEF.md', 'report': 'TEST-REPORT.md', 'tuning': 'TUNING.md', 'frictional': 'FRICTIONAL.md',
+        'readme': 'README.md', 'submission': 'SUBMISSION.md'}
+_doc_cache = {}
+DOC_DRIFT = {}
+
+
+def doc_at(name, n, first):
+    """Line n of an A7 document as it is at the revision shown (git show BUILD:path). The working tree may have been
+    revised since (dated additions by the author); the film quotes the revision it names, and DOC_DRIFT records which
+    files differ in the working tree."""
+    rel = name if '/' in name else DOCS[name]
+    if rel not in _doc_cache:
+        tree = (A7 / rel).read_text(encoding='utf-8').splitlines()
+        shown = run(['git', '-C', A7, 'show', f'{BUILD_FULL}:fall-2026/zhefan-z/assignment-7/{rel}'],
+                    encoding='utf-8').stdout.splitlines()
+        if tree != shown:
+            DOC_DRIFT[rel] = 'working tree differs from ' + BUILD
+        _doc_cache[rel] = shown
+    text = _doc_cache[rel][n - 1]
+    assert text.startswith(first), f'{rel}:{n} does not start with {first!r}'
+    return text
+
+
+TREE_QUOTES = {}
+
+
+def doc_tree(name, n, first):
+    """Line n of an A7 document as it is in the working tree, for a dated addition the author made after the revision
+    shown (quoted only with that label). Asserts the line is not already in the file at BUILD."""
+    rel = name if '/' in name else DOCS[name]
+    text = (A7 / rel).read_text(encoding='utf-8').splitlines()[n - 1]
+    assert text.startswith(first), f'{rel}:{n} (working tree) does not start with {first!r}'
+    shown = run(['git', '-C', A7, 'show', f'{BUILD_FULL}:fall-2026/zhefan-z/assignment-7/{rel}'],
+                encoding='utf-8').stdout.splitlines()
+    assert text not in shown, f'{rel}:{n} is already at {BUILD}; quote it with doc_at'
+    TREE_QUOTES[f'{rel}:{n}'] = {'sha256_of_line': hashlib.sha256(text.encode('utf-8')).hexdigest(),
+                                 'note': f'working tree, not in {BUILD}'}
+    return text
+
+
+def four_ideas():
+    """CHANGE-BRIEF.md:197, the four ideas in the author's words, split into its four sentences."""
+    text = doc_at('brief', 197, '**The four ideas** *(mine, translated)*. ')
+    body = text[len('**The four ideas** *(mine, translated)*. '):]
+    parts = [p if p.endswith('.') else p + '.' for p in body.split('. ')]
+    assert len(parts) == 4 and parts[0].startswith('A clip is') and parts[3].startswith('Designing feel'), parts
+    return parts
+
+
+def src_block(d, x, y, w, items, m):
+    """items: [(path, [(line number, exact text), ...])]: one dark panel per item, numbered lines; returns bottom y."""
+    fm = F('mono', m)
+    lh = int(m * 1.32)
+    for path, lines in items:
+        rows = []
+        for n, text in lines:
+            parts = wrap(d, text.replace('\t', '    ').rstrip(), fm, w - 80 - int(m * 2.8))
+            rows += [(n if j == 0 else None, p) for j, p in enumerate(parts)]
+        h = 30 + int(m * 1.2) + 14 + len(rows) * lh + 22
+        d.rounded_rectangle([x, y, x + w, y + h], radius=22, fill=DARK)
+        d.text((x + 36, y + 22), path, font=F('mono', int(m * 0.9)), fill='#8BC7F3')
+        ty = y + 30 + int(m * 1.2) + 14
+        for n, p in rows:
+            if n is not None:
+                d.text((x + 36, ty), f'{n:>3}', font=fm, fill=DARK_MUTED)
+            d.text((x + 36 + int(m * 2.8), ty), p, font=fm, fill=DARK_TEXT)
+            ty += lh
+        y += h + 18
+    return y
+
+
+def quote_block(d, x, y, w, label, text, size):
+    """The author's words: a label, then the quote in serif behind an accent bar; returns bottom y."""
+    y = text_block(d, x + 40, y, label, F('sans', int(size * 0.62)), w - 40, INK_SOFT, int(size * 0.85)) + 6
+    top = y
+    y = text_block(d, x + 40, y, f'“{text}”', F('serif', size), w - 40, INK, int(size * 1.22))
+    d.rectangle([x, top + 6, x + 12, y - 6], fill=SPARK)
+    return y
+
+
+def snap_lines(rel, numbers, first=None):
+    """[(n, exact text)] from the snapshot (checked equal to the working tree by excerpt())."""
+    out = []
+    for i, n in enumerate(numbers):
+        text = excerpt(rel, n, n, (first or {}).get(n, ''))
+        out.append((n, text))
+    return out
+
+
+IDEA_LABEL = 'The author’s words · CHANGE-BRIEF.md:197, “The four ideas” (translated from Chinese by the author)'
+
+
+def idea_card(title, sentence, items, note, src, extra=None, sizes=(84, 78, 72, 68, 64, 60, 56, 52, 48, 46, 44)):
+    """Idea card: the author's sentence, the exact lines it points at, a note; `extra(d, y, v)` may add a block."""
+    def make(v):
+        im, d, y = cards.base(title, SRCVIEW + ' · exact lines at ' + BUILD)
+        ty = quote_block(d, SAFE_L, y + 6, SAFE_R - SAFE_L, IDEA_LABEL, sentence, v)
+        ty = src_block(d, SAFE_L, ty + 34, SAFE_R - SAFE_L, items, int(v * 0.62))
+        if extra:
+            ty = extra(d, ty + 10, v)
+        ty = text_block(d, SAFE_L, ty + 14, note, F('sans', int(v * 0.66)), SAFE_R - SAFE_L, INK, int(v * 0.88))
+        assert ty < 1950, f'{title}: overflows ({ty})'
+        cards.footer(d, src)
+        return im
+    return fit(make, sizes)
+
+
 # ---------------------------------------------------------------- beats
 def build():
     rows = capture_rows()
+    ideas = four_ideas()
     remotion('B00')
-    remotion('B29')
+    remotion('B27')
     remotion('B01')
-    remotion('B28', brandLabel='@NikBearBrown', artifactLines=[
-        'Built: the run clip (4 cells, 10 fps, LOOP_LINEAR, discrete), the lunge rig and clip (89 ticks, LOOP_NONE) and '
-        'the torch flicker, each owned by one AnimationPlayer on the physics callback; the growl cancel; embers and the '
-        'afterimage; the pin, edges, read-back, structure and afterimage tests.',
-        'Measured: pin 16 / 0 at 30, 60, 144 with the clips wired; the change differs only in hit_growl and kill, '
-        're-pinned after play (ff71bbb); edges 13 / 0 at 30, 60, 144; mutations a7-2 to a7-5 caught, a7-1 harmless '
-        'on 4.7.2.',
-        'Judged by the author in play: run r2 kept (r1 rejected), the lunge in both facings, the growl cancel and its '
-        '0.2 s window, visual upgrades r1 kept (r0 not noticeable).',
-        'Open: in-between frames so the planted foot stops sliding; whether the growl window should be wider.',
-        'The author: clips, rule, verdicts, Gemini images · Claude Code: pin, clips, tests, harnesses, upgrades, '
-        'figures, this film · claude.ai: brief and documents · source f860fed'])
-    BEATS['B30']['shot']['remotion']['props']['durationSeconds'] = nframes('B30') / FPS
+    remotion('B26', brandLabel='@NikBearBrown', artifactLines=[
+        'Built: the run clip (4 cells, 10 fps, step 0.1, LOOP_LINEAR, discrete) and the lunge rig and clip (89 frames, '
+        'step 1/60, LOOP_NONE), each owned by one AnimationPlayer on the physics callback; the growl cancel.',
+        'Measured: pin 16 / 0 at 30, 60, 144, unchanged by the clips; the change re-pinned after play (ff71bbb); edges '
+        '25 / 0 at 30, 60, 144; read-backs 17, 18, 12, 11 / 0; M1–M3 caught, M4 (fresh import) passes.',
+        'Judged by the author in play: run r2 kept (r1 rejected), the three phases and an interrupt in each, the 0.2 s '
+        'growl window kept.',
+        'Open: in-between frames so the planted foot stops sliding; the hitbox read 1/60 s after the clip’s active '
+        'section; a fresh clone at the submitted commit.',
+        f'The author: clips, rule, verdicts, Gemini sheet · Claude Code: pin, clips, tests, mutations, this film · '
+        f'claude.ai: brief and documents · source {BUILD}'])
+    BEATS['B28']['shot']['remotion']['props']['durationSeconds'] = nframes('B28') / FPS
+    for bid in ('B03', 'B04', 'B05', 'B06', 'B07'):
+        BEATS[bid]['shot']['evidence_media'] = f'media/{bid}.mp4'
 
-    # B02 — before and after at tick 40 (fixture captures of the take_lunge pin scenario).
-    still('B02', cards.identity('Before and after: the same tick of the same scripted lunge',
-        'Fixture capture · tests/capture_look.gd places the mage (780) and the wolf (860): the pin’s take_lunge, no input', {
-            'img': cap('look/take_lunge_t40_before.png'), 'badge': 'Before A7 · 2276069 · tick 40', 'crop': (150, 140, 640, 360),
-            'caption': 'captures/look/take_lunge_t40_before.png, crop x 150–640, y 140–360',
-            'rows': [('Before', 'one static lunge image, flipped and slid forward; the cave unlit')]}, {
-            'img': cap('look/take_lunge_t40_now.png'), 'badge': 'Now · tick 40', 'crop': (150, 140, 640, 360),
-            'caption': 'captures/look/take_lunge_t40_now.png, crop x 150–640, y 140–360',
-            'rows': [('Now', 'the keyed cutout rig mid-stretch with its afterimage; two flickering torches; embers. '
-                             'Gameplay identical on every tick (pin 16 / 0 at 30, 60, 144).')]},
-        'captures/look/ (README.md image before_after.png) · tests/capture_look.gd · TEST-REPORT.md → Pin first'),
-        caps_prov('look/take_lunge_t40_before.png', 'look/take_lunge_t40_now.png'))
+    # B02 — the game and its two clips (CHANGE-BRIEF revision 2026-11-13, "The two clips").
+    now = cap('look/take_lunge_t40_now.png').crop((150, 140, 640, 360))
+    doc_at('brief', 148, '| | Clip 1: run cycle | Clip 2: wolf lunge |')
+    doc_at('brief', 155, '| Cycle or committing | cycle | committing action |')
 
-    BEATS['B03']['shot']['evidence_media'] = 'media/B03.mp4'
-    BEATS['B04']['shot']['evidence_media'] = 'media/B04.mp4'
-    BEATS['B05']['shot']['evidence_media'] = 'media/B05.mp4'
-
-    # B06 — clip 2 route and source: regions and pivots on wolf_lunge.png, beside Muybridge plate 707.
-    wolf_png = Image.open(SRC / 'assets/sprites/wolf/wolf_lunge.png').convert('RGBA')
-    bg = Image.new('RGBA', wolf_png.size, (246, 243, 236, 255))
-    wolf_img = Image.alpha_composite(bg, wolf_png).convert('RGB')
-    dog = Image.open(GAME / 'design/a7/reference/Animal_locomotion._Plate_707_(Boston_Public_Library).jpg').convert('RGB')
-
-    def rig_marks(d, ox, oy, k):
-        for (x, y, w, h), col, lab, below in (((0, 0, 40, 40), AMBER, 'Rear · Rect2(0, 0, 40, 40)', True),
-                                              ((36, 0, 44, 40), RED, 'Front · Rect2(36, 0, 44, 40)', False)):
-            d.rectangle([ox + x * k, oy + y * k + (6 if below else 0), ox + (x + w) * k - 1, oy + (y + h) * k - 1 - (0 if below else 6)],
-                        outline=col, width=10)
-        for (px, py), lab in (((29, 16), 'hip · RearPivot (−11, −22)'), ((55, 16), 'shoulder · FrontPivot (15, −22)')):
-            cx, cy = ox + px * k, oy + py * k
-            d.ellipse([cx - 22, cy - 22, cx + 22, cy + 22], fill=SPARK, outline='#FFFFFF', width=6)
-            f = F('sans_med', 44)
-            tw = d.textlength(lab, font=f)
-            lx = min(cx - tw / 2 - 26, ox + 80 * k - tw - 52)
-            d.rounded_rectangle([lx, cy + 40, lx + tw + 52, cy + 116], radius=38, fill=(61, 57, 41))
-            d.text((lx + 26, cy + 52), lab, font=f, fill='#FAF9F5')
-
-    def b06(v):
-        im, d, y = cards.base('Clip 2 · a cutout rig from the A2 lunge image', 'Route: cutout rig keyed as resource text in '
-                              'features/wolf/wolf.tscn · source: assets/sprites/wolf/wolf_lunge.png (A2, unchanged)')
-        lw = 2000
-        pic, k = scaled(wolf_img, lw, 1000, pixel=True)
+    def b02(v):
+        im, d, y = cards.base('The game and its two clips', 'Fixture capture (left) · CHANGE-BRIEF.md revision '
+                              '2026-11-13, “The two clips” · git log (right)')
+        lw = 1470
+        pic, k = scaled(now, lw, 1000, pixel=True)
         cards.paste_framed(im, d, pic, SAFE_L, y + 10)
-        rig_marks(d, SAFE_L, y + 10, k)
-        ty = text_block(d, SAFE_L, y + 10 + pic.height + 20, f'wolf_lunge.png, 80×40, enlarged ×{k}, nearest neighbour; '
-                        'outlines: the two region_rects (4 px overlap at x 36–40); dots: the pivots in image pixels '
-                        '(29, 16) and (55, 16)', F('sans', 38), lw, INK_SOFT, 50)
+        ty = text_block(d, SAFE_L, y + 10 + pic.height + 20, f'captures/look/take_lunge_t40_now.png, crop, ×{k} '
+                        '(fixture: tests/capture_look.gd places the mage and the wolf)', F('sans', 38), lw, INK_SOFT, 50)
         notes_block(d, SAFE_L, ty + 30, lw, [
-            ('Nodes (wolf.tscn:216–245)', 'Facing → Rig → RearPivot / FrontPivot → Rear / Front'),
-            ('Who writes what', 'code: Facing.scale.x = facing · clip: Rig position and scale, pivot rotations')], v)
+            ('walker-magic (README.md)', 'a 2D side-scroller: a mage crosses a cave and casts fireballs at a wolf'),
+            ('Engine', 'Godot 4.7.2-stable, Forward+, 640×360 at 2×')], int(v * 1.1))
         rx = SAFE_L + lw + 90
-        dp, _ = scaled(dog, SAFE_R - rx, 1050)
-        cards.paste_framed(im, d, dp, rx, y + 10)
-        text_block(d, rx, y + 10 + dp.height + 20, 'Motion reference: Eadweard Muybridge, Animal Locomotion (1887), plate '
-                   '707, dog galloping · public domain · design/a7/reference/ (reference only, nothing drawn from it)',
-                   F('sans', 40), SAFE_R - rx, INK_SOFT, 54)
-        cards.footer(d, 'features/wolf/wolf.tscn:216–245 · tests/test_clip_lunge.gd (parts-are-regions, pivots-at-measured-'
-                        'hip-and-shoulder: PASS) · SOURCES.md')
+        tw = SAFE_R - rx
+        cards.table(d, rx, y + 10, [int(tw * 0.22), int(tw * 0.39), tw - int(tw * 0.22) - int(tw * 0.39)],
+                    ['', 'Clip 1: run cycle', 'Clip 2: wolf lunge'], [
+            ('Object', 'the mage’s Sprite2D (features/player/player.tscn)',
+             'the wolf’s rig Facing → Rig → pivots → parts (features/wolf/wolf.tscn)'),
+            ('Route', 'Sprite2D + AnimationPlayer frame track',
+             'cutout rig keyed as resource text: two region_rects of the A2 wolf_lunge.png'),
+            ('Loops or commits', 'loops: LOOP_LINEAR, 4 frames at 10 fps',
+             'commits: LOOP_NONE, 89 frames at 60 fps'),
+            ('Authority', 'player.gd _set_state() calls play()',
+             'wolf.gd _enter() plays on GROWL entry; take_damage() seeks on a growl cancel'),
+            ('Commits', 'clips 72e8d21 · wired 33d78ae · r2 sheet 32eed66 · step b1422ca',
+             'clips 72e8d21 · wired 33d78ae · growl cancel 72f37b8 · step b1422ca')],
+            size=v, head_size=int(v * 0.85), hi_cols=(0,))
+        cards.footer(d, f'CHANGE-BRIEF.md:146–155 · README.md · git log · game source {BUILD}')
         return im
-    still('B06', fit(b06, (60, 56, 52, 48, 44)), {
-        'images': ['assets/sprites/wolf/wolf_lunge.png', 'design/a7/reference/Animal_locomotion._Plate_707_(Boston_Public_Library).jpg'],
-        'sha256': {'wolf_lunge.png': sha256(SRC / 'assets/sprites/wolf/wolf_lunge.png'),
-                   'plate_707': sha256(GAME / 'design/a7/reference/Animal_locomotion._Plate_707_(Boston_Public_Library).jpg')},
-        'source': 'wolf.tscn:216-245; logs/test_clip_lunge_60fps.log lines 16-17'})
+    still('B02', fit(b02, (56, 52, 48, 46, 44, 42, 40)), {**caps_prov('look/take_lunge_t40_now.png'),
+          'source': 'CHANGE-BRIEF.md:146-155; README.md; git log'})
 
-    # B07 -> B08: the rig's scale track, then the read-back and the logged poses.
-    wolf_tscn = 'features/wolf/wolf.tscn'
-    workbench('B07', 'Clip 2 · the phase table becomes keys', wolf_tscn, 99, 110, 'tracks/3/type', [
-        ('Measured phase table (CHANGE-BRIEF revision 2026-11-10)', 'GROWL 31 · LUNGE 22 · RECOVER 36 ticks'),
-        ('Key frames ÷ 60 (all four pose tracks)', '0, 25, 31, 37, 53, 65, 89 → 0, 0.4167, 0.5167, 0.6167, 0.8833, '
-                                                  '1.0833, 1.4833 s')],
-        [(0.0, 102, 'Line 102: the track keys Facing/Rig:scale'),
-         ('The keys follow it', 106, 'Line 106: key times = frame ÷ 60'),
-         ('crouch, stretch', 109, 'Line 109: (1.08, 0.86) crouch · (1.22, 0.84) stretch · (0.94, 1.06) overshoot')],
-        font=23)
-    lunge_rows = [('every-track-resolves-to-a-real-node-and-property', 'PASS · no problems'),
-                  ('lunge-key-times-equal-frames-over-60', 'PASS · frames 0, 25, 31, 37, 53, 65, 89'),
-                  ('lunge-length-89-over-60-loop-none', 'PASS · 1.48333 s, loop_mode 0'),
-                  ('lunge-poses-match-table', 'PASS'),
-                  ('one-animation-player-physics-no-autoplay', 'PASS · callback 0 (physics), autoplay empty'),
-                  ('WALKER TESTS', '17 checks / 0 failures')]
-    still('B08', figure_left_notes('Clip 2 · read back, and logged in the game', FIXTURE + ' · ' + RESULTS,
-        cap('figures/lunge_onion.png'),
-        'captures/figures/lunge_onion.png: rig values logged per tick in the game by tests/capture_lunge.gd (fixture: the '
-        'harness places the mage), overlaid at the keys 0, 25, 37, 65',
-        [(k, v) for k, v in lunge_rows], 'logs/test_clip_lunge_60fps.log · captures/lunge/game-r0/ · TEST-REPORT.md → Clip '
-        'read-backs', frac=0.5),
-        caps_prov('figures/lunge_onion.png'), evidence=True)
+    # B08 — idea 1: what a clip is.
+    ptscn = 'features/player/player.tscn'
+    note201 = doc_tree('brief', 201, 'My answer that a track to a missing property "is skipped with no error')
+    assert 'is my understanding, not a measurement' in note201 and 'M1 and the earlier a7-4 exit 1' in note201
+    doc_tree('brief', 199, '### 2026-11-13 — note on the four ideas')
+    m1log = (LOGS / 'mutation-a7-M1-lunge-track-property-renamed_60fps.log').read_text(encoding='utf-8', errors='replace')
+    assert 'lunge track 4: FrontPivot has no property rotaton' in m1log
 
-    # B09 — clip 1 route and source: the four-cell sheet beside Muybridge plate 60.
+    def note_block(d, y, v):
+        return quote_block(d, SAFE_L, y + 6, SAFE_R - SAFE_L, 'The author’s note · CHANGE-BRIEF.md:201, “2026-11-13 — note '
+                           f'on the four ideas” (a dated addition in the working tree, after {BUILD})', note201,
+                           int(v * 0.74)) + int(v * 0.45)
+
+    still('B08', idea_card('Idea 1 · what a clip is', ideas[0], [
+        (ptscn, snap_lines(ptscn, range(95, 100), {95: 'tracks/2/path', 99: '"times"'})),
+        ('tests/anim_checks.gd · track_problems(), the published function', snap_lines('tests/anim_checks.gd', [32, 33],
+                                                                                         {32: 'if not', 33: 'problems'}))],
+        'The run clip’s frame track names its target as the string Sprite2D:frame (line 95). Measured: with a property '
+        'misspelt (mutation M1), track_problems() reports “lunge track 4: FrontPivot has no property rotaton”, exit 1 '
+        '(logs/mutation-a7-M1-…_60fps.log).',
+        'CHANGE-BRIEF.md:197, 201 · features/player/player.tscn:95–99 · tests/anim_checks.gd:32–33 · TEST-REPORT.md → '
+        'Mutations', extra=note_block),
+        {'card': 'media/B08.png', 'source': 'CHANGE-BRIEF.md:197 (ad7935f) and :201 (working tree, the author’s dated note); '
+                                            'player.tscn:95-99; anim_checks.gd:32-33; logs/mutation-a7-M1'})
+
+    # B09 — clip 1: the sheet and its slicing.
     sheet_png = Image.open(SRC / 'assets/sprites/mage/mage_run_cycle_sheet.png').convert('RGBA')
+    assert sheet_png.size == (248, 69)
     sheet_img = Image.alpha_composite(Image.new('RGBA', sheet_png.size, (246, 243, 236, 255)), sheet_png).convert('RGB')
-    runner = Image.open(GAME / 'design/a7/reference/Man_in_pelvis_cloth_running_at_a_half-mile_gait_(rbm-QP301M8-1887-060).jpg')
-    runner.draft('RGB', (2400, 2000))
-    runner = runner.convert('RGB')
-    runner.thumbnail((2400, 2400))
+    attribution = doc_at('walker-magic-zhefan/assets/sprites/mage/ATTRIBUTION.md', 5, '| `mage_run_cycle_sheet.png`')
+    assert '4 Hydrogen' in attribution and 'Generative AI Additional Terms' in attribution
+    run_head = snap_lines(ptscn, [64, 65, 66, 67], {64: 'resource_name = "run"', 65: 'length', 66: 'loop_mode', 67: 'step'})
+    hfr = snap_lines(ptscn, [83, 90], {83: 'tracks/1/path = NodePath("Sprite2D:hframes")', 90: '"values": [4]'})
 
     def b09(v):
-        im, d, y = cards.base('Clip 1 · four cells on one sheet', 'Route: Sprite2D with an AnimationPlayer frame track · '
-                              'source: assets/sprites/mage/mage_run_cycle_sheet.png')
+        im, d, y = cards.base('Clip 1 · the sheet and its slicing', 'assets/sprites/mage/mage_run_cycle_sheet.png · '
+                              'cell 62×69 · grid 4 × 1 · CHANGE-BRIEF.md:157')
         lw = 2050
         pic, k = scaled(sheet_img, lw, 760, pixel=True)
         cards.paste_framed(im, d, pic, SAFE_L, y + 10)
@@ -347,32 +438,36 @@ def build():
             if i:
                 d.line([x, y + 10, x, y + 10 + pic.height], fill=SPARK, width=6)
             cards.badge(d, x + 16, y + 26, name, size=40)
-        ty = text_block(d, SAFE_L, y + 10 + pic.height + 20, f'248×69, cells 62×69, hframes 4, enlarged ×{k}, nearest '
-                        'neighbour', F('sans', 40), lw, INK_SOFT, 54)
+        ty = text_block(d, SAFE_L, y + 10 + pic.height + 20, f'248×69 = 4 cells of 62×69 in one row: hframes = 4, vframes = '
+                        f'1 (not keyed, the Sprite2D default); order 0 contact, 1 down, 2 passing, 3 up · enlarged ×{k}, '
+                        'nearest neighbour', F('sans', 40), lw, INK_SOFT, 54)
         notes_block(d, SAFE_L, ty + 30, lw, [
-            ('Drawn (SOURCES.md)', 'in the Gemini app from the author’s prompt v3, with the A2 contact sprite as the only '
-                                   'reference; raw output design/a7/mage_run_cycle_gemini_raw.jpg'),
-            ('Cleaned', 'tools/clean_run_cycle.py: onto the A2 palette, at the A2 size, torsos aligned to contact A')], v)
+            ('Source (assets/sprites/mage/ATTRIBUTION.md)', 'generated with the Gemini app (model shown as “4 Hydrogen”), '
+             '2026-11-12, from prompt v3, with the author’s A2 contact sprite as the only reference; cleaned onto the A2 '
+             'palette by tools/clean_run_cycle.py; original as downloaded in design/a7/'),
+            ('Terms', 'Google Terms of Service and Generative AI Additional Terms of Service')], v)
         rx = SAFE_L + lw + 90
-        rp, _ = scaled(runner, SAFE_R - rx, 1130)
-        cards.paste_framed(im, d, rp, rx, y + 10)
-        text_block(d, rx, y + 10 + rp.height + 20, 'Motion reference: Muybridge, Animal Locomotion (1887), plate 60, a man '
-                   'running · public domain · design/a7/reference/', F('sans', 40), SAFE_R - rx, INK_SOFT, 54)
-        cards.footer(d, 'CHANGE-BRIEF.md revision 2026-11-12 (run cycle replaced) · SOURCES.md · design/a7/reference/SOURCES.md')
+        by = src_block(d, rx, y + 10, SAFE_R - rx, [(ptscn + ' · the run clip', run_head),
+                                                     (ptscn + ' · the hframes track', hfr)], int(v * 0.72))
+        text_block(d, rx, by + 10, 'test_clip_run.gd: every frame key < hframes × vframes (4) · run-sheet-hframes-4 · '
+                   'every-clip-step-one-frame-period-0.1: PASS', F('sans', 38), SAFE_R - rx, INK_SOFT, 50)
+        cards.footer(d, 'CHANGE-BRIEF.md revision 2026-11-13 (“The sheet”) · ATTRIBUTION.md · SOURCES.md · '
+                        'logs/test_clip_run_60fps.log')
         return im
-    still('B09', fit(b09, (60, 56, 52, 48, 44)), {
-        'images': ['assets/sprites/mage/mage_run_cycle_sheet.png', 'design/a7/reference/Man_in_pelvis_cloth_running_at_a_half-mile_gait_(rbm-QP301M8-1887-060).jpg'],
-        'sha256': {'mage_run_cycle_sheet.png': sha256(SRC / 'assets/sprites/mage/mage_run_cycle_sheet.png'),
-                   'plate_60': sha256(GAME / 'design/a7/reference/Man_in_pelvis_cloth_running_at_a_half-mile_gait_(rbm-QP301M8-1887-060).jpg')}})
+    still('B09', fit(b09, (60, 56, 52, 48, 44, 40)), {
+        'images': ['assets/sprites/mage/mage_run_cycle_sheet.png'],
+        'sha256': {'mage_run_cycle_sheet.png': sha256(SRC / 'assets/sprites/mage/mage_run_cycle_sheet.png')},
+        'source': 'player.tscn:64-67, 83, 90; ATTRIBUTION.md:5; CHANGE-BRIEF.md:157'})
 
-    # B10 -> B11: the run clip's frame track, then the run cell by cell in the capture.
-    ptscn = 'features/player/player.tscn'
-    workbench('B10', 'Clip 1 · the run clip in the scene file', ptscn, 93, 101, 'tracks/2/path', [
-        ('Lines 64–65', 'length = 0.4 · loop_mode = 1 (LOOP_LINEAR)'),
-        ('Line 88', 'Sprite2D:hframes = 4 (four cells)')],
-        [(0.0, 93, 'Line 93: the track keys Sprite2D:frame'),
-         ('cells zero to three', 97, 'Line 97: keys at 0, 0.1, 0.2, 0.3 s'),
-         ('No duplicate cell', 100, 'Line 100: cells 0, 1, 2, 3 · line 99: update 1 = discrete')], font=32)
+    # B10 -> B11: the frame track, then the run cell by cell in the capture.
+    workbench('B10', 'Clip 1 · the frame track that reads the sheet', ptscn, 92, 103, 'tracks/2/type', [
+        ('Line 67', 'step = 0.1 (one key per frame at 10 fps)'),
+        ('Lines 65–66', 'length = 0.4 · loop_mode = 1 (LOOP_LINEAR)')],
+        [(0.0, 95, 'Line 95: the track keys Sprite2D:frame'),
+         ('cells zero to three', 99, 'Line 99: keys at 0, 0.1, 0.2, 0.3 s'),
+         ('Step: point one', 101, 'Line 101: update 1 = discrete'),
+         ('No duplicate', 102, 'Line 102: cells 0, 1, 2, 3 — no cell 0 repeated at 0.4')], font=26)
+    assert line(ptscn, 67, 'step = 0.1') == 'step = 0.1'
     run_rows = [r for r in rows if 20 <= r['f'] <= 44]
     items = [(mage_crop(r, left=31, right=19), f"f{r['f']} · cell {r['pfr']}", i == 0 or r['pfr'] != run_rows[i - 1]['pfr'])
              for i, r in enumerate(run_rows)]
@@ -382,27 +477,43 @@ def build():
         b1, k = crops_row(im, d, items[:13], SAFE_L, y + 10, SAFE_R - SAFE_L, 470, cap_size=34)
         b2, _ = crops_row(im, d, items[13:], SAFE_L, b1 + 20, int((SAFE_R - SAFE_L) * 12 / 13), 470, cap_size=34)
         ty = text_block(d, SAFE_L, b2 + 10, f'Crops of the 640×360 frames around the mage, enlarged ×{k}, nearest neighbour; '
-                        'outlined in orange: the tick a new cell appears (sheet cell from capture/run-01-frames.jsonl)',
+                        f'outlined in orange: the tick a new cell appears (sheet cell from capture/{CAPTURE}-frames.jsonl)',
                         F('sans', 38), SAFE_R - SAFE_L, INK_SOFT, 50)
         cards.table(d, SAFE_L, ty + 24, [1300, 2156], ['Ticks per cell', ''],
                     [('This capture (frames 20–116)', '0:6, 1:6, 2:6, 3:7 on entry, then 0:5, 1:6, 2:6, 3:7 every loop'),
                      ('captures/run/game-r2-ticks/', '6 / 6 / 6 / 7 on entry, 5 / 6 / 6 / 7 per loop (TUNING.md r2)'),
-                     ('test_clip_run.gd', '16 / 0: keys 0, 0.1, 0.2, 0.3; length 0.4; LOOP_LINEAR; discrete')], size=v, head_size=int(v * 0.8))
-        cards.footer(d, 'capture/run-01 (scripted input) · logs/test_clip_run_60fps.log · TUNING.md → Run cycle r2')
+                     ('test_clip_run.gd', '17 / 0: keys 0, 0.1, 0.2, 0.3 within half a frame; length 0.4; LOOP_LINEAR; '
+                                          'discrete; step 0.1; seam')], size=v, head_size=int(v * 0.8))
+        cards.footer(d, f'capture/{CAPTURE} (scripted input) · logs/test_clip_run_60fps.log · TUNING.md → Run cycle r2')
         return im
-    still('B11', fit(b11, (52, 48, 46, 44, 42, 40)), {'images': [f'capture/run-01 frames 20-44'],
-          'capture_sha256': sha256(REEL / 'capture' / 'run-01.mp4'), 'frame_log': 'capture/run-01-frames.jsonl'}, evidence=True)
+    still('B11', fit(b11, (52, 48, 46, 44, 42, 40)), {'images': [f'capture/{CAPTURE} frames 20-44'],
+          'capture_sha256': sha256(REEL / 'capture' / f'{CAPTURE}.mp4'), 'frame_log': f'capture/{CAPTURE}-frames.jsonl'},
+          evidence=True)
+    # the tick counts quoted on B11, checked against this capture's frame log
+    cells = [rows[f]['pfr'] for f in range(20, 117)]
+    runs_ = []
+    for c in cells:
+        if runs_ and runs_[-1][0] == c:
+            runs_[-1][1] += 1
+        else:
+            runs_.append([c, 1])
+    assert [n for _, n in runs_[:8]] == [6, 6, 6, 7, 5, 6, 6, 7], runs_
 
-    # B12 -> B13: one authority, then the landing restart in the capture.
+    # B12 — idea 2: one authority.  B13 — land, run, cell zero.
     pgd = 'features/player/player.gd'
-    workbench('B12', 'One authority: the state machine only calls play()', pgd, 143, 154, 'func _set_state', [
-        ('test_anim_structure.gd · 11 / 0', 'no game script writes a property a clip keys'),
-        ('player.tscn:416–417', 'process_physics_priority = -1 · callback_mode_process = 0 (physics)')],
-        [(0.0, 143, 'Line 143: _set_state(next)'),
-         ('a state\'s clip starts', 147, 'Lines 144–147: play only when the state (or clip) changes'),
-         ('flip h stays in code', 148, 'Line 148: flip_h stays in code'),
-         ('from zero', 154, 'Lines 152–154: play(clip), seek(0.0, true)')], font=25)
+    still('B12', idea_card('Idea 2 · one authority', ideas[1], [
+        (pgd + ' · _set_state() and _play()', snap_lines(pgd, range(143, 155),
+                                                          {147: '_play(CLIPS[next])', 148: 'sprite.flip_h', 153: 'anim.play',
+                                                           154: 'anim.seek'})),
+        ('tests/test_anim_structure.gd', snap_lines('tests/test_anim_structure.gd', [236],
+                                                    {236: 'check("no-game-script-writes-a-keyed-property"'}))],
+        'The mage’s AnimationPlayer is the one writer of texture, hframes and frame; the state machine only calls play() '
+        'from frame 0 when the state changes, and flip_h stays in code. The structure test scans every game script for '
+        'writes to a property a clip keys (and must find a planted one): 11 / 0 (logs/test_anim_structure_60fps.log).',
+        'CHANGE-BRIEF.md:197 · features/player/player.gd:143–154 · tests/test_anim_structure.gd:236'),
+        {'card': 'media/B12.png', 'source': 'CHANGE-BRIEF.md:197; player.gd:143-154; test_anim_structure.gd:236'})
     land = [r for r in rows if 340 <= r['f'] <= 351]
+    assert rows[345]['ps'] == 'FALL' and rows[346]['ps'] == 'RUN' and rows[346]['pfr'] == 0
     items = [(mage_crop(r, top=226, bottom=334, left=31, right=19), f"f{r['f']}" + '\n' + f"{r['ps']} · {r['pfr']}",
               r['f'] == 346) for r in land]
 
@@ -410,287 +521,323 @@ def build():
         im, d, y = cards.base('Land, run, cell zero', PLAY + ' · frames 340–351')
         b1, k = crops_row(im, d, items, SAFE_L, y + 10, SAFE_R - SAFE_L, 760, cap_size=38)
         ty = text_block(d, SAFE_L, b1 + 10, f'Crops around the mage, enlarged ×{k}, nearest neighbour; state · sheet cell '
-                        'from capture/run-01-frames.jsonl; orange: the landing tick (FALL → RUN at frame 346, cell 0)',
+                        f'from capture/{CAPTURE}-frames.jsonl; orange: the landing tick (FALL → RUN at frame 346, cell 0)',
                         F('sans', 38), SAFE_R - SAFE_L, INK_SOFT, 50)
         cards.table(d, SAFE_L, ty + 30, [1500, 1956], ['Check', 'Result'],
                     [('test_anim_structure.gd · run-reentry-restarts-at-frame-0', 'PASS · 11 checks / 0 failures'),
                      ('test_anim_edges.gd · run → jump → land → run', 'PASS at 30, 60, 144 · re-entry tick 71, cell 0, clip '
                                                                     'position 0.0')], size=v, head_size=int(v * 0.8))
-        cards.footer(d, 'capture/run-01 · logs/test_anim_structure_60fps.log · logs/test_anim_edges_60fps.log')
+        cards.footer(d, f'capture/{CAPTURE} · logs/test_anim_structure_60fps.log · logs/test_anim_edges_60fps.log')
         return im
-    still('B13', fit(b13, (56, 52, 48, 44, 40)), {'images': ['capture/run-01 frames 340-351'],
-          'capture_sha256': sha256(REEL / 'capture' / 'run-01.mp4')}, evidence=True)
+    still('B13', fit(b13, (56, 52, 48, 44, 40)), {'images': [f'capture/{CAPTURE} frames 340-351'],
+          'capture_sha256': sha256(REEL / 'capture' / f'{CAPTURE}.mp4')}, evidence=True)
 
-    # B14 — pin first: the commit sequence.
-    still('B14', table_card('Pin first: record, add, wire, change, play, re-pin', RESULTS + ' · git log · TEST-REPORT.md',
-        ['Commit', 'Step', 'Pin (tests/test_pin_behaviour.gd)'],
-        [('2276069', 'Baseline: 13 earlier suites', '19 runs, 0 failures'),
-         ('a9b4bc1', 'Pin recorded: 8 scenarios, every physics tick, real input', '16 / 0 at 30, 60, 144'),
-         ('72e8d21', 'Clips added, not wired', 'unchanged'),
-         ('33d78ae', 'Clips wired into both state machines', 'unchanged'),
-         ('72f37b8', 'The one change: a growl hit cancels the lunge', 'differs only in hit_growl and kill, from tick 24'),
-         ('—', 'Played by the author; accepted', 'TEST-REPORT.md → Human checks'),
-         ('ff71bbb', 'Re-pinned, in its own commit', 'hit_growl.json, kill.json changed; 16 / 0 at 30, 60, 144'),
-         ('a1b6f44 · 7a9a65e · 272fb39', 'Visual upgrades, alignment fixes', '16 / 0 at 30, 60, 144 after each')],
-        [900, 1350, 1206],
-        'Recorded per tick: the mage’s state, position and velocity; the wolf’s state, position, HP and hitbox monitoring. '
-        'Before the re-pin, 32eed66 (run r2) shows 14 / 16: the two known differences.',
-        'git log · logs/pin/*.json · logs/test_pin_behaviour_*fps.log · TEST-REPORT.md → Pin first', hi_cols=(0,)),
-        {'card': 'media/B14.png', 'source': 'TEST-REPORT.md:7-21; git log; 32eed66 commit message'})
+    # B14 — idea 4 and the phase table, beside the key times built from it.
+    wolf_tscn = 'features/wolf/wolf.tscn'
+    head = doc_at('brief', 163, '| Phase | Frames (begins on) | What the player may do | What the game reads |')
+    table_rows = [[c.strip() for c in doc_at('brief', n, '| ').strip('|').split('|')] for n in (165, 166, 167)]
+    assert [r[0] for r in table_rows] == ['Startup (GROWL)', 'Active (LUNGE)', 'Recovery (RECOVER)']
+    note169 = doc_at('brief', 169, 'A hit on the first tick of a phase')
+    step_line = line(wolf_tscn, 64, 'step = 0.016666666666666666')
+    times_line = line(wolf_tscn, 108, '"times": PackedFloat32Array(')
+    times = [float(t) for t in times_line.split('(')[1].split(')')[0].split(',')]
+    frames = [0, 25, 31, 37, 53, 65, 89]
+    assert all(abs(t - f / 60) < 1e-6 for t, f in zip(times, frames)) and len(times) == 7
 
-    # B15 -> B16: the change, then what the pin saw.
+    def b14(v):
+        im, d, y = cards.base('Idea 4 · feel designed in frames', 'The author’s words · CHANGE-BRIEF.md:163–169 (the '
+                              'phase table, revision 2026-11-13) · key times from features/wolf/wolf.tscn')
+        ty = quote_block(d, SAFE_L, y + 6, SAFE_R - SAFE_L, IDEA_LABEL, ideas[3], int(v * 1.05))
+        lw = 2380
+        hdr = [c.strip().replace('`', '') for c in head.strip('|').split('|')]
+        body = [[c.replace('`', '').replace('\\|', '|') for c in r] for r in table_rows]
+        tb = cards.table(d, SAFE_L, ty + 34, [430, 400, 900, lw - 1730], hdr, body, size=int(v * 0.8),
+                         head_size=int(v * 0.66), hi_cols=(0,))
+        tb = text_block(d, SAFE_L, tb + 6, note169, F('sans', int(v * 0.66)), lw, INK_SOFT, int(v * 0.88))
+        rx = SAFE_L + lw + 90
+        cards.table(d, rx, ty + 34, [380, SAFE_R - rx - 380], ['Key frame', 'Time (frame ÷ 60), line 108'],
+                    [(str(f), f'{t:.4f} s') for f, t in zip(frames, times)], size=int(v * 0.8), head_size=int(v * 0.62),
+                    hi_cols=(0,))
+        assert tb < 1950, f'B14 overflows ({tb})'
+        cards.footer(d, f'CHANGE-BRIEF.md:163–169, 197 · {wolf_tscn}:64 ({step_line}) and :108')
+        return im
+    still('B14', fit(b14, (80, 76, 72, 68, 64, 60, 56, 52, 48, 46, 44)), {'card': 'media/B14.png',
+          'source': 'CHANGE-BRIEF.md:163-169,197; wolf.tscn:64,108'})
+
+    # B15 -> B16: the scale track, then each boundary in a fixture strip and in play.
+    workbench('B15', 'Clip 2 · the keys built from the phase table', wolf_tscn, 101, 112, 'tracks/3/type', [
+        ('Line 64', 'step = 0.016666666666666666 (1/60 s)'),
+        ('Key frames ÷ 60 (all four pose tracks)', '0, 25, 31, 37, 53, 65, 89 → 0, 0.4167, 0.5167, 0.6167, 0.8833, '
+                                                  '1.0833, 1.4833 s')],
+        [(0.0, 104, 'Line 104: the track keys Facing/Rig:scale'),
+         ('frames zero', 108, 'Line 108: key times = frame ÷ 60'),
+         ('crouch, stretch', 111, 'Line 111: (1.08, 0.86) crouch · (1.22, 0.84) stretch · (0.94, 1.06) overshoot')],
+        font=23)
+    ticks_fx = {r['since_growl']: r for r in (json.loads(l) for l in
+                (CAPS / 'lunge/game-r0/ticks_take_lunge.jsonl').read_text(encoding='utf-8').splitlines())}
+    fx_items, play_items = [], []
+    play_frames = {0: 880, 31: 911, 53: 933, 89: 969}
+    for g, f in play_frames.items():
+        fr = ticks_fx[g]
+        fx_items.append((cap(f'lunge/game-r0/take_lunge_g+{g:02d}.png').crop((220, 200, 500, 345)),
+                         f"g+{g} · {fr['w_state']} · clip {fr['clip']} {fr['clip_frame']}", True))
+        r = rows[f]
+        assert r['f'] - 880 == g and r['wcf'] == (g if g < 89 else 0), (g, r)
+        play_items.append((wolf_crop(r), f"frame {f} · g+{g} · {r['ws']} · clip {r['wclip']} {r['wcf']}", True))
+    assert rows[880]['ws'] == 'GROWL' and rows[879]['ws'] == 'PATROL'
+
+    def b16(v):
+        im, d, y = cards.base('Each phase boundary, in a strip and in play', 'Fixture capture (top) · ' + PLAY + ' (bottom)'
+                              ' · ' + RESULTS)
+        d.text((SAFE_L, y), 'Fixture capture · captures/lunge/game-r0/take_lunge_g+00, +31, +53, +89 (the harness places the '
+               'characters; its overlay and collision shapes are on)', font=F('sans', 38), fill=INK_SOFT)
+        b1, k = crops_row(im, d, fx_items, SAFE_L, y + 60, SAFE_R - SAFE_L, 560, cap_size=40)
+        d.text((SAFE_L, b1 + 20), f'{PLAY} · frames 880, 911, 933, 969: the first lunge of B04, g+0 = GROWL entry',
+               font=F('sans', 38), fill=INK_SOFT)
+        b2, _ = crops_row(im, d, play_items, SAFE_L, b1 + 80, SAFE_R - SAFE_L, 560, cap_size=40)
+        ty = text_block(d, SAFE_L, b2 + 16, f'Crops enlarged ×{k}, nearest neighbour; g+n = physics ticks since the growl '
+                        'began (clip frame n). test_clip_lunge.gd: 18 checks / 0 failures — every track resolves to a real '
+                        'node and property; key times = frames ÷ 60 within half a frame; step 1/60; length 89/60, '
+                        'LOOP_NONE; poses match the table.', F('sans', v), SAFE_R - SAFE_L, INK, int(v * 1.25))
+        assert ty < 1950, ty
+        cards.footer(d, 'captures/lunge/game-r0/ (tests/capture_lunge.gd) · capture/' + CAPTURE +
+                     '-frames.jsonl · logs/test_clip_lunge_60fps.log')
+        return im
+    still('B16', fit(b16, (60, 56, 52, 48, 46, 44, 42, 40, 38)), {
+        **caps_prov(*[f'lunge/game-r0/take_lunge_g+{g:02d}.png' for g in play_frames]),
+        'capture_frames': list(play_frames.values()), 'capture_sha256': sha256(REEL / 'capture' / f'{CAPTURE}.mp4')},
+        evidence=True)
+
+    # B17 — idea 3: the two clocks, measured.
     wgd = 'features/wolf/wolf.gd'
-    workbench('B15', 'The one behaviour change: a growl hit cancels the lunge', wgd, 152, 163, 'func take_damage', [
+    probes = {}
+    for fps in (30, 60, 144):
+        for l in (LOGS / f'probe_two_clocks_{fps}fps.log').read_text(encoding='utf-8', errors='replace').splitlines():
+            if l.startswith('{'):
+                r = json.loads(l)
+                probes.setdefault(fps, {})[r['id']] = r.get('observed') or r.get('observation')
+    for fps, p in probes.items():
+        c = p['clip-time-equals-phase-time-on-every-lunge-clip-tick']
+        w = p['lunge-active-window']
+        assert c['lunge_clip_ticks'] == 89 and c['largest_abs_difference_s'] < 2e-15, (fps, c)
+        assert w['clip_active_section_frames'] == [31, 52] and w['gameplay_reads_hitbox_frames'] == [32, 53]
+        assert w['monitoring_on_frames'] == [31, 53] and abs(w['largest_offset_s'] - 1 / 60) < 1e-9
+
+    def clocks_table(d, y, v):
+        return cards.table(d, SAFE_L, y, [1250, SAFE_R - SAFE_L - 1250],
+                           ['tests/probe_two_clocks.gd at 30, 60 and 144 fps (identical)', 'Measured'], [
+            ('Clip time against phase time', 'equal on all 89 lunge-clip ticks; largest difference 1.4e-15 s'),
+            ('The hitbox read (LUNGE branch, line 89)', 'clip frames 32–53 against the active section 31–52: '
+                                                        'largest disagreement 1/60 s ≈ 0.0167 s'),
+            ('monitoring', 'on for frames 31–53: switched off with set_deferred (line 121)'),
+            ('The process clock', 'the torch flicker player and the wolf’s removal timer (tick 79 at 60 fps, 80 at 30 and '
+                                  '144); gameplay reads neither')], size=int(v * 0.7), head_size=int(v * 0.6), hi_cols=(0,))
+
+    still('B17', idea_card('Idea 3 · two clocks, measured', ideas[2], [
+        (wolf_tscn + ' · the AnimationPlayer', snap_lines(wolf_tscn, [251, 252], {251: 'process_physics_priority = -1',
+                                                                                   252: 'callback_mode_process = 0'})),
+        (wgd + ' · the hitbox, read and switched off', snap_lines(wgd, [89, 121], {89: 'for body in lunge_hitbox',
+                                                                                  121: 'lunge_hitbox.set_deferred'}))],
+        'callback_mode_process = 0 is ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS. The author’s short answer 5 first said '
+        '0 s and was corrected to the probe’s measurement (CHANGE-BRIEF.md:193).',
+        'CHANGE-BRIEF.md:183, 193, 197 · logs/probe_two_clocks_30fps.log · _60fps.log · _144fps.log · TEST-REPORT.md → Two clocks',
+        extra=clocks_table, sizes=(72, 68, 64, 60, 56, 52, 48, 46, 44, 42, 40)),
+        {'card': 'media/B17.png', 'source': 'CHANGE-BRIEF.md:197; wolf.tscn:251-252; wolf.gd:89,121; '
+                                            'logs/probe_two_clocks_{30,60,144}fps.log'})
+
+    # B18 -> B19: the change, then what the pin saw.
+    workbench('B18', 'The one behaviour change: a growl hit cancels the lunge', wgd, 152, 163, 'func take_damage', [
         ('Line 24', 'const RECOVER_FRAME := 53'),
         ('Lines 164–171', 'the last HP: DEAD in every phase')],
         [(0.0, 158, 'Line 158: only during GROWL'),
          ('sends the wolf to recover', 159, 'Line 159: straight to RECOVER'),
          ('seeks the clip', 162, 'Line 162: seek to frame 52, so the hit tick shows 53'),
          ('Every other phase', 163, 'Line 163: any other phase: HP only')], font=24)
-    still('B16', figure_left_notes('What the pin saw', FIGLABEL + ' · logs/pin/hit_growl.json',
+    still('B19', figure_left_notes('What the pin saw', FIGLABEL + ' · logs/pin/hit_growl.json · git log',
         cap('figures/pin_timeline.png'),
         'captures/figures/pin_timeline.png: hit_growl before (a9b4bc1) and after (ff71bbb); one cast at tick 4, the hit '
         'on tick 24', [
-            ('hit_growl', 'from tick 24: GROWL → RECOVER; no lunge, hitbox never armed'),
-            ('kill (not predicted)', 'its first hit also lands in GROWL, so its second fireball now misses'),
-            ('Re-pin, ff71bbb, after play', 'only hit_growl.json and kill.json changed; the other six byte-identical; '
-                                            '16 / 0 at 30, 60, 144')],
-        'TEST-REPORT.md → Pin first · FRICTIONAL.md → Predictions · git show --stat ff71bbb', frac=0.68),
+            ('Pin first (tests/test_pin_behaviour.gd)', 'a9b4bc1: 8 scenarios, every physics tick, real input, 16 / 0 at '
+                                                        '30, 60, 144 · clips 72e8d21 and wired 33d78ae: unchanged'),
+            ('The change, 72f37b8', 'hit_growl from tick 24: GROWL → RECOVER, no lunge; kill too (its first hit lands '
+                                    'in GROWL), not predicted'),
+            ('Played, then re-pinned, ff71bbb', 'only hit_growl.json and kill.json changed; 16 / 0 at 30, 60, 144')],
+        'TEST-REPORT.md → Pins · FRICTIONAL.md → Predictions · git show --stat ff71bbb', frac=0.6),
         caps_prov('figures/pin_timeline.png'), evidence=True)
 
-    # B17 — edges.
-    still('B17', table_card('Edges at the phase boundaries', RESULTS + ' · tests/test_anim_edges.gd · real clicks',
-        ['Case (reference: growl from tick 80, lunge 111, recover 133)', 'Result'],
-        [('Hit on the first and on the last GROWL tick', 'cancel: RECOVER on the hit tick, clip frame 53, hitbox never armed'),
-         ('Hit on the first and on the last LUNGE tick', 'no cancel: states, positions and clip as the unhit run'),
-         ('Hit on the first RECOVER tick', 'only HP changes'),
-         ('Killing hit in GROWL, LUNGE, RECOVER', 'DEAD, dead clip, hitbox off from the next tick'),
-         ('Real Esc mid-lunge', 'position, state and clip freeze on the same tick; resume aligned'),
-         ('Run → jump → land → run', 'the cycle restarts at frame 0'),
-         ('Clip frame = ticks since the clip began', 'all 119 ticks checked: 89 of one growl-lunge-recover, 30 of the next '
-                                                     'growl')],
-        [1700, 1756], '13 checks / 0 failures at 30, 60 and 144 fps.',
-        'logs/test_anim_edges_30fps.log · _60fps.log · _144fps.log · TEST-REPORT.md → Edges'),
-        {'card': 'media/B17.png', 'source': 'logs/test_anim_edges_{30,60,144}fps.log'})
+    # B20 — edges before, on and after every boundary (identical at 30, 60, 144).
+    edges = {}
+    for fps in (30, 60, 144):
+        res = {}
+        for l in (LOGS / f'test_anim_edges_{fps}fps.log').read_text(encoding='utf-8', errors='replace').splitlines():
+            if l.startswith('{"id"'):
+                r = json.loads(l)
+                res[r['id']] = r
+            if l.startswith('WALKER TESTS'):
+                res['summary'] = l
+        edges[fps] = res
+    for fps in (30, 144):
+        assert edges[fps]['summary'] == edges[60]['summary'] == 'WALKER TESTS: 25 checks / 0 failures'
+    e60 = edges[60]
+    bnames = [('growl-start', 0, 'GROWL start'), ('growl-to-lunge', 31, 'GROWL → LUNGE'),
+              ('lunge-to-recover', 53, 'LUNGE → RECOVER'), ('recover-to-patrol', 89, 'RECOVER → PATROL')]
+    rule = {'cancel': 'cancel', 'no-cancel': 'no cancel', 'hp-only': 'HP only'}
+    grid = []
+    for key, frame, name in bnames:
+        row = [f'{name} (frame {frame})']
+        for when in ('before', 'on', 'after'):
+            hit = next(v for k, v in e60.items() if k.startswith(f'boundary-{key}-{when}-'))
+            assert hit['status'] == 'PASS'
+            outcome = rule[hit['id'].split(f'-{when}-')[1]]
+            for fps in (30, 144):
+                assert edges[fps][hit['id']]['status'] == 'PASS'
+            row.append(f"tick {hit['observed']['hit_tick']} · {hit['observed']['expected_phase']}: {outcome}")
+        grid.append(row)
+    still('B20', table_card('Edges: before, on and after every boundary', RESULTS + ' · tests/test_anim_edges.gd · real '
+        'clicks · reference: growl from tick 80', ['Boundary of the lunge clip', 'One tick before', 'On the boundary',
+                                                    'One tick after'], grid, [1000, 820, 820, 816],
+        'A hit is resolved before the wolf’s update on its tick, so a hit “on” a boundary follows the phase before. Also: '
+        'first and last tick of GROWL and LUNGE, first of RECOVER; a killing hit in GROWL, LUNGE and RECOVER (DEAD, dead '
+        'clip); a real Esc mid-lunge freezes and resumes aligned; run → jump → land restarts at frame 0; clip frame = '
+        'phase tick on 119 ticks. 25 checks / 0 failures at 30, 60 and 144 fps.',
+        'logs/test_anim_edges_30fps.log · _60fps.log · _144fps.log (b33642a) · TEST-REPORT.md → Edges', hi_cols=(0,)),
+        {'card': 'media/B20.png', 'source': 'logs/test_anim_edges_{30,60,144}fps.log'})
 
-    # B18 — two alignment bugs, with this capture's evidence.
-    still('B18', line_panels('Two alignment bugs the read-backs could not see', SRCVIEW + ' · fixes in 272fb39', [
-        ('1 · Found by the edges test: a cancel drew clip frame 54 on the hit tick', [[(wgd, 162, line(wgd, 162, 'anim.seek'))]],
-         'The hit is handled before the tick’s update, and the clip then advances once: seeking frame 52 makes the hit tick '
-         'show 53. In capture/run-01 the cancel tick (frame 1549) shows RECOVER, clip frame 53.'),
-        ('2 · Seen in a capture’s tick log: after a one-tick patrol, a growl began at frame 1', [[
-            (wolf_tscn, 248, line(wolf_tscn, 248, 'process_physics_priority')),
-            (ptscn, 416, line(ptscn, 416, 'process_physics_priority'))]],
-         'Spotted in the windowed lunge capture’s tick log; both AnimationPlayers now run before their owner’s script. The '
-         'edges check was then extended; with the setting '
-         'removed it fails on tick 170. In capture/run-01, PATROL lasts one tick (frame 969) and the growl starts at clip '
-         'frame 0 (frame 970).')],
-        'CHANGE-BRIEF.md revision 2026-11-12 (two clip-alignment fixes) · TEST-REPORT.md → Edges · capture/run-01-frames.jsonl'),
-        {'card': 'media/B18.png', 'source': 'wolf.gd:162; wolf.tscn:248; player.tscn:416; run-01-frames.jsonl 969-970, 1549'})
+    # B21 — the four published mutations.
+    def summary(name):
+        return next(l for l in (LOGS / name).read_text(encoding='utf-8', errors='replace').splitlines()
+                    if l.startswith('WALKER TESTS')).replace('WALKER TESTS: ', '')
+    m1 = (LOGS / 'mutation-a7-M1-lunge-track-property-renamed_60fps.log').read_text(encoding='utf-8', errors='replace')
+    assert 'lunge track 4: FrontPivot has no property rotaton' in m1
+    m4 = [summary(f'mutation-a7-M4-fresh-import-{n}_60fps.log') for n in ('clip-run', 'clip-lunge', 'clip-flicker',
+                                                                          'anim-structure')]
+    still('B21', table_card('Broken on purpose: M1 to M4', RESULTS + ' · each from a sparse git worktree of HEAD, '
+        'removed after (50aac04)', ['Mutation', 'What the test printed', 'Result'], [
+            ('M1 · lunge track subname renamed in the clip only (rotation → rotaton)',
+             'track_problems(): “lunge track 4: FrontPivot has no property rotaton”',
+             summary('mutation-a7-M1-lunge-track-property-renamed_60fps.log') + ' · exit 1'),
+            ('M2 · run loop_mode = LOOP_NONE', 'run-length-0.4-loop-linear and only-run-loops: FAIL (loop_mode 0)',
+             summary('mutation-a7-M2-run-loop-none_60fps.log') + ' · exit 1'),
+            ('M3 · run frame key = hframes × vframes (4)', 'every frame key < hframes × vframes: FAIL (frame 4, 4 cells '
+                                                          'in all)', summary('mutation-a7-M3-run-frame-key-4_60fps.log') +
+             ' · exit 1'),
+            ('M4 · .godot deleted, --import, every read-back', 'run, lunge, flicker, structure: ' + ', '.join(m4) +
+             '; 0 error lines', 'passes: the clips are scene text, not imported — it proves no more than that')],
+        [1150, 1450, 856], 'Five earlier mutation logs (logs/mutation-a7-1…5): a Godot 3 loop = true loads as loop_mode 1 '
+        'and still loops on 4.7.2 (not caught, harmless); a continuous frame track, a track to a missing node and the '
+        'growl cancel removed are caught; a7-3 is the same mutation as M3.',
+        'logs/mutation-a7-M*_60fps.log · TEST-REPORT.md → Mutations (exit codes)'),
+        {'card': 'media/B21.png', 'source': 'logs/mutation-a7-M1..M4_60fps.log; TEST-REPORT.md:13'})
 
-    # B19 — mutations.
-    still('B19', table_card('Broken on purpose', RESULTS + ' · each in a temporary git worktree, removed',
-        ['Mutation', 'Caught by', 'Log'],
-        [('a7-1 · run clip written with Godot 3 loop = true', 'not caught: 4.7.2 loads it as loop_mode 1, the run still loops '
-                                                            '(predicted failure F1 does not occur)', '16 / 0'),
-         ('a7-2 · run frame track continuous', 'test_clip_run · every-track-discrete', '1 failure'),
-         ('a7-3 · run frame key 4, past the last cell', 'test_clip_run · frame range and frame keys', '2 failures'),
-         ('a7-4 · lunge track to a missing node', 'track_problems(): no node at FrontPivotX', '2 failures'),
-         ('a7-5 · growl cancel removed', 'test_anim_edges: the lunge continues, hitbox armed 23 ticks', '2 failures')],
-        [1300, 1556, 600], 'No mutation printed a game error in a 600-frame headless run without input; that run never plays the lunge '
-        'or reaches the run’s bad frame. The tests are what catch them.',
-        'logs/mutation-a7-1-…-5-*_60fps.log · TEST-REPORT.md → Mutations'),
-        {'card': 'media/B19.png', 'source': 'logs/mutation-a7-*_60fps.log'})
+    # B22 — what the read-backs proved, and what no headless run shows.
+    nohead = doc_at('report', 27, 'Whether either motion reads or feels committed')
+    rb = [(n, summary(f'test_{n}_60fps.log')) for n in ('clip_run', 'clip_lunge', 'clip_flicker', 'anim_structure')]
+    assert [s for _, s in rb] == ['17 checks / 0 failures', '18 checks / 0 failures', '12 checks / 0 failures',
+                                  '11 checks / 0 failures'], rb
 
-    # B20 — growl window and two clocks.
-    def b20(v):
-        im, d, y = cards.base('The growl window, and a second clock', FIGLABEL)
-        gw = cap('figures/growl_window.png')
-        tc = cap('figures/two_clocks.png')
-        lw = 1640
-        gp, _ = scaled(gw, lw, 1930 - (y + 10) - 120)
-        cards.paste_framed(im, d, gp, SAFE_L, y + 10)
-        text_block(d, SAFE_L, y + 10 + gp.height + 16, 'captures/figures/growl_window.png · tests/probe_growl_cancel.gd, '
-                   'real clicks', F('sans', 36), lw, INK_SOFT, 46)
-        rx = SAFE_L + lw + 80
-        tp, _ = scaled(tc, SAFE_R - rx, 900)
-        cards.paste_framed(im, d, tp, rx, y + 10)
-        ty = text_block(d, rx, y + 10 + tp.height + 16, 'captures/figures/two_clocks.png · pin kill scenario',
-                        F('sans', 36), SAFE_R - rx, INK_SOFT, 46)
-        notes_block(d, rx, ty + 30, SAFE_R - rx, [
-            ('Growl window (kept by the author)', 'from sight distance (dx 118.75) the fireball needs 20 ticks: only casts '
-                                                  'in the first 12 of 31 growl ticks (0.2 s) cancel'),
-            ('Second clock (kept: gameplay never reads it)', 'removal after death: a create_timer on the frame clock '
-                                                            '(wolf.gd:170) — tick 79 at 60 fps, 80 at 30 and 144')], v)
-        cards.footer(d, 'TUNING.md · CHANGE-BRIEF.md revisions 2026-11-10 and 2026-11-12 · FRICTIONAL.md')
-        return im
-    still('B20', fit(b20, (60, 56, 52, 48, 44, 40)), caps_prov('figures/growl_window.png', 'figures/two_clocks.png'))
-
-    # B21 — run r0 and three dead ends.
-    rc = cap('figures/run_cycle.png')
-    def b21(v):
-        im, d, y = cards.base('The run, r0, and three dead ends', FIXTURE + ' · captures/run/')
-        r0 = rc.crop((0, 60, 700, 440))
-        lw = 1680
-        p0, _ = scaled(r0, lw, 820)
-        cards.paste_framed(im, d, p0, SAFE_L, y + 10)
-        ty = text_block(d, SAFE_L, y + 10 + p0.height + 14, 'captures/figures/run_cycle.png, r0: the two A2 frames at 8 fps, '
-                        'ticks per frame 8 8 7 8 7 8 7 8 6 …', F('sans', 36), lw, INK_SOFT, 46)
-        notes_block(d, SAFE_L, ty + 26, lw, [
-            ('r0 in the game (captures/run/game-r0/)', 'a 1 px hat hop; each pose held 7–8 ticks while the body moves '
-                                                        '1.83 px per tick: the planted foot slides 13–15 px, then snaps back')], v)
-        rx = SAFE_L + lw + 80
-        cb = cap('run/analysis/contact_b_compare_8x.png').crop((0, 0, 2032, 600))
-        pc, _ = scaled(cb, SAFE_R - rx, 640)
-        cards.paste_framed(im, d, pc, rx, y + 10)
-        ty2 = text_block(d, rx, y + 10 + pc.height + 14, 'captures/run/analysis/contact_b_compare_8x.png: Gemini contact B '
-                         'against contact A; magenta = the 103 px that differ, all in the trailing leg', F('sans', 36),
-                         SAFE_R - rx, INK_SOFT, 46)
-        notes_block(d, rx, ty2 + 26, SAFE_R - rx, [
-            ('Rejected (TUNING.md, 26932e1)', 'mirroring the leg region: a kick, boots pointing back · Gemini contact B, '
-                                              'twice: the same foot forward · darkening the far leg: 19 px, invisible at 2×')], v)
-        cards.footer(d, 'TUNING.md → Run cycle r0 · FRICTIONAL.md → Struggle and revision · captures/run/analysis/')
-        return im
-    still('B21', fit(b21, (60, 56, 52, 48, 44, 40)), caps_prov('figures/run_cycle.png', 'run/analysis/contact_b_compare_8x.png'))
-
-    # B22 — r1 rejected in play, r2 kept.
     def b22(v):
-        im, d, y = cards.base('The run: r1 rejected in play, r2 kept', FIXTURE + ' · captures/run/')
-        r1 = cap('run/analysis/run_r1_beats_vs_r0_6x.png')
-        p1, _ = scaled(r1, SAFE_R - SAFE_L, 470)
-        cards.paste_framed(im, d, p1, SAFE_L, y + 10)
-        ty = text_block(d, SAFE_L, y + 10 + p1.height + 14, 'captures/run/analysis/run_r1_beats_vs_r0_6x.png: r0 and r1 '
-                        'at each of r1’s four beats (game strip, debug collisions on)', F('sans', 36), SAFE_R - SAFE_L,
-                        INK_SOFT, 46)
-        r2 = rc.crop((0, 480, 1060, 850))
-        lw = 1900
-        p2, _ = scaled(r2, lw, 1930 - (ty + 30) - 60)
-        cards.paste_framed(im, d, p2, SAFE_L, ty + 30)
-        text_block(d, SAFE_L, ty + 30 + p2.height + 12, 'captures/figures/run_cycle.png, r2', F('sans', 36), lw, INK_SOFT, 46)
-        rx = SAFE_L + lw + 80
-        notes_block(d, rx, ty + 30, SAFE_R - rx, [
-            ('r1 · fc096c9 → reverted 338c8bf', 'a 2 px sink and lift from the same two frames; hat rows 268 / 270 / 267 / '
-                                               '265 exactly as predicted; in play: “still looks like the feet twitch”'),
-            ('r2 · 32eed66 · kept', 'a four-frame cycle drawn in one image, cleaned onto the A2 palette, 10 fps: '
-                                    '“much better”')], v)
-        cards.footer(d, 'TUNING.md → Run cycle r1, r2 (the author’s words, translated from Chinese) · FRICTIONAL.md')
+        im, d, y = cards.base('What the read-backs proved, and what they cannot', RESULTS + ' · TEST-REPORT.md:12, 15, 25–27')
+        ty = cards.table(d, SAFE_L, y + 10, [900, 650, SAFE_R - SAFE_L - 1550], ['Read-back (60 fps)', 'Log', 'Checks'], [
+            ('test_clip_run.gd', rb[0][1], 'track_problems(); keys 0, 0.1, 0.2, 0.3 within half a frame; step 0.1; '
+                                           'LOOP_LINEAR; discrete; frame keys < hframes × vframes; seam'),
+            ('test_clip_lunge.gd', rb[1][1], 'track_problems(); key times = frames ÷ 60 within half a frame; step 1/60; '
+                                             'length 89/60, LOOP_NONE; rig parts and pivots'),
+            ('test_clip_flicker.gd', rb[2][1], 'step 0.01; LOOP_LINEAR; continuous energy and size; seam per track'),
+            ('test_anim_structure.gd', rb[3][1], 'every state has its clip; play() uses it; autoplay empty; physics '
+                                                 'callback; no other writer; one player per sprite')],
+            size=int(v * 0.9), head_size=int(v * 0.75), hi_cols=(0,))
+        ty = text_block(d, SAFE_L, ty + 30, 'TEST-REPORT.md → What no headless run shows', F('serif_med', int(v * 1.1)),
+                        SAFE_R - SAFE_L, SPARK, int(v * 1.4))
+        ty = quote_block(d, SAFE_L, ty + 10, SAFE_R - SAFE_L, 'TEST-REPORT.md:27, the author’s words', nohead, int(v * 1.05))
+        assert ty < 1950, ty
+        cards.footer(d, 'logs/test_clip_run_60fps.log · test_clip_lunge · test_clip_flicker · test_anim_structure · '
+                        'TEST-REPORT.md')
         return im
-    still('B22', fit(b22, (60, 56, 52, 48, 44, 40)), caps_prov('run/analysis/run_r1_beats_vs_r0_6x.png', 'figures/run_cycle.png'))
+    still('B22', fit(b22, (72, 68, 64, 60, 56, 52, 48, 46, 44, 42)), {'card': 'media/B22.png',
+          'source': 'logs/test_clip_*_60fps.log; logs/test_anim_structure_60fps.log; TEST-REPORT.md:27'})
 
-    # B23 -> B24: the flicker clip, then the flicker measured in the capture.
-    lights = 'effects/cave_lights.tscn'
-    workbench('B23', 'Beyond the requirements: the torch flicker clip', lights, 19, 30, 'tracks/0/type', [
-        ('Lines 75–89', 'PointLight2D energy: TorchLeft 1.6 · TorchRight 1.5'),
-        ('Lines 16–18', 'flicker · length = 2.4 · loop_mode = 1 (LOOP_LINEAR) · autoplay (line 95)')],
-        [(0.0, 22, 'Line 22: the track keys TorchLeft:energy'),
-         ('continuous tracks', 23, 'Lines 23 and 28: interp 2, update 0 (continuous)'),
-         ('Its seam', 29, 'Line 29: the first and the last value are both 1.6')], font=23)
-    pool = []
-    for n in range(0, 441):            # frames 441-442 are empty: the scene was freed between segments
-        a = np.asarray(play(n)).astype(float)
-        pool.append(float(a[110:190, 40:120].mean()))
-    T = [0, 0.13, 0.31, 0.47, 0.7, 0.88, 1.07, 1.33, 1.58, 1.81, 2.06, 2.4]
-    V = [1.6, 1.2, 1.95, 1.3, 2.08, 1.45, 1.12, 1.85, 1.25, 2.0, 1.35, 1.6]
-    best = None
-    for off in range(-3, 4):
-        e = np.interp(((np.arange(441) - off) / 60.0) % 2.4, T, V)
-        c = float(np.corrcoef(pool, e)[0, 1])
-        if best is None or c > best[0]:
-            best = (c, off, e)
-    corr, off, energy = best
-    assert corr > 0.9, corr
+    # B23 — Claude against the author.
+    against = doc_at('report', 23, '| **Claude against me** | ')
+    slips = doc_at('frictional', 42, '**Process slips.** ')
+    assert '2.6–3.3 px' in against and 'I rejected r1 in play' in against and 'not noticeable' in against
+    assert 'it still looks like the feet twitch' in doc_at('tuning', 28, '**r1:**')
+    r1img = cap('run/analysis/run_r1_beats_vs_r0_6x.png')
 
-    def b24(v):
-        im, d, y = cards.base('The flicker, measured in the capture', PLAY + ' · frames 0–440')
-        x0, y0, pw, ph = SAFE_L + 120, y + 40, 2300, 1050
-        d.rectangle([x0, y0, x0 + pw, y0 + ph], outline=BORDER, width=4)
-        lo, hi = min(pool), max(pool)
-        elo, ehi = 1.1, 2.1
-        def px(i):
-            return x0 + i / 440 * pw
-        pts = [(px(i), y0 + ph - (p - lo) / (hi - lo) * ph * 0.9 - ph * 0.05) for i, p in enumerate(pool)]
-        ept = [(px(i), y0 + ph - (e - elo) / (ehi - elo) * ph * 0.9 - ph * 0.05) for i, e in enumerate(energy)]
-        d.line(ept, fill=SPARK, width=8)
-        d.line(pts, fill=INK, width=5)
-        for t in (0, 2.4, 4.8, 7.2):
-            xx = px(t * 60)
-            if xx <= x0 + pw:
-                d.line([xx, y0, xx, y0 + ph], fill=BORDER, width=3)
-                d.text((xx - 30, y0 + ph + 14), f'{t:g} s', font=F('sans', 38), fill=INK_SOFT)
-        d.text((x0, y0 - 64), f'black: mean brightness of the left torch’s pool (screen x 40–120, y 110–190), {lo:.0f}–{hi:.0f} '
-               'of 255 · orange: the clip’s TorchLeft:energy keys, 1.12–2.08 (linear between keys)', font=F('sans', 36),
-               fill=INK_SOFT)
-        crops = [(play(n).crop((0, 70, 200, 230)), f'frame {n}', False) for n in (int(np.argmin(pool[:150])), int(np.argmax(pool[:150])))]
-        rx = x0 + pw + 80
-        b, k = crops_row(im, d, crops, rx, y0, SAFE_R - rx, 560, cap_size=38)
-        notes_block(d, rx, b + 30, SAFE_R - rx, [
-            ('Correlation with the keys', f'{corr:.2f} (best of offsets −3…+3 frames: {off:+d})'),
-            ('test_clip_flicker.gd', '11 / 0 · seam: value at 0 = value at 2.4 s on every track')], v)
-        cards.footer(d, f'capture/run-01 frames 0–440 · effects/cave_lights.tscn:15–30 · logs/test_clip_flicker_60fps.log · '
-                        f'crops enlarged ×{k}')
+    def b23(v):
+        im, d, y = cards.base('Claude against the author', FIXTURE + ' · TEST-REPORT.md:23 · TUNING.md · FRICTIONAL.md:42')
+        pic, _ = scaled(r1img, SAFE_R - SAFE_L, 560)
+        cards.paste_framed(im, d, pic, SAFE_L, y + 10)
+        ty = text_block(d, SAFE_L, y + 10 + pic.height + 14, 'captures/run/analysis/run_r1_beats_vs_r0_6x.png: r0 and r1 at '
+                        'each of r1’s four beats (game strip, collision shapes on)', F('sans', 38), SAFE_R - SAFE_L,
+                        INK_SOFT, 50) + 30
+        cw = (SAFE_R - SAFE_L - 90) // 2
+        notes_block(d, SAFE_L, ty, cw, [
+            ('Waist seam (TEST-REPORT.md:23)', 'Claude estimated a 2.6–3.3 px step; the author saw none, and neither did '
+                                               'Claude at 4× in the game strip'),
+            ('Run r1 (fc096c9), the strip above', 'hat rows 268 / 270 / 267 / 265 exactly as predicted; in play: “it still '
+                                                  'looks like the feet twitch” — reverted (338c8bf)')], v)
+        notes_block(d, SAFE_L + cw + 90, ty, cw, [
+            ('Visual upgrades r0 (TUNING.md)', 'Claude read them as matching its values; the author: “not noticeable” → '
+                                               'r1, then “clearly visible”'),
+            ('Process slips the author recorded (FRICTIONAL.md:42)', 'one amended local commit; a temporary backup one '
+             'folder above the assignment root for a few seconds; the mutation script run from a temporary folder outside '
+             'the repository; nothing left behind')], v)
+        cards.footer(d, 'TEST-REPORT.md → Claude against me · TUNING.md (the author’s verdicts, translated) · '
+                        'FRICTIONAL.md → Process slips')
         return im
-    still('B24', fit(b24, (60, 56, 52, 48, 44)), {'images': ['capture/run-01 frames 0-440'],
-          'capture_sha256': sha256(REEL / 'capture' / 'run-01.mp4'), 'measure': 'mean RGB of crop (40,110)-(120,190) per frame',
-          'correlation': round(corr, 4), 'offset_frames': off}, evidence=True)
-    EV.mkdir(exist_ok=True)
-    save_json(EV / 'torch-flicker-measurement.json', {
-        'source': 'capture/run-01 frames 0-440 (segment "run")', 'region': [40, 110, 120, 190],
-        'clip_track': 'effects/cave_lights.tscn TorchLeft:energy (lines 26, 29), linear interpolation between keys',
-        'correlation': round(corr, 4), 'best_offset_frames': off, 'mean_brightness': [round(p, 3) for p in pool]})
+    still('B23', fit(b23, (64, 60, 56, 52, 48, 46, 44, 42)), caps_prov('run/analysis/run_r1_beats_vs_r0_6x.png'))
 
-    # B25 — embers, afterimage, readability.
-    ghost_row = rows[926]
-    sx = int(round(ghost_row['wx'] - ghost_row['cam_x'] + 320))
-    g = play(926).crop((sx - 130, 250, sx + 90, 335))
+    # B24 — uncertain, and the next step.
+    nxt = doc_at('frictional', 26, '**What I learned:**')
+    assert 'The next test is in-betweens for the planted foot, in the final project.' in nxt
+    doc_at('readme', 62, '- The growl-cancel window is 0.2 s')
+    doc_at('readme', 63, "- The run's planted foot still slides")
+    lim = doc_at('submission', 16, 'Known limitations:')
+    assert '1/60 s' in lim
+    fresh = doc_at('report', 14, '| **Fresh cache** | A clean local clone of HEAD')
+    still('B24', columns('Uncertain, and the next step', 'README.md → Known limitations · SUBMISSION.md · FRICTIONAL.md · '
+                         'this film', [
+        ('Still open in the game', [
+            ('', 'The planted foot still slides while a frame is held.'),
+            ('', 'The growl window is 0.2 s from sight distance — kept by the author’s decision.'),
+            ('', 'The hitbox is read 1/60 s after the clip’s active section begins.')]),
+        ('Not confirmed by this film', [
+            ('', 'A fresh clone of the submitted commit: it comes after this film (TEST-REPORT.md:14 records a clean '
+                 'local clone of HEAD as it was then: import, then 17 / 0 and 18 / 0).'),
+            ('', 'A broken track “skipped with no error”: the author’s understanding, not a measurement (the author’s '
+                 'note, CHANGE-BRIEF.md:201); no run here played a broken clip.'),
+            ('', 'Feel: scripted input here; the verdicts are the author’s, in play.')]),
+        ('The next step (FRICTIONAL.md:26)', [
+            ('', '“The next test is in-betweens for the planted foot, in the final project.”'),
+            ('Also open (FRICTIONAL.md:53)', 'whether the growl window should be wider — a gameplay change with its own '
+                                             'pin and re-pin')])],
+        'README.md:62–64 · SUBMISSION.md:16 · TEST-REPORT.md:14 · CHANGE-BRIEF.md:201 · FRICTIONAL.md:26, 52–53'),
+        {'card': 'media/B24.png', 'source': 'README.md:62-64; SUBMISSION.md:16; TEST-REPORT.md:14; CHANGE-BRIEF.md:201 '
+                                            '(working tree); FRICTIONAL.md:26,52-53'})
 
-    def b25(v):
-        im, d, y = cards.base('Beyond the requirements: embers, afterimage, readability', PLAY + ' · frame 926')
-        lw = 2000
-        pg, k = scaled(g, lw, 900, pixel=True)
-        cards.paste_framed(im, d, pg, SAFE_L, y + 10)
-        ty = text_block(d, SAFE_L, y + 10 + pg.height + 16, f'capture/run-01 frame 926: LUNGE, {ghost_row["ghosts"]} ghosts '
-                        f'alive (frame log); enlarged ×{k}, nearest neighbour', F('sans', 38), lw, INK_SOFT, 50)
-        full, _ = scaled(play(926), lw, 1930 - (ty + 30))
-        cards.paste_framed(im, d, full, SAFE_L, ty + 24)
-        rx = SAFE_L + lw + 90
-        notes_block(d, rx, y + 10, SAFE_R - rx, [
-            ('Afterimage (wolf.tscn:254–259)', 'a ghost every 3 LUNGE ticks, alpha 0.6, life 0.25 s, tint (1, 0.55, 0.2); '
-                                              'test_afterimage 6 / 0 at 30, 60, 144'),
-            ('Embers (embers.tscn)', '144 particles, lifetime 9 s'),
-            ('Readability (TUNING.md)', 'robe-to-cave contrast 2.74 before A7 → 2.57 at r0 → 3.07 at r1'),
-            ('The author, in the game', 'r0 “not noticeable” · r1 “clearly visible”: kept'),
-            ('Pin after each', '16 / 0 at 30, 60, 144')], v)
-        cards.footer(d, 'features/wolf/wolf.tscn · effects/embers.tscn · TUNING.md → Visual upgrades · logs/test_afterimage_*')
-        return im
-    still('B25', fit(b25, (56, 52, 48, 46, 44, 40)), {'images': ['capture/run-01 frame 926'],
-          'capture_sha256': sha256(REEL / 'capture' / 'run-01.mp4')})
-
-    # B26 — limitations.
-    still('B26', columns('Limitations', 'README.md → Known limitations · FRICTIONAL.md → Still open · this film', [
-        ('In the game', [
-            ('', 'The planted foot still slides while a cell is held.'),
-            ('', 'The growl window is 0.2 s from sight distance, kept by the author.'),
-            ('', 'The wolf’s removal after death runs on the frame clock (gameplay never reads it).')]),
-        ('In this film', [
-            ('', 'Gameplay is scripted input, not a human playtest.'),
-            ('', 'How the clips feel is the author’s judgement in play (TEST-REPORT.md → Human checks).'),
-            ('', 'Strips and figures marked “fixture” come from harnesses that place the characters.')])],
-        'README.md · FRICTIONAL.md · TEST-REPORT.md'),
-        {'card': 'media/B26.png', 'source': 'README.md Known limitations; FRICTIONAL.md Still open'})
-
-    # B27 — who did what.
-    still('B27', columns('Who did what', f'FRICTIONAL.md → Human and AI contributions · game source revision {BUILD}', [
+    # B25 — who did what; the sheet's source and terms; the revision shown.
+    doc_at('frictional', 46, '- **Mine:**')
+    doc_at('frictional', 47, '- **Claude Code:**')
+    doc_at('frictional', 48, '- **claude.ai (chat):**')
+    doc_at('submission', 15, 'Summary of my work:')
+    still('B25', columns('Who did what', f'FRICTIONAL.md → Human and AI contributions · SUBMISSION.md · ATTRIBUTION.md · '
+                         f'game source shown {BUILD}', [
         ('The author', [
             ('', 'Both clips and their look; the per-phase interrupt rule; keeping the 0.2 s window.'),
-            ('', 'Every first look and verdict in the running game; the run images in Gemini; accepting the re-pin.')]),
+            ('', 'Every first look and verdict in the running game; the run images in Gemini; the re-pin after play; '
+                 'reviews of the agent’s CLAUDE.md draft; the human checks.')]),
         ('Claude Code', [
-            ('', 'CLAUDE.md drafts, the pin, the clips and rig, read-backs, structure, edges and afterimage tests, probes, '
-                 'capture harnesses, cleanup tools, visual upgrades, mutations, figures, measurements; this film.')]),
+            ('', 'The pin, clips and rig, read-backs with the published track_problems(), structure and edges tests, '
+                 'probes, harnesses, mutations, visual upgrades, figures, measurements; this film.')]),
         ('claude.ai (chat)', [
             ('', 'Planning, commands, the brief and its revisions from the author’s decisions, the Gemini prompts, the '
-                 'documents.')])],
-        'FRICTIONAL.md · SOURCES.md'),
-        {'card': 'media/B27.png', 'source': 'FRICTIONAL.md Human and AI contributions'})
+                 'documents.')]),
+        ('The run sheet', [
+            ('', 'Gemini app, model shown as “4 Hydrogen”, 2026-11-12, prompt v3; Google Terms of Service and Generative AI '
+                 'Additional Terms of Service; original in design/a7/.'),
+            ('Revision shown', f'{BUILD} ({BUILD_FULL[:12]}…)')])],
+        'FRICTIONAL.md:46–48 · SUBMISSION.md:15 · assets/sprites/mage/ATTRIBUTION.md:5 · git log'),
+        {'card': 'media/B25.png', 'source': 'FRICTIONAL.md:46-48; SUBMISSION.md:15; ATTRIBUTION.md:5'})
 
 
 def main():
@@ -704,11 +851,14 @@ def main():
     save_json(REEL / 'beat_sheet.json', sheet)
     footage = load_json(EV / 'footage-provenance.json')['beats']
     save_json(EV / 'media-provenance.json', {
-        'note': f'How each non-Remotion slot was made. Gameplay: capture/run-01 at {BUILD} (scripted input, real engine '
-                'output; see CAPTURE.md). Fixtures: the author’s committed captures in captures/ (capture harnesses and '
-                'preview scenes that place the characters). Figures: captures/figures/ (tools/make_figures.py).',
+        'note': f'How each non-Remotion slot was made. Gameplay: capture/{CAPTURE} at {BUILD} (scripted input, real '
+                'engine output; see CAPTURE.md). Fixtures: the author’s committed captures in captures/ (capture '
+                'harnesses that place the characters). Figures: captures/figures/ (tools/make_figures.py). Document '
+                f'lines: checked equal to the files at {BUILD} (git show).',
+        'documents_quoted_at': BUILD, 'documents_changed_in_working_tree_since': DOC_DRIFT,
+        'working_tree_lines_quoted': TREE_QUOTES,
         'beats': {**PROV, **footage}})
-    print('media built:', ', '.join(sorted(PROV)))
+    print('media built:', ', '.join(sorted(PROV)), '· documents quoted at', BUILD, '· changed since:', sorted(DOC_DRIFT))
 
 
 if __name__ == '__main__':

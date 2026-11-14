@@ -1,5 +1,5 @@
 # Gate V — visual QC report
 
-Frames sampled: 62  ·  BLOCKER: 0  ·  MAJOR: 0
+Frames sampled: 58  ·  BLOCKER: 0  ·  MAJOR: 0
 
 Clean — no BLOCKER/MAJOR defects. ✓

@@ -4,39 +4,37 @@ Adapted from the Assignment 6 film's shotlist.py.
 """
 from common import REEL, FPS, load_json, render_frames
 
-PLAY = 'Scripted input · real engine output (capture/run-01, ×5)'
+PLAY = 'Scripted input · real engine output (capture/run-02, ×5)'
 LABELS = {
     'B00': 'ClaudeComposerAsk · Reconstructed prompt (not a saved chat)',
     'B01': 'BrutalistHesitantWriter · one correction: drawing → timing',
-    'B02': 'Card · Fixture capture · take_lunge tick 40 before (2276069) and now',
+    'B02': 'Card · Fixture capture (take_lunge tick 40, now) · the brief’s two-clips table · commits',
     'B03': f'Gameplay · {PLAY} · frames 15–439 real speed (every second frame), replay ×0.25 of 292–372, last frame held',
-    'B04': f'Gameplay · {PLAY} · frames 850–1088 real speed, replay ×0.25 of 876–1062 (both lunges), last frame held',
-    'B05': f'Gameplay · {PLAY} · frames 1380–1619 real speed, replay ×0.25 of 1518–1600 (cast and cancel), last frame held',
-    'B06': 'Card · wolf_lunge.png regions and pivots · Muybridge plate 707',
-    'B07': 'GodotDevWorkbench · Godot editor reconstruction · wolf.tscn 99–110',
-    'B08': 'Card · Fixture capture (lunge_onion figure) · Recorded results (test_clip_lunge)',
-    'B09': 'Card · mage_run_cycle_sheet.png four cells · Muybridge plate 60',
-    'B10': 'GodotDevWorkbench · Godot editor reconstruction · player.tscn 93–101',
-    'B11': f'Card · {PLAY} crops of frames 20–44 · ticks per cell · test_clip_run',
-    'B12': 'GodotDevWorkbench · Godot editor reconstruction · player.gd 143–154',
+    'B04': f'Gameplay · {PLAY} · frames 860–1088 real speed, replay ×0.25 of 876–1030 (both lunges), last frame held',
+    'B05': f'Gameplay · {PLAY} · frames 1380–1619 real speed, replay ×0.25 of 1518–1600 (hit in GROWL: cancel), hit chip, last frame held',
+    'B06': f'Gameplay · {PLAY} · frames 1930–2148 real speed, replay ×0.25 of 2058–2148 (hit in LUNGE: no cancel), hit chip, last frame held',
+    'B07': f'Gameplay · {PLAY} · frames 2500–2706 real speed, replay ×0.25 of 2616–2706 (hit in RECOVER: HP only), hit chip, last frame held',
+    'B08': 'Card · The author’s words (CHANGE-BRIEF.md:197) · Source view: player.tscn:95–99, anim_checks.gd:32–33 · the author’s note (CHANGE-BRIEF.md:201, working tree)',
+    'B09': 'Card · mage_run_cycle_sheet.png sliced 62×69, 4 × 1 · Source view player.tscn:64–67, 83, 90 · ATTRIBUTION.md',
+    'B10': 'GodotDevWorkbench · Godot editor reconstruction · player.tscn 92–103',
+    'B11': f'Card · {PLAY} crops of frames 20–44 · ticks per cell · test_clip_run 17 / 0',
+    'B12': 'Card · The author’s words · Source view: player.gd:143–154, test_anim_structure.gd:236',
     'B13': f'Card · {PLAY} crops of frames 340–351 · structure and edges checks',
-    'B14': 'Card · Recorded results — not a render · pin commit sequence',
-    'B15': 'GodotDevWorkbench · Godot editor reconstruction · wolf.gd 152–163',
-    'B16': 'Card · Figure from the logs · pin_timeline.png',
-    'B17': 'Card · Recorded results — not a render · edges',
-    'B18': 'Card · Source view — reconstruction · wolf.gd:162, wolf.tscn:248, player.tscn:416',
-    'B19': 'Card · Recorded results — not a render · mutations a7-1 to a7-5',
-    'B20': 'Card · Figures from the logs · growl_window.png, two_clocks.png',
-    'B21': 'Card · Fixture capture · run r0, contact B comparison',
-    'B22': 'Card · Fixture capture · run r1 beats vs r0, r2 cycle',
-    'B23': 'GodotDevWorkbench · Godot editor reconstruction · cave_lights.tscn 19–30',
-    'B24': f'Card · {PLAY} · torch pool brightness, frames 0–440, against the energy keys',
-    'B25': f'Card · {PLAY} frame 926 · afterimage, embers, readability',
-    'B26': 'Card · Limitations',
-    'B27': 'Card · Human and AI contributions · revision f860fed',
-    'B28': 'ClaudeVerdictArtifact',
-    'B29': 'ClaudeComposerAsk · Your turn. · suggested prompt, not a saved chat',
-    'B30': 'ClaudeTitleOutro (locked) · silent',
+    'B14': 'Card · The author’s words · the phase table (CHANGE-BRIEF.md:163–169) beside the key times (wolf.tscn:108)',
+    'B15': 'GodotDevWorkbench · Godot editor reconstruction · wolf.tscn 101–112',
+    'B16': f'Card · Fixture capture g+0/31/53/89 · {PLAY} frames 880, 911, 933, 969 · test_clip_lunge 18 / 0',
+    'B17': 'Card · The author’s words · Source view: wolf.tscn:251–252, wolf.gd:89, 121 · Recorded results (probe_two_clocks)',
+    'B18': 'GodotDevWorkbench · Godot editor reconstruction · wolf.gd 152–163',
+    'B19': 'Card · Figure from the logs · pin_timeline.png · commit sequence',
+    'B20': 'Card · Recorded results — not a render · edges before/on/after every boundary',
+    'B21': 'Card · Recorded results — not a render · mutations M1–M4',
+    'B22': 'Card · Recorded results — not a render · read-backs · TEST-REPORT.md:27 quoted',
+    'B23': 'Card · Fixture capture (run r1 beats vs r0) · Claude against the author · process slips',
+    'B24': 'Card · Uncertain, and the next step (FRICTIONAL.md:26) · not confirmed by this film',
+    'B25': 'Card · Human and AI contributions · the sheet’s source and terms · revision ad7935f',
+    'B26': 'ClaudeVerdictArtifact',
+    'B27': 'ClaudeComposerAsk · Your turn. · suggested prompt, not a saved chat',
+    'B28': 'ClaudeTitleOutro (locked) · silent',
 }
 
 
@@ -55,7 +53,7 @@ def main():
 
 > Generated by `scripts/shotlist.py` from `beat_sheet.json` and `evidence/media-provenance.json`. Native 3840x2160, 30 fps. Total {t:.2f} s.
 
-**Image rule.** Gameplay (B03, B04, B05, and the crops on B11, B13, B24, B25) is `capture/run-01`: the real main scene at f860fed, played by `capture/driver.gd` with scripted key and mouse input, recorded by Movie Maker in a window (640×360 at 60 fps, one frame per physics tick) and shown ×5 nearest neighbour; each gameplay beat plays its interval at real speed (every second frame), then a labelled ×0.25 replay (every frame twice), then a labelled hold. The state chip under the action is read from `capture/run-01-frames.jsonl` and drawn by the film, outside the game image. Images marked "Fixture capture" are the author's committed captures from harnesses and preview scenes that place the characters (not played gameplay); figures are `captures/figures/` drawn from the logs. Code views are labelled reconstructions. Liam's narration is the only sound; game audio is not used; the final card is silent.
+**Image rule.** Gameplay (B03–B07, and the crops on B11, B13 and B16) is `capture/run-02`: the real main scene at ad7935f, played by `capture/driver.gd` with scripted key and mouse input, recorded by Movie Maker in a window (640×360 at 60 fps, one frame per physics tick) and shown ×5 nearest neighbour; each gameplay beat plays its interval at real speed (every second frame), then a labelled ×0.25 replay (every frame twice), then a labelled hold. The state chip under the action, and the hit chip in B05–B07, are read from the capture's logs and drawn by the film, outside the game image. Images marked "Fixture capture" are the author's committed captures from harnesses that place the characters (not played gameplay); figures are `captures/figures/` drawn from the logs. Code views are labelled reconstructions; lines of the author's documents are quoted exactly with file:line. Liam's narration is the only sound; game audio is not used; the final card is silent.
 
 | Beat | Start s | Dur s | Heading | On screen / label | Source |
 |---|---|---|---|---|---|

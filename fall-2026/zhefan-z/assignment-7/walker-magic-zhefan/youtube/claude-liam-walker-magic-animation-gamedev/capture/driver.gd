@@ -2,7 +2,8 @@ extends SceneTree
 ## Scripted-input capture driver for the Assignment 7 film (Brutalist godot-waikthrough capture contract, used by
 ## godot-gamedev). Adapted from the Assignment 6 film's driver (docs/a6/youtube/claude-liam-walker-magic-particles-gamedev/
 ## capture/driver.gd). Runs the real game scene, res://game/main.tscn, on an isolated copy of the project at the film's
-## revision (f860fed), and plays it only through the normal input path: Input.parse_input_event with key events (A/D walk,
+## revision (ad7935f; capture/run-01 was made with the earlier version of this file at f860fed), and plays it only through
+## the normal input path: Input.parse_input_event with key events (A/D walk,
 ## Space jump) and mouse events (motion to the aim point, then a left click to cast). It observes positions and states to
 ## choose its inputs; it never moves the player or the wolf, calls cast(), take_damage() or play(), or sets any game,
 ## clip or effect value. `test_mode` is set on Main only so that a fail would not reload the scene under this script
@@ -15,11 +16,22 @@ extends SceneTree
 ##   godot --path <capture copy> --script <this file> --write-movie <abs>/frame.png --fixed-fps 60 --resolution 1280x720
 ##     -- <inputs.jsonl> <frames.jsonl>
 ## Writes one JSON line per input, observed event and expectation to the first user argument, and one line per rendered
-## frame (the state the frame shows: player and wolf state, position, clip frame, hitbox, ghosts) to the second. Quits 1
-## if an expectation fails, so an exhausted run is never taken as success.
+## frame (the state the frame shows: player and wolf state, position, clip frame, hitbox, ghosts, fireballs alive) to the
+## second. Quits 1 if an expectation fails, so an exhausted run is never taken as success.
+## Segments: run, lunges, cancel (a fireball hit in GROWL) as in run-01; then lunge_hit (a hit in LUNGE) and recover_hit
+## (a hit in RECOVER), added for run-02. A wolf hit is resolved at the start of a physics tick, before the wolf's own
+## update, so the phase a hit lands in is the state the wolf ended the previous tick in: at 60 fps one rendered frame is
+## one tick, so it is the previous frame's state (logged as "wolf_hit" with prev_state, the state on the hit tick, the
+## clip frame and the ticks since GROWL entry). The click times after the sighting (LUNGE_HIT_DELAY, RECOVER_HIT_DELAY)
+## were found by trial runs of this file, headless, with the optional user arguments
+##   only=lunge_hit,recover_hit lunge_delay=<frames> recover_delay=<frames>
+## (trials only; the recorded run passes just the two log paths and uses the constants below).
 
 const MAIN := "res://game/main.tscn"
 const GHOST := "LungeGhost"
+## Frames from the sighting (the wolf's GROWL entry) to the click, found by trial runs (see the header).
+const LUNGE_HIT_DELAY := 14
+const RECOVER_HIT_DELAY := 40
 
 var main: Node
 var vp: SubViewport
@@ -33,12 +45,17 @@ var failures: Array[String] = []
 var segment := ""
 var counts := {}
 var seen := {}          # per segment: observations collected frame by frame
+var opts := {}          # optional key=value user arguments (trial runs only)
 
 
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
 	log_file = FileAccess.open(args[0] if args.size() > 0 else "user://capture_inputs.jsonl", FileAccess.WRITE)
 	frames_file = FileAccess.open(args[1] if args.size() > 1 else "user://capture_frames.jsonl", FileAccess.WRITE)
+	for a in args.slice(2):
+		var kv := a.split("=", true, 1)
+		if kv.size() == 2:
+			opts[kv[0]] = kv[1]
 	process_frame.connect(_on_frame)
 	vp = SubViewport.new()
 	vp.size = Vector2i(640, 360)
@@ -71,10 +88,14 @@ func _on_frame() -> void:
 		row["ws"] = "FREED"
 	if is_instance_valid(main):
 		var g := 0
+		var fb := 0
 		for c in main.get_node("Level").get_children():
 			if str(c.name).begins_with(GHOST):
 				g += 1
+			elif c is Fireball:
+				fb += 1
 		row["ghosts"] = g
+		row["fireballs"] = fb
 		row["cam_x"] = snappedf(main.camera.get_screen_center_position().x, 0.01)
 	frames_file.store_line(JSON.stringify(row))
 	_observe(row)
@@ -86,6 +107,22 @@ func _observe(row: Dictionary) -> void:
 	if segment == "" or not row.has("ws"):
 		return
 	var ws: String = row.ws
+	if ws == "GROWL" and seen.get("last_ws", "") != "GROWL":
+		seen.growl_frame = row.f
+	if row.has("whp") and seen.has("last_whp") and row.whp < seen.last_whp:
+		var hit := {"prev_state": seen.get("last_ws", ""), "state": ws, "clip_frame": row.get("wcf", -1),
+			"since_growl": row.f - seen.get("growl_frame", row.f), "hp_before": seen.last_whp, "hp_after": row.whp,
+			"monitoring": row.get("mon", false), "wolf_x": row.get("wx", 0.0), "player_x": row.get("px", 0.0)}
+		note("wolf_hit", hit)
+		seen["hits"] = seen.get("hits", []) + [hit]
+	if row.has("whp"):
+		seen.last_whp = row.whp
+	if ws == "LUNGE":
+		seen.lunge_frames = seen.get("lunge_frames", 0) + 1
+	if ws == "RECOVER":
+		seen.recover_frames = seen.get("recover_frames", 0) + 1
+		if seen.get("last_ws", "") != "RECOVER":
+			seen.recover_entry_clip_frame = row.get("wcf", -1)
 	if seen.get("last_ws", "") != ws:
 		note("wolf_state", {"state": ws, "facing": row.get("wface", 0), "clip_frame": row.get("wcf", -1),
 			"wolf_x": row.get("wx", 0.0), "player_x": row.get("px", 0.0)})
@@ -225,10 +262,36 @@ func wait_wolf(s: String, limit: int) -> int:
 	return n
 
 
+func wants(seg: String) -> bool:
+	return not opts.has("only") or seg in str(opts.only).split(",")
+
+
 func run() -> void:
 	note("start", {"engine": Engine.get_version_info().string, "window": [root.size.x, root.size.y],
-		"physics_ticks_per_second": Engine.physics_ticks_per_second})
+		"physics_ticks_per_second": Engine.physics_ticks_per_second, "options": opts})
+	if wants("run"):
+		await seg_run()
+	if wants("lunges"):
+		await seg_lunges()
+	if wants("cancel"):
+		await seg_cancel()
+	if wants("lunge_hit"):
+		await seg_lunge_hit(int(opts.get("lunge_delay", LUNGE_HIT_DELAY)))
+	if wants("recover_hit"):
+		await seg_recover_hit(int(opts.get("recover_delay", RECOVER_HIT_DELAY)))
 
+	note("end", {"failures": failures})
+	log_file.close()
+	segment = ""
+	main.queue_free()
+	player = null
+	wolf = null
+	await frames(2)
+	frames_file.close()
+	quit(1 if failures.size() > 0 else 0)
+
+
+func seg_run() -> void:
 	# 1. The run cycle in play: run, stop, run, jump the pit, land, run, stop. Torches and embers behind.
 	await fresh("run")
 	await walk_right(220.0)
@@ -240,6 +303,8 @@ func run() -> void:
 		{"run_entries": seen.get("p_RUN", 0), "rise": seen.get("p_RISE", 0), "fall": seen.get("p_FALL", 0),
 		 "player_x": snappedf(player.global_position.x, 0.1)})
 
+
+func seg_lunges() -> void:
 	# 2. Both facings: stop where the wolf first sees the mage, step back so the leftward lunge misses, then run right
 	#    past the recovering wolf; it growls again, turns to follow her and lunges to the right.
 	await fresh("lunges")
@@ -258,6 +323,8 @@ func run() -> void:
 		{"lunge_facings": facings, "max_ghosts_alive": seen.get("max_ghosts", 0), "recovers": seen.get("RECOVER_count", 0),
 		 "player_hp": player.hp})
 
+
+func seg_cancel() -> void:
 	# 3. An early cast: the moment the wolf starts to growl, a click on its body; the fireball lands during the growl and
 	#    the lunge is cancelled (CHANGE-BRIEF "Behaviour change"). Then step back out of sight.
 	await fresh("cancel")
@@ -275,18 +342,72 @@ func run() -> void:
 	if player.global_position.x > 640.0:
 		await tap(KEY_A, 30)
 	await wait_wolf("PATROL", 90)
+	var h := one_hit()
 	expect("cancel", counts.casts == 1 and after == "RECOVER" and wolf.hp == hp_before - 1 and seen.get("LUNGE_count", 0) == 0
-		and seen.get("monitoring_frames", 0) == 0,
+		and seen.get("monitoring_frames", 0) == 0 and not h.is_empty() and h.prev_state == "GROWL" and h.state == "RECOVER"
+		and h.clip_frame == 53,
 		{"casts": counts.casts, "state_after_growl": after, "wolf_hp": wolf.hp, "lunges": seen.get("LUNGE_count", 0),
-		 "monitoring_frames": seen.get("monitoring_frames", 0), "sight_dx": snappedf(dx, 0.01)})
+		 "monitoring_frames": seen.get("monitoring_frames", 0), "sight_dx": snappedf(dx, 0.01), "hit": h})
 	await seconds(0.6)
 
-	note("end", {"failures": failures})
-	log_file.close()
-	segment = ""
-	main.queue_free()
-	player = null
-	wolf = null
+
+## Walk and jump the pit as in the cancel segment, stop at the sighting, step back (A held 24 frames from the second frame
+## after the sighting, as in the lunges segment) and click on the wolf `delay` frames after the sighting. Returns the
+## wolf's HP before the hit.
+func sight_step_back_and_click(delay: int) -> int:
+	await walk_right(1100.0, 492.0, func() -> bool: return wolf_is("GROWL"))
+	note("sighted", {"dx": snappedf(wolf.global_position.x - player.global_position.x, 0.01)})
+	var hp_before: int = wolf.hp
+	var t := 0
 	await frames(2)
-	frames_file.close()
-	quit(1 if failures.size() > 0 else 0)
+	t += 2
+	key(KEY_A, true)
+	var a_held := true
+	while t < delay:
+		await frames(1)
+		t += 1
+		if a_held and t >= 26:
+			key(KEY_A, false)
+			a_held = false
+	await click(wolf.global_position + Vector2(8.0 * wolf.facing, -14.0))
+	t += 5
+	while a_held and t < 26:
+		await frames(1)
+		t += 1
+	if a_held:
+		key(KEY_A, false)
+	return hp_before
+
+
+func one_hit() -> Dictionary:
+	var hits: Array = seen.get("hits", [])
+	return hits[0] if hits.size() == 1 else {}
+
+
+func seg_lunge_hit(delay: int) -> void:
+	# 4. A hit in LUNGE: the lunge is committed (CHANGE-BRIEF "Behaviour change"): the wolf loses HP and keeps dashing
+	#    for its full 22 ticks, then recovers as usual.
+	await fresh("lunge_hit")
+	var hp_before := await sight_step_back_and_click(delay)
+	await wait_wolf("PATROL", 150)
+	await seconds(0.5)
+	var h := one_hit()
+	expect("lunge_hit", counts.casts == 1 and not h.is_empty() and h.prev_state == "LUNGE" and h.state == "LUNGE"
+		and wolf.hp == hp_before - 1 and seen.get("LUNGE_count", 0) == 1 and seen.get("lunge_frames", 0) == 22
+		and seen.get("RECOVER_count", 0) == 1 and seen.get("recover_entry_clip_frame", -1) == 53 and not player.is_failing,
+		{"delay": delay, "casts": counts.casts, "hit": h, "wolf_hp": wolf.hp, "lunge_frames": seen.get("lunge_frames", 0),
+		 "recover_entry_clip_frame": seen.get("recover_entry_clip_frame", -1), "player_hp": player.hp})
+
+
+func seg_recover_hit(delay: int) -> void:
+	# 5. A hit in RECOVER: only HP changes; the wolf stands for its full 36 ticks and the clip plays on.
+	await fresh("recover_hit")
+	var hp_before := await sight_step_back_and_click(delay)
+	await wait_wolf("PATROL", 150)
+	await seconds(0.5)
+	var h := one_hit()
+	expect("recover_hit", counts.casts == 1 and not h.is_empty() and h.prev_state == "RECOVER" and h.state == "RECOVER"
+		and wolf.hp == hp_before - 1 and seen.get("LUNGE_count", 0) == 1 and seen.get("lunge_frames", 0) == 22
+		and seen.get("recover_frames", 0) == 36 and not player.is_failing,
+		{"delay": delay, "casts": counts.casts, "hit": h, "wolf_hp": wolf.hp, "recover_frames": seen.get("recover_frames", 0),
+		 "player_hp": player.hp})

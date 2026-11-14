@@ -4,8 +4,8 @@ Adapted from the Assignment 6 film's common.py (docs/a6/youtube/claude-liam-walk
 Nothing here edits the game. Paths outside the repository come from the environment, so no developer-machine path
 is baked into the reel:
   WALKER_ART_HOME   the Brutalist toolkit (brutalist.art)
-  WALKER_SNAPSHOT   a `git archive` of walker-magic-zhefan at the build shown (f860fed), never run
-  WALKER_CAPTURE    the PNG frames Movie Maker wrote for capture/run-01 (frame%08d.png), kept outside the repository
+  WALKER_SNAPSHOT   a `git archive` of walker-magic-zhefan at the build shown (ad7935f), never run
+  WALKER_CAPTURE    the PNG frames Movie Maker wrote for capture/run-02 (frame%08d.png), kept outside the repository
 """
 import hashlib
 import json
@@ -22,12 +22,13 @@ CAPS = A7 / 'captures'
 LOGS = A7 / 'logs'
 SLUG = REEL.name
 TITLE = 'Keys on the Tick: A Run Cycle and a Wolf Lunge'
-BUILD = 'f860fed'                           # game source revision shown (snapshot, capture and excerpts)
-BUILD_FULL = 'f860fed1d2214c143bf1b38ee20bff08b6b8c470'
-TREE = '0443b97e6581dc2a0e45ade04166c66644018749'   # git rev-parse f860fed:fall-2026/zhefan-z/assignment-7/walker-magic-zhefan
+BUILD = 'ad7935f'                           # game source revision shown (snapshot, capture and excerpts)
+BUILD_FULL = 'ad7935fab018f8acb1ff8c72b55d6642ff921fa4'
+TREE = 'b4ea2c1d78edea5cc546224b241cc9aeaa40ebbe'   # git rev-parse ad7935f:fall-2026/zhefan-z/assignment-7/walker-magic-zhefan
 FPS = 30
-CAPTURE_FPS = 60                            # capture/run-01: --fixed-fps 60, one rendered frame per physics tick
-CAPTURE_FRAMES_TOTAL = 1623
+CAPTURE_FPS = 60                            # capture/run-02: --fixed-fps 60, one rendered frame per physics tick
+CAPTURE = 'run-02'                          # capture/run-02 (CAPTURE.md); run-01 was the f860fed film's capture
+CAPTURE_FRAMES_TOTAL = 2739
 W, H = 3840, 2160
 
 ART = Path(os.environ['WALKER_ART_HOME']) if os.environ.get('WALKER_ART_HOME') else None
@@ -84,8 +85,8 @@ def source_lines(root, rel, start, end):
 
 
 def capture_rows():
-    """capture/run-01-frames.jsonl: one row per rendered frame (row f = Movie Maker PNG frame f)."""
-    rows = [json.loads(l) for l in (REEL / 'capture' / 'run-01-frames.jsonl').read_text(encoding='utf-8').splitlines()]
+    """capture/run-02-frames.jsonl: one row per rendered frame (row f = Movie Maker PNG frame f)."""
+    rows = [json.loads(l) for l in (REEL / 'capture' / f'{CAPTURE}-frames.jsonl').read_text(encoding='utf-8').splitlines()]
     assert [r['f'] for r in rows] == list(range(len(rows))), 'frame log is not one row per frame'
     return rows
 
