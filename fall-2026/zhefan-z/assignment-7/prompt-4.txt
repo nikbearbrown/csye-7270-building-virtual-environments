@@ -1,0 +1,47 @@
+Read CLAUDE.md first. Never edit anything under shaders/. Never push.
+Commit messages name the author, no Co-Authored-By.
+
+Part 0 — commit my notes: TUNING.md (lunge in play, run r0-r2),
+CHANGE-BRIEF.md (revision "run cycle replaced after play"), prompt-4.txt,
+as "TUNING and brief: run r0-r2, growl window (mine, committed by Claude
+Code at my request)".
+
+Part 1 — re-pin, in its own commit. I have played the growl cancel and
+accept it (TUNING.md). Re-record only hit_growl and kill with PIN_MODE=
+record, show the diff of those two files against the old pin (first
+changed tick and what changed), then run the pin check at 30, 60 and 144:
+all 8 scenarios must pass. Commit as "Re-pin hit_growl and kill after
+play: the growl hit cancels the lunge (mine, committed by Claude Code at
+my request)".
+
+Part 2 — visual upgrades. Each must change only what is drawn: the pin
+must still pass 8/8 at 30, 60 and 144 afterwards, and no gameplay script
+may change except to read state. Settings live in scene files.
+1. Cave lights: darken the level (CanvasModulate, also on the background
+   layer, so the background is lit too) and add two warm PointLight2D
+   glows at believable spots on the cave walls, with a looping flicker
+   clip on an AnimationPlayer: continuous tracks on energy and
+   texture_scale, irregular but subtle, LOOP_LINEAR, each track's value
+   at 0 equal to its value at the length (the continuous-track seam
+   rule). Add tests/test_clip_flicker.gd: track_problems(), the seam rule
+   per track, loop_mode, and that nothing else keys the lights.
+2. Embers: one GPUParticles2D of slow, sparse, additive embers and dust
+   drifting up across the whole visible level, present from the first
+   frame (preprocess), local_coords off, visibility_rect covering the
+   level, configured in a scene file.
+3. Lunge afterimage: during LUNGE only, every 3 ticks leave a fading
+   ghost of the wolf's current rig pose (tinted, about 40 % alpha,
+   gone in about 0.15 s), by a presentation script that reads the wolf's
+   state and never writes it. No ghosts in any other state.
+4. Check that the mage's red hurt tint, the fireball impact and the
+   trail still read after the darkening: capture one windowed Movie
+   Maker frame of each (fixture) to captures/look/ and say what you see.
+5. Before/after frame for the README: the same moment of the
+   take_lunge pin scenario captured at 2276069 (baseline, before A7) in a
+   git worktree and now, side by side, saved as
+   captures/look/before_after.png.
+Run every test through ./scripts/run-test.sh (the pin at 30, 60, 144;
+all read-backs and the structure test; every earlier suite). If all
+pass, commit as "Visual upgrades: cave lights with flicker clip, embers,
+lunge afterimage; pin unchanged (agent, unedited)". Give me the command
+to play, and stop.

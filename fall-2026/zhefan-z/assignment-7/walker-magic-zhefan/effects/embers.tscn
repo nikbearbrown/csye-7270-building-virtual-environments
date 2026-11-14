@@ -1,0 +1,45 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" uid="uid://co66unc1jkixs" path="res://assets/textures/fx/spark.png" id="1_spark"]
+
+[sub_resource type="CanvasItemMaterial" id="Mat_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Grad_tone"]
+offsets = PackedFloat32Array(0, 0.55, 0.72, 0.88, 0.9, 1)
+colors = PackedColorArray(1, 0.5, 0.15, 1, 1, 0.72, 0.3, 1, 0.72, 0.68, 0.74, 1, 0.72, 0.68, 0.74, 1, 1, 0.97, 0.8, 1, 1, 0.97, 0.8, 1)
+
+[sub_resource type="GradientTexture1D" id="Tone"]
+gradient = SubResource("Grad_tone")
+
+[sub_resource type="Gradient" id="Grad_life"]
+offsets = PackedFloat32Array(0, 0.12, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0.85, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="Life"]
+gradient = SubResource("Grad_life")
+
+[sub_resource type="ParticleProcessMaterial" id="Process_embers"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(640, 180, 1)
+direction = Vector3(0, -1, 0)
+spread = 35.0
+initial_velocity_min = 4.0
+initial_velocity_max = 12.0
+gravity = Vector3(0, -3, 0)
+scale_min = 0.5
+scale_max = 1.0
+color_ramp = SubResource("Life")
+color_initial_ramp = SubResource("Tone")
+
+[node name="Embers" type="GPUParticles2D"]
+material = SubResource("Mat_add")
+position = Vector2(640, 180)
+amount = 144
+texture = ExtResource("1_spark")
+lifetime = 9.0
+preprocess = 9.0
+local_coords = false
+visibility_rect = Rect2(-660, -200, 1320, 400)
+process_material = SubResource("Process_embers")
