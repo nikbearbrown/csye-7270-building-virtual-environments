@@ -1,0 +1,140 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://effect.gd" id="1_rs2xt"]
+[ext_resource type="Texture2D" path="res://assets/smoke-fade.tres" id="2_epbb0"]
+[ext_resource type="Texture2D" path="res://assets/grow.tres" id="3_6f6h0"]
+[ext_resource type="Texture2D" path="res://assets/smoke-flipbook.png" id="4_6hf2g"]
+[ext_resource type="Texture2D" path="res://assets/hot-fade.tres" id="5_ob6j6"]
+[ext_resource type="Texture2D" path="res://assets/soft-dot.tres" id="6_m7y8k"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_i4n8e"]
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 0.5
+initial_velocity_max = 0.9
+gravity = Vector3(0, 0, 0)
+scale_max = 2.0
+scale_curve = ExtResource("3_6f6h0")
+color_ramp = ExtResource("2_epbb0")
+anim_speed_min = 1.0
+anim_speed_max = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_en52v"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("4_6hf2g")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 4
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_el6bu"]
+material = SubResource("StandardMaterial3D_en52v")
+size = Vector2(0.8, 0.8)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3xolu"]
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0, 0)
+color_ramp = ExtResource("5_ob6j6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_klm52"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("6_m7y8k")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_tmgnv"]
+material = SubResource("StandardMaterial3D_klm52")
+size = Vector2(0.5, 0.5)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_4j34o"]
+direction = Vector3(0, 1, 0)
+spread = 25.0
+initial_velocity_min = 1.0
+initial_velocity_max = 3.0
+gravity = Vector3(0, -1.5, 0)
+color_ramp = ExtResource("5_ob6j6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lv3by"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_jxi1n"]
+material = SubResource("StandardMaterial3D_lv3by")
+radius = 0.025
+height = 0.05
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_loc2v"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("4_6hf2g")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 4
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_u2tvn"]
+material = SubResource("StandardMaterial3D_loc2v")
+size = Vector2(0.8, 0.8)
+
+[node name="Campfire" type="Node3D" unique_id=524351655]
+script = ExtResource("1_rs2xt")
+preview_interval = 6.5
+
+[node name="Smoke" type="GPUParticles3D" parent="." unique_id=1988310963]
+emitting = false
+amount = 40
+lifetime = 3.0
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_i4n8e")
+draw_pass_1 = SubResource("QuadMesh_el6bu")
+
+[node name="Flame" type="GPUParticles3D" parent="." unique_id=372322077]
+emitting = false
+amount = 32
+lifetime = 0.8
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_3xolu")
+draw_pass_1 = SubResource("QuadMesh_tmgnv")
+
+[node name="Embers" type="GPUParticles3D" parent="." unique_id=1606151176]
+emitting = false
+amount = 16
+lifetime = 1.5
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_4j34o")
+draw_pass_1 = SubResource("SphereMesh_jxi1n")
+
+[node name="SmokeCopy" type="GPUParticles3D" parent="." unique_id=1269634761]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+emitting = false
+amount = 40
+lifetime = 3.0
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_i4n8e")
+draw_pass_1 = SubResource("QuadMesh_u2tvn")
+metadata/disabled = true

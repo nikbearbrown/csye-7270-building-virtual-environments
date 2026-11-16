@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Animation foundations | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Animation foundations">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Animation foundations">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 10</p>
+      <h1 class="t-opening rise g2">Animation foundations</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for clips, tracks, tweens, skeletons and IK in Godot, and for checking them headless</p>
+      <div class="speaker-notes" hidden><p>Deck 8b of the animation topic, second of three. 33 terms. Tags: in the book text means Chapter 10 uses and explains it; in the glossary means a glossary row only; editor or docs means the Godot class reference only; outside source means a source beyond the course.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-three terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-three terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Clips, players and libraries">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Clips and players</p>
+      <h2 class="t-chart">Clips, players and libraries</h2>
+      <div class="diagram build" data-build="clip" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “An animation is data bound to node paths” and “Frames, sprite sheets and cycles”; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Clip contents are from the sword in Chapter 10: length 0.45 s, five animations in the library. Frame list at 8 fps is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Tracks, keys and the playhead">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tracks and keys</p>
+      <h2 class="t-chart">Tracks, keys and the playhead</h2>
+      <div class="diagram build" data-build="line" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Between keys”; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Keys are the sword rotation keys from Chapter 10 (0 s, −80°; 0.15 s, 85°; 0.2 s, 75°). Linear and nearest follow the chapter; cubic is a Catmull-Rom curve through the same keys.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Four track types on one timeline">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tracks and keys</p>
+      <h2 class="t-chart">Four track types on one timeline</h2>
+      <div class="diagram build" data-build="types" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Track types”; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Value keys and method times (0.1 s, 0.25 s) are from the chapter. The Bezier curve and the audio clip are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Loop mode, loop seam and speed scale">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Time and tweens</p>
+      <h2 class="t-chart">Loop mode, loop seam and speed scale</h2>
+      <div class="diagram build" data-build="loop" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Frames, sprite sheets and cycles”; glossary, Animation foundations; Godot AnimationPlayer class reference (speed_scale).</p>
+      <div class="speaker-notes" hidden><p>Speed scale: time to finish = length divided by speed_scale. Walk-cycle values are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Autoplay, signals, callbacks and update mode">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Time and tweens</p>
+      <h2 class="t-chart">Autoplay, signals, callbacks and update mode</h2>
+      <div class="diagram build" data-build="when" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “When animation actually runs”; glossary, Animation foundations; Godot AnimationPlayer and AnimationMixer class references (autoplay, animation_finished).</p>
+      <div class="speaker-notes" hidden><p>Frame 12 on paper, frame 14 observed (+1 first-frame, +1 deferred call): Chapter 10, “When animation actually runs”. Autoplay times are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Tween, easing, transition type and kill">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Time and tweens</p>
+      <h2 class="t-chart">Tween, easing, transition type and kill</h2>
+      <div class="diagram build" data-build="tween" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Tween or AnimationPlayer”; glossary, Animation foundations; Godot Tween class reference (transition types, kill).</p>
+      <div class="speaker-notes" hidden><p>The rule from Chapter 10: scrub it, it is an Animation; gameplay sets the end value, it is a Tween. Curves use the standard easing formulas.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Skeleton, rest pose and inverse kinematics">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Bones and checks</p>
+      <h2 class="t-chart">Skeleton, rest pose and inverse kinematics</h2>
+      <div class="diagram build" data-build="bones" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Skeletons and IK”; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Bone lengths 150 and 130 are illustrative. IK uses the law of cosines.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="FABRIK, SkeletonIK3D and look-at">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Bones and checks</p>
+      <h2 class="t-chart">FABRIK, SkeletonIK3D and look-at</h2>
+      <div class="diagram build" data-build="solvers" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Skeletons and IK”, walker-3d-ik; Aristidou and Lasenby, FABRIK paper (2011); Godot LookAtModifier3D class reference.</p>
+      <div class="speaker-notes" hidden><p>Chain lengths are illustrative. Chapter 10 names the FABRIK plugin, SkeletonIK3D (Deprecated) and the look-at scene.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="What a headless check can see">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Bones and checks</p>
+      <h2 class="t-chart">What a headless check can see</h2>
+      <div class="diagram build" data-build="checks" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Running animation deterministically without a window”, walker-3d-ik; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>10 of 12 and 12 of 12, 4 of 8, and 7, 9, 9 of 20 are from Chapter 10. Frame times in the pinned-versus-unpinned rows are a seeded simulation.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Animation and Tween, loop and ping-pong, two-bone IK and FABRIK, continuous and discrete.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions, each with a computed chart.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust an animation change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust an animation change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Hands-on” and “Check your understanding”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Animation foundations (Chapter 10 + glossary) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  var T = {
+    anim: { n: "Animation resource", tag: "book", m: "Stored animation data: a length plus tracks of keys. It does nothing until a player plays it" },
+    player: { n: "AnimationPlayer", tag: "book", m: "The node that plays animations by name" },
+    lib: { n: "AnimationLibrary", tag: "book", m: "A named collection of animations that a player holds" },
+    asprite: { n: "AnimatedSprite2D", tag: "book", m: "A 2D node that plays a list of frames. Simpler than AnimationPlayer, which can key any property" },
+    track: { n: "Track", tag: "book", m: "One property's keyframes inside a clip, bound to a node path" },
+    key: { n: "Key", tag: "book", m: "One point on a track: a time, a value and an easing value" },
+    playhead: { n: "Playhead", tag: "gloss", m: "The marker for the current time on the timeline" },
+    interp: { n: "Interpolation", tag: "book", m: "How values are filled in between keys: nearest, linear or cubic" },
+    vtrack: { n: "Value track", tag: "book", m: "Sets a property, such as rotation_degrees, to a value at each time" },
+    mtrack: { n: "Method track", tag: "book", m: "Calls a function at chosen times. Does not fire when you scrub in the editor" },
+    btrack: { n: "Bezier track", tag: "book", m: "Fills a value in between keys along a hand-shaped curve" },
+    atrack: { n: "Audio track", tag: "book", m: "Plays a sound stream at a chosen time" },
+    loop: { n: "Loop mode", tag: "gloss", m: "Whether a clip plays once, loops or ping-pongs" },
+    seam: { n: "Loop seam", tag: "book", m: "A jump where the last value meets the first on a loop. Test that they match" },
+    speed: { n: "Speed scale", tag: "gloss", m: "A multiplier on how fast a clip plays. 0.5 is half speed" },
+    autoplay: { n: "Autoplay", tag: "editor", m: "The animation a player starts by itself when its scene loads" },
+    signal: { n: "animation_finished", tag: "editor", m: "A signal sent when a clip ends. A looping clip does not send it" },
+    callback: { n: "Callback modes", tag: "book", m: "Settings for when animation updates (idle or physics) and when method keys run (deferred or now)" },
+    updmode: { n: "Update mode", tag: "book", m: "Per value track: update between keys (continuous), or only at the keys (discrete)" },
+    tween: { n: "Tween", tag: "book", m: "A value animated from code toward a target, then thrown away. For end values that come from gameplay" },
+    easing: { n: "Easing", tag: "gloss", m: "The speed curve of a change: slow start (ease-in) or slow end (ease-out)" },
+    trans: { n: "Transition type", tag: "editor", m: "The family of curve a tween follows: linear, sine, quad, cubic, back, bounce and more" },
+    kill: { n: "Kill a tween", tag: "editor", m: "Abort a tween where it is. It stops short of its end value" },
+    skeleton: { n: "Skeleton", tag: "book", m: "The hierarchy of bones. A child bone moves with its parent" },
+    rest: { n: "Rest pose", tag: "book", m: "The skeleton's default pose, which you can return to at any time" },
+    ik: { n: "Inverse kinematics", tag: "book", m: "Choose a target and compute the joint angles that reach it" },
+    pole: { n: "Pole target", tag: "gloss", m: "A helper point that sets which way an elbow or knee bends" },
+    fabrik: { n: "FABRIK", tag: "web", m: "An IK solver that moves a chain back and forth between target and root until it fits" },
+    lookat: { n: "Look-at", tag: "editor", m: "Turn one bone to face a target. No chain is solved" },
+    skik: { n: "SkeletonIK3D", tag: "book", m: "The older built-in IK node. Marked Deprecated in the class reference" },
+    skelupd: { n: "skeleton_updated", tag: "book", m: "A signal sent when the final pose, IK included, is ready to read" },
+    fixfps: { n: "Fixed frame rate", tag: "book", m: "--fixed-fps n: every frame advances game time by exactly 1/n s" },
+    backend: { n: "Backend limit", tag: "book", m: "Something a headless run cannot test, such as a captured mouse. It stays unverified" }
+  };
+  function note(svg, ey, text) {
+    var n = Math.ceil(text.length / 41);
+    if (ey + 8 + n * 36 <= 590) wrap(svg.append("g"), 800, ey + 34, text, 41, { size: 28, lh: 36, fill: INK });
+    else { var m = Math.ceil(text.length / 52); wrap(svg.append("g"), 0, 560 - (m - 1) * 36, text, 52, { size: 28, lh: 36, fill: INK }); }
+  }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function ln(g, x1, y1, x2, y2, c, w, dash) { return g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 2).attr("fill", "none").attr("stroke-dasharray", dash || null).attr("stroke-linecap", "round"); }
+  function dt(g, x, y, r, fill, stroke) { return g.append("circle").attr("cx", x).attr("cy", y).attr("r", r).attr("fill", fill || INK).attr("stroke", stroke || "none").attr("stroke-width", 2.5); }
+  function curve(g, f, x0, x1, c, w, dash) {
+    var pts = d3.range(0, 121).map(function (i) { var t = i / 120; return f(t); });
+    return g.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", c || INK).attr("stroke-width", w || 3).attr("stroke-dasharray", dash || null);
+  }
+  var f1 = function (v, d) { var s = v.toFixed(d === undefined ? 1 : d); return /^-0(\.0+)?$/.test(s) ? s.slice(1) : s; };
+
+  /* ----- sword fast attack, from Chapter 10 (Sword.tscn): rotation track ----- */
+  var SK = [[0, -80], [0.15, 85], [0.2, 75]], SL = 0.45;
+  function segOf(keys, t) { var i = 0; while (i < keys.length - 2 && t > keys[i + 1][0]) i++; return i; }
+  function vLin(t) { if (t <= SK[0][0]) return SK[0][1]; if (t >= SK[2][0]) return SK[2][1]; var i = segOf(SK, t), u = (t - SK[i][0]) / (SK[i + 1][0] - SK[i][0]); return SK[i][1] + (SK[i + 1][1] - SK[i][1]) * u; }
+  function vNear(t) { var b = 0; SK.forEach(function (k, i) { if (Math.abs(k[0] - t) < Math.abs(SK[b][0] - t)) b = i; }); return SK[b][1]; }
+  function vCub(t) {
+    if (t >= SK[2][0]) return SK[2][1];
+    var i = segOf(SK, t), u = (t - SK[i][0]) / (SK[i + 1][0] - SK[i][0]);
+    var p0 = SK[Math.max(i - 1, 0)][1], p1 = SK[i][1], p2 = SK[i + 1][1], p3 = SK[Math.min(i + 2, 2)][1];
+    return 0.5 * (2 * p1 + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (-p0 + 3 * p1 - 3 * p2 + p3) * u * u * u);
+  }
+  /* two-bone solve (law of cosines). side = +1 or -1 picks the elbow side */
+  function twoBone(rx, ry, L1, L2, tx, ty, side) {
+    var dx = tx - rx, dy = ty - ry, d = Math.hypot(dx, dy), dd = Math.min(d, L1 + L2 - 0.01), a = Math.atan2(dy, dx);
+    var s = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + dd * dd - L2 * L2) / (2 * L1 * dd))));
+    var ex = rx + L1 * Math.cos(a + side * s), ey = ry + L1 * Math.sin(a + side * s), hx = rx + dd * Math.cos(a), hy = ry + dd * Math.sin(a);
+    var el = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + L2 * L2 - dd * dd) / (2 * L1 * L2)))) / DEG;
+    return { ex: ex, ey: ey, hx: hx, hy: hy, elbow: el, d: d };
+  }
+  function arm(g, r, e, h, c, w, dash) {
+    var p = g.append("path").attr("d", "M" + r[0] + "," + r[1] + "L" + e[0] + "," + e[1] + "L" + h[0] + "," + h[1]).attr("fill", "none").attr("stroke", c || INK).attr("stroke-width", w || 8).attr("stroke-linecap", "round").attr("stroke-linejoin", "round").attr("stroke-dasharray", dash || null);
+    dt(g, r[0], r[1], 12, "#FFFFFF", c || INK); dt(g, e[0], e[1], 12, "#FFFFFF", c || INK); dt(g, h[0], h[1], 10, c || INK);
+    return p;
+  }
+  function tgt(g, x, y, c) { var c0 = c || RED; g.append("circle").attr("cx", x).attr("cy", y).attr("r", 16).attr("fill", "none").attr("stroke", c0).attr("stroke-width", 3.5); ln(g, x - 24, y, x + 24, y, c0, 3); ln(g, x, y - 24, x, y + 24, c0, 3); }
+  /* time chart frame: returns X(t) and Y(v) */
+  function frame(g, x0, y0, w, h, tmax, vmin, vmax, zero) {
+    g.append("rect").attr("x", x0 + 0.5).attr("y", y0 + 0.5).attr("width", w).attr("height", h).attr("fill", "#FFFFFF").attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+    var X = function (t) { return x0 + w * t / tmax; }, Y = function (v) { return y0 + h * (vmax - v) / (vmax - vmin); };
+    if (zero !== false && vmin < 0 && vmax > 0) ln(g, x0, Y(0), x0 + w, Y(0), GRID, 2, "5 5");
+    return { X: X, Y: Y };
+  }
+
+  var MAPROWS = [
+    ["Clips and players", "Animation resource, AnimationPlayer, AnimationLibrary, AnimatedSprite2D", "What holds the motion and what plays it"],
+    ["Tracks and keys", "track, key, playhead, interpolation, value, method, Bezier and audio tracks", "What a clip is made of, and how values fill in"],
+    ["Time and tweens", "loop mode, loop seam, speed scale, autoplay, animation_finished, callback modes, update mode, Tween, easing, transition type, kill", "When things run, how fast, and code-driven motion"],
+    ["Bones and checks", "skeleton, rest pose, inverse kinematics, pole target, FABRIK, look-at, SkeletonIK3D, skeleton_updated, fixed frame rate, backend limit", "Posing bodies, and what you can test headless"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of animation foundation terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "33 terms from Chapter 10 and the glossary. Every one is about making motion in Godot and checking that it happens when you think.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1030];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 126, row = g.append("g");
+      box(row, 0, y, 1400, 114, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 115).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 20, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 54, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 28, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. clip, player, library, AnimatedSprite2D ---------- */
+  var LIBN = ["SETUP", "attack_circular", "attack_fast", "attack_medium", "idle"];
+  function renderClip(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "An Animation is data; an AnimationPlayer plays it by name from a library", "A clip card with length and tracks, a playhead running along it, a library of five names, and a sprite-sheet player.");
+    var ey = base(svg, [{ id: "anim", s: 1 }, { id: "player", s: 2 }, { id: "lib", s: 3 }, { id: "asprite", s: 4 }], k, anim, ["Animation", "the data: tracks and keys"], ["AnimationPlayer", "the node that plays it"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    if (kd <= 1) {
+      lab(d, 0, 30, "ONE ANIMATION RESOURCE: attack_fast");
+      box(d, 0, 56, 740, 250, { stroke: INK, sw: 3 });
+      [["length = 0.45", 0], ["step = 0.05", 0], ["tracks/0  value   .:rotation_degrees", 0], ["tracks/3  method  .", 0]].forEach(function (r, i) { var g = d.append("g"); mono(g, 24, 108 + i * 46, r[0], { size: 26, weight: i < 2 ? 700 : 400 }); fade(g, A(anim, k, 1), i * 250); });
+      cap(d, 24, 290, "(two more tracks not shown)", { size: 24, fill: MUTED });
+      cap(d, 0, 370, "Only data. Nothing moves until a player plays it.", { size: 26, weight: 700 });
+    } else if (kd === 2) {
+      lab(d, 0, 30, "A PLAYER RUNS THE PLAYHEAD ALONG THE CLIP");
+      box(d, 0, 56, 300, 64, { stroke: INK, sw: 3 }); cap(d, 150, 98, "AnimationPlayer", { size: 26, weight: 700, anchor: "middle" });
+      ln(d, 300, 88, 380, 88, INK, 3); box(d, 380, 56, 360, 64, { stroke: RED, sw: 3 }); cap(d, 560, 98, "attack_fast", { size: 26, weight: 700, anchor: "middle", fill: RED });
+      var X = function (t) { return 40 + 660 * t / SL; };
+      ln(d, 40, 230, 700, 230, INK, 4); [0, 0.15, 0.2, SL].forEach(function (t) { ln(d, X(t), 220, X(t), 240, INK, 3); });
+      cap(d, X(0), 280, "0", { size: 24, anchor: "middle" }); cap(d, X(SL), 280, "0.45 s", { size: 24, anchor: "middle" });
+      var ph = ln(d, 40, 190, 40, 250, RED, 5), rd = cap(d, 0, 400, "", { size: 26, weight: 700 }), rv = cap(d, 0, 440, "", { size: 26, weight: 700, fill: RED });
+      var bl = d.append("g").attr("transform", "translate(600,380)"); var blade = ln(bl, 0, 0, 90, 0, INK, 10); dt(bl, 0, 0, 12, INK);
+      run(d, 3500, function (t) { var p = t * SL; ph.attr("d", "M" + X(p) + ",190 V250"); rd.text("current_animation_position = " + f1(p, 2) + " s"); rv.text("rotation_degrees = " + f1(vLin(p)) + "°"); blade.attr("transform", "rotate(" + (vLin(p) - 0) + ")"); }, A(anim, k, 2));
+    } else if (kd === 3) {
+      lab(d, 0, 30, "THE PLAYER'S LIBRARY MAPS NAMES TO ANIMATIONS");
+      box(d, 0, 56, 360, 300, { stroke: INK, sw: 3 }); cap(d, 18, 92, "library (default)", { size: 24, weight: 700, fill: MUTED });
+      LIBN.forEach(function (n, i) { var y = 112 + i * 46, on = n === "attack_fast", g = d.append("g"); if (on) g.append("rect").attr("x", 10).attr("y", y).attr("width", 340).attr("height", 40).attr("fill", TINT); mono(g, 24, y + 29, n, { size: 24, weight: on ? 700 : 400, fill: on ? RED : INK }); fade(g, A(anim, k, 3), i * 150); });
+      ln(d, 360, 252, 440, 252, RED, 3); box(d, 440, 200, 300, 104, { stroke: RED, sw: 3 }); cap(d, 590, 244, "Animation", { size: 26, weight: 700, anchor: "middle" }); cap(d, 590, 284, "length 0.45 s", { size: 24, anchor: "middle" });
+      mono(d, 0, 410, "player.play(\"attack_fast\")", { size: 26, weight: 700 }); cap(d, 0, 450, "A name picks one clip from the library.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "TWO WAYS TO PLAY A SPRITE SHEET");
+      var FR = 4, FPS = 8;
+      cap(d, 0, 76, "AnimatedSprite2D", { size: 26, weight: 700 }); cap(d, 0, 110, "plays a frame list at " + FPS + " fps", { size: 24, fill: MUTED });
+      var cells = d.append("g"), mk = d.append("rect").attr("y", 130).attr("width", 80).attr("height", 80).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5), fi = cap(d, 0, 250, "", { size: 24, weight: 700 });
+      d3.range(FR).forEach(function (i) { box(cells, i * 88 + 0, 130, 80, 80, { stroke: INK, sw: 2 }); cap(cells, i * 88 + 40, 182, String(i), { size: 26, weight: 700, anchor: "middle" }); });
+      cap(d, 400, 76, "AnimationPlayer", { size: 26, weight: 700 }); cap(d, 400, 110, "keys any property, per time", { size: 24, fill: MUTED });
+      ["frame", "position", "monitoring"].forEach(function (p, i) { box(d, 400, 130 + i * 50, 330, 42, { stroke: i === 0 ? RED : FAMILIAR, sw: 2 }); mono(d, 414, 160 + i * 50, p, { size: 24, weight: i === 0 ? 700 : 400, fill: i === 0 ? RED : INK }); });
+      cap(d, 0, 340, FR + " frames at " + FPS + " fps = " + f1(FR / FPS, 2) + " s per cycle", { size: 26, weight: 700 }); cap(d, 0, 380, "Both can show frame 0 to 3. Only the player can also move a hitbox.", { size: 24, fill: MUTED });
+      run(d, 3000, function (t) { var i = Math.floor(t * 2 * FR) % FR; mk.attr("x", i * 88); fi.text("frame index = " + i); }, A(anim, k, 4));
+    }
+    note(svg, ey, ["", "An Animation is a resource: a length and tracks. It is data, not behaviour.", "The AnimationPlayer node plays a clip. The playhead moves; the property follows.", "A library maps names to clips. play(name) picks one.", "AnimatedSprite2D plays frames. AnimationPlayer keys any property."][k]);
+  }
+
+  /* ---------- 2. track, key, playhead, interpolation ---------- */
+  function renderLine(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "A track is a list of keys; the playhead reads the value between them", "A rotation track with three keys. Then a playhead sweeping the curve with a live value, then nearest, linear and cubic interpolation compared.");
+    var ey = base(svg, [{ id: "track", s: 1 }, { id: "key", s: 2 }, { id: "playhead", s: 3 }, { id: "interp", s: 4 }], k, anim, ["Key", "one stored point"], ["Playhead", "where the clip is now"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)"), c = frame(d, 90, 30, 640, 320, SL, -100, 100);
+    lab(d, 0, 26, ".:rotation_degrees", { fill: kd === 1 ? RED : MUTED });
+    ["0", "0.15", "0.2", "0.45 s"].forEach(function (s, i) { var t = [0, 0.15, 0.2, SL][i]; ln(d, c.X(t), 350, c.X(t), 360, INK, 2); cap(d, c.X(t) + (i === 3 ? -20 : 0), 388, s, { size: 24, anchor: "middle" }); });
+    cap(d, 6, c.Y(0) + 8, "0°", { size: 24, fill: MUTED });
+    if (kd === 1) { cap(d, 106, 60, "one track = one property on one node", { size: 24, weight: 700 }); cap(d, 106, 94, "its keyframes will sit on this line", { size: 24, fill: MUTED }); }
+    if (kd >= 2) {
+      SK.forEach(function (p, i) { var g = d.append("g"); dt(g, c.X(p[0]), c.Y(p[1]), 11, kd === 2 ? RED : INK); if (kd === 2) cap(g, c.X(p[0]) + (i === 0 ? 20 : i === 1 ? -150 : 20), c.Y(p[1]) + (i === 0 ? -8 : i === 1 ? 6 : 34), "(" + p[0] + " s, " + p[1] + "°)", { size: 24, weight: 700, fill: i === 1 ? INK : INK }); fade(g, A(anim, k, 2), i * 250); });
+    }
+    if (kd >= 3 && kd <= 3) {
+      curve(d, function (t) { return [c.X(t * SL), c.Y(vLin(t * SL))]; }, 0, 1, INK, 3);
+      var ph = ln(d, 90, 30, 90, 350, RED, 4), dd = dt(d, 90, 320, 10, RED), rd = cap(d, 0, 450, "", { size: 26, weight: 700 });
+      run(d, 3500, function (t) { var p = t * SL; ph.attr("d", "M" + c.X(p) + ",30 V350"); dd.attr("cx", c.X(p)).attr("cy", c.Y(vLin(p))); rd.text("playhead " + f1(p, 2) + " s → rotation " + f1(vLin(p)) + "°"); }, A(anim, k, 3));
+    }
+    if (kd === 4) {
+      var tt = 0.06;
+      curve(d, function (t) { return [c.X(t * SL), c.Y(vNear(t * SL))]; }, 0, 1, GREY, 3, "7 6");
+      curve(d, function (t) { return [c.X(t * SL), c.Y(vLin(t * SL))]; }, 0, 1, INK, 3);
+      curve(d, function (t) { return [c.X(t * SL), c.Y(vCub(t * SL))]; }, 0, 1, RED, 3);
+      SK.forEach(function (p) { dt(d, c.X(p[0]), c.Y(p[1]), 8, INK); });
+      ln(d, c.X(tt), 30, c.X(tt), 350, MUTED, 2, "4 5");
+      [[vNear(tt), GREY], [vLin(tt), INK], [vCub(tt), RED]].forEach(function (p) { dt(d, c.X(tt), c.Y(p[0]), 9, p[1], "#FFFFFF"); });
+      [["nearest", GREY, "7 6"], ["linear", INK, null], ["cubic", RED, null]].forEach(function (r, i) { ln(d, 470, 250 + i * 36 - 8, 520, 250 + i * 36 - 8, r[1], 4, r[2]); cap(d, 530, 250 + i * 36, r[0], { size: 24 }); });
+      cap(d, 0, 450, "At " + tt + " s:  nearest " + f1(vNear(tt)) + "°   linear " + f1(vLin(tt)) + "°   cubic " + f1(vCub(tt)) + "°", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "A track binds to one property of one node. Its keys are the points that property passes through.", "A key holds a time, a value and an easing value. This sword track has three.", "The playhead is the current time. The engine reads the track at that time and sets the property.", "Between keys, interpolation decides the value: nearest holds, linear is straight, cubic bends."][k]);
+  }
+
+  /* ---------- 3. track types ---------- */
+  function renderTypes(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "Four track types share one timeline", "Four lanes under one playhead: a value curve, two method calls, a Bezier curve and an audio clip.");
+    var ey = base(svg, [{ id: "vtrack", s: 1 }, { id: "mtrack", s: 2 }, { id: "btrack", s: 3 }, { id: "atrack", s: 4 }], k, anim, ["Value track", "sets a property"], ["Method track", "calls a function"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)"), X0 = 160, XW = 570, X = function (t) { return X0 + XW * t / SL; };
+    var lanes = ["value", "method", "bezier", "audio"], LY = function (i) { return 14 + i * 96; };
+    lanes.forEach(function (n, i) { if (i + 1 > kd) return; var y = LY(i); box(d, X0, y, XW, 84, { stroke: i + 1 === kd ? RED : FAMILIAR, sw: i + 1 === kd ? 2.5 : 1.5 }); cap(d, 0, y + 54, n, { size: 24, weight: 700, fill: i + 1 === kd ? RED : INK }); });
+    ln(d, X0, 404, X0 + XW, 404, INK, 3); cap(d, X0, 440, "0", { size: 24, anchor: "middle" }); cap(d, X0 + XW, 440, "0.45 s", { size: 24, anchor: "end" });
+    /* value */
+    var vy = function (v) { return LY(0) + 42 - v * 0.38; };
+    curve(d, function (t) { return [X(t * SL), vy(vLin(t * SL))]; }, 0, 1, INK, 3);
+    var ph = ln(d, X(0), 8, X(0), 396, RED, 4);
+    var vdot = dt(d, X(0), vy(-80), 8, RED), fire = [];
+    if (kd >= 2) {
+      [[0.1, "buffer"], [0.25, "next swing"]].forEach(function (m, i) { var g = d.append("g"); g.append("rect").attr("x", X(m[0]) - 9).attr("y", LY(1) + 14).attr("width", 18).attr("height", 18).attr("fill", INK).attr("transform", "rotate(45 " + X(m[0]) + " " + (LY(1) + 23) + ")"); cap(g, X(m[0]), LY(1) + 68, m[1], { size: 24, anchor: "middle" }); fire.push(g.append("circle").attr("cx", X(m[0])).attr("cy", LY(1) + 23).attr("r", 22).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4).attr("opacity", 0)); });
+    }
+    var bz = function (t) { var u = 1 - t, p0 = 0, p1 = 0.1, p2 = 0.95, p3 = 1; return u * u * u * p0 + 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t * p3; };
+    var by = function (v) { return LY(2) + 72 - v * 60; };
+    if (kd >= 3) { curve(d, function (t) { return [X(t * SL), by(bz(t))]; }, 0, 1, RED, 3); ln(d, X(0), by(0), X(0.08), by(0.0), GREY, 2, "4 4"); ln(d, X(SL), by(1), X(SL - 0.08), by(1), GREY, 2, "4 4"); dt(d, X(0), by(0), 7, INK); dt(d, X(SL), by(1), 7, INK); }
+    var bdot = kd >= 3 ? dt(d, X(0), by(0), 8, RED) : null;
+    var ar = rng(4), ab = [];
+    if (kd >= 4) { d3.range(26).forEach(function (i) { var t = 0.1 + i * 0.25 / 26, h = (6 + 30 * Math.sin(Math.PI * i / 26) * (0.4 + 0.6 * ar())); ab.push(d.append("rect").attr("x", X(t)).attr("y", LY(3) + 42 - h / 2).attr("width", 11).attr("height", h).attr("fill", GREY)); }); cap(d, X(0.1) + 10, LY(3) + 76, "whoosh", { size: 24, fill: MUTED }); ln(d, X(0.1), LY(3) + 4, X(0.1), LY(3) + 88, INK, 3); }
+    var rd = cap(d, 0, 480, "", { size: 24, weight: 700 });
+    run(d, 3800, function (t) {
+      var p = t * SL; ph.attr("d", "M" + X(p) + ",8 V396"); vdot.attr("cx", X(p)).attr("cy", vy(vLin(p)));
+      fire.forEach(function (c, i) { var tk = [0.1, 0.25][i]; c.attr("opacity", p >= tk && p < tk + 0.03 ? 1 : 0); });
+      if (bdot) bdot.attr("cx", X(p)).attr("cy", by(bz(p / SL)));
+      ab.forEach(function (b, i) { var tb = 0.1 + i * 0.25 / 26; b.attr("fill", p >= tb ? RED : GREY); });
+      rd.text(["", "rotation_degrees = " + f1(vLin(p)) + "°", "method calls fired so far: " + (p >= 0.25 ? 2 : p >= 0.1 ? 1 : 0) + " of 2", "bezier value = " + f1(bz(p / SL), 2) + " (0 to 1)", "audio plays from 0.10 s: " + (p >= 0.1 ? "playing" : "waiting")][kd]);
+    }, A(anim, k, k));
+    note(svg, ey, ["", "A value track sets a property to the keyed value at each time.", "A method track calls a function at 0.10 s and 0.25 s. It does not fire when you scrub in the editor.", "A Bezier track follows a curve you shape by hand.", "An audio track starts a sound at its key time."][k]);
+  }
+
+  /* ---------- 4. loop mode, seam, speed scale ---------- */
+  function renderLoop(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "Loop mode, the loop seam and speed scale", "Playhead position over six seconds for three loop modes; two loops with and without a seam jump; three speed scales racing a clip.");
+    var ey = base(svg, [{ id: "loop", s: 1 }, { id: "seam", s: 2 }, { id: "speed", s: 3 }], k, anim, ["Loop", "wraps from end to start"], ["Ping-pong", "reverses at each end"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    if (kd <= 1) {
+      var L = 2, pos = [function (t) { return Math.min(t, L); }, function (t) { return t % L; }, function (t) { var m = t % (2 * L); return m <= L ? m : 2 * L - m; }];
+      lab(d, 0, 26, "PLAYHEAD POSITION OVER 6 S, CLIP LENGTH 2 S");
+      var dots = [], rd = [];
+      ["play once", "loop (linear)", "ping-pong"].forEach(function (n, i) {
+        var y = 40 + i * 146, c = frame(d, 0, y + 30, 520, 100, 6, 0, L, false); cap(d, 0, y + 22, n, { size: 24, weight: 700 });
+        curve(d, function (t) { return [c.X(t * 6), c.Y(pos[i](t * 6))]; }, 0, 1, i === 0 ? GREY : INK, 3);
+        dots.push(dt(d, 0, c.Y(0), 9, RED)); rd.push(c);
+        cap(d, 540, y + 100, "at 6 s: " + f1(pos[i](6)), { size: 24, weight: 700 });
+      });
+      run(d, 4200, function (t) { dots.forEach(function (dd, i) { dd.attr("cx", rd[i].X(t * 6)).attr("cy", rd[i].Y(pos[i](t * 6))); }); }, A(anim, k, 1));
+    } else if (kd === 2) {
+      lab(d, 0, 26, "TWO LOOPS OF A WALK-CYCLE ANGLE");
+      [["last value −10°: seam", -30, -10], ["last value −30°: no seam", -30, -30]].forEach(function (r, i) {
+        var y = 40 + i * 220, c = frame(d, 0, y + 36, 700, 130, 2, -40, 0, false); cap(d, 0, y + 24, r[0], { size: 24, weight: 700, fill: i ? INK : RED });
+        var f = function (t) { var u = t % 1; if (t >= 2) u = 1; var mid = -5 - 8 * Math.sin(Math.PI * u) * 0 ; return r[1] + (r[2] - r[1]) * u + (-18) * Math.sin(Math.PI * u); };
+        curve(d, function (t) { return [c.X(t * 2), c.Y(f(t * 2))]; }, 0, 1, INK, 3);
+        var jump = Math.abs(r[2] - r[1]); if (jump > 0) { ln(d, c.X(1), c.Y(r[2]), c.X(1), c.Y(r[1]), RED, 6); cap(d, c.X(1) + 14, c.Y(-20) + 8, "jump " + jump + "°", { size: 24, weight: 700, fill: RED }); }
+        else { cap(d, c.X(1) + 14, c.Y(-20) + 8, "jump 0°", { size: 24, weight: 700 }); }
+        fade(d.append("g").attr("opacity", 1), false); dt(d, c.X(1), c.Y(r[1]), 7, INK);
+      });
+    } else {
+      lab(d, 0, 26, "TIME FOR A 0.45 S CLIP TO FINISH");
+      var rows = [0.5, 1, 2], bw = 400, tot = SL / 0.5, bars = [];
+      rows.forEach(function (s, i) { var y = 60 + i * 120; cap(d, 0, y, "speed_scale " + s, { size: 24, weight: 700 }); box(d, 0, y + 14, bw, 44, { stroke: FAMILIAR, sw: 1.5 }); bars.push(d.append("rect").attr("x", 0).attr("y", y + 14).attr("width", 0).attr("height", 44).attr("fill", s === 1 ? INK : RED)); cap(d, bw + 20, y + 46, f1(SL / s, 3).replace(/0+$/, "") + " s", { size: 26, weight: 700 }); });
+      cap(d, 0, 420, "time to finish = length ÷ speed_scale", { size: 26, weight: 700 });
+      run(d, 3000, function (t) { var el_ = t * tot; rows.forEach(function (s, i) { bars[i].attr("width", bw * Math.min(1, el_ * s / SL)); }); }, A(anim, k, 3));
+      if (!anim) rows.forEach(function (s, i) { bars[i].attr("width", bw); });
+    }
+    note(svg, ey, ["", "Loop mode: play once, loop, or ping-pong. At 6 s a 2 s clip is stopped, back at 0, or at its end.", "A loop seam is the jump when the last value meets the first. Compare the value at 0 and at length.", "Speed scale divides the time. Half speed takes twice as long; double speed takes half."][k]);
+  }
+
+  /* ---------- 5. autoplay, signal, callbacks, update mode ---------- */
+  function renderWhen(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "When things happen: autoplay, finished signal, callback modes, update mode", "Autoplay against a later play call; a signal at the end of a one-shot clip but not a loop; a frame strip showing the method key observed two frames late; continuous against discrete update.");
+    var ey = base(svg, [{ id: "autoplay", s: 1 }, { id: "signal", s: 2 }, { id: "callback", s: 3 }, { id: "updmode", s: 4 }], k, anim, ["Immediate call", "runs when the playhead crosses"], ["Deferred call", "runs at the end of that frame"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    if (kd === 1 || kd === 2) {
+      var S = 190, X = function (t) { return 140 + S * t; }, CL = 1.2;
+      lab(d, 0, 26, kd === 1 ? "SECONDS AFTER THE SCENE LOADS" : "WHAT FIRES WHEN A CLIP ENDS");
+      ln(d, 140, 330, 140 + S * 3, 330, INK, 3); [0, 1, 2, 3].forEach(function (s) { ln(d, X(s), 322, X(s), 338, INK, 2); cap(d, X(s), 368, String(s), { size: 24, anchor: "middle" }); });
+      if (kd === 1) {
+        cap(d, 0, 100, "autoplay", { size: 24, weight: 700 }); bar(d, X(0), 70, S * CL, 44, INK, A(anim, k, 1), 0); cap(d, X(CL) + 10, 100, "starts at 0 s", { size: 24 });
+        cap(d, 0, 220, "no autoplay", { size: 24, weight: 700 }); bar(d, X(1.5), 190, S * CL, 44, RED, A(anim, k, 1), 500); cap(d, X(0.1), 222, "waits for play()", { size: 24, fill: MUTED });
+        cap(d, X(1.5), 270, "play() at 1.5 s", { size: 24, fill: RED, weight: 700 });
+      } else {
+        cap(d, 0, 140, "once", { size: 24, weight: 700 }); bar(d, X(0), 110, S * CL, 44, INK, A(anim, k, 2), 0);
+        var fl = d.append("g"); fl.append("path").attr("d", "M" + X(CL) + ",110 V76").attr("stroke", RED).attr("stroke-width", 4); dt(fl, X(CL), 76, 9, RED); cap(fl, X(CL) + 18, 86, "animation_finished", { size: 24, weight: 700, fill: RED }); fade(fl, A(anim, k, 2), 700);
+        cap(d, 0, 250, "looping", { size: 24, weight: 700 }); [0, 1.2, 2.4].forEach(function (s, i) { var w = Math.min(S * CL, S * 3 - S * s); d.append("rect").attr("x", X(s) + 2).attr("y", 220).attr("width", w - 4).attr("height", 44).attr("fill", i % 2 ? "#6a6a6a" : INK); });
+        cap(d, X(0), 300, "no signal while it loops", { size: 24, fill: MUTED });
+      }
+    } else if (kd === 3) {
+      var FPS = 120, key = 0.1, nominal = Math.round(key * FPS), obs = nominal + 1 + 1, N = 18, cw = 40;
+      lab(d, 0, 26, "FRAMES AT 120 FPS, KEY AT 0.10 S");
+      d3.range(N + 1).forEach(function (i) { var g = d.append("g"); g.append("rect").attr("x", i * cw + 0.5).attr("y", 140.5).attr("width", cw - 4).attr("height", 54).attr("fill", i === obs ? RED : i === nominal ? TINT : "#FFFFFF").attr("stroke", i === nominal ? RED : FAMILIAR).attr("stroke-width", 1.5); });
+      cap(d, nominal * cw + cw / 2 - 2, 124, String(nominal), { size: 24, anchor: "middle", weight: 700 }); cap(d, obs * cw + cw / 2 - 2, 124, String(obs), { size: 24, anchor: "middle", weight: 700, fill: RED });
+      cap(d, 0, 100, "frame number:", { size: 24, fill: MUTED });
+      cap(d, 0, 250, "on paper: 0.10 s × 120 = frame " + nominal, { size: 24 }); cap(d, 0, 290, "+1  play() leaves the playhead at 0.0 on the first frame", { size: 24 }); cap(d, 0, 330, "+1  deferred call runs after that frame's scripts", { size: 24 });
+      cap(d, 0, 400, "observed: frame " + obs, { size: 28, weight: 700, fill: RED });
+      var mk = d.append("circle").attr("cy", 167).attr("r", 12).attr("fill", INK);
+      run(d, 2600, function (t) { mk.attr("cx", Math.min(obs, t * (obs + 1)) * cw + cw / 2 - 2); }, A(anim, k, 3));
+    } else {
+      lab(d, 0, 26, "A VALUE KEYED 0 THEN 1 AT 0.15 S, READ AT 0.075 S");
+      var c1 = frame(d, 0, 50, 700, 130, 0.3, -0.2, 1.2, false), c2 = frame(d, 0, 250, 700, 130, 0.3, -0.2, 1.2, false);
+      cap(d, 0, 44, "", { size: 24 });
+      var contf = function (t) { return Math.max(0, Math.min(1, t / 0.15)); }, disf = function (t) { return t < 0.15 ? 0 : 1; };
+      curve(d, function (t) { return [c1.X(t * 0.3), c1.Y(contf(t * 0.3))]; }, 0, 1, INK, 3); curve(d, function (t) { return [c2.X(t * 0.3), c2.Y(disf(t * 0.3))]; }, 0, 1, RED, 3);
+      cap(d, 720 - 0, 130, "", {}); cap(d, 6, 214, "continuous: blends between keys", { size: 24, weight: 700 }); cap(d, 6, 414, "discrete: changes only at keys", { size: 24, weight: 700, fill: RED });
+      var ph1 = dt(d, c1.X(0), c1.Y(0), 9, RED), ph2 = dt(d, c2.X(0), c2.Y(0), 9, INK), r1 = cap(d, 460, 214, "", { size: 24, weight: 700 }), r2 = cap(d, 460, 414, "", { size: 24, weight: 700, fill: RED });
+      run(d, 3200, function (t) { var p = t * 0.3; ph1.attr("cx", c1.X(p)).attr("cy", c1.Y(contf(p))); ph2.attr("cx", c2.X(p)).attr("cy", c2.Y(disf(p))); r1.text("at " + f1(p, 3) + " s: " + f1(contf(p), 2)); r2.text("at " + f1(p, 3) + " s: " + f1(disf(p), 0)); }, A(anim, k, 4));
+    }
+    note(svg, ey, ["", "Autoplay starts a clip when the scene loads. Without it, a script must call play().", "animation_finished tells your code the clip ended. A looping clip never ends, so it never sends it.", "Two settings shift a key. The first frame after play() reads 0.0; a deferred call waits to frame end.", "A yes-or-no value has nothing between: use discrete, which jumps at the key."][k]);
+  }
+
+  /* ---------- 6. tween, easing, transition, kill ---------- */
+  var ZE = {
+    lin: d3.easeLinear, qin: d3.easeQuadIn, qout: d3.easeQuadOut, qio: d3.easeQuadInOut
+  };
+  function renderTween(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "A tween computes motion in code: easing and transition type shape it, and kill stops it short", "Two zoom tweens with different targets; four balls racing with different easing; six transition curves; a sword tween killed half way.");
+    var ey = base(svg, [{ id: "tween", s: 1 }, { id: "easing", s: 2 }, { id: "trans", s: 3 }, { id: "kill", s: 4 }], k, anim, ["Animation", "end value is in the clip"], ["Tween", "end value is read at run time"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    if (kd === 1) {
+      lab(d, 0, 26, "CAMERA ZOOM FROM 1.0, OVER 1 S");
+      var c = frame(d, 90, 60, 640, 290, 1, 1, 3, false);
+      cap(d, 6, c.Y(1) + 8, "1.0", { size: 24 }); cap(d, 6, c.Y(2) + 8, "2.0", { size: 24 }); cap(d, 6, c.Y(3) + 8, "3.0", { size: 24 }); cap(d, c.X(0), 380, "0", { size: 24, anchor: "middle" }); cap(d, c.X(1), 380, "1 s", { size: 24, anchor: "end" });
+      var runs = [[2.0, GREY, "Animation: 2.0 always", "7 6"], [2.5, RED, "Tween A: target 2.5", null], [1.8, INK, "Tween B: target 1.8", null]], ds = [];
+      runs.forEach(function (r, i) { ln(d, c.X(0), c.Y(1), c.X(1), c.Y(r[0]), r[1], 4, r[2]); ds.push(dt(d, c.X(0), c.Y(1), 9, r[1] === GREY ? "#FFFFFF" : r[1], r[1])); });
+      runs.forEach(function (r, i) { ln(d, 100, 66 + i * 34 - 8, 150, 66 + i * 34 - 8, r[1], 4, r[2]); cap(d, 160, 66 + i * 34, r[2 === 2 ? 2 : 2], { size: 24 }); });
+      run(d, 2800, function (t) { runs.forEach(function (r, i) { ds[i].attr("cx", c.X(t)).attr("cy", c.Y(1 + (r[0] - 1) * t)); }); }, A(anim, k, 1));
+      cap(d, 0, 450, "End values: 2.0 fixed; 2.5 and 1.8 chosen by the player's target.", { size: 24, weight: 700 });
+    } else if (kd === 2) {
+      lab(d, 0, 26, "FOUR BALLS, SAME TRIP, 1 S, TRANS_QUAD");
+      var E = [["linear", ZE.lin], ["ease in", ZE.qin], ["ease out", ZE.qout], ["ease in-out", ZE.qio]], bs = [], x0 = 200, xw = 520;
+      E.forEach(function (e, i) { var y = 70 + i * 90; cap(d, 0, y + 8, e[0], { size: 24, weight: 700 }); ln(d, x0, y, x0 + xw, y, FAMILIAR, 3); ln(d, x0 + xw * 0.25, y - 18, x0 + xw * 0.25, y + 18, MUTED, 2);  bs.push(dt(d, x0, y, 14, i === 0 ? GREY : RED)); cap(d, x0 + xw * 0.25 + 4, y + 40, f1(100 * e[1](0.25), 0) + "%", { size: 24 }); });
+      cap(d, x0 + xw * 0.25, 410, "0.25 s", { size: 24, anchor: "middle", fill: MUTED });
+      run(d, 2600, function (t) { bs.forEach(function (b, i) { b.attr("cx", x0 + xw * E[i][1](t)); }); }, A(anim, k, 2));
+    } else if (kd === 3) {
+      lab(d, 0, 26, "EASE OUT CURVES BY TRANSITION TYPE (VALUE AT 0.5 S)");
+      var TR = [["LINEAR", d3.easeLinear], ["SINE", d3.easeSinOut], ["CUBIC", d3.easeCubicOut], ["BACK", d3.easeBackOut], ["BOUNCE", d3.easeBounceOut], ["ELASTIC", d3.easeElasticOut]], dts = [], cc = [];
+      TR.forEach(function (r, i) {
+        var x = (i % 3) * 252, y = 36 + Math.floor(i / 3) * 224, f = frame(d, x, y + 34, 226, 130, 1, -0.2, 1.4, false);
+        cap(d, x, y + 24, r[0] + " " + f1(r[1](0.5), 2), { size: 24, weight: 700 });
+        curve(d, function (t) { return [f.X(t), f.Y(r[1](t))]; }, 0, 1, i ? INK : GREY, 3); dts.push(dt(d, f.X(0), f.Y(0), 8, RED)); cc.push(f);
+      });
+      run(d, 3000, function (t) { dts.forEach(function (b, i) { b.attr("cx", cc[i].X(t)).attr("cy", cc[i].Y(TR[i][1](t))); }); }, A(anim, k, 3));
+    } else if (kd === 4) {
+      lab(d, 0, 26, "TWEEN rotation_degrees −80° → 85° OVER 0.15 S");
+      var TD = 0.15, KT = 0.075, stop = -80 + 165 * (KT / TD);
+      [["runs to the end", 1, 85, "callback runs: hitbox OFF", INK], ["killed at 0.075 s", KT / TD, stop, "callback never runs: hitbox ON", RED]].forEach(function (r, i) {
+        var x = i * 380, g = d.append("g").attr("transform", "translate(" + x + ",0)");
+        cap(g, 0, 70, r[0], { size: 24, weight: 700, fill: r[4] });
+        g.append("rect").attr("x", 0.5).attr("y", 90.5).attr("width", 300).attr("height", 30).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+        var b = bar(g, 0, 91, 300 * r[1], 29, r[4], false);
+        if (i) { ln(g, 300 * r[1], 84, 300 * r[1], 128, RED, 4); cross(g, 300 * r[1] + 22, 105, 9, RED); }
+        var bl = g.append("g").attr("transform", "translate(110,230)"); ln(bl, 0, 0, 0, 0, FAMILIAR, 1);
+        ln(bl, -80 * 0 + 0, 0, 100 * Math.cos(-80 * DEG), 100 * Math.sin(-80 * DEG), FAMILIAR, 4, "6 6");
+        var tw = ln(bl, 0, 0, 100 * Math.cos(r[2] * DEG), 100 * Math.sin(r[2] * DEG), r[4], 10); dt(bl, 0, 0, 12, r[4]);
+        cap(g, 0, 380, "rotation " + f1(r[2]) + "°", { size: 24, weight: 700 }); cap(g, 0, 416, r[3], { size: 24, weight: 700, fill: r[4] });
+      });
+      cap(d, 0, 470, "Key “hitbox is live” in an Animation, not a tween.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "The clip's end value is typed in. A tween reads it at run time, from gameplay. Designers scrub clips.", "Easing shapes the speed. Ease-in starts slow, ease-out ends slow. At 0.25 s the balls differ: 25, 6, 44, 13 percent.", "Transition type picks the curve family. Back overshoots; bounce and elastic wobble to rest.", "Kill halfway and the value stays at " + f1(-80 + 165 * 0.5) + "° and the end step never runs."][k]);
+  }
+
+  /* ---------- 7. skeleton, rest pose, IK, pole ---------- */
+  var R0 = [110, 330], L1 = 150, L2 = 130;
+  function renderBones(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "A skeleton moves by parent and child; IK works backwards from a target", "A two-bone arm: a child follows its parent; a dashed rest pose; the arm solved to reach a moving target; and two elbow solutions chosen by a pole.");
+    var ey = base(svg, [{ id: "skeleton", s: 1 }, { id: "rest", s: 2 }, { id: "ik", s: 3 }, { id: "pole", s: 4 }], k, anim, ["Forward", "set angles, find the hand"], ["Inverse (IK)", "set the hand, find the angles"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    function fk(a1, a2) { var e = [R0[0] + L1 * Math.cos(a1 * DEG), R0[1] + L1 * Math.sin(a1 * DEG)]; return { e: e, h: [e[0] + L2 * Math.cos((a1 + a2) * DEG), e[1] + L2 * Math.sin((a1 + a2) * DEG)] }; }
+    function pose(a1, a2, c, w, dash) { var p = fk(a1, a2); return { p: p, el: arm(d, R0, p.e, p.h, c, w, dash) }; }
+    if (kd === 1) {
+      lab(d, 0, 26, "UPPER ARM TURNS, FOREARM RIDES ALONG");
+      var g = d.append("g"), live = [];
+      var A1 = -50, A2 = 70, rd = cap(d, 0, 450, "", { size: 24, weight: 700 }), rd2 = cap(d, 0, 486, "", { size: 24, fill: MUTED });
+      run(d, 3200, function (t) { g.selectAll("*").remove(); var a1 = A1 * d3.easeCubicInOut(t), p = fk(a1, A2 * d3.easeCubicInOut(Math.min(1, t * 1.0))); arm(g, R0, p.e, p.h, INK, 8); cap(g, p.e[0] + 18, p.e[1] - 14, "forearm", { size: 24, fill: MUTED }); rd.text("upper arm " + f1(a1, 0) + "°, forearm " + f1(A2 * d3.easeCubicInOut(t), 0) + "° from it"); rd2.text("hand at (" + f1(p.h[0], 0) + ", " + f1(p.h[1], 0) + ")"); }, A(anim, k, 1));
+      cap(d, 24, 380, "upper arm", { size: 24, fill: MUTED }); dt(d, R0[0], R0[1], 5, GREY);
+    } else if (kd === 2) {
+      lab(d, 0, 26, "REST POSE (DASHED) AND THE CURRENT POSE");
+      var rp = fk(0, 0); arm(d, R0, rp.e, rp.h, GREY, 6, "8 8"); var g2 = d.append("g"), rd3 = cap(d, 0, 450, "", { size: 24, weight: 700 });
+      run(d, 3600, function (t) { var f = d3.easeCubicInOut(kf(t, [1, 0, 1]) * 0 + (t < 0.5 ? 1 - 2 * t : 2 * t - 1)); var a1 = -50 * f, a2 = 70 * f; g2.selectAll("*").remove(); var p = fk(a1, a2); arm(g2, R0, p.e, p.h, INK, 8); rd3.text("angles from rest: " + f1(a1, 0) + "°, " + f1(a2, 0) + "°"); }, A(anim, k, 2));
+      cap(d, 0, 486, "Rest pose: all angles 0. Resetting returns every bone there.", { size: 24, fill: MUTED });
+    } else if (kd === 3) {
+      lab(d, 0, 26, "TWO-BONE IK: THE HAND FOLLOWS THE TARGET");
+      var g3 = d.append("g"), rd4 = cap(d, 0, 450, "", { size: 24, weight: 700 }), rd5 = cap(d, 0, 486, "", { size: 24, fill: MUTED });
+      var PX = [330, 300, 250], PY = [230, 430, 200];
+      run(d, 4200, function (t) { var x = kf(t, [330, 300, 250, 250]), y = kf(t, [230, 430, 200, 200]); g3.selectAll("*").remove(); var a = twoBone(R0[0], R0[1], L1, L2, x, y, 1), b = twoBone(R0[0], R0[1], L1, L2, x, y, -1), s = a.ey < b.ey ? a : b; arm(g3, R0, [s.ex, s.ey], [s.hx, s.hy], INK, 8); tgt(g3, x, y); rd4.text("distance " + f1(s.d, 0) + " of reach " + (L1 + L2) + "  →  elbow bends " + f1(s.elbow, 0) + "°"); rd5.text("hand − target = " + f1(Math.hypot(s.hx - x, s.hy - y), 1) + " px"); }, A(anim, k, 3));
+    } else {
+      lab(d, 0, 26, "SAME TARGET, TWO ELBOW SOLUTIONS");
+      var TX = 320, TY = 330, up = twoBone(R0[0], R0[1], L1, L2, TX, TY, -1), dn = twoBone(R0[0], R0[1], L1, L2, TX, TY, 1), g4 = d.append("g");
+      arm(d, R0, [up.ex, up.ey], [up.hx, up.hy], FAMILIAR, 6, "8 8"); arm(d, R0, [dn.ex, dn.ey], [dn.hx, dn.hy], FAMILIAR, 6, "8 8"); tgt(d, TX, TY);
+      var rd6 = cap(d, 0, 486, "", { size: 24, weight: 700 });
+      run(d, 4200, function (t) { var py = kf(t, [110, 110, 380, 380]); g4.selectAll("*").remove(); var s = Math.hypot(up.ex - 215, up.ey - py) < Math.hypot(dn.ex - 215, dn.ey - py) ? up : dn; arm(g4, R0, [s.ex, s.ey], [s.hx, s.hy], INK, 8); var pg = g4.append("g"); pg.append("path").attr("d", "M215," + (py - 16) + " l16,16 l-16,16 l-16,-16Z").attr("fill", RED); cap(pg, 215, py - 24, "pole", { size: 24, fill: RED, weight: 700, anchor: "middle" }); rd6.text("elbow goes " + (s === up ? "up" : "down") + ": its distance to the pole is smaller"); }, A(anim, k, 4));
+      cap(d, 0, 450, "Both elbows reach the target. Only the pole decides.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A skeleton is bones in a hierarchy. Turn the upper arm and the forearm and hand go with it.", "The rest pose is the default pose. Every animated pose is angles away from it.", "IK works backwards: give the hand's target, get the angles. The law of cosines solves two bones.", "Two elbow positions reach the same target. A pole target picks the side."][k]);
+  }
+
+  /* ---------- 8. FABRIK, SkeletonIK3D, look-at ---------- */
+  function fabrikRun(p0, Ls, root, target, iters) {
+    var p = p0.map(function (q) { return q.slice(); }), n = p.length - 1, out = [{ p: p.map(function (q) { return q.slice(); }), err: Math.hypot(p[n][0] - target[0], p[n][1] - target[1]) }];
+    for (var it = 0; it < iters; it++) {
+      p[n] = target.slice();
+      for (var i = n - 1; i >= 0; i--) { var dx = p[i][0] - p[i + 1][0], dy = p[i][1] - p[i + 1][1], dl = Math.hypot(dx, dy); p[i] = [p[i + 1][0] + dx / dl * Ls[i], p[i + 1][1] + dy / dl * Ls[i]]; }
+      p[0] = root.slice();
+      for (var j = 0; j < n; j++) { var ex = p[j + 1][0] - p[j][0], ey = p[j + 1][1] - p[j][1], el = Math.hypot(ex, ey); p[j + 1] = [p[j][0] + ex / el * Ls[j], p[j][1] + ey / el * Ls[j]]; }
+      out.push({ p: p.map(function (q) { return q.slice(); }), err: Math.hypot(p[n][0] - target[0], p[n][1] - target[1]) });
+    }
+    return out;
+  }
+  function chain(g, p, c, w, dash) { g.append("path").attr("d", d3.line()(p)).attr("fill", "none").attr("stroke", c || INK).attr("stroke-width", w || 8).attr("stroke-linecap", "round").attr("stroke-linejoin", "round").attr("stroke-dasharray", dash || null); p.forEach(function (q, i) { dt(g, q[0], q[1], i === p.length - 1 ? 10 : 11, i === p.length - 1 ? (c || INK) : "#FFFFFF", c || INK); }); }
+  function renderSolvers(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "FABRIK solves a chain by iterating; SkeletonIK3D is Godot's older IK node; look-at turns one bone", "A three-bone chain pulled to a target iteration by iteration with an error table; two arms reaching one target; a head turning to face a moving target.");
+    var ey = base(svg, [{ id: "fabrik", s: 1 }, { id: "skik", s: 2 }, { id: "lookat", s: 3 }], k, anim, ["Look-at", "turn one bone, no chain"], ["IK", "solve a whole chain"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    if (kd === 1) {
+      lab(d, 0, 26, "FABRIK: BACK, THEN FORWARD, REPEAT");
+      var root = [70, 420], Ls = [120, 100, 80], P0 = [[70, 420], [190, 420], [290, 420], [370, 420]], target = [260, 190];
+      var S = fabrikRun(P0, Ls, root, target, 4), g = d.append("g");
+      box(d, 520, 40, 220, 232, { stroke: FAMILIAR }); lab(d, 536, 72, "ERROR PX", { size: 24 });
+      var rows = S.map(function (s, i) { return cap(d, 536, 114 + i * 38, "pass " + i + ": " + f1(s.err, 1), { size: 24, weight: 700, fill: "#FFFFFF" }); });
+      function draw(i) { g.selectAll("*").remove(); tgt(g, target[0], target[1]); chain(g, P0, FAMILIAR, 6, "8 8"); chain(g, S[i].p, INK, 8); rows.forEach(function (r, j) { r.attr("fill", j <= i ? (j === i ? RED : INK) : "#FFFFFF"); }); }
+      draw(S.length - 1);
+      cap(d, 0, 486, "Chain lengths 120, 100, 80; target 256 px from the root.", { size: 24, fill: MUTED });
+      run(d, 5000, function (t) { draw(Math.min(S.length - 1, Math.floor(t * S.length * 1.0))); }, A(anim, k, 1));
+    } else if (kd === 2) {
+      lab(d, 0, 26, "SkeletonIK3D ON BOTH ARMS, ONE TARGET");
+      var R1 = [110, 250], R2 = [110, 410], l1 = 130, l2 = 110, g2 = d.append("g"), rd = cap(d, 0, 486, "", { size: 24, weight: 700 });
+      box(d, 480, 56, 260, 40, { stroke: RED, sw: 2 }); cap(d, 610, 84, "Deprecated", { size: 24, weight: 700, fill: RED, anchor: "middle" });
+      run(d, 3600, function (t) { var y = kf(t, [330, 300, 360, 330]), x = 330; g2.selectAll("*").remove(); var a = twoBone(R1[0], R1[1], l1, l2, x, y, -1), b = twoBone(R2[0], R2[1], l1, l2, x, y, 1); arm(g2, R1, [a.ex, a.ey], [a.hx, a.hy], INK, 8); arm(g2, R2, [b.ex, b.ey], [b.hx, b.hy], INK, 8); tgt(g2, x, y); rd.text("both hands within " + f1(Math.max(Math.hypot(a.hx - x, a.hy - y), Math.hypot(b.hx - x, b.hy - y)), 1) + " px of the target"); }, A(anim, k, 2));
+      cap(d, 480, 120, "is_running() = true", { size: 24, family: MONO }); cap(d, 480, 160, "target_node", { size: 24, family: MONO, fill: MUTED });
+    } else {
+      lab(d, 0, 26, "LOOK-AT: ONE BONE, ONE ANGLE");
+      var H0 = [200, 270], g3 = d.append("g"), rd2 = cap(d, 0, 486, "", { size: 24, weight: 700 });
+      run(d, 4200, function (t) { var a = kf(t, [-60, 20, 60, -20, -20]), x = H0[0] + 250 * Math.cos(a * DEG), y = H0[1] + 250 * Math.sin(a * DEG); g3.selectAll("*").remove(); ln(g3, H0[0], H0[1], x, y, FAMILIAR, 3, "6 6"); dt(g3, H0[0], H0[1], 34, "#FFFFFF", INK); g3.append("path").attr("d", "M" + (H0[0] + 34) + ",-14 L" + (H0[0] + 62) + ",0 L" + (H0[0] + 34) + ",14Z").attr("fill", RED).attr("transform", "rotate(" + a + " " + H0[0] + " " + H0[1] + ") translate(0," + H0[1] + ")"); tgt(g3, x, y); rd2.text("angle = atan2(dy, dx) = " + f1(Math.atan2(y - H0[1], x - H0[0]) / DEG, 0) + "°"); }, A(anim, k, 3));
+    }
+    note(svg, ey, ["", "FABRIK moves the chain back from the target, then forward from the root, again and again until it fits.", "The built-in IK node does this for you on a bone chain. The class reference marks it Deprecated.", "Look-at only rotates one bone to face a target. It does not bend a chain."][k]);
+  }
+
+  /* ---------- 9. skeleton_updated, fixed frame rate, backend limit ---------- */
+  function renderChecks(el, k, anim) {
+    var kd = k || 1;
+    var svg = svgFor(el, W, H, "What a headless animation check can and cannot see", "Two arm poses read at different moments; frame numbers pinned and unpinned; a mouse mode that reads back wrong, and a grid of eight checks, four failing.");
+    var ey = base(svg, [{ id: "skelupd", s: 1 }, { id: "fixfps", s: 2 }, { id: "backend", s: 3 }], k, anim, ["Timer wait", "reads between updates"], ["Fixed frame rate", "reads on a known frame"]);
+    var d = svg.append("g").attr("transform", "translate(0,10)");
+    if (kd === 1) {
+      lab(d, 0, 26, "SAME FRAME, TWO MOMENTS TO READ THE POSE");
+      var tg = [170, -120], l1 = 130, l2 = 110;
+      [[40, "read after a timer", false], [420, "read in skeleton_updated", true]].forEach(function (r, i) {
+        var rt = [r[0], 350], g = d.append("g"), th = [rt[0] + tg[0], rt[1] + tg[1]];
+        var s = twoBone(rt[0], rt[1], l1, l2, th[0], th[1], -1), hand = r[2] ? [s.hx, s.hy] : [rt[0] + l1 + l2, rt[1]], el = r[2] ? [s.ex, s.ey] : [rt[0] + l1, rt[1]];
+        tgt(g, th[0], th[1]); arm(g, rt, el, hand, r[2] ? INK : RED, 8); fade(g, A(anim, k, 1), i * 500);
+        cap(g, r[0], 430, r[1], { size: 24, weight: 700, fill: r[2] ? INK : RED }); cap(g, r[0], 466, "hand is " + f1(Math.hypot(hand[0] - th[0], hand[1] - th[1]), 0) + " px from target", { size: 24 });
+      });
+    } else if (kd === 2) {
+      lab(d, 0, 26, "FIRST FRAME AT OR PAST 0.10 S (SIMULATION, SEEDED)");
+      var x0 = 130, sc = 480 / 0.13, rg = rng(11), rowsd = [];
+      var ROWS = [["pinned", null], ["run 1", rg], ["run 2", rg], ["run 3", rg]];
+      ln(d, x0 + 0.1 * sc, 50, x0 + 0.1 * sc, 370, MUTED, 2, "5 5"); cap(d, x0 + 0.1 * sc, 404, "0.1 s", { size: 24, anchor: "middle", fill: MUTED });
+      ROWS.forEach(function (r, i) {
+        var y = 80 + i * 90, g = d.append("g"), t = 0, n = 0, hit = -1; cap(g, 0, y + 8, r[0], { size: 24, weight: 700, fill: i ? INK : RED });
+        ln(g, x0, y, x0 + 0.13 * sc, y, FAMILIAR, 2);
+        while (t < 0.13 && n < 60) { ln(g, x0 + t * sc, y - 14, x0 + t * sc, y + 14, i ? INK : RED, 2); var dtm = r[1] ? 0.004 + 0.010 * r[1]() : 1 / 120; t += dtm; n++; if (hit < 0 && t >= 0.1 - 1e-9) hit = n; }
+        cap(g, x0 + 0.13 * sc + 20, y + 8, "frame " + hit, { size: 24, weight: 700, fill: i ? INK : RED }); fade(g, A(anim, k, 2), i * 300);
+      });
+      cap(d, 0, 450, "20-check frame test: pinned 20 of 20 each time. Unpinned: 7, 9 and 9 checks failed.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 26, "MOUSE-LOOK MODE: ASKED 2, READ BACK 0");
+      box(d, 0, 40, 330, 56, { stroke: INK, sw: 2.5 }); mono(d, 16, 76, "requested 2", { size: 26 }); ln(d, 330, 68, 410, 68, RED, 4); box(d, 410, 40, 330, 56, { stroke: RED, sw: 2.5 }); mono(d, 426, 76, "observed 0", { size: 26, weight: 700, fill: RED });
+      lab(d, 0, 150, "FPS NAVIGATION TEST: 4 OF 8 PASS");
+      d3.range(4).forEach(function (i) { var b = d.append("rect").attr("x", i * 56).attr("y", 170).attr("width", 46).attr("height", 40).attr("fill", INK); if (A(anim, k, 3)) b.attr("opacity", 0).transition().delay(i * 120).duration(300).attr("opacity", 1); });
+      ["captured mode", "yaw", "pitch up clamp", "pitch down clamp"].forEach(function (n, i) { var g = d.append("g"), y = 232 + i * 46; g.append("rect").attr("x", 0).attr("y", y).attr("width", 46).attr("height", 38).attr("fill", RED); cross(g, 23, y + 19, 9, "#FFFFFF"); cap(g, 62, y + 28, n + ": fails", { size: 24, weight: 700, fill: RED }); fade(g, A(anim, k, 3), 500 + i * 150); });
+      cap(d, 0, 470, "No patch and no visible window were used. Those four stay unverified.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Read the pose in the skeleton_updated signal. A timer reads between updates and misses the IK: 10 of 12 checks passed.", "Pin the time step so frame numbers mean the same thing each run. Frame-number checks need it.", "Some things need a real window. Report them as unverified, not as passed."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from animation foundations", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Animation", "A clip with the end value in it. Designers scrub it"], ["Tween", "Computed in code, to a target from gameplay"]],
+      [["Loop", "Wraps from the end straight to the start"], ["Ping-pong", "Plays forward, then backward, and repeats"]],
+      [["Two-bone IK", "Solved in one step with the law of cosines"], ["FABRIK", "Iterates until the chain fits the target"]],
+      [["Continuous", "Blends between keys"], ["Discrete", "Changes only at the keys"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(40,0)"), RG = R.append("g").attr("transform", "translate(40,0)");
+      function mini(G, f, c) { var cc = frame(G, 0, 120, 600, 280, 1, -0.1, 1.2, false); curve(G, function (u) { return [cc.X(u), cc.Y(f(u))]; }, 0, 1, c || INK, 4); dt(G, cc.X(t), cc.Y(f(t)), 11, RED); return cc; }
+      if (i === 0) { mini(LG, function (u) { return u; }, GREY); mini(RG, function (u) { return d3.easeCubicOut(u) * 0.8; }); cap(LG, 20, 440, "end value 1.0, always", { size: 24, fill: MUTED }); cap(RG, 20, 440, "end value 0.8 here, 1.0 elsewhere", { size: 24, fill: MUTED }); }
+      else if (i === 1) { mini(LG, function (u) { return (u * 3) % 1; }); mini(RG, function (u) { var m = (u * 3) % 2; return m <= 1 ? m : 2 - m; }); }
+      else if (i === 2) { var s = twoBone(100, 330, 150, 130, 330, 300, -1); arm(LG, [100, 330], [s.ex, s.ey], [s.hx, s.hy], INK, 8); tgt(LG, 330, 300); var S = fabrikRun([[80, 330], [200, 330], [300, 330], [380, 330]], [120, 100, 80], [80, 330], [300, 240], 4); chain(RG, S[Math.min(S.length - 1, Math.floor(t * S.length))].p, INK, 8); tgt(RG, 300, 240); cap(LG, 20, 440, "1 step", { size: 24, fill: MUTED }); cap(RG, 20, 440, "pass " + Math.min(S.length - 1, Math.floor(t * S.length)) + " of " + (S.length - 1), { size: 24, fill: MUTED }); }
+      else { mini(LG, function (u) { return Math.min(1, u / 0.5); }); mini(RG, function (u) { return u < 0.5 ? 0 : 1; }, RED); }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the swing slower", x: "Set speed_scale to 0.5 on attack_fast: 0.45 s becomes 0.9 s" },
+    { v: "make the zoom feel smooth", x: "Tween zoom 1.0 to 2.5 over 1 s, TRANS_QUAD with EASE_OUT" },
+    { v: "make the arm reach the target", x: "Two-bone IK, shoulder to hand, with a pole target above the elbow" },
+    { v: "the hitbox should match the swing", x: "Key monitoring true at 0.0 s, false at 0.15 s; update mode discrete" },
+    { v: "test the animation headless", x: "Run with --fixed-fps 120 and read the pose in skeleton_updated" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague animation requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { [["speed 1.0: 0.45 s", 1, INK], ["speed 0.5: 0.9 s", 0.5, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, 600 * (i ? 1 : 0.5), 40, r[2], anim, i * 400); }); nt = "half speed doubles the time"; }
+    else if (k === 2) { var c = frame(p, 14, 20, 600, 220, 1, 0, 1, false); curve(p, function (t) { return [c.X(t), c.Y(t)]; }, 0, 1, GREY, 3, "7 6"); curve(p, function (t) { return [c.X(t), c.Y(d3.easeQuadOut(t))]; }, 0, 1, RED, 4); dt(p, c.X(0.25), c.Y(d3.easeQuadOut(0.25)), 8, RED); cap(p, 14, 268, "at 0.25 s: zoom " + f1(1 + 1.5 * d3.easeQuadOut(0.25), 2) + " (linear " + f1(1 + 1.5 * 0.25, 2) + ")", { size: 24, weight: 700 }); nt = "ease-out front-loads the move"; }
+    else if (k === 3) { var c3 = frame(p, 14, 20, 600, 220, 220, 100, 280, false); curve(p, function (t) { var dd = 100 + 180 * t, s = twoBone(0, 0, 150, 130, dd, 0, 1); return [c3.X(dd - 100 + 0) * 0 + 14 + 600 * (dd - 100) / 180 * 1, c3.Y(s.elbow * 0 + 0) * 0 + 20 + 220 * (1 - s.elbow / 180)]; }, 0, 1, RED, 4); cap(p, 14, 268, "elbow bend: " + f1(twoBone(0, 0, 150, 130, 100, 0, 1).elbow, 0) + "° at reach 100, " + f1(twoBone(0, 0, 150, 130, 270, 0, 1).elbow, 0) + "° at 270", { size: 24, weight: 700 }); nt = "farther target, straighter elbow"; }
+    else if (k === 4) { var w = 600 / 24; d3.range(24).forEach(function (j) { var on = j < 18, c4 = p.append("rect").attr("x", 14 + j * w).attr("y", 60).attr("width", w - 3).attr("height", 40).attr("fill", on ? RED : "#FFFFFF").attr("stroke", on ? "none" : FAMILIAR); if (anim) c4.attr("opacity", 0).transition().delay(j * 40).duration(150).attr("opacity", 1); d3.range(1).forEach(function () { var on2 = j >= 2 && j < 20; p.append("rect").attr("x", 14 + j * w).attr("y", 170).attr("width", w - 3).attr("height", 40).attr("fill", on2 ? INK : "#FFFFFF").attr("stroke", on2 ? "none" : FAMILIAR); }); }); cap(p, 14, 50, "on paper: frames 0 to 18 (0.15 s at 120 fps)", { size: 24 }); cap(p, 14, 160, "observed: frames 2 to 20", { size: 24 }); cap(p, 14, 268, "the window moves 2 frames; its length is the same 18", { size: 24, weight: 700 }); nt = "check frames, not just seconds"; }
+    else { [["pinned", 0], ["run 1", 7], ["run 2", 9], ["run 3", 9]].forEach(function (r, i) { cap(p, 14, 50 + i * 62, r[0], { size: 24 }); box(p, 120, 28 + i * 62, 440, 30, { stroke: FAMILIAR, sw: 1.5 }); bar(p, 120, 29 + i * 62, 440 * r[1] / 20, 29, r[1] ? RED : INK, anim, i * 250); cap(p, 576, 52 + i * 62, r[1] + " of 20", { size: 24, weight: 700 }); }); cap(p, 14, 280, "failed checks, same test, unpinned (book's runs)", { size: 24 }); nt = "pin the time step first"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Does a designer need to scrub it? Then an Animation. Gameplay sets the end value? A Tween.",
+    "If it loops, do the first and last values match, and is the loop mode set?",
+    "Is a yes-or-no property keyed with update mode discrete?",
+    "On which frame does the key really fire, given the callback modes?",
+    "Do I read the pose in skeleton_updated, not after a timer?",
+    "Did I pin the time step, and say what a headless run cannot test?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust an animation change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 28, c, 76, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it smoother”, but “TRANS_QUAD, EASE_OUT, 1 s”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, clip: { steps: 4, render: renderClip }, line: { steps: 4, render: renderLine },
+    types: { steps: 4, render: renderTypes }, loop: { steps: 3, render: renderLoop }, when: { steps: 4, render: renderWhen },
+    tween: { steps: 4, render: renderTween }, bones: { steps: 4, render: renderBones }, solvers: { steps: 3, render: renderSolvers },
+    checks: { steps: 3, render: renderChecks }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

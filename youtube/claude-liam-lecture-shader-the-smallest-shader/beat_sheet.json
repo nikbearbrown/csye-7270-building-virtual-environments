@@ -1,0 +1,1300 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-the-smallest-shader",
+    "title": "The Smallest Shader",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Separate placing vertices from coloring fragments.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. The Smallest Shader. Separate placing vertices from coloring fragments.",
+      "estimated_duration_s": 5.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      },
+      "actual_duration_s": 6.058667,
+      "audio_file": "mp3/beat-BOPEN.mp3"
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hola. This is Liam, in for Bear. The key correction is that a color is enough. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nlighting is required.",
+            "triggerWords": "lighting is required",
+            "replacementWords": "a color is enough",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-the-smallest-shader",
+            "banner": "",
+            "durationSeconds": 9.802667
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      },
+      "actual_duration_s": 9.802667,
+      "audio_file": "mp3/beat-BIDEA-padded.wav"
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Vertex: A mesh point processed before rasterization. Fragment: A candidate sample produced by rasterization. Uniform: A material parameter shared by shader invocations.",
+      "estimated_duration_s": 10.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Uniform",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Vertex"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Fragment"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Uniform"
+          }
+        ],
+        "motion_claim": "Reveal Uniform",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Vertex",
+                "meaning": "A mesh point processed before rasterization"
+              },
+              {
+                "term": "Fragment",
+                "meaning": "A candidate sample produced by rasterization"
+              },
+              {
+                "term": "Uniform",
+                "meaning": "A material parameter shared by shader invocations"
+              }
+            ],
+            "durationSeconds": 11.605333
+          }
+        }
+      },
+      "actual_duration_s": 11.605333,
+      "audio_file": "mp3/beat-BDEFS.mp3"
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This shader has two jobs. The vertex function places mesh points. Rasterization turns triangles into fragments. The fragment function assigns their color. Neither function needs to know the whole picture.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: shader_type",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Two Jobs"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: shader_type"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: shader_type",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "shader_type spatial;\nrender_mode unshaded;",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  1
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 11.882667
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 18,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.882667,
+      "audio_file": "mp3/beat-B01.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.4713,
+              0.8365,
+              0.612
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.612,
+              0.8333,
+              0.6491
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.612,
+              0.8333,
+              0.6491
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Read the matrix chain from right to left. Model places the object in the world. View expresses that world relative to the camera. Projection produces clip coordinates.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: POSITION =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Place The Mesh"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: POSITION ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: POSITION =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Place The Mesh",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "void vertex() {\n\tPOSITION = PROJECTION_MATRIX * VIEW_MATRIX * MODEL_MATRIX * vec4(VERTEX, 1.0);\n}",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 9.792
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 24,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.792,
+      "audio_file": "mp3/beat-B02.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3676,
+              0.4448,
+              0.6787
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6787,
+              0.4417,
+              0.7157
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6787,
+              0.4417,
+              0.7157
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The fourth coordinate is one because this is a position. Translation must affect it. The result is a four-component clip position; perspective division comes later in the rendering pipeline.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec4(VERTEX",
+        "show": [
+          {
+            "at": 0,
+            "event": "Homogeneous Position"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec4(VERTEX"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec4(VERTEX",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Homogeneous Position",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "void vertex() {\n\tPOSITION = PROJECTION_MATRIX * VIEW_MATRIX * MODEL_MATRIX * vec4(VERTEX, 1.0);\n}",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 10.858667
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 24,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.858667,
+      "audio_file": "mp3/beat-B03.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.4231,
+              0.8365,
+              0.6602
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6602,
+              0.8333,
+              0.6972
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6602,
+              0.8333,
+              0.6972
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Now the fragment function writes the same uniform color everywhere. The sphere loses its shading cues and looks like a flat disc. Its geometry has not disappeared.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Choose A Color"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Choose A Color",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "void fragment() {\n\tALBEDO = shader_color;\n}",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 9.877333
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 28,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.877333,
+      "audio_file": "mp3/beat-B04.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.4343,
+              0.4448,
+              0.612
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.612,
+              0.4417,
+              0.6491
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.612,
+              0.4417,
+              0.6491
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the color change from teal to terracotta. Every visible fragment receives the new material value. We changed an input, not the triangle mesh or the shader program.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Change One Input"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/00_super_simple.mp4",
+            "durationSeconds": 16.0
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 21,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0,
+      "actual_duration_s": 16.0,
+      "audio_file": "mp3/beat-B05-padded.wav",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.1376,
+              0.087,
+              0.9251,
+              0.1648
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.1376,
+              0.9019,
+              0.8624,
+              0.9519
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.1376,
+              0.087,
+              0.9251,
+              0.1648
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.1376,
+              0.9019,
+              0.8624,
+              0.9519
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Unshaded means Godot does not add its built-in lighting here. A light node will not create a highlight on this material. The silhouette still comes from the mesh.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: render_mode unshaded",
+        "show": [
+          {
+            "at": 0,
+            "event": "No Hidden Lamp"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: render_mode unshaded"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: render_mode unshaded",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "No Hidden Lamp",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "shader_type spatial;\nrender_mode unshaded;\nuniform vec3 shader_color : source_color = vec3(1.0);",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 8.96
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 19,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 8.96,
+      "audio_file": "mp3/beat-B06.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.4472,
+              0.8365,
+              0.6361
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6361,
+              0.8333,
+              0.6731
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6361,
+              0.8333,
+              0.6731
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The source-color hint identifies a color input. In Forward Plus, color conversion matters. A displayed color is not automatically the same numeric quantity as a linear-light shader value.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: source_color",
+        "show": [
+          {
+            "at": 0,
+            "event": "The Color Contract"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: source_color"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: source_color",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "The Color Contract",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "render_mode unshaded;\nuniform vec3 shader_color : source_color = vec3(1.0);\nvoid vertex() {",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 11.285333
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 21,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.285333,
+      "audio_file": "mp3/beat-B07.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3646,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.412,
+              0.4448,
+              0.6343
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6343,
+              0.4417,
+              0.6713
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3646,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6343,
+              0.4417,
+              0.6713
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Writing POSITION makes this shader responsible for the entire clip position. Godot can normally do that transformation for you. Keep this explicit version to understand the pipeline, not because every material requires it.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: void vertex",
+        "show": [
+          {
+            "at": 0,
+            "event": "A Useful Baseline"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: void vertex"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: void vertex",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "A Useful Baseline",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "uniform vec3 shader_color : source_color = vec3(1.0);\nvoid vertex() {\n\tPOSITION = PROJECTION_MATRIX * VIEW_MATRIX * MODEL_MATRIX * vec4(VERTEX, 1.0);",
+            "codeFile": "00_super_simple.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/00_super_simple.jpg",
+            "durationSeconds": 13.013333
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/00_super_simple.gdshader",
+        "sha256": "e7f097646a8b541254899c5bcdcec4fcba4f745f380c9998de3f572f48d86a4d",
+        "line": 23,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 13.013333,
+      "audio_file": "mp3/beat-B08.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3484,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.4231,
+              0.8365,
+              0.6602
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6602,
+              0.8333,
+              0.6972
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3484,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6602,
+              0.8333,
+              0.6972
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. The vertex stage positions the mesh. The fragment stage supplies its color. A uniform exposes a material control. Unshaded output has no built-in lighting. Liam, in for Bear.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "The Smallest Shader",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "The vertex stage positions the mesh.",
+              "The fragment stage supplies its color.",
+              "A uniform exposes a material control.",
+              "Unshaded output has no built-in lighting."
+            ],
+            "lectureLayout": true,
+            "durationSeconds": 12.681333
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "actual_duration_s": 12.681333,
+      "audio_file": "mp3/beat-BVDT-padded.wav"
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Make an unshaded Godot material with a color uniform. Change the color, then rotate the mesh. Explain which change alters the flat color and why. Check two things: Rotation changes the silhouette, not the chosen color. The material exposes its color in the Inspector.",
+      "estimated_duration_s": 18.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Make an unshaded Godot material with a color uniform. Change the color, then rotate the mesh. Explain which change alters the flat color and why. Check two things: Rotation changes the silhouette, not the chosen color. The material exposes its color in the Inspector.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "Rotation changes the silhouette, not the chosen color.",
+              "The material exposes its color in the Inspector."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "durationSeconds": 15.509333
+          }
+        }
+      },
+      "actual_duration_s": 15.509333,
+      "audio_file": "mp3/beat-BHTF.mp3"
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "The Smallest Shader. At Nik Bear Brown.",
+      "estimated_duration_s": 2.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "The Smallest Shader",
+            "slug": "claude-liam-lecture-shader-the-smallest-shader",
+            "lectureLayout": true,
+            "durationSeconds": 3.922667,
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "actual_duration_s": 3.922667,
+      "audio_file": "mp3/beat-BOUT-padded.wav",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "ClaudeTitleOutro outro card: dark full-frame background with small centered title and mascot by design; only underfill/clustered are waived."
+      }
+    }
+  ]
+}

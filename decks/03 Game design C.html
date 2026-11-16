@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game design C: pacing and guidance | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: game design C">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Game design: pacing and guidance">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology</p>
+      <h1 class="t-opening rise g2">Game design: pacing and guidance</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">How a designer steers the player, sets the pace and keeps promises</p>
+      <div class="speaker-notes" hidden><p>Part C of the game design set. 19 terms from the tips video and the Crash Course lecture. Level design is the only glossary row; none is in the chapters. Numbers marked illustrative or seeded are my own examples.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Nineteen terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Nineteen terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm); Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Three pillars">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The foundation</p>
+      <h2 class="t-chart">Three pillars</h2>
+      <div class="diagram build" data-build="pillars" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Player, communication, appeal.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Communication and guiding the focus">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Guiding the player</p>
+      <h2 class="t-chart">Communication and guiding the focus</h2>
+      <div class="diagram build" data-build="comm" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Random walk with step 14 px and a fixed seed against a straight walk to the door.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Linear, nonlinear and side quest">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Guiding the player</p>
+      <h2 class="t-chart">Linear, nonlinear and side quest</h2>
+      <div class="diagram build" data-build="linear" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Routes: 1 for linear; 2 x 2 = 4 with two forks.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Level design, teaching and the middle first">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Guiding the player</p>
+      <h2 class="t-chart">Level design, teaching and the middle first</h2>
+      <div class="diagram build" data-build="teach" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”; a game design tips video (title to confirm); glossary, Game design documents.</p>
+      <div class="speaker-notes" hidden><p>Skill positions approximate. Level design is a glossary row (Game design documents).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Anticipation and build-up">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Meeting expectations</p>
+      <h2 class="t-chart">Anticipation and build-up</h2>
+      <div class="diagram build" data-build="antic" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Reaction time 0.25 s is an assumption. Curves are illustrative powers of time.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Logical events and consistent rules">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Meeting expectations</p>
+      <h2 class="t-chart">Logical events and consistent rules</h2>
+      <div class="diagram build" data-build="logic" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Bounce heights: 100 x 0.8^n against seeded random values.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Games can cheat">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Meeting expectations</p>
+      <h2 class="t-chart">Games can cheat</h2>
+      <div class="diagram build" data-build="cheat" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Distances in pixels; the 120 px turn trigger is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Dynamic play">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Rhythm and space</p>
+      <h2 class="t-chart">Dynamic play</h2>
+      <div class="diagram build" data-build="dynamic" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Durations 3, 5, 3 and 7 s with start times 0, 1, 2 and 0.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Progression, pacing and waves">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Rhythm and space</p>
+      <h2 class="t-chart">Progression, pacing and waves</h2>
+      <div class="diagram build" data-build="pacing" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm); Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Intensity curves are illustrative; time in band is computed from them.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Spacing">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Rhythm and space</p>
+      <h2 class="t-chart">Spacing</h2>
+      <div class="diagram build" data-build="spacing" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Three characters drifting in two rooms with a fixed seed; contact when closer than 40 px.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm); Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Linear and nonlinear, anticipation and build-up, progression and pacing, logical events and consistent rules.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm); Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you call the pacing done">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you call the pacing done</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: a game design tips video (title to confirm); Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Game design C: pacing and guidance ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  var T = {
+    pillars: { n: "Three pillars", m: "A game rests on the player's role, communication and appeal" },
+    purpose: { n: "Player purpose", m: "What the player does and why; the player, not the game, drives it forward" },
+    comm: { n: "Communication", m: "Showing the player the goal and how to reach it, with clues in the environment" },
+    focus: { n: "Guiding the focus", m: "Making clear what the player should concentrate on" },
+    linear: { n: "Linear and nonlinear", m: "Straight from start to end, or with alternate choices along the way" },
+    side: { n: "Side quest", m: "A detour from the main storyline" },
+    level: { n: "Level design", tag: "gloss", m: "Planning and building the spaces the player moves through" },
+    teach: { n: "Teaching through levels", m: "The first level lets the player try each skill, with no text" },
+    midfirst: { n: "Design the middle first", m: "Build the engaging middle levels, then the opening levels that lead there" },
+    antic: { n: "Anticipation", m: "Prepare the player for what comes next, such as a wind-up before an attack" },
+    build: { n: "Build-up", m: "A sequence that raises tension toward an event: sound, sparks, camera shake" },
+    logic: { n: "Logical events", m: "Events behave sensibly and meet the player's unspoken expectations" },
+    consist: { n: "Consistent rules", m: "Even where physics is bent, it is bent the same way every time" },
+    cheat: { n: "Games can cheat", m: "Hidden help the player does not notice, such as enemies told not to turn around" },
+    dynamic: { n: "Dynamic", m: "Many things happening at once, so play stays fresh" },
+    prog: { n: "Progression", m: "A natural rise in challenge; do not over-stimulate or under-stimulate" },
+    pacing: { n: "Pacing", m: "Alternating intense and calm moments" },
+    wave: { n: "Waves", m: "A group of enemies sent together: many weak ones or a few strong ones" },
+    spacing: { n: "Spacing", m: "Open areas to admire, or tight ones that feel claustrophobic; leave room for AI" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function conePath(x, y, ang, fov, len) { var h = fov * DEG / 2; return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) + "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z"; }
+
+  var MAPROWS = [
+    ["The foundation", "three pillars, player purpose, communication", "What a game needs before anything else"],
+    ["Guiding the player", "guiding the focus, linear and nonlinear, side quest, level design, teaching through levels, design the middle first", "How the player finds the way and learns the skills"],
+    ["Meeting expectations", "anticipation, build-up, logical events, consistent rules, games can cheat", "Whether events feel fair, sensible and earned"],
+    ["Rhythm and space", "dynamic, progression, pacing, waves, spacing", "How much happens, how fast, and where"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of game design terms about pacing and guidance", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "19 terms from three video lectures on game design. Each says how a designer steers the player, sets the pace, or keeps promises.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 36, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 36, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. pillars ---------- */
+  function renderPillars(el, k, anim) {
+    var svg = svgFor(el, W, H, "A game stands on three pillars: player, communication and appeal", "Three columns rise one at a time and a roof rests on them.");
+    var ey = base(svg, [{ id: "pillars", s: 1 }, { id: "purpose", s: 1 }], k, anim, ["Player purpose", "what you do and why"], ["Communication", "showing you what and how"]);
+    var d = svg.append("g"), NM = ["Player", "Communication", "Appeal"], xs = [60, 290, 520];
+    d.append("path").attr("d", "M0,440 H740").attr("stroke", INK).attr("stroke-width", 4);
+    NM.forEach(function (n, i) {
+      var g = d.append("g"), on = i + 1 <= k, h = 260;
+      var r = g.append("rect").attr("x", xs[i]).attr("y", 440 - (on ? h : 0)).attr("width", 150).attr("height", on ? h : 0).attr("fill", on ? (i + 1 === k ? RED : INK) : "none");
+      if (A(anim, k, i + 1)) r.attr("y", 440).attr("height", 0).transition().duration(900).attr("y", 440 - h).attr("height", h);
+      cap(g, xs[i] + 75, 478, n, { size: 24, weight: 700, anchor: "middle", fill: on ? INK : MUTED });
+    });
+    if (k >= 3) { var roof = d.append("path").attr("d", "M30,180 H700 L365,100Z").attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 4); cap(d, 365, 160, "the game", { size: 26, weight: 700, anchor: "middle" }); fade(roof, A(anim, k, 3), 700); }
+    cap(d, 0, 540, k + " of 3 pillars standing", { size: 26, weight: 700, fill: k === 3 ? INK : RED });
+    note(svg, ey, ["", "Player: the player has a role and a purpose, and drives the game. Without that they just complete tasks.", "Communication: without it the player does not know the goal or how to reach it, and feels powerless.", "Appeal: the pull to keep playing. It is the hardest to guarantee, and the most important."][k]);
+  }
+
+  /* ---------- 2. communication and focus ---------- */
+  var SEARCH = (function () {
+    var r = rng(17), W_ = 700, H_ = 300, goal = [650, 150], out = {};
+    var p = [40, 150], path = [p.slice()], n = 0;
+    while (n < 3000 && Math.hypot(p[0] - goal[0], p[1] - goal[1]) > 20) { var a = r() * 2 * Math.PI; p = [Math.max(10, Math.min(W_ - 10, p[0] + 14 * Math.cos(a))), Math.max(10, Math.min(H_ - 10, p[1] + 14 * Math.sin(a)))]; path.push(p.slice()); n++; }
+    var q = [40, 150], dir = [], m = 0, path2 = [q.slice()];
+    while (Math.hypot(q[0] - goal[0], q[1] - goal[1]) > 20) { var a2 = Math.atan2(goal[1] - q[1], goal[0] - q[0]); q = [q[0] + 14 * Math.cos(a2), q[1] + 14 * Math.sin(a2)]; path2.push(q.slice()); m++; }
+    return { blind: path, clue: path2, goal: goal, nBlind: n, nClue: m };
+  })();
+  function renderComm(el, k, anim) {
+    var svg = svgFor(el, W, H, "Communication: a visible clue turns a wandering search into a straight walk", "A room with a hidden door. Without a clue the player wanders. With a lit door they walk straight to it.");
+    var ey = base(svg, [{ id: "comm", s: 1 }, { id: "focus", s: 2 }], k, anim, ["Communication", "tell the player the goal"], ["Guiding the focus", "tell them where to look now"]);
+    var d = svg.append("g"), ox = 20, oy = 60;
+    lab(d, 0, 30, k >= 2 ? "WITH A CLUE: THE DOOR IS LIT" : "NO CLUE: THE PLAYER GUESSES");
+    d.append("rect").attr("x", ox + 0.5).attr("y", oy + 0.5).attr("width", 700).attr("height", 300).attr("fill", SUBTLE).attr("stroke", INK).attr("stroke-width", 4);
+    var G = SEARCH.goal;
+    d.append("rect").attr("x", ox + G[0] - 14).attr("y", oy + G[1] - 28).attr("width", 28).attr("height", 56).attr("fill", k >= 2 ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+    if (k >= 2) d.append("circle").attr("cx", ox + G[0]).attr("cy", oy + G[1]).attr("r", 50).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "6 6");
+    d.append("circle").attr("cx", ox + 40).attr("cy", oy + 150).attr("r", 10).attr("fill", INK);
+    if (k >= 1) {
+      var P = k >= 2 ? SEARCH.clue : SEARCH.blind, ln = d.append("path").attr("fill", "none").attr("stroke", k >= 2 ? RED : INK).attr("stroke-width", 3), dot = d.append("circle").attr("r", 10).attr("fill", k >= 2 ? RED : INK), cnt = cap(d, 0, 500, "", { size: 26, weight: 700 });
+      run(d, k >= 2 ? 1800 : 4500, function (t) { var m = Math.min(P.length - 1, Math.round(t * (P.length - 1))); ln.attr("d", "M" + P.slice(0, m + 1).map(function (q) { return (ox + q[0]) + "," + (oy + q[1]); }).join("L")); dot.attr("cx", ox + P[m][0]).attr("cy", oy + P[m][1]); cnt.text(m + " steps taken" + (m === P.length - 1 ? ": found it" : "")); }, anim);
+    }
+    note(svg, ey, ["", "Nothing says where the goal is. The player wanders: this run takes " + SEARCH.nBlind + " steps. (A seeded random walk.)", "A lit door and a ring of light draw the eye. The same player now needs " + SEARCH.nClue + " steps. Guiding the focus means making the next thing to look at obvious."][k]);
+  }
+
+  /* ---------- 3. linear, nonlinear, side quest ---------- */
+  function renderLinear(el, k, anim) {
+    var svg = svgFor(el, W, H, "Linear, nonlinear and side quest, drawn as routes", "A straight chain of rooms, then a chain with two forks, then a side quest loop leaving and rejoining the main line.");
+    var ey = base(svg, [{ id: "linear", s: 1 }, { id: "side", s: 3 }], k, anim, ["Linear", "one route from start to end"], ["Nonlinear", "the player chooses between routes"]);
+    var d = svg.append("g"), xs = [20, 170, 320, 470, 620], y0 = 250;
+    lab(d, 0, 30, k === 1 ? "LINEAR" : k === 2 ? "NONLINEAR: TWO FORKS" : "A SIDE QUEST");
+    function room(x, y, fill) { d.append("rect").attr("x", x).attr("y", y).attr("width", 90).attr("height", 70).attr("fill", fill || "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); }
+    function link(a, b, col) { var l = d.append("path").attr("d", "M" + a[0] + "," + a[1] + "L" + b[0] + "," + b[1]).attr("stroke", col || GREY).attr("stroke-width", 4); if (anim) { var L_ = l.node().getTotalLength(); l.attr("stroke-dasharray", L_ + " " + L_).attr("stroke-dashoffset", L_).transition().duration(600).attr("stroke-dashoffset", 0); } }
+    xs.forEach(function (x, i) { if (k !== 2 || (i !== 1 && i !== 3)) room(x, y0 - 35, i === 0 || i === 4 ? "#FBE7EA" : null); });
+    cap(d, xs[0] + 45, y0 + 70, "start", { size: 24, anchor: "middle" }); cap(d, xs[4] + 45, y0 + 70, "end", { size: 24, anchor: "middle" });
+    var routes = 1;
+    if (k === 1) { for (var i = 0; i < 4; i++) link([xs[i] + 90, y0], [xs[i + 1], y0], INK); }
+    else if (k === 2) {
+      [[1, -90], [3, -90]].forEach(function (f) { room(xs[f[0]], y0 - 35 - 90, null); room(xs[f[0]], y0 - 35 + 90, null); });
+      [0, 2].forEach(function (i) { [-90, 90].forEach(function (dy) { link([xs[i] + 90, y0], [xs[i + 1], y0 + dy], dy < 0 ? RED : INK); link([xs[i + 1] + 90, y0 + dy], [xs[i + 2], y0], dy < 0 ? RED : INK); }); });
+      routes = 4;
+    } else {
+      for (var j = 0; j < 4; j++) link([xs[j] + 90, y0], [xs[j + 1], y0], INK);
+      room(xs[2], y0 - 35 - 120, "#FBE7EA"); link([xs[2] + 20, y0 - 35], [xs[2] + 20, y0 - 35 - 50], RED); link([xs[2] + 70, y0 - 35 - 50], [xs[2] + 70, y0 - 35], RED); cap(d, xs[2] + 45, y0 - 35 - 125, "side quest", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      routes = 2;
+    }
+    cap(d, 0, 500, k === 3 ? "Main line plus an optional detour: " + routes + " ways to finish (with or without it)." : "Routes from start to end: " + routes, { size: 26, weight: 700 });
+    note(svg, ey, ["", "Linear: each room leads to the next. Easy to guide, and the designer controls the pace.", "Nonlinear: two forks give 2 × 2 = 4 routes. The player must be given alternatives, not one corridor.", "A side quest is a detour off the main story. It returns to the same line, so the main story still holds."][k]);
+  }
+
+  /* ---------- 4. level design, teaching, design the middle first ---------- */
+  function renderTeach(el, k, anim) {
+    var svg = svgFor(el, W, H, "A first level teaches without words; the designer may build the middle first", "A curve of skills the player has learned as they move through World 1-1, then a strip of three parts with the designer's order of work against the player's order.");
+    var ey = base(svg, [{ id: "level", s: 1 }, { id: "teach", s: 1 }, { id: "midfirst", s: 2 }], k, anim, ["Level design", "planning the spaces"], ["Teaching", "the space shows what to do"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "SKILLS LEARNED ALONG LEVEL 1-1");
+      var SK = [["move right", 0.05], ["jump", 0.1], ["enemy", 0.25], ["blocks", 0.38], ["power-up", 0.5], ["pit", 0.7], ["flagpole", 0.95]];
+      var gx = 20, gy = 70, gw = 700, gh = 330, X = function (p) { return gx + p * gw; }, Y = function (n) { return gy + gh - n / SK.length * gh; };
+      d.append("rect").attr("x", gx + 0.5).attr("y", gy + 0.5).attr("width", gw).attr("height", gh).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      var pts = [[X(0), Y(0)]]; SK.forEach(function (s, i) { pts.push([X(s[1]), Y(i)]); pts.push([X(s[1]), Y(i + 1)]); }); pts.push([X(1), Y(SK.length)]);
+      var ln = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4), lbl = d.append("g");
+      run(d, 3600, function (t) { var vis = pts.filter(function (p) { return p[0] <= X(t) + 0.1; }); ln.attr("d", "M" + vis.map(function (p) { return p.join(","); }).join("L") + "L" + X(t) + "," + (vis.length ? vis[vis.length - 1][1] : Y(0))); lbl.selectAll("*").remove(); SK.forEach(function (s, i) { if (s[1] <= t) cap(lbl, X(s[1]) + 6, Y(i + 1) - 6 + 22 * (i % 2), s[0], { size: 24 }); }); }, k === 1 && anim);
+      cap(d, 0, 470, SK.length + " skills in one level, with no tutorial text.", { size: 26, weight: 700 }); cap(d, 0, 506, "Order of skills is from the video's description; positions are approximate.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "ORDER OF DESIGN AGAINST ORDER OF PLAY");
+      var parts = ["start", "middle", "end"], design = [2, 1, 3];
+      parts.forEach(function (p, i) { var x = 20 + i * 240, g = d.append("g"); box(g, x, 120, 220, 120, { stroke: i === 1 ? RED : INK, sw: 3 }); cap(g, x + 110, 190, p, { size: 28, anchor: "middle", weight: 700 }); cap(g, x + 110, 100, "played " + (i + 1) + (i === 0 ? "st" : i === 1 ? "nd" : "rd"), { size: 24, anchor: "middle", fill: MUTED }); var c = g.append("circle").attr("cx", x + 110).attr("cy", 310).attr("r", 30).attr("fill", i === 1 ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(g, x + 110, 320, design[i] + "", { size: 28, anchor: "middle", weight: 700, fill: i === 1 ? "#FFFFFF" : INK }); cap(g, x + 110, 380, "designed " + design[i] + (design[i] === 1 ? "st" : design[i] === 2 ? "nd" : "rd"), { size: 24, anchor: "middle", fill: i === 1 ? RED : MUTED }); if (anim) g.attr("opacity", 0).transition().delay(design[i] * 400).duration(400).attr("opacity", 1); });
+      cap(d, 0, 470, "The middle is built first, then the start that leads into it.", { size: 26, weight: 700 });
+    }
+    note(svg, ey, ["", "World 1-1: the player can move and jump, meets an enemy and a power-up, learns pits and the flagpole. Seven skills, no instructions.", "Designing the middle first shows what players can do. Then the opening levels are built to lead them there."][k]);
+  }
+
+  /* ---------- 5. anticipation and build-up ---------- */
+  function renderAntic(el, k, anim) {
+    var svg = svgFor(el, W, H, "Anticipation gives the player time to react. Build-up raises tension toward an event.", "A timeline of an enemy attack with and without a 0.5 second wind-up, then three curves for sound, sparks and camera shake rising to an explosion.");
+    var ey = base(svg, [{ id: "antic", s: 1 }, { id: "build", s: 2 }], k, anim, ["Anticipation", "a short warning before the hit"], ["Build-up", "a long rise toward the event"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "TIME FROM FIRST SIGN TO DAMAGE"); cap(d, 0, 530, "Reaction time of 0.25 s is an assumption.", { size: 24, fill: MUTED });
+      [["no wind-up", 0], ["0.5 s wind-up", 0.5]].forEach(function (r, ri) {
+        var y = 90 + ri * 190, sc = 600, g = d.append("g"); cap(g, 0, y, r[0], { size: 24, weight: 700 });
+        if (r[1] > 0) g.append("rect").attr("x", 20).attr("y", y + 16).attr("width", r[1] * sc).attr("height", 50).attr("fill", "#C4C4C4");
+        g.append("rect").attr("x", 20 + r[1] * sc).attr("y", y + 16).attr("width", 12).attr("height", 50).attr("fill", RED);
+        cap(g, 20 + r[1] * sc + 24, y + 50, "hit", { size: 24, fill: RED, weight: 700 });
+        var margin = r[1] - 0.25;
+        cap(g, 0, y + 110, margin > 0 ? "time to spare after reacting: " + margin.toFixed(2) + " s" : "no time to react: it feels cheap", { size: 24, weight: 700, fill: margin > 0 ? INK : RED });
+        if (k === 1 && anim) g.attr("opacity", 0).transition().delay(ri * 500).duration(500).attr("opacity", 1);
+      });
+    } else {
+      lab(d, 0, 30, "TEN SECONDS BEFORE THE EXPLOSION");
+      var gx = 20, gy = 90, gw = 700, ghh = 90, lines = [["sound", 1], ["sparks", 2], ["camera shake", 3]];
+      lines.forEach(function (l, i) {
+        var y = gy + i * 130, g = d.append("g"); cap(g, 0, y - 10, l[0], { size: 24, weight: 700 }); g.append("rect").attr("x", gx + 0.5).attr("y", y + 0.5).attr("width", gw).attr("height", ghh).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+        var ln = g.append("path").attr("fill", "none").attr("stroke", i === 2 ? RED : INK).attr("stroke-width", 4);
+        run(g, 3000, function (t) { var pts = d3.range(0, t + 1e-9, 0.01).map(function (u) { return [gx + u * gw, y + ghh - Math.pow(u, l[1] === 1 ? 1.5 : l[1] === 2 ? 2 : 3) * ghh]; }); ln.attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")); }, anim);
+      });
+      cap(d, 0, 490, "At 90% of the way: sound " + Math.pow(0.9, 1.5).toFixed(2) + ", sparks " + Math.pow(0.9, 2).toFixed(2) + ", shake " + Math.pow(0.9, 3).toFixed(2) + ".", { size: 24, weight: 700 });
+      cap(d, 0, 526, "Illustrative curves; the shake arrives last.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A 0.5 s wind-up leaves " + (0.5 - 0.25).toFixed(2) + " s to react after a 0.25 s reaction. No wind-up leaves none, and the player feels cheated.", "Before the explosion: sound builds, sparks fly, the camera starts to shake. The whole scene is one long build-up."][k]);
+  }
+
+  /* ---------- 6. logical events and consistent rules ---------- */
+  function renderLogic(el, k, anim) {
+    var svg = svgFor(el, W, H, "Logical events meet expectations; consistent rules bend physics the same way every time", "A table of player actions and the expected responses, then two rows of bounce heights: one consistent, one random.");
+    var ey = base(svg, [{ id: "logic", s: 1 }, { id: "consist", s: 2 }], k, anim, ["Logical events", "what happens makes sense"], ["Consistent rules", "the same every time"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "WHAT THE PLAYER EXPECTS");
+      var rows = [["shoot a wall", "a bullet hole", 1], ["shoot a wall", "nothing happens", 0], ["walk on gravel", "crunching sound", 1], ["walk on gravel", "silence", 0]];
+      rows.forEach(function (r, i) { var y = 60 + i * 100, g = d.append("g"); box(g, 0, y, 740, 84, { stroke: FAMILIAR }); cap(g, 14, y + 36, r[0], { size: 24, weight: 700 }); cap(g, 14, y + 70, "→ " + r[1], { size: 24 }); if (r[2]) check(g, 690, y + 46, 18, INK); else cross(g, 690, y + 42, 14, RED); fade(g, k === 1 && anim, i * 350); });
+      cap(d, 0, 500, "2 of 4 events meet the expectation.", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "PEAK HEIGHT OF EACH BOUNCE (PERCENT OF THE DROP)");
+      var r = rng(4), cons = d3.range(6).map(function (i) { return 100 * Math.pow(0.8, i); }), rnd = d3.range(6).map(function () { return 40 + 60 * r(); });
+      [["consistent: keeps 80% each time", cons, INK, 80], ["random: no rule to learn", rnd, RED, 290]].forEach(function (row) { var y = row[3]; cap(d, 0, y - 10, row[0], { size: 24, weight: 700, fill: row[2] }); row[1].forEach(function (v, i) { var h = v * 1.2; bar(d, i * 120, y + 170 - h - 10, 90, h, row[2], A(anim, k, 2) && false, 0); cap(d, i * 120 + 45, y + 170 - h - 16, Math.round(v) + "", { size: 24, anchor: "middle", weight: 700 }); }); });
+      d.selectAll("rect").filter(function () { return +d3.select(this).attr("width") === 90; }).attr("opacity", anim && k === 2 ? 0 : 1).transition().delay(function (_, i) { return i * 90; }).duration(300).attr("opacity", 1);
+    }
+    note(svg, ey, ["", "Shoot a wall and a bullet hole should appear. Walk on gravel and it should crunch. If not, the player's expectation is broken.", "A game may change physics, but the same way every time. The first row can be learned. The second cannot."][k]);
+  }
+
+  /* ---------- 7. games can cheat ---------- */
+  function renderCheat(el, k, anim) {
+    var svg = svgFor(el, W, H, "A game can cheat in the player's favour: the guard that does not turn around", "A top-down view. A guard faces away and the player sneaks up from behind. An honest guard turns and catches the player. A guard told not to turn lets the player ambush.");
+    var ey = base(svg, [{ id: "cheat", s: 1 }], k, anim, ["Honest AI", "reacts to everything it could sense"], ["Cheating AI", "ignores something to help you"]);
+    var d = svg.append("g"), gx = 400, gy = 230, FOV = 70, LEN = 200;
+    function draw(t) {
+      d.selectAll("*").remove();
+      var px = 40 + t * 280, dist = gx - px, honestTurn = k === 1 && dist < 120, ang = honestTurn ? Math.PI : 0;
+      lab(d, 0, 30, k === 2 ? "THE GUARD IS TOLD NOT TO TURN" : "AN HONEST GUARD");
+      var turned = k === 1 ? (dist < 120 ? Math.min(1, (120 - dist) / 40) : 0) : 0, a = turned * Math.PI;
+      d.append("path").attr("d", conePath(gx, gy, a, FOV, LEN)).attr("fill", "#FBE7EA").attr("stroke", RED).attr("stroke-width", 2);
+      d.append("circle").attr("cx", gx).attr("cy", gy).attr("r", 22).attr("fill", INK);
+      d.append("circle").attr("cx", px).attr("cy", gy).attr("r", 14).attr("fill", RED);
+      cap(d, 0, 470, "distance to the guard: " + dist.toFixed(0) + " px", { size: 24 });
+      var caught = k === 1 && dist < 100 && turned > 0.9;
+      cap(d, 0, 506, k === 1 ? (caught ? "the guard turned and saw you" : "the guard is still looking away") : (dist < 60 ? "ambush: the guard never turned" : "sneaking up from behind"), { size: 26, weight: 700, fill: k === 1 && caught ? INK : RED });
+    }
+    draw(k === 0 ? 0 : 1);
+    if (k >= 1) run(d, 3000, draw, anim);
+    note(svg, ey, ["", "An honest guard hears and sees all around it. At 120 px it turns, and the sneak fails.", "The designers told this guard not to turn around. The player can ambush from behind, and the game rewards that play. As long as the player does not notice, it works."][k]);
+  }
+
+  /* ---------- 8. dynamic ---------- */
+  function renderDynamic(el, k, anim) {
+    var svg = svgFor(el, W, H, "Dynamic play: many things happen at once. One at a time loses it.", "A timeline of four team actions in a bomb round, overlapping in the first step and placed one after another in the second.");
+    var ey = base(svg, [{ id: "dynamic", s: 1 }], k, anim, ["Dynamic", "several changes at once"], ["Sequential", "one change at a time"]);
+    var d = svg.append("g"), ACT = [["throw smoke", 3, 0], ["flank round the side", 5, 1], ["charge in", 3, 2], ["check angles", 7, 0]];
+    var sc = k >= 2 ? 700 / 18 : 700 / 8; lab(d, 0, 30, k >= 2 ? "ONE AFTER ANOTHER (SECONDS)" : "ALL AT ONCE (SECONDS)");
+    var t0 = 0;
+    ACT.forEach(function (a, i) { var start = k >= 2 ? t0 : a[2]; if (k >= 2) t0 += a[1]; var y = 80 + i * 90, g = d.append("g"); cap(g, 0, y, a[0], { size: 24, weight: 700 }); g.append("rect").attr("x", 20 + start * sc).attr("y", y + 12).attr("width", a[1] * sc).attr("height", 40).attr("fill", i === 1 ? RED : INK).attr("opacity", 0.9); if (k >= 1 && anim) g.select("rect").attr("width", 0).transition().delay(k >= 2 ? i * 500 : 0).duration(700).attr("width", a[1] * sc); });
+    var maxc = 0; if (k < 2) for (var s = 0; s < 8; s += 0.1) maxc = Math.max(maxc, ACT.filter(function (a) { return a[2] <= s && s < a[2] + a[1]; }).length);
+    cap(d, 0, 470, k >= 2 ? "Total time " + d3.sum(ACT, function (a) { return a[1]; }) + " s, never more than 1 thing happening." : "Total time 8 s, up to " + maxc + " things happening at once.", { size: 26, weight: 700, fill: k >= 2 ? INK : RED });
+    note(svg, ey, ["", "A smoke, a flank, a charge and an angle check all overlap. The round is full, and the defenders must watch everything.", "Do the same four things one after another: 18 s and one thing at a time. Easy to predict, and dull."][k >= 2 ? 2 : k]);
+  }
+
+  /* ---------- 9. progression, pacing, waves ---------- */
+  function renderPacing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Progression rises, pacing varies, and waves package the enemies", "A line chart of intensity over four minutes with a comfortable band. A steady climb leaves the band. Alternating calm and intense stays inside it. Then two ways to build one wave of strength ten.");
+    var ey = base(svg, [{ id: "prog", s: 1 }, { id: "pacing", s: 2 }, { id: "wave", s: 3 }], k, anim, ["Pacing", "calm and intense in turn"], ["Progression", "the overall rise in challenge"]);
+    var d = svg.append("g"), gx = 20, gy = 60, gw = 700, gh = 300, lo = 0.3, hi = 0.8;
+    var ramp = function (u) { return 0.2 + 0.9 * u; }, paced = function (u) { return 0.35 + 0.3 * u + 0.2 * Math.sin(u * 2 * Math.PI * 4); };
+    if (k <= 2) {
+      lab(d, 0, 30, k === 1 ? "ONE STEADY CLIMB" : "WAVES OF HIGH AND LOW INTENSITY");
+      d.append("rect").attr("x", gx).attr("y", gy + gh - hi * gh).attr("width", gw).attr("height", (hi - lo) * gh).attr("fill", "#F6F6F6").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      cap(d, gx + gw - 4, gy + gh - hi * gh - 8, "comfortable band", { size: 24, fill: MUTED, anchor: "end" });
+      var f = k === 1 ? ramp : paced, inb = d3.mean(d3.range(0, 1, 0.005).map(function (u) { var v = f(u); return v >= lo && v <= hi ? 1 : 0; }));
+      var ln = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      run(d, 3500, function (t) { var pts = d3.range(0, t + 1e-9, 0.004).map(function (u) { return [gx + u * gw, gy + gh - Math.max(0, Math.min(1.2, f(u))) * gh]; }); ln.attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")); }, anim);
+      cap(d, 0, 450, "Time inside the band: " + Math.round(inb * 100) + "% of the four minutes", { size: 26, weight: 700, fill: k === 1 ? RED : INK });
+      cap(d, 0, 486, k === 1 ? "The climb passes " + hi + " and over-stimulates." : "Peaks then rests keep the player in the band while still rising.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "ONE WAVE OF TOTAL STRENGTH 10");
+      [["many weak: 10 enemies of strength 1", 10, 1], ["few strong: 2 enemies of strength 5", 2, 5]].forEach(function (r, ri) { var y = 80 + ri * 190; cap(d, 0, y, r[0], { size: 24, weight: 700 }); for (var i = 0; i < r[1]; i++) { var s = 18 + r[2] * 10, sq = d.append("rect").attr("x", 10 + i * (s + 12)).attr("y", y + 20).attr("width", s).attr("height", s).attr("fill", ri ? RED : INK); if (anim) sq.attr("opacity", 0).transition().delay(i * 80 + ri * 500).duration(200).attr("opacity", 1); } cap(d, 0, y + 150, "same total, a different feel", { size: 24, fill: MUTED }); });
+    }
+    note(svg, ey, ["", "Progression should climb, but a straight climb over-stimulates the player near the end.", "Pacing alternates. The tower defence game alternates waves of enemies with time to build, so the player never saturates.", "Many weak or few strong: the same total strength, a different pressure."][k]);
+  }
+
+  /* ---------- 10. spacing ---------- */
+  var SP = (function () {
+    var out = {};
+    [["wide", 700, 300], ["tight", 700, 100]].forEach(function (R) {
+      var r = rng(31), ag = d3.range(3).map(function (i) { return { x: 100 + i * 180, y: R[2] / 2, vx: 3 * (r() - 0.5) * 2 + 1, vy: 2 * (r() - 0.5) * 2 }; }), fr = [], contacts = 0;
+      for (var f = 0; f < 300; f++) { ag.forEach(function (a) { a.x += a.vx * 2; a.y += a.vy * 2; if (a.x < 15 || a.x > R[1] - 15) a.vx *= -1; if (a.y < 15 || a.y > R[2] - 15) a.vy *= -1; a.x = Math.max(15, Math.min(R[1] - 15, a.x)); a.y = Math.max(15, Math.min(R[2] - 15, a.y)); }); var c = 0; for (var i = 0; i < 3; i++) for (var j = i + 1; j < 3; j++) if (Math.hypot(ag[i].x - ag[j].x, ag[i].y - ag[j].y) < 40) c++; if (c) contacts++; fr.push(ag.map(function (a) { return [a.x, a.y]; })); }
+      out[R[0]] = { w: R[1], h: R[2], frames: fr, contacts: contacts, area: R[1] * R[2] / 10000 / 3 };
+    });
+    return out;
+  })();
+  function renderSpacing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Spacing: the same three characters in an open space and in a tight corridor", "Two rooms of the same length, one three times as tall. Three characters drift around. In the tight room they bump into each other far more often.");
+    var ey = base(svg, [{ id: "spacing", s: 1 }], k, anim, ["Open space", "room to move and admire"], ["Tight space", "crowded, tense, claustrophobic"]);
+    var d = svg.append("g"), key = k >= 2 ? "tight" : "wide", S = SP[key];
+    lab(d, 0, 30, k >= 2 ? "TIGHT: 7 m BY 1 m" : "OPEN: 7 m BY 3 m");
+    d.append("rect").attr("x", 20.5).attr("y", 60.5).attr("width", S.w).attr("height", S.h).attr("fill", SUBTLE).attr("stroke", INK).attr("stroke-width", 4);
+    var dots = d.append("g"), cnt = cap(d, 0, 450, "", { size: 26, weight: 700 });
+    function draw(t) { var f = Math.min(299, Math.round(t * 299)); dots.selectAll("*").remove(); S.frames[f].forEach(function (p) { dots.append("circle").attr("cx", 20 + p[0]).attr("cy", 60 + p[1]).attr("r", 14).attr("fill", RED).attr("stroke", INK).attr("stroke-width", 2); }); var c = 0; for (var q = 0; q <= f; q++) { var fr = S.frames[q], hit = false; for (var i = 0; i < 3; i++) for (var j = i + 1; j < 3; j++) if (Math.hypot(fr[i][0] - fr[j][0], fr[i][1] - fr[j][1]) < 40) hit = true; if (hit) c++; } cnt.text("frames with characters touching: " + c + " of 300"); }
+    if (k >= 1) run(d, 3600, draw, anim); else draw(0);
+    cap(d, 0, 490, "Room per character: " + S.area.toFixed(1) + " square metres.", { size: 24, fill: MUTED });
+    note(svg, ey, ["", "Open: " + SP.wide.area.toFixed(1) + " square metres each. The characters rarely touch, and the player has room to look around.", "Tight: " + SP.tight.area.toFixed(1) + " square metres each. They touch in " + SP.tight.contacts + " of 300 frames, against " + SP.wide.contacts + " in the open room. Narrow space changes the pace, and AI needs room to move."][k >= 2 ? 2 : k]);
+  }
+
+  /* ---------- 11. look-alike pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs about pacing and guidance", "Each step shows two ideas students mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Linear", "One route from start to end"], ["Nonlinear", "Alternate routes the player picks"]],
+      [["Anticipation", "A short warning before an event"], ["Build-up", "A rise in tension toward it"]],
+      [["Progression", "The overall rise in challenge"], ["Pacing", "The swing between calm and intense"]],
+      [["Logical events", "Things behave sensibly"], ["Consistent rules", "Bent physics bent the same way"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        d3.range(4).forEach(function (j) { LG.append("rect").attr("x", 20 + j * 80).attr("y", 230).attr("width", 60).attr("height", 50).attr("fill", "#FFFFFF").attr("stroke", j / 4 < t ? RED : INK).attr("stroke-width", 3); });
+        [[0, 0], [1, -1], [1, 1], [2, 0], [3, 0]].forEach(function (p) { RG.append("rect").attr("x", 20 + p[0] * 80).attr("y", 230 + p[1] * 70).attr("width", 60).attr("height", 50).attr("fill", "#FFFFFF").attr("stroke", t > 0.5 && p[1] < 0 ? RED : INK).attr("stroke-width", 3); });
+      } else if (i === 1) {
+        LG.append("rect").attr("x", 20).attr("y", 230).attr("width", 100).attr("height", 40).attr("fill", "#C4C4C4"); LG.append("rect").attr("x", 120).attr("y", 230).attr("width", 12).attr("height", 40).attr("fill", RED); LG.append("circle").attr("cx", 20 + 112 * t).attr("cy", 250).attr("r", 10).attr("fill", INK);
+        var pts = d3.range(0, t + 1e-9, 0.02).map(function (u) { return [20 + u * 300, 300 - Math.pow(u, 3) * 150]; }); RG.append("path").attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      } else if (i === 2) {
+        var up = d3.range(0, t + 1e-9, 0.02).map(function (u) { return [20 + u * 300, 300 - (0.2 + 0.7 * u) * 200]; }), wv = d3.range(0, t + 1e-9, 0.01).map(function (u) { return [20 + u * 300, 300 - (0.35 + 0.3 * u + 0.2 * Math.sin(u * 2 * Math.PI * 4)) * 200]; });
+        LG.append("path").attr("d", "M" + up.map(function (q) { return q.join(","); }).join("L")).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4); RG.append("path").attr("d", "M" + wv.map(function (q) { return q.join(","); }).join("L")).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      } else {
+        [["bullet hole", 1], ["no hole", 0]].forEach(function (r, ri) { var y = 190 + ri * 80; cap(LG, 20, y, r[0], { size: 24 }); if (t > 0.3 + ri * 0.3) { if (r[1]) check(LG, 250, y - 6, 16, INK); else cross(LG, 250, y - 10, 12, RED); } });
+        var r = rng(2); d3.range(5).forEach(function (j) { var h = 100 * Math.pow(0.8, j), h2 = 40 + 60 * r(); if (j / 5 < t) { RG.append("rect").attr("x", 20 + j * 62).attr("y", 330 - h * 1.5).attr("width", 20).attr("height", h * 1.5).attr("fill", INK); RG.append("rect").attr("x", 42 + j * 62).attr("y", 330 - h2 * 1.5).attr("width", 20).attr("height", h2 * 1.5).attr("fill", RED); } });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3200, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- 12. say it exactly ---------- */
+  var SAY = [
+    { v: "players keep getting lost", x: "Light the exit door and put a ring of light around it, visible from the start" },
+    { v: "the enemy hits feel cheap", x: "Add a 0.5 s wind-up animation before every attack" },
+    { v: "the level feels flat", x: "Alternate: 60 s of enemies, 30 s of calm, strongest wave last" },
+    { v: "the ending is a letdown", x: "Build up for 10 s: sound rises, sparks fly, camera shakes before the blast" },
+    { v: "the physics feel random", x: "Bounces keep 80% of the height every time" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests turned into precise design instructions", "Five rows with a vague request and an exact instruction. On the right, a chart of what the instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { [["no clue", SEARCH.nBlind, "#C4C4C4"], ["lit door", SEARCH.nClue, RED]].forEach(function (r, i) { cap(p, 14, 60 + i * 110, r[0], { size: 24 }); var w = Math.max(6, r[1] / SEARCH.nBlind * 560); bar(p, 14, 72 + i * 110, w, 40, r[2], anim, i * 400); cap(p, 14 + w + 10, 104 + i * 110, r[1] + " steps", { size: 24, weight: 700 }); }); nt = "steps to find the door, same player"; }
+    else if (k === 2) { [0, 0.5].forEach(function (w, ri) { var y = 70 + ri * 120, sc = 560; cap(p, 14, y - 8, w ? "0.5 s wind-up: " + (w - 0.25).toFixed(2) + " s spare" : "no wind-up: no time", { size: 24 }); if (w) bar(p, 14, y + 4, w * sc, 40, "#C4C4C4", anim, 200); bar(p, 14 + w * sc, y + 4, 12, 40, RED, false, 0); }); nt = "reaction time assumed 0.25 s"; }
+    else if (k === 3) { var f = function (u) { return 0.35 + 0.3 * u + 0.2 * Math.sin(u * 2 * Math.PI * 4); }; var ln = p.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4); run(p, 3000, function (t) { var pts = d3.range(0, t + 1e-9, 0.005).map(function (u) { return [20 + u * 600, 280 - f(u) * 260]; }); ln.attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")); }, anim); nt = "alternating peaks, rising overall"; }
+    else if (k === 4) { var ln2 = p.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4); run(p, 3000, function (t) { var pts = d3.range(0, t + 1e-9, 0.01).map(function (u) { return [20 + u * 600, 280 - Math.pow(u, 2.5) * 260]; }); ln2.attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")); }, anim); nt = "intensity at 90% of the way: " + Math.pow(0.9, 2.5).toFixed(2); }
+    else { d3.range(6).forEach(function (j) { var h = 100 * Math.pow(0.8, j) * 2.4; bar(p, 20 + j * 100, 280 - h, 70, h, INK, anim, j * 200); cap(p, 20 + j * 100 + 35, 280 - h - 8, Math.round(100 * Math.pow(0.8, j)) + "", { size: 24, weight: 700, anchor: "middle" }); }); nt = "each bounce is 80% of the last: a rule to learn"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  /* ---------- 13. closing ---------- */
+  var CHECKS = [
+    "Does the player know their role, the goal and how to reach it?",
+    "Can they tell where to look, and do they have alternatives?",
+    "Is every danger telegraphed, and do events behave as expected?",
+    "Are the rules consistent, and is any cheating hidden and helpful?",
+    "Does the pace alternate and still rise, inside a comfortable band?",
+    "Is there room to move, or tightness on purpose?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you call the pacing done", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “the level feels flat”, but “60 s of enemies, 30 s of calm”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, pillars: { steps: 3, render: renderPillars }, comm: { steps: 2, render: renderComm },
+    linear: { steps: 3, render: renderLinear }, teach: { steps: 2, render: renderTeach }, antic: { steps: 2, render: renderAntic },
+    logic: { steps: 2, render: renderLogic }, cheat: { steps: 2, render: renderCheat }, dynamic: { steps: 2, render: renderDynamic },
+    pacing: { steps: 3, render: renderPacing }, spacing: { steps: 2, render: renderSpacing }, pairs: { steps: 4, render: renderPairs },
+    say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+HEADER godot 4.7.2-stable (official) | renderer gl_compatibility | adapter Apple M4 Pro | window (1280, 720)
+NOTE transfer curve measured (ALBEDO k/255 -> screen byte): 16:11 32:30 64:64 128:128 188:188 255:255 | monotone true | grey (r=g=b) true
+NOTE test textures carry NO mip chains (the CPU reference reads level 0 only; --mips 1 turns them on)
+CHECK L04 04_fresnel | gl_compatibility | lit_pole (N=L) px(167,166) N.L=1.00 N.E=0.26 | linear value (255,255,255) | expected screen (255,255,255), got (255,255,255), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | facing the camera px(322,360) N.L=0.42 N.E=1.00 | linear value (145,145,145) | expected screen (145,145,145), got (145,145,145), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | terminator (N.L=0) px(398,454) N.L=0.00 N.E=0.87 | linear value (39,39,39) | expected screen (37,37,37), got (37,37,37), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | dark side (N.L=-0.5) px(459,531) N.L=-0.50 N.E=0.44 | linear value (45,45,45) | expected screen (44,44,44), got (44,44,44), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | lit rim (N.L=0.5, N.E=0.25) px(438,153) N.L=0.50 N.E=0.25 | linear value (236,236,236) | expected screen (236,236,236), got (236,236,236), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | lit mid (N.L=0.7, N.E=0.5) px(374,153) N.L=0.70 N.E=0.50 | linear value (244,244,244) | expected screen (244,244,244), got (245,245,245), diff 1 byte(s) | PASS
+NOTE L04 rim weight pow(1 - N.E, 3) before the lighting factor: N.E = 1.0 -> 0.000, 0.5 -> 0.125, 0.2 -> 0.512, 0.0 (the silhouette) -> 1.000
+CHECK L04 04_fresnel | gl_compatibility | silhouette-ward lit point (N.L=0.3, N.E=0.12) px(481,176) N.L=0.30 N.E=0.11 | linear value (195,195,195) | expected screen (195,195,195), got (195,195,195), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | rim on the dark side (N.L=-0.3, N.E=0.25): rim is multiplied by the lighting px(559,347) N.L=-0.30 N.E=0.24 | linear value (55,55,55) | expected screen (54,54,54), got (54,54,54), diff 0 byte(s) | PASS
+CHECK L04 04_fresnel | gl_compatibility | full image: 21634 pixels (every 3-th in x and y), 100.00% within 3 bytes, mean diff 0.19, worst 1 at (383, 145) | PASS
+CHECK L04 04_fresnel | gl_compatibility | fresnel_power 6: lit rim (N.L=0.5, N.E=0.25) px(438,153) N.L=0.50 N.E=0.25 | linear value (195,195,195) | expected screen (195,195,195), got (196,196,196), diff 1 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | highlight peak (N=half(L,E)) px(230,245) N.L=0.81 N.E=0.81 | linear value (255,255,255) | expected screen (255,255,255), got (255,255,255), diff 0 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | lit_pole (N=L) px(167,166) N.L=1.00 N.E=0.26 | linear value (255,255,255) | expected screen (255,255,255), got (255,255,255), diff 0 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | facing the camera px(322,360) N.L=0.42 N.E=1.00 | linear value (145,145,145) | expected screen (145,145,145), got (145,145,145), diff 0 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | terminator (N.L=0) px(398,454) N.L=0.00 N.E=0.87 | linear value (39,39,39) | expected screen (37,37,37), got (37,37,37), diff 0 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | lit rim (N.L=0.5, N.E=0.25) px(438,153) N.L=0.50 N.E=0.25 | linear value (236,236,236) | expected screen (236,236,236), got (236,236,236), diff 0 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | highlight shoulder (6 degrees off the peak) px(247,266) N.L=0.75 N.E=0.88 | linear value (255,255,255) | expected screen (255,255,255), got (255,255,255), diff 0 byte(s) | PASS
+CHECK L05 05_phong | gl_compatibility | full image: 21634 pixels (every 3-th in x and y), 100.00% within 3 bytes, mean diff 0.18, worst 1 at (383, 145) | PASS
+CHECK L05 05_phong | gl_compatibility | highlight position, specular-only render: brightest pixel (230,244), predicted from the half vector (230,245) | PASS
+CHECK L05 05_phong | gl_compatibility | highlight width at half height (specular >= 0.5) along the peak row: 60 px rendered, 60 px predicted by pow(R.L, 30) | PASS
+CHECK L05 05_phong | gl_compatibility | same, specular_power 100 (a tighter spot): 33 px rendered, 33 px predicted (power 30 gave 60 px) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | red marker cell (column 0, row 3) (uv 0.062, 0.438) px(369,302) N.L=0.46 N.E=0.95 | linear value (125,37,30) | expected screen (125,35,28), got (125,35,28), diff 0 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | green marker cell (column 1, row 3) (uv 0.188, 0.438) px(536,308) N.L=-0.06 N.E=0.44 | linear value (16,32,18) | expected screen (11,30,14), got (11,29,14), diff 1 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | yellow marker cell (column 0, row 4) (uv 0.062, 0.562) px(369,417) N.L=0.18 N.E=0.95 | linear value (77,67,20) | expected screen (77,67,16), got (77,67,16), diff 0 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | magenta marker cell (column 7, row 3) (uv 0.938, 0.438) px(150,302) N.L=0.79 N.E=0.72 | linear value (185,63,167) | expected screen (185,63,167), got (186,62,167), diff 1 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | sand cell (column 0, row 2) (uv 0.062, 0.312) px(361,202) N.L=0.67 N.E=0.75 | linear value (188,167,118) | expected screen (188,167,118), got (188,167,118), diff 0 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | steel cell (column 0, row 5) (uv 0.062, 0.688) px(361,517) N.L=-0.13 N.E=0.75 | linear value (11,17,23) | expected screen (5,12,19), got (5,13,20), diff 1 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | steel cell (column 7, row 4) (uv 0.938, 0.562) px(150,417) N.L=0.51 N.E=0.72 | linear value (50,77,103) | expected screen (49,77,103), got (49,77,104), diff 1 byte(s) | PASS
+CHECK L06 06_diffuse_mapped | gl_compatibility | full image: 17224 pixels (every 3-th in x and y; textured lesson: polar cap (|y| > 0.75) and a 2-texel band along checker-cell edges skipped (2428 px), where a sub-texel difference between the analytic and the mesh uv flips a pixel), 100.00% within 3 bytes, mean diff 0.50, worst 2 at (155, 172) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | highlight peak (steel cell: spec mask 0 there) (uv 0.983, 0.373) px(230,245) N.L=0.81 N.E=0.81 | linear value (69,108,146) | expected screen (69,108,146), got (69,108,147), diff 1 byte(s) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | just below the peak (sand cell: spec mask 1) (uv 0.983, 0.403) px(226,270) N.L=0.77 N.E=0.85 | linear value (255,206,255) | expected screen (255,206,255), got (255,206,255), diff 0 byte(s) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | sand cell centre (column 0, row 2), rim mask bright row (uv 0.062, 0.312) px(361,202) N.L=0.67 N.E=0.75 | linear value (189,167,118) | expected screen (189,167,118), got (189,168,119), diff 1 byte(s) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | steel cell centre (column 0, row 5), dim rim row (uv 0.062, 0.688) px(361,517) N.L=-0.13 N.E=0.75 | linear value (12,18,24) | expected screen (6,13,20), got (6,13,20), diff 0 byte(s) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | rim: bright row (row 2) at column 1 (uv 0.188, 0.312) px(502,215) N.L=0.22 N.E=0.33 | linear value (104,119,134) | expected screen (104,119,134), got (104,119,134), diff 0 byte(s) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | rim: dim row (row 3) at column 1 (uv 0.188, 0.438) px(536,308) N.L=-0.06 N.E=0.44 | linear value (20,36,23) | expected screen (16,34,19), got (17,34,19), diff 1 byte(s) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | full image: 17224 pixels (every 3-th in x and y; textured lesson: polar cap (|y| > 0.75) and a 2-texel band along checker-cell edges skipped (2428 px), where a sub-texel difference between the analytic and the mesh uv flips a pixel), 100.00% within 3 bytes, mean diff 0.51, worst 2 at (524, 232) | PASS
+CHECK L07 07_spec_mapped | gl_compatibility | rim on the dark side (N.L=-0.4, N.E=0.2): 07 does NOT multiply the rim by the lighting px(561,372) N.L=-0.40 N.E=0.21 | linear value (138,144,150) | expected screen (138,144,150), got (139,145,151), diff 1 byte(s) | PASS
+SUMMARY L04 04_fresnel | gl_compatibility | checks passed 10, failed 0
+SUMMARY L05 05_phong | gl_compatibility | checks passed 10, failed 0
+SUMMARY L06 06_diffuse_mapped | gl_compatibility | checks passed 8, failed 0
+SUMMARY L07 07_spec_mapped | gl_compatibility | checks passed 8, failed 0
+SUMMARY TOTAL | gl_compatibility | passed 36, failed 0

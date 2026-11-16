@@ -1,0 +1,22 @@
+# STATUS — claude-liam-lecture-pbr-textures-are-data
+
+16/16 beats filled. Derived from beat_sheet.json — edit the sheet, not this file.
+
+| beat | status | fill method | who | slot | suggested prompt / search |
+|---|---|---|---|---|---|
+| BOPEN | ✅ filled | ai-video-prompt | human | `media/BOPEN.mp4` | C S Y E seventy-two seventy, Building Virtual Environments. PBR Textures Are Data, Not Pic |
+| BIDEA | ✅ filled | remotion | pipeline | `media/BIDEA.mp4` |  |
+| BDEFS | ✅ filled | remotion | pipeline | `media/BDEFS.mp4` |  |
+| B01 | ✅ filled | remotion | pipeline | `media/B01.mp4` |  |
+| B02 | ✅ filled | manim | pipeline | `manim/B02.mp4` |  |
+| B03 | ✅ filled | manim | pipeline | `manim/B03.mp4` |  |
+| B04 | ✅ filled | remotion | pipeline | `media/B04.mp4` |  |
+| B05 | ✅ filled | manim | pipeline | `manim/B05.mp4` |  |
+| B06 | ✅ filled | manim | pipeline | `manim/B06.mp4` |  |
+| B07 | ✅ filled | remotion | pipeline | `media/B07.mp4` |  |
+| B08 | ✅ filled | manim | pipeline | `manim/B08.mp4` |  |
+| B09 | ✅ filled | manim | pipeline | `manim/B09.mp4` |  |
+| B10 | ✅ filled | remotion | pipeline | `media/B10.mp4` |  |
+| BVDT | ✅ filled | remotion | pipeline | `media/BVDT.mp4` |  |
+| BHTF | ✅ filled | remotion | pipeline | `media/BHTF.mp4` |  |
+| BOUT | ✅ filled | remotion | pipeline | `media/BOUT.mp4` |  |

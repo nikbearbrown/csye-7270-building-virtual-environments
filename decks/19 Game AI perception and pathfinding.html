@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game AI: perception, movement and pathfinding | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Game AI, perception, movement and pathfinding">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Game AI: perception, movement and pathfinding">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 14 · Assignment 9</p>
+      <h1 class="t-opening rise g2">Game AI: perception, movement and pathfinding</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for how an agent senses, steers and finds a route</p>
+      <div class="speaker-notes" hidden><p>Deck 9a of the topic order, the first of two Game AI decks. 33 terms. Tags: in the book text means Chapter 14 (or Chapter 1 for velocity) uses and explains it; in the glossary means a row of the Game AI glossary section only; outside source means it comes from the Game AI books or Godot docs only. Decision-making, behavior trees, procedural generation and learning are deck 9b.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-three terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-three terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Agent, loop, hearing and memory">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Perceiving</p>
+      <h2 class="t-chart">Agent, loop, hearing and memory</h2>
+      <div class="diagram build" data-build="agent" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Ideas you need” and the guard hands-on; Game AI Made Easy (agents); glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Guard and player positions are computed tick by tick at 30 ticks a second. Distances, the 200 px rule and the 1.0 s search are inputs. The hearing radius (250 px) and sight (380 px) are illustrative inputs.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Sight range, field-of-view cone and line of sight">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Perceiving</p>
+      <h2 class="t-chart">Sight range, field-of-view cone and line of sight</h2>
+      <div class="diagram build" data-build="vision" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, Search state and line-of-sight raycast; Game AI Uncovered Vol. 2 (field of view); glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Ten target dots seeded (seed 21) plus two placed in the wall shadow. Each is tested per agent: distance, angle, then a segment-against-wall intersection.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Steering: velocity, seek, flee and arrive">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Steering</p>
+      <h2 class="t-chart">Steering: velocity, seek, flee and arrive</h2>
+      <div class="diagram build" data-build="steer" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “Velocity”; glossary, Game AI (Steering, Seek, Flee, Arrive); Game AI Uncovered Vol. 2.</p>
+      <div class="speaker-notes" hidden><p>Steering is desired velocity minus current velocity, limited to 320 px/s² per tick; speed is capped at 160 px/s. 60 ticks a second.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Pursue and wander">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Steering</p>
+      <h2 class="t-chart">Pursue and wander</h2>
+      <div class="diagram build" data-build="pursue" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI (Pursue); Game AI Made Easy (wander).</p>
+      <div class="speaker-notes" hidden><p>Pursue uses the prediction distance / chaser speed. Wander is seeded (seed 33).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Separation, alignment, cohesion and emergent behavior">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Crowds</p>
+      <h2 class="t-chart">Separation, alignment, cohesion and emergent behavior</h2>
+      <div class="diagram build" data-build="flock" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI (Separation, Alignment, Cohesion, Emergent behavior); Game AI Uncovered Vol. 2 (separation).</p>
+      <div class="speaker-notes" hidden><p>14 agents, seed 5, constant starting layout; four runs of 240 ticks.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Graph, grid, navigation mesh and waypoint">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps and search</p>
+      <h2 class="t-chart">Graph, grid, navigation mesh and waypoint</h2>
+      <div class="diagram build" data-build="graph" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Navigation: a server, a region, an agent”; glossary, Game AI (Navigation mesh, Waypoint).</p>
+      <div class="speaker-notes" hidden><p>Counts are computed from the 8 by 6 room: walkable cells, merged rectangles and a hand-placed set of waypoints. Graph weights and waypoint placement are illustrative inputs.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Breadth-first search, Dijkstra and the open and closed set">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps and search</p>
+      <h2 class="t-chart">Breadth-first search, Dijkstra and the open and closed set</h2>
+      <div class="diagram build" data-build="bfs" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI (Dijkstra); Game AI Made Easy.</p>
+      <div class="speaker-notes" hidden><p>Mud costs 8. Breadth-first ignores cost; Dijkstra respects it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="A* and f = g + h">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps and search</p>
+      <h2 class="t-chart">A* and f = g + h</h2>
+      <div class="diagram build" data-build="astar" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI (A*, f/g/h).</p>
+      <div class="speaker-notes" hidden><p>Manhattan heuristic, four-direction moves, ties broken by lower h then insertion order.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Manhattan, Euclidean and admissible heuristics">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps and search</p>
+      <h2 class="t-chart">Manhattan, Euclidean and admissible heuristics</h2>
+      <div class="diagram build" data-build="heur" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI (Manhattan distance, Admissible heuristic).</p>
+      <div class="speaker-notes" hidden><p>Second room has a mud column of cost 8; the start and goal are on the same row.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="NavigationAgent2D, path smoothing and local avoidance">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Godot navigation</p>
+      <h2 class="t-chart">NavigationAgent2D, path smoothing and local avoidance</h2>
+      <div class="diagram build" data-build="nav" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Navigation: a server, a region, an agent”; glossary, Game AI (NavigationAgent2D, Local avoidance).</p>
+      <div class="speaker-notes" hidden><p>Smoothing keeps only the corners where a straight line between cell centres would cross a wall.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Sight range and line of sight, seek and arrive, Dijkstra and A*, separation and cohesion.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a game AI behaviour">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a game AI behaviour</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Hands-on” and “Verify”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= pure algorithms for the Game AI deck ================= */
+  var MAP = ["S...#...", "....#.#.", ".#~~..#.", ".#~~#...", "....#.#G", "......#."];
+  function cellCost(M, c, r) { var ch = M[r][c]; return ch === "#" ? 0 : ch === "~" ? 8 : 1; }
+  function findCh(M, ch) { for (var r = 0; r < M.length; r++) for (var c = 0; c < M[0].length; c++) if (M[r][c] === ch) return [c, r]; return null; }
+  function hOf(hk, c, r, gc, gr) {
+    if (hk === "manh") return Math.abs(c - gc) + Math.abs(r - gr);
+    if (hk === "eucl") return Math.hypot(c - gc, r - gr);
+    return 0;
+  }
+  /* mode: bfs | dij | astar. hk: manh | eucl. wgt multiplies h. Returns states (before each expansion), path, cost, n */
+  function search(M, mode, hk, wgt, s, g0) {
+    var R = M.length, C = M[0].length, DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+    var gs = {}, par = {}, closed = {}, open = [], seq = 0, states = [], cl = [];
+    function key(c, r) { return r * C + c; }
+    function mk(c, r, g) { var h = mode === "astar" ? wgt * hOf(hk, c, r, g0[0], g0[1]) : 0; return { c: c, r: r, g: g, h: h, f: g + h, q: seq++ }; }
+    function snap() { return open.map(function (o) { return [o.c, o.r, o.g, o.h, o.f]; }); }
+    open.push(mk(s[0], s[1], 0)); gs[key(s[0], s[1])] = 0;
+    var found = false;
+    while (open.length) {
+      var bi = 0;
+      for (var i = 1; i < open.length; i++) {
+        var a = open[i], b = open[bi];
+        if (mode === "bfs") { if (a.q < b.q) bi = i; }
+        else if (a.f < b.f - 1e-9 || (Math.abs(a.f - b.f) < 1e-9 && (a.h < b.h - 1e-9 || (Math.abs(a.h - b.h) < 1e-9 && a.q < b.q)))) bi = i;
+      }
+      var cur = open[bi];
+      states.push({ cur: [cur.c, cur.r, cur.g, cur.h, cur.f], open: snap(), closed: cl.slice() });
+      open.splice(bi, 1); closed[key(cur.c, cur.r)] = 1; cl.push(key(cur.c, cur.r));
+      if (cur.c === g0[0] && cur.r === g0[1]) { found = true; break; }
+      DIRS.forEach(function (d) {
+        var nc = cur.c + d[0], nr = cur.r + d[1];
+        if (nc < 0 || nr < 0 || nc >= C || nr >= R || !cellCost(M, nc, nr) || closed[key(nc, nr)]) return;
+        var step = mode === "bfs" ? 1 : cellCost(M, nc, nr), ng = cur.g + step, k = key(nc, nr);
+        if (gs[k] === undefined || ng < gs[k] - 1e-9) {
+          if (mode === "bfs" && gs[k] !== undefined) return;
+          gs[k] = ng; par[k] = key(cur.c, cur.r);
+          for (var j = open.length - 1; j >= 0; j--) if (open[j].c === nc && open[j].r === nr) open.splice(j, 1);
+          open.push(mk(nc, nr, ng));
+        }
+      });
+    }
+    states.push({ cur: null, open: snap(), closed: cl.slice() });
+    var path = [], cost = 0;
+    if (found) {
+      var k2 = key(g0[0], g0[1]);
+      while (k2 !== undefined) { path.unshift([k2 % C, Math.floor(k2 / C)]); k2 = par[k2]; }
+      for (var p = 1; p < path.length; p++) cost += cellCost(M, path[p][0], path[p][1]);
+    }
+    return { states: states, path: path, cost: cost, n: states.length - 1, found: found };
+  }
+  function clearLine(M, a, b, noMud) { /* cell-centre line from a to b stays out of walls */
+    var n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) * 12) + 1;
+    for (var i = 0; i <= n; i++) {
+      var t = i / n, x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t;
+      var c = Math.floor(x + 0.5), r = Math.floor(y + 0.5);
+      if (r < 0 || c < 0 || r >= M.length || c >= M[0].length || M[r][c] === "#" || (noMud && M[r][c] === "~")) return false;
+    }
+    return true;
+  }
+  function smoothPath(M, path) {
+    var out = [path[0]], i = 0;
+    while (i < path.length - 1) { var j = path.length - 1; while (j > i + 1 && !clearLine(M, path[i], path[j], true)) j--; out.push(path[j]); i = j; }
+    return out;
+  }
+  function plen(p) { var s = 0; for (var i = 1; i < p.length; i++) s += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); return s; }
+  function segHit(a, b, c, d) {
+    function o(p, q, r) { return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); }
+    return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0;
+  }
+  /* steering step: returns new [x,y,vx,vy]; desired velocity (dx,dy), max accel, max speed */
+  function steerStep(p, dx, dy, acc, vmax, dt) {
+    var sx = dx - p[2], sy = dy - p[3], sl = Math.hypot(sx, sy), lim = acc * dt;
+    if (sl > lim) { sx *= lim / sl; sy *= lim / sl; }
+    var vx = p[2] + sx, vy = p[3] + sy, vl = Math.hypot(vx, vy);
+    if (vl > vmax) { vx *= vmax / vl; vy *= vmax / vl; }
+    return [p[0] + vx * dt, p[1] + vy * dt, vx, vy];
+  }
+  function unit(x, y) { var l = Math.hypot(x, y) || 1; return [x / l, y / l]; }
+  /* flocking: weights sw, aw, cw; returns frames of [[x,y,vx,vy]...] */
+  function flockSim(sw, aw, cw, seed, N, F, W0, H0) {
+    var r = rng(seed), P = [], SPD = 70, dt = 1 / 30, SEPR = 60, NBR = 170;
+    for (var i = 0; i < N; i++) { var a = r() * 6.2832; P.push([220 + r() * 320, 160 + r() * 220, Math.cos(a) * SPD, Math.sin(a) * SPD]); }
+    var frames = [P.map(function (p) { return p.slice(); })];
+    for (var f = 1; f < F; f++) {
+      var Q = [];
+      for (var i2 = 0; i2 < N; i2++) {
+        var p = P[i2], sx = 0, sy = 0, ax = 0, ay = 0, cx = 0, cy = 0, n = 0;
+        for (var j = 0; j < N; j++) {
+          if (j === i2) continue; var q = P[j], dx = p[0] - q[0], dy = p[1] - q[1], d = Math.hypot(dx, dy);
+          if (d < SEPR) { sx += dx / (d * d); sy += dy / (d * d); }
+          if (d < NBR) { var u = unit(q[2], q[3]); ax += u[0]; ay += u[1]; cx += q[0]; cy += q[1]; n++; }
+        }
+        var vx = p[2], vy = p[3];
+        vx += sw * 9000 * sx * dt; vy += sw * 9000 * sy * dt;
+        if (n) {
+          var ua = unit(ax, ay); vx += aw * (ua[0] * SPD - vx) * 8 * dt; vy += aw * (ua[1] * SPD - vy) * 8 * dt;
+          var uc = unit(cx / n - p[0], cy / n - p[1]); vx += cw * (uc[0] * SPD - vx) * 2 * dt; vy += cw * (uc[1] * SPD - vy) * 2 * dt;
+        }
+        var l = Math.hypot(vx, vy) || 1, s2 = Math.max(45, Math.min(90, l)); vx *= s2 / l; vy *= s2 / l;
+        var nx = p[0] + vx * dt, ny = p[1] + vy * dt;
+        if (nx < 20 || nx > W0 - 20) { vx = -vx; nx = Math.max(20, Math.min(W0 - 20, nx)); }
+        if (ny < 20 || ny > H0 - 20) { vy = -vy; ny = Math.max(20, Math.min(H0 - 20, ny)); }
+        Q.push([nx, ny, vx, vy]);
+      }
+      P = Q; frames.push(P.map(function (p) { return p.slice(); }));
+    }
+    return frames;
+  }
+  function flockStats(fr) {
+    var n = fr.length, mind = 1e9, cx = 0, cy = 0, ux = 0, uy = 0, i, j;
+    fr.forEach(function (p) { cx += p[0]; cy += p[1]; var u = unit(p[2], p[3]); ux += u[0]; uy += u[1]; });
+    cx /= n; cy /= n;
+    for (i = 0; i < n; i++) for (j = i + 1; j < n; j++) mind = Math.min(mind, Math.hypot(fr[i][0] - fr[j][0], fr[i][1] - fr[j][1]));
+    var md = d3.mean(fr, function (p) { return Math.hypot(p[0] - cx, p[1] - cy); });
+    return { mind: mind, meand: md, order: Math.hypot(ux, uy) / n };
+  }
+  /* ================= Game AI: perception, movement and pathfinding (Chapter 14) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 14 (or 1) uses and explains it; gloss = glossary Game AI row; web = outside source only */
+  var T = {
+    agent: { n: "Agent", tag: "web", m: "A game character that senses and acts on its own" },
+    loop: { n: "Sense, decide, act", tag: "book", m: "The loop every system in Chapter 14 runs, once per tick" },
+    sight: { n: "Sight range", tag: "gloss", m: "How far an NPC can see" },
+    fov: { n: "Field-of-view cone", tag: "web", m: "The angle across which the agent can see" },
+    los: { n: "Line of sight", tag: "book", m: "A straight line to the target that nothing blocks" },
+    hear: { n: "Hearing (noise) radius", tag: "web", m: "How far a noise carries to an agent" },
+    last: { n: "Last known position", tag: "book", m: "Where the target was last seen, kept in memory" },
+    steer: { n: "Steering", tag: "gloss", m: "Behaviours that adjust movement toward a goal" },
+    vel: { n: "Velocity, max speed", tag: "book", m: "Speed with a direction; max speed caps its size" },
+    seek: { n: "Seek", tag: "gloss", m: "Steer toward a target" },
+    flee: { n: "Flee", tag: "gloss", m: "Steer away from a target" },
+    arrive: { n: "Arrive", tag: "gloss", m: "Seek and slow down to stop at the target" },
+    pursue: { n: "Pursue", tag: "gloss", m: "Steer toward where a moving target will be" },
+    wander: { n: "Wander", tag: "web", m: "Small random turns, so the path meanders" },
+    sep: { n: "Separation", tag: "gloss", m: "Steer away from close neighbours" },
+    align: { n: "Alignment", tag: "gloss", m: "Steer to match neighbours' heading" },
+    coh: { n: "Cohesion", tag: "gloss", m: "Steer toward the neighbours' centre" },
+    emerg: { n: "Emergent behavior", tag: "gloss", m: "Complex group behaviour from simple rules" },
+    graph: { n: "Graph, edge, weight", tag: "web", m: "Points (nodes) joined by edges, each with a cost" },
+    grid: { n: "Grid (AStarGrid2D)", tag: "book", m: "Cells marked solid or free; the light tool for grid games" },
+    navmesh: { n: "Navigation mesh", tag: "book", m: "Polygons marking where agents can walk" },
+    waypoint: { n: "Waypoint", tag: "gloss", m: "A point along a path" },
+    bfs: { n: "Breadth-first search", tag: "web", m: "Expands outward one step at a time and ignores cost" },
+    dij: { n: "Dijkstra", tag: "gloss", m: "Pathfinding that expands by cost so far only, with no heuristic" },
+    oc: { n: "Open and closed set", tag: "web", m: "Open: found, not yet expanded. Closed: already expanded" },
+    astar: { n: "A*", tag: "gloss", m: "Pathfinding that picks the lowest f = g + h node first" },
+    fgh: { n: "f, g, h", tag: "gloss", m: "Total estimated cost / cost so far / estimated cost to goal" },
+    manh: { n: "Manhattan distance", tag: "gloss", m: "Distance counted along grid axes only" },
+    eucl: { n: "Euclidean distance", tag: "web", m: "Straight-line distance" },
+    adm: { n: "Admissible heuristic", tag: "gloss", m: "An estimate that never overestimates the true cost" },
+    navagent: { n: "NavigationAgent2D", tag: "book", m: "Godot node that follows a navmesh path" },
+    smooth: { n: "Path smoothing", tag: "web", m: "Cut corners from a path wherever the straight line is clear" },
+    local: { n: "Local avoidance", tag: "gloss", m: "Steering around nearby obstacles and agents" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 32, text, 40, { size: 26, lh: 33, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function arrow(g, x1, y1, x2, y2, col, w) {
+    var l = Math.hypot(x2 - x1, y2 - y1); if (l < 3) return;
+    var ux = (x2 - x1) / l, uy = (y2 - y1) / l, h = Math.min(14, l * 0.6);
+    g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + (x2 - ux * h * 0.7) + "," + (y2 - uy * h * 0.7)).attr("stroke", col).attr("stroke-width", w || 3).attr("fill", "none");
+    g.append("path").attr("d", "M" + x2 + "," + y2 + "L" + (x2 - ux * h - uy * h * 0.5) + "," + (y2 - uy * h + ux * h * 0.5) + "L" + (x2 - ux * h + uy * h * 0.5) + "," + (y2 - uy * h - ux * h * 0.5) + "Z").attr("fill", col);
+  }
+  function poly(g, pts, col, w, dash) {
+    if (pts.length < 2) return null;
+    var p = g.append("path").attr("d", "M" + pts.map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join("L")).attr("fill", "none").attr("stroke", col).attr("stroke-width", w || 3).attr("stroke-linejoin", "round");
+    if (dash) p.attr("stroke-dasharray", dash); return p;
+  }
+  function frameOf(t, n) { return Math.min(n - 1, Math.floor(t * n)); }
+  function glyph(g, x, y, ang, s, fill) { /* triangle pointing along ang */
+    var c = Math.cos(ang), sn = Math.sin(ang), P = [[s, 0], [-s * 0.7, s * 0.6], [-s * 0.7, -s * 0.6]].map(function (q) { return [x + q[0] * c - q[1] * sn, y + q[0] * sn + q[1] * c]; });
+    return g.append("path").attr("d", "M" + P.map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join("L") + "Z").attr("fill", fill || INK);
+  }
+  function arena(g, x, y, w, h) { return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h).attr("fill", "#FFFFFF").attr("stroke", FAMILIAR).attr("stroke-width", 2); }
+  function spark(g, x, y, w, h, ys, ymax, col, refv, refl) {
+    g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+    if (refv !== undefined) { var ry = y + h - refv / ymax * h; g.append("path").attr("d", "M" + x + "," + ry + "H" + (x + w)).attr("stroke", GREY).attr("stroke-dasharray", "6 5").attr("stroke-width", 2); if (refl) txt(g, x + w - 8, ry - 7, refl, { size: 24, anchor: "end", fill: MUTED }); }
+    poly(g, ys.map(function (v, i) { return [x + i / Math.max(1, ys.length - 1) * w, y + h - Math.min(v, ymax) / ymax * h]; }), col, 4);
+  }
+  function legend(g, x, y, items) {
+    items.forEach(function (it) {
+      g.append("rect").attr("x", x + 0.5).attr("y", y - 20).attr("width", 24).attr("height", 24).attr("fill", it[1]).attr("stroke", it[2] || INK).attr("stroke-width", it[3] || 1.5);
+      txt(g, x + 34, y, it[0], { size: 24, fill: BODY }); x += 34 + it[0].length * 12.6 + 24;
+    });
+  }
+
+  /* ---------- shared simulations (computed once at load) ---------- */
+  var MAPS = findCh(MAP, "S"), MAPG = findCh(MAP, "G");
+  var R_BFS = search(MAP, "bfs", "manh", 1, MAPS, MAPG), R_DIJ = search(MAP, "dij", "manh", 1, MAPS, MAPG),
+      R_AST = search(MAP, "astar", "manh", 1, MAPS, MAPG), R_ASTE = search(MAP, "astar", "eucl", 1, MAPS, MAPG);
+  var M2 = ["...~~...", "S..~~..G", "...~~...", "...~~...", "........", "........"];
+  var R_H1 = search(M2, "astar", "manh", 1, [0, 1], [7, 1]), R_H4 = search(M2, "astar", "manh", 4, [0, 1], [7, 1]);
+  var FL = { sep: flockSim(1, 0, 0, 5, 14, 240, 760, 440), ali: flockSim(0, 1, 0, 5, 14, 240, 760, 440), coh: flockSim(0, 0, 1, 5, 14, 240, 760, 440), all: flockSim(1, 1, 1, 5, 14, 240, 760, 440) };
+  var FL0 = flockSim(0, 1, 1, 5, 14, 240, 760, 440), FLS = flockStats(FL.sep[0]);
+
+  /* guard patrols; player walks left along y=350; guard senses distance each tick and chases inside 200 px */
+  var AG = (function () {
+    var dt = 1 / 30, F = 181, g = [120, 170], dir = 1, out = [];
+    for (var f = 0; f < F; f++) {
+      var pl = [690 - 95 * f * dt, 350], d = Math.hypot(pl[0] - g[0], pl[1] - g[1]), st = d < 200 ? "chase" : "patrol", v = [0, 0];
+      if (d < 30) { st = "caught"; }
+      else if (st === "patrol") { v = [100 * dir, 0]; } else { var u = unit(pl[0] - g[0], pl[1] - g[1]); v = [130 * u[0], 130 * u[1]]; }
+      out.push({ g: g.slice(), p: pl, d: d, st: st, v: v });
+      g = [g[0] + v[0] * dt, g[1] + v[1] * dt]; if (st === "patrol" && (g[0] > 640 || g[0] < 120)) dir = -dir;
+    }
+    return out;
+  })();
+  var AGCH = (function () { for (var i = 0; i < AG.length; i++) if (AG[i].st === "chase") return i; return -1; })();
+
+  var WALL4 = [[380, 260], [380, 470]];
+  var MEM = (function () { /* guard sees the player unless the wall blocks; goes to the last seen spot, searches 1 s, returns */
+    var dt = 1 / 30, F = 420, G0 = [150, 140], g = G0.slice(), PATH = [[690, 110], [470, 110], [470, 200], [470, 430], [740, 540]], seg = 0, pl = PATH[0].slice(), L = null, st = "wait", wt = 0, out = [], tArr = null, tLost = null, blind = false;
+    for (var f = 0; f < F; f++) {
+      if (seg < PATH.length - 1) {
+        var a = PATH[seg], b = PATH[seg + 1], dd = Math.hypot(b[0] - pl[0], b[1] - pl[1]), step = 110 * dt;
+        if (dd <= step) { pl = b.slice(); seg++; } else { var u = unit(b[0] - pl[0], b[1] - pl[1]); pl = [pl[0] + u[0] * step, pl[1] + u[1] * step]; }
+      }
+      var vis = !blind && Math.hypot(pl[0] - g[0], pl[1] - g[1]) <= 380 && !segHit(g, pl, WALL4[0], WALL4[1]);
+      if (vis) { L = pl.slice(); st = "watch"; }
+      else if (st === "watch") { st = "go to last known"; tLost = f * dt; blind = true; }
+      var tgt = null;
+      if (st === "go to last known") tgt = L; else if (st === "return") tgt = G0;
+      if (st === "search") { wt += dt; if (wt >= 1) st = "return"; }
+      if (tgt) { var dd2 = Math.hypot(tgt[0] - g[0], tgt[1] - g[1]), st2 = 120 * dt; if (dd2 <= st2) { g = tgt.slice(); if (st === "go to last known") { st = "search"; tArr = f * dt; } else if (st === "return") st = "home"; } else { var u2 = unit(tgt[0] - g[0], tgt[1] - g[1]); g = [g[0] + u2[0] * st2, g[1] + u2[1] * st2]; } }
+      out.push({ g: g.slice(), p: pl.slice(), L: L ? L.slice() : null, st: st, vis: vis });
+    }
+    return { fr: out, L: L, tLost: tLost, tArr: tArr, PATH: PATH, G0: G0 };
+  })();
+
+  /* vision targets */
+  var VW = [[300, 200], [300, 380]], VG = [{ p: [100, 170], base: 20 }, { p: [100, 430], base: -20 }], VR = 340, VF = 70;
+  var VT = (function () {
+    var r = rng(21), pts = [], tries = 0;
+    while (pts.length < 10 && tries++ < 500) {
+      var p = [250 + r() * 490, 70 + r() * 470];
+      if (Math.abs(p[0] - 300) < 30 && p[1] > 170 && p[1] < 410) continue;
+      var ok = true; pts.forEach(function (q) { if (Math.hypot(q[0] - p[0], q[1] - p[1]) < 60) ok = false; });
+      if (ok) pts.push(p);
+    }
+    pts.push([420, 265], [420, 335]); /* two targets placed in the wall's shadow */
+    return pts;
+  })();
+  function visSeen(ai, p, k, ang) { /* k: 1 range, 2 +cone, 3 +line of sight */
+    var a = VG[ai].p, d = Math.hypot(p[0] - a[0], p[1] - a[1]);
+    if (d > VR) return false;
+    if (k >= 2) { var da = Math.atan2(p[1] - a[1], p[0] - a[0]) - ang * DEG; da = Math.atan2(Math.sin(da), Math.cos(da)); if (Math.abs(da) > VF * DEG / 2) return false; }
+    if (k >= 3 && segHit(a, p, VW[0], VW[1])) return false;
+    return true;
+  }
+  function visCount(k) { var c = [0, 0], any = 0; VT.forEach(function (p) { var s0 = visSeen(0, p, k, VG[0].base), s1 = visSeen(1, p, k, VG[1].base); if (s0) c[0]++; if (s1) c[1]++; if (s0 || s1) any++; }); return { a: c[0], b: c[1], any: any }; }
+
+  /* steering simulations */
+  var ST = { max: 160, acc: 320, dt: 1 / 60 };
+  function steerRun(kind, p0, Tg, secs, o) {
+    o = o || {}; var p = p0.slice(), fr = [p.slice()], n = Math.round(secs / ST.dt);
+    for (var i = 0; i < n; i++) {
+      var dx = Tg[0] - p[0], dy = Tg[1] - p[1], d = Math.hypot(dx, dy), u = unit(dx, dy), des;
+      if (kind === "seek") des = [u[0] * ST.max, u[1] * ST.max];
+      else if (kind === "flee") des = d < o.radius ? [-u[0] * ST.max, -u[1] * ST.max] : [0, 0];
+      else { var sp = ST.max * Math.min(1, d / o.slow); des = d < 2 ? [0, 0] : [u[0] * sp, u[1] * sp]; }
+      p = steerStep(p, des[0], des[1], ST.acc, ST.max, ST.dt); fr.push(p.slice());
+    }
+    return fr;
+  }
+  var S1 = steerRun("seek", [80, 330, 0, -110], [600, 150], 2.6), S2 = steerRun("seek", [80, 330, 0, 0], [560, 200], 8),
+      S3 = steerRun("flee", [440, 210, 0, 0], [520, 170], 5, { radius: 300 }), S4 = steerRun("arrive", [80, 100, 0, 0], [600, 330], 8, { slow: 200 });
+  var T2 = [560, 200], T3 = [520, 170], T4 = [600, 330], T1 = [600, 150];
+  function spd(p) { return Math.hypot(p[2], p[3]); }
+  var S2min = (function () { var bi = 0, bd = 1e9; S2.forEach(function (p, i) { var d = Math.hypot(p[0] - T2[0], p[1] - T2[1]); if (d < bd) { bd = d; bi = i; } }); return { d: bd, v: spd(S2[bi]), i: bi }; })();
+  var S4stopI = (function () { for (var i = 30; i < S4.length; i++) if (spd(S4[i]) < 5) return i; return S4.length - 1; })(), S4stop = S4stopI * ST.dt;
+  var S3stop = (function () { for (var i = 0; i < S3.length; i++) if (Math.hypot(S3[i][0] - T3[0], S3[i][1] - T3[1]) >= 300) return i * ST.dt; return 5; })();
+
+  /* pursue versus seek, and wander */
+  var PU = (function () {
+    var dt = 1 / 30, sp = 110, tv = [55, -30], tp = [150, 400], a = [150, 60], b = [150, 60], ta = [], A1 = [], B1 = [], capA = null, capB = null, ca = true, cb = true;
+    for (var f = 0; f < 330; f++) {
+      ta.push(tp.slice()); A1.push(a.slice()); B1.push(b.slice());
+      if (ca) { var u = unit(tp[0] - a[0], tp[1] - a[1]); a = [a[0] + u[0] * sp * dt, a[1] + u[1] * sp * dt]; if (Math.hypot(tp[0] - a[0], tp[1] - a[1]) < 12) { ca = false; capA = f * dt; } }
+      if (cb) { var d = Math.hypot(tp[0] - b[0], tp[1] - b[1]), tt = d / sp, pr = [tp[0] + tv[0] * tt, tp[1] + tv[1] * tt], u2 = unit(pr[0] - b[0], pr[1] - b[1]); b = [b[0] + u2[0] * sp * dt, b[1] + u2[1] * sp * dt]; if (Math.hypot(tp[0] - b[0], tp[1] - b[1]) < 12) { cb = false; capB = f * dt; } }
+      tp = [tp[0] + tv[0] * dt, tp[1] + tv[1] * dt];
+      if (!ca) a = a.slice(); 
+    }
+    return { t: ta, a: A1, b: B1, capA: capA, capB: capB };
+  })();
+  var WN = (function () {
+    var r = rng(33), dt = 1 / 20, p = [380, 280], th = -0.6, wa = 0, fr = [];
+    for (var i = 0; i < 260; i++) {
+      wa = Math.max(-1.3, Math.min(1.3, wa + (r() - 0.5) * 1.1)); var cx = p[0] + Math.cos(th) * 100, cy = p[1] + Math.sin(th) * 100, tx = cx + Math.cos(th + wa) * 55, ty = cy + Math.sin(th + wa) * 55;
+      if (p[0] < 60 || p[0] > 700 || p[1] < 90 || p[1] > 420) { var back = Math.atan2(260 - p[1], 380 - p[0]); var dd = back - th; dd = Math.atan2(Math.sin(dd), Math.cos(dd)); th += Math.max(-4 * dt, Math.min(4 * dt, dd)); }
+      else { var want = Math.atan2(ty - p[1], tx - p[0]), da = want - th; da = Math.atan2(Math.sin(da), Math.cos(da)); th += Math.max(-2.2 * dt, Math.min(2.2 * dt, da)); }
+      fr.push({ p: p.slice(), th: th, c: [cx, cy], t: [tx, ty] });
+      p = [p[0] + Math.cos(th) * 90 * dt, p[1] + Math.sin(th) * 90 * dt];
+    }
+    return fr;
+  })();
+
+  var MAPROWS = [
+    ["Perceiving", "agent, sense-decide-act, sight range, field-of-view cone, line of sight, hearing radius, last known position", "What an agent can know about the world"],
+    ["Steering", "steering, velocity and max speed, seek, flee, arrive, pursue, wander", "How an agent moves toward or away from things"],
+    ["Groups and crowds", "separation, alignment, cohesion, emergent behavior, local avoidance", "How many agents move without bumping or scattering"],
+    ["Maps and search", "graph, grid, navigation mesh, waypoint, breadth-first search, Dijkstra, A*, f g h, heuristics, open and closed set, path smoothing, NavigationAgent2D", "How an agent finds a route through the level"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of game AI terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "33 terms from Chapter 14 and the glossary. An agent senses, then steers, then follows a route; this deck takes them in that order.", 100, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 300, 1090];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 126, row = g.append("g");
+      box(row, 0, y, 1400, 114, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 115).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 46, r[0], 20, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 60, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 22, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 700 - 20, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. agent, loop, hearing, last known position ---------- */
+  function renderAgent(el, k, anim) {
+    var svg = svgFor(el, W, H, "An agent senses, decides and acts each tick; it can hear, and it remembers", "A patrolling guard, then the same guard running a sense-decide-act loop against a walking player, then a noise ring reaching two of three guards, then a guard walking to the last place it saw the player.");
+    var ey = base(svg, [{ id: "agent", s: 1 }, { id: "loop", s: 2 }, { id: "hear", s: 3 }, { id: "last", s: 4 }], k, anim, ["Hearing radius", "ignores facing; counts distance only"], ["Sight range", "needs a clear line to the target"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 27, "ONE GUARD, ALONE");
+      arena(d, 0, 34, 760, 410);
+      var g = d.append("g");
+      [[120, 170], [640, 170]].forEach(function (w, i) { d.append("rect").attr("x", w[0] - 8).attr("y", w[1] - 8).attr("width", 16).attr("height", 16).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 3); });
+      txt(d, 120, 135, "waypoint", { size: 24, anchor: "middle", fill: MUTED }); txt(d, 640, 135, "waypoint", { size: 24, anchor: "middle", fill: MUTED });
+      var gd = d.append("g");
+      run(gd, 5200, function (t) {
+        gd.selectAll("*").remove();
+        var x = 120 + 520 * t, vx = t < 1 ? 100 : 0;
+        gd.append("circle").attr("cx", x).attr("cy", 170).attr("r", 18).attr("fill", INK); gd.append("path").attr("d", "M" + (x + 18) + ",170 h14").attr("stroke", INK).attr("stroke-width", 5);
+        txt(gd, x, 224, "guard", { size: 24, anchor: "middle", weight: 700 });
+        mono(gd, 0, 490, "position   (" + x.toFixed(0) + ", 170)", { size: 24 }); mono(gd, 0, 524, "velocity   (" + vx + ", 0) px/s", { size: 24 }); mono(gd, 0, 558, "state      patrol", { size: 24, fill: RED, weight: 700 });
+      }, A(anim, k, 1));
+    } else if (kk === 2) {
+      lab(d, 0, 27, "ONE TICK AT A TIME");
+      arena(d, 0, 34, 760, 410);
+      var gd2 = d.append("g");
+      run(gd2, 6000, function (t) {
+        gd2.selectAll("*").remove();
+        var f = frameOf(t, AG.length), s = AG[f], g0 = s.g, p0 = s.p;
+        gd2.append("circle").attr("cx", g0[0]).attr("cy", g0[1]).attr("r", 200).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "7 6");
+        gd2.append("path").attr("d", "M" + g0[0] + "," + g0[1] + "L" + p0[0] + "," + p0[1]).attr("stroke", s.st === "chase" ? RED : FAMILIAR).attr("stroke-width", 3).attr("stroke-dasharray", s.st === "chase" ? null : "4 6");
+        gd2.append("circle").attr("cx", g0[0]).attr("cy", g0[1]).attr("r", 18).attr("fill", INK);
+        gd2.append("rect").attr("x", p0[0] - 14).attr("y", p0[1] - 14).attr("width", 28).attr("height", 28).attr("fill", RED);
+        txt(gd2, 14, 78, "guard", { size: 24, weight: 700, fill: INK }); txt(gd2, 14, 108, "player", { size: 24, weight: 700, fill: RED });
+        var hi = Math.floor(f / 6) % 3, vals = ["d = " + s.d.toFixed(0) + " px", s.d < 200 ? "d < 200: chase" : "d ≥ 200: patrol", "v = (" + s.v[0].toFixed(0) + ", " + s.v[1].toFixed(0) + ")"];
+        ["SENSE", "DECIDE", "ACT"].forEach(function (n, i) {
+          var bx = i * 258;
+          box(gd2, bx, 466, 244, 100, { stroke: i === hi ? RED : INK, sw: i === hi ? 4 : 2, fill: i === hi ? TINT : "#FFFFFF" });
+          lab(gd2, bx + 14, 500, n, { fill: i === hi ? RED : MUTED }); mono(gd2, bx + 14, 546, vals[i], { size: 24, weight: 700 });
+        });
+        if (s.st === "caught") txt(gd2, 380, 440, "", { size: 24 });
+      }, A(anim, k, 2));
+    } else if (kk === 3) {
+      lab(d, 0, 27, "A NOISE AT THE DOT");
+      arena(d, 0, 34, 760, 540);
+      var NS = [380, 290], GU = [[250, 170], [580, 380], [660, 110]], RMAX = 250, gd3 = d.append("g");
+      run(gd3, 3500, function (t) {
+        gd3.selectAll("*").remove();
+        var r = RMAX * t, heard = 0;
+        gd3.append("circle").attr("cx", NS[0]).attr("cy", NS[1]).attr("r", RMAX).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "7 6");
+        gd3.append("circle").attr("cx", NS[0]).attr("cy", NS[1]).attr("r", Math.max(1, r)).attr("fill", TINT).attr("fill-opacity", 0.6).attr("stroke", RED).attr("stroke-width", 3);
+        gd3.append("circle").attr("cx", NS[0]).attr("cy", NS[1]).attr("r", 9).attr("fill", RED);
+        txt(gd3, NS[0], NS[1] + 40, "noise", { size: 24, anchor: "middle", weight: 700, fill: RED });
+        GU.forEach(function (q, i) {
+          var dd = Math.hypot(q[0] - NS[0], q[1] - NS[1]), h = dd <= r; if (h) heard++;
+          gd3.append("circle").attr("cx", q[0]).attr("cy", q[1]).attr("r", 18).attr("fill", h ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+          txt(gd3, q[0], q[1] - 28, dd.toFixed(0) + " px", { size: 24, anchor: "middle", weight: 700, fill: h ? RED : INK });
+        });
+        txt(gd3, 10, 566, "dashed ring = hearing radius 250 px · heard by " + heard + " of 3", { size: 24, fill: BODY });
+      }, A(anim, k, 3));
+    } else {
+      lab(d, 0, 27, "THE PLAYER HIDES; THE GUARD REMEMBERS");
+      arena(d, 0, 34, 760, 540);
+      d.append("rect").attr("x", WALL4[0][0] - 8).attr("y", WALL4[0][1]).attr("width", 16).attr("height", WALL4[1][1] - WALL4[0][1]).attr("fill", INK);
+      txt(d, WALL4[0][0] + 24, 380, "wall", { size: 24, fill: MUTED });
+      poly(d, MEM.PATH, FAMILIAR, 3, "3 8");
+      var gd4 = d.append("g");
+      run(gd4, 9000, function (t) {
+        gd4.selectAll("*").remove();
+        var f = frameOf(t, MEM.fr.length), s = MEM.fr[f];
+        if (s.L) {
+          cross(gd4, s.L[0], s.L[1], 10, RED);
+          txt(gd4, s.L[0] + 16, s.L[1] - 18, "last seen", { size: 24, fill: RED, weight: 700 });
+        }
+        gd4.append("circle").attr("cx", s.g[0]).attr("cy", s.g[1]).attr("r", 18).attr("fill", INK);
+        gd4.append("rect").attr("x", s.p[0] - 14).attr("y", s.p[1] - 14).attr("width", 28).attr("height", 28).attr("fill", s.vis ? RED : "#FFFFFF").attr("stroke", RED).attr("stroke-width", 3);
+        mono(gd4, 10, 566, "guard state: " + s.st + (s.vis ? " (sees player)" : ""), { size: 24, weight: 700 });
+      }, A(anim, k, 4));
+    }
+    note(svg, ey, ["", "An agent is a character that decides for itself. This one patrols between two waypoints at 100 px/s.", "Each tick it senses the distance (168 px), decides (inside 200 px means chase) and acts by setting its velocity.", "A noise travels outward at once. A guard hears it if its distance is within the radius, whichever way it faces.", "When the player slips behind the wall, the guard keeps the last place it saw him: it walks there in " + (MEM.tArr - MEM.tLost).toFixed(1) + " s, then searches."][k]);
+  }
+
+  /* ---------- 2. sight range, cone, line of sight ---------- */
+  function renderVision(el, k, anim) {
+    var svg = svgFor(el, W, H, "Three tests decide whether an agent sees a target: range, cone and line of sight", "Two guards and twelve target dots. A range circle, then a field-of-view cone that sweeps, then a wall that blocks the line.");
+    var ey = base(svg, [{ id: "sight", s: 1 }, { id: "fov", s: 2 }, { id: "los", s: 3 }], k, anim, ["Sight range", "a distance and nothing else"], ["Line of sight", "also needs a clear straight line"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    lab(d, 0, 27, kk === 1 ? "TEST 1: DISTANCE" : kk === 2 ? "TESTS 1 AND 2: DISTANCE AND ANGLE" : "ALL THREE TESTS");
+    arena(d, 0, 34, 760, 540);
+    var wallG = d.append("g");
+    if (kk >= 3) { wallG = null; }
+    var vcid = "vc" + (uid++);
+    svg.append("defs").append("clipPath").attr("id", vcid).append("rect").attr("x", 0).attr("y", 34).attr("width", 760).attr("height", 540);
+    var g = d.append("g").attr("clip-path", "url(#" + vcid + ")");
+    if (kk >= 3) { wallG = d.append("g"); wallG.append("rect").attr("x", VW[0][0] - 8).attr("y", VW[0][1]).attr("width", 16).attr("height", VW[1][1] - VW[0][1]).attr("fill", INK); txt(wallG, VW[0][0] + 20, VW[1][1] + 30, "wall", { size: 24, fill: MUTED }); }
+    var lg = d.append("g");
+    run(g, 5000, function (t) {
+      g.selectAll("*").remove();
+      var sw = kk >= 2 ? 28 * Math.sin(t * 2 * Math.PI) : 0, cnt = [0, 0], any = 0;
+      VG.forEach(function (a, i) {
+        var ang = (a.base + (i ? -sw : sw));
+        if (kk === 1) g.append("circle").attr("cx", a.p[0]).attr("cy", a.p[1]).attr("r", VR).attr("fill", i ? "none" : "none").attr("stroke", i ? INK : RED).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+        else { g.append("path").attr("d", conePath(a.p[0], a.p[1], ang * DEG, VF, VR)).attr("fill", i ? "#EDEDED" : TINT).attr("fill-opacity", 0.85).attr("stroke", i ? INK : RED).attr("stroke-width", 2); }
+        g.append("circle").attr("cx", a.p[0]).attr("cy", a.p[1]).attr("r", 15).attr("fill", i ? INK : RED); txt(g, a.p[0], a.p[1] + 44, "G" + (i + 1), { size: 24, anchor: "middle", weight: 700 });
+        a.cur = ang;
+      });
+      VT.forEach(function (p) {
+        var s0 = visSeen(0, p, kk, VG[0].cur), s1 = visSeen(1, p, kk, VG[1].cur); if (s0) cnt[0]++; if (s1) cnt[1]++; if (s0 || s1) any++;
+        g.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 11).attr("fill", s0 || s1 ? (s0 ? RED : INK) : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+        if (kk >= 3 && (s0 || s1)) g.append("path").attr("d", "M" + VG[s0 ? 0 : 1].p[0] + "," + VG[s0 ? 0 : 1].p[1] + "L" + p[0] + "," + p[1]).attr("stroke", s0 ? RED : INK).attr("stroke-width", 1.5).attr("opacity", 0.55);
+      });
+      lg.selectAll("*").remove(); lg.append("rect").attr("x", 1).attr("y", 540).attr("width", 759).attr("height", 34).attr("fill", "#FFFFFF");
+      txt(lg, 10, 566, "G1 sees " + cnt[0] + " of " + VT.length + " · G2 sees " + cnt[1] + " of " + VT.length + " · seen by either: " + any, { size: 24, weight: 700, fill: INK });
+    }, A(anim, k, 2) || A(anim, k, 3));
+    note(svg, ey, ["", "Test 1: is the target within " + VR + " px? Every dot inside a circle counts, even behind a wall.", "Test 2: is it also inside the " + VF + "° cone around where the agent faces? The cone sweeps and the count changes.", "Test 3: does a straight line to it avoid the wall? Dots in the wall's shadow drop out."][k]);
+  }
+
+  /* ---------- 3. steering: velocity, seek, flee, arrive ---------- */
+  function renderSteer(el, k, anim) {
+    var svg = svgFor(el, W, H, "Steering changes velocity a little each tick: seek, flee and arrive", "An agent turning toward a target with its velocity and steering arrows, then seek overshooting, then flee stopping at a safe distance, then arrive slowing to a stop.");
+    var ey = base(svg, [{ id: "steer", s: 1 }, { id: "vel", s: 1 }, { id: "seek", s: 2 }, { id: "flee", s: 3 }, { id: "arrive", s: 4 }], k, anim, ["Seek", "aims at the target and never slows"], ["Arrive", "same aim, but speed drops near the target"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), SIM = [S1, S2, S3, S4][kk - 1], TG = [T1, T2, T3, T4][kk - 1];
+    var cid = "cl" + (uid++);
+    svg.append("defs").append("clipPath").attr("id", cid).append("rect").attr("x", 0).attr("y", 34).attr("width", 760).attr("height", kk === 1 ? 410 : 410);
+    lab(d, 0, 27, ["", "DESIRED − CURRENT = STEERING", "SEEK", "FLEE FROM A THREAT", "ARRIVE"][kk]);
+    arena(d, 0, 34, 760, 410);
+    var g = d.append("g").attr("clip-path", "url(#" + cid + ")"), pl = d.append("g"), secs = SIM.length * ST.dt;
+    var dur = kk === 1 ? 3500 : 6500;
+    run(g, dur, function (t) {
+      g.selectAll("*").remove(); pl.selectAll("*").remove();
+      var f = frameOf(t, SIM.length), p = SIM[f];
+      if (kk === 3) g.append("circle").attr("cx", TG[0]).attr("cy", TG[1]).attr("r", 300).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+      if (kk === 4) g.append("circle").attr("cx", TG[0]).attr("cy", TG[1]).attr("r", 200).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+      poly(g, SIM.slice(0, f + 1).filter(function (q, i) { return i % 3 === 0; }).map(function (q) { return [q[0], q[1]]; }), kk === 3 ? INK : GREY, 3);
+      if (kk === 3) { g.append("rect").attr("x", TG[0] - 14).attr("y", TG[1] - 14).attr("width", 28).attr("height", 28).attr("fill", RED); txt(g, TG[0] + 24, TG[1] + 8, "threat", { size: 24, weight: 700, fill: RED }); }
+      else { g.append("circle").attr("cx", TG[0]).attr("cy", TG[1]).attr("r", 11).attr("fill", RED); txt(g, TG[0] + 18, TG[1] - 18, "target", { size: 24, weight: 700, fill: RED }); }
+      glyph(g, p[0], p[1], Math.atan2(p[3], p[2] || 1e-6), 17, INK);
+      if (kk === 1) {
+        var u = unit(TG[0] - p[0], TG[1] - p[1]), des = [u[0] * ST.max, u[1] * ST.max], sc = 0.8;
+        g.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", ST.max * sc).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "4 6");
+        arrow(g, p[0], p[1], p[0] + des[0] * sc, p[1] + des[1] * sc, GREY, 3);
+        arrow(g, p[0], p[1], p[0] + p[2] * sc, p[1] + p[3] * sc, INK, 5);
+        arrow(g, p[0] + p[2] * sc, p[1] + p[3] * sc, p[0] + des[0] * sc, p[1] + des[1] * sc, RED, 4);
+        txt(pl, 10, 480, "grey = desired · black = current velocity · red = steering", { size: 24, fill: BODY });
+        txt(pl, 10, 520, "speed " + spd(p).toFixed(0) + " px/s (max " + ST.max + ")", { size: 26, weight: 700, fill: INK });
+        txt(pl, 10, 560, "dashed circle = the max-speed limit", { size: 24, fill: MUTED });
+      } else {
+        var sp = SIM.slice(0, f + 1).map(spd), ys = SIM.map(spd);
+        lab(pl, 0, 478, kk === 3 ? "DISTANCE FROM THREAT" : "SPEED", { size: 24 });
+        if (kk === 3) spark(pl, 0, 490, 560, 80, SIM.slice(0, f + 1).map(function (q) { return Math.hypot(q[0] - TG[0], q[1] - TG[1]); }), 340, RED, 300, "safe 300");
+        else spark(pl, 0, 490, 560, 80, sp, 180, RED, 160, "max 160");
+        txt(pl, 580, 548, kk === 3 ? Math.hypot(p[0] - TG[0], p[1] - TG[1]).toFixed(0) + " px" : spd(p).toFixed(0) + " px/s", { size: 26, weight: 700, fill: INK });
+      }
+    }, A(anim, k, kk));
+    var nt = ["",
+      "Steering = desired velocity minus current velocity, limited per tick. Velocity is speed with a direction; speed stays at or below " + ST.max + " px/s.",
+      "Seek aims at the target at full speed every tick. It reaches the target at " + S2min.v.toFixed(0) + " px/s, so it overshoots and circles back.",
+      "Flee aims directly away. It runs for " + S3stop.toFixed(1) + " s, until it is 300 px from the threat, then stops steering.",
+      "Arrive seeks, but desired speed falls in the last 200 px. It is " + Math.hypot(S4[S4stopI][0] - T4[0], S4[S4stopI][1] - T4[1]).toFixed(1) + " px from the target and under 5 px/s after " + S4stop.toFixed(1) + " s."][k];
+    note(svg, ey, nt);
+  }
+
+  /* ---------- 4. pursue and wander ---------- */
+  function renderPursue(el, k, anim) {
+    var svg = svgFor(el, W, H, "Pursue aims where the target will be; wander turns a little at random", "A chaser that seeks lags behind a moving target while a chaser that pursues cuts it off; then an agent wandering with a small circle ahead of it.");
+    var ey = base(svg, [{ id: "pursue", s: 1 }, { id: "wander", s: 2 }], k, anim, ["Seek", "aims at where the target is now"], ["Pursue", "aims at where it will be"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    lab(d, 0, 27, kk === 1 ? "SEEK (GREY) AGAINST PURSUE (RED)" : "WANDER, SEEDED");
+    arena(d, 0, 34, 760, 440);
+    var g = d.append("g");
+    if (kk === 1) {
+      run(g, 6000, function (t) {
+        g.selectAll("*").remove();
+        var f = frameOf(t, PU.t.length), tt = f / 30;
+        var ea = PU.capA !== null ? Math.min(f, Math.round(PU.capA * 30)) : f, eb = PU.capB !== null ? Math.min(f, Math.round(PU.capB * 30)) : f;
+        poly(g, PU.t.slice(0, f + 1).filter(function (q, i) { return i % 4 === 0; }), FAMILIAR, 3, "3 7");
+        poly(g, PU.a.slice(0, ea + 1).filter(function (q, i) { return i % 2 === 0; }), GREY, 4);
+        poly(g, PU.b.slice(0, eb + 1).filter(function (q, i) { return i % 2 === 0; }), RED, 4);
+        g.append("circle").attr("cx", PU.a[ea][0]).attr("cy", PU.a[ea][1]).attr("r", 12).attr("fill", GREY);
+        g.append("circle").attr("cx", PU.b[eb][0]).attr("cy", PU.b[eb][1]).attr("r", 12).attr("fill", RED);
+        g.append("rect").attr("x", PU.t[f][0] - 13).attr("y", PU.t[f][1] - 13).attr("width", 26).attr("height", 26).attr("fill", INK);
+        txt(g, 10, 566, "seek catches at " + PU.capA.toFixed(1) + " s · pursue catches at " + PU.capB.toFixed(1) + " s (both 110 px/s)", { size: 24, weight: 700, fill: INK });
+      }, A(anim, k, 1));
+    } else {
+      run(g, 7000, function (t) {
+        g.selectAll("*").remove();
+        var f = frameOf(t, WN.length), s = WN[f];
+        poly(g, WN.slice(0, f + 1).filter(function (q, i) { return i % 2 === 0; }).map(function (q) { return q.p; }), GREY, 3);
+        g.append("circle").attr("cx", s.c[0]).attr("cy", s.c[1]).attr("r", 55).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 5");
+        g.append("path").attr("d", "M" + s.p[0] + "," + s.p[1] + "L" + s.t[0] + "," + s.t[1]).attr("stroke", RED).attr("stroke-width", 2).attr("stroke-dasharray", "5 5");
+        g.append("circle").attr("cx", s.t[0]).attr("cy", s.t[1]).attr("r", 9).attr("fill", RED);
+        glyph(g, s.p[0], s.p[1], s.th, 17, INK);
+        txt(g, 10, 566, "red dot = this tick's wander target, on a circle 100 px ahead", { size: 24, fill: BODY });
+      }, A(anim, k, 2));
+    }
+    note(svg, ey, ["", "The target (black) runs at a steady 63 px/s. Pursue predicts its position after the travel time, so it catches it " + (PU.capA - PU.capB).toFixed(1) + " s sooner than seek.", "Each tick wander nudges a target point around a small circle ahead. The turns are random but seeded, so a test can replay them."][k]);
+  }
+
+  /* ---------- 5. flocking ---------- */
+  function renderFlock(el, k, anim) {
+    var svg = svgFor(el, W, H, "Three simple rules, together, make a flock", "Fourteen agents. Separation spreads them, alignment points them the same way, cohesion pulls them together, and all three give a flock.");
+    var ey = base(svg, [{ id: "sep", s: 1 }, { id: "align", s: 2 }, { id: "coh", s: 3 }, { id: "emerg", s: 4 }], k, anim, ["Separation", "pushes agents apart"], ["Cohesion", "pulls agents together"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), key = ["sep", "ali", "coh", "all"][kk - 1], FR = FL[key], fcid = "fc" + (uid++);
+    svg.append("defs").append("clipPath").attr("id", fcid).append("rect").attr("x", 0).attr("y", 34).attr("width", 760).attr("height", 440);
+    lab(d, 0, 27, ["", "SEPARATION ONLY", "ALIGNMENT ONLY", "COHESION ONLY", "ALL THREE"][kk]);
+    arena(d, 0, 34, 760, 440);
+    var g = d.append("g");
+    var st0 = flockStats(FL.sep[0]);
+    run(g, 6500, function (t) {
+      g.selectAll("*").remove();
+      var f = frameOf(t, FR.length), P = FR[f], s = flockStats(P), o = g.append("g").attr("clip-path", "url(#" + fcid + ")").append("g").attr("transform", "translate(0,34)");
+      var b0 = P[0], ringR = kk === 1 ? 60 : 170;
+      o.append("circle").attr("cx", b0[0]).attr("cy", b0[1]).attr("r", ringR).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 2).attr("stroke-dasharray", "6 5");
+      P.forEach(function (p, i) { glyph(o, p[0], p[1], Math.atan2(p[3], p[2]), 13, i === 0 ? RED : INK); });
+      var l1, l2;
+      if (kk === 1) { l1 = "closest pair " + s.mind.toFixed(0) + " px (start " + st0.mind.toFixed(0) + ")"; l2 = "red ring = separation radius 60 px"; }
+      else if (kk === 2) { l1 = "heading agreement " + s.order.toFixed(2) + " (start " + st0.order.toFixed(2) + ")"; l2 = "1.00 = all pointing the same way"; }
+      else if (kk === 3) { l1 = "mean distance to centre " + s.meand.toFixed(0) + " px (start " + st0.meand.toFixed(0) + ")"; l2 = "red ring = neighbour radius 170 px"; }
+      else { l1 = "agreement " + s.order.toFixed(2) + " · closest pair " + s.mind.toFixed(0) + " px · centre " + s.meand.toFixed(0) + " px"; l2 = "14 agents, seed 5, 30 ticks a second"; }
+      txt(g, 10, 516, l1, { size: 24, weight: 700, fill: INK }); txt(g, 10, 552, l2, { size: 24, fill: MUTED });
+    }, A(anim, k, kk));
+    var fa = flockStats(FL.all[239]);
+    note(svg, ey, ["", "Each agent steers away from neighbours closer than 60 px. The closest pair opens from " + st0.mind.toFixed(0) + " to " + flockStats(FL.sep[239]).mind.toFixed(0) + " px.", "Each agent steers toward its neighbours' average heading. Agreement rises from " + st0.order.toFixed(2) + " to " + flockStats(FL.ali[239]).order.toFixed(2) + ".", "Each agent steers toward its neighbours' centre. They bunch: mean distance to the centre falls to " + flockStats(FL.coh[239]).meand.toFixed(0) + " px.", "Together: no agent knows about a flock, yet one forms. Agreement " + fa.order.toFixed(2) + ", nobody closer than " + fa.mind.toFixed(0) + " px."][k]);
+  }
+
+  /* ---------- grid drawing for searches ---------- */
+  function colName(c) { return String.fromCharCode(65 + c); }
+  function drawGrid(g, ox, oy, cs, M, st, o) {
+    o = o || {}; var R = M.length, C = M[0].length, openD = {}, closedS = {};
+    if (st) { st.closed.forEach(function (k) { closedS[k] = 1; }); st.open.forEach(function (a) { openD[a[1] * C + a[0]] = a; }); }
+    var cur = st && st.cur ? st.cur : null, lbls = [];
+    for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) {
+      var ch = M[r][c], k = r * C + c, x = ox + c * cs, y = oy + r * cs, fill = "#FFFFFF";
+      if (ch === "#") fill = INK; else if (ch === "~") fill = closedS[k] ? "#E6B8BF" : FAMILIAR; else if (closedS[k]) fill = TINT;
+      if (cur && cur[0] === c && cur[1] === r) fill = RED;
+      g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", cs).attr("height", cs).attr("fill", fill).attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+      if (openD[k] && !(cur && cur[0] === c && cur[1] === r)) g.append("rect").attr("x", x + 4.5).attr("y", y + 4.5).attr("width", cs - 8).attr("height", cs - 8).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      var isCur = cur && cur[0] === c && cur[1] === r;
+      if (M[r][c] === "S" || M[r][c] === "G") lbls.push([x + cs / 2, y + cs / 2 + 8, M[r][c], isCur]);
+      else if (o.fmap && o.fmap[k] !== undefined) txt(g, x + cs / 2, y + cs / 2 + 8, String(Math.round(o.fmap[k])), { size: 24, weight: 700, anchor: "middle", fill: isCur ? "#FFFFFF" : closedS[k] ? MUTED : INK });
+    }
+    if (o.path && o.path.length) poly(g, o.path.map(function (p) { return [ox + (p[0] + 0.5) * cs, oy + (p[1] + 0.5) * cs]; }), RED, 7);
+    lbls.forEach(function (l) { txt(g, l[0], l[1], l[2], { size: 24, weight: 700, anchor: "middle", fill: l[3] ? "#FFFFFF" : INK }); });
+  }
+  function fmapAt(res, e) { var m = {}; for (var i = 0; i <= Math.min(e, res.states.length - 1); i++) res.states[i].open.forEach(function (a) { m[a[1] * MAP[0].length + a[0]] = a[4]; }); return m; }
+  function stateAt(res, e) { var i = Math.max(0, Math.min(res.states.length - 1, e)); return res.states[i]; }
+
+  /* ---------- 6. graph, grid, navigation mesh, waypoint ---------- */
+  var GN = { A: [70, 270], B: [260, 120], C: [260, 420], D: [470, 270], F: [690, 270] }, GE = [["A", "B", 4], ["A", "C", 2], ["C", "B", 1], ["B", "D", 5], ["C", "D", 8], ["D", "F", 2]];
+  var GPATH = (function () { /* Dijkstra on the small graph */
+    var dist = { A: 0 }, prev = {}, done = {}, names = Object.keys(GN);
+    while (true) { var u = null; names.forEach(function (n) { if (!done[n] && dist[n] !== undefined && (u === null || dist[n] < dist[u])) u = n; }); if (u === null) break; done[u] = 1;
+      GE.forEach(function (e) { var v = e[0] === u ? e[1] : e[1] === u ? e[0] : null; if (v && dist[u] + e[2] < (dist[v] === undefined ? 1e9 : dist[v])) { dist[v] = dist[u] + e[2]; prev[v] = u; } }); }
+    var p = ["F"]; while (prev[p[0]]) p.unshift(prev[p[0]]); return { path: p, cost: dist.F };
+  })();
+  var WALK = (function () { var n = 0, e = 0; for (var r = 0; r < MAP.length; r++) for (var c = 0; c < MAP[0].length; c++) { if (MAP[r][c] === "#") continue; n++; if (c + 1 < MAP[0].length && MAP[r][c + 1] !== "#") e++; if (r + 1 < MAP.length && MAP[r + 1][c] !== "#") e++; } return { n: n, e: e }; })();
+  var MESH = (function () { /* greedy merge of walkable cells into rectangles */
+    var R = MAP.length, C = MAP[0].length, used = {}, rects = [];
+    for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) {
+      if (MAP[r][c] === "#" || used[r * C + c]) continue;
+      var w = 1; while (c + w < C && MAP[r][c + w] !== "#" && !used[r * C + c + w]) w++;
+      var h = 1, ok = true; while (ok && r + h < R) { for (var j = 0; j < w; j++) if (MAP[r + h][c + j] === "#" || used[(r + h) * C + c + j]) ok = false; if (ok) h++; }
+      for (var a = 0; a < h; a++) for (var b = 0; b < w; b++) used[(r + a) * C + c + b] = 1;
+      rects.push({ c: c, r: r, w: w, h: h });
+    }
+    var adj = [];
+    for (var i = 0; i < rects.length; i++) for (var q = i + 1; q < rects.length; q++) {
+      var A1 = rects[i], B1 = rects[q], ox = Math.min(A1.c + A1.w, B1.c + B1.w) - Math.max(A1.c, B1.c), oy = Math.min(A1.r + A1.h, B1.r + B1.h) - Math.max(A1.r, B1.r);
+      if ((ox === 0 && oy > 0) || (oy === 0 && ox > 0)) adj.push([i, q]);
+    }
+    return { rects: rects, adj: adj };
+  })();
+  var WPS = [[0, 1], [3, 0], [7, 0], [0, 4], [3, 4], [4, 5], [5, 5], [5, 3], [5, 2], [7, 3], [7, 5]];
+  var WPE = (function () { var e = []; for (var i = 0; i < WPS.length; i++) for (var j = i + 1; j < WPS.length; j++) if (Math.hypot(WPS[i][0] - WPS[j][0], WPS[i][1] - WPS[j][1]) <= 4.3 && clearLine(MAP, WPS[i], WPS[j])) e.push([i, j]); return e; })();
+  function renderGraph(el, k, anim) {
+    var svg = svgFor(el, W, H, "The same room as a graph, a grid, a navigation mesh and waypoints", "A small weighted graph with its cheapest path, then the room as grid cells, as merged walkable polygons, and as hand-placed waypoints, with a bar for how many nodes each uses.");
+    var ey = base(svg, [{ id: "graph", s: 1 }, { id: "grid", s: 2 }, { id: "navmesh", s: 3 }, { id: "waypoint", s: 4 }], k, anim, ["Grid", "a node for every cell"], ["Navigation mesh", "a node for every polygon"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 27, "NODES, EDGES AND WEIGHTS");
+      var onP = {}; for (var i = 0; i + 1 < GPATH.path.length; i++) { onP[GPATH.path[i] + GPATH.path[i + 1]] = 1; onP[GPATH.path[i + 1] + GPATH.path[i]] = 1; }
+      GE.forEach(function (e) {
+        var a = GN[e[0]], b = GN[e[1]], hot = onP[e[0] + e[1]], g = d.append("g");
+        g.append("path").attr("d", "M" + a[0] + "," + a[1] + "L" + b[0] + "," + b[1]).attr("stroke", hot ? RED : GREY).attr("stroke-width", hot ? 7 : 3);
+        var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; g.append("rect").attr("x", mx - 17).attr("y", my - 18).attr("width", 34).attr("height", 34).attr("fill", "#FFFFFF");
+        txt(g, mx, my + 9, e[2], { size: 26, weight: 700, anchor: "middle", fill: hot ? RED : INK });
+        if (A(anim, k, 1) && hot) drawIn(g.select("path"), 0, 900);
+      });
+      Object.keys(GN).forEach(function (n) { var p = GN[n]; d.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 28).attr("fill", GPATH.path.indexOf(n) >= 0 ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); txt(d, p[0], p[1] + 9, n, { size: 26, weight: 700, anchor: "middle", fill: GPATH.path.indexOf(n) >= 0 ? "#FFFFFF" : INK }); });
+      txt(d, 10, 566, "cheapest A to F: " + GPATH.path.join(" → ") + ", total cost " + GPATH.cost, { size: 26, weight: 700, fill: INK });
+    } else {
+      var OX = 0, OY = 40, CS = 64, g2 = d.append("g");
+      lab(d, 0, 27, ["", "", "ONE NODE PER CELL", "ONE NODE PER POLYGON", "A FEW HAND-PLACED POINTS"][kk]);
+      drawGrid(g2, OX, OY, CS, MAP, null, {});
+      var cen = function (c, r) { return [OX + (c + 0.5) * CS, OY + (r + 0.5) * CS]; };
+      if (kk === 2) {
+        for (var r = 0; r < MAP.length; r++) for (var c = 0; c < MAP[0].length; c++) { if (MAP[r][c] === "#") continue; var p = cen(c, r);
+          if (c + 1 < MAP[0].length && MAP[r][c + 1] !== "#") g2.append("path").attr("d", "M" + p[0] + "," + p[1] + "h" + CS).attr("stroke", GREY).attr("stroke-width", 2);
+          if (r + 1 < MAP.length && MAP[r + 1][c] !== "#") g2.append("path").attr("d", "M" + p[0] + "," + p[1] + "v" + CS).attr("stroke", GREY).attr("stroke-width", 2); }
+        for (var r2 = 0; r2 < MAP.length; r2++) for (var c2 = 0; c2 < MAP[0].length; c2++) if (MAP[r2][c2] !== "#" && MAP[r2][c2] !== "S" && MAP[r2][c2] !== "G") { var q = cen(c2, r2); g2.append("circle").attr("cx", q[0]).attr("cy", q[1]).attr("r", 6).attr("fill", RED); }
+      } else if (kk === 3) {
+        MESH.rects.forEach(function (m, i) { g2.append("rect").attr("x", OX + m.c * CS + 4.5).attr("y", OY + m.r * CS + 4.5).attr("width", m.w * CS - 8).attr("height", m.h * CS - 8).attr("fill", TINT).attr("fill-opacity", 0.55).attr("stroke", RED).attr("stroke-width", 3); });
+        MESH.adj.forEach(function (e) { var a = MESH.rects[e[0]], b = MESH.rects[e[1]], pa = [OX + (a.c + a.w / 2) * CS, OY + (a.r + a.h / 2) * CS], pb = [OX + (b.c + b.w / 2) * CS, OY + (b.r + b.h / 2) * CS]; g2.append("path").attr("d", "M" + pa + "L" + pb).attr("stroke", INK).attr("stroke-width", 2); });
+        MESH.rects.forEach(function (m) { g2.append("circle").attr("cx", OX + (m.c + m.w / 2) * CS).attr("cy", OY + (m.r + m.h / 2) * CS).attr("r", 7).attr("fill", INK); });
+      } else {
+        WPE.forEach(function (e) { var a = cen(WPS[e[0]][0], WPS[e[0]][1]), b = cen(WPS[e[1]][0], WPS[e[1]][1]); g2.append("path").attr("d", "M" + a + "L" + b).attr("stroke", INK).attr("stroke-width", 2.5); });
+        WPS.forEach(function (w) { var q = cen(w[0], w[1]); g2.append("circle").attr("cx", q[0]).attr("cy", q[1]).attr("r", 10).attr("fill", RED).attr("stroke", "#FFFFFF").attr("stroke-width", 2); });
+      }
+      if (A(anim, k, kk)) g2.attr("opacity", 0).transition().duration(500).attr("opacity", 1);
+      var data = [["Grid", WALK.n, "cells"], ["Mesh", MESH.rects.length, "polygons"], ["Waypoints", WPS.length, "points"]], bw = 330, b = d.append("g");
+      legend(b, 530, 85, [["wall", INK], ["mud", FAMILIAR]]); 
+      for (var i2 = 0; i2 < 3; i2++) {
+        if (i2 + 2 > kk) continue;
+        var y = 446 + i2 * 38, row = b.append("g"); txt(row, 0, y + 22, data[i2][0], { size: 24, weight: 700 });
+        var bb = bar(row, 150, y, bw * data[i2][1] / WALK.n, 28, i2 === 0 ? INK : RED, A(anim, k, i2 + 2), 0); txt(row, 150 + bw * data[i2][1] / WALK.n + 12, y + 23, data[i2][1] + " " + data[i2][2], { size: 24, fill: BODY });
+      }
+    }
+    note(svg, ey, ["", "A graph is nodes joined by edges, each edge with a cost. The cheapest path from A to F costs " + GPATH.cost + ". Weights here are illustrative.", "A grid makes every free cell a node: " + WALK.n + " nodes and " + WALK.e + " edges for this 8 by 6 room. Godot's AStarGrid2D works this way.", "A navigation mesh merges walkable cells into polygons: " + MESH.rects.length + " nodes for the same room. Godot bakes it once.", "Waypoints are placed by hand: " + WPS.length + " points, " + WPE.length + " edges (an edge only where the straight line is clear). Placement is illustrative."][k]);
+  }
+
+  /* ---------- 7. BFS, Dijkstra, open and closed set ---------- */
+  function renderBfsDij(el, k, anim) {
+    var svg = svgFor(el, W, H, "Breadth-first search counts steps; Dijkstra counts cost; both keep an open and a closed set", "The same room searched by breadth-first search, then by Dijkstra, with the cells they expand shaded, then a frozen mid-search view showing the open and closed sets.");
+    var ey = base(svg, [{ id: "bfs", s: 1 }, { id: "dij", s: 2 }, { id: "oc", s: 3 }], k, anim, ["Breadth-first", "fewest steps, ignores mud"], ["Dijkstra", "lowest total cost, mud counted"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), res = kk === 1 ? R_BFS : R_DIJ, g = d.append("g"), half = Math.floor(R_DIJ.n / 2);
+    lab(d, 0, 27, ["", "BREADTH-FIRST SEARCH", "DIJKSTRA", "DIJKSTRA, HALFWAY"][kk]);
+    run(g, 5500, function (t) {
+      g.selectAll("*").remove();
+      var last = kk === 3 ? half : res.n, e = Math.round(t * last), done = e >= res.n && kk < 3, st = stateAt(res, e);
+      drawGrid(g, 0, 40, 64, MAP, st, { path: done ? res.path : null });
+      txt(g, 0, 490, (kk === 3 ? "open " + st.open.length + " · closed " + st.closed.length : "expanded " + Math.min(e, res.n) + " cells") + (done ? " · " + (res.path.length - 1) + " steps, cost " + res.cost : ""), { size: 26, weight: 700, fill: INK });
+      legend(g, 0, 562, [["closed", TINT, INK], ["open", "#FFFFFF", RED, 3], ["mud, cost 8", FAMILIAR]]);
+    }, A(anim, k, kk));
+    note(svg, ey, ["", "Breadth-first spreads one step at a time and stops at the goal. It takes the fewest steps (" + (R_BFS.path.length - 1) + ") but the route crosses mud: cost " + R_BFS.cost + ".", "Dijkstra always expands the open cell with the lowest cost so far. It avoids the mud: cost " + R_DIJ.cost + ", though " + (R_DIJ.path.length - 1) + " steps.", "Open = found but not yet expanded (red outline). Closed = expanded and done (pink). The search ends when the goal is taken from the open set."][k]);
+  }
+
+  /* ---------- 8. A*, f g h ---------- */
+  function renderAstar(el, k, anim) {
+    var svg = svgFor(el, W, H, "A* expands the cell with the lowest f = g + h, so it heads for the goal", "The same room searched by A*, with the f value shown in each open cell and the open list sorted by f; then a frozen frame with g, h and f broken out; then a bar chart of cells expanded by breadth-first search, Dijkstra and A*.");
+    var ey = base(svg, [{ id: "astar", s: 1 }, { id: "fgh", s: 2 }], k, anim, ["Dijkstra", "expands in every direction by cost"], ["A*", "leans toward the goal with h"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), g = d.append("g"), N = R_AST.n, frozen = 4;
+    if (kk <= 2) {
+      lab(d, 0, 27, kk === 1 ? "A*: THE NUMBER IN A CELL IS f" : "ONE MOMENT, BROKEN DOWN");
+      run(g, 6500, function (t) {
+        g.selectAll("*").remove();
+        var e = kk === 2 ? frozen : Math.round(t * N), st = stateAt(R_AST, e), done = e >= N;
+        drawGrid(g, 0, 40, 64, MAP, st, { fmap: fmapAt(R_AST, e), path: done ? R_AST.path : null });
+        lab(g, 540, 62, "OPEN LIST BY f", { size: 24 });
+        var rows = st.open.slice().sort(function (a, b) { return a[4] - b[4] || a[3] - b[3]; });
+        rows.slice(0, 8).forEach(function (a, i) { mono(g, 540, 100 + i * 34, colName(a[0]) + (a[1] + 1) + " " + (kk === 2 ? "g" + a[2] + "+h" + a[3] + "=" + a[4] : "f " + a[4]), { size: 24, weight: i === 0 ? 700 : 400, fill: i === 0 ? RED : INK }); });
+        if (rows.length > 8) txt(g, 540, 100 + 8 * 34, "+ " + (rows.length - 8) + " more", { size: 24, fill: MUTED });
+        txt(g, 0, 490, (done ? "expanded " + N + " cells · cost " + R_AST.cost : "expanded " + e + " of the " + N + " it will need"), { size: 26, weight: 700, fill: INK });
+        if (kk === 2 && st.cur) txt(g, 0, 526, "next: " + colName(st.cur[0]) + (st.cur[1] + 1) + ", g " + st.cur[2] + " + h " + st.cur[3] + " = f " + st.cur[4], { size: 26, weight: 700, fill: RED });
+        legend(g, 0, 562, [["closed", TINT, INK], ["open", "#FFFFFF", RED, 3], ["mud, cost 8", FAMILIAR]]);
+      }, A(anim, k, kk) && kk === 1);
+    } else {
+      lab(d, 0, 27, "CELLS EXPANDED ON THE SAME ROOM");
+      var data = [["Breadth-first", R_BFS, INK], ["Dijkstra", R_DIJ, GREY], ["A*", R_AST, RED]], mx = R_BFS.n, bw = 460;
+      data.forEach(function (r, i) {
+        var y = 80 + i * 150, row = d.append("g");
+        txt(row, 0, y + 20, r[0], { size: 26, weight: 700 });
+        bar(row, 0, y + 40, bw * r[1].n / mx, 44, r[2], A(anim, k, 3), i * 300); txt(row, bw * r[1].n / mx + 14, y + 72, r[1].n + " expanded", { size: 26, weight: 700, fill: r[2] === RED ? RED : INK });
+        txt(row, 0, y + 118, "path cost " + r[1].cost, { size: 24, fill: MUTED });
+      });
+    }
+    note(svg, ey, ["", "A* picks the open cell with the lowest f = g + h. Cells that point toward the goal score lower, so fewer cells are expanded.", "g is the cost paid so far. h is the estimate to the goal (Manhattan distance here). f adds them. The top row of the list is expanded next.", "Same room: breadth-first " + R_BFS.n + ", Dijkstra " + R_DIJ.n + ", A* " + R_AST.n + " cells. A* and Dijkstra both find the cost " + R_AST.cost + " route."][k]);
+  }
+
+  /* ---------- 9. Manhattan, Euclidean, admissible ---------- */
+  function renderHeur(el, k, anim) {
+    var svg = svgFor(el, W, H, "Manhattan and Euclidean distance are two heuristics; admissible ones keep A* optimal", "A staircase of grid moves between two cells, then the straight line between them, then two A* runs on a room with mud: one with an honest estimate and one with the estimate multiplied by four.");
+    var ey = base(svg, [{ id: "manh", s: 1 }, { id: "eucl", s: 2 }, { id: "adm", s: 3 }], k, anim, ["Manhattan", "counted along grid axes: 8"], ["Euclidean", "a straight line: 5.83"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), g = d.append("g");
+    if (kk <= 2) {
+      var A0 = [1, 4], B0 = [6, 1], OPEN = ["........", "........", "........", "........", "........", "........"], cs = 64, cen = function (c, r) { return [(c + 0.5) * cs, 40 + (r + 0.5) * cs]; };
+      lab(d, 0, 27, kk === 1 ? "MANHATTAN: |Δcolumn| + |Δrow|" : "EUCLIDEAN: √(Δcolumn² + Δrow²)");
+      drawGrid(d, 0, 40, cs, OPEN, null, {});
+      var P = cen(A0[0], A0[1]), Q = cen(B0[0], B0[1]), st = [P, cen(B0[0], A0[1]), Q];
+      var gg = d.append("g");
+      run(gg, 3500, function (t) {
+        gg.selectAll("*").remove();
+        if (kk === 2) poly(gg, st, FAMILIAR, 5);
+        if (kk === 1) { var n = 5 + 3, m = Math.round(t * n), pts = [P]; for (var i = 1; i <= Math.min(m, 5); i++) pts.push(cen(A0[0] + i, A0[1])); for (var j = 1; j <= m - 5; j++) pts.push(cen(B0[0], A0[1] - j)); poly(gg, pts, RED, 7); txt(gg, 0, 490, "moves counted: " + m + "  (5 across + 3 up = 8)", { size: 26, weight: 700, fill: INK }); }
+        else { gg.append("path").attr("d", "M" + P + "L" + Q).attr("stroke", RED).attr("stroke-width", 7); txt(gg, 0, 490, "straight line: " + Math.hypot(5, 3).toFixed(2) + "   along the grid: 8", { size: 26, weight: 700, fill: INK }); txt(gg, 0, 526, "never above the true cost of 8 moves", { size: 24, fill: MUTED }); }
+        [P, Q].forEach(function (c, i) { gg.append("circle").attr("cx", c[0]).attr("cy", c[1]).attr("r", 15).attr("fill", i ? INK : RED); txt(gg, c[0], c[1] + 8, i ? "B" : "A", { size: 24, weight: 700, anchor: "middle", fill: "#FFFFFF" }); });
+      }, A(anim, k, kk));
+    } else {
+      lab(d, 0, 27, "SAME ROOM, TWO ESTIMATES");
+      var CS = 44, runs = [[R_H1, "ADMISSIBLE: h × 1", 0], [R_H4, "NOT ADMISSIBLE: h × 4", 392]];
+      runs.forEach(function (r) { lab(d, r[2], 66, r[1], { size: 24, fill: r[2] ? RED : INK }); });
+      var gg2 = d.append("g");
+      run(gg2, 5000, function (t) {
+        gg2.selectAll("*").remove();
+        runs.forEach(function (r) {
+          var res = r[0], e = Math.round(t * res.n), done = e >= res.n;
+          drawGrid(gg2, r[2], 84, CS, M2, stateAt(res, e), { path: done ? res.path : null });
+          txt(gg2, r[2], 396, done ? "cost " + res.cost + " · expanded " + res.n : "expanded " + e, { size: 26, weight: 700, fill: r[2] ? RED : INK });
+        });
+        legend(gg2, 0, 562, [["closed", TINT, INK], ["open", "#FFFFFF", RED, 3], ["mud, cost 8", FAMILIAR]]);
+        txt(gg2, 0, 448, "h × 4 reaches the goal after " + R_H4.n + " expansions instead of " + R_H1.n + ",", { size: 24, fill: BODY });
+        txt(gg2, 0, 482, "but pays " + R_H4.cost + " where the honest estimate pays " + R_H1.cost + ".", { size: 24, fill: BODY });
+      }, A(anim, k, 3));
+    }
+    note(svg, ey, ["", "Manhattan distance counts moves along grid axes: 5 across plus 3 up is 8. On a grid that moves in four directions it is the true cost when nothing is in the way.", "Euclidean distance is the straight line, 5.83. It is never more than Manhattan, so it never overestimates, but on a four-direction grid it is the weaker guide.", "An admissible heuristic never overestimates, and A* then returns the cheapest path. Inflate it and A* hurries into the mud: faster, but not cheapest."][k]);
+  }
+
+  /* ---------- 10. NavigationAgent2D, path smoothing, local avoidance ---------- */
+  var NCS = 70, NOY = 40;
+  var NAVRAW = R_AST.path, NAVSM = smoothPath(MAP, NAVRAW);
+  function cpx(p) { return [(p[0] + 0.5) * NCS, NOY + (p[1] + 0.5) * NCS]; }
+  var AVO = (function () { /* two agents on a head-on course; avoidance pushes sideways from anything within 150 px */
+    function sim(avoid) {
+      var dt = 1 / 30, a = [60, 40], b = [700, 52], out = [], mind = 1e9;
+      for (var f = 0; f < 150; f++) {
+        out.push([a.slice(), b.slice()]); mind = Math.min(mind, Math.hypot(a[0] - b[0], a[1] - b[1]));
+        var va = [130, 0], vb = [-130, 0];
+        if (avoid) { var dx = a[0] - b[0], dy = a[1] - b[1], dd = Math.hypot(dx, dy), R = 170; if (dd < R) { var s = (1 - dd / R) * 240, ux = dx / dd, uy = dy / dd; if (Math.abs(uy) < 0.05) uy = -0.05; va = [va[0] + 0, va[1] + Math.sign(uy) * s]; vb = [vb[0], vb[1] - Math.sign(uy) * s]; } }
+        a = [a[0] + va[0] * dt, a[1] + va[1] * dt]; b = [b[0] + vb[0] * dt, b[1] + vb[1] * dt];
+      }
+      return { fr: out, mind: mind };
+    }
+    return { no: sim(false), yes: sim(true) };
+  })();
+  function renderNav(el, k, anim) {
+    var svg = svgFor(el, W, H, "A NavigationAgent2D follows a path; smoothing straightens it; avoidance steers around others", "An agent following a path of cells to the target with the next path position marked, then the raw cell path beside its smoothed version, then two agents on a head-on course, one pair without avoidance and one with.");
+    var ey = base(svg, [{ id: "navagent", s: 1 }, { id: "smooth", s: 2 }, { id: "local", s: 3 }], k, anim, ["Path smoothing", "same route, fewer corners"], ["Local avoidance", "reacts to what is close, each tick"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk <= 2) {
+      lab(d, 0, 27, kk === 1 ? "THE AGENT ASKS FOR THE NEXT POINT EVERY FRAME" : "RAW PATH AGAINST SMOOTHED PATH");
+      var g = d.append("g"); drawGrid(g, 0, NOY, NCS, MAP, null, {});
+      var raw = NAVRAW.map(cpx), sm = NAVSM.map(cpx), gg = d.append("g");
+      if (kk === 1) {
+        var segL = [0]; for (var i = 1; i < raw.length; i++) segL.push(segL[i - 1] + Math.hypot(raw[i][0] - raw[i - 1][0], raw[i][1] - raw[i - 1][1])); var tot = segL[segL.length - 1];
+        poly(d, raw, FAMILIAR, 5);
+        run(gg, 6500, function (t) {
+          gg.selectAll("*").remove();
+          var s = tot * t, j = 1; while (j < raw.length - 1 && segL[j] < s) j++;
+          var a = raw[j - 1], b = raw[j], f = (s - segL[j - 1]) / Math.max(1, segL[j] - segL[j - 1]), p = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], fin = t >= 0.999, nx = fin ? raw[raw.length - 1] : b;
+          gg.append("circle").attr("cx", nx[0]).attr("cy", nx[1]).attr("r", 13).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+          gg.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 16).attr("fill", INK);
+          var tgp = raw[raw.length - 1];
+          mono(gg, 0, 500, "target_position = (" + tgp[0].toFixed(0) + ", " + (tgp[1] - NOY).toFixed(0) + ")", { size: 24 });
+          mono(gg, 0, 536, "next_path_position = (" + nx[0].toFixed(0) + ", " + (nx[1] - NOY).toFixed(0) + ")", { size: 24, weight: 700, fill: RED });
+          mono(gg, 0, 572, "is_navigation_finished = " + (fin ? "true" : "false"), { size: 24 });
+        }, A(anim, k, 1));
+      } else {
+        poly(d, raw, FAMILIAR, 6, "10 8");
+        var sp = poly(d, sm, RED, 7); if (A(anim, k, 2)) drawIn(sp, 0, 1600);
+        sm.slice(1, sm.length - 1).forEach(function (p) { d.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 8).attr("fill", RED).attr("stroke", "#FFFFFF").attr("stroke-width", 2); });
+        txt(d, 0, 500, "raw path: " + NAVRAW.length + " points, length " + plen(NAVRAW).toFixed(1) + " cells", { size: 26, weight: 700, fill: MUTED });
+        txt(d, 0, 540, "smoothed: " + NAVSM.length + " points, length " + plen(NAVSM).toFixed(1) + " cells", { size: 26, weight: 700, fill: RED });
+      }
+    } else {
+      lab(d, 0, 27, "TWO AGENTS, HEAD ON");
+      var lanes = [[AVO.no, "NO AVOIDANCE", 60], [AVO.yes, "WITH LOCAL AVOIDANCE", 320]], g3 = d.append("g");
+      run(g3, 4500, function (t) {
+        g3.selectAll("*").remove();
+        lanes.forEach(function (ln) {
+          var f = frameOf(t, ln[0].fr.length), fr = ln[0].fr[f], y0 = ln[2];
+          arena(g3, 0, y0, 760, 220);
+          txt(g3, 12, y0 + 34, ln[1], { size: 24, weight: 700, fill: ln[2] > 100 ? RED : INK });
+          poly(g3, ln[0].fr.slice(0, f + 1).map(function (q) { return [q[0][0], y0 + 60 + q[0][1]]; }), GREY, 3); poly(g3, ln[0].fr.slice(0, f + 1).map(function (q) { return [q[1][0], y0 + 60 + q[1][1]]; }), GREY, 3);
+          g3.append("circle").attr("cx", fr[0][0]).attr("cy", y0 + 60 + fr[0][1]).attr("r", 20).attr("fill", INK); g3.append("circle").attr("cx", fr[1][0]).attr("cy", y0 + 60 + fr[1][1]).attr("r", 20).attr("fill", RED);
+          txt(g3, 748, y0 + 206, "closest " + ln[0].mind.toFixed(0) + " px" + (ln[0].mind < 40 ? " (overlap)" : ""), { size: 24, weight: 700, anchor: "end", fill: ln[0].mind < 40 ? RED : INK });
+        });
+        txt(g3, 0, 574, "bodies are 20 px radius: closer than 40 px means they overlap", { size: 24, fill: MUTED });
+      }, A(anim, k, 3));
+    }
+    note(svg, ey, ["", "Set target_position; the server returns a path. Each physics frame the agent asks get_next_path_position() and moves toward it. The agent does not move the body itself.", "A cell path turns at every cell. Smoothing keeps a corner only where the straight line would hit a wall: " + plen(NAVRAW).toFixed(1) + " cells becomes " + plen(NAVSM).toFixed(1) + ".", "Path and smoothing ignore other agents. Local avoidance steers away from anything close each tick: closest pass " + AVO.no.mind.toFixed(0) + " px without it, " + AVO.yes.mind.toFixed(0) + " px with it."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from game AI", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Sight range", "Tests only the distance to the target"], ["Line of sight", "Also tests that nothing blocks the line"]],
+      [["Seek", "Aims at the target, never slows"], ["Arrive", "Aims at the target, then stops"]],
+      [["Dijkstra", "Expands in every direction by cost"], ["A*", "Adds h to lean toward the goal"]],
+      [["Separation", "Steer away from close neighbours"], ["Cohesion", "Steer toward the neighbours' centre"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 500, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(20,0)"), RG = R.append("g").attr("transform", "translate(20,0)");
+      if (i === 0) {
+        [LG, RG].forEach(function (G, j) {
+          var y = 100 + 170 * t, a = [20, 270], w = [120, 240, 120, 300], p = [200, y], inR = Math.hypot(p[0] - a[0], p[1] - a[1]) <= 240, blocked = segHit(a, p, [w[0], w[1]], [w[2], w[3]]);
+          G.append("rect").attr("x", w[0] - 6).attr("y", w[1]).attr("width", 12).attr("height", w[3] - w[1]).attr("fill", INK);
+          if (!j) G.append("circle").attr("cx", a[0]).attr("cy", a[1]).attr("r", 240).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "7 6"); else G.append("path").attr("d", "M" + a + "L" + p).attr("stroke", blocked ? FAMILIAR : RED).attr("stroke-width", 3).attr("stroke-dasharray", blocked ? "5 6" : null);
+          G.append("circle").attr("cx", a[0]).attr("cy", a[1]).attr("r", 14).attr("fill", INK);
+          var on = j ? !blocked && inR : inR; G.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 12).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+          cap(G, 0, 470 - 8, j ? (on ? "line clear: seen" : (inR ? "blocked: not seen" : "too far: not seen")) : (inR ? "in range: seen" : "too far: not seen"), { size: 24, weight: 700, fill: on ? RED : MUTED });
+        });
+      } else if (i === 1) {
+        [LG, RG].forEach(function (G, j) {
+          var pts = [], p = [0, 0], T0 = 270, x = 20, v = 0, dt = 1 / 40, n = Math.round(t * 200);
+          for (var s = 0; s <= n; s++) { var dd = T0 - x, des = j ? 160 * Math.min(1, Math.abs(dd) / 90) * Math.sign(dd) : 160 * Math.sign(dd); if (Math.abs(dd) < 1.5 && j) des = 0; v += Math.max(-300 * dt, Math.min(300 * dt, des - v)); x += v * dt; pts.push([x, 110 + s * 1.6]); }
+          G.append("path").attr("d", "M" + T0 + ",100V440").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "7 6"); txt(G, T0 + 10, 130, "target", { size: 24, fill: RED, weight: 700 });
+          poly(G, pts, INK, 4); var q = pts[pts.length - 1]; G.append("circle").attr("cx", q[0]).attr("cy", q[1]).attr("r", 11).attr("fill", INK);
+          cap(G, 0, 462, j ? "settles on the target" : "swings past it and back", { size: 24, fill: MUTED });
+        });
+      } else if (i === 2) {
+        [[0, R_DIJ, LG], [1, R_AST, RG]].forEach(function (a) { var res = a[1], e = Math.round(t * res.n); drawGrid(a[2], 0, 130, 40, MAP, stateAt(res, e), { path: e >= res.n ? res.path : null }); cap(a[2], 0, 420, e >= res.n ? "expanded " + res.n + " · cost " + res.cost : "expanded " + e, { size: 24, weight: 700, fill: a[0] ? RED : INK }); });
+      } else {
+        var r = rng(41), P = d3.range(6).map(function () { return [60 + r() * 200, 180 + r() * 200]; }), sc = 0.5, mid = [160, 280];
+        [LG, RG].forEach(function (G, j) {
+          var Q = P.map(function (p) { return p.slice(); }), n = Math.round(t * 60);
+          for (var s = 0; s < n; s++) { var cx = d3.mean(Q, function (q) { return q[0]; }), cy = d3.mean(Q, function (q) { return q[1]; }); Q = Q.map(function (q, a) { var fx = 0, fy = 0; if (j) { fx = (cx - q[0]) * 0.02; fy = (cy - q[1]) * 0.02; } else Q.forEach(function (o, b) { if (a === b) return; var dx = q[0] - o[0], dy = q[1] - o[1], dd = Math.hypot(dx, dy) || 1; if (dd < 110) { fx += dx / dd * (110 - dd) * 0.06; fy += dy / dd * (110 - dd) * 0.06; } }); return [q[0] + fx, q[1] + fy]; }); }
+          Q.forEach(function (q) { G.append("circle").attr("cx", q[0]).attr("cy", q[1]).attr("r", 13).attr("fill", j ? RED : INK); });
+          var md = 1e9; Q.forEach(function (a, i1) { Q.forEach(function (b, i2) { if (i2 > i1) md = Math.min(md, Math.hypot(a[0] - b[0], a[1] - b[1])); }); });
+          var cx2 = d3.mean(Q, function (q) { return q[0]; }), cy2 = d3.mean(Q, function (q) { return q[1]; }), mc = d3.mean(Q, function (q) { return Math.hypot(q[0] - cx2, q[1] - cy2); });
+          cap(G, 0, 462, j ? "mean distance to centre " + mc.toFixed(0) + " px" : "closest pair " + md.toFixed(0) + " px", { size: 24, weight: 700, fill: j ? RED : INK });
+        });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3500, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the guard see the player", x: "Seen only if within 340 px, inside a 70° cone, and the line to it hits no wall" },
+    { v: "make it move smoothly to the door", x: "Arrive: slow down inside 200 px of the target, max speed 160 px/s" },
+    { v: "find the shortest way", x: "A* on the grid with a Manhattan heuristic; stop when the goal leaves the open set" },
+    { v: "make the crowd look natural", x: "Separation, alignment and cohesion on every agent, with a fixed random seed" },
+    { v: "make it search after the player hides", x: "Store the last known position, walk there, wait 1 s, then return to patrol" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague AI requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 46, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 340, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      var c1 = visCount(1), c2 = visCount(2), c3 = visCount(3);
+      [["range only", c1.any], ["+ 70° cone", c2.any], ["+ line of sight", c3.any]].forEach(function (r, i) { cap(p, 14, 60 + i * 96, r[0], { size: 24 }); bar(p, 14, 74 + i * 96, 560 * Math.max(r[1], 0.15) / VT.length, 36, i === 2 ? RED : "#C4C4C4", anim, i * 350); cap(p, 14 + 560 * Math.max(r[1], 0.15) / VT.length + 12, 102 + i * 96, r[1] + " of " + VT.length, { size: 24, weight: 700 }); });
+      nt = "each test removes targets: " + c1.any + ", " + c2.any + ", " + c3.any;
+    } else if (k === 2) {
+      var pts = d3.range(0, 301, 10).map(function (dd) { return [14 + (300 - dd) / 300 * 600, 300 - 160 * Math.min(1, dd / 200) / 160 * 220]; });
+      poly(p, pts, RED, 5); cap(p, 14, 40, "speed", { size: 24, fill: MUTED }); cap(p, 626, 330, "distance to target → 0", { size: 24, fill: MUTED, anchor: "end" });
+      cap(p, 14 + 100 / 300 * 600 + 8, 72, "full speed 160 outside 200 px", { size: 24, weight: 700 }); 
+      nt = "speed at 100 px: " + (160 * 100 / 200).toFixed(0) + ", at 20 px: " + (160 * 20 / 200).toFixed(0) + " px/s";
+    } else if (k === 3) {
+      [["Dijkstra", R_DIJ.n, "#C4C4C4"], ["A*, Manhattan", R_AST.n, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 130, r[0], { size: 24 }); bar(p, 14, 90 + i * 130, 560 * r[1] / R_DIJ.n, 40, r[2], anim, i * 400); cap(p, 14 + 560 * r[1] / R_DIJ.n + 12, 122 + i * 130, r[1] + " cells", { size: 24, weight: 700 }); });
+      nt = "same cost " + R_AST.cost + ", " + (R_DIJ.n - R_AST.n) + " fewer cells expanded";
+    } else if (k === 4) {
+      var f0 = flockSim(0, 1, 1, 5, 14, 240, 760, 440), a0 = flockStats(f0[239]), a1 = flockStats(FL.all[239]);
+      [["no separation", a0.mind, "#C4C4C4"], ["with separation", a1.mind, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 130, r[0] + ": closest pair", { size: 24 }); bar(p, 14, 90 + i * 130, 560 * Math.max(r[1], 1) / 50, 40, r[2], anim, i * 400); cap(p, 14 + 560 * Math.max(r[1], 1) / 50 + 12, 122 + i * 130, r[1].toFixed(0) + " px", { size: 24, weight: 700 }); });
+      nt = "closest pair " + a0.mind.toFixed(0) + " px against " + a1.mind.toFixed(0) + " px";
+    } else {
+      var dwalk = Math.hypot(MEM.L[0] - MEM.fr[Math.round(MEM.tLost * 30)].g[0], MEM.L[1] - MEM.fr[Math.round(MEM.tLost * 30)].g[1]), tw = dwalk / 120;
+      cap(p, 14, 70, "walk to the last seen spot: " + dwalk.toFixed(0) + " px at 120 px/s", { size: 24 }); bar(p, 14, 90, 560 * tw / (tw + 2), 40, "#C4C4C4", anim, 0); cap(p, 14, 190, "search, standing still: 1.0 s", { size: 24 }); bar(p, 14, 210, 560 * 1 / (tw + 2), 40, RED, anim, 400);
+      cap(p, 14, 300, "walk " + tw.toFixed(1) + " s, then search 1.0 s", { size: 24, weight: 700 });
+      nt = "arrives " + (MEM.tArr - MEM.tLost).toFixed(1) + " s after losing sight";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Can the agent see it: range, cone and a clear line?",
+    "Is the steering right: seek, arrive, pursue or flee?",
+    "Does it slow down and stop where it should?",
+    "Is the map a grid, a mesh or waypoints, and why?",
+    "Is the search A* with a heuristic that never overestimates?",
+    "Is every random choice seeded, so a test can replay it?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a game AI behaviour", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 70, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it smart”, but “within 340 px, 70° cone, seed 5”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, agent: { steps: 4, render: renderAgent }, vision: { steps: 3, render: renderVision },
+    steer: { steps: 4, render: renderSteer }, pursue: { steps: 2, render: renderPursue }, flock: { steps: 4, render: renderFlock },
+    graph: { steps: 4, render: renderGraph }, bfs: { steps: 3, render: renderBfsDij }, astar: { steps: 3, render: renderAstar },
+    heur: { steps: 3, render: renderHeur }, nav: { steps: 3, render: renderNav },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

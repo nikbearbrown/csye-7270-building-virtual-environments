@@ -1,0 +1,66 @@
+{
+  "id": 5,
+  "slug": "phong-the-moving-highlight",
+  "title": "Phong: The Moving Highlight",
+  "objective": "Explain why a specular highlight depends on view direction and exponent.",
+  "wrong": "the highlight is painted on",
+  "right": "the highlight is computed from directions",
+  "terms": {
+    "Specular": "A view-dependent reflection highlight",
+    "Reflection": "Mirroring a direction around the surface normal",
+    "Exponent": "The control for highlight concentration"
+  },
+  "exercise": "Compare specular powers of eight and one hundred while keeping the light fixed. Then move the camera. Explain the highlight's width and why it is not attached like painted texture.",
+  "checks": [
+    "Higher power produces a tighter highlight.",
+    "Camera movement changes the highlight position."
+  ],
+  "recap": [
+    "Reflect the view direction about the normal.",
+    "Compare that reflected direction with the light.",
+    "The exponent controls the highlight's width.",
+    "This Phong model is an artistic lighting approximation."
+  ],
+  "beats": [
+    [
+      "A View-Dependent Spot",
+      "normalize(eye_vector)",
+      "A painted white spot stays attached to the object. A reflection highlight depends on where the viewer stands. This shader introduces the eye vector alongside the surface normal and light direction."
+    ],
+    [
+      "Mirror The Direction",
+      "-reflect(e, n)",
+      "The eye vector points away from the surface. The shader negates its reflected value to obtain the outward mirror direction. The sign matters because reflect expects an incident direction."
+    ],
+    [
+      "Compare With Light",
+      "dot(r, l)",
+      "The mirrored direction is compared with the direction toward the light. Alignment produces a value near one. Misalignment reduces it. Clamp prevents negative values from entering the power."
+    ],
+    [
+      "Control The Width",
+      "specular_power",
+      "Raise that alignment to a positive power. A larger exponent suppresses everything except close alignment. Watch the highlight tighten as the power increases from eight toward one hundred."
+    ],
+    [
+      "Color The Highlight",
+      "specular_color",
+      "The highlight has its own color control. Its contribution is added after the diffuse term. That is why changing the base color does not simply repaint every highlight by the same factor."
+    ],
+    [
+      "Keep Terms Separate",
+      "ALBEDO =",
+      "The final line combines diffuse lighting, ambient, the rim, and this highlight. Reading those terms separately lets you identify which control changes a broad shading gradient and which changes the bright spot."
+    ],
+    [
+      "No Scene Query",
+      "uniform vec3 light_direction",
+      "This is a manually specified directional light. The shader does not trace a ray to a lamp or ask whether another object blocks it. A highlight is not proof of a traced reflection."
+    ],
+    [
+      "Know What It Teaches",
+      "vec3 specular",
+      "Phong gives a compact model for a shiny lobe. The exponent is an artistic concentration control, not a physical roughness measurement. The key mechanism is the relationship among light, normal, and viewer."
+    ]
+  ]
+}

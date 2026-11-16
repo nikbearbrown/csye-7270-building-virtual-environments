@@ -1,0 +1,131 @@
+**Godot’s scenes define how a game is organized; collision shapes define where objects interact; physics bodies define how those objects move and respond.** Understanding these together makes it much easier to build characters, environments, pickups, and moving platforms.
+
+This research uses Godot’s official stable documentation and Godot 4 terminology, with 2D examples and notes for 3D.
+
+**Scenes: reusable game objects**
+
+A **node** provides a particular capability, such as displaying an image, playing audio, or handling movement. A **scene** combines nodes under one root node into a reusable object.
+
+A scene can represent a player, enemy, door, menu, or entire level. This means “scene” in Godot is broader than a location or screen. A level can contain instances of many other scenes. Each saved scene has one root, and a project specifies a main scene to load when the game starts. [Godot Engine (stable) documentation in English](https://docs.godotengine.org/en/stable/getting_started/step_by_step/nodes_and_scenes.html?utm_source=chatgpt.com)
+
+For example, a player scene could contain:
+
+| Node | Responsibility |
+|---|---|
+| `CharacterBody2D` as root | Character movement and collision response |
+| `Sprite2D` as child | Visible artwork |
+| `CollisionShape2D` as child | Physical boundary |
+| `Camera2D` as child | Camera that follows the character |
+
+Instancing lets you reuse a scene repeatedly. Ten enemies can share one enemy scene definition while having different positions and instance-specific property overrides. Changes to the source scene propagate to its instances, subject to those overrides. [Godot Engine (4.7) documentation in English](https://docs.godotengine.org/en/4.7/getting_started/introduction/key_concepts_overview.html?utm_source=chatgpt.com)
+
+My practical recommendation: create separate scenes for objects that have their own behavior or need reuse. Keep a player’s movement, visuals, and collision setup together.
+
+**Collision: boundaries, detection, and filtering**
+
+A sprite or mesh supplies appearance. A collision shape supplies the geometry used for physical interaction. Add a `CollisionShape2D` or `CollisionShape3D` to the appropriate body or area, then assign a shape resource.
+
+Collision layers and masks control which objects interact:
+
+- **Layer:** which categories an object belongs to.
+- **Mask:** which categories it checks for.
+
+Name layers by purpose, such as World, Player, Enemies, and Pickups. Resize the shape resource rather than scaling the collision node. [Godot Docs](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html?utm_source=chatgpt.com)
+
+For an illustrative pickup setup:
+
+| Object | Layer membership | Mask checks |
+|---|---|---|
+| Player body | Player | World |
+| Ground body | World | Player |
+| Coin area | Pickups | Player |
+
+The coin detects the player because its mask includes the Player layer. The player does not need to scan Pickups for the coin’s own detection to work. An area’s `monitoring` must be enabled; use `body_entered` for bodies and `area_entered` for other areas. [Godot Engine (stable) documentation in English](https://docs.godotengine.org/en/stable/classes/class_area2d.html?utm_source=chatgpt.com)
+
+**Choosing the correct physics node**
+
+| Intended behavior | 2D node | 3D equivalent | Typical use |
+|---|---|---|---|
+| Stationary solid obstacle | `StaticBody2D` | `StaticBody3D` | Ground, walls |
+| Movement controlled by gameplay code | `CharacterBody2D` | `CharacterBody3D` | Player, controlled enemy |
+| Movement calculated by physics | `RigidBody2D` | `RigidBody3D` | Falling crate, rolling ball |
+| Solid object moved along a prescribed path | `AnimatableBody2D` | `AnimatableBody3D` | Moving platform, elevator |
+| Overlap detection without solid blocking | `Area2D` | `Area3D` | Pickup, damage zone, sensor |
+
+Static bodies stay unaffected by impacts. Rigid bodies respond to simulated forces. Character bodies provide movement and collision helpers while leaving gameplay movement under your control. [Godot Docs](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html?utm_source=chatgpt.com)
+
+`AnimatableBody2D` estimates velocity from its movement so it can affect bodies in its path. `Area2D` detects overlaps and can also override local gravity or damping. [Godot Engine (stable) documentation in English](https://docs.godotengine.org/en/stable/classes/class_animatablebody2d.html?utm_source=chatgpt.com)
+
+**Physics timing and character movement**
+
+Godot separates rendered frames from physics ticks. `_process(delta)` follows rendered frames; `_physics_process(delta)` runs at the physics rate, which defaults to 60 ticks per second. Put collision-based movement in `_physics_process()`. [Godot Docs](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html?utm_source=chatgpt.com)
+
+Two movement methods serve different purposes:
+
+| Method | Input | Behavior |
+|---|---|---|
+| `move_and_slide()` | Uses the character’s `velocity` property | Handles sliding along surfaces |
+| `move_and_collide(motion)` | Takes a displacement, commonly `velocity * delta` | Stops at a collision and returns information for your response |
+
+Use sliding for conventional character movement. Use collision information directly when you want custom responses such as bouncing or stopping a projectile. [Godot Docs](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html?utm_source=chatgpt.com)
+
+Here is an illustrative Godot 4 platformer script. Attach it to a `CharacterBody2D`, add a visual and collision shape, and create `move_left`, `move_right`, and `jump` actions in the Input Map.
+
+```gdscript
+extends CharacterBody2D
+
+@export var speed: float = 250.0
+@export var jump_speed: float = 420.0
+@export var gravity: float = 980.0
+
+func _physics_process(delta: float) -> void:
+    if not is_on_floor():
+        velocity.y += gravity * delta
+
+    velocity.x = Input.get_axis(
+        "move_left", "move_right"
+    ) * speed
+
+    if Input.is_action_just_pressed("jump") and is_on_floor():
+        velocity.y = -jump_speed
+
+    move_and_slide()
+```
+
+`velocity` is measured in pixels per second. Multiply acceleration by `delta` when updating velocity, but do **not** multiply that velocity by `delta` for `move_and_slide()`: the method accounts for the timestep internally. `is_on_floor()` reflects the result of the most recent movement call. [Godot Engine (stable) documentation in English](https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html?utm_source=chatgpt.com)
+
+**Rigid bodies and realistic motion**
+
+For a falling crate or bouncing ball, let a `RigidBody` control movement:
+
+- Apply a **force** for an ongoing push.
+- Apply an **impulse** for a single impact.
+- Use physics materials to adjust friction and bounce.
+- Use `_integrate_forces()` when you need direct control over the simulated state.
+
+Repeatedly assigning a rigid body’s transform can conflict with the simulation. Also, physical contact and contact reporting are separate: in `RigidBody2D`, contact signals require `contact_monitor` and a sufficiently large `max_contacts_reported`. [Godot Engine (stable) documentation in English](https://docs.godotengine.org/en/stable/classes/class_rigidbody2d.html?utm_source=chatgpt.com)
+
+**Collision geometry in 3D**
+
+Choose collision geometry for behavior and performance:
+
+| Geometry | Appropriate use |
+|---|---|
+| Box, sphere, capsule | Simple objects and character bodies |
+| Convex hull | More detailed movable objects |
+| Multiple convex shapes | Movable objects with complex outlines |
+| Concave triangle mesh | Detailed static environments |
+
+A complex visual model usually does not need an equally complex collider. Godot’s documentation recommends primitive shapes where practical; concave shapes are slower and intended for static collision. Collision-shape nodes must be direct children of the physics body. [Godot Engine (stable) documentation in English](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html?utm_source=chatgpt.com)
+
+**A useful first exercise**
+
+Build a small test level containing a player, floor, falling crate, moving platform, and collectible. Check these outcomes:
+
+1. The player lands and slides against walls.
+2. The crate falls and responds to contact.
+3. The platform carries the player.
+4. The collectible detects entry without blocking movement.
+5. Changing the collectible’s mask prevents detection as expected.
+
+For deeper study, start with Godot’s [Nodes and Scenes](https://docs.godotengine.org/en/stable/getting_started/step_by_step/nodes_and_scenes.html), [Physics Introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html), and [Using CharacterBody2D/3D](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html).

@@ -1,0 +1,168 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://shaders/06-shore-foam.gdshader" id="1_s3811"]
+[ext_resource type="Script" path="res://scripts/water_driver.gd" id="2_p1n2c"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ewrsg"]
+sky_top_color = Color(0.7490196, 0.8156863, 0.8627451, 1)
+sky_horizon_color = Color(0.8509804, 0.8352941, 0.7921569, 1)
+sky_curve = 0.25
+ground_bottom_color = Color(0.8509804, 0.8352941, 0.7921569, 1)
+ground_horizon_color = Color(0.8509804, 0.8352941, 0.7921569, 1)
+sun_angle_max = 0.0
+
+[sub_resource type="Sky" id="Sky_fiwy5"]
+sky_material = SubResource("ProceduralSkyMaterial_ewrsg")
+
+[sub_resource type="Environment" id="Environment_xgdjl"]
+background_mode = 2
+sky = SubResource("Sky_fiwy5")
+ambient_light_source = 3
+ambient_light_energy = 0.55
+reflected_light_source = 2
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_5exq1"]
+seed = 1
+frequency = 0.006
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4pb3l"]
+noise = SubResource("FastNoiseLite_5exq1")
+seamless = true
+as_normal_map = true
+bump_strength = 6.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_htah3"]
+seed = 2
+frequency = 0.009
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_a35vf"]
+noise = SubResource("FastNoiseLite_htah3")
+seamless = true
+as_normal_map = true
+bump_strength = 6.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b6428"]
+render_priority = 0
+shader = ExtResource("1_s3811")
+shader_parameter/water_color = Color(0.1, 0.45, 0.7, 1)
+shader_parameter/roughness = 0.15
+shader_parameter/opacity = 0.7
+shader_parameter/foam_color = Color(0.92, 0.97, 1, 1)
+shader_parameter/foam_roughness = 0.9
+shader_parameter/cell_density = 10.0
+shader_parameter/cell_speed = 0.8
+shader_parameter/edge_width = 0.1
+shader_parameter/normal_a = SubResource("NoiseTexture2D_4pb3l")
+shader_parameter/normal_b = SubResource("NoiseTexture2D_a35vf")
+shader_parameter/ripple_scale = 3.0
+shader_parameter/ripple_speed = 0.03
+shader_parameter/ripple_strength = 0.8
+shader_parameter/warp_strength = 0.15
+shader_parameter/wave_height = 0.12
+shader_parameter/wave_length = 3.0
+shader_parameter/wave_speed = 0.8
+shader_parameter/wave_clock = 0.0
+shader_parameter/shore_width = 0.5
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_qhskj"]
+size = Vector2(8, 8)
+subdivide_width = 127
+subdivide_depth = 127
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4bf1b"]
+albedo_color = Color(0.72156864, 0.6156863, 0.43137255, 1)
+roughness = 0.85
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_feeo5"]
+size = Vector2(4.8, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uvc0e"]
+albedo_color = Color(0.72156864, 0.6156863, 0.43137255, 1)
+roughness = 0.85
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_dtvsg"]
+size = Vector2(3.5341196, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mmdeg"]
+albedo_color = Color(0.5568628, 0.5294118, 0.48235294, 1)
+roughness = 0.95
+
+[sub_resource type="SphereMesh" id="SphereMesh_ywl3n"]
+radius = 0.55
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5xfte"]
+albedo_color = Color(0.5568628, 0.5294118, 0.48235294, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="BoxMesh_hfgk7"]
+size = Vector3(0.9, 0.7, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8rac5"]
+albedo_color = Color(0.37254903, 0.6392157, 0.5686275, 1)
+roughness = 0.55
+
+[sub_resource type="SphereMesh" id="SphereMesh_55myt"]
+radius = 0.3
+height = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x08qg"]
+albedo_color = Color(0.95686275, 0.9372549, 0.8901961, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_xckav"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[node name="Cove" type="Node3D" unique_id=1737856422]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1362395818]
+environment = SubResource("Environment_xgdjl")
+
+[node name="Lamp" type="DirectionalLight3D" parent="." unique_id=1184266986]
+transform = Transform3D(-0.9396926, 0.21056864, -0.26951557, 0, 0.7880108, 0.6156615, 0.34202015, 0.5785326, -0.74048793, 0, 0, 0)
+
+[node name="Water" type="MeshInstance3D" parent="." unique_id=864565527]
+material_override = SubResource("ShaderMaterial_b6428")
+mesh = SubResource("PlaneMesh_qhskj")
+
+[node name="SeaFloor" type="MeshInstance3D" parent="." unique_id=125148512]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, -0.9, 0)
+material_override = SubResource("StandardMaterial3D_4bf1b")
+mesh = SubResource("PlaneMesh_feeo5")
+
+[node name="Beach" type="MeshInstance3D" parent="." unique_id=1969216350]
+transform = Transform3D(0.9054589, -0.4244339, 0, 0.4244339, 0.9054589, 0, 0, 0, 1, 2.4, -0.15, 0)
+material_override = SubResource("StandardMaterial3D_uvc0e")
+mesh = SubResource("PlaneMesh_dtvsg")
+
+[node name="Rock1" type="MeshInstance3D" parent="." unique_id=2119318345]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 0.9, 1, -0.25, -1.4)
+material_override = SubResource("StandardMaterial3D_mmdeg")
+mesh = SubResource("SphereMesh_ywl3n")
+
+[node name="Rock2" type="MeshInstance3D" parent="." unique_id=223181766]
+transform = Transform3D(0.88294756, 0, 0.46947157, 0, 1, 0, -0.46947157, 0, 0.88294756, -0.1, -0.55, 1.9)
+material_override = SubResource("StandardMaterial3D_5xfte")
+mesh = SubResource("BoxMesh_hfgk7")
+
+[node name="Buoy" type="MeshInstance3D" parent="." unique_id=2068381700]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 0.6)
+material_override = SubResource("StandardMaterial3D_8rac5")
+mesh = SubResource("SphereMesh_55myt")
+
+[node name="Crate" type="MeshInstance3D" parent="." unique_id=732559580]
+transform = Transform3D(0.9396926, 0, 0.34202012, 0, 1, 0, -0.34202012, 0, 0.9396926, -0.2, 0, -0.6)
+material_override = SubResource("StandardMaterial3D_x08qg")
+mesh = SubResource("BoxMesh_xckav")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=424772802]
+transform = Transform3D(0.99965394, 0.015139324, -0.021513773, 0, 0.81780636, 0.57549345, 0.026306683, -0.5752943, 0.81752336, 0, 5, 7.6)
+current = true
+fov = 38.0
+
+[node name="WaterDriver" type="Node" parent="." unique_id=410674208 node_paths=PackedStringArray("water", "floaters")]
+script = ExtResource("2_p1n2c")
+water = NodePath("../Water")
+floaters = [NodePath("../Buoy"), NodePath("../Crate")]

@@ -1,0 +1,484 @@
+{
+ "deck": "13",
+ "opening_summary": "Thirty terms for checking a shader change, from the evidence ladder and controlled inputs to golden images, tolerances and test oracles. The exact term lets you say what a check proves, and what it leaves for a person to see.",
+ "opening_description": "30 terms for proving a shader change is right.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. A newcomer sees a clean compile and says the shader is right. That claims too much. A clean compile proves one thing, that the shader parses, the bottom rung of the evidence ladder. What the screen shows sits on a higher rung. This film goes through the terms, each one shown, so you can say exactly what a check proves.",
+  "text": "It compiles, so\nthe shader is right.",
+  "triggerWords": "the shader is right",
+  "replacementWords": "it passed rung one only"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty terms in four groups, all about proving a shader change works. The first group is where a claim stands. Evidence ladder, claim versus evidence, observed versus inferred, compile error, headless mode and software renderer. What a check can and cannot show.",
+   "figures": [
+    "30 terms",
+    "four groups"
+   ]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is inputs you fix. Controlled input, exposing input, bench scene, test fixture, pinned clock, random seed and frame counter. These terms make a run repeat, and make a bug show itself.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is reading the output. Golden image, pixel diff, tolerance, per-platform reference, false positive, false negative, the source color hint, flat normal texel and premultiplied alpha. These terms compare pixels and values.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is checks on the checker. CPU model, test oracle, specification oracle, assertion, mutation check, test the test, uniform value check and scope violation. These terms ask whether the test itself deserves your trust.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "A ladder of five rungs for a shader change. The Evidence ladder ranks kinds of proof, each rung proving something the rung below cannot. Parse, contract, driver and model can all be checked headless, with no window. Only the top rung, observation, needs a person at a screen. For example, an agent says the hit flash on your player sprite works. If it only loaded the shader without an error, that claim stands on the bottom rung.",
+   "figures": [
+    "Five rungs",
+    "Four rungs run headless"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "Claim versus evidence separates what someone says works from a check that shows it. Saying it compiles is a claim. Zero SHADER ERROR lines in the log is the evidence, and it proves rung one, parse, and nothing about rungs two to five. For example, a coding agent reports that the water shader in your level compiles. The evidence is the log of your own run, searched for SHADER ERROR, with a count of zero.",
+   "figures": [
+    "0 SHADER ERROR lines",
+    "rungs 2 to 5"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "Observed versus inferred is the gap between what happened in a run you can show, and what you guessed from it. Rungs one to four, now dark, were run and printed, so they are observed. Rung five, in red, was inferred from Godot's documentation of the incoming colour. Nobody saw the pixels. For example, if you say the enemy turns red when hit because the shader code says so, that is inferred until you watch it happen.",
+   "figures": [
+    "Rungs 1 to 4",
+    "Rung 5"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 4,
+   "narration": "A Compile error means the shader fails to build and prints an error. Here one semicolon was removed. The log printed SHADER ERROR, expected a semicolon. Yet one test exited with code zero, eleven checks passing, and another passed twenty-five of twenty-five. The suite stayed green, and only the log showed the error. For example, after an agent edits the shader on your coin sprite, search the log for SHADER ERROR, because green tests do not mean it built.",
+   "figures": [
+    "exit 0, 11 checks pass",
+    "25 of 25 pass"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "Two panels, what a windowless run can print, and what only the GPU, the graphics processor, draws. Headless mode is a run with no window, so no pixels are drawn. It still prints values and logic, such as the flash amount on every frame and seven bench checks. It cannot show the body or eye colour, or whether it looks right. For example, a headless test can confirm your player's flash value rises at a hit, but not that the sprite visibly flashed.",
+   "figures": [
+    "7 checks"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "A Software renderer draws on the CPU, the main processor, so its output is the same on any machine. In this simulated run, one shader is drawn four times. The two software renders match exactly. The two GPU renders differ, by one hundred seventy-one and one hundred seventy-seven pixels, in the last digit. Headless mode checks values, and a software renderer gives pixels that repeat. For example, a title screen drawn by a software renderer on two different laptops would match pixel for pixel.",
+   "figures": [
+    "171 px differ",
+    "177 px differ"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "A chart of output over black as alpha, the opacity, changes. The dark line is right, and the red curve applies alpha twice. A Controlled input fixes every input except the one value under test, so the run can be repeated. Here everything is fixed, and only alpha changes, one value at a time. For example, to test the fade on a ghost enemy, fix its colour, the background and the time, and step only its opacity.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "An Exposing input is the value where the right and wrong answers are far apart, so the bug cannot hide. At alpha zero or one, both lines give the same pixel. At one half the gap is largest, zero point two five, found by searching one hundred one inputs. For example, test a shader that must keep a character's own colours on Clawd, the player in one Walker game, with a terracotta body and black eyes. A shader that ignores them cannot show both.",
+   "figures": [
+    "alpha 0 or 1",
+    "0.50",
+    "gap 0.25",
+    "searched 101 inputs"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "A Bench scene is a scene made only to be looked at, with its inputs fixed. Here three copies of Clawd hold flash amounts of zero, one half and one, with the colours the model predicts printed below. A person takes a screenshot, samples pixels with a colour picker, and compares. For example, to judge a new outline shader on your coins, build a scene of three coins at fixed settings, open it in the editor, and look.",
+   "figures": [
+    "flash_amount 0.0",
+    "flash_amount 0.5",
+    "flash_amount 1.0"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 4,
+   "narration": "A Test fixture is the fixed setup a test starts from. This one fixes three copies at zero, one half and one, the background colour, and no timers and no input. Seven headless checks pass, and none looks at a pixel. The bench is for a person, the fixture is for a test. For example, a jump test that always starts the player on the same platform, at the same spot, with the same gravity, starts from a test fixture.",
+   "figures": [
+    "0.0, 0.5, 1.0",
+    "7 headless checks pass"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "Bars show how long thirty-three frames took. A Pinned clock is a fixed frame rate, so every frame is the same length of game time. In this simulated run, three free runs take between zero point two three and zero point two six seconds, each a little different. Pinned at sixty frames per second, all three take zero point five five seconds. For example, the Walker Pong test gives the same numbers every time only when its frame rate is pinned at sixty.",
+   "figures": [
+    "33 frames",
+    "0.23 s",
+    "0.26 s",
+    "--fixed-fps 60",
+    "0.55 s"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "A Random seed is a fixed starting number, so random results repeat. Here twelve random values are drawn in each run. Seed seven three seven five gives the same sequence twice, and a different seed gives a different one. The pinned clock fixes time, and the seed fixes chance. For example, the Walker Pong test seeds its random number generator with seven three seven five before the game starts, so its random choices come out the same in every run.",
+   "figures": [
+    "TWELVE RANDOM VALUES PER RUN",
+    "seed 7375"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 3,
+   "narration": "A Frame counter is a fade that counts frames, not seconds of game time. Here the flash is one minus the frame number divided by thirty-three. At exactly sixty frames per second the red dots sit on the spec line and reach zero at zero point five five seconds. But thirty-three frames last one point one seconds at thirty, and zero point two three at one hundred forty-four. For example, a power-up glow that counts frames ends sooner on a faster screen.",
+   "figures": [
+    "1 − n / 33",
+    "33 frames last 1.10 s at 30 fps",
+    "0.55 s at 60",
+    "0.23 s at 144"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 4,
+   "narration": "An Assertion is a statement a test requires to be true, or the test fails. Here it says the flash stays within one frame of the spec line. At sixty frames per second the gap is zero, and it passes. At thirty the gap is zero point four eight five, and at one hundred forty-four zero point five eight three. Both fail. For example, a test line that requires the player to be standing on the floor after a landing is an assertion.",
+   "figures": [
+    "60 fps",
+    "max gap 0.000",
+    "30 fps",
+    "max gap 0.485",
+    "144 fps",
+    "max gap 0.583"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "A decode curve, one stored value, two readings. The source color hint, written source, underscore, color, tells Godot a texture holds colour, so it decodes it from sRGB, the standard colour encoding. A stored one twenty-eight of two fifty-five then comes out as zero point two one six, where plain data gives zero point five zero two. Its look-alike, hint normal, keeps data as stored. For example, the colour texture of a crate exported from Blender gets source color, and its normal map does not.",
+   "figures": [
+    "stored 128 of 255",
+    "as colour: 0.216",
+    "as data: 0.502"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "A Flat normal texel is the pixel one twenty-eight, one twenty-eight, two fifty-five in a normal map, a surface facing straight out. Read linearly, as data, the left surface stays flat, lit at one. Decoded as sRGB by mistake, the right one tilts thirty-eight point eight degrees and is lit at only zero point seven seven nine. For example, a flat patch in the normal map of a stone floor is a quick check that the floor lights evenly in Godot.",
+   "figures": [
+    "(128, 128, 255)",
+    "lit at 1.000",
+    "tilt 38.8°",
+    "lit at 0.779"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "Premultiplied alpha means a colour already multiplied by its alpha. Here white at half opacity sits over black. Blended once with blend mix, the result is zero point five. If the colour was premultiplied and blend mix applies alpha again, the result is zero point two five, half as bright. Godot's premultiplied blend mode expects it. For example, if an agent multiplies a ghost sprite's colour by its alpha in the shader, that sprite needs the premultiplied blend mode.",
+   "figures": [
+    "ALPHA 0.5",
+    "result 0.50",
+    "result 0.25"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "A small grey image, saved, beside an empty box for the next render. A Golden image, also called a reference image, is a saved correct picture that new renders are compared with. It is saved once, after a person has checked it. For example, once you approve how the main menu of your game looks, you save a screenshot of it as the golden image, and the menu of every later build is compared against that file.",
+   "figures": []
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "A Pixel diff counts the pixels where two images differ. In this simulated run the new render has a small defect at the lower left. At a tolerance of zero any difference counts, so the diff map flags two hundred nine of two hundred fifty-six pixels, mostly harmless noise, and all nine real defect pixels among them. For example, after a change to the water shader in a level, a pixel diff against the saved screenshot shows which pixels moved.",
+   "figures": [
+    "tolerance 0",
+    "209 of 256",
+    "9 real-defect pixels"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 3,
+   "narration": "A Tolerance is the allowed gap between expected and actual. Here it is set to two, out of two hundred fifty-five per pixel. Now the noise passes, and nine pixels are over, exactly the three by three defect. Too low, and noise is flagged. Too high, and the defect hides. For example, a test of where the player lands after a jump can allow a small gap, so a rounding difference passes and a fall through the floor still fails.",
+   "figures": [
+    "tolerance 2",
+    "9 of 256",
+    "3 × 3"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 4,
+   "narration": "Bars count pixels that differ from the first platform's golden image. A Per-platform reference is a separate reference image for each platform, because one shader comes out slightly different on each. Against the first platform's image, the second differs by one hundred sixty-one pixels and the third by one hundred eighty-four. Against its own reference, each differs by zero. For example, if you ship your game for desktop and for the Web, keep one saved title screen for each.",
+   "figures": [
+    "161 px",
+    "184 px",
+    "0 px vs its own reference"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "Dots show the largest pixel difference of thirty good renders and thirty bad ones, in this simulated run. A False positive, also called a false pass, is a check that passes though the thing is wrong. With a loose tolerance of fourteen, every bad render slips under the line, thirty of thirty. The check is wrong, and green. For example, a screenshot test of a campfire effect with a tolerance so wide that a missing flame still passes gives a false positive.",
+   "figures": [
+    "30 GOOD, 30 BAD",
+    "tolerance 14",
+    "false passes: 30 of 30"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "A False negative, also called a false fail, is a check that fails though the thing is right. Tighten the tolerance to one. Now no bad render passes, but twenty-eight of the thirty good renders fail. The check is wrong, and red. For example, a menu screenshot test with no tolerance at all, that fails on a friend's graphics card although the menu looks right, is a false negative.",
+   "figures": [
+    "tolerance 1",
+    "false passes: 0 of 30",
+    "false fails: 28 of 30"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 3,
+   "narration": "Now the line sweeps across. As the tolerance rises, false passes rise and false fails fall. The best setting here is five. Two bad renders pass and eight good renders fail, ten wrong out of sixty. Both mistakes can be zero only if the good and bad groups do not overlap. For example, to choose the tolerance for a screenshot test of a level, run it on good and broken versions, and keep the value that gets the fewest wrong.",
+   "figures": [
+    "tolerance 5",
+    "2 of 30",
+    "8 of 30",
+    "10 wrong of 60"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "A table of colours for a body and eyes. A CPU model is the spec written as arithmetic that runs headless, on the processor, with no screen. For Clawd's flash, the spec mixes the drawn colour toward the flash colour by the flash amount, giving the colour at zero, one half and one. It says what the GPU should draw, never what it did. For example, a few lines that compute an enemy's expected damage tint at a few tint values are a CPU model.",
+   "figures": [
+    "amount 0.0",
+    "amount 0.5",
+    "amount 1.0"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "A Test oracle is the source of the right answer a test compares against. The test asks whether its output equals the oracle. The oracle can come from the spec, one minus the time divided by zero point five five, or from the code, the retry countdown divided by zero point five five. Only the first survives a rewrite of the code. For example, a test of the score after collecting coins compares against an oracle, the scoring rule in the game design document.",
+   "figures": [
+    "1 − t / 0.55",
+    "retry_remaining / 0.55"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "A Specification oracle is an oracle taken from the written spec, not from the code. Three versions of the fade face two oracles. The code-copy oracle passes the original but fails the second version, which is correct and keeps its own clock. The spec oracle, at thirty frames per second, passes the first two and fails only the frame counter. For example, a jump test that checks the height written in your design document, not one copied from the player script, uses a specification oracle.",
+   "figures": [
+    "spec at 30 fps"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "A grid of broken shaders against three test inputs. A Mutation check breaks the code on purpose, and the test must then fail. If it still passes, it cannot see that break. Here the mix inputs are swapped, so the test at amount zero fails. At all three amounts, three of three mutants are caught. At one half only, the swap survives. For example, flip the sign of gravity in a copy of the player script, and check that your jump test goes red.",
+   "figures": [
+    "amount 0.0",
+    "3 of 3",
+    "amount 0.5 only"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "Test the test means a new check must pass on known-good code and fail on known-bad code, or it proves nothing. The first timing oracle failed good code at one hundred forty-four frames per second, the red box at the top, so the test was wrong. The second passes good code everywhere. The lower red box is bad code passing at sixty. For example, run a score test on a build you know works, and on one without scoring, where it must fail.",
+   "figures": [
+    "Oracle v1 failed good code at 144 fps",
+    "60 fps"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 3,
+   "narration": "A Uniform value check takes a shader input, called a uniform, and compares its value with the spec. Four checks run on the original and two broken shaders. Set then get passes them all, even the one missing a semicolon, because a value comes back whether or not the shader parsed. A wrong default of one half is caught only by checking the default. For example, confirm that the outline width uniform on your enemy shader starts at the value your design notes give.",
+   "figures": [
+    "default 0.5"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 4,
+   "narration": "A diff of seven changed files. A Scope violation is changing something the brief said not to touch. This brief said, do not edit the shader, the player script or the existing tests. Two files outside it changed, eight lines in all, so check git diff against the brief. The file list is illustrative. For example, the brief for a pause menu rules out enemy scripts, and the agent edits the patrol script. Even if the game still works, that edit is a scope violation.",
+   "figures": [
+    "7 FILES CHANGED",
+    "2 files, 8 changed lines"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "Look-alike pairs, side by side. A Claim is a statement, it compiles. Evidence is output you can read for yourself, a log with zero SHADER ERROR lines. Ask for the evidence, then say which rung it proves.",
+   "figures": [
+    "SHADER ERROR: 0"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "A False pass is a check that passes while the thing is wrong, a bad render with a difference of four, under the line. A False fail is a check that fails while the thing is right, a good render with a difference of nine, over it.",
+   "figures": [
+    "difference 4",
+    "difference 9"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "Frame count is thirty-three frames at any rate, so the seconds change, one point one, zero point five five and zero point two three. Game time is zero point five five seconds at every rate. A fade should follow game time.",
+   "figures": [
+    "33 frames",
+    "1.10, 0.55, 0.23",
+    "0.55 at every rate"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 4,
+   "narration": "The source color hint decodes a texture as colour, so a stored one twenty-eight becomes zero point two one six. Hint normal keeps it as data, zero point five zero two. Colour textures get the first, and normal maps the second.",
+   "figures": [
+    "stored 128",
+    "0.216",
+    "0.502"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "A vague request, and under it the exact instruction. Check the shader looks right becomes, sample body and eye pixels on the bench at zero, one half and one, each within one step of the model. In this illustrative sample, all three rows are okay.",
+   "figures": [
+    "0.0, 0.5, 1.0",
+    "within 1 of the model"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "Make sure the fade is the right length becomes, run the spec check pinned at thirty, sixty and one hundred forty-four frames per second, with the error within a frame plus a physics tick. Good code stays under every red tolerance line.",
+   "figures": [
+    "30, 60 and",
+    "144"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Check the test is any good becomes, run it on known-good code, which must pass, and known-bad code, which must fail. At one hundred forty-four frames per second, good code is off by zero point zero three seven, bad code by zero point five six nine.",
+   "figures": [
+    "144 fps",
+    "0.037",
+    "0.569"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 4,
+   "narration": "Ignore tiny differences becomes, count pixels over a tolerance of two out of two hundred fifty-five, so noise passes and a three by three defect fails. Two hundred nine pixels are over at zero, and nine at two, the defect.",
+   "figures": [
+    "tolerance of 2 of 255",
+    "3 × 3",
+    "209 px at 0",
+    "9 px at 2"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 5,
+   "narration": "Make sure it only touched the flash becomes, run git diff with its stat option, and any path outside the brief's list is a scope violation. In this illustrative count, one hundred eighty-four changed lines sit inside the brief and eight outside.",
+   "figures": [
+    "184 lines",
+    "8 lines"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "A checklist of six questions to ask before you trust a shader change. First, which rung of the evidence ladder is the claim standing on, and was it observed or only inferred?",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "Second, are the inputs fixed? A pinned clock, a fixed random seed and a bench scene make the run repeat, so a difference means something.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "Third, does the input separate the right answer from the wrong one? Choose an exposing input, where the two are far apart, not one where every version gives the same pixel.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Fourth, does the tolerance catch the bug and still pass good code? Too loose gives false passes, and too tight gives false fails.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 5,
+   "narration": "Fifth, was the test run on known-good and known-bad code? A test that has never failed on broken code has not itself been tested.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 6,
+   "narration": "Sixth, what can a headless run not show, and who looks at the screen? Then say it exactly. Not check the shader, but three pixels within one of the model.",
+   "figures": [
+    "within 1 of the model"
+   ]
+  }
+ ],
+ "recap_lines": [
+  "It compiles is a claim, and a clean log proves only the bottom rung.",
+  "A headless run prints values, but only a person at a screen sees pixels.",
+  "A pinned clock and a fixed random seed make a run repeat.",
+  "Colour textures get the source color hint, and normal maps stay as data.",
+  "A loose tolerance gives false passes, and a tight one gives false fails.",
+  "A new test must fail on known-bad code and pass on known-good code."
+ ],
+ "your_turn": {
+  "segment": "Name The Proof, Defend It",
+  "command": "Quiz me on shader verification terms with short game-making cases, one at a time. Use the terms claim versus evidence, observed versus inferred, headless mode, bench scene, test fixture, golden image, tolerance, false positive, specification oracle and mutation check. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is about making a game, and the answer waits for you.",
+   "Check: you named the exact term and said why its look-alike does not fit."
+  ]
+ },
+ "say_as": [],
+ "deck_problems": [
+  "Slide 9 step 3 shows the Chapter 6 code (version A) against the spec oracle at 30 fps with 'gap 0.000', but slide 10 step 2 and Chapter 8 give the same known-good code an error of .030 (0.0303) at 30 fps. Likewise slide 5 step 4 gives the seeded frame counter 'max gap 0.000' at 60 fps and 0.485 at 30, where slide 10 step 2 shows the same seeded change at '.030' (60) and '.515' (30). The slide 5 and 9 figures look like ideal sampling with no physics-tick lag; nothing on those slides says so, so the two sets read as contradictions.",
+  "Slide 5 step 4 uses a tolerance of one frame (0.061 / 0.030 / 0.013), while slide 10 calls 'one frame or one physics tick' oracle v1 (0.030 at 144 fps) and the corrected v2 'one frame plus one physics tick' (0.043 at 144). The assertion on slide 5 matches neither oracle, and is never told apart from them.",
+  "Slide 13 says 'three pixels within 1 of the model', but the exact instruction on slide 12 step 1 samples body and eye pixels at three amounts, which is six samples (the chart shows only three rows, the body).",
+  "Slide 11 pair 3 names the term 'Frame count', where slide 5 and the map use 'Frame counter'.",
+  "Slide 4 step 2: the labels 'gap 0.25' and 'gap 0: hidden' sit on top of the curves, and the lower 'gap 0' label overlaps the axis 0, so they are hard to make out. Slide 12 step 3: the red tolerance line cuts through the word 'seeded' and touches the '0.037' label.",
+  "Slide 9 step 3: the explanation text breaks 'line 1 − t / 0.55' across two lines after the '1', so the next line starts with a minus sign.",
+  "Slide 1 says '30 terms from Chapter 8 and the glossary', but slide 7 tags pixel diff 'editor or docs', its note says pixel diff is not in the chapters, and the course glossary has no pixel diff row."
+ ]
+}

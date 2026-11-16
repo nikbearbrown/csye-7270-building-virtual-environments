@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[sub_resource type="Gradient" id="Gradient_g2pgm"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_e60kh"]
+gradient = SubResource("Gradient_g2pgm")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_5a3rq"]
+offsets = PackedFloat32Array(0, 1, 0.3)
+colors = PackedColorArray(1, 0.9529412, 0.6745098, 1, 0.95, 0.3, 0.1, 0, 1, 0.5568628, 0.22352941, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_vkdmq"]
+gradient = SubResource("Gradient_5a3rq")
+
+[sub_resource type="Curve" id="Curve_qkpt1"]
+_data = [Vector2(0, 0.2), 0.0, 0.0, 0, 0, Vector2(0.12, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.02), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_6cr2a"]
+curve = SubResource("Curve_qkpt1")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_cq60o"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 220.0
+gravity = Vector3(0, 140, 0)
+scale_min = 0.4
+scale_max = 0.8
+scale_curve = SubResource("CurveTexture_6cr2a")
+color_ramp = SubResource("GradientTexture1D_vkdmq")
+
+[node name="PickupBurst" type="GPUParticles2D" unique_id=375033312]
+emitting = false
+amount = 48
+texture = SubResource("GradientTexture2D_e60kh")
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+use_fixed_seed = true
+seed = 7270
+visibility_rect = Rect2(-400, -400, 800, 800)
+process_material = SubResource("ParticleProcessMaterial_cq60o")

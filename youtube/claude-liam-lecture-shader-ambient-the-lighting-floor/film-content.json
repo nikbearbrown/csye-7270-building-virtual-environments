@@ -1,0 +1,66 @@
+{
+  "id": 3,
+  "slug": "ambient-the-lighting-floor",
+  "title": "Ambient: The Lighting Floor",
+  "objective": "Distinguish a constant ambient approximation from simulated bounced light.",
+  "wrong": "ambient simulates bouncing light",
+  "right": "ambient supplies a constant floor",
+  "terms": {
+    "Diffuse": "The orientation-dependent lighting contribution",
+    "Ambient": "A simple background lighting approximation",
+    "Linear light": "Values proportional to light intensity"
+  },
+  "exercise": "Set ambient color to black, then raise it gradually. Predict which side of the object changes most visibly. Explain why this constant term cannot reproduce contact shadows.",
+  "checks": [
+    "The previously dark side becomes visible.",
+    "No geometry-dependent occlusion is computed."
+  ],
+  "recap": [
+    "Ambient is added to the diffuse weight.",
+    "The surface color multiplies both contributions.",
+    "A constant floor cannot compute occlusion.",
+    "Color conversion changes the arithmetic values."
+  ],
+  "beats": [
+    [
+      "The Missing Dark Side",
+      "vec3 lambert",
+      "Lambert alone returns zero on the back-facing side. Real scenes often contain indirect illumination. This shader uses a constant ambient color as a cheap stand-in for that missing light."
+    ],
+    [
+      "Add Before Tinting",
+      "ALBEDO =",
+      "Look at the parentheses. Ambient is added to the Lambert term first. The sum is multiplied by the surface color, so the background contribution inherits the same surface tint."
+    ],
+    [
+      "Begin At Black",
+      "ambient_color",
+      "Start with ambient set to black. That adds nothing. The material returns to plain Lambert behavior, which gives us a clean baseline for seeing what the extra term does."
+    ],
+    [
+      "Raise The Floor",
+      "ambient_color",
+      "Now raise ambient gradually. The dark side becomes visible even where the light-facing dot product is zero. This reveals color; it does not calculate the shape of bounced illumination."
+    ],
+    [
+      "A Color Is Not A Weight",
+      "source_color",
+      "The ambient input is marked as a color. In Forward Plus, an sRGB gray of zero point fifteen converts to roughly zero point zero one nine six in linear light."
+    ],
+    [
+      "Avoid A False Sum",
+      "ALBEDO =",
+      "That conversion means the Forward Plus sum is not automatically one plus zero point fifteen. Add the values the shader actually receives. Display colors and linear-light contributions are different quantities."
+    ],
+    [
+      "Where It Fails",
+      "uniform vec3 ambient_color",
+      "There is no neighborhood query in this shader. An exposed surface and a hidden crevice receive the same ambient input. A constant floor cannot produce contact shadows or color bleeding."
+    ],
+    [
+      "Use The Approximation",
+      "ALBEDO =",
+      "Use this material to separate the direct-light term from an ambient approximation. If you need convincing indirect illumination, this constant alone is insufficient. The useful lesson is where each contribution enters."
+    ]
+  ]
+}

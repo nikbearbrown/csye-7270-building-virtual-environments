@@ -1,0 +1,291 @@
+1
+00:00:00,000 --> 00:00:07,120
+Godot Shaders. Learn what a shader is, the
+words you will meet along the way, and how
+to write one that your game can control.
+
+2
+00:00:07,170 --> 00:00:21,050
+Hallo. This is Liam, in for Bear. Most
+people meet a shader as a strange file of
+math. One idea makes it readable. A shader
+
+3
+00:00:21,100 --> 00:00:35,410
+Five terms. The G P U is the graphics
+chip: many small workers running at once.
+A pixel is one dot of the picture. A
+
+4
+00:00:35,460 --> 00:00:45,520
+A game can work and still look flat. Same
+sprite, same background, nothing broken. A
+shader is the part that decides how it
+
+5
+00:00:45,570 --> 00:00:56,950
+A shader is a small program that runs on
+the graphics card, the G P U. It decides
+how something is drawn. Your game code
+
+6
+00:00:57,000 --> 00:01:09,300
+Why a second chip? The C P U is a few fast
+workers, doing one job after another. The
+G P U is a crowd of small workers, all
+
+7
+00:01:09,350 --> 00:01:19,540
+Here is the slow way. A G D script loop
+colors every pixel of a full H D picture,
+one at a time. That is over two million
+
+8
+00:01:19,590 --> 00:01:31,720
+On this Mac, that loop took about fifty-
+five milliseconds. A game running at sixty
+frames per second has sixteen and a half
+
+9
+00:01:31,770 --> 00:01:43,180
+The shader way describes one pixel. This
+line says: the red amount is how far
+across the shape this pixel sits. Nothing
+
+10
+00:01:43,230 --> 00:01:55,510
+Drawing that same gradient this way cost
+the processor about four hundredths of a
+millisecond, only to hand over the job.
+
+11
+00:01:55,560 --> 00:02:05,940
+So a shader flips the question. Not: for
+each pixel, do this. Instead: write down
+what one pixel should do, and let the card
+
+12
+00:02:05,990 --> 00:02:14,840
+Where does a shader live? In a file. You
+attach it to a node through a material.
+The node holds a Shader Material, and the
+
+13
+00:02:14,890 --> 00:02:28,900
+In the editor, that is a few clicks. In
+the node's Material slot, choose Shader
+Material under New. Click it, and in its
+
+14
+00:02:28,950 --> 00:02:42,060
+What you type there is Godot's own shader
+language. It is similar to a standard one
+called G L S L, but simpler. If you can
+
+15
+00:02:42,110 --> 00:02:56,400
+The first line of every shader says what
+it is for. Canvas item is for two-D
+drawing and interface. Spatial is for
+
+16
+00:02:56,450 --> 00:03:08,920
+The smallest working shader has one
+function and one line. In the function
+called fragment, set color to four
+
+17
+00:03:08,970 --> 00:03:19,160
+A shader can have up to three special
+functions, and the engine calls them for
+you: vertex, fragment and light. You write
+
+18
+00:03:19,210 --> 00:03:29,100
+Vertex runs once for each vertex, each
+corner point of the shape. A plain
+rectangle has four corners, so vertex runs
+
+19
+00:03:29,150 --> 00:03:39,890
+A real run. This vertex pushes the bottom
+two corners fifty pixels to the right and
+leaves the top two alone. The whole
+
+20
+00:03:39,940 --> 00:03:53,290
+Between the corners, you calculate
+nothing. The left edge slides evenly from
+top to bottom: fifty pixels over a hundred
+
+21
+00:03:53,340 --> 00:04:05,540
+Fragment runs after the corners are
+placed. It runs once for each pixel the
+shape covers, and its job is to set that
+
+22
+00:04:05,590 --> 00:04:19,680
+You will hear this called a pixel shader,
+or a fragment shader. Same job, two names.
+Microsoft's Direct three D says pixel.
+
+23
+00:04:19,730 --> 00:04:30,730
+It is only a pixel-to-be because it can
+still be thrown away, or blended with
+others. This shader says discard for the
+
+24
+00:04:30,780 --> 00:04:42,660
+The third function, light, runs once for
+each light that touches a pixel. Two
+lights, two runs, and the results add. If
+
+25
+00:04:42,710 --> 00:04:52,490
+So the order of work is fixed. First
+vertex places the corners. Then the card
+fills in the shape. Then fragment colors
+
+26
+00:04:52,540 --> 00:05:04,740
+Inside these functions the engine hands
+you values, called built-ins, written in
+capital letters. Some come in, like a
+
+27
+00:05:04,790 --> 00:05:14,490
+So far: vertex runs once per corner and
+places things. Fragment runs once per
+pixel and colors things. Light runs once
+
+28
+00:05:14,540 --> 00:05:25,090
+A shader that always draws the same red is
+not much use. Your game needs to say: more
+red now, less red later. But the shader
+
+29
+00:05:25,140 --> 00:05:36,290
+With a uniform. A uniform is a value you
+declare outside the functions, and set
+from outside the shader. Here is one
+
+30
+00:05:36,340 --> 00:05:45,760
+In the editor, that line becomes a slider.
+In the Inspector, under Shader Parameters,
+there is a control labelled Red. Drag it,
+
+31
+00:05:45,810 --> 00:05:53,850
+Three uniforms make a color mixer. Red,
+green, blue, each its own slider. The
+shader puts the three numbers together
+
+32
+00:05:53,900 --> 00:06:05,410
+The part after the colon is a hint. It
+tells the editor how to show the uniform.
+A range adds a slider bar. Source color
+
+33
+00:06:05,460 --> 00:06:15,800
+A hint does not clamp. If your game code
+sets the value to seven, the shader
+receives seven. The slider only guards the
+
+34
+00:06:15,850 --> 00:06:26,680
+From the game, you set a uniform with set
+shader parameter. Get the node's material,
+then pass the uniform's name and a value.
+
+35
+00:06:26,730 --> 00:06:38,780
+Get the name wrong, and nothing happens.
+No error. The value is stored as an unused
+parameter, the real uniform keeps its
+
+36
+00:06:38,830 --> 00:06:50,980
+You can animate a uniform too. Set its
+starting value from code, then tween it,
+and the shader follows, every frame. Skip
+
+37
+00:06:51,030 --> 00:07:02,220
+A uniform is one value, the same for every
+pixel in the draw. Some inputs must
+differ, because each pixel needs to know
+
+38
+00:07:02,270 --> 00:07:13,060
+Two kinds of input, then. A uniform is set
+by you. A built-in is set by the engine.
+Both are names the shader can read, and
+
+39
+00:07:13,110 --> 00:07:24,670
+Now, the pixel's address. U V runs from
+zero to one across the shape, and zero to
+one down. The top left is zero, zero. The
+
+40
+00:07:24,720 --> 00:07:35,230
+Use the address as a color. Red is how far
+across. Green is how far down. Left to
+right, red grows. Top to bottom, green
+
+41
+00:07:35,280 --> 00:07:45,020
+Use it as a fade instead. Multiply the
+alpha by the horizontal address. The left
+edge is invisible, the right edge solid.
+
+42
+00:07:45,070 --> 00:07:54,680
+Now time. Time counts up in seconds. Put
+it inside a sine and you get a smooth back
+and forth, between minus one and one.
+
+43
+00:07:54,730 --> 00:08:04,390
+One catch. Time is not the age of your
+node. It is one clock for the whole game,
+started with the engine. Add a node three
+
+44
+00:08:04,440 --> 00:08:15,290
+So for a one-time effect, a fade-in, or a
+reveal that starts when something happens,
+do not lean on time. Use a uniform, and
+
+45
+00:08:15,340 --> 00:08:25,660
+Put it together: a circle that opens from
+the middle. For each pixel, measure the
+distance to the middle of the shape. If it
+
+46
+00:08:25,710 --> 00:08:36,520
+Now drive it from the game. When the
+player presses a key, tween the radius
+from zero to point eight, and the picture
+
+47
+00:08:36,570 --> 00:08:55,660
+Let's recap with Claude. A shader decides
+the color of one pixel, and the card runs
+it for every pixel. A shader lives in a
+
+48
+00:08:55,710 --> 00:09:16,670
+Your turn. Paste this into Claude: Write a
+Godot canvas item shader for a Color Rect.
+One float uniform called fill, with a hint
+
+49
+00:09:16,720 --> 00:09:20,550
+Godot Shaders. At Nik Bear Brown.

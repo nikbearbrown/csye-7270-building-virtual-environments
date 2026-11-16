@@ -1,0 +1,655 @@
+{
+  "slug": "claude-liam-lecture-what-is-a-particle-system",
+  "title": "What Is a Particle System?",
+  "payoff": "Build the rules behind a moving effect",
+  "summary": "Build a small particle system and test the rules behind its motion.",
+  "framing": "How do simple rules make an effect? A particle system is a changing population, not one animated picture. We will expose the rules in Godot.",
+  "question": "How do simple pictures\nmake an effect?",
+  "trigger": "pictures",
+  "replacement": "rules",
+  "terms": [
+    {
+      "term": "Node",
+      "meaning": "An object in the scene tree"
+    },
+    {
+      "term": "Vector",
+      "meaning": "A direction and a magnitude"
+    },
+    {
+      "term": "Delta",
+      "meaning": "Elapsed time for one update"
+    },
+    {
+      "term": "Resource",
+      "meaning": "Reusable data held by a node"
+    }
+  ],
+  "body": [
+    {
+      "act": "A System You Can Inspect",
+      "narration": "Watch the fountain first. New dots rise, bend, shrink, and disappear. One effect comes from many short lives. This is an original teaching scene running inside the real Godot editor.",
+      "actions": [
+        {
+          "op": "call",
+          "method": "reset"
+        },
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "A System You Can Inspect",
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "A System You Can Inspect",
+      "narration": "Here is the actual scene tree. I add a Node Two D as an organizational child. The drawing script belongs to the root. Nodes organize the tool; the particle records describe each moving dot.",
+      "actions": [
+        {
+          "op": "add",
+          "class_name": "Node2D",
+          "name": "EmissionOrigin",
+          "properties": {
+            "position": {
+              "v2": [
+                0,
+                0
+              ]
+            }
+          },
+          "checkpoint": true
+        },
+        {
+          "at": 3,
+          "op": "select"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "A System You Can Inspect",
+      "narration": "Open the script. Each record has position, velocity, age, and lifetime. Spawn creates that record. Draw turns it into a circle. The engine runs this code; the editor footage is not a rebuilt interface.",
+      "actions": [
+        {
+          "op": "script",
+          "path": "res://particle_system.gd",
+          "line": 26
+        },
+        {
+          "at": 6,
+          "op": "select"
+        }
+      ],
+      "focus": "code"
+    },
+    {
+      "act": "A System You Can Inspect",
+      "narration": "Birth Rate is twenty. Lifetime is two seconds. After the startup fills, the live counter settles near forty. Twenty arrivals each second, kept for two seconds: that is the population budget.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "birth_rate",
+          "value": 20,
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "lifetime",
+          "value": 2,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Motion Has Separate Knobs",
+      "narration": "I turn on the diagnostic vectors. Mint shows velocity; purple shows acceleration. The particle moves along its velocity. Gravity changes that velocity. Two different jobs, even when the arrows share one dot.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Motion Has Separate Knobs",
+          "node": "."
+        },
+        {
+          "at": 0.25,
+          "op": "set",
+          "property": "birth_rate",
+          "value": 3,
+          "node": "."
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "vectors",
+          "value": true,
+          "node": "."
+        },
+        {
+          "at": 0.75,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Motion Has Separate Knobs",
+      "narration": "Set gravity to zero. The trajectories become straight. Restore positive gravity and they bend downward. In this two-dimensional scene, positive Y points down. The launch velocity begins upward, with negative Y.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "gravity",
+          "value": 0,
+          "node": "."
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "gravity",
+          "value": 180,
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Motion Has Separate Knobs",
+      "narration": "These are the update lines. Velocity gains acceleration times delta. Position gains velocity times delta. Delta is elapsed time in seconds, so the units stay tied to time instead of to a frame count.",
+      "actions": [
+        {
+          "op": "script",
+          "path": "res://particle_system.gd",
+          "line": 37
+        },
+        {
+          "at": 6,
+          "op": "select"
+        }
+      ],
+      "focus": "code"
+    },
+    {
+      "act": "Motion Has Separate Knobs",
+      "narration": "Increase launch speed from two hundred sixty to three hundred forty. The next particles climb farther before gravity turns them around. The change enters at birth; existing particles keep the velocity they already have.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "launch_speed",
+          "value": 340,
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "set",
+          "property": "vectors",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "birth_rate",
+          "value": 20,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Age Controls The Exit",
+      "narration": "Now shorten lifetime from two seconds to one. Reset gives every dot the same rule immediately. The trail ends sooner and the live count falls toward twenty. Birth rate did not change.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Age Controls The Exit",
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "set",
+          "property": "launch_speed",
+          "value": 260,
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "lifetime",
+          "value": 1,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Age Controls The Exit",
+      "narration": "Switch fading and shrinking off. Dots now disappear abruptly at their lifetime. Turn both back on and the exit becomes a transition. Appearance reads normalized age: age divided by that particle\u2019s own lifetime.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "fade",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "set",
+          "property": "shrink",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "fade",
+          "value": true,
+          "node": "."
+        },
+        {
+          "at": 5.2,
+          "op": "set",
+          "property": "shrink",
+          "value": true,
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Age Controls The Exit",
+      "narration": "Here is a deliberately broken version. Cleanup is off. Dead records remain in the array, so the live counter keeps growing even after the visible dots fade away. Invisible does not mean removed.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "cleanup",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Age Controls The Exit",
+      "narration": "Restore cleanup. The reverse loop can remove expired entries without skipping the next record. The count returns to its bounded population. This lab also caps storage at six hundred to contain the deliberate fault.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "cleanup",
+          "value": true,
+          "node": "."
+        },
+        {
+          "at": 4,
+          "op": "script",
+          "path": "res://particle_system.gd",
+          "line": 40
+        },
+        {
+          "at": 8,
+          "op": "select"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Variation And The Emitter",
+      "narration": "Set spread to zero. Every launch points the same way and the fountain collapses into a narrow column. Randomness is not the system itself. It is a controlled variation applied when particles are born.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Variation And The Emitter",
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "set",
+          "property": "lifetime",
+          "value": 2,
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "spread",
+          "value": 0,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Variation And The Emitter",
+      "narration": "Open spread to thirty-five degrees. Each birth samples a direction inside the range. The fountain widens, while lifetime and gravity stay fixed. A repeatable seed helps compare one parameter without changing every random choice.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "spread",
+          "value": 35,
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "call",
+          "method": "reset"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Variation And The Emitter",
+      "narration": "Move the emitter. New particles start at its current position; older particles continue from their stored positions. That separation makes a trail. Dragging every old particle with the emitter would produce a different effect.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "move_emitter",
+          "value": true,
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Variation And The Emitter",
+      "narration": "Add wind to the right. The trajectories curve sideways because wind enters the acceleration vector. Position, launch direction, gravity, and wind are separate controls. Change one and watch the consequence before changing another.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "wind",
+          "value": 120,
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "A Burst Is A Schedule",
+      "narration": "Stop continuous births and reset. One burst now creates forty particles together. Watch the complete effect die out. A burst changes when particles are born; it does not require a different motion equation.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "A Burst Is A Schedule",
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "set",
+          "property": "birth_rate",
+          "value": 0,
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "wind",
+          "value": 0,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "move_emitter",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 0.8,
+          "op": "call",
+          "method": "reset"
+        },
+        {
+          "at": 1,
+          "op": "call",
+          "method": "burst"
+        },
+        {
+          "at": 5,
+          "op": "call",
+          "method": "burst"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "A Burst Is A Schedule",
+      "narration": "Trigger the burst again. The new records get fresh ages and positions. An effect should respond to an event, such as an impact, while a continuous effect should follow a condition that can turn off.",
+      "actions": [
+        {
+          "op": "call",
+          "method": "burst"
+        },
+        {
+          "at": 5,
+          "op": "call",
+          "method": "burst"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "A Burst Is A Schedule",
+      "narration": "The built-in version packages those responsibilities. This is a real G P U Particles Two D node with a texture and a Particle Process Material. Godot owns the simulation; the Inspector exposes its controls.",
+      "actions": [
+        {
+          "op": "open",
+          "path": "res://builtin_fountain.tscn"
+        },
+        {
+          "at": 1,
+          "op": "set",
+          "property": "position",
+          "value": {
+            "v2": [
+              0,
+              0
+            ]
+          },
+          "node": "Fountain"
+        },
+        {
+          "at": 1.3,
+          "op": "zoom",
+          "node": "Fountain"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "A Burst Is A Schedule",
+      "narration": "Increase Amount from forty to eighty. More particles occupy the built-in effect. Here Amount is a population setting, not births per second. For a steady emitter, amount divided by lifetime gives its nominal emission rate.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "amount",
+          "value": 80,
+          "node": "Fountain"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Build A Testable Effect",
+      "narration": "Switch One Shot on and set Explosiveness to one. Restart releases the group together. The visible change is timing, not a new texture. In a reusable scene, let the final layer finish before removing its owner.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "one_shot",
+          "value": true,
+          "node": "Fountain"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "explosiveness",
+          "value": 1,
+          "node": "Fountain"
+        },
+        {
+          "at": 0.6,
+          "op": "call",
+          "node": "Fountain",
+          "method": "restart"
+        },
+        {
+          "at": 5,
+          "op": "call",
+          "node": "Fountain",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Build A Testable Effect",
+      "narration": "Return to the original lab. A larger circle covers more pixels even with the same particle count. This demonstrates coverage, not a measured frame-time cost. Performance needs its own instrument and a repeatable scene.",
+      "actions": [
+        {
+          "op": "open",
+          "path": "res://lesson.tscn"
+        },
+        {
+          "at": 1,
+          "op": "set",
+          "property": "birth_rate",
+          "value": 20,
+          "node": "."
+        },
+        {
+          "at": 1.3,
+          "op": "set",
+          "property": "radius",
+          "value": 24,
+          "node": "."
+        },
+        {
+          "at": 1.6,
+          "op": "call",
+          "method": "reset"
+        },
+        {
+          "at": 1.9,
+          "op": "zoom"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Build A Testable Effect",
+      "narration": "Keep the experiment readable. Reset the counter, return to small particles, and change lifetime alone. Save the source and the settings that produced the picture. Otherwise a convincing clip is difficult to reproduce.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Build A Testable Effect",
+          "node": "."
+        },
+        {
+          "at": 0.2,
+          "op": "set",
+          "property": "radius",
+          "value": 8,
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "lifetime",
+          "value": 2,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "spread",
+          "value": 28,
+          "node": "."
+        },
+        {
+          "at": 0.8,
+          "op": "set",
+          "property": "birth_rate",
+          "value": 20,
+          "node": "."
+        },
+        {
+          "at": 1,
+          "op": "call",
+          "method": "reset"
+        },
+        {
+          "at": 5,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Build A Testable Effect",
+      "narration": "The teaching tool is now inspectable: source, live counters, exported controls, and a built-in comparison. These actions were scripted in the actual editor. The result remains an editable project, not just a movie of orange dots.",
+      "actions": [
+        {
+          "op": "script",
+          "path": "res://particle_system.gd",
+          "line": 1
+        },
+        {
+          "at": 5,
+          "op": "select"
+        },
+        {
+          "at": 5.2,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "focus": "code"
+    }
+  ],
+  "recap": [
+    "A system gives many particles short lives.",
+    "Velocity and acceleration have separate jobs.",
+    "Age controls appearance and removal.",
+    "The emitter chooses each starting state.",
+    "Bursts and streams use different birth schedules.",
+    "A reproducible test connects settings to motion."
+  ],
+  "prompt": "Build a fountain with a fixed birth rate and lifetime. Change wind alone, then change lifetime alone. Record each result and explain the live count. Keep the source and both settings.",
+  "checks": [
+    "Check: wind changes the path, not the birth rate.",
+    "Check: the live population stays bounded."
+  ],
+  "coverage": "The source treatment covers particle state, birth/update/draw/death, time-based integration, lifetime and appearance, bounded cleanup, emission rate and population, controlled random starts, moving emitter and wind, stream versus burst, built-in Godot nodes, reproducible source and performance limits. Six acts, four beats each.",
+  "facts": "The original GDScript uses p.v += acceleration * delta, p.p += p.v * delta, reverse removal after age >= life. Population estimate is rate \u00d7 lifetime for this steady emitter. Godot GPUParticles2D Amount is a count, not a rate. Missing cleanup is a labeled seeded fault. The 600-record cap limits the deliberate failure. No GPU performance measurement is claimed."
+}

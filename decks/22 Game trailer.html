@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to make a trailer for your game | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: how to make a trailer for your game">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="How to make a trailer for your game">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Assignment 8 and the final project</p>
+      <h1 class="t-opening rise g2">How to make a trailer for your game</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Important terms for a short film that sells a game: hook, best moments, call to action</p>
+      <div class="speaker-notes" hidden><p>Deck 11 of the topic order. 32 terms. A trailer is a short film that sells a game: a hook, the best real moments, and one call to action. Tags: in the book text means a chapter uses and explains it; in the glossary means a glossary row; editor or docs means Godot documentation; outside source means the repo's godot-trailer skill or general film vocabulary, not the chapters or glossary. Only 1 term is in the book text and 3 are glossary rows, so most tags here are outside source.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-two terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-two terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer skill, Assignment 8, glossary.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Trailer, teaser, gameplay video, pitch film">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">What you are making</p>
+      <h2 class="t-chart">Trailer, teaser, gameplay video, pitch film</h2>
+      <div class="diagram build" data-build="kinds" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md; Assignment 8.</p>
+      <div class="speaker-notes" hidden><p>Trailer 30 to 90 s is from the godot-trailer skill; pitch film 2 to 4 minutes is from Assignment 8; teaser and gameplay video ranges are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Pitch, logline and tagline">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">What you are making</p>
+      <h2 class="t-chart">Pitch, logline and tagline</h2>
+      <div class="diagram build" data-build="pitch" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game design documents ("Pitch"); godot-trailer SKILL.md and trailer-craft.md (hook in one sentence).</p>
+      <div class="speaker-notes" hidden><p>Tilt is an invented example game. Word counts are computed from the three texts.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Hook, key art and thumbnail">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">What you are making</p>
+      <h2 class="t-chart">Hook, key art and thumbnail</h2>
+      <div class="diagram build" data-build="hook" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md.</p>
+      <div class="speaker-notes" hidden><p>The hook sentence is the skill's own example. The two openings and the 5 s limit are illustrative; the rule gameplay-in-five-seconds is from the skill. The 12 px threshold is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Beat structure, climax and title card">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Shape and length</p>
+      <h2 class="t-chart">Beat structure, climax and title card</h2>
+      <div class="diagram build" data-build="beats" style="flex-basis:700px"></div>
+      <p class="source">Source: Shipping Lane SHOTLIST.md and MUSIC.md; trailer-craft.md.</p>
+      <div class="speaker-notes" hidden><p>Durations are the Shipping Lane trailer shot list: 3, 3, 14, 2, 1.5, 1.5, 5.5 s. 120 BPM is from its MUSIC.md.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Runtime, frame rate and resolution">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Shape and length</p>
+      <h2 class="t-chart">Runtime, frame rate and resolution</h2>
+      <div class="diagram build" data-build="runtime" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md, trailer-contract.md; glossary, Textures and Camera sections.</p>
+      <div class="speaker-notes" hidden><p>30 to 90 s typical and 15 to 120 s gate limits are from the skill and its contract. Frame rate and resolution are glossary rows.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Pacing and cut on action">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Cutting and sound</p>
+      <h2 class="t-chart">Pacing and cut on action</h2>
+      <div class="diagram build" data-build="pace" style="flex-basis:700px"></div>
+      <p class="source">Source: Shipping Lane SHOTLIST.md; trailer-craft.md; "cut on action" is general film vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Shot lengths are the nine Shipping Lane shots. The jump uses speed 24 px a frame across, 40 up, gravity 3.4 px a frame squared (invented inputs).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="BPM, cut on the beat and music drop">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Cutting and sound</p>
+      <h2 class="t-chart">BPM, cut on the beat and music drop</h2>
+      <div class="diagram build" data-build="music" style="flex-basis:700px"></div>
+      <p class="source">Source: Shipping Lane MUSIC.md; godot-trailer beat_grid.py and capture-for-trailers.md.</p>
+      <div class="speaker-notes" hidden><p>Rough cut times are invented. Energy values 0.14, 0.016 and 0.17 are measured in Shipping Lane MUSIC.md.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Sound design, muted test and accessibility">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Cutting and sound</p>
+      <h2 class="t-chart">Sound design, muted test and accessibility</h2>
+      <div class="diagram build" data-build="sound" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md (section 3); Shipping Lane SHOTLIST.md voice table.</p>
+      <div class="speaker-notes" hidden><p>Ducking depth and the flash sequences are illustrative. The 3 flashes a second limit is a common rule, not read in this session.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Call to action and logo sting">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Shape and length</p>
+      <h2 class="t-chart">Call to action and logo sting</h2>
+      <div class="diagram build" data-build="cta" style="flex-basis:700px"></div>
+      <p class="source">Source: Shipping Lane SHOTLIST.md; godot-trailer SKILL.md and trailer-craft.md (section 4).</p>
+      <div class="speaker-notes" hidden><p>The 5.5 s end card is the Shipping Lane call to action. The 3 s sting is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Fixed frame rate, Movie Maker and clean footage">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Capture and honesty</p>
+      <h2 class="t-chart">Fixed frame rate, Movie Maker and clean footage</h2>
+      <div class="diagram build" data-build="capture" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, "The time trap"; capture-and-coverage.md (Movie Maker flags); capture-for-trailers.md.</p>
+      <div class="speaker-notes" hidden><p>The 50 ms per frame machine is illustrative. The command shape is from the capture notes.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Real play, an honest trailer and the viewer test">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Capture and honesty</p>
+      <h2 class="t-chart">Real play, an honest trailer and the viewer test</h2>
+      <div class="diagram build" data-build="honest" style="flex-basis:700px"></div>
+      <p class="source">Source: capture-for-trailers.md (allowed table); godot-trailer SKILL.md and trailer-craft.md (section 6); Assignment 8, honesty rule.</p>
+      <div class="speaker-notes" hidden><p>The feature list is illustrative. Viewer test results are pending: no one has run it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md.</p>
+      <div class="speaker-notes" hidden><p>Trailer and teaser, logline and tagline, cut on action and cut on the beat, key art and thumbnail.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md; Shipping Lane SHOTLIST.md.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before a trailer goes out">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before a trailer goes out</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: godot-trailer SKILL.md and trailer-craft.md (the one test and the viewer test).</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= How to make a trailer: important terms ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = chapters use AND explain it; gloss = glossary row; editor = engine docs; web = outside the course chapters and glossary
+     (here mostly the repo's godot-trailer skill and general film vocabulary); video = course videos */
+  var T = {
+    trailer: { n: "Trailer", tag: "web", m: "A short film that sells a game to a stranger" },
+    teaser: { n: "Teaser", tag: "web", m: "An early look that hints and shows little" },
+    gvideo: { n: "Gameplay video", tag: "web", m: "Plain footage of play, made to cover, not sell" },
+    pfilm: { n: "Pitch film", tag: "web", m: "A 2 to 4 minute film on what you will build" },
+    pitch: { n: "Pitch", tag: "gloss", m: "A short sales description of the game idea" },
+    logline: { n: "Logline", tag: "web", m: "The game in one sentence: who does what, and what is new" },
+    tagline: { n: "Tagline", tag: "web", m: "A few memorable words that sit beside the title" },
+    hook: { n: "Hook", tag: "web", m: "The most distinctive thing the player does, said in one sentence" },
+    keyart: { n: "Key art", tag: "web", m: "The one still image that stands for the game: title, character, idea" },
+    thumb: { n: "Thumbnail", tag: "web", m: "The small preview image; it has to read at a glance" },
+    beats: { n: "Beat structure", tag: "web", m: "The order of parts: hook, establish, escalate, peak, title, button, call to action" },
+    peak: { n: "Climax (peak)", tag: "web", m: "The biggest payoff, placed on a strong beat after a quiet drop" },
+    titlecard: { n: "Title card", tag: "web", m: "A held card with the game's name, after the peak" },
+    runtime: { n: "Runtime", tag: "web", m: "How long the film runs; a store trailer is typically 30 to 90 seconds" },
+    fps: { n: "Frame rate", tag: "gloss", m: "Frames shown per second" },
+    res: { n: "Resolution", tag: "gloss", m: "Width and height in pixels" },
+    pacing: { n: "Pacing", tag: "web", m: "How fast the cuts come; it follows how well the viewer understands the game" },
+    cutact: { n: "Cut on action", tag: "web", m: "Cut while the motion is under way, so the eye carries across the cut" },
+    bpm: { n: "BPM", tag: "web", m: "Beats per minute of the music; 60 divided by it is the seconds per beat" },
+    cutbeat: { n: "Cut on the beat", tag: "web", m: "Place cuts on the music's beats so picture and sound lock together" },
+    drop: { n: "Music drop", tag: "web", m: "A quiet moment just before the peak, so the peak lands" },
+    sound: { n: "Sound design", tag: "web", m: "Mix so music sets the tone and the game's own hits punch through" },
+    muted: { n: "Muted test", tag: "web", m: "Check that the film still makes sense with the sound off" },
+    access: { n: "Accessibility", tag: "web", m: "Captions for speech and no rapid flashing, so more people can watch" },
+    cta: { n: "Call to action", tag: "web", m: "One thing to do next: wishlist, play, or follow a link" },
+    sting: { n: "Logo sting", tag: "web", m: "A very short logo animation with a sound; better at the end than the start" },
+    fixed: { n: "Fixed frame rate", tag: "book", m: "Rendering locked to a set number of frames a second so runs match" },
+    movie: { n: "Movie Maker mode", tag: "editor", m: "Godot's mode that records a run to a video file, frame by frame" },
+    clean: { n: "Clean footage", tag: "web", m: "Real play with debug clutter hidden and the HUD that explains a mechanic kept" },
+    real: { n: "Gameplay vs cinematic", tag: "web", m: "Captured play from the real build; a cinematic must be the game's own and labelled" },
+    honest: { n: "Honest trailer", tag: "web", m: "Shows only what the game really does; planned features never appear" },
+    viewer: { n: "Viewer test", tag: "web", m: "Show the cut, unexplained, to someone new and ask what the game is and what they do" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function vline(g, x, y1, y2, col, w, dash) { var p = g.append("path").attr("d", "M" + x + "," + y1 + " V" + y2).attr("stroke", col || INK).attr("stroke-width", w || 2); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function words(s) { return s.split(/\s+/).length; }
+
+  /* ---- the Shipping Lane trailer: beat durations from its SHOTLIST (real) ---- */
+  var BEATS = [["hook", "Hook", 3], ["establish", "Establish", 3], ["escalate", "Escalate", 14], ["peak", "Peak", 2], ["title", "Title card", 1.5], ["button", "Button", 1.5], ["cta", "Call to action", 5.5]];
+  var RT = d3.sum(BEATS, function (b) { return b[2]; });           /* 30.5 */
+  var BCOL = ["#2A1A0E", "#545454", "#909090", RED, "#C4C4C4", "#E3E3E3", "#2A1A0E"];
+  var SHOTS = [3, 3, 3.5, 2, 2, 1.5, 2, 3, 2];                       /* S01 to S09 */
+  function tlBlocks(g, x, y, w, h, o) {
+    o = o || {}; var sc = w / RT, t0 = 0;
+    BEATS.forEach(function (b, i) {
+      var r = g.append("rect").attr("x", x + t0 * sc).attr("y", y).attr("width", Math.max(b[2] * sc - 2, 2)).attr("height", h).attr("fill", o.hi == null ? BCOL[i] : (i === o.hi ? RED : FAMILIAR));
+      if (o.anim) r.attr("opacity", 0).transition().delay(i * 180).duration(300).attr("opacity", 1);
+      t0 += b[2];
+    });
+    return sc;
+  }
+
+  var MAPROWS = [
+    ["What you are making", "trailer, teaser, gameplay video, pitch film, pitch, logline, tagline, hook, key art, thumbnail", "The kind of film and the idea it sells"],
+    ["Shape and length", "beat structure, climax, title card, call to action, logo sting, runtime, frame rate, resolution", "Where each part goes and how long it runs"],
+    ["Cutting and sound", "pacing, cut on action, BPM, cut on the beat, music drop, sound design, muted test", "How the cuts and the music work together"],
+    ["Capture and honesty", "fixed frame rate, Movie Maker mode, clean footage, gameplay vs cinematic, honest trailer, viewer test, accessibility", "Getting real footage and keeping the promise"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of trailer terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "32 terms for a short film that sells a game. A trailer shows real play, builds to one peak and ends on one action.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. kinds of video ---------- */
+  var LAN = [["Trailer", 30, 90, "sells a stranger", "30 to 90 s"], ["Teaser", 15, 45, "hints, shows little", "15 to 45 s, illustrative"], ["Gameplay video", 180, 600, "covers play; range illustrative", "3 to 10 min"], ["Pitch film", 120, 240, "argues for a project", "2 to 4 min"]];
+  function renderKinds(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four kinds of game video, by how long they run and what they are for", "Four bars on a time axis from 0 to 600 seconds: trailer, teaser, gameplay video and pitch film, each with a purpose.");
+    var ey = base(svg, [{ id: "trailer", s: 1 }, { id: "teaser", s: 2 }, { id: "gvideo", s: 3 }, { id: "pfilm", s: 4 }], k, anim, ["Trailer", "sells; ends on one action"], ["Teaser", "hints; saves the rest"]);
+    var d = svg.append("g"), sc = 740 / 600;
+    lab(d, 0, 30, "RUNTIME RANGE, 0 TO 600 SECONDS");
+    LAN.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 56 + i * 110, g = d.append("g"), cur = i + 1 === k, x0 = r[1] * sc, x1 = r[2] * sc;
+      cap(g, x0, y + 24, r[0], { size: 26, weight: 700, fill: cur ? RED : INK });
+      bar(g, x0, y + 38, Math.max(x1 - x0, 6), 30, cur ? RED : INK, A(anim, k, i + 1), 0);
+      if (x1 > 520) cap(g, x0 - 12, y + 62, r[4], { size: 24, anchor: "end", fill: MUTED }); else cap(g, x1 + 12, y + 62, r[4], { size: 24, fill: MUTED });
+      cap(g, x0, y + 98, r[3], { size: 24, fill: BODY });
+      fade(g, A(anim, k, i + 1), 0);
+    });
+    d.append("path").attr("d", "M0,500 H740").attr("stroke", INK).attr("stroke-width", 2);
+    [0, 120, 240, 360, 480, 600].forEach(function (v) { vline(d, v * sc, 500, 510, INK, 2); cap(d, v * sc, 540, String(v), { size: 24, anchor: v === 0 ? "start" : v === 600 ? "end" : "middle", fill: MUTED }); });
+    note(svg, ey, ["", "A trailer is a short film made to sell a game to someone who owes you nothing. Store trailers run 30 to 90 seconds.", "A teaser announces. It shows little and saves the rest for later.", "A gameplay video shows play as it is. It covers the game; it does not argue for it.", "A pitch film (Assignment 8) tells a reviewer what you will build and why. It runs 2 to 4 minutes."][k]);
+  }
+
+  /* ---------- 2. pitch, logline, tagline ---------- */
+  var PITCH = "Tilt is a short platformer. You reverse gravity, so a spike on the floor becomes a path on the ceiling. Each room adds one new rule. A level takes about two minutes.";
+  var LOGL = "A platformer where you reverse gravity to turn every hazard into a pathway.";
+  var TAGL = "Fall up.";
+  function renderPitch(el, k, anim) {
+    var svg = svgFor(el, W, H, "Pitch, logline and tagline are the same idea at three lengths", "Three text blocks with bars: a pitch of about 30 words, a logline of 13 words and a tagline of 2 words, for an invented game called Tilt.");
+    var ey = base(svg, [{ id: "pitch", s: 1 }, { id: "logline", s: 2 }, { id: "tagline", s: 3 }], k, anim, ["Logline", "one sentence for a reader"], ["Tagline", "a few words beside the title"]);
+    var d = svg.append("g"), wn = words(PITCH), sc = 740 / wn;
+    var R = [["PITCH", PITCH, 10, 3], ["LOGLINE", LOGL, 210, 2], ["TAGLINE", TAGL, 410, 1]];
+    R.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var g = d.append("g"), y = r[2], n = words(r[1]), cur = i + 1 === k;
+      lab(g, 0, y + 24, r[0] + " · " + n + " WORDS", { fill: cur ? RED : MUTED });
+      wrap(g, 0, y + 62, r[1], 56, { size: i === 2 ? 32 : 26, lh: 32, weight: i === 2 ? 700 : 400, fill: INK });
+      bar(g, 0, y + (i === 0 ? 150 : i === 1 ? 140 : 100), n * sc, 22, cur ? RED : INK, A(anim, k, i + 1), 0);
+      fade(g, A(anim, k, i + 1), 0);
+    });
+    note(svg, ey, ["", "The pitch sells the whole idea in a few sentences. Tilt is an invented game for this example.", "The logline cuts it to one sentence: " + words(LOGL) + " words, from " + words(PITCH) + ". It says who does what and what is new.", "The tagline is " + words(TAGL) + " words. It cannot explain; it can only be remembered."][k]);
+  }
+
+  /* ---------- 3. hook, key art, thumbnail ---------- */
+  var HOOK = "You reverse gravity to turn hazards into pathways.";
+  function poster(g, x, y, w, h, o) {
+    o = o || {};
+    box(g, x, y, w, h, { stroke: INK, sw: 3 });
+    var s = w / 300;
+    g.append("path").attr("d", "M" + (x + 30 * s) + "," + (y + 40 * s) + " L" + (x + 60 * s) + "," + (y + 40 * s) + " L" + (x + 45 * s) + "," + (y + 70 * s) + "Z").attr("fill", RED);
+    g.append("rect").attr("x", x + 120 * s).attr("y", y + 230 * s).attr("width", 60 * s).attr("height", 60 * s).attr("fill", INK);
+    g.append("path").attr("d", "M" + x + "," + (y + 290 * s) + " H" + (x + w)).attr("stroke", INK).attr("stroke-width", 4);
+  }
+  function renderHook(el, k, anim) {
+    var svg = svgFor(el, W, H, "A hook says the most distinctive thing in one sentence; key art and a thumbnail carry it as a still", "Step one splits a hook sentence into what the player does and what changes. Step two tests the first five seconds of two openings. Step three draws a key art poster. Step four shrinks it to thumbnail sizes and checks the title height.");
+    var ey = base(svg, [{ id: "hook", s: 1 }, { id: "keyart", s: 3 }, { id: "thumb", s: 4 }], k, anim, ["Hook", "the one thing nobody else has"], ["Tagline", "memorable words, not an explanation"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "A HOOK, FROM THE MECHANIC");
+      [["WHAT THE PLAYER DOES", "reverse gravity", 0], ["WHAT CHANGES", "hazards become pathways", 400]].forEach(function (b, i) {
+        var g = d.append("g"); box(g, b[2], 60, 340, 150, { stroke: i ? RED : INK, sw: 3 }); lab(g, b[2] + 16, 96, b[0], { fill: MUTED });
+        wrap(g, b[2] + 16, 150, b[1], 18, { size: 30, lh: 36, weight: 700, fill: i ? RED : INK }); fade(g, anim, i * 400);
+      });
+      d.append("path").attr("d", "M346,135 H394").attr("stroke", INK).attr("stroke-width", 4); d.append("path").attr("d", "M382,123 L396,135 L382,147").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+      wrap(d, 0, 290, "“" + HOOK + "”", 52, { size: 30, lh: 38, weight: 700, fill: INK });
+      cap(d, 0, 400, "Words in the hook: " + words(HOOK) + ". It fits in one sentence.", { size: 24, weight: 700, fill: RED });
+      wrap(d, 0, 450, "If it will not fit in one sentence, the trailer cannot find it. That is a design problem showing, not an editing one.", 56, { size: 24, lh: 30, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "FIRST SECONDS: WHAT IS ON SCREEN");
+      var AX = 740 / 12, LIM = 5;
+      var OP = [["A  logo first", [["black", 0, 2, "#C4C4C4"], ["studio logo", 2, 6, GREY], ["gameplay", 6, 12, INK]]], ["B  gameplay first", [["gameplay", 0, 12, INK]]]];
+      OP.forEach(function (o, i) {
+        var y = 110 + i * 130, g = d.append("g");
+        cap(g, 0, y - 12, o[0], { size: 26, weight: 700 });
+        o[1].forEach(function (s) {
+          g.append("rect").attr("x", s[1] * AX).attr("y", y).attr("width", (s[2] - s[1]) * AX - 2).attr("height", 56).attr("fill", s[3]);
+          cap(g, s[1] * AX + 10, y + 36, s[0], { size: 24, fill: s[3] === "#C4C4C4" ? INK : "#FFFFFF", weight: 700 });
+        });
+      });
+      d.append("path").attr("d", "M0,330 H740").attr("stroke", INK).attr("stroke-width", 2);
+      [0, 3, 6, 9, 12].forEach(function (v) { vline(d, v * AX, 330, 340, INK, 2); cap(d, v * AX, 370, v + " s", { size: 24, anchor: v === 0 ? "start" : v === 12 ? "end" : "middle", fill: MUTED }); });
+      vline(d, LIM * AX, 90, 330, RED, 3, "8 6"); cap(d, LIM * AX - 8, 82, "5 s limit", { size: 24, weight: 700, fill: RED, anchor: "end" });
+      var ph = d.append("path").attr("d", "M0,90 V330").attr("stroke", RED).attr("stroke-width", 5);
+      run(d, 2500, function (t) { ph.attr("transform", "translate(" + (t * LIM * AX) + ",0)"); }, anim);
+      [["A", 6], ["B", 0]].forEach(function (r, i) { cap(d, 0, 430 + i * 44, r[0] + ": first play at " + r[1].toFixed(1) + " s, " + (r[1] <= LIM ? "passes" : "fails") + " the 5 s test", { size: 24, weight: 700, fill: r[1] <= LIM ? INK : RED }); });
+      cap(d, 0, 540, "Play seen by 5 s: A " + Math.max(0, LIM - 6).toFixed(1) + " s, B " + (LIM - 0).toFixed(1) + " s.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "KEY ART: ONE STILL, ONE IDEA");
+      var g3 = d.append("g"); poster(g3, 0, 50, 300, 400);
+      txt(g3, 150, 190, "TILT", { size: 64, weight: 700, anchor: "middle", fill: INK }); txt(g3, 150, 430, "Fall up.", { size: 26, weight: 700, anchor: "middle", fill: RED });
+      fade(g3, anim, 0);
+      [["title", 190, 175], ["the idea: gravity flipped", 130, 100], ["one character", 360, 345], ["tagline", 430, 425]].forEach(function (a, i) {
+        var g = d.append("g"); g.append("path").attr("d", "M310," + a[2] + " H350").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+        cap(g, 360, a[2] + 8, a[0], { size: 24, weight: 700 }); fade(g, anim, 300 + i * 200);
+      });
+    } else if (k === 4) {
+      lab(d, 0, 30, "THUMBNAIL: THE SAME ART, SMALL");
+      var FP = 64, LEG = 12, S = [300, 120, 45], X = [0, 294, 586];
+      S.forEach(function (w, i) {
+        var g = d.append("g"), s = 0.6 * w / 300, px = FP * w / 300, ok = px >= LEG, cx = X[i] + 90 * 1;
+        var hgt = 400 * s; poster(g, X[i], 300 - hgt + 40, 300 * s, hgt);
+        g.append("rect").attr("x", X[i] + 20 * s).attr("y", 300 - hgt + 40 + 130 * s - px * s * 0.7).attr("width", 260 * s).attr("height", Math.max(px * s * 0.7, 1)).attr("fill", ok ? INK : RED).attr("opacity", 0.9);
+        var cxm = X[i] + 300 * s / 2;
+        cap(g, cxm, 380, w + " px wide", { size: 24, anchor: "middle", weight: 700 });
+        cap(g, cxm, 420, "title " + px.toFixed(1) + " px", { size: 24, anchor: "middle" });
+        cap(g, cxm, 460, ok ? "reads" : "too small", { size: 24, anchor: "middle", weight: 700, fill: ok ? INK : RED });
+        fade(g, anim, i * 300);
+      });
+      cap(d, 0, 540, "Title letters of 12 px or more read (an illustrative threshold).", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A hook is built from the mechanic, not from adjectives. It names what you do and what that changes.", "The hook test: gameplay in the first five seconds. A logo and a fade can eat that time before the game appears.", "Key art is one still that stands for the game: a title, one character, one idea.", "A thumbnail is the key art at store size. Shrink the title with the image, and check it still reads."][k]);
+  }
+
+  /* ---------- 4. beat structure, climax, title card ---------- */
+  function renderBeats(el, k, anim) {
+    var svg = svgFor(el, W, H, "Beat structure: seven parts whose durations add up to the runtime", "A timeline of the Shipping Lane trailer from the hook to the call to action, with each part's start, end and length, then the peak on beat 40, then the 1.5 second title card.");
+    var ey = base(svg, [{ id: "beats", s: 1 }, { id: "peak", s: 2 }, { id: "titlecard", s: 3 }], k, anim, ["Peak", "the payoff, on a strong beat"], ["Title card", "the name, held, after the peak"]);
+    var d = svg.append("g"), hi = k === 2 ? 3 : k === 3 ? 4 : null;
+    lab(d, 0, 30, "SHIPPING LANE TRAILER, " + RT.toFixed(1) + " S");
+    var sc = tlBlocks(d, 0, 48, 740, 50, { hi: hi, anim: A(anim, k, 1) });
+    if (k === 1) {
+      var t0 = 0;
+      BEATS.forEach(function (b, i) {
+        var y = 160 + i * 40, g = d.append("g");
+        g.append("rect").attr("x", 0).attr("y", y - 20).attr("width", 20).attr("height", 20).attr("fill", BCOL[i]);
+        cap(g, 36, y, b[1], { size: 24, weight: 700 }); cap(g, 300, y, t0.toFixed(1) + " to " + (t0 + b[2]).toFixed(1) + " s", { size: 24 }); cap(g, 740, y, b[2].toFixed(1) + " s", { size: 24, anchor: "end", weight: 700 });
+        t0 += b[2]; fade(g, A(anim, k, 1), 500 + i * 120);
+      });
+      cap(d, 0, 470, BEATS.map(function (b) { return b[2]; }).join(" + ") + " = " + RT.toFixed(1) + " s", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 510, "× 30 fps = " + fmtInt(RT * 30) + " frames", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      var pk0 = d3.sum(BEATS.slice(0, 3), function (b) { return b[2]; }), spb = 60 / 120, bn = pk0 / spb, dropX = (pk0 - 1) * sc;
+      d.append("rect").attr("x", dropX).attr("y", 104).attr("width", sc - 2).attr("height", 12).attr("fill", INK);
+      cap(d, dropX + sc / 2, 148, "drop 19 to 20 s", { size: 24, anchor: "end", fill: MUTED, weight: 700 });
+      var L = ["peak starts at " + pk0.toFixed(1) + " s", pk0.toFixed(1) + " s ÷ " + spb.toFixed(1) + " s a beat = beat " + bn, bn + " ÷ 4 = bar " + (bn / 4) + " exactly: a downbeat", "it lasts 2.0 s = " + (2 / RT * 100).toFixed(1) + "% of the runtime", "it starts " + (pk0 / RT * 100).toFixed(1) + "% of the way in"];
+      L.forEach(function (s, i) { var g = d.append("g"); cap(g, 0, 230 + i * 50, s, { size: 26, weight: i === 0 ? 700 : 400, fill: i === 0 ? RED : INK }); fade(g, A(anim, k, 2), i * 200); });
+    } else if (k === 3) {
+      var tc = d.append("g"); box(tc, 0, 170, 330, 200, { stroke: INK, sw: 3 }); txt(tc, 165, 285, "Shipping Lane", { size: 32, weight: 700, anchor: "middle" }); fade(tc, A(anim, k, 3), 0);
+      ["22.0 to 23.5 s", "1.5 s × 30 fps", "= " + (1.5 * 30) + " frames", (1.5 / RT * 100).toFixed(1) + "% of the runtime"].forEach(function (s, i) { var g = d.append("g"); cap(g, 360, 210 + i * 50, s, { size: 26, weight: i === 0 ? 700 : 400, fill: i === 0 ? RED : INK }); fade(g, A(anim, k, 3), 200 + i * 200); });
+    }
+    note(svg, ey, ["", "Beats run in order: hook, establish, escalate, peak, title, button, call to action. Their lengths add to the runtime.", "The peak sits on a downbeat. A quiet drop one second before it makes it land.", "The title card comes after the peak. An unknown game's name is the least interesting opening."][k]);
+  }
+
+  /* ---------- 5. runtime, frame rate, resolution ---------- */
+  function renderRuntime(el, k, anim) {
+    var svg = svgFor(el, W, H, "Runtime in seconds, and the frames and pixels it costs", "Step one shows runtime ranges on an axis to 120 seconds with the Shipping Lane trailer at 30.5. Step two shows frames equal frame rate times seconds. Step three compares 1080p and 4K pixel counts.");
+    var ey = base(svg, [{ id: "runtime", s: 1 }, { id: "fps", s: 2 }, { id: "res", s: 3 }], k, anim, ["Frame rate", "how many images each second"], ["Resolution", "how many pixels in each image"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "RUNTIME, 0 TO 120 SECONDS"); var sc = 740 / 120;
+      [["Gate accepts 15 to 120 s", 15, 120, "#C4C4C4"], ["Store trailer, typical 30 to 90 s", 30, 90, "#909090"], ["Good first target 60 to 90 s", 60, 90, INK]].forEach(function (r, i) {
+        var y = 70 + i * 90, g = d.append("g"); cap(g, r[1] * sc, y, r[0], { size: 24, weight: 700 }); bar(g, r[1] * sc, y + 12, (r[2] - r[1]) * sc, 30, r[3], A(anim, k, 1), i * 250);
+      });
+      d.append("path").attr("d", "M0,350 H740").attr("stroke", INK).attr("stroke-width", 2);
+      [0, 30, 60, 90, 120].forEach(function (v) { vline(d, v * sc, 350, 360, INK, 2); cap(d, v * sc, 390, v + " s", { size: 24, anchor: v === 0 ? "start" : v === 120 ? "end" : "middle", fill: MUTED }); });
+      vline(d, RT * sc, 70, 350, RED, 3, "8 6");
+      cap(d, RT * sc + 12, 440, "Shipping Lane: " + RT.toFixed(1) + " s", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 500, "It is " + (RT - 30).toFixed(1) + " s above the typical lower edge of 30 s.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "ONE SECOND OF FILM, AS FRAMES");
+      [30, 60].forEach(function (f, i) {
+        var y = 70 + i * 120, g = d.append("g"); cap(g, 0, y, f + " frames a second", { size: 24, weight: 700 });
+        d3.range(f + 1).forEach(function (j) { var tk = vline(g, j * 740 / f, y + 14, y + 64, i ? RED : INK, 2); if (A(anim, k, 2)) tk.attr("opacity", 0).transition().delay(j * (900 / f)).duration(150).attr("opacity", 1); });
+      });
+      [30, 60].forEach(function (f, i) { var g = d.append("g"); cap(g, 0, 340 + i * 56, "frames = " + f + " × " + RT.toFixed(1) + " s = " + fmtInt(f * RT), { size: 26, weight: 700, fill: i ? RED : INK }); fade(g, A(anim, k, 2), 900 + i * 300); });
+      cap(d, 0, 480, "The Shipping Lane film runs at 30; its capture ran at 60.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "PIXELS IN ONE FRAME");
+      var g = d.append("g"); g.append("rect").attr("x", 0.5).attr("y", 60.5).attr("width", 384).attr("height", 216).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3);
+      g.append("rect").attr("x", 0.5).attr("y", 60.5).attr("width", 192).attr("height", 108).attr("fill", "#C4C4C4").attr("stroke", INK).attr("stroke-width", 3); fade(g, A(anim, k, 3), 0);
+      var p1 = 1920 * 1080, p4 = 3840 * 2160;
+      cap(d, 410, 100, "3840 × 2160", { size: 26, weight: 700, fill: RED }); cap(d, 410, 140, "= " + fmtInt(p4) + " px", { size: 24 });
+      cap(d, 410, 200, "1920 × 1080", { size: 26, weight: 700 }); cap(d, 410, 240, "= " + fmtInt(p1) + " px", { size: 24 });
+      cap(d, 0, 340, (p4 / p1).toFixed(1) + " times the pixels in 4K.", { size: 28, weight: 700, fill: RED });
+      cap(d, 0, 400, "The repo's trailer gate wants native 3840 × 2160 footage.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Runtime is a choice. 60 to 90 seconds is a good first target; anything that does not earn its seconds costs the viewer.", "Frames are frame rate times seconds. Doubling the rate doubles the frames to capture and store.", "Resolution is pixels. 4K has four times the pixels of 1080p, so it needs a stronger machine to capture."][k]);
+  }
+
+  /* ---------- 6. pacing and cut on action ---------- */
+  function renderPace(el, k, anim) {
+    var svg = svgFor(el, W, H, "Pacing is cuts per minute rising toward the peak; cut on action cuts while the motion is moving", "Step one shows nine shots with their cuts per minute rising from 20 to 30. Step two shows a jump arc with three possible cut points and the speed at each.");
+    var ey = base(svg, [{ id: "pacing", s: 1 }, { id: "cutact", s: 2 }], k, anim, ["Pacing", "how fast the cuts come"], ["Cut on action", "cut while the motion moves"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "NINE SHOTS BEFORE THE TITLE");
+      var tot = d3.sum(SHOTS), sc = 740 / tot, t0 = 0, SEC = [[0, 2, "hook + establish", "#545454"], [2, 8, "escalate", "#909090"], [8, 9, "peak", RED]];
+      SHOTS.forEach(function (s, i) {
+        var sec = SEC.filter(function (q) { return i >= q[0] && i < q[1]; })[0];
+        var r = d.append("rect").attr("x", t0 * sc).attr("y", 48).attr("width", s * sc - 3).attr("height", 44).attr("fill", sec[3]); if (A(anim, k, 1)) r.attr("opacity", 0).transition().delay(i * 120).duration(250).attr("opacity", 1);
+        t0 += s;
+      });
+      cap(d, 0, 132, "Shortest shot " + d3.min(SHOTS).toFixed(1) + " s; the gate's floor is 0.8 s.", { size: 24, fill: MUTED });
+      SEC.forEach(function (q, i) {
+        var arr = SHOTS.slice(q[0], q[1]), secs = d3.sum(arr), cpm = arr.length / secs * 60, y = 180 + i * 110, g = d.append("g");
+        cap(g, 0, y, q[2] + ": " + arr.length + (arr.length === 1 ? " shot" : " shots") + " in " + secs.toFixed(0) + " s", { size: 24, weight: 700 });
+        bar(g, 0, y + 14, cpm * 12, 32, q[3], A(anim, k, 1), 400 + i * 300); cap(g, cpm * 12 + 12, y + 40, cpm.toFixed(1) + " cuts a minute", { size: 26, weight: 700, fill: i === 2 ? RED : INK });
+        fade(g, A(anim, k, 1), 300 + i * 300);
+      });
+    } else {
+      lab(d, 0, 30, "A JUMP, 24 FRAMES AT 30 FPS");
+      var VX = 24, VY = 40, GG = 3.4, X0 = 20, GY = 300, SCY = 0.8;
+      var px = function (f) { return X0 + VX * f; }, py = function (f) { return GY - (VY * f - GG / 2 * f * f) * SCY; }, spd = function (f) { return Math.hypot(VX, VY - GG * f); };
+      d.append("path").attr("d", "M0," + GY + " H740").attr("stroke", INK).attr("stroke-width", 3);
+      var ball = d.append("g");
+      d3.range(24).forEach(function (f) { ball.append("circle").attr("cx", px(f)).attr("cy", py(f)).attr("r", 7).attr("fill", f === 2 ? RED : "#909090"); });
+      var CUTS = [["A", 0, "before the jump"], ["B", Math.round(VY / GG), "at the apex"], ["C", 2, "2 frames after takeoff"]];
+      CUTS.forEach(function (c, i) {
+        var g = d.append("g"), x = px(c[1]), fy = c[0] === "B" ? 80 : 345, y0 = c[0] === "B" ? py(c[1]) - 10 : GY + 6;
+        vline(g, x, Math.min(fy, y0), Math.max(fy, y0), c[0] === "C" ? RED : INK, 2);
+        g.append("circle").attr("cx", x).attr("cy", fy).attr("r", 18).attr("fill", "#FFFFFF").attr("stroke", c[0] === "C" ? RED : INK).attr("stroke-width", 3);
+        txt(g, x, fy + 8, c[0], { size: 24, weight: 700, anchor: "middle", fill: c[0] === "C" ? RED : INK });
+        var spA = c[0] === "A" ? 0 : spd(c[1]);
+        cap(d, 0, 420 + i * 46, c[0] + "  " + c[2] + ": speed " + spA.toFixed(1) + " px a frame", { size: 24, weight: c[0] === "C" ? 700 : 400, fill: c[0] === "C" ? RED : INK });
+        fade(g, A(anim, k, 2), 300 + i * 250);
+      });
+      var mv = d.append("circle").attr("r", 11).attr("fill", RED).attr("cx", px(0)).attr("cy", py(0));
+      run(d, 2200, function (t) { var f = t * 23; mv.attr("cx", px(f)).attr("cy", py(f)); }, anim);
+    }
+    note(svg, ey, ["", "Pacing is cuts per minute. It rises toward the peak, but only after the viewer knows the game: 20 to 25.7 to 30 here.", "A cut hides best when the eye is already following motion. Cut at C, not A or B, and the move carries across."][k]);
+  }
+
+  /* ---------- 7. BPM, cut on the beat, music drop ---------- */
+  var ROUGH = [3.01, 5.87, 9.49, 11.38, 13.52, 14.91, 17.03, 19.83, 22.01];
+  function renderMusic(el, k, anim) {
+    var svg = svgFor(el, W, H, "BPM sets seconds per beat; cuts snap to the beat grid; a drop makes the peak land", "Step one shows beat ticks at 90, 120 and 140 BPM over four seconds. Step two shows rough cuts snapping to a half-second grid. Step three compares music energy in the build, the drop and the peak.");
+    var ey = base(svg, [{ id: "bpm", s: 1 }, { id: "cutbeat", s: 2 }, { id: "drop", s: 3 }], k, anim, ["Cut on action", "cut while the motion moves"], ["Cut on the beat", "cut on the music's pulse"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "BEATS IN FOUR SECONDS"); var sc = 740 / 4, lines = [];
+      [90, 120, 140].forEach(function (b, i) {
+        var y = 70 + i * 140, g = d.append("g"), spb = 60 / b;
+        cap(g, 0, y, b + " BPM: 60 ÷ " + b + " = " + spb.toFixed(3) + " s a beat", { size: 24, weight: 700, fill: b === 120 ? RED : INK });
+        var ticks = d3.range(0, 4 + 1e-9, spb).map(function (t) { return t; });
+        ticks.forEach(function (t) { var tk = vline(g, t * sc, y + 14, y + 54, b === 120 ? RED : INK, 3); if (A(anim, k, 1)) tk.attr("opacity", 0.15).transition().delay(t / 4 * 2500).duration(120).attr("opacity", 1); });
+        cap(g, 0, y + 90, "beats in 4 s = 4 × " + b + " ÷ 60 = " + (4 * b / 60).toFixed(1), { size: 24, fill: MUTED });
+      });
+      var ph = d.append("path").attr("d", "M0,55 V440").attr("stroke", RED).attr("stroke-width", 2).attr("opacity", 0.5);
+      run(d, 2500, function (t) { ph.attr("transform", "translate(" + (t * 740) + ",0)"); }, anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "CUTS 1 TO 4 OF 9, 2 TO 12 SECONDS (ILLUSTRATIVE)");
+      var a0 = 2, a1 = 12, sc2 = 740 / (a1 - a0), X = function (t) { return (t - a0) * sc2; }, snap = function (t) { return Math.round(t / 0.5) * 0.5; };
+      cap(d, 0, 90, "rough cuts", { size: 24, weight: 700, fill: MUTED }); cap(d, 0, 250, "beat grid, 120 BPM", { size: 24, weight: 700, fill: MUTED }); cap(d, 0, 330, "snapped cuts", { size: 24, weight: 700, fill: RED });
+      for (var b = Math.ceil(a0 / 0.5) * 0.5; b <= a1; b += 0.5) vline(d, X(b), 262, (Math.round(b * 2) % 4 === 0) ? 296 : 282, INK, 2);
+      var dots = [];
+      ROUGH.slice(0, 4).forEach(function (t) {
+        d.append("circle").attr("cx", X(t)).attr("cy", 130).attr("r", 10).attr("fill", "#909090");
+        d.append("path").attr("d", "M" + X(t) + ",142 V" + 262).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+        dots.push(d.append("circle").attr("cy", 360).attr("r", 12).attr("fill", RED));
+      });
+      run(d, 1800, function (t) { ROUGH.slice(0, 4).forEach(function (r, i) { dots[i].attr("cx", X(r + (snap(r) - r) * t)); }); }, anim);
+      var near = function (a, b) { return Math.abs(a - b) <= 0.04; };
+      var before = ROUGH.filter(function (t) { return near(t, snap(t)); }).length, after = ROUGH.length;
+      cap(d, 0, 440, "Before: " + before + " of " + ROUGH.length + " within 40 ms = " + (before / ROUGH.length * 100).toFixed(1) + "%", { size: 24 });
+      cap(d, 0, 480, "After: " + after + " of " + ROUGH.length + " = " + (after / after * 100).toFixed(1) + "%", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 520, "The gate fails a cut with under 60% on the beat.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "MEASURED ENERGY (RMS), SHIPPING LANE CUE");
+      var V = [["build", 0.14], ["drop", 0.016], ["peak", 0.17]], sh = 300 / 0.17;
+      V.forEach(function (v, i) {
+        var x = 40 + i * 240, g = d.append("g"), h = v[1] * sh;
+        var b2 = g.append("rect").attr("x", x).attr("y", 420 - h).attr("width", 150).attr("height", h).attr("fill", i === 1 ? RED : INK);
+        if (A(anim, k, 3)) b2.attr("y", 420).attr("height", 0).transition().delay(i * 300).duration(600).attr("y", 420 - h).attr("height", h);
+        cap(g, x + 75, 456, v[0] + " " + v[1], { size: 24, anchor: "middle", weight: 700 });
+      });
+      d.append("path").attr("d", "M0,420 H740").attr("stroke", INK).attr("stroke-width", 2);
+      cap(d, 0, 505, "20 × log10(0.14 ÷ 0.016) = " + (20 * Math.log10(0.14 / 0.016)).toFixed(1) + " dB quieter", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 545, "Drop 19.0 to 20.0 s; the peak lands at 20.0 s.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "BPM is beats a minute. Divide 60 by it for the seconds between beats; at 120 BPM that is 0.5 s.", "Put each cut on a beat so picture and sound lock. Snapping moved the off-beat cuts by up to 170 ms.", "Just before the peak the music nearly stops. That quiet is what makes the peak feel big."][k]);
+  }
+
+  /* ---------- 8. sound design, muted test, accessibility ---------- */
+  var VO = [["V01", "HUD reads Space: jump"], ["V02", "+1 TOKEN pops up"], ["V03", "POWERED label shows"], ["V04", "route sign on screen"], ["V05", "the title card"], ["V06", "ONE MORE TRY on HUD"], ["V07", "the end card"]];
+  function renderSound(el, k, anim) {
+    var svg = svgFor(el, W, H, "Sound design ducks the music under hits; the muted test and flash limits keep the film usable", "Step one plots music gain ducking under two game hits. Step two lists seven voice lines each backed by something on screen. Step three counts flashes per second in two sequences.");
+    var ey = base(svg, [{ id: "sound", s: 1 }, { id: "muted", s: 2 }, { id: "access", s: 3 }], k, anim, ["Muted test", "does it work with no sound"], ["Sound design", "music for tone, hits for impact"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "MUSIC GAIN OVER 3 SECONDS (ILLUSTRATIVE)");
+      var X0 = 110, SX = 200, DUCK = 6, HITS = [0.6, 1.8], DB = 25;
+      var gain = function (t) { var m = 0; HITS.forEach(function (h) { var dt = t - h, e = dt < 0 ? 0 : dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) / 0.25); if (e > m) m = e; }); return -DUCK * m; };
+      d.append("path").attr("d", "M" + X0 + ",100 H" + (X0 + 600)).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      cap(d, 0, 108, "0 dB", { size: 24, fill: MUTED }); cap(d, 0, 108 + DUCK * DB, "−6 dB", { size: 24, fill: MUTED });
+      var pts = d3.range(0, 3.0001, 0.01).map(function (t) { return [X0 + t * SX, 100 - gain(t) * DB]; });
+      var path = d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4); if (A(anim, k, 1)) drawIn(path, 0, 2200);
+      HITS.forEach(function (h, i) { var g = d.append("g"); vline(g, X0 + h * SX, 80, 300, RED, 3); cap(g, X0 + h * SX + 10, 330, "hit " + (i + 1), { size: 24, weight: 700, fill: RED }); fade(g, A(anim, k, 1), 600 + i * 600); });
+      cap(d, 0, 400, "At each game hit the music drops " + DUCK + " dB, then recovers.", { size: 24 });
+      cap(d, 0, 440, "Master target: −16 LUFS, true peak under −2 dB.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 480, "The ducking depth here is illustrative.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SEVEN VOICE LINES, EACH ALSO ON SCREEN");
+      VO.forEach(function (v, i) {
+        var y = 76 + i * 50, g = d.append("g"); cap(g, 0, y, v[0], { size: 24, weight: 700 }); cap(g, 90, y, v[1], { size: 24 }); check(g, 700, y - 8, 12, RED); fade(g, A(anim, k, 2), i * 220);
+      });
+      cap(d, 0, 470, "Lost with the sound off: " + VO.filter(function (v) { return !v[1]; }).length + " of " + VO.length + " lines.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 510, "From the Shipping Lane shot list.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "BRIGHT FRAMES OVER 2 SECONDS AT 30 FPS (ILLUSTRATIVE)");
+      var N = 60, FX = 740 / N, LIMF = 3;
+      [["A", 8], ["B", 20]].forEach(function (s, i) {
+        var y = 80 + i * 140, g = d.append("g"), on = [], bright = d3.range(N).map(function (f) { var ph = f % s[1], b = ph < s[1] / 2; if (b && ph === 0) on.push(f); return b; });
+        var worst = 0; for (var w0 = 0; w0 + 30 <= N; w0++) worst = Math.max(worst, on.filter(function (f) { return f >= w0 && f < w0 + 30; }).length);
+        cap(g, 0, y, "Sequence " + s[0] + ": worst second has " + worst + " flashes: " + (worst > LIMF ? "too many" : "within the limit"), { size: 24, weight: 700, fill: worst > LIMF ? RED : INK });
+        bright.forEach(function (b, f) { g.append("rect").attr("x", f * FX).attr("y", y + 14).attr("width", FX).attr("height", 60).attr("fill", b ? INK : "#E3E3E3"); });
+        fade(g, A(anim, k, 3), i * 300);
+      });
+      cap(d, 0, 400, "A common limit is no more than 3 flashes in any second.", { size: 24, fill: MUTED });
+      var cb = d.append("g"); box(cb, 0, 440, 740, 70, { stroke: INK, sw: 2 }); lab(cb, 14, 466, "CAPTION", { size: 24 }); cap(cb, 14, 498, "“One jump. Read the landing.”", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "Music sets the tone. The game's own hits and sounds carry impact, so the music steps aside for them.", "Seven lines of voice, and each is also on screen. With the sound off, nothing is lost.", "Captions carry speech. Fast flashing can harm some viewers, so count flashes before you cut."][k]);
+  }
+
+  /* ---------- 9. call to action, logo sting ---------- */
+  function renderCta(el, k, anim) {
+    var svg = svgFor(el, W, H, "A call to action ends the film; a logo sting belongs after the game, not before", "Step one shows the end card with one action held for 5.5 seconds, 18 percent of the runtime. Step two compares play seen in the first ten seconds with a 3 second logo first versus last.");
+    var ey = base(svg, [{ id: "cta", s: 1 }, { id: "sting", s: 2 }], k, anim, ["Call to action", "one thing to do next"], ["Logo sting", "short; at the end"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "THE LAST 5.5 SECONDS");
+      tlBlocks(d, 0, 48, 740, 44, { hi: 6, anim: A(anim, k, 1) });
+      var c = d.append("g"); box(c, 0, 140, 420, 290, { stroke: INK, sw: 3 });
+      txt(c, 210, 200, "Shipping Lane", { size: 32, weight: 700, anchor: "middle" }); cap(c, 210, 245, "macOS · Godot 4.7", { size: 24, anchor: "middle" }); cap(c, 210, 285, "Playable prototype", { size: 24, anchor: "middle" });
+      box(c, 50, 330, 320, 60, { stroke: RED, sw: 3 }); cap(c, 210, 369, "Download on GitHub", { size: 24, weight: 700, anchor: "middle", fill: RED });
+      fade(c, A(anim, k, 1), 300);
+      var hold = BEATS[6][2];
+      [hold.toFixed(1) + " s hold", fmtInt(hold * 30) + " frames", (hold / RT * 100).toFixed(1) + "% of " + RT.toFixed(1) + " s", "4 to 6 s: " + (hold >= 4 && hold <= 6 ? "yes" : "no")].forEach(function (s, i) { var g = d.append("g"); cap(g, 450, 190 + i * 50, s, { size: 24, weight: i === 0 ? 700 : 400, fill: i === 0 ? RED : INK }); fade(g, A(anim, k, 1), 500 + i * 200); });
+      cap(d, 0, 480, "One action, not four social handles.", { size: 24, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THE FIRST 10 SECONDS (STING LENGTH ILLUSTRATIVE)");
+      var STING = 3, SC = 740 / 10, play = [10 - STING, 10];
+      [["Logo first", STING], ["Logo last", 0]].forEach(function (r, i) {
+        var y = 80 + i * 130, g = d.append("g"), pl = 10 - r[1];
+        cap(g, 0, y, r[0] + ": " + pl.toFixed(0) + " s of play in 10 s", { size: 24, weight: 700, fill: i ? INK : RED });
+        if (r[1]) g.append("rect").attr("x", 0).attr("y", y + 14).attr("width", r[1] * SC - 2).attr("height", 50).attr("fill", GREY);
+        if (r[1]) cap(g, 12, y + 47, "sting", { size: 24, fill: "#FFFFFF", weight: 700 });
+        bar(g, r[1] * SC, y + 14, pl * SC, 50, i ? INK : "#C4C4C4", A(anim, k, 2), 0); cap(g, r[1] * SC + 12, y + 47, "gameplay", { size: 24, weight: 700, fill: i ? "#FFFFFF" : INK });
+      });
+      d.append("path").attr("d", "M0,330 H740").attr("stroke", INK).attr("stroke-width", 2);
+      [0, 5, 10].forEach(function (v) { vline(d, v * SC, 330, 340, INK, 2); cap(d, v * SC, 370, v + " s", { size: 24, anchor: v === 0 ? "start" : v === 10 ? "end" : "middle", fill: MUTED }); });
+      cap(d, 0, 440, ((10 - (10 - STING)) / 10 * 100).toFixed(0) + "% less play before the viewer decides.", { size: 26, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "End on one action: wishlist, play, or a link. Hold it long enough to read, and never fade to black.", "A logo sting spends the most-watched seconds on the least interesting content. Put it at the end."][k]);
+  }
+
+  /* ---------- 10. capture: fixed frame rate, Movie Maker, clean footage ---------- */
+  function renderCapture(el, k, anim) {
+    var svg = svgFor(el, W, H, "Capture with a fixed frame rate, record with Movie Maker mode, and hide only the clutter", "Step one compares real-time and fixed-rate capture of three seconds of play. Step two shows the Movie Maker command with its flags. Step three shows a game frame with debug items fading out and the explaining HUD kept.");
+    var ey = base(svg, [{ id: "fixed", s: 1 }, { id: "movie", s: 2 }, { id: "clean", s: 3 }], k, anim, ["Frame rate", "images shown each second"], ["Fixed frame rate", "each frame = 1/fps of game time"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "THREE SECONDS OF PLAY, ON A SLOW MACHINE");
+      var MS = 50, SEC = 3, FPS = 60, real = Math.floor(SEC / (MS / 1000)), fixed = FPS * SEC;
+      [["Real time: " + real + " frames", real, INK], ["Fixed " + FPS + " fps: " + fixed + " frames", fixed, RED]].forEach(function (r, i) {
+        var y = 70 + i * 120, g = d.append("g"); cap(g, 0, y, r[0], { size: 24, weight: 700, fill: r[2] });
+        d3.range(r[1]).forEach(function (j) { var tk = vline(g, 1 + j * 738 / r[1], y + 14, y + 64, r[2], i ? 1.5 : 2.5); if (A(anim, k, 1)) tk.attr("opacity", 0).transition().delay(j / r[1] * 1500).duration(100).attr("opacity", 1); });
+      });
+      cap(d, 0, 330, "One frame takes " + MS + " ms to draw here (illustrative).", { size: 24, fill: MUTED });
+      cap(d, 0, 380, "Real time: " + (real / SEC) + " frames a second reach the file.", { size: 24 });
+      cap(d, 0, 420, "Fixed: " + fixed + " frames, but the run takes " + (fixed * MS / 1000).toFixed(0) + " s to record.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 470, "frames = fps × seconds = " + FPS + " × " + SEC + " = " + fixed, { size: 24 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THE RECORDING COMMAND");
+      d.append("rect").attr("x", 0.5).attr("y", 60.5).attr("width", 740).attr("height", 140).attr("fill", INK);
+      var t = d.append("text").attr("x", 20).attr("y", 110).attr("font-family", MONO).attr("font-size", 26);
+      t.append("tspan").attr("fill", "#FFFFFF").text("godot ");
+      t.append("tspan").attr("fill", "#FBE7EA").attr("font-weight", 700).text("--write-movie").append("tspan").attr("fill", "#FFFFFF").attr("font-weight", 400).text(" run.avi");
+      var t2 = d.append("text").attr("x", 20).attr("y", 170).attr("font-family", MONO).attr("font-size", 26);
+      t2.append("tspan").attr("fill", "#FBE7EA").attr("font-weight", 700).text("--fixed-fps 60 --quit-after 1800");
+      var Q = 1800, F = 60, L = ["--write-movie: record to this file", "--fixed-fps 60: one frame = 1/60 s", "--quit-after 1800: stop after 1800 frames"];
+      L.forEach(function (s, i) { var g = d.append("g"); mono(g, 0, 260 + i * 46, s, { size: 24 }); fade(g, A(anim, k, 2), 300 + i * 300); });
+      cap(d, 0, 440, Q + " frames ÷ " + F + " = " + (Q / F).toFixed(1) + " s of play", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 485, "Shape from the repo's capture notes; Godot's docs list the flags.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "ONE CAPTURED FRAME");
+      var g = d.append("g"); box(g, 0, 50, 740, 290, { stroke: INK, sw: 3 });
+      var ITEMS = [["TOKENS 3", 20, 100, "start", true], ["RETRIES 01", 720, 100, "end", true], ["FPS 60", 20, 320, "start", false], ["pos=(12,4)", 720, 320, "end", false]];
+      g.append("rect").attr("x", 330).attr("y", 210).attr("width", 56).attr("height", 56).attr("fill", INK); g.append("path").attr("d", "M0,266 H740").attr("stroke", INK).attr("stroke-width", 3).attr("transform", "translate(0,0)");
+      var dbg = d.append("g");
+      ITEMS.forEach(function (it) { var s = it[4] ? g : dbg; cap(s, it[1], it[2], it[0], { size: 24, anchor: it[3], weight: 700, fill: it[4] ? INK : RED }); });
+      dbg.append("rect").attr("x", 316).attr("y", 196).attr("width", 84).attr("height", 84).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+      var keep = ITEMS.filter(function (i) { return i[4]; }).length, hide = ITEMS.length - keep + 1;
+      if (anim) dbg.transition().delay(600).duration(900).attr("opacity", 0).remove(); else dbg.remove();
+      cap(d, 0, 385, "Hidden: FPS counter, collider overlay, debug print (" + hide + " of " + (ITEMS.length + 1) + " items).", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 430, "Kept: token counter and retries, which explain the game.", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "A fixed frame rate gives every frame exactly 1/fps of game time, so a slow machine still records smooth, true motion.", "Movie Maker mode writes the run to a video file, frame by frame, at the rate you fix.", "Hide the clutter a player never sees. Keep any HUD that explains a mechanic."][k]);
+  }
+
+  /* ---------- 11. gameplay vs cinematic, honest, viewer test ---------- */
+  function renderHonest(el, k, anim) {
+    var svg = svgFor(el, W, H, "Real play, an honest promise and a test with a stranger", "Step one sorts six kinds of footage into allowed and not allowed. Step two shows a feature list where planned features may not appear. Step three shows the viewer test plan with results pending.");
+    var ey = base(svg, [{ id: "real", s: 1 }, { id: "honest", s: 2 }, { id: "viewer", s: 3 }], k, anim, ["Trailer", "sells; keeps its promise"], ["Gameplay video", "plain footage of play"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "WHAT THE FOOTAGE MAY BE");
+      var F = [["rehearsed input route", 1], ["best of several takes", 1], ["the game's own cinematic, labelled", 1], ["teleport or invincibility", 0], ["slow motion or speed-up", 0], ["AI video or mock-up footage", 0]];
+      F.forEach(function (f, i) {
+        var y = 76 + i * 56, g = d.append("g"); cap(g, 0, y, f[0], { size: 24 }); cap(g, 740, y, f[1] ? "allowed" : "not allowed", { size: 24, weight: 700, anchor: "end", fill: f[1] ? INK : RED }); g.append("path").attr("d", "M0," + (y + 16) + " H740").attr("stroke", FAMILIAR).attr("stroke-width", 1.5); fade(g, A(anim, k, 1), i * 180);
+      });
+      var ok = d3.sum(F, function (f) { return f[0] && f[1]; });
+      cap(d, 0, 450, "Allowed: " + d3.sum(F, function (f) { return f[1]; }) + " of " + F.length + ". What the game did is the line,", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 486, "not how many takes it needed.", { size: 24, weight: 700, fill: RED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "FEATURE LIST (ILLUSTRATIVE)");
+      var FT = [["jump", "implemented"], ["bump block", "implemented"], ["shield", "implemented"], ["stomp", "implemented"], ["checkpoints", "planned"]];
+      FT.forEach(function (f, i) {
+        var y = 80 + i * 60, g = d.append("g"), imp = f[1] === "implemented";
+        cap(g, 0, y, f[0], { size: 26, weight: 700 }); cap(g, 300, y, f[1], { size: 24, fill: imp ? INK : RED }); cap(g, 740, y, imp ? "may appear" : "never appears", { size: 24, anchor: "end", weight: 700, fill: imp ? INK : RED });
+        g.append("path").attr("d", "M0," + (y + 18) + " H740").attr("stroke", FAMILIAR).attr("stroke-width", 1.5); fade(g, A(anim, k, 2), i * 180);
+      });
+      var imp = FT.filter(function (f) { return f[1] === "implemented"; }).length;
+      cap(d, 0, 450, imp + " of " + FT.length + " features may be shown.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 495, "A trailer is a promise. The game has to keep it.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "TEN SECONDS INTO A " + RT.toFixed(1) + " S FILM");
+      d.append("rect").attr("x", 0).attr("y", 50).attr("width", 740).attr("height", 30).attr("fill", "#E3E3E3"); d.append("rect").attr("x", 0).attr("y", 50).attr("width", 10 / RT * 740).attr("height", 30).attr("fill", RED);
+      cap(d, 10 / RT * 740 + 12, 74, "stop at 10 s = " + (10 / RT * 100).toFixed(1) + "%", { size: 24, weight: 700 });
+      [["Viewer 1, sound on", 0], ["Viewer 2, sound off", 380]].forEach(function (v, i) {
+        var g = d.append("g"); box(g, v[1], 130, 360, 270, { stroke: i ? RED : INK, sw: 3 }); cap(g, v[1] + 16, 170, v[0], { size: 24, weight: 700, fill: i ? RED : INK });
+        wrap(g, v[1] + 16, 212, "What kind of game is it? What does the player do?", 26, { size: 24, lh: 30 }); cap(g, v[1] + 16, 340, "Result: pending", { size: 24, weight: 700, fill: RED }); cap(g, v[1] + 16, 376, "until a person does it", { size: 24, fill: MUTED });
+        fade(g, A(anim, k, 3), i * 300);
+      });
+      cap(d, 0, 450, "Watch their faces. Where attention drifts, cut.", { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "Footage must be real play from the real build. A cinematic is allowed only if it is the game's own and is labelled.", "An honest trailer shows only what the game really does. A planned feature on screen is a promise you cannot keep.", "You already know the game, so you cannot judge the cut. Show it to someone who does not, then with the sound off."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from trailer making", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Trailer", "Sells the game; shows enough to convince"], ["Teaser", "Announces it; saves the rest for later"]],
+      [["Logline", "One sentence that explains the game"], ["Tagline", "A few words to remember; explains nothing"]],
+      [["Cut on action", "Cut while the motion is moving"], ["Cut on the beat", "Cut when the music pulses"]],
+      [["Key art", "The full still image that stands for the game"], ["Thumbnail", "The same art at store size"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(40,0)"), RG = R.append("g").attr("transform", "translate(40,0)");
+      if (i === 0) {
+        var shL = 12, shR = 3, sL = 60, sR = 20;
+        [[LG, shL, sL, INK], [RG, shR, sR, RED]].forEach(function (p) {
+          var g = p[0], sc = 5; d3.range(p[1]).forEach(function (j) { g.append("rect").attr("x", j * (p[2] / p[1]) * sc).attr("y", 200).attr("width", (p[2] / p[1]) * sc - 3).attr("height", 50).attr("fill", p[3]).attr("opacity", (j + 0.5) / p[1] < t ? 1 : 0.15); });
+          cap(g, 0, 300, p[1] + " shots in " + p[2] + " s", { size: 24 });
+        });
+        cap(LG, 0, 340, "ends on one action", { size: 24, fill: MUTED }); cap(RG, 0, 340, "ends on a hint, or nothing", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        [[LG, LOGL, INK], [RG, TAGL, RED]].forEach(function (p) {
+          var w = p[1].split(" "), n = Math.max(1, Math.round(w.length * t)); wrap(p[0], 0, 160, w.slice(0, n).join(" "), 22, { size: 28, lh: 36, weight: 700, fill: p[2] }); cap(p[0], 0, 340, words(p[1]) + " words", { size: 24, fill: MUTED });
+        });
+      } else if (i === 2) {
+        var spC = Math.hypot(24, 40 - 3.4 * 2);
+        [["A", 0, "#C4C4C4"], ["C", spC, RED]].forEach(function (b, j) { var h = b[1] * 4 * t; LG.append("rect").attr("x", 30 + j * 120).attr("y", 300 - h).attr("width", 70).attr("height", Math.max(h, 2)).attr("fill", b[2]); cap(LG, 65 + j * 120, 340, b[0], { size: 24, anchor: "middle", weight: 700 }); });
+        cap(LG, 0, 385, "cut C: " + spC.toFixed(1) + " px a frame, A: 0", { size: 24, fill: MUTED });
+        d3.range(7).forEach(function (j) { vline(RG, 20 + j * 80, 150, 210, INK, 3); });
+        var rx = 20 + (5.87 + (6 - 5.87) * t - 5) * 160; RG.append("circle").attr("cx", rx).attr("cy", 280).attr("r", 12).attr("fill", RED);
+        cap(RG, 0, 340, "rough 5.87 s snaps to 6.0 s", { size: 24, fill: MUTED });
+      } else {
+        var wk = 300 - 180 * t, FPX = 64 * wk / 300, hk = wk * 4 / 3;
+        LG.append("rect").attr("x", 0.5).attr("y", 140.5).attr("width", 180).attr("height", 240).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); LG.append("rect").attr("x", 20).attr("y", 190).attr("width", 140).attr("height", 24).attr("fill", INK); cap(LG, 200, 200, "title 64 px", { size: 24 });
+        RG.append("rect").attr("x", 0.5).attr("y", 140.5).attr("width", wk * 0.6).attr("height", hk * 0.6).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        RG.append("rect").attr("x", 10).attr("y", 140 + 40 * wk / 300).attr("width", wk * 0.6 - 20).attr("height", Math.max(FPX * 0.7 * 0.6, 2)).attr("fill", FPX >= 12 ? INK : RED);
+        cap(RG, 200, 200, "title " + FPX.toFixed(1) + " px", { size: 24 });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the trailer shorter", x: "Cut it from 90 s to 60 s: 1,800 frames at 30 fps" },
+    { v: "make it more exciting", x: "Shorten shots from 3 s to 1.5 s toward the peak, after the game is shown" },
+    { v: "put it on the music", x: "At 120 BPM, move every cut to the nearest 0.5 s beat" },
+    { v: "start strong", x: "Show gameplay by 5 s; the logo goes last" },
+    { v: "tell them what to do", x: "End on one action, held 5.5 s: title, platform, one link" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests about a trailer turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 44, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { var fr = [["90 s: " + fmtInt(90 * 30) + " frames", 90 * 30, "#C4C4C4"], ["60 s: " + fmtInt(60 * 30) + " frames", 60 * 30, RED]]; fr.forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, 560 * r[1] / 2700, 40, r[2], anim, i * 400); }); nt = (90 * 30 - 60 * 30) + " fewer frames, a third less"; }
+    else if (k === 2) { [["3 s shots: " + (60 / 3).toFixed(0) + " cuts a minute", 60 / 3, "#C4C4C4"], ["1.5 s shots: " + (60 / 1.5).toFixed(0) + " cuts a minute", 60 / 1.5, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, 560 * r[1] / 40, 40, r[2], anim, i * 400); }); nt = "doubles the rate; the floor is 0.8 s"; }
+    else if (k === 3) {
+      var er = ROUGH.map(function (t) { return Math.abs(t - Math.round(t / 0.5) * 0.5) * 1000; });
+      er.forEach(function (e, j) { var b = p.append("rect").attr("x", 20 + j * 66).attr("y", 220 - e * 1.1).attr("width", 46).attr("height", Math.max(e * 1.1, 2)).attr("fill", e > 40 ? RED : INK); if (anim) b.attr("y", 220).attr("height", 0).transition().delay(j * 80).duration(400).attr("y", 220 - e * 1.1).attr("height", Math.max(e * 1.1, 2)); });
+      cap(p, 14, 260, "off the beat, ms, per cut: up to " + Math.round(d3.max(er)) + ", then 0", { size: 24, weight: 700 }); nt = "nine cuts snapped to the 0.5 s grid";
+    }
+    else if (k === 4) { var LIM = 5, fp = [["logo first: " + "6.0 s", 6, RED], ["gameplay first: 0.0 s", 0, INK]]; fp.forEach(function (r, i) { cap(p, 14, 70 + i * 110, "first play, " + r[0], { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(560 * r[1] / 10, 4), 40, r[2], anim, i * 400); }); vline(p, 14 + 560 * LIM / 10, 70, 270, RED, 3, "8 6"); nt = "6.0 s misses the 5 s limit by " + (6 - LIM).toFixed(1) + " s"; }
+    else { var h5 = BEATS[6][2]; p.append("rect").attr("x", 14).attr("y", 90).attr("width", 560 * (RT - h5) / RT).attr("height", 40).attr("fill", "#C4C4C4"); bar(p, 14 + 560 * (RT - h5) / RT, 90, 560 * h5 / RT, 40, RED, anim, 0); cap(p, 14, 80, "30.5 s film, last 5.5 s on one action", { size: 24 }); cap(p, 14, 200, (h5 / RT * 100).toFixed(1) + "% of the runtime", { size: 24, weight: 700, fill: RED }); cap(p, 14, 240, fmtInt(h5 * 30) + " frames at 30 fps", { size: 24, weight: 700, fill: RED }); nt = "long enough to read, short enough to keep"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Does real gameplay show in the first five seconds?",
+    "Can I say the hook in one sentence?",
+    "Is every shot readable, and are the cuts on the beat?",
+    "Is every shot real play from this build?",
+    "Does it work with the sound off, with no rapid flashing?",
+    "One call to action, held long enough to read?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before a trailer goes out", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it exciting”, but “1.5 s shots into the peak”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, kinds: { steps: 4, render: renderKinds }, pitch: { steps: 3, render: renderPitch },
+    hook: { steps: 4, render: renderHook }, beats: { steps: 3, render: renderBeats }, runtime: { steps: 3, render: renderRuntime },
+    pace: { steps: 2, render: renderPace }, music: { steps: 3, render: renderMusic }, sound: { steps: 3, render: renderSound },
+    cta: { steps: 2, render: renderCta }, capture: { steps: 3, render: renderCapture }, honest: { steps: 3, render: renderHonest },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

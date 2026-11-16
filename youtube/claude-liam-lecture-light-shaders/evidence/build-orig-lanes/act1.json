@@ -1,0 +1,382 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform float cutoff : hint_range(0.5, 0.99) = 0.9;\n\nvoid light() {\n\tvec2 aim = vec2(cos(TIME), sin(TIME));\n\tfloat agree = dot(-LIGHT_DIRECTION.xy, aim);\n\tfloat beam = smoothstep(cutoff, 0.99, agree);\n\tvec3 rgb = COLOR.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY * beam;\n\tLIGHT = vec4(rgb, LIGHT_COLOR.a);\n}",
+   "codeFile": "lab-shaders/13-lighthouse-soft.gdshader",
+   "cues": [],
+   "video": "godot-shaders/ls-c01-hook.mp4",
+   "videoLabel": "Godot 4.7.2 · same scene, light() switched on · scripted",
+   "readouts": [
+    {
+     "at": 0.02,
+     "text": "default light",
+     "x": 0.17,
+     "y": 0.07
+    },
+    {
+     "at": 0.415,
+     "text": "light()",
+     "x": 0.83,
+     "y": 0.07
+    }
+   ],
+   "rings": [],
+   "caption": "light(): runs once per pixel for each light that touches it",
+   "durationSeconds": "__AUDIO__",
+   "title": "Lights in 2D"
+  },
+  "capture_spec": "C01: Dusk tiled floor, one warm lamp (scale 7: reach 896 px) at the centre, the teal blob at lower right on default lighting. The lamp bulb disc marks the lamp. Scene = evidence/planning-checks/light_scene.gd with captures.json id C01; 1920 x 1080 window at scale 1, 30 fps, 15 s, Forward+. Expected: before the switch a soft round glow on the tiles; after it a soft-edged wedge turning clockwise from the lamp, the blob unchanged.",
+  "visual_intent": "Act title 'Lights in 2D' (serif 40) top-left. A real Godot render in a framed window on the cream stage: a dusk-blue tiled floor, a teal blob and a lamp. For a few seconds the lamp is a soft round glow. At the words 'one function later' the floor's shader switches on and the glow becomes a soft-edged beam sweeping round. Caption: 'light(): runs once per pixel for each light that touches it'.",
+  "motion_claim": "The glow turns into a sweeping beam at the moment the voice says 'one function later'.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "soft glow, window labelled"
+   },
+   {
+    "at": 0.415,
+    "event": "shader switches on: the beam appears and turns"
+   }
+  ],
+  "runner_up": "manim drawing of a glow becoming a beam",
+  "why": "A real render is the honest picture of 'a glow' versus 'a beam from the same light'; a drawing would only claim it.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_TwoLights",
+  "visual_intent": "Two panels on the cream stage, each a short strip of six outlined floor tiles. Left: a pale lamp disc above the strip with rays fanning out to every tile, label 'point light'. Right: a sun disc far up with parallel rays slanting the same way onto the strip, label 'directional light'. Grey captions under them: 'like a lamp', 'like the sun'.",
+  "motion_claim": "Rays fan out from the lamp in every direction; on the right they arrive side by side, all parallel.",
+  "show": [
+   {
+    "at": 0.033,
+    "event": "two floor strips"
+   },
+   {
+    "at": 0.194,
+    "event": "rays fan out from the lamp"
+   },
+   {
+    "at": 0.57,
+    "event": "parallel rays from the sun"
+   },
+   {
+    "at": 0.806,
+    "event": "ring on the lamp"
+   }
+  ],
+  "runner_up": "isometric lamp and sun drawing (show-tell)",
+  "why": "Fan versus parallel is the whole difference between the two lights, and rays drawn on the spoken cue show it with motion.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-shaders/ls-c02-ambient.mp4",
+   "videoLabel": "Godot 4.7.2 · ambient tint added · scripted",
+   "readouts": [
+    {
+     "at": 0.027,
+     "text": "no tint",
+     "x": 0.17,
+     "y": 0.07
+    },
+    {
+     "at": 0.628,
+     "text": "Canvas Modulate",
+     "x": 0.17,
+     "y": 0.14
+    },
+    {
+     "at": 0.86,
+     "text": "ambient",
+     "x": 0.8,
+     "y": 0.8
+    }
+   ],
+   "rings": [],
+   "caption": "ambient light: the tint where no lamp reaches",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C02: Dusk floor with ONE lamp (scale 4) at (760, 520) and the blob at (1180, 660). No tint for the first part (a white CanvasModulate: the scene is fully lit); the tint eases to dusk (0.50, 0.55, 0.72) over one second. Scene = evidence/planning-checks/light_scene.gd with captures.json id C02; 1920 x 1080 window at scale 1, 30 fps, 16 s, Forward+. Expected: no tint: far floor (1500, 300) = tile colour (0.867, 0.847, 0.788), lit centre clipped to white; dusk: far floor (0.435, 0.467, 0.569), lit (900, 520) = (0.980, 0.910, 0.804).",
+  "visual_intent": "A real Godot render in a framed window: a cream-tiled floor already fully lit, a lamp that barely shows. At 'set it dim' the tint eases in, the floor goes dusk blue and the lamp's glow blooms. Caption: 'ambient light: the tint where no lamp reaches'; a label 'Canvas Modulate' lands as the node is named.",
+  "motion_claim": "The scene dims and the lamp suddenly stands out.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "fully lit floor, lamp barely visible"
+   },
+   {
+    "at": 0.791,
+    "event": "dusk tint eases in; the glow blooms"
+   },
+   {
+    "at": 0.86,
+    "event": "'ambient' label on the dim floor"
+   }
+  ],
+  "runner_up": "manim: floor strip with a tint slider",
+  "why": "The film's first point is a before and after on one scene; only a real render shows how little a light adds to a bright floor.",
+  "sparse": false
+ },
+ "B04": {
+  "lane": "remotion",
+  "pattern": "BrowserCapture",
+  "props": {
+   "url": "https://docs.godotengine.org/en/stable/tutorials/2d/2d_lights_and_shadows.html",
+   "image": "godot-shaders/ls-docs-2d-lights.png",
+   "caption": "Godot 4.7 documentation · 2D lights and shadows · captured at build time",
+   "frame": "browser",
+   "moves": [
+    {
+     "at": 0.0,
+     "x": 0.5,
+     "y": 0.5,
+     "scale": 1
+    },
+    {
+     "at": 0.154,
+     "x": 0.42,
+     "y": 0.52,
+     "scale": 1.5,
+     "ring": [
+      0.08,
+      0.46,
+      0.84,
+      0.14
+     ]
+    },
+    {
+     "at": 0.821,
+     "x": 0.42,
+     "y": 0.55,
+     "scale": 2.2,
+     "ring": [
+      0.36,
+      0.55,
+      0.4,
+      0.04
+     ]
+    }
+   ],
+   "moveSeconds": 1.2,
+   "ringColor": "#A64A24",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "The real Godot 4.7 'Point lights' section in a browser window. The camera pushes in on the paragraph that gives the recipe (gradient texture, fill radial, opaque white to transparent white) with one terracotta ring, then closes in on the words 'opaque white to transparent white'.",
+  "motion_claim": "The camera pushes in on the recipe paragraph, then on the two colors the voice names.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "page"
+   },
+   {
+    "at": 0.154,
+    "event": "push-in and ring on the recipe paragraph"
+   },
+   {
+    "at": 0.821,
+    "event": "closer ring on 'opaque white to transparent white'"
+   }
+  ],
+  "runner_up": "manim: a gradient strip from white to transparent",
+  "why": "The recipe is a documentation claim, and the documentation itself is the evidence (SHOW-THE-THING); the ring positions are set from the real capture.",
+  "sparse": false
+ },
+ "B05": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-shaders/ls-c03-settings.mp4",
+   "videoLabel": "Godot 4.7.2 · lamp settings changed in turn · scripted",
+   "readouts": [
+    {
+     "at": 0.171,
+     "text": "texture",
+     "x": 0.17,
+     "y": 0.07
+    },
+    {
+     "at": 0.293,
+     "text": "scale",
+     "x": 0.17,
+     "y": 0.14
+    },
+    {
+     "at": 0.43,
+     "text": "color",
+     "x": 0.17,
+     "y": 0.21
+    },
+    {
+     "at": 0.561,
+     "text": "energy",
+     "x": 0.17,
+     "y": 0.28
+    }
+   ],
+   "rings": [],
+   "caption": "reach: how far the light spreads · energy: how strong it is",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: Dusk floor, one warm lamp at the centre, blob at lower right. In turn: scale 2 to 6 (smooth), colour warm to cool blue-white, energy 1.0 to 0.2 then to 1.5 (smooth). Scene = evidence/planning-checks/light_scene.gd with captures.json id C03; 1920 x 1080 window at scale 1, 30 fps, 15 s, Forward+. Expected: lamp settings read back from the scene: scale 2.0 at 4.0 s and 6.0 at 6.5 s; colour from warm (1.0, 0.86, 0.55) to cool (0.55, 0.85, 1.0) by 8.3 s; energy 0.21 at 8.7 s and 1.5 at 10.5 s (render_captures state print). No pixel probe: these are lamp settings, not shader results.",
+  "visual_intent": "A real Godot render: one lamp on the dusk floor. Its glow first grows (scale), then shifts from warm to cool (color), then dims and brightens (energy); a small label names each setting as the voice says it. Caption: 'reach: how far the light spreads · energy: how strong it is'.",
+  "motion_claim": "The same lamp grows, changes color, then dims and brightens, one setting at a time.",
+  "show": [
+   {
+    "at": 0.171,
+    "event": "texture: the soft shape"
+   },
+   {
+    "at": 0.3,
+    "event": "scale sweep"
+   },
+   {
+    "at": 0.43,
+    "event": "color sweep"
+   },
+   {
+    "at": 0.561,
+    "event": "energy sweep"
+   }
+  ],
+  "runner_up": "manim: three dials",
+  "why": "Each setting changes the glow differently, and a real render shows all three effects on the same lamp.",
+  "sparse": false
+ },
+ "B06": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "",
+   "codeFile": "",
+   "cues": [],
+   "video": "godot-shaders/ls-c04-lights-add.mp4",
+   "videoLabel": "Godot 4.7.2 · lamps switched on one by one · scripted",
+   "readouts": [
+    {
+     "at": 0.02,
+     "text": "1 lamp",
+     "x": 0.17,
+     "y": 0.07
+    },
+    {
+     "at": 0.089,
+     "text": "2 lamps",
+     "x": 0.17,
+     "y": 0.14
+    },
+    {
+     "at": 0.345,
+     "text": "3 lamps",
+     "x": 0.17,
+     "y": 0.21
+    },
+    {
+     "at": 0.57,
+     "text": "ambient",
+     "x": 0.85,
+     "y": 0.85
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: Dusk tiled floor. Three warm lamps (scale 3.5, energy 0.4) close together in a triangle: the first is on from the start, the second appears at 'overlapping', the third at 'three make it brighter still'. Scene = evidence/planning-checks/light_scene.gd with captures.json id C04; 1920 x 1080 window at scale 1, 30 fps, 11 s, Forward+. Expected: overlap point (960, 540) steps up with each lamp (verify9 B: far floor (0.435, 0.467, 0.569) stays the same; the overlap rises from dusk to near white).",
+  "visual_intent": "A real Godot render: dusk floor and three warm lamps in a triangle that switch on one after another. The overlap gets brighter with each lamp while the far floor stays at its dim ambient look. Small labels '1 lamp', '2 lamps', '3 lamps' and 'ambient' (on the far floor).",
+  "motion_claim": "The overlap brightens in steps as each lamp appears; the far floor does not change.",
+  "show": [
+   {
+    "at": 0.02,
+    "event": "one lamp"
+   },
+   {
+    "at": 0.089,
+    "event": "second lamp: the overlap brightens"
+   },
+   {
+    "at": 0.345,
+    "event": "third lamp: brighter still"
+   },
+   {
+    "at": 0.57,
+    "event": "far floor stays dim: 'ambient'"
+   }
+  ],
+  "runner_up": "manim: three overlapping circles",
+  "why": "Brightness stepping up where lights overlap is best seen on the real floor; circles would only suggest it.",
+  "sparse": false
+ },
+ "B07": {
+  "lane": "manim",
+  "class": "B07_Formula",
+  "visual_intent": "The rule as outlined swatch boxes on the cream stage: [surface 0.5] x ( [ambient 0.2] + [lamp 0.4] + [lamp 0.4] ) = [pixel 0.5], each swatch filled with the grey of its own number. Small grey credit: 'measured · Godot 4.7.2 · Forward+ · 0, 1, 2, 3 lamps: 0.1, 0.3, 0.5, 0.7'.",
+  "motion_claim": "The two lamp boxes slide in one after the other and the result swatch fills to the sum, ending on one half.",
+  "show": [
+   {
+    "at": 0.104,
+    "event": "surface box"
+   },
+   {
+    "at": 0.296,
+    "event": "ambient box inside the bracket"
+   },
+   {
+    "at": 0.725,
+    "event": "first lamp box"
+   },
+   {
+    "at": 0.8,
+    "event": "second lamp box"
+   },
+   {
+    "at": 0.925,
+    "event": "result swatch fills: one half"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "A sum that builds as each lamp arrives is the rule in motion; a table only lists the numbers.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "manim",
+  "class": "B08_PerLamp",
+  "visual_intent": "A header strip of three outlined boxes, 'vertex()  corners', 'fragment()  pixels', 'light()  lamps'; the third is ringed. Below, one pixel cell on a small floor strip with two lamp dots; an arrow runs from each lamp to the pixel and a small 'light()' box answers each arrow with its own swatch, the swatches piling up. Caption: 'light(): once per pixel, for each light that touches it'.",
+  "motion_claim": "The two arrows travel from the lamps to the pixel; each is answered by a swatch and the swatches pile up.",
+  "show": [
+   {
+    "at": 0.032,
+    "event": "three function boxes"
+   },
+   {
+    "at": 0.405,
+    "event": "light() ringed"
+   },
+   {
+    "at": 0.622,
+    "event": "arrows from both lamps"
+   },
+   {
+    "at": 0.865,
+    "event": "answers pile up at the pixel"
+   }
+  ],
+  "runner_up": "DesignPipelineClaim, show-tell isometric",
+  "why": "The idea is one function called many times, once per lamp per pixel; arrows arriving one after another show the repetition.",
+  "sparse": true
+ }
+}

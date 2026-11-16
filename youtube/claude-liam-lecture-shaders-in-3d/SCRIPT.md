@@ -205,7 +205,7 @@ a different, harder thing." then deletes "a different, harder thing" and types "
 
 *Motion.* The camera pushes in on the unshaded row the voice is describing.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: manim: the sentence with the word unshaded highlighted
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: manim: the sentence with the word unshaded highlighted
 
 ### B16 · 34 words · ~12 s
 
@@ -515,7 +515,7 @@ a different, harder thing." then deletes "a different, harder thing" and types "
 
 *Motion.* The camera pushes in on the OUTPUT_IS_SRGB row the voice is reading.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: ShaderLab of a shader that paints red or blue by renderer
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: ShaderLab of a shader that paints red or blue by renderer
 
 ### B43 · 33 words · ~11 s
 

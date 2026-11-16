@@ -311,7 +311,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to challe
 
 ## The next step
 
-This module feeds Assignment 6, "Audit a Plausible but Incorrect Shader Change". It covers Module 8, opens in Module 8 and is due about Day 60; its own page has the brief and the rubric, and nothing in this lesson is graded by itself. Bring this module's habits: know which rung a claim stands on, use controlled inputs, and test the test. Read the companion chapter, [Chapter 8 — Shader Verification](../../chapters/08-shader-verification.md), for the full run, the transcripts and the Unity and Unreal comparison.
+This module supports Assignment 5, "Shaders, Materials, and the Godot Shading Language," due October 29. Shader verification is practice and part of the checks required by that brief; it is not a separate numbered audit assignment. Bring these habits: use controlled inputs, identify what a claim establishes, and test the test. Read the companion chapter, [Chapter 8 — Shader Verification](../../chapters/08-shader-verification.md), for the full run, the transcripts and the Unity and Unreal comparison.
 
 ## If you know Unity or Unreal
 

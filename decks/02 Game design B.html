@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game design B: choices and challenge | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: game design B">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Game design: choices and challenge">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology</p>
+      <h1 class="t-opening rise g2">Game design: choices and challenge</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">What makes a decision interesting, and a challenge fair</p>
+      <div class="speaker-notes" hidden><p>Part B of the game design set. 19 terms from the Crash Course, Game/Show and Riot Episode 10 lectures. None is in the chapters or the glossary, so every tag is video only. Numbers marked illustrative are my own examples.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Nineteen terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Nineteen terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”; Game/Show, episode on interesting choices (title to confirm); “So You Wanna Make Games??” Episode 10: Game Design.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Meaningful play and agency">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Choices that matter</p>
+      <h2 class="t-chart">Meaningful play and agency</h2>
+      <div class="diagram build" data-build="play" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”; Game/Show, episode on interesting choices (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Routes: 2 x 2 x 2 = 8.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Risk versus reward">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Kinds of interesting decision</p>
+      <h2 class="t-chart">Risk versus reward</h2>
+      <div class="diagram build" data-build="risk" style="flex-basis:700px"></div>
+      <p class="source">Source: Game/Show, episode on interesting choices (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Net = 0.25 x 100 x score factor minus forgone points minus 0.1 x life value. All inputs illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Trade-off and persistence">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Kinds of interesting decision</p>
+      <h2 class="t-chart">Trade-off and persistence</h2>
+      <div class="diagram build" data-build="trade" style="flex-basis:700px"></div>
+      <p class="source">Source: Game/Show, episode on interesting choices (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Score curves are illustrative: 10 per second, a capture at 8 s, 20 per second after the rescue at 13 s.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Situational choice and unit differentiation">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Kinds of interesting decision</p>
+      <h2 class="t-chart">Situational choice and unit differentiation</h2>
+      <div class="diagram build" data-build="situ" style="flex-basis:700px"></div>
+      <p class="source">Source: Game/Show, episode on interesting choices (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Threat = hit chance x damage per second; the numbers are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Personalisation">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Kinds of interesting decision</p>
+      <h2 class="t-chart">Personalisation</h2>
+      <div class="diagram build" data-build="personal" style="flex-basis:700px"></div>
+      <p class="source">Source: Game/Show, episode on interesting choices (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Three players with risky-pick odds of 0.8, 0.5 and 0.15, fixed seed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Frustration, difficulty and fairness">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The challenge</p>
+      <h2 class="t-chart">Frustration, difficulty and fairness</h2>
+      <div class="diagram build" data-build="fair" style="flex-basis:700px"></div>
+      <p class="source">Source: “So You Wanna Make Games??” Episode 10: Game Design; Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Expected attempts computed from the per-attempt win chances.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Luck and skill">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">The challenge</p>
+      <h2 class="t-chart">Luck and skill</h2>
+      <div class="diagram build" data-build="luck" style="flex-basis:700px"></div>
+      <p class="source">Source: “So You Wanna Make Games??” Episode 10: Game Design; Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>4000 matches each; outcome = luck weight x random + (1 - luck weight) x skill; skills 0.7 and 0.5; luck weights 1.0, 0.6 and 0.3 are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Balance and rock-paper-scissors">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Balance and waiting</p>
+      <h2 class="t-chart">Balance and rock-paper-scissors</h2>
+      <div class="diagram build" data-build="balance" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”; Game/Show, episode on interesting choices (title to confirm).</p>
+      <div class="speaker-notes" hidden><p>Win rate against a random opponent: 1 for a win, 0.5 for a tie, 0 for a loss.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Downtime and probability">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Balance and waiting</p>
+      <h2 class="t-chart">Downtime and probability</h2>
+      <div class="diagram build" data-build="down" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”.</p>
+      <div class="speaker-notes" hidden><p>Exact dice probabilities; better of two rolls has P(total <= s) squared.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”; Game/Show, episode on interesting choices (title to confirm); “So You Wanna Make Games??” Episode 10: Game Design.</p>
+      <div class="speaker-notes" hidden><p>Difficulty and fairness, trade-off and persistence, luck and skill, descriptive and evaluative play.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Game/Show, episode on interesting choices (title to confirm); Crash Course Games, “Game Design”; “So You Wanna Make Games??” Episode 10: Game Design.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you call the choices done">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you call the choices done</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Crash Course Games, “Game Design”; Game/Show, episode on interesting choices (title to confirm); “So You Wanna Make Games??” Episode 10: Game Design.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Game design B: choices and challenge ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  var T = {
+    mplay: { n: "Meaningful play", m: "The player acts and the game responds in a way that matters" },
+    desc: { n: "Descriptive play", m: "The player acts and sees the game respond: the bola hits, the ice shatters" },
+    eval: { n: "Evaluative play", m: "The player steps back and asks why this action matters to the whole game" },
+    choice: { n: "Meaningful choice", m: "A choice that changes what happens and that the player has to think about" },
+    agency: { n: "Agency (autonomy)", m: "The player takes control of how the game is played" },
+    risk: { n: "Risk versus reward", m: "A harder or riskier action pays more, and the player weighs the factors" },
+    trade: { n: "Trade-off", m: "Give up one thing to get another" },
+    persist: { n: "Persistence", m: "The player lives with the consequences of a choice for a set time" },
+    situ: { n: "Situational choice", m: "The same choice is better or worse depending on the situation the player is in" },
+    ortho: { n: "Unit differentiation", alias: "also: orthogonal unit differentiation", m: "Each enemy type does something different, which forces the player to prioritise" },
+    personal: { n: "Personalisation", m: "Players build their own play style from the decisions they make" },
+    frust: { n: "Frustration", m: "Some is part of challenge; it has to be the kind the player can learn from" },
+    diff: { n: "Difficulty", m: "How hard the opposition is; it is separate from fairness" },
+    fair: { n: "Fairness", m: "Clear expectations and consistent design, so the player can learn from failing" },
+    luckskill: { n: "Luck and skill", m: "Luck: chance decides. Skill: the player's ability decides. Games mix the two" },
+    balance: { n: "Balance", m: "Every advantage has a disadvantage; no role starts with an unfair edge" },
+    rps: { n: "Rock-paper-scissors", m: "Each option beats one and loses to another, so no option wins everywhere" },
+    down: { n: "Downtime", m: "Time a player waits with nothing to do" },
+    prob: { n: "Probability", m: "The odds of each result; extra rolls change them" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+
+  /* ---------- map ---------- */
+  var MAPROWS = [
+    ["Choices that matter", "meaningful play (descriptive, evaluative), meaningful choice, agency", "Whether the player's action means something"],
+    ["Kinds of interesting decision", "risk versus reward, trade-off, persistence, situational choice, personalisation, unit differentiation", "What makes one decision more interesting than another"],
+    ["The challenge", "frustration, difficulty, fairness, luck and skill", "How hard it is, and whether the player can learn from losing"],
+    ["Balance and waiting", "balance, rock-paper-scissors, downtime, probability", "Whether every option and every turn is worth taking"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of game design terms about choices and challenge", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "19 terms from three video lectures on game design. Each one says what makes a decision interesting, or what makes a challenge fair.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 36, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 36, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. meaningful play, descriptive, evaluative, agency ---------- */
+  function renderPlay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Meaningful play: the game answers, the player understands why, and the player steers", "Step one: a thrown bola shatters ice. Step two: a chain from one action to the end of the game. Step three: eight routes through three forks, two players taking different ones.");
+    var ey = base(svg, [{ id: "mplay", s: 1 }, { id: "desc", s: 1 }, { id: "eval", s: 2 }, { id: "agency", s: 3 }], k, anim, ["Descriptive play", "action, then a clear response"], ["Evaluative play", "why does this action matter overall?"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "ACTION, THEN RESPONSE");
+      d.append("path").attr("d", "M0,400 H740").attr("stroke", GREY).attr("stroke-width", 3);
+      d.append("circle").attr("cx", 60).attr("cy", 370).attr("r", 26).attr("fill", INK);
+      var proj = d.append("circle").attr("r", 10).attr("fill", RED), shards = d.append("g");
+      function draw(t) {
+        var hit = t > 0.55, u = Math.max(0, (t - 0.55) / 0.45);
+        proj.attr("cx", 100 + Math.min(1, t / 0.55) * 500).attr("cy", 370).attr("opacity", hit ? 0 : 1);
+        shards.selectAll("*").remove();
+        if (!hit) shards.append("rect").attr("x", 620).attr("y", 340).attr("width", 60).attr("height", 60).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 4);
+        else [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (s) { shards.append("rect").attr("x", 650 - 15 + s[0] * u * 40).attr("y", 370 - 15 + s[1] * u * 30).attr("width", 30).attr("height", 30).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3).attr("opacity", 1 - 0.6 * u); });
+        cap(d.selectAll(".m").remove().size() ? d : d, 0, 470, "", { size: 24 });
+      }
+      d.append("text").attr("class", "m");
+      cap(d, 0, 470, hitText(), { size: 24 });
+      function hitText() { return k === 0 ? "The player throws. Nothing yet." : "Throw the bola: the ice shatters and the way opens."; }
+      run(d, 2400, draw, k === 1 && anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "FROM ONE ACTION TO THE END OF THE GAME");
+      var nodes = ["throw bola", "ice breaks", "path opens", "reach cave", "finish game"], xs = nodes.map(function (_, i) { return 10 + i * 142; });
+      nodes.forEach(function (n, i) {
+        if (i < 4) d.append("path").attr("d", "M" + (xs[i] + 112) + ",200 H" + (xs[i + 1])).attr("stroke", GREY).attr("stroke-width", 3);
+        box(d, xs[i], 160, 112, 80, { stroke: i === 0 || i === 4 ? RED : INK, sw: 2.5 });
+        wrap(d, xs[i] + 10, 196, n, 8, { size: 24, lh: 28, fill: INK, weight: 700 });
+      });
+      var hl = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 6);
+      run(d, 2600, function (t) { hl.attr("d", "M" + (xs[0] + 56) + ",150 Q" + (xs[2] + 56) + ",60 " + (xs[4] + 56) + ",150").attr("stroke-dasharray", (t * 900) + " 900"); }, anim);
+      cap(d, 0, 330, "Evaluative: this one throw is " + (nodes.length - 1) + " steps from finishing the game.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 370, "The player asks what the action means for the whole.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "THREE FORKS, TWO PLAYERS");
+      var routes = Math.pow(2, 3), px = [60, 260, 460, 660], ys = function (i, path) { var y = 260; for (var j = 0; j < i; j++) y += (path[j] ? 1 : -1) * (110 - j * 30); return y; };
+      var P = [[1, 0, 1], [0, 0, 1]], cols = [RED, INK];
+      [0, 1, 2].forEach(function (i) { [-1, 1].forEach(function (s) { d.append("path").attr("d", "M" + px[i] + ",260 L" + px[i + 1] + ",260").attr("opacity", 0); }); });
+      P.forEach(function (path, pi) {
+        var pts = [[px[0], 260]], y = 260;
+        for (var j = 0; j < 3; j++) { y += (path[j] ? 1 : -1) * (110 - j * 30) + (pi ? 14 : -14) * 0; pts.push([px[j + 1], y]); }
+        var ln = d.append("path").attr("fill", "none").attr("stroke", cols[pi]).attr("stroke-width", 6).attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L"));
+        if (anim) { var L_ = ln.node().getTotalLength(); ln.attr("stroke-dasharray", L_ + " " + L_).attr("stroke-dashoffset", L_).transition().delay(pi * 700).duration(1200).attr("stroke-dashoffset", 0); }
+        cap(d, pts[3][0] + 14, pts[3][1] + 8, pi ? "B" : "A", { size: 26, weight: 700, fill: cols[pi] });
+      });
+      cap(d, 0, 470, routes + " possible routes through three forks (2 × 2 × 2).", { size: 26, weight: 700 });
+      cap(d, 0, 510, "Players A and B finish the same level by different routes.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Descriptive: the player acts and the game answers at once. The ice shatters, so the player knows the throw worked.", "Evaluative: step back. Why throw the bola at all? Because it leads, step by step, to the end of the game.", "Agency: the player picks the route. Eight routes make the game theirs."][k]);
+  }
+
+  /* ---------- 2. risk versus reward ---------- */
+  function renderRisk(el, k, anim) {
+    var svg = svgFor(el, W, H, "Risk versus reward: the UFO pays more but is hard to hit, and the right call depends on the situation", "Bars for points from invaders and from the UFO. Then three situations scored: reward minus the cost of going for it.");
+    var ey = base(svg, [{ id: "risk", s: 1 }, { id: "choice", s: 2 }], k, anim, ["Risk", "what you may lose"], ["Reward", "what you may gain"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "POINTS");
+      [["invader", [10, 20, 30], "#C4C4C4"], ["UFO", [50, 100, 150], RED], ["UFO, 23rd shot", [300], RED]].forEach(function (r, ri) {
+        var y = 80 + ri * 120; cap(d, 0, y, r[0], { size: 24, weight: 700 });
+        r[1].forEach(function (v, i) { var yy = y + 14 + i * 30; bar(d, 0, yy, v * 2, 24, r[2], k === 1 && anim, i * 150 + ri * 200); cap(d, v * 2 + 12, yy + 20, v + "", { size: 24, weight: 700 }); });
+      });
+      cap(d, 0, 500, "Average UFO score: " + d3.mean([50, 100, 150]) + " points, against 20 for an invader.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "SHOULD I CHASE THE UFO?");
+      var pHit = 0.25, avg = 100, rows = [["Behind on score, 3 lives, invaders far", 1.5, 10, 20], ["Ahead, 3 lives, invaders close", 1, 40, 20], ["Ahead, last life, invaders far", 1, 10, 120]];
+      rows.forEach(function (r, i) {
+        var y = 70 + i * 140, g = d.append("g"), reward = pHit * avg * r[1], cost = r[2] + 0.1 * r[3], net = reward - cost;
+        box(g, 0, y, 740, 120, { stroke: FAMILIAR });
+        wrap(g, 14, y + 32, r[0], 40, { size: 24, lh: 28, weight: 700 });
+        cap(g, 14, y + 96, "reward " + reward.toFixed(1) + " − cost " + cost.toFixed(1) + " = " + sgn(net, 1), { size: 24 });
+        cap(g, 740 - 14, y + 96, net > 0 ? "go" : "skip", { size: 28, weight: 700, fill: net > 0 ? RED : INK, anchor: "end" });
+        fade(g, A(anim, k, 2), i * 400);
+      });
+      cap(d, 0, 520, "Illustrative: 25% to hit, 100 average, 0.1 chance to lose a life.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Invaders are worth 10, 20 or 30. The UFO gives 50, 100 or 150, and 300 on the 23rd shot. It is harder to hit, so the player takes a risk for a bigger reward.", "The player weighs their score, their lives, and how close the invaders are. Same UFO, three different answers."][k]);
+  }
+
+  /* ---------- 3. trade-off and persistence ---------- */
+  function renderTrade(el, k, anim) {
+    var svg = svgFor(el, W, H, "Trade-off: give up something now for more later. Persistence: you live with the choice.", "A score line for a Galaga player who lets a ship be captured and rescues it, against one who does not. Then four power pellets spent across a stage.");
+    var ey = base(svg, [{ id: "trade", s: 1 }, { id: "persist", s: 2 }], k, anim, ["Trade-off", "sacrifice one thing for another"], ["Persistence", "the choice stays with you for a while"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "SCORE OVER TIME (ILLUSTRATIVE)");
+      var gx = 50, gy = 50, gw = 690, gh = 380, Tm = 40, score = function (t, trade) { if (!trade) return 10 * t; if (t < 8) return 10 * t; if (t < 13) return 80; return 80 + 20 * (t - 13); };
+      d.append("rect").attr("x", gx + 0.5).attr("y", gy + 0.5).attr("width", gw).attr("height", gh).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      var X = function (t) { return gx + t / Tm * gw; }, Y = function (v) { return gy + gh - v / 600 * gh; };
+      var cross_ = 0; for (var t = 13; t < 40; t += 0.01) if (score(t, true) >= score(t, false)) { cross_ = t; break; }
+      var l1 = d.append("path").attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 4), l2 = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      function draw(u) { var tt = u * Tm; [[l1, false], [l2, true]].forEach(function (p) { var pts = d3.range(0, tt + 1e-9, 0.25).map(function (x) { return [X(x), Y(score(x, p[1]))]; }); p[0].attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")); }); }
+      run(d, 3500, draw, k === 1 && anim);
+      if (k === 0) { draw(0); } else { cap(d, gx, gy + gh + 34, "Safe: 10 points a second. Trade: lose a ship at 8 s, rescue it, then 20 a second.", { size: 24, fill: MUTED }); }
+      d.append("circle").attr("cx", X(cross_)).attr("cy", Y(score(cross_, true))).attr("r", 9).attr("fill", INK).attr("opacity", k === 1 ? 1 : 0);
+      if (k === 1) cap(d, X(cross_) + 14, Y(score(cross_, true)) + 36, "pays off after " + cross_.toFixed(0) + " s", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 30, "FOUR POWER PELLETS, EIGHT MOMENTS");
+      var spend = [0, 1, 2, 3], events = ["ghost", "ghost", "cherry", "blue ghost", "ghost", "cherry", "big group", "ghost"];
+      events.forEach(function (e, i) { var x = 10 + i * 90; var spent = spend.indexOf(i) >= 0; d.append("rect").attr("x", x).attr("y", 90).attr("width", 80).attr("height", 80).attr("fill", spent ? RED : "#FFFFFF").attr("fill-opacity", spent ? 0.85 : 1).attr("stroke", INK).attr("stroke-width", 2); wrap(d, x + 6, 124, e, 8, { size: 24, lh: 26 }); });
+      d3.range(4).forEach(function (i) { var c = d.append("circle").attr("cx", 40 + i * 70).attr("cy", 300).attr("r", 24).attr("fill", INK); if (anim) c.transition().delay(600 + i * 500).duration(300).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); else c.attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+      cap(d, 0, 370, "Pellets left at the big group: 0", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 410, "Spent early on the first four moments. No more until the next stage.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Trade-off: in Galaga, letting the enemy take a ship costs a life, but rescuing it gives dual fire. The safe player scores slower after " + "about 17 s.", "Persistence: there are only four power pellets. Use them on the first four moments and you face the big group with none."][k]);
+  }
+
+  /* ---------- 4. situational choice and unit differentiation ---------- */
+  function renderSitu(el, k, anim) {
+    var svg = svgFor(el, W, H, "Situational choice: which enemy to shoot first depends on who else is in the room", "A grid of enemy behaviour and attack type, then bars ranking the threat from each enemy.");
+    var ey = base(svg, [{ id: "ortho", s: 1 }, { id: "situ", s: 2 }], k, anim, ["Situational choice", "depends on the arrangement now"], ["Personal choice", "depends on the player's own style"]);
+    var d = svg.append("g");
+    var EN = [["imp", 0, 0], ["cacodemon", 1, 0], ["shotgun guy", 1, 1]];
+    if (k <= 1) {
+      lab(d, 0, 30, "TWO DIFFERENCES PER ENEMY");
+      cap(d, 230, 80, "charges", { size: 24, weight: 700, anchor: "middle" }); cap(d, 530, 80, "stays back", { size: 24, weight: 700, anchor: "middle" });
+      cap(d, 0, 190, "dodgeable", { size: 24, weight: 700 }); cap(d, 0, 350, "never misses", { size: 24, weight: 700 });
+      [0, 1].forEach(function (cx_) { [0, 1].forEach(function (cy_) { box(d, 110 + cx_ * 300, 110 + cy_ * 160, 280, 140, { stroke: FAMILIAR }); }); });
+      EN.forEach(function (e, i) { var g = d.append("g"); g.append("circle").attr("cx", 250 + e[1] * 300).attr("cy", 180 + e[2] * 160).attr("r", 30).attr("fill", RED); cap(g, 250 + e[1] * 300, 235 + e[2] * 160 + 10, e[0], { size: 24, anchor: "middle", weight: 700 }); fade(g, k === 1 && anim, i * 400); });
+      cap(d, 0, 520, "Each enemy sits in a different cell: " + EN.length + " enemies, " + EN.length + " different cells.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "THREAT THAT YOU CANNOT DODGE (DAMAGE PER SECOND)");
+      var th = [["shotgun guy", 1.0 * 10], ["cacodemon", 0.25 * 12], ["imp", 0.25 * 10]];
+      th.forEach(function (r, i) { var y = 80 + i * 110; cap(d, 0, y, r[0], { size: 26, weight: i === 0 ? 700 : 400 }); bar(d, 0, y + 16, r[1] * 50, 46, i === 0 ? RED : "#C4C4C4", anim, i * 350); cap(d, r[1] * 50 + 12, y + 52, r[1].toFixed(1), { size: 26, weight: 700 }); });
+      cap(d, 0, 450, "Kill the shotgun guy first.", { size: 28, weight: 700, fill: RED }); cap(d, 0, 490, "Illustrative: hit chance × damage per second.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Imp: charges, fireballs you can dodge. Cacodemon: stays back, dodgeable. Shotgun guy: never misses. Each differs from the others on both counts.", "With a shotgun guy and an imp in the room, the shotgun guy is the bigger threat, since the imp can be dodged. Remove him and the answer may change."][k]);
+  }
+
+  /* ---------- 5. personalisation ---------- */
+  function renderPersonal(el, k, anim) {
+    var svg = svgFor(el, W, H, "Personalisation: the same level, three players, three different histories of choices", "Three rows of twenty decisions: red for a risky pick, black for a safe one. Then the share of risky picks per player.");
+    var ey = base(svg, [{ id: "personal", s: 1 }], k, anim, ["Personal choice", "your own style shows in what you pick"], ["Situational choice", "the situation decides what is best"]);
+    var d = svg.append("g"), r = rng(21), PL = [["Aggressive", 0.8], ["Mixed", 0.5], ["Cautious", 0.15]];
+    var H_ = PL.map(function (p) { return d3.range(20).map(function () { return r() < p[1] ? 1 : 0; }); });
+    PL.forEach(function (p, pi) {
+      var y = 60 + pi * 130, g = d.append("g"); cap(g, 0, y - 12, p[0], { size: 26, weight: 700 });
+      H_[pi].forEach(function (v, i) { var c = g.append("rect").attr("x", i * 36).attr("y", y).attr("width", 30).attr("height", 40).attr("fill", v ? RED : INK); if (A(anim, k, 1)) c.attr("opacity", 0).transition().delay(i * 40 + pi * 300).duration(200).attr("opacity", 1); });
+      if (k >= 2) { var n = d3.sum(H_[pi]); cap(g, 0, y + 78, n + " of 20 risky (" + n * 5 + "%)", { size: 24, weight: 700, fill: RED }); fade(g, A(anim, k, 2), pi * 300); }
+    });
+    note(svg, ey, ["", "Twenty identical decisions. Each player chooses a different mix of risky and safe.", "The game never told them to. The choices let each develop a style: " + H_.map(function (h) { return d3.sum(h) * 5 + "%"; }).join(", ") + " risky picks."][k > 1 ? 1 : k]);
+  }
+
+  /* ---------- 6. frustration, difficulty, fairness ---------- */
+  function renderFair(el, k, anim) {
+    var svg = svgFor(el, W, H, "Good frustration lets you learn; unfair frustration does not", "Chance of beating a boss on each attempt: it climbs when the player can learn and stays flat when the game is inconsistent. Then a grid of difficulty against fairness.");
+    var ey = base(svg, [{ id: "frust", s: 1 }, { id: "fair", s: 2 }, { id: "diff", s: 2 }], k, anim, ["Difficulty", "how hard it is"], ["Fairness", "whether you can learn from losing"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "CHANCE OF WINNING ON EACH ATTEMPT");
+      var n = 12, learn = d3.range(n).map(function (i) { return 1 - 0.9 * Math.pow(0.7, i); }), flat = d3.range(n).map(function () { return 0.1; });
+      var expA = function (p) { var surv = 1, e = 0; for (var i = 0; i < p.length; i++) { e += (i + 1) * p[i] * surv; surv *= 1 - p[i]; } return e + surv * (p.length + 1 / p[p.length - 1]); };
+      var gx = 40, gy = 50, gw = 690, gh = 330, X = function (i) { return gx + i / (n - 1) * gw; }, Y = function (v) { return gy + gh - v * gh; };
+      d.append("rect").attr("x", gx + 0.5).attr("y", gy + 0.5).attr("width", gw).attr("height", gh).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      var l1 = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4), l2 = d.append("path").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4).attr("stroke-dasharray", "10 6");
+      run(d, 3000, function (t) { var m = Math.floor(t * (n - 1)) + 1; [[l1, learn], [l2, flat]].forEach(function (p) { p[0].attr("d", "M" + p[1].slice(0, m).map(function (v, i) { return X(i) + "," + Y(v); }).join("L")); }); }, k === 1 && anim);
+      cap(d, gx, gy + gh + 34, "Attempts 1 to 12", { size: 24, fill: MUTED });
+      cap(d, 0, 470, "Learnable (red): about " + expA(learn).toFixed(1) + " attempts to win.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 506, "Inconsistent (black): about " + expA(flat).toFixed(0) + " attempts, and nothing to learn.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 30, "DIFFICULTY AGAINST FAIRNESS");
+      var cells = [["hard and fair", "satisfying to win", 1, 0, RED], ["hard and unfair", "feels cheap", 1, 1, INK], ["easy and fair", "relaxed", 0, 0, GREY], ["easy and unfair", "confusing", 0, 1, GREY]];
+      cells.forEach(function (c, i) { var x = 40 + (1 - c[2]) * 340, y = 70 + c[3] * 190, g = d.append("g"); box(g, x, y, 320, 170, { stroke: c[4], sw: 3 }); cap(g, x + 16, y + 56, c[0], { size: 26, weight: 700, fill: c[4] === GREY ? INK : c[4] }); cap(g, x + 16, y + 100, c[1], { size: 24 }); fade(g, A(anim, k, 2), i * 250); });
+      cap(d, 0, 470, "Difficulty is how hard. Fairness is whether the player can learn.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Both players lose a lot. The first can see what to change and improves. The second cannot, so the chance never moves. Same frustration, very different games.", "A very hard game can still feel fair. When rules change or obstacles ambush the player, it feels unfair, and winning stops feeling earned."][k]);
+  }
+
+  /* ---------- 7. luck and skill ---------- */
+  var LS = (function () {
+    var r = rng(99), N = 4000, sk = [0.7, 0.5], out = {};
+    [["Candy Land", 1.0], ["Battle royale", 0.6], ["Counter-Strike", 0.3]].forEach(function (g) {
+      var w = 0; for (var i = 0; i < N; i++) { var a = g[1] * r() + (1 - g[1]) * sk[0], b = g[1] * r() + (1 - g[1]) * sk[1]; if (a > b) w++; } out[g[0]] = w / N;
+    });
+    return out;
+  })();
+  function renderLuck(el, k, anim) {
+    var svg = svgFor(el, W, H, "Luck and skill: how often the better player wins depends on how much chance the game has", "Bars for how often a skilled player beats a weaker one in three games, from a seeded simulation of 4000 matches each.");
+    var ey = base(svg, [{ id: "luckskill", s: 1 }], k, anim, ["Luck", "chance decides the result"], ["Skill", "the player's ability decides it"]);
+    var d = svg.append("g"), rows = [["Candy Land", "all luck", 1.0], ["Battle royale", "random loot, skilled fights", 0.6], ["Counter-Strike", "mostly skill", 0.3]];
+    lab(d, 0, 30, "HOW OFTEN THE SKILLED PLAYER WINS");
+    rows.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 70 + i * 150, g = d.append("g"), v = LS[r[0]];
+      cap(g, 0, y, r[0] + ": " + r[1], { size: 24, weight: 700 }); g.append("rect").attr("x", 0.5).attr("y", y + 16.5).attr("width", 700).attr("height", 50).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      bar(g, 1, y + 17, 698 * v, 49, i === 1 ? RED : INK, A(anim, k, i + 1), 0);
+      cap(g, 698 * v - 12, y + 52, Math.round(v * 100) + "%", { size: 26, weight: 700, fill: "#FFFFFF", anchor: "end" });
+      cap(g, 0, y + 100, "chance weight " + Math.round(r[2] * 100) + "%, skill weight " + Math.round((1 - r[2]) * 100) + "%", { size: 24, fill: MUTED });
+    });
+    note(svg, ey, ["", "Pure luck: the stronger player wins half the time, about " + Math.round(LS["Candy Land"] * 100) + "%. It works for a game that needs no skill.", "Mostly skill: the stronger player wins " + Math.round(LS["Counter-Strike"] * 100) + "% of matches.", "A mix: " + Math.round(LS["Battle royale"] * 100) + "%. A weaker player can still win with good loot, and a strong one can recover from a bad start. The weights are my own illustration."][k]);
+  }
+
+  /* ---------- 8. balance and rock-paper-scissors ---------- */
+  function renderBalance(el, k, anim) {
+    var svg = svgFor(el, W, H, "Balance: in rock-paper-scissors every option wins about half the time. Change one matchup and it breaks.", "A triangle of water, fire and grass with arrows for who beats whom, then bars of the average win rate of each option.");
+    var ey = base(svg, [{ id: "balance", s: 1 }, { id: "rps", s: 1 }], k, anim, ["Balance", "every edge has a cost"], ["Imbalance", "one option is simply better"]);
+    var d = svg.append("g"), NM = ["water", "fire", "grass"], P = [[0.5, 1, 0], [0, 0.5, 1], [1, 0, 0.5]];
+    var M = P.map(function (r) { return r.slice(); }); if (k >= 2) { M[1][0] = 0.5; M[0][1] = 0.5; }
+    var pos = [[200, 70], [60, 330], [340, 330]];
+    lab(d, 0, 30, k >= 2 ? "AFTER A CHANGE: FIRE AND WATER NOW TIE" : "WATER BEATS FIRE, FIRE BEATS GRASS, GRASS BEATS WATER");
+    pos.forEach(function (p, i) { d.append("circle").attr("cx", p[0] + 40).attr("cy", p[1] + 40).attr("r", 44).attr("fill", "#FFFFFF").attr("stroke", i === 1 ? RED : INK).attr("stroke-width", 4); cap(d, p[0] + 40, p[1] + 48, NM[i], { size: 24, anchor: "middle", weight: 700 }); });
+    [[0, 1], [1, 2], [2, 0]].forEach(function (e, i) {
+      if (k >= 2 && i === 0) return; var a = pos[e[0]], b = pos[e[1]], ln = d.append("path").attr("d", "M" + (a[0] + 40) + "," + (a[1] + 40) + "L" + (b[0] + 40) + "," + (b[1] + 40)).attr("stroke", GREY).attr("stroke-width", 4);
+      var mx = (a[0] + b[0]) / 2 + 40, my = (a[1] + b[1]) / 2 + 40, ang = Math.atan2(b[1] - a[1], b[0] - a[0]) / DEG;
+      d.append("path").attr("d", "M-14,-12 L14,0 L-14,12Z").attr("transform", "translate(" + mx + "," + my + ") rotate(" + ang + ")").attr("fill", INK);
+      if (A(anim, k, 1)) ln.attr("opacity", 0).transition().delay(i * 500).duration(400).attr("opacity", 1);
+    });
+    var wr = M.map(function (r) { return d3.mean(r); });
+    NM.forEach(function (n, i) { var y = 480 + i * 0; });
+    NM.forEach(function (n, i) { var x = 440 + i * 100; cap(d, x + 40, 130, n, { size: 24, anchor: "middle" }); var h = wr[i] * 260; bar(d, x + 10, 400 - h, 60, h, i === 1 && k >= 2 ? RED : "#C4C4C4", A(anim, k, 2) && false, 0); cap(d, x + 40, 400 - h - 10, wr[i].toFixed(2), { size: 24, weight: 700, anchor: "middle" }); });
+    cap(d, 440, 450, "average win rate against a random opponent", { size: 24, fill: MUTED });
+    d.append("path").attr("d", "M430,400 H740").attr("stroke", INK).attr("stroke-width", 2);
+    note(svg, ey, ["", "Each option beats one, loses to one. Against a random opponent each wins " + d3.mean(P[0]).toFixed(2) + " of the time: balanced.", "Make fire tie with water and fire wins " + d3.mean(M[1]).toFixed(2) + ", water drops to " + d3.mean(M[0]).toFixed(2) + ". Nobody picks water any more."][k]);
+  }
+
+  /* ---------- 9. downtime and probability ---------- */
+  function renderDown(el, k, anim) {
+    var svg = svgFor(el, W, H, "Downtime: waiting for your turn. Probability: extra rolls change the odds.", "A timeline of four players taking turns of 15 seconds against 45 seconds, then two bar charts of dice results for one roll and for the better of two rolls.");
+    var ey = base(svg, [{ id: "down", s: 1 }, { id: "prob", s: 2 }], k, anim, ["Downtime", "time spent waiting"], ["Probability", "the odds of each result"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "FOUR PLAYERS, ONE ROUND (SECONDS)");
+      [15, 45].forEach(function (len, ri) {
+        var y = 80 + ri * 200, sc = 700 / 180; cap(d, 0, y, "turn length " + len + " s", { size: 24, weight: 700 });
+        for (var p = 0; p < 4; p++) bar(d, p * len * sc, y + 16, len * sc - 3, 50, p === 0 ? RED : "#C4C4C4", k === 1 && anim, ri * 400 + p * 200);
+        cap(d, 0, y + 100, "Player 1 waits " + (len * 3) + " s between turns.", { size: 24, fill: MUTED });
+      });
+    } else {
+      lab(d, 0, 30, "TWO SIX-SIDED DICE: CHANCE OF EACH TOTAL");
+      var one = d3.range(2, 13).map(function (s) { return (6 - Math.abs(s - 7)) / 36; }), cum = 0, two = one.map(function (p, i) { var below = d3.sum(one.slice(0, i + 1)), prev = i ? d3.sum(one.slice(0, i)) : 0; return below * below - prev * prev; });
+      var sc = 1500, gx = 20, gy = 400;
+      one.forEach(function (p, i) { var x = gx + i * 66; bar(d, x, gy - p * sc, 26, p * sc, "#C4C4C4", false); bar(d, x + 28, gy - two[i] * sc, 26, two[i] * sc, RED, A(anim, k, 2), i * 60); cap(d, x + 27, gy + 26, (i + 2) + "", { size: 24, anchor: "middle" }); });
+      var hi1 = d3.sum(one.slice(8)), hi2 = d3.sum(two.slice(8));
+      cap(d, 0, 470, "Total 10 or more: " + (hi1 * 100).toFixed(1) + "% on one roll, " + (hi2 * 100).toFixed(1) + "% taking the better of two.", { size: 24, weight: 700 });
+      cap(d, 0, 506, "grey: one roll   red: better of two rolls", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Short turns keep players in the game. With turns of 45 s instead of 15 s, each player waits 135 s instead of 45 s for their next go.", "Allow a re-roll and the odds shift: high totals become much more likely. This is why \"no more than one roll per turn\" protects the game's design."][k]);
+  }
+
+  /* ---------- 10. look-alike pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs about choices and challenge", "Each step shows two ideas students mix up side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Difficulty", "How hard the opposition is"], ["Fairness", "Whether the player can learn from losing"]],
+      [["Trade-off", "Give up one thing to get another"], ["Persistence", "Live with the choice for a set time"]],
+      [["Luck", "Chance decides the result"], ["Skill", "The player's ability decides it"]],
+      [["Descriptive play", "The game answers an action"], ["Evaluative play", "The player asks why it matters"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        LG.append("rect").attr("x", 20).attr("y", 330 - 240 * t).attr("width", 70).attr("height", 240 * t).attr("fill", INK); cap(LG, 20, 380, "how hard: " + Math.round(t * 100), { size: 24, fill: MUTED });
+        var n = Math.floor(t * 12) + 1, pts = d3.range(n).map(function (j) { return [20 + j * 26, 330 - 240 * (1 - 0.9 * Math.pow(0.7, j))]; });
+        RG.append("path").attr("d", "M" + pts.map(function (p) { return p.join(","); }).join("L")).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4); cap(RG, 20, 380, "learning rises", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var s = d3.range(4).map(function (j) { return j / 4 < t; });
+        s.forEach(function (on, j) { LG.append("rect").attr("x", 20 + j * 80).attr("y", 220).attr("width", 60).attr("height", 60).attr("fill", on ? "#FFFFFF" : INK).attr("stroke", INK).attr("stroke-width", 3); });
+        cap(LG, 20, 330, "one swap, done", { size: 24, fill: MUTED });
+        d3.range(4).forEach(function (j) { RG.append("circle").attr("cx", 50 + j * 80).attr("cy", 250).attr("r", 26).attr("fill", j / 4 < t ? "#FFFFFF" : INK).attr("stroke", INK).attr("stroke-width", 3); }); cap(RG, 20, 330, "spent for the whole stage", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        var rr = rng(3); [LG, RG].forEach(function (g, gi) { var w = gi ? 0.1 : 1; for (var q = 0; q < 12; q++) { var a = w * rr() + (1 - w) * 0.8, b = w * rr() + (1 - w) * 0.4, win = a > b; if (q / 12 < t) g.append("rect").attr("x", 20 + (q % 6) * 52).attr("y", 190 + Math.floor(q / 6) * 60).attr("width", 44).attr("height", 44).attr("fill", win ? INK : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); } cap(g, 20, 340, gi ? "skilled player nearly always wins" : "skilled player wins about half", { size: 24, fill: MUTED }); });
+      } else {
+        var x = 20 + 300 * Math.min(1, t * 2); LG.append("circle").attr("cx", x).attr("cy", 250).attr("r", 12).attr("fill", RED); LG.append("rect").attr("x", 330).attr("y", 220).attr("width", 50).attr("height", 60).attr("fill", t > 0.5 ? "#FFFFFF" : INK).attr("stroke", INK).attr("stroke-width", 3); cap(LG, 20, 340, "throw, then response", { size: 24, fill: MUTED });
+        [0, 1, 2, 3].forEach(function (j) { RG.append("rect").attr("x", 20 + j * 90).attr("y", 220).attr("width", 70).attr("height", 50).attr("fill", "#FFFFFF").attr("stroke", j / 4 < t ? RED : INK).attr("stroke-width", 3); if (j < 3) RG.append("path").attr("d", "M" + (90 + j * 90) + ",245 H" + (110 + j * 90)).attr("stroke", GREY).attr("stroke-width", 3); }); cap(RG, 20, 340, "chain to the end", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3200, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- 11. say it exactly ---------- */
+  var SAY = [
+    { v: "make the fights more interesting", x: "Give each enemy a different behaviour: one charges, one stays back; one dodgeable, one never misses" },
+    { v: "the shop is too easy to ignore", x: "Make the choice persist: robbing it sends a shopkeeper to the end of every level" },
+    { v: "the game is too random", x: "Cut luck to 30%: random start loot only, skill decides most fights" },
+    { v: "waiting for turns is boring", x: "Turns average 15 seconds, one roll each, and give the others something to do" },
+    { v: "the boss feels unfair", x: "Same attack, same damage every time, so the player can learn it" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests turned into precise design instructions", "Five rows with a vague request and an exact instruction. On the right, a chart of what the instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { [["charges, dodgeable (imp)", 2.5], ["stays back, dodgeable (cacodemon)", 3], ["never misses (shotgun guy)", 10]].forEach(function (r, i) { cap(p, 14, 50 + i * 90, r[0], { size: 24 }); bar(p, 14, 62 + i * 90, r[1] * 50, 30, i === 2 ? RED : "#C4C4C4", anim, i * 250); }); nt = "three enemies, three threat levels"; }
+    else if (k === 2) { var step = 0; for (var i = 0; i < 8; i++) { var spent = i < 4; var c = p.append("rect").attr("x", 20 + i * 76).attr("y", 80).attr("width", 62).attr("height", 62).attr("fill", spent ? "#FFFFFF" : RED).attr("stroke", INK).attr("stroke-width", 3); if (anim) c.attr("opacity", 0).transition().delay(i * 200).duration(250).attr("opacity", 1); } cap(p, 20, 190, "first four moments: pellets gone", { size: 24 }); cap(p, 20, 240, "shopkeeper waits at every level end", { size: 24, weight: 700, fill: RED }); nt = "the choice lasts, the shopkeeper waits"; }
+    else if (k === 3) { [["luck 60%", LS["Battle royale"]], ["luck 30%", LS["Counter-Strike"]]].forEach(function (r, i) { cap(p, 14, 50 + i * 120, r[0], { size: 24 }); bar(p, 14, 64 + i * 120, 600 * r[1], 46, i ? RED : "#C4C4C4", anim, i * 400); cap(p, 14 + 600 * r[1] - 10, 100 + i * 120, Math.round(r[1] * 100) + "%", { size: 24, weight: 700, fill: i ? "#FFFFFF" : INK, anchor: "end" }); }); nt = "skilled player wins " + Math.round(LS["Counter-Strike"] * 100) + "% of matches"; }
+    else if (k === 4) { [15, 45].forEach(function (len, ri) { var sc = 600 / 180; cap(p, 14, 50 + ri * 120, "turn " + len + " s", { size: 24 }); for (var q = 0; q < 4; q++) bar(p, 14 + q * len * sc, 64 + ri * 120, len * sc - 3, 40, q === 0 ? RED : "#C4C4C4", anim, ri * 300 + q * 150); }); nt = "wait between turns: 45 s, not 135 s"; }
+    else { var rr = rng(8), bef = d3.range(10).map(function () { return Math.round(5 + rr() * 35); }); [[bef, 90, "unpredictable: damage 5 to 40"], [d3.range(10).map(function () { return 10; }), 210, "consistent: damage 10 every time"]].forEach(function (r, ri) { cap(p, 14, r[1] - 40, r[2], { size: 24, weight: 700, fill: ri ? INK : RED }); r[0].forEach(function (v, j) { var c = p.append("circle").attr("cx", 40 + j * 58).attr("cy", r[1] + 60 - v * 1.4).attr("r", 10).attr("fill", ri ? INK : RED); if (anim) c.attr("r", 0).transition().delay(j * 100 + ri * 500).duration(250).attr("r", 10); }); }); nt = "the player can learn the consistent one"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  /* ---------- 12. closing checklist ---------- */
+  var CHECKS = [
+    "Does the player see a response to each action, and why it matters?",
+    "Is there at least one real trade-off or lasting choice?",
+    "Do different enemies or options call for different answers?",
+    "Is the challenge hard and fair, so failing teaches something?",
+    "Is the luck and skill mix right for the game?",
+    "Is every option worth taking, and are turns short enough?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you call the choices done", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make fights interesting”, but “one enemy never misses”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, play: { steps: 3, render: renderPlay }, risk: { steps: 2, render: renderRisk },
+    trade: { steps: 2, render: renderTrade }, situ: { steps: 2, render: renderSitu }, personal: { steps: 2, render: renderPersonal },
+    fair: { steps: 2, render: renderFair }, luck: { steps: 3, render: renderLuck }, balance: { steps: 2, render: renderBalance },
+    down: { steps: 2, render: renderDown }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

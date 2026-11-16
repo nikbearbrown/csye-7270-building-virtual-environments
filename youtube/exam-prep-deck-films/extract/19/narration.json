@@ -1,0 +1,361 @@
+{
+ "deck": "19",
+ "opening_summary": "Thirty-three terms for game characters that act on their own, from what a guard can see and hear to how it steers and finds a route. The exact term lets you tell an AI coding agent what to build.",
+ "opening_description": "33 terms: sight, steering, crowds, pathfinding.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers often say a guard sees the player whenever it is in range. Range is only the first test. The player must also be inside the guard's cone, on a straight line no wall blocks. Game AI is full of look-alike pairs like that. This film goes through the terms group by group, each one shown, so you can name the exact one.",
+  "text": "A guard sees the player\nwhenever it is in range.",
+  "triggerWords": "whenever it is in range",
+  "replacementWords": "only in range, in its cone, with a clear line"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty-three terms of game AI in four groups, in the order an agent works. It senses, then steers, then follows a route. The first group is perceiving. Agent, sense-decide-act, sight range, field-of-view cone, line of sight, hearing radius and last known position.",
+   "figures": ["33", "four groups"]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is steering. Steering itself, velocity and max speed, seek, flee, arrive, pursue and wander. These terms say how an agent moves toward things or away from them, a little on every tick.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is groups and crowds. Separation, alignment, cohesion, emergent behavior and local avoidance. These terms say how many agents move together without bumping into each other or scattering.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is maps and search. Graph, grid, navigation mesh, waypoint, breadth-first search, Dijkstra, A star, f, g and h, heuristics, the open and closed set, path smoothing and NavigationAgent2D. These terms say how an agent finds a route through a level.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "A single guard in an empty room, in a simulated run. An Agent is a game character that senses the world and acts on its own, with no player pressing its buttons. This guard decides for itself to walk between two waypoints, at one hundred pixels per second. For example, the guard the course adds to a Walker project is an agent. It patrols a loop of waypoints, and it switches to a chase when it spots the player.",
+   "figures": ["100 px/s"]
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "Now a player square walks toward the guard. Sense, decide, act is the loop an agent runs once per tick. It senses, here the distance to the player. It decides, here closer than two hundred pixels means chase. It acts, by setting its velocity. The three boxes light up in turn. For example, a turret in your level senses each tick whether the player is in reach, decides to fire or wait, and acts by spawning a bullet.",
+   "figures": ["200"]
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "A noise goes off at the red dot. The Hearing radius, or noise radius, is how far a noise carries to an agent. It counts distance only and ignores which way the agent faces. The ring is two hundred fifty pixels, so two of the three guards hear it, and the one at three hundred thirty-three pixels does not. For example, a player knocks over a crate, and every guard within its noise radius turns toward the sound, even guards looking the other way.",
+   "figures": ["250 px", "2 of 3", "333 px"]
+  },
+  {
+   "slide": 2,
+   "step": 4,
+   "narration": "The player slips behind a wall. Last known position is where the target was last seen, kept in the agent's memory. The red cross marks it. The guard walks to that spot, which takes three seconds here, searches, and then goes back where it started. For example, the Walker guard's Search state takes it to the last known player position, where it waits, and then it returns to Patrol.",
+   "figures": ["3.0 s"]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "Two guards, G1 and G2, and twelve dots to spot. Sight range is how far an NPC, a non-player character, can see. It is a distance and nothing else. Every dot inside a guard's circle of three hundred forty pixels counts, even one behind a wall. Here each guard counts four, and six dots are seen by either. For example, a sentry tower that wakes up whenever the player comes within a set distance, walls or no walls, uses only a sight range.",
+   "figures": ["340 px", "4 of 12", "seen by either: 6"]
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "Now each guard has a cone. The Field-of-view cone is the angle across which an agent can see, centred on the way it faces. A dot must be in range and also inside the seventy degree cone. As the cones sweep, the counts rise and fall. For example, a guard in a stealth level who faces the door cannot see the player creeping up from behind, however near the player gets.",
+   "figures": ["70°"]
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "A wall now stands in the middle. Line of sight means a straight line from the agent to the target that nothing blocks. Dots in the wall's shadow drop out. With all three tests each guard sees two, and three dots are seen by either. Sight range is only a distance, and line of sight also needs that clear line. For example, the Walker guard casts a ray toward the player, and a player hidden behind the obstacle does not make it chase.",
+   "figures": ["2 of 12", "seen by either: 3"]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "An agent turns toward a red target in a simulated run. Velocity is speed with a direction, and max speed caps its size, here one hundred sixty pixels per second. Steering is the family of behaviours that change that velocity a little each tick, the desired velocity minus the current one. For example, the Walker player's run speed is capped at one hundred sixty too. And a bat enemy that curves toward the player, instead of snapping around, is steering.",
+   "figures": ["160 px/s"]
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "Seek means steer toward a target. It aims straight at the target at full speed on every tick and never slows. So it reaches the target at one hundred sixty pixels per second, overshoots, and circles back, and the speed line below swings up and down. For example, a homing fireball that flies at the player at full speed is seeking. When the player dodges, it shoots past and turns around.",
+   "figures": ["160"]
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "A red threat sits in the middle. Flee is the opposite of seek. The agent steers directly away from a target. Here it flees for one point six seconds, until it is three hundred pixels from the threat, and then it stops steering. For example, a chicken in a farm level that runs from the player whenever the player comes near, and settles once it is far enough away, is fleeing.",
+   "figures": ["1.6 s", "300 px"]
+  },
+  {
+   "slide": 4,
+   "step": 4,
+   "narration": "Arrive means seek, then slow down to stop at the target. Inside the last two hundred pixels the desired speed falls, so the agent eases in. After six point nine seconds it is about six pixels from the target and moving at under five pixels per second. Seek never slows, and arrive does. For example, a pet that runs to the player and comes to a gentle stop at the player's feet, instead of bumping past, is arriving.",
+   "figures": ["200 px", "6.9 s", "6.2 px", "5 px/s"]
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "Two chasers, grey and red, go after a black target that runs at a steady sixty-three pixels per second, in a simulated run. Pursue means steer toward where a moving target will be, not where it is now. The red chaser pursues and catches it at two point six seconds. The grey one seeks, and catches it at three seconds. Both move at one hundred ten. For example, a hawk enemy that dives at the spot a running player is about to reach is pursuing.",
+   "figures": ["63 px/s", "2.6 s", "3.0 s", "110 px/s"]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "One agent, wandering. Wander means small random turns, so the path meanders. Each tick it nudges a target point, the red dot, around a small circle one hundred pixels ahead, and steers toward it. The turns are random but seeded, so a test can replay the same path. For example, a slime that drifts around a cave when it has nothing to chase, and drifts the same way in every test run, is wandering with a seed.",
+   "figures": ["100 px"]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "Fourteen small agents in one room, in a simulated run. Separation means steer away from near neighbours. Each agent turns away from any neighbour nearer than sixty pixels, the red ring. The nearest pair opens from twenty-four pixels apart to forty-three. For example, a crowd of zombies shuffling toward the player keeps a little space between each one, so they never pile up into a single blob.",
+   "figures": ["14 agents", "60 px", "start 24", "43 px"]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "Alignment means steer to match the neighbours' heading. Each agent turns toward the average direction of the agents around it. Heading agreement rises from zero point one seven to one, which means every agent points the same way. For example, a flock of birds in the background of a level, where all of them bank together as soon as their neighbours turn, is using alignment.",
+   "figures": ["0.17", "1.00"]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "Cohesion means steer toward the neighbours' centre. Each agent heads for the middle of the agents within one hundred seventy pixels, the red ring. They bunch, and the mean distance to the centre falls from ninety-nine pixels to nineteen. Separation pushes agents apart, and cohesion pulls them together. For example, a pack of wolves that drifts back into one group after the player splits it up is showing cohesion.",
+   "figures": ["170 px", "start 99", "19 px"]
+  },
+  {
+   "slide": 6,
+   "step": 4,
+   "narration": "All three rules at once. Emergent behavior is complex group behaviour that comes out of simple rules. No agent knows there is a flock, yet one forms. Agreement is zero point nine four, and no two agents are nearer than thirty-one pixels. For example, nobody writes a herd script for the deer in a forest level. Each deer follows separation, alignment and cohesion, and the herd emerges on its own.",
+   "figures": ["0.94", "31 px"]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "Five lettered circles joined by lines. A Graph is a set of points, called nodes, joined by edges, and each edge has a weight, its cost. The cheapest route starts at node A, then goes through C, B and D to F, for a total cost of ten. These weights are made up. For example, the rooms of a dungeon can be the nodes, the doors between them the edges, and a long corridor gets a higher weight.",
+   "figures": ["total cost 10"]
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "A room eight cells wide and six tall, with walls and mud. A Grid marks each cell solid or free, and every free cell becomes a node. This room gives thirty-eight nodes and forty-nine edges. Godot's AStarGrid2D works this way, the light tool for grid games. For example, a tile puzzle game where enemies step from tile to tile can run AStarGrid2D on its tile map layer.",
+   "figures": ["8 by 6", "38", "49 edges"]
+  },
+  {
+   "slide": 7,
+   "step": 3,
+   "narration": "A Navigation mesh marks where agents can walk with polygons instead of cells. Here the walkable cells merge into ten polygons, so the same room needs ten nodes instead of thirty-eight. Godot bakes the mesh once, ahead of time. A grid has a node for every cell, and a navigation mesh has one for every polygon. For example, the Walker guard arena has a navigation region whose polygon covers the floor, leaves out the obstacle, and keeps a margin for the guard's size.",
+   "figures": ["10 polygons", "38 cells"]
+  },
+  {
+   "slide": 7,
+   "step": 4,
+   "narration": "A Waypoint is a single point along a path, usually placed by hand. Here eleven points cover the room, with thirteen edges, each one only where the straight line between two points is clear. The placement is made up. The bars compare the three maps, thirty-eight cells, ten polygons, eleven points. For example, the Walker guard's Patrol state walks it around a loop of waypoints set around the arena.",
+   "figures": ["11 points", "13 edges", "38 cells", "10 polygons"]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "The same room, searched from start to goal. Breadth-first search expands outward one step at a time, like a ripple, and ignores cost. It stops at the goal with the fewest steps, eleven, but its route crosses mud, so it costs eighteen. It expanded thirty-six cells. For example, on a board game map where every square costs the same, breadth-first search is enough to count how many moves a piece needs.",
+   "figures": ["11 steps", "cost 18", "36 cells"]
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "Dijkstra is pathfinding that always expands the open cell with the lowest cost so far, with no estimate of what is left. It counts each mud cell at eight, so it walks around the mud. Its route is fifteen steps and costs fifteen, cheaper than breadth-first search, after thirty-four cells. For example, if swamp tiles slow units down in your strategy game, Dijkstra sends a unit the long way round on dry land.",
+   "figures": ["mud, cost 8", "15 steps, cost 15", "34 cells"]
+  },
+  {
+   "slide": 8,
+   "step": 3,
+   "narration": "The Dijkstra search, frozen halfway. The Open and closed set are the two lists a search keeps. Open holds cells found but not yet expanded, the red outlines. Closed holds cells already expanded, the pink ones. Here five are open and seventeen closed. The search ends when the goal is taken from the open set. For example, when an enemy asks for a route, each tile next to it goes into the open set, and once expanded moves to the closed set for good.",
+   "figures": ["open 5", "closed 17"]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "The room, searched with A star. The number in each cell is its f. A star is pathfinding that takes the open cell with the lowest f first, where f is g plus h. Cells that point toward the goal score lower, so it expands just twenty-five cells yet finds the cost fifteen route. Dijkstra spreads in every direction, and A star leans toward the goal. For example, an enemy in a large level plots a route to the player after searching far fewer tiles.",
+   "figures": ["25 cells", "cost 15"]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "One moment, broken down. f, g and h are the three numbers behind A star. g is the cost paid so far. h is the estimated cost still to go, here the Manhattan distance. f is the total, g plus h. The cell taken next has g four plus h seven, so f is eleven, the top of the open list. For example, a guard four tiles into its walk, with seven tiles still to go to the player, has an f of eleven.",
+   "figures": ["g 4 + h 7 = f 11"]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "Bars compare the three searches on the same room. Breadth-first search expanded thirty-six cells and paid eighteen. Dijkstra expanded thirty-four and paid fifteen. A star expanded twenty-five and also paid fifteen. A star finds a route as cheap as Dijkstra's with less work. For example, in a level where many enemies ask for paths at the same moment, that saved work keeps the game running smoothly.",
+   "figures": ["36 expanded", "path cost 18", "34 expanded", "path cost 15", "25 expanded"]
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "Two points on a grid, labelled B and A. Manhattan distance counts moves along the grid's axes only, across and up, never on a diagonal. Here it is five across plus three up, which is eight. On a grid that moves in four directions, it is the true cost when nothing is in the way. For example, a robot in a tile game that moves one tile up, down, left or right needs exactly its Manhattan distance in moves on an empty floor.",
+   "figures": ["5 across", "3 up", "8"]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "Euclidean distance is the straight-line distance, the length a ruler would measure. Here the straight line is five point eight three, against eight along the grid. It is never more than the Manhattan distance, so it never overestimates, but on a four-direction grid it is the weaker guide. For example, a check that asks whether a noise is within a set number of pixels of a guard measures Euclidean distance.",
+   "figures": ["5.83", "8"]
+  },
+  {
+   "slide": 10,
+   "step": 3,
+   "narration": "Two A star runs on a room with a column of mud. An Admissible heuristic is an estimate that never overestimates the true cost, and with one, A star returns the cheapest path. On the left the honest estimate pays thirteen, after twenty-one expansions. On the right the estimate is multiplied by four. It finishes after ten, but hurries through the mud and pays twenty-one. For example, in a tile game with four-direction moves that each cost at least one, Manhattan distance is admissible.",
+   "figures": ["cost 13", "expanded 21", "h × 4", "expanded 10", "cost 21"]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "An agent follows a path across the room to its goal. NavigationAgent2D is the Godot node that follows a path on the navigation mesh. You set its target position, and the navigation server returns a path. Each physics frame your code asks it for the next path position and moves toward it. The agent never moves the body itself. For example, the Walker guard is a character body with a NavigationAgent2D inside it, and the guard's own move and slide call does the moving.",
+   "figures": []
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "The grey dashes are the raw path, turning at every cell, sixteen points and fifteen cells long. Path smoothing cuts corners from a path wherever the straight line is clear, and keeps a corner only where the line would hit a wall. The red path has six points and is fourteen point one cells long. Same route, fewer corners. For example, a guard that zigzags cell by cell down a diagonal hallway walks one straight line once its path is smoothed.",
+   "figures": ["16 points", "15.0 cells", "6 points", "14.1 cells"]
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "Two agents head straight at each other. Local avoidance is steering around nearby obstacles and agents, reacting to whatever is near on each tick. A path and its smoothing ignore other agents. Without avoidance the two pass twelve pixels apart, which means they overlap. With it, they pass eighty-nine pixels apart. For example, two guards whose patrol routes cross in a narrow corridor sidestep each other instead of walking through one another.",
+   "figures": ["12 px", "89 px"]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "Each pair sets two look-alike terms side by side. Sight range tests only the distance, so the dot behind the bar counts as seen. Line of sight also tests that nothing blocks the line, so the same dot is not seen.",
+   "figures": []
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "Seek aims at the target and never slows, so it swings past and comes back. Arrive aims at the same target, then slows down and settles on it.",
+   "figures": []
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Dijkstra expands in every direction by cost, thirty-four cells here. A star adds h, the estimate to the goal, and leans toward it, twenty-five cells. Both pay fifteen.",
+   "figures": ["expanded 34", "expanded 25", "cost 15"]
+  },
+  {
+   "slide": 12,
+   "step": 4,
+   "narration": "Separation steers away from near neighbours, and here the nearest pair ends one hundred eight pixels apart. Cohesion steers toward the neighbours' centre, and the mean distance to it shrinks to twenty-six pixels. One spreads, the other gathers.",
+   "figures": ["108 px", "26 px"]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "A vague request sits above the exact instruction that replaces it, beside a chart of what it does. Make the guard see the player becomes, seen only within three hundred forty pixels, inside a seventy degree cone, on a line that hits no wall. Six dots, then six, then three.",
+   "figures": ["340 px", "70°", "6 of 12", "3 of 12"]
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "Make it move smoothly to the door becomes, arrive, slowing down inside two hundred pixels of the target, with a max speed of one hundred sixty. At one hundred pixels away the speed is eighty, and at twenty it is sixteen.",
+   "figures": ["200 px", "160 px/s", "100 px: 80", "20 px: 16"]
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "Find the shortest way becomes, A star on the grid with a Manhattan heuristic, stopping when the goal leaves the open set. Dijkstra expands thirty-four cells and A star twenty-five, for the same cost of fifteen.",
+   "figures": ["34 cells", "25 cells", "same cost 15"]
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Make the crowd look natural becomes, separation, alignment and cohesion on every agent, with a fixed random seed. Without separation the nearest pair touches, at zero pixels. With it, they stay thirty-one pixels apart.",
+   "figures": ["0 px", "31 px"]
+  },
+  {
+   "slide": 13,
+   "step": 5,
+   "narration": "Make it search after the player hides becomes, store the last known position, walk there, wait one second, then return to patrol. The guard walks three hundred fifty-seven pixels at one hundred twenty pixels per second, three seconds, then searches for one.",
+   "figures": ["1 s", "357 px", "120 px/s", "3.0 s", "1.0 s"]
+  },
+  {
+   "slide": 14,
+   "step": 1,
+   "narration": "This is a checklist to run before you trust a game AI behaviour. First, can the agent really see the target? Check all three tests, the range, the cone and a clear line.",
+   "figures": []
+  },
+  {
+   "slide": 14,
+   "step": 2,
+   "narration": "Second, is the steering right for the job? Seek, arrive, pursue or flee. Each one moves differently, and only one fits.",
+   "figures": []
+  },
+  {
+   "slide": 14,
+   "step": 3,
+   "narration": "Third, does the agent slow down and stop where it should, or does it seek straight past its target and circle back?",
+   "figures": []
+  },
+  {
+   "slide": 14,
+   "step": 4,
+   "narration": "Fourth, is the map a grid, a navigation mesh or a set of waypoints? And can you say why that one suits this level?",
+   "figures": []
+  },
+  {
+   "slide": 14,
+   "step": 5,
+   "narration": "Fifth, is the search A star with a heuristic that never overestimates? An admissible estimate is what makes A star return the cheapest path.",
+   "figures": []
+  },
+  {
+   "slide": 14,
+   "step": 6,
+   "narration": "Sixth, is every random choice seeded, so a test can replay it? Then say it exactly. Not make it smart, but within three hundred forty pixels, a seventy degree cone, seed five.",
+   "figures": ["340 px", "70°", "seed 5"]
+  }
+ ],
+ "recap_lines": [
+  "An agent senses, decides and acts, once on every tick.",
+  "Sight range is a distance only, and line of sight needs a clear line.",
+  "Seek never slows, and arrive slows down to stop on the target.",
+  "Separation, alignment and cohesion together make a flock emerge.",
+  "Dijkstra expands by cost so far, and A star adds an estimate toward the goal.",
+  "An admissible heuristic never overestimates, so A star finds the cheapest path."
+ ],
+ "your_turn": {
+  "segment": "Name The Game AI Term",
+  "command": "Quiz me on game AI terms with short game-making cases, one at a time. Use the terms sight range, line of sight, field-of-view cone, seek, arrive, pursue, separation, cohesion, Dijkstra and A star. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is a game situation, and the answer waits for your reply.",
+   "Check: you named the exact term and said why its look-alike does not fit."
+  ]
+ },
+ "say_as": [
+  {"term": "A star", "say": "A-star"},
+  {"term": "AStarGrid2D", "say": "A-star grid two D"},
+  {"term": "sense-decide-act", "say": "sense, decide, act"}
+ ],
+ "deck_problems": [
+  "Slide 2 (Agent, loop, hearing and memory): the TELL THESE APART box says Sight range 'needs a clear line to the target'. Slide 3, its own TELL box, slide 12 pair 1 and the glossary all say sight range is a distance and nothing else, and give the clear line to line of sight. The term is defined two ways. The narration follows slide 3.",
+  "Slide 2 step 1: the caption says the guard patrols at 100 px/s, but the readout at the end of the step shows 'velocity (0, 0) px/s' (renderAgent sets vx to 0 once t reaches 1). Slide 2 step 2: the caption says it senses 168 px, while the still ends on 'd = 32 px'. The captions quote one moment of the animation and the readouts show another.",
+  "Slide 2 step 3: the caption calls the hearing radius the 'dashed ring', but at the end of the step the dashed ring is hidden under the solid red expanding ring of the same 250 px radius.",
+  "Slide 2 step 4: the guard's readout ends on the state 'home'. The chapter's guard states are Patrol, Chase and Search, and slide 13 step 5 says 'return to patrol'.",
+  "Slide 3 step 1: the caption says a dot counts 'even behind a wall', but no wall is drawn until step 3.",
+  "Slide 3 step 2 ends with the same counts as step 1 (G1 4, G2 4, either 6), and slide 13 step 1 shows '+ 70° cone: 6 of 12', so at rest the cone removes nothing. Slide 13 step 1 also captions '6, 6, 3' as 'each test removes targets', but those are the targets that remain.",
+  "Slide 1 says '33 terms from Chapter 14 and the glossary', but nine of the entries are tagged 'outside source' (agent, hearing radius, field-of-view cone, wander, graph, breadth-first search, open and closed set, Euclidean distance, path smoothing).",
+  "Slide 4 step 3: the 'safe 300' label sits on top of the red distance curve and is partly hidden by it.",
+  "Slide 6 step 4: the flock ends jammed into the bottom-left corner of the arena, with its red ring cut off by the border.",
+  "Slide 12 pair 4 gives 'closest pair 108 px' and 'mean distance to centre 26 px', while slide 6 gives 43 px and 19 px for the same two rules. Nothing says pair 4 is a separate run.",
+  "Slide 9 step 2 names cells D2, C2, B2, A2 and slide 9 step 1 names H3, F3, D3, but the grid has no column letters or row numbers printed, so a viewer cannot find them.",
+  "Slide 11 step 1: NavigationAgent2D is defined as following a navmesh path, but the picture shows the agent following the grid-cell route from slides 8 and 9.",
+  "Slide 12 pair 1: the dashed sight-range circle is drawn across the 'Sight range' heading and the caption 'Tests only the distance to the target.'"
+ ]
+}

@@ -85,7 +85,7 @@ You can't touch it." then deletes "You can't touch it" and types "A shader can r
 
 *Motion.* The camera pushes in on the recipe paragraph, then on the two colors the voice names.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: manim: a gradient strip from white to transparent
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: manim: a gradient strip from white to transparent
 
 ### B05 · 41 words · ~14 s
 

@@ -1,0 +1,712 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-car-paint-tuning-reflections",
+    "title": "Car Paint: Tuning Reflections",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Separate reflection controls from the two specular highlight lobes.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Car Paint: Tuning Reflections. Separate reflection controls from the two specular highlight lobes.",
+      "estimated_duration_s": 6.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Merhaba. This is Liam, in for Bear. The key correction is that several contributions shape the finish. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\ncar paint is one shine control.",
+            "triggerWords": "car paint is one shine control",
+            "replacementWords": "several contributions shape the finish",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-car-paint-tuning-reflections",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Reflection floor: An added baseline in the rim weight. Contrast power: An exponent applied to cubemap color. Lobe: A concentrated reflection contribution.",
+      "estimated_duration_s": 10.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Lobe",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Reflection floor"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Contrast power"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Lobe"
+          }
+        ],
+        "motion_claim": "Reveal Lobe",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Reflection floor",
+                "meaning": "An added baseline in the rim weight"
+              },
+              {
+                "term": "Contrast power",
+                "meaning": "An exponent applied to cubemap color"
+              },
+              {
+                "term": "Lobe",
+                "meaning": "A concentrated reflection contribution"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This shader extends a rim-weighted environment lookup. Intensity scales the angular part, while offset adds a baseline. The two controls are not interchangeable even when both make some regions brighter.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: fresnel_intensity",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Separate The Controls"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: fresnel_intensity"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: fresnel_intensity",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "uniform float fresnel_power : hint_range(0.0, 10.0, 0.01) = 3.0;\nuniform float fresnel_intensity : hint_range(0.0, 10.0, 0.01) = 1.0;\nuniform float fresnel_offset : hint_range(0.0, 10.0, 0.01) = 0.0;",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 24,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "With zero offset, a point facing the camera has zero geometric rim weight. A positive offset lets an environment contribution survive there, still multiplied by the diffuse-plus-ambient lighting factor.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: fresnel_offset",
+        "show": [
+          {
+            "at": 0,
+            "event": "Give The Center Reflection"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: fresnel_offset"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: fresnel_offset",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Give The Center Reflection",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "uniform float fresnel_intensity : hint_range(0.0, 10.0, 0.01) = 1.0;\nuniform float fresnel_offset : hint_range(0.0, 10.0, 0.01) = 0.0;\nuniform float reflection_contrast : hint_range(0.0, 10.0, 0.01) = 1.0;",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 25,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The contrast control raises each cubemap color component to a power. For components between zero and one, a power above one darkens intermediate values. This is an artistic operation, not a new reflection ray.",
+      "estimated_duration_s": 14.17,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: pow(cube_map, vec3(reflection_contrast))",
+        "show": [
+          {
+            "at": 0,
+            "event": "Reshape The Environment"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: pow(cube_map, vec3(reflection_contrast))"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: pow(cube_map, vec3(reflection_contrast))",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Reshape The Environment",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 fresnel = (pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * fresnel_intensity + fresnel_offset) * (lambert + ambient_color);\n\tvec3 total_spec = (fresnel * pow(cube_map, vec3(reflection_contrast))) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 58,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Two powers operate on the same reflection-light alignment. Their independently colored contributions add together. A smaller exponent gives a broader lobe; a larger exponent gives a tighter one.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: specular_power2",
+        "show": [
+          {
+            "at": 0,
+            "event": "Two Highlight Lobes"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: specular_power2"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: specular_power2",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Two Highlight Lobes",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "uniform vec3 specular_color : source_color = vec3(1.0);\nuniform float specular_power2 : hint_range(0.1, 100.0, 0.01) = 30.0;\nuniform vec3 specular_color2 : source_color = vec3(1.0);",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 29,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the offset increase from zero to one half on the red demo material. Reflection appears more strongly on front-facing regions. The stored environment and the mesh remain the same.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Raise The Offset"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/14_car_shader.mp4"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 25,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The reflection contribution and both highlights are added to the diffuse base. This makes the controls easy to inspect, but the sum is not an energy-conserving model of layered automotive paint.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 total_spec",
+        "show": [
+          {
+            "at": 0,
+            "event": "Read The Sum"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 total_spec"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 total_spec",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Read The Sum",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 fresnel = (pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * fresnel_intensity + fresnel_offset) * (lambert + ambient_color);\n\tvec3 total_spec = (fresnel * pow(cube_map, vec3(reflection_contrast))) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 58,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Godot's vector power call uses a vector exponent here. The scalar contrast is explicitly expanded into three components. That is a language-porting detail, not an extra physical effect.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3(reflection_contrast)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Types Matter"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3(reflection_contrast)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3(reflection_contrast)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Types Matter",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 fresnel = (pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * fresnel_intensity + fresnel_offset) * (lambert + ambient_color);\n\tvec3 total_spec = (fresnel * pow(cube_map, vec3(reflection_contrast))) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 58,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Tune each term against a visible goal: reflection at the center, environment contrast, a broad sheen, or a tight highlight. Calling everything shininess hides which calculation you actually changed.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Tune With A Purpose"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Tune With A Purpose",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 total_spec = (fresnel * pow(cube_map, vec3(reflection_contrast))) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;\n}",
+            "codeFile": "14_car_shader.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/14_car_shader.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/14_car_shader.gdshader",
+        "sha256": "275c758d410e0cd5a27411f6144395b84271986b22759d5a3972c7464d2360fa",
+        "line": 60,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. Intensity scales the angle-based reflection term. Offset adds a reflection baseline before lighting. A power reshapes the cubemap color. Two specular lobes contribute separate highlights. Liam, in for Bear.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Car Paint: Tuning Reflections",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "Intensity scales the angle-based reflection term.",
+              "Offset adds a reflection baseline before lighting.",
+              "A power reshapes the cubemap color.",
+              "Two specular lobes contribute separate highlights."
+            ],
+            "lectureLayout": true
+          }
+        }
+      },
+      "lead_silence_s": 0.5
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Raise Fresnel offset while keeping intensity fixed, then compare the two specular powers. Explain which change adds front-facing reflection and which changes highlight width. Check two things: Offset allows a nonzero front-facing reflection weight. The two powers shape separate highlight contributions.",
+      "estimated_duration_s": 17.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Raise Fresnel offset while keeping intensity fixed, then compare the two specular powers. Explain which change adds front-facing reflection and which changes highlight width. Check two things: Offset allows a nonzero front-facing reflection weight. The two powers shape separate highlight contributions.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "Offset allows a nonzero front-facing reflection weight.",
+              "The two powers shape separate highlight contributions."
+            ],
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Car Paint: Tuning Reflections. At Nik Bear Brown.",
+      "estimated_duration_s": 3.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Car Paint: Tuning Reflections",
+            "slug": "claude-liam-lecture-shader-car-paint-tuning-reflections",
+            "lectureLayout": true
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://effect.gd" id="1_3dibn"]
+[ext_resource type="Texture2D" path="res://assets/magic-fade.tres" id="2_gdj1g"]
+[ext_resource type="Texture2D" path="res://assets/soft-dot.tres" id="3_i0u2h"]
+[ext_resource type="Texture2D" path="res://assets/grow.tres" id="4_xg2vo"]
+[ext_resource type="Texture2D" path="res://assets/ring.tres" id="5_y5ppo"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmfel"]
+emission_shape = 1
+emission_sphere_radius = 0.35
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 0.05
+initial_velocity_max = 0.2
+gravity = Vector3(0, 0, 0)
+color_ramp = ExtResource("2_gdj1g")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2pr2n"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("3_i0u2h")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_0eego"]
+material = SubResource("StandardMaterial3D_2pr2n")
+size = Vector2(0.18, 0.18)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hh5xo"]
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+gravity = Vector3(0, 0, 0)
+color_ramp = ExtResource("2_gdj1g")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8nt75"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_2j7lr"]
+material = SubResource("StandardMaterial3D_8nt75")
+radius = 0.05
+height = 0.1
+radial_segments = 8
+rings = 4
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ax31k"]
+direction = Vector3(0, 1, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+scale_min = 4.0
+scale_max = 4.0
+scale_curve = ExtResource("4_xg2vo")
+color_ramp = ExtResource("2_gdj1g")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yldbk"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("5_y5ppo")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_ef4is"]
+material = SubResource("StandardMaterial3D_yldbk")
+
+[node name="Magic" type="Node3D" unique_id=112317386]
+script = ExtResource("1_3dibn")
+
+[node name="Charge" type="GPUParticles3D" parent="." unique_id=13083151]
+emitting = false
+amount = 32
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_xmfel")
+draw_pass_1 = SubResource("QuadMesh_0eego")
+metadata/emit_until = 1.5
+
+[node name="Release" type="GPUParticles3D" parent="." unique_id=870795058]
+emitting = false
+amount = 28
+lifetime = 0.9
+one_shot = true
+explosiveness = 1.0
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_hh5xo")
+draw_pass_1 = SubResource("SphereMesh_2j7lr")
+metadata/delay = 1.5
+
+[node name="Ring" type="GPUParticles3D" parent="." unique_id=419585267]
+emitting = false
+amount = 1
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_ax31k")
+draw_pass_1 = SubResource("QuadMesh_ef4is")
+metadata/delay = 1.6
+
+[node name="Pulse" type="OmniLight3D" parent="." unique_id=2097485011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+light_color = Color(0.27450982, 0.6117647, 1, 1)
+light_energy = 0.0
+omni_range = 4.0

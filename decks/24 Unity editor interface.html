@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Unity editor interface | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: The Unity editor interface">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="The Unity editor interface">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Unity</p>
+      <h1 class="t-opening rise g2">The Unity editor interface</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">What each window is for and how to find things, for a student who knows the Godot editor</p>
+      <div class="speaker-notes" hidden><p>Deck 14 of the topic order. 32 terms. Tags: in the book text means a chapter's "Doing the same thing in Unity" section uses and explains it; in the glossary means a glossary row; editor or docs means it comes from the Unity manual or the editor itself. Unity was not run for the course chapters; the animations are drawn to show behaviour, and the numbers are computed from the stated inputs.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-two terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-two terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 to 15, "Doing the same thing in Unity"; glossary, Engine vocabulary and Unity workflows; Unity manual.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Scene view, Game view, Hierarchy, Project window">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Windows</p>
+      <h2 class="t-chart">Scene view, Game view, Hierarchy, Project window</h2>
+      <div class="diagram build" data-build="wina" style="flex-basis:700px"></div>
+      <p class="source">Source: Unity manual, "Unity Editor interface"; Chapter 2, "Doing the same thing in Unity".</p>
+      <div class="speaker-notes" hidden><p>Each click lights one window and shows what it does. Object counts are computed from the drawn positions. The editor drawing is simplified; the real default layout has the same four areas.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Inspector, Console, Toolbar, Layout">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Windows</p>
+      <h2 class="t-chart">Inspector, Console, Toolbar, Layout</h2>
+      <div class="diagram build" data-build="winb" style="flex-basis:700px"></div>
+      <p class="source">Source: Unity manual, "Unity Editor interface".</p>
+      <div class="speaker-notes" hidden><p>Frame counts in step 3 are computed: 90 frames of Play, then 3 Steps. Layout names are those on the Layout dropdown.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Scene view and Game view see different things">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Same scene, two cameras</p>
+      <h2 class="t-chart">Scene view and Game view see different things</h2>
+      <div class="diagram build" data-build="sg" style="flex-basis:700px"></div>
+      <p class="source">Source: Unity manual, "Scene view" and "Game view".</p>
+      <div class="speaker-notes" hidden><p>Camera cone and object positions are invented; which objects are inside is computed by an angle and distance test.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="GameObject, component, space and handles">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Objects</p>
+      <h2 class="t-chart">GameObject, component, space and handles</h2>
+      <div class="diagram build" data-build="tree" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Engine vocabulary and Unity workflows; Unity manual, "Tool handle position and rotation".</p>
+      <div class="speaker-notes" hidden><p>World x = parent local + child local, computed. Bounds centre is computed from the two boxes.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Scene gizmo and moving around">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Looking and moving</p>
+      <h2 class="t-chart">Scene gizmo and moving around</h2>
+      <div class="diagram build" data-build="nav" style="flex-basis:700px"></div>
+      <p class="source">Source: Unity manual, "Scene view navigation" and "Transform tools".</p>
+      <div class="speaker-notes" hidden><p>Wireframe projections are computed with a perspective camera. Shortcuts: Alt plus left drag to orbit, middle drag to pan, scroll to zoom, right drag plus W A S D to fly.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Play Mode and what survives it">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Play</p>
+      <h2 class="t-chart">Play Mode and what survives it</h2>
+      <div class="diagram build" data-build="play" style="flex-basis:700px"></div>
+      <p class="source">Source: Unity manual, "Configurable Enter Play Mode" and "Play Mode"; Chapter 1, Play Mode tests.</p>
+      <div class="speaker-notes" hidden><p>Edit Mode and Play Mode timelines are illustrative. Enter Play Mode Options page was read: Reload Domain and Scene, Reload Scene only (default), Reload Domain only, Do not reload. Start-up seconds are invented.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Prefab, Prefab Mode and the Overrides dropdown">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Prefabs</p>
+      <h2 class="t-chart">Prefab, Prefab Mode and the Overrides dropdown</h2>
+      <div class="diagram build" data-build="prefab" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, "Doing the same thing in Unity"; glossary, Engine vocabulary and Unity workflows (Prefab, Override, Apply, Revert); Unity manual, "Prefab Mode".</p>
+      <div class="speaker-notes" hidden><p>Instance values and counts are computed from the rule: instance value is its override, else the prefab value.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Tags and layers">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Grouping objects</p>
+      <h2 class="t-chart">Tags and layers</h2>
+      <div class="diagram build" data-build="lt" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, "Layers work differently"; glossary, Engine vocabulary and Unity workflows (Tag, Layer).</p>
+      <div class="speaker-notes" hidden><p>Counts are computed from the twelve objects in the table.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Import settings and the Package Manager">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Assets</p>
+      <h2 class="t-chart">Import settings and the Package Manager</h2>
+      <div class="diagram build" data-build="imp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 2 and 7, "Doing the same thing in Unity" (.meta import settings); Unity manual, "Package Manager".</p>
+      <div class="speaker-notes" hidden><p>Memory is computed from width, height, bytes per pixel and a 4/3 mipmap factor. Package list is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Project Settings, Preferences, Build Profiles">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Settings</p>
+      <h2 class="t-chart">Project Settings, Preferences, Build Profiles</h2>
+      <div class="diagram build" data-build="set" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 15, "Build configuration as a committable file"; Unity manual, "Project Settings" and "Preferences".</p>
+      <div class="speaker-notes" hidden><p>Team of four is illustrative. Build Profiles: Chapter 15, File menu, Build Profiles.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Animation window, Animator window, Profiler">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Windows from the Window menu</p>
+      <h2 class="t-chart">Animation window, Animator window, Profiler</h2>
+      <div class="diagram build" data-build="anim" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10, 11 and 13, "Doing the same thing in Unity".</p>
+      <div class="speaker-notes" hidden><p>Clip values follow a smooth curve between 3 keys (Unity tangents vary). Frame times are seeded and illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Unity editor part and Godot equivalent">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Mapping</p>
+      <h2 class="t-chart">Unity editor part and Godot equivalent</h2>
+      <div class="diagram build" data-build="mapping" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 to 15, Unity versus Godot tables; Unity manual.</p>
+      <div class="speaker-notes" hidden><p>Eleven rows, one per click. Godot parts from Chapters 0, 1 and 4.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4; glossary, Engine vocabulary and Unity workflows.</p>
+      <div class="speaker-notes" hidden><p>Scene and Game view, prefab asset and instance, tag and layer, Project Settings and Preferences.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 2, 4; glossary, Engine vocabulary and Unity workflows.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions. Field of view heights use 2 d tan(fov/2).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you change something in the editor">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you change something in the editor</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, Chapter 13.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= The Unity editor interface (deck 14) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = chapters use AND explain it (Unity sections); gloss = glossary row; editor = Unity manual / editor behaviour */
+  var T = {
+    scene: { n: "Scene view", tag: "editor", m: "Where you look at the scene and edit it, through a free editor camera" },
+    game: { n: "Game view", tag: "editor", m: "Shows what the scene's cameras render, as a player sees it" },
+    hier: { n: "Hierarchy", tag: "editor", m: "A tree of every GameObject in the open scene; drag one onto another to nest it" },
+    proj: { n: "Project window", tag: "editor", m: "A file browser for the project's Assets and Packages folders" },
+    insp: { n: "Inspector", tag: "editor", m: "Shows the components and settings of the selected object and lets you edit them" },
+    console: { n: "Console", tag: "editor", m: "Messages, warnings and errors from your scripts and the editor" },
+    toolbar: { n: "Toolbar", tag: "editor", m: "The top strip: transform tools, pivot and handle toggles, Play, Pause and Step" },
+    layout: { n: "Layout and tabs", tag: "editor", m: "A saved arrangement of windows; drag tabs to dock them, or pick a layout at top right" },
+    gobj: { n: "GameObject", tag: "gloss", m: "Unity's object; does nothing until components are added" },
+    comp: { n: "Component", tag: "gloss", m: "A piece of behaviour or data attached to a GameObject" },
+    space: { n: "Local and world space", tag: "gloss", m: "Local is relative to the parent object; world is relative to the whole level" },
+    pivot: { n: "Pivot and Local handles", tag: "editor", m: "Pivot or Center sets where the handle sits; Local or Global sets how it points" },
+    gizmo: { n: "Scene gizmo", tag: "editor", m: "The axis widget at the Scene view's top right; click an axis to look along it" },
+    navigate: { n: "Orbit, pan, zoom", tag: "editor", m: "Orbit turns around a point, pan slides the view, zoom changes the distance" },
+    fly: { n: "Flythrough", tag: "editor", m: "Hold the right mouse button and press W, A, S, D to move the camera itself" },
+    tools: { n: "Transform tools", tag: "editor", m: "Move, Rotate, Scale, Rect and Hand: the handles for changing a selection" },
+    playmode: { n: "Play Mode", tag: "editor", m: "The editor runs the game inside itself; the Play button turns it on and off" },
+    lost: { n: "Play Mode changes lost", tag: "editor", m: "Edits to scene objects made during Play Mode are thrown away when you stop" },
+    enterpo: { n: "Enter Play Mode Options", tag: "editor", m: "A Project Settings choice to skip reloading code or scene when Play starts, so it starts faster" },
+    prefab: { n: "Prefab", tag: "book", m: "Unity's reusable object template; edits to it flow to every instance" },
+    prefabmode: { n: "Prefab Mode", tag: "editor", m: "Opens a prefab asset on its own so you edit the template, not one instance" },
+    overrides: { n: "Overrides dropdown", tag: "gloss", m: "Lists an instance's changes; Apply pushes one into the prefab, Revert drops it" },
+    tag: { n: "Tag", tag: "gloss", m: "A text label on an object for lookup and filtering" },
+    layer: { n: "Layer", tag: "book", m: "A numbered category, one per object, for rendering or collision filtering; set in the Layer dropdown at the top of the Inspector" },
+    importset: { n: "Asset import settings", tag: "book", m: "Per-asset options such as texture Max Size and compression, shown in the Inspector and saved in the .meta file" },
+    pkgmgr: { n: "Package Manager", tag: "editor", m: "The window (Window menu) that adds, updates and removes packages; the list is saved in Packages/manifest.json" },
+    projset: { n: "Project Settings", tag: "editor", m: "Settings that belong to the project and are saved in it, such as Tags and Layers, Physics and Time" },
+    prefs: { n: "Preferences", tag: "editor", m: "Settings that belong to you and your machine, such as colours, keys and the script editor" },
+    build: { n: "Build Profiles", tag: "book", m: "A saved set of build settings for one platform: target and scenes to include, kept as an asset" },
+    animwin: { n: "Animation window", tag: "book", m: "Where you key properties over time to make an Animation Clip" },
+    animator: { n: "Animator window", tag: "book", m: "Where an Animator Controller's states and transitions are drawn and tested" },
+    profiler: { n: "Profiler", tag: "book", m: "Records each frame's time by system (scripts, rendering, physics) to find what is slow" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function rect(g, x, y, w, h, fill, stroke, sw) { return g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill || "none").attr("stroke", stroke || "none").attr("stroke-width", sw || 0); }
+  function line(g, x1, y1, x2, y2, c, sw, dash) { var l = g.append("line").attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2).attr("stroke", c || INK).attr("stroke-width", sw || 2); if (dash) l.attr("stroke-dasharray", dash); return l; }
+  function clear(g) { g.selectAll("*").remove(); }
+  function tri(g, x, y, s, fill) { return g.append("path").attr("d", "M" + x + "," + (y - s) + "L" + (x + s * 1.6) + "," + y + "L" + x + "," + (y + s) + "Z").attr("fill", fill); }
+
+  var MAPROWS = [
+    ["Windows and the toolbar", "Scene view, Game view, Hierarchy, Project window, Inspector, Console, Toolbar, Layout and tabs", "Where each thing lives and what it is for"],
+    ["Objects and moving around", "GameObject, Component, local and world space, pivot handles, Scene gizmo, orbit pan zoom, Flythrough, transform tools", "What you select, and how you look at it and move it"],
+    ["Play, prefabs, tags and layers", "Play Mode, changes lost, Enter Play Mode Options, Prefab, Prefab Mode, Overrides dropdown, Tag, Layer", "What survives Play, and how objects are grouped"],
+    ["Assets, settings and measuring", "Import settings, Package Manager, Project Settings, Preferences, Build Profiles, Animation window, Animator window, Profiler", "Where options live, and how you check speed"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Thirty-two Unity editor terms in four groups", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "32 terms for finding your way around the Unity editor. Each one is matched to its Godot part on the last term slide.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1040];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 52, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 28, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- the editor drawing (760 x 590) ---------- */
+  var EX = { hier: [0, 52, 170, 284], scene: [178, 52, 362, 284], game: [178, 52, 362, 284], insp: [548, 52, 212, 284], proj: [0, 344, 760, 226], console: [0, 344, 760, 226], tools: [4, 1, 176, 42], pivot: [188, 1, 180, 42], play: [384, 1, 140, 42], layout: [610, 1, 150, 42] };
+  function icon(g, x, y, i) {
+    var p = g.append("g").attr("transform", "translate(" + x + "," + y + ")");
+    function st(s) { return s.attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); }
+    if (i === 0) st(p.append("circle").attr("r", 9));
+    else if (i === 1) st(p.append("path").attr("d", "M-11,0H11M0,-11V11"));
+    else if (i === 2) st(p.append("path").attr("d", "M-9,2A9,9 0 1,1 2,9"));
+    else if (i === 3) { st(p.append("rect").attr("x", -10).attr("y", -10).attr("width", 20).attr("height", 20)); st(p.append("rect").attr("x", -4).attr("y", -4).attr("width", 8).attr("height", 8)); }
+    else st(p.append("rect").attr("x", -11).attr("y", -7).attr("width", 22).attr("height", 14));
+  }
+  var MOBS = [[250, 70], [310, 195], [335, 110]], CAMRECT = [40, 40, 300, 200];
+  function inRect(p, r) { return p[0] >= r[0] && p[0] <= r[2] && p[1] >= r[1] && p[1] <= r[3]; }
+  var COMPS = { "Main Camera": ["Transform", "Camera"], "Player": ["Transform", "Sprite Renderer", "PlayerMove"], "Mob": ["Transform", "Sprite Renderer", "MobMove"], "Light": ["Transform", "Light"] };
+  var FILES = ["player.png", "mob.png", "Player.prefab", "Move.cs"];
+  var CON = [["i", "Player ready"], ["w", "Mob has no collider"], ["e", "NullReference: Player.cs:12"]];
+  function editor(g, s) {
+    s = s || {};
+    var bodyFill = s.play ? TINT : "#FFFFFF";
+    /* toolbar */
+    box(g, 0, 0, 760, 44, { stroke: FAMILIAR, fill: bodyFill });
+    for (var i = 0; i < 5; i++) { if (s.tool === i) rect(g, 6 + i * 34, 5, 32, 34, TINT, RED, 2); icon(g, 22 + i * 34, 22, i); }
+    box(g, 194, 6, 78, 32, { stroke: GREY }); cap(g, 233, 31, s.center ? "Center" : "Pivot", { size: 24, anchor: "middle", weight: 700 });
+    box(g, 280, 6, 82, 32, { stroke: GREY }); cap(g, 321, 31, s.global ? "Global" : "Local", { size: 24, anchor: "middle", weight: 700 });
+    box(g, 392, 6, 124, 32, { stroke: s.playing ? RED : GREY, sw: s.playing ? 3 : 1.5, fill: s.playing ? TINT : "#FFFFFF" });
+    tri(g, 406, 22, 10, s.playing ? RED : INK);
+    rect(g, 444, 12, 7, 20, s.paused ? RED : INK); rect(g, 456, 12, 7, 20, s.paused ? RED : INK);
+    tri(g, 486, 22, 9, INK); rect(g, 502, 12, 6, 20, INK);
+    box(g, 618, 6, 134, 32, { stroke: GREY }); cap(g, 630, 31, "Layout", { size: 24, weight: 700 }); g.append("path").attr("d", "M726,19 L738,19 L732,28Z").attr("fill", INK);
+    /* hierarchy */
+    box(g, 0, 52, 170, 36, { stroke: FAMILIAR, fill: "#F6F6F6" }); cap(g, 10, 78, "Hierarchy", { size: 24, weight: 700 });
+    box(g, 0, 88, 170, 248, { stroke: FAMILIAR });
+    var tree = ["SampleScene", "Main Camera", "Player", "Mob", "Light"];
+    tree.forEach(function (n, j) {
+      var y = 96 + j * 40, on = s.sel === n;
+      if (on) rect(g, 3, y, 164, 34, TINT, RED, 2);
+      cap(g, j ? 24 : 10, y + 26, n, { size: 24, weight: j ? 400 : 700, fill: on ? RED : INK });
+    });
+    /* scene / game */
+    var gt = s.tab === "game";
+    box(g, 178, 52, 94, 36, { stroke: gt ? FAMILIAR : RED, sw: gt ? 1.5 : 3, fill: gt ? "#F6F6F6" : "#FFFFFF" }); cap(g, 190, 78, "Scene", { size: 24, weight: gt ? 400 : 700, fill: gt ? MUTED : RED });
+    box(g, 278, 52, 86, 36, { stroke: gt ? RED : FAMILIAR, sw: gt ? 3 : 1.5, fill: gt ? "#FFFFFF" : "#F6F6F6" }); cap(g, 290, 78, "Game", { size: 24, weight: gt ? 700 : 400, fill: gt ? RED : MUTED });
+    box(g, 178, 88, 362, 248, { stroke: FAMILIAR, fill: bodyFill });
+    var ox = 178, oy = 88, px = s.px === undefined ? 110 : s.px, py = s.py === undefined ? 150 : s.py;
+    if (!gt) {
+      for (var gx = 40; gx < 362; gx += 40) line(g, ox + gx, oy + 1, ox + gx, oy + 247, GRID, 1);
+      for (var gy = 40; gy < 248; gy += 40) line(g, ox + 1, oy + gy, ox + 361, oy + gy, GRID, 1);
+      rect(g, ox + CAMRECT[0], oy + CAMRECT[1], CAMRECT[2] - CAMRECT[0], CAMRECT[3] - CAMRECT[1], "none", GREY, 2).attr("stroke-dasharray", "6 5");
+      MOBS.forEach(function (m) { g.append("circle").attr("cx", ox + m[0]).attr("cy", oy + m[1]).attr("r", 12).attr("fill", INK); });
+      g.append("circle").attr("cx", ox + px).attr("cy", oy + py).attr("r", 14).attr("fill", RED);
+      if (s.handle) { line(g, ox + px, oy + py, ox + px + 40, oy + py, RED, 4); tri(g, ox + px + 40, oy + py, 7, RED); }
+      var gz = g.append("g").attr("transform", "translate(" + (ox + 322) + "," + (oy + 40) + ")");
+      line(gz, 0, 0, 22, 0, RED, 4); line(gz, 0, 0, 0, -22, INK, 4); line(gz, 0, 0, -14, 14, GREY, 4);
+    } else {
+      var sc = 1.3, gx0 = ox + 12, gy0 = oy + 16;
+      rect(g, gx0, gy0, (CAMRECT[2] - CAMRECT[0]) * sc, (CAMRECT[3] - CAMRECT[1]) * sc, "#FFFFFF", INK, 3);
+      var objs = [[px, py, RED, 14]].concat(MOBS.map(function (m) { return [m[0], m[1], INK, 12]; }));
+      objs.forEach(function (o) { if (inRect(o, CAMRECT)) g.append("circle").attr("cx", gx0 + (o[0] - CAMRECT[0]) * sc).attr("cy", gy0 + (o[1] - CAMRECT[1]) * sc).attr("r", o[3] * sc).attr("fill", o[2]); });
+      if (s.frame !== undefined) cap(g, gx0 + 10, gy0 + 32, "Frame " + s.frame, { size: 24, weight: 700 });
+    }
+    /* inspector */
+    box(g, 548, 52, 212, 36, { stroke: FAMILIAR, fill: "#F6F6F6" }); if (!s.noInsp) cap(g, 558, 78, "Inspector", { size: 24, weight: 700 });
+    box(g, 548, 88, 212, 248, { stroke: FAMILIAR });
+    if (s.insp === "import") {
+      cap(g, 558, 120, s.file || "player.png", { size: 24, weight: 700 });
+      [["Max Size", "2048"], ["Mipmaps", "off"]].forEach(function (r, j) { var y = 160 + j * 44; line(g, 556, y + 12, 752, y + 12, FAMILIAR, 1.5); cap(g, 558, y, r[0], { size: 24 }); cap(g, 750, y, r[1], { size: 24, anchor: "end", weight: 700 }); });
+      box(g, 558, 270, 92, 40, { stroke: GREY, sw: 2 }); cap(g, 604, 298, "Apply", { size: 24, anchor: "middle", weight: 700 });
+    } else if (s.noInsp) {
+    } else {
+      var nm = s.sel && COMPS[s.sel] ? s.sel : "Player";
+      cap(g, 558, 120, nm, { size: 24, weight: 700 });
+      COMPS[nm].forEach(function (c, j) { var y = 134 + j * 40; box(g, 556, y, 196, 34, { stroke: FAMILIAR, fill: "#F6F6F6" }); cap(g, 564, y + 25, c, { size: 24 }); });
+      if (nm === "Player") { var yy = 134 + 3 * 40 + 30; cap(g, 558, yy, "Speed", { size: 24 }); cap(g, 750, yy, (s.speed === undefined ? 5 : s.speed).toFixed(1), { size: 24, anchor: "end", weight: 700, fill: s.speed !== undefined && s.speed !== 5 ? RED : INK }); }
+    }
+    /* bottom */
+    var cn = s.bot === "console";
+    box(g, 0, 344, 110, 36, { stroke: cn ? FAMILIAR : RED, sw: cn ? 1.5 : 3, fill: cn ? "#F6F6F6" : "#FFFFFF" }); cap(g, 10, 370, "Project", { size: 24, weight: cn ? 400 : 700, fill: cn ? MUTED : RED });
+    box(g, 116, 344, 112, 36, { stroke: cn ? RED : FAMILIAR, sw: cn ? 3 : 1.5, fill: cn ? "#FFFFFF" : "#F6F6F6" }); cap(g, 126, 370, "Console", { size: 24, weight: cn ? 700 : 400, fill: cn ? RED : MUTED });
+    box(g, 0, 380, 760, 190, { stroke: FAMILIAR });
+    if (!cn) {
+      ["Assets", "Art", "Prefabs", "Scripts", "Packages"].forEach(function (n, j) { cap(g, j && j < 4 ? 28 : 10, 410 + j * 34, n, { size: 24, weight: j === 0 || j === 4 ? 700 : 400 }); });
+      line(g, 176, 392, 176, 562, FAMILIAR, 2);
+      FILES.forEach(function (n, j) { var y = 392 + j * 40, on = s.botSel === n; if (on) rect(g, 184, y, 566, 36, TINT, RED, 2); cap(g, 196, y + 27, n, { size: 24, fill: on ? RED : INK, weight: on ? 700 : 400 }); });
+    } else {
+      CON.forEach(function (c, j) {
+        if (j >= (s.con === undefined ? 3 : s.con)) return;
+        var y = 392 + j * 44;
+        rect(g, 14, y + 8, 20, 20, c[0] === "e" ? RED : c[0] === "w" ? INK : GREY);
+        mono(g, 50, y + 27, c[1], { size: 24, fill: c[0] === "e" ? RED : INK });
+      });
+    }
+    /* highlight */
+    if (s.hl && EX[s.hl]) { var r = EX[s.hl]; rect(g, r[0] - 2, r[1] - 2, r[2] + 4, r[3] + 4, "none", RED, 4); }
+  }
+
+  /* ---------- 1. windows ---------- */
+  function renderWinA(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Unity editor: Scene view, Game view, Hierarchy and Project window", "A drawing of the Unity editor with a toolbar, Hierarchy, Scene and Game tabs, Inspector and Project window. Each step lights one window.");
+    var ey = base(svg, [{ id: "scene", s: 1 }, { id: "game", s: 2 }, { id: "hier", s: 3 }, { id: "proj", s: 4 }], k, anim, ["Scene view", "editor camera you steer"], ["Game view", "what the game's camera shows"]);
+    var d = svg.append("g"), objs = 1 + MOBS.length, inView = [[110, 150]].concat(MOBS).filter(function (o) { return inRect(o, CAMRECT); }).length;
+    function draw(t) {
+      var s = { hl: [null, "scene", "game", "hier", "proj"][k], tab: "scene", bot: "proj", sel: "Player" };
+      if (k === 1) { s.px = 110 + 140 * d3.easeCubicInOut(Math.min(1, t * 1.2)); s.handle = true; s.tool = 1; }
+      if (k === 2) s.tab = t > 0.25 ? "game" : "scene";
+      if (k === 3) { var ss = ["Main Camera", "Player", "Mob"]; s.sel = ss[Math.min(2, Math.floor(t * 3))]; }
+      if (k === 4) { var ff = ["Move.cs", "Player.prefab", "player.png"]; s.botSel = ff[Math.min(2, Math.floor(t * 3))]; if (s.botSel === "player.png") s.insp = "import"; }
+      clear(d); editor(d, s);
+    }
+    if (k === 0) draw(1); else run(d, [0, 3000, 3000, 3600, 3600][k], draw, anim);
+    note(svg, ey, ["", "Drag the Move handle: the Player goes from x = 0 to x = 4 in the scene.", "Game view draws " + inView + " of " + objs + " objects: the camera frame.", "Click a row in the tree: the Inspector shows that object.", "Click a file: a texture shows its import settings."][k]);
+  }
+  function renderWinB(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Inspector, the Console, the toolbar and the layout menu", "The editor drawing again. Step 1 edits a value in the Inspector. Step 2 opens the Console and shows three messages. Step 3 presses Play, Pause and Step. Step 4 opens the Layout menu.");
+    var ey = base(svg, [{ id: "insp", s: 1 }, { id: "console", s: 2 }, { id: "toolbar", s: 3 }, { id: "layout", s: 4 }], k, anim, ["Inspector", "settings of the selected object"], ["Hierarchy", "which objects exist in the scene"]);
+    var d = svg.append("g");
+    function draw(t) {
+      var s = { hl: [null, "insp", "console", "play", "layout"][k], sel: "Player", bot: "proj" };
+      if (k === 1) s.speed = t < 0.2 ? 5 : t > 0.8 ? 7.5 : 5 + 2.5 * (t - 0.2) / 0.6;
+      if (k === 2) { s.bot = "console"; s.con = Math.min(3, Math.floor(t * 3.9)); }
+      if (k === 3) {
+        var fr = 0; s.tab = "game";
+        if (t < 0.5) { s.play = true; s.playing = true; fr = Math.round(t / 0.5 * 90); }
+        else if (t < 0.75) { s.play = true; s.paused = true; s.playing = true; fr = 90; }
+        else { s.play = true; s.paused = true; s.playing = true; fr = 90 + Math.min(3, Math.floor((t - 0.75) / 0.25 * 3.99) + 1); s.step = true; }
+        s.frame = fr;
+      }
+      if (k === 4) { s.dd = true; s.noInsp = true; }
+      clear(d); editor(d, s);
+      if (k === 4) {
+        box(d, 560, 46, 200, 150, { stroke: INK, sw: 2.5 });
+        ["Default", "2 by 3", "Tall", "Wide"].forEach(function (n, j) { var on = j === Math.min(3, Math.floor(t * 4)); if (on) rect(d, 563, 52 + j * 36, 194, 34, TINT); cap(d, 574, 78 + j * 36, n, { size: 24, weight: on ? 700 : 400, fill: on ? RED : INK }); });
+      }
+    }
+    if (k === 0) draw(1); else run(d, [0, 3000, 3000, 5000, 3200][k], draw, anim);
+    var errs = CON.filter(function (c) { return c[0] === "e"; }).length, warns = CON.filter(function (c) { return c[0] === "w"; }).length;
+    note(svg, ey, ["", "Speed 5.0 to 7.5 in the Inspector.", "Console: " + (CON.length - errs - warns) + " message, " + warns + " warning, " + errs + " error.", "Play runs 90 frames, Pause holds, 3 Steps add 3: frame 93.", "Layout lists saved window arrangements."][k]);
+  }
+
+  /* ---------- 2. scene vs game ---------- */
+  var WORLD = [[220, 120], [260, 230], [330, 330], [380, 160], [450, 260], [520, 100], [560, 380], [660, 230]];
+  function renderSG(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Scene view shows the whole world; the Game view shows only what the game camera sees", "A top-down world with eight objects and a camera cone. Step 1 shows everything, with the camera cone drawn. Step 2 sweeps the camera and a strip below shows only the objects inside the cone.");
+    var ey = base(svg, [{ id: "scene", s: 1 }, { id: "game", s: 2 }], k, anim, ["Scene view", "editor camera you steer"], ["Game view", "what the game's camera shows"]);
+    var d = svg.append("g"), cx = 50, cy = 230, fov = 50, len = 440;
+    function draw(t) {
+      clear(d);
+      var ang = k >= 2 ? kf(t, [0, 0.38, -0.38, 0]) : 0, n = 0;
+      lab(d, 0, 24, k === 1 ? "SCENE VIEW: THE WORLD FROM ABOVE" : "THE WORLD FROM ABOVE, CAMERA SWEEPING");
+      box(d, 0, 36, 760, 410, { stroke: FAMILIAR });
+      cone(d, cx, cy, ang, fov, len); camBody(d, cx, cy, ang);
+      var seen = [];
+      WORLD.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) { n++; seen.push(p); } d.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 12).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5); });
+      if (k === 1) cap(d, 750, 76, "camera cone: " + n + " of " + WORLD.length + " inside", { size: 24, weight: 700, anchor: "end", fill: RED });
+      if (k >= 2) {
+        box(d, 0, 454, 760, 132, { stroke: INK, sw: 3 }); lab(d, 10, 484, "GAME VIEW");
+        cap(d, 750, 484, "in view: " + n + " of " + WORLD.length, { size: 26, weight: 700, anchor: "end", fill: RED });
+        seen.forEach(function (p) { var da = Math.atan2(p[1] - cy, p[0] - cx) - ang, dist = Math.hypot(p[0] - cx, p[1] - cy); d.append("circle").attr("cx", 380 + (da / (fov * DEG / 2)) * 340).attr("cy", 570 - (dist / len) * 62).attr("r", 12).attr("fill", RED); });
+      }
+    }
+    if (k === 0) { draw(1); cap(d, 380, 560, "", {}); } else run(d, k === 1 ? 1 : 6000, draw, anim);
+    var n0 = WORLD.filter(function (p) { return inView(p[0], p[1], cx, cy, 0, fov, len); }).length;
+    note(svg, ey, ["", "You see all " + WORLD.length + " objects, plus the camera's cone. " + n0 + " are inside it.", "The Game view draws only what is inside the cone, so its count changes as the camera turns."][k]);
+  }
+
+  /* ---------- 3. objects, components, space, handles ---------- */
+  function renderTree(el, k, anim) {
+    var svg = svgFor(el, W, H, "A GameObject is an empty holder; components give it behaviour; children move with the parent", "A hierarchy tree next to an Inspector. Components are added one by one. Then a parent moves and its child follows. Then the pivot, center, local and global handle options are compared.");
+    var ey = base(svg, [{ id: "gobj", s: 1 }, { id: "comp", s: 2 }, { id: "space", s: 3 }, { id: "pivot", s: 4 }], k, anim, ["Local space", "relative to the parent"], ["World space", "relative to the whole level"]);
+    var d = svg.append("g");
+    if (k >= 1 && k <= 3) {
+      lab(d, 0, 30, "HIERARCHY");
+      box(d, 0, 44, 300, 260, { stroke: FAMILIAR });
+      [["Level", 0], ["Player", 1], ["Sword", 2], ["Enemy", 1]].forEach(function (r, i) { var y = 56 + i * 56, on = r[0] === (k === 3 ? "Sword" : "Player"); if (on) rect(d, 4, y, 292, 48, TINT, RED, 2); cap(d, 16 + r[1] * 36, y + 33, r[0], { size: 26, weight: r[1] ? 400 : 700, fill: on ? RED : INK }); if (r[1]) line(d, 8 + r[1] * 36 - 14, y + 24, 8 + r[1] * 36 + 6, y + 24, GREY, 2); });
+    }
+    function draw(t) {
+      clear(d.append("g").attr("class", "x"));
+    }
+    var dd = svg.append("g");
+    if (k === 0) { cap(dd, 330, 120, "", {}); }
+    else if (k === 1 || k === 2) {
+      lab(dd, 330, 30, "INSPECTOR: PLAYER");
+      box(dd, 330, 44, 430, 420, { stroke: FAMILIAR });
+      var comps = [["Transform", "position, rotation, scale"], ["Sprite Renderer", "draws the picture"], ["Rigidbody 2D", "gravity and contact"], ["PlayerMove (script)", "your code: moves it"]], nshow = k === 1 ? 1 : 4;
+      comps.forEach(function (c, i) { if (i >= nshow) return; var y = 56 + i * 98, g2 = dd.append("g"); box(g2, 342, y, 406, 88, { stroke: i ? RED : INK, sw: 2 }); cap(g2, 356, y + 36, c[0], { size: 26, weight: 700 }); cap(g2, 356, y + 72, c[1], { size: 24, fill: MUTED }); fade(g2, A(anim, k, 2) && i > 0, (i - 1) * 700); });
+      cap(dd, 330, 504, k === 1 ? "1 component: it does nothing yet" : "4 components: it draws, falls and moves", { size: 26, weight: 700, fill: RED });
+    } else if (k === 3) {
+      lab(dd, 330, 30, "X POSITION (UNITS)");
+      var X = function (v) { return 350 + v * 38; };
+      var P0 = 4, S0 = 1, P1 = 8;
+      line(dd, X(0), 130, X(10), 130, INK, 3);
+      for (var v = 0; v <= 10; v += 2) { line(dd, X(v), 124, X(v), 136, INK, 2); cap(dd, X(v), 168, "" + v, { size: 24, anchor: "middle", fill: MUTED }); }
+      var pdot = dd.append("circle").attr("r", 16).attr("cy", 130).attr("fill", INK), sdot = dd.append("circle").attr("r", 12).attr("cy", 130).attr("fill", RED);
+      var pl = cap(dd, 330, 250, "", { size: 26, weight: 700 }), sl = cap(dd, 330, 296, "", { size: 26, weight: 700, fill: RED }), wl = cap(dd, 330, 342, "", { size: 26, weight: 700, fill: RED });
+      cap(dd, 330, 400, "The child's local x stays 1.0.", { size: 24, fill: MUTED });
+      var upd = function (t) { var p = P0 + (P1 - P0) * d3.easeCubicInOut(Math.min(1, t * 1.25)); pdot.attr("cx", X(p)); sdot.attr("cx", X(p + S0)).attr("cy", 100); pl.text("Player local = world x " + p.toFixed(1)); sl.text("Sword local x " + S0.toFixed(1)); wl.text("Sword world x " + (p + S0).toFixed(1) + " = parent + local"); };
+      run(dd, 3200, upd, anim);
+    } else {
+      lab(dd, 0, 30, "PIVOT OR CENTER");
+      var us = 1.2, ox = 60, oy = 190;
+      /* parent [-40,40], child [40,160] in local px; pivot at 0, center at bounds middle */
+      var lo = -40, hi = 160, cen = (lo + hi) / 2;
+      rect(dd, ox + -40 * us + 80, oy - 50, 80 * us, 100, "#FFFFFF", INK, 3); rect(dd, ox + 40 * us + 80, oy - 25, 120 * us, 50, TINT, RED, 3);
+      var hdl = dd.append("circle").attr("cy", oy).attr("r", 12).attr("fill", RED), hl = cap(dd, 0, 330, "", { size: 26, weight: 700 });
+      cap(dd, 0, 380, "bounds x " + lo + " to " + hi + " : center " + cen, { size: 24, fill: MUTED });
+      lab(dd, 400, 30, "LOCAL OR GLOBAL");
+      var rot = dd.append("g").attr("transform", "translate(570,190)"), gl = cap(dd, 400, 330, "", { size: 26, weight: 700 });
+      var upd2 = function (t) {
+        var useC = t > 0.5; hdl.attr("cx", ox + 80 + (useC ? cen : 0) * us); hl.text(useC ? "Center: handle at x " + cen : "Pivot: handle at x 0");
+        var a = 30 * d3.easeCubicInOut(Math.min(1, t * 1.3)); clear(rot);
+        rect(rot, -70, -35, 140, 70, "#FFFFFF", INK, 3).attr("transform", "rotate(" + a + ")");
+        line(rot, 0, 0, 100, 0, GREY, 3, "6 5"); line(rot, 0, 0, 0, -100, GREY, 3, "6 5");
+        var ca = Math.cos(a * DEG) * 100, sa = Math.sin(a * DEG) * 100; line(rot, 0, 0, ca, sa, RED, 5); line(rot, 0, 0, sa, -ca, RED, 5);
+        gl.text("Local turns " + a.toFixed(0) + "°, Global 0°");
+      };
+      run(dd, 5000, upd2, anim);
+    }
+    note(svg, ey, ["", "A GameObject starts with only a Transform.", "Each component adds one job: 4 components, 4 jobs.", "World x = parent + local: 4.0 + 1.0 = 5.0, then 8.0 + 1.0 = 9.0.", "Pivot vs Center moves the handle; Local vs Global turns it."][k]);
+  }
+
+  /* ---------- 4. navigation (small 3D projection) ---------- */
+  function vsub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function vdot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function vcross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function vnorm(a) { var l = Math.hypot(a[0], a[1], a[2]); return [a[0] / l, a[1] / l, a[2] / l]; }
+  function camBasis(pos, tgt) { var f = vnorm(vsub(tgt, pos)), r = vnorm(vcross(f, [0, 1, 0])), u = vcross(r, f); return { pos: pos, f: f, r: r, u: u }; }
+  function orbitCam(yaw, pitch, dist, tgt) { var y = yaw * DEG, p = pitch * DEG; return camBasis([tgt[0] + dist * Math.cos(p) * Math.sin(y), tgt[1] + dist * Math.sin(p), tgt[2] + dist * Math.cos(p) * Math.cos(y)], tgt); }
+  function pr(c, q, cx, cy, F) { var v = vsub(q, c.pos), z = vdot(v, c.f); if (z < 0.2) return null; return [cx + F * vdot(v, c.r) / z, cy - F * vdot(v, c.u) / z]; }
+  var CEDGES = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+  function cubeV(c, s, yaw, sc) { var out = []; for (var i = 0; i < 8; i++) { var x = (i & 1 ? 1 : -1) * sc, y = (i & 2 ? 1 : -1) * sc, z = (i & 4 ? 1 : -1) * sc, a = yaw * DEG; out.push([c[0] + x * Math.cos(a) + z * Math.sin(a), c[1] + y, c[2] - x * Math.sin(a) + z * Math.cos(a)]); } return out; }
+  function drawCube(g, cam, verts, cx, cy, F, col, sw) { CEDGES.forEach(function (e) { var a = pr(cam, verts[e[0]], cx, cy, F), b = pr(cam, verts[e[1]], cx, cy, F); if (a && b) line(g, a[0], a[1], b[0], b[1], col || INK, sw || 3); }); }
+  function drawFloor(g, cam, cx, cy, F, ext) { for (var i = -ext; i <= ext; i += 2) { var a = pr(cam, [i, -1, -ext], cx, cy, F), b = pr(cam, [i, -1, ext], cx, cy, F); if (a && b) line(g, a[0], a[1], b[0], b[1], GRID, 2); a = pr(cam, [-ext, -1, i], cx, cy, F); b = pr(cam, [ext, -1, i], cx, cy, F); if (a && b) line(g, a[0], a[1], b[0], b[1], GRID, 2); } }
+  function gizmoDraw(g, cam, label) {
+    var gx = 690, gy = 100; g.append("circle").attr("cx", gx).attr("cy", gy).attr("r", 62).attr("fill", "#F6F6F6").attr("stroke", FAMILIAR);
+    [["x", [1, 0, 0], RED], ["y", [0, 1, 0], INK], ["z", [0, 0, 1], GREY]].forEach(function (a) { var ex = 40 * vdot(a[1], cam.r), ey = -40 * vdot(a[1], cam.u); line(g, gx, gy, gx + ex, gy + ey, a[2], 5); g.append("circle").attr("cx", gx + ex).attr("cy", gy + ey).attr("r", 9).attr("fill", a[2]); });
+    cap(g, gx, gy + 100, label, { size: 24, anchor: "middle", weight: 700 });
+  }
+  function renderNav(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Scene gizmo snaps the view; orbit, pan and zoom move around an object; flythrough moves the camera", "A wireframe cube seen by an editor camera. Step 1 clicks the gizmo to look from Top, Front and Right. Step 2 orbits, pans and zooms. Step 3 flies forward past three cubes. Step 4 uses the Move, Rotate and Scale tools.");
+    var ey = base(svg, [{ id: "gizmo", s: 1 }, { id: "navigate", s: 2 }, { id: "fly", s: 3 }, { id: "tools", s: 4 }], k, anim, ["Orbit", "turn around a point"], ["Flythrough", "move the camera itself"]);
+    var cp = svg.append("clipPath").attr("id", "navclip"); cp.append("rect").attr("x", 0).attr("y", 36).attr("width", 760).attr("height", 554); var d = svg.append("g").attr("clip-path", "url(#navclip)"), cx = 300, cy = 300, F = 430;
+    function draw(t) {
+      clear(d); var cam, label = "Persp", extra = null, cubes = [cubeV([0, 0, 0], 0, 0, 1)];
+      if (k === 0 || k === 1) {
+        var ph = Math.max(0, Math.min(2, Math.floor(t * 3 - 1e-9))), f = t * 3 - ph, tgt = [0, 0, 0];
+        var S = [[35, 25, "Persp"], [0, 89, "Top"], [0, 0, "Front"], [90, 0, "Right"]], a = S[ph], b = S[ph + 1], e = d3.easeCubicInOut(Math.min(1, f * 1.4));
+        if (k === 0) { cam = orbitCam(S[0][0], S[0][1], 7, tgt); label = "Persp"; } else {
+          cam = orbitCam(a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e, 7, tgt); label = f > 0.7 ? b[2] : "…";
+        }
+      } else if (k === 2) {
+        var ph2 = t < 0.34 ? 0 : t < 0.67 ? 1 : 2, e2;
+        var yaw = 35, dist = 7, tx = 0;
+        if (ph2 === 0) { yaw = 35 + 55 * d3.easeCubicInOut(t / 0.34); extra = "orbit: yaw " + yaw.toFixed(0) + "°"; } else { yaw = 90; }
+        if (ph2 === 1) { tx = 1.5 * d3.easeCubicInOut((t - 0.34) / 0.33); extra = "pan: target moves " + tx.toFixed(1) + " units"; } else if (ph2 === 2) { tx = 1.5; dist = 7 - 1.5 * d3.easeCubicInOut((t - 0.67) / 0.33); extra = "zoom: distance " + dist.toFixed(1); }
+        cam = orbitCam(yaw, 25, dist, [0, 0, tx]); label = "Persp"; cubes = [cubeV([0, 0, 0], 0, 0, 1)];
+        if (ph2 === 1) cubes = [cubeV([0, 0, 0], 0, 0, 1)];
+      } else if (k === 3) {
+        var z = 8 - 3 * 2 * t; cam = camBasis([0, 0.2, z], [0, 0.2, z - 1]); extra = "W held " + (2 * t).toFixed(1) + " s at 3 units/s: z = " + z.toFixed(1);
+        cubes = [[-2, -3], [2, -7], [-2, -11]].map(function (p) { return cubeV([p[0], 0, p[1]], 0, 0, 1); }); label = "Persp";
+      } else {
+        cam = orbitCam(35, 25, 7, [0, 0, 0]); var ph3 = Math.max(0, Math.min(2, Math.floor(t * 3 - 1e-9))), f3 = d3.easeCubicInOut(Math.min(1, (t * 3 - ph3) * 1.3));
+        var pos = [0, 0, 0], yawm = 0, sc = 1; if (ph3 === 0) pos = [2 * f3, 0, 0]; else if (ph3 === 1) { pos = [2, 0, 0]; yawm = 45 * f3; } else { pos = [2, 0, 0]; yawm = 45; sc = 1 + 0.5 * f3; }
+        cubes = [cubeV(pos, 0, yawm, sc)]; extra = ["Move: x = " + pos[0].toFixed(1), "Rotate: y = " + yawm.toFixed(0) + "°", "Scale: " + sc.toFixed(2)][ph3]; label = ["Move", "Rotate", "Scale"][ph3];
+        for (var i = 0; i < 3; i++) { if (i === ph3) rect(d, 10 + i * 50, 40, 44, 44, TINT, RED, 2); icon(d, 32 + i * 50, 62, i + 1); }
+      }
+      drawFloor(d, cam, cx, cy, F, 8); cubes.forEach(function (v) { drawCube(d, cam, v, cx, cy, F, INK, 3.5); });
+      if (k === 3) { /* camera-side view only */ } else if (k !== 3) gizmoDraw(d, cam, k === 3 ? "" : label);
+      if (k === 3) gizmoDraw(d, cam, "Persp");
+      if (k === 3 || k === 2 || k === 4) cap(d, 0, 556, extra || "", { size: 26, weight: 700, fill: RED });
+      if (k === 4) cap(d, 560, 570, "", {});
+      lab(d, 0, 24, ["", "SCENE VIEW · VIEW: " + label.toUpperCase(), "SCENE VIEW · MOVING AROUND ONE OBJECT", "SCENE VIEW · CAMERA FLIES FORWARD", "SCENE VIEW · THE SELECTED CUBE"][k] || "SCENE VIEW");
+    }
+    if (k === 0) draw(1); else run(d, [0, 5400, 6000, 4000, 6000][k], draw, anim);
+    note(svg, ey, ["", "Click an axis cone: the view snaps to Top, Front or Right.", "Orbit and pan change what you look at; zoom changes distance.", "Flythrough moves the camera itself, not the view target.", "The tools change the selected object: Move, Rotate, Scale."][k]);
+  }
+
+  /* ---------- 5. play mode ---------- */
+  var PXT = function (t) { return 60 + t * 68; }, PYV = function (v) { return 450 - v * 28; };
+  function renderPlay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Play Mode changes to scene objects are lost on exit; changes to assets stay", "A timeline from 0 to 10 seconds with Play Mode from 2 to 8. A scene object's Speed is edited from 5 to 9 inside Play Mode and goes back to 5 on exit. An asset value edited the same way stays at 9. Then four Enter Play Mode options with start-up times.");
+    var ey = base(svg, [{ id: "playmode", s: 1 }, { id: "lost", s: 2 }, { id: "enterpo", s: 4 }], k, anim, ["Edit Mode", "changes are kept"], ["Play Mode", "scene changes are thrown away"]);
+    var d = svg.append("g"), PS = 2, PE = 8, ED = 4;
+    function draw(t) {
+      clear(d);
+      if (k <= 3) {
+        lab(d, 0, 28, "SECONDS");
+        for (var s2 = 0; s2 <= 10; s2 += 2) { cap(d, PXT(s2), 62, "" + s2, { size: 24, anchor: "middle", fill: MUTED }); }
+        rect(d, PXT(0), 74, PXT(PS) - PXT(0), 44, "#FFFFFF", GREY, 2); cap(d, PXT(0) + 8, 104, "Edit", { size: 24, weight: 700 });
+        rect(d, PXT(PS), 74, PXT(PE) - PXT(PS), 44, TINT, RED, 3); cap(d, PXT(PS) + 12, 104, "Play Mode", { size: 24, weight: 700, fill: RED });
+        rect(d, PXT(PE), 74, PXT(10) - PXT(PE), 44, "#FFFFFF", GREY, 2); cap(d, PXT(PE) + 8, 104, "Edit", { size: 24, weight: 700 });
+        for (var v = 0; v <= 10; v += 5) { line(d, 60, PYV(v), 740, PYV(v), GRID, 1.5); cap(d, 50, PYV(v) + 8, "" + v, { size: 24, anchor: "end", fill: MUTED }); }
+        var tt = k === 1 ? 10 * t * 0.5 : 10 * Math.min(1, t);
+        if (k === 1) tt = 10 * Math.min(1, t); /* reveal */
+        var sceneV = function (x) { return x >= ED && x < PE ? 9 : 5; };
+        var assetV = function (x) { return x >= ED ? 9 : 5; };
+        var pts = d3.range(0, tt + 1e-9, 0.05);
+        if (k >= 2) {
+          var path = d3.line().curve(d3.curveStepAfter)(pts.map(function (x) { return [PXT(x), PYV(sceneV(x))]; }));
+          d.append("path").attr("d", path).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+        } else {
+          d.append("path").attr("d", d3.line()([[PXT(0), PYV(5)], [PXT(Math.min(tt, 10)), PYV(5)]])).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+        }
+        if (k >= 3) {
+          d.append("path").attr("d", d3.line().curve(d3.curveStepAfter)(pts.map(function (x) { return [PXT(x), PYV(assetV(x)) + 0]; }))).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4).attr("stroke-dasharray", "10 6");
+        }
+        if (k >= 2 && tt >= ED) { line(d, PXT(ED), 118, PXT(ED), 450, GREY, 2, "6 5"); cap(d, PXT(ED) + 10, PYV(9) + 34, "edit to 9", { size: 24 }); }
+        if (k >= 2 && tt >= PE) { cap(d, PXT(PE) + 8, PYV(5) + 36, "back to 5", { size: 24, weight: 700, fill: RED }); }
+        cap(d, 60, 490, "red line: Player Speed on a scene object", { size: 24, weight: 700, fill: RED });
+        if (k >= 3) cap(d, 60, 522, "dashed: runSpeed in a ScriptableObject asset", { size: 24, weight: 700 });
+        var fin = k >= 2 ? "At 8 s: scene object " + sceneV(9) + ", " + (k >= 3 ? "asset " + assetV(9) : "") : "";
+        if (k === 1) cap(d, 60, 522, "Play starts at 2 s and stops at 8 s. The tint shows you are in it.", { size: 24, fill: MUTED });
+        if (k >= 2) cap(d, 60, 560, k >= 3 ? "After exit: scene object " + sceneV(9) + ", asset " + assetV(9) : "After exit: scene object " + sceneV(9) + " again", { size: 26, weight: 700 });
+      } else {
+        lab(d, 0, 28, "START-UP SECONDS (ILLUSTRATIVE)");
+        var OPT = [["Reload Domain and Scene", 6.0], ["Reload Scene only", 3.0], ["Reload Domain only", 3.4], ["Do not reload", 0.5]], bx = 300, sc = 340 / 6.0;
+        OPT.forEach(function (o, i) {
+          var y = 70 + i * 100, g2 = d.append("g"); cap(g2, 0, y + 34, o[0], { size: 24, weight: i === 1 ? 700 : 400 }); if (i === 1) cap(g2, 0, y + 68, "(the default)", { size: 24, fill: MUTED });
+          bar(g2, bx, y + 8, o[1] * sc * Math.min(1, t * 2), 44, i === 3 ? RED : "#C4C4C4", false, 0); cap(g2, bx + o[1] * sc * Math.min(1, t * 2) + 10, y + 42, (o[1] * Math.min(1, t * 2)).toFixed(1) + " s", { size: 24, weight: 700 });
+        });
+        cap(d, 0, 500, "Faster start, but static values and old objects can carry over.", { size: 24, fill: MUTED });
+        cap(d, 0, 540, "Times here are invented to show the trade-off.", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0.5); } else run(d, [0, 3000, 4500, 4500, 2500][k], draw, anim);
+    note(svg, ey, ["", "Play Mode runs the game inside the editor, tinted.", "A scene object edited at 4 s goes back from 9 to 5 on exit.", "An asset edited in Play Mode stays 9. Copy Component values before you exit.", "Skipping reloads saves seconds."][k]);
+    if (k === 0) { clear(d); draw(1); }
+  }
+
+  /* ---------- 6. prefab ---------- */
+  function renderPrefab(el, k, anim) {
+    var svg = svgFor(el, W, H, "Editing a prefab updates every instance except those that override the value", "A prefab asset above five instances. Editing the prefab changes the instances without an override. The Overrides dropdown applies one override to the prefab and reverts another.");
+    var ey = base(svg, [{ id: "prefab", s: 1 }, { id: "prefabmode", s: 2 }, { id: "overrides", s: 3 }], k, anim, ["Prefab asset", "the template file"], ["Prefab instance", "one copy in a scene"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clear(d);
+      var pv = 1, ov = { 2: 5, 4: 7 }, hdr = "COIN.PREFAB ASSET", changed = 0;
+      if (k === 2) { pv = t > 0.4 ? 2 : 1; hdr = "PREFAB MODE: SCENE > COIN"; }
+      if (k === 3) { pv = 2; ov = { 2: 5, 4: 7 }; hdr = "OVERRIDES DROPDOWN"; if (t > 0.35) { pv = 5; delete ov[2]; } if (t > 0.75) { delete ov[4]; } }
+      lab(d, 0, 28, hdr);
+      box(d, 0, 44, 330, 130, { stroke: k === 2 ? RED : INK, sw: 3 }); cap(d, 14, 84, "Coin.prefab", { size: 26, weight: 700 }); cap(d, 14, 124, "Value " + pv, { size: 28, weight: 700, fill: RED }); cap(d, 14, 160, k === 2 ? "editing the template" : "the template", { size: 24, fill: MUTED });
+      for (var i = 1; i <= 5; i++) {
+        var x = (i - 1) * 153, y = 250, val = ov[i] !== undefined ? ov[i] : pv, g2 = d.append("g"), o = ov[i] !== undefined;
+        box(g2, x, y, 142, 130, { stroke: o ? RED : INK, sw: o ? 3 : 2 }); cap(g2, x + 10, y + 36, "#" + i, { size: 24, weight: 700 }); cap(g2, x + 10, y + 80, "Value " + val, { size: 24, weight: 700, fill: o ? RED : INK }); if (o) cap(g2, x + 10, y + 116, "override", { size: 24, fill: RED });
+        line(d, 165, 174, x + 71, y, GREY, 2);
+      }
+      var match = 0; for (var j = 1; j <= 5; j++) if ((ov[j] !== undefined ? ov[j] : pv) === pv) match++;
+      cap(d, 0, 440, "Instances showing the prefab's value: " + match + " of 5", { size: 26, weight: 700 });
+      if (k === 2) cap(d, 0, 486, "Edit to Value " + pv + ": " + (5 - Object.keys(ov).length) + " instances follow, " + Object.keys(ov).length + " keep an override.", { size: 24, fill: RED, weight: 700 });
+      if (k === 3) { box(d, 420, 28, 340, 130, { stroke: INK, sw: 2.5 }); cap(d, 434, 62, t > 0.35 ? "Instance #4 · Overrides" : "Instance #2 · Overrides", { size: 24, weight: 700 }); cap(d, 434, 100, t > 0.35 ? "Value 7 (prefab: 5)" : "Value 5 (prefab: 2)", { size: 24 }); cap(d, 434, 140, t > 0.35 ? "Revert" : "Apply", { size: 26, weight: 700, fill: RED }); }
+      if (k === 3) cap(d, 0, 486, t > 0.75 ? "Revert #4: every instance matches." : t > 0.35 ? "Apply #2 made the prefab 5; #4 still overrides." : "Two overrides are listed.", { size: 24, fill: RED, weight: 700 });
+    }
+    if (k === 0) draw(1); else run(d, [0, 1, 4000, 5000][k], draw, anim);
+    note(svg, ey, ["", "One asset, five copies, each showing Value 1.", "Prefab Mode: edit the template; 3 of 5 follow.", "Apply pushes #2's 5 into the prefab; Revert resets #4."][k]);
+  }
+
+  /* ---------- 7. tags and layers ---------- */
+  var OBJ = [["Orc", "Enemy", "Enemies"], ["Bat", "Enemy", "Enemies"], ["Ghost", "Enemy", "Default"], ["Slime", "Enemy", "Enemies"], ["Hero", "Player", "Default"], ["Coin", "Pickup", "Default"], ["Gem", "Pickup", "Default"], ["Tree", "Untagged", "Props"], ["Rock", "Untagged", "Props"], ["Door", "Untagged", "Default"], ["Lamp", "Untagged", "Props"], ["Key", "Pickup", "Default"]];
+  function renderLT(el, k, anim) {
+    var svg = svgFor(el, W, H, "A tag finds objects by name; a layer hides or filters them by number", "Twelve objects each with a tag and a layer. Step 1 selects the Enemy tag. Step 2 hides the Enemies layer in the Scene view. Step 3 shows that tag and layer are separate.");
+    var ey = base(svg, [{ id: "tag", s: 1 }, { id: "layer", s: 2 }], k, anim, ["Tag", "a text label for lookup"], ["Layer", "a number for rendering, physics"]);
+    var d = svg.append("g"), nE = OBJ.filter(function (o) { return o[1] === "Enemy"; }).length, nL = OBJ.filter(function (o) { return o[2] === "Enemies"; }).length;
+    function draw(t) {
+      clear(d);
+      lab(d, 0, 28, k === 1 ? "SELECT BY TAG: ENEMY" : k === 2 ? "LAYERS DROPDOWN: ENEMIES HIDDEN" : "TAG AND LAYER ARE SEPARATE");
+      var shown = Math.floor(Math.min(1, t * 1.5) * OBJ.length + 1e-9), hid = 0, found = 0;
+      OBJ.forEach(function (o, i) {
+        var x = (i % 4) * 190, y = 44 + Math.floor(i / 4) * 124, tagHit = o[1] === "Enemy", hide = o[2] === "Enemies" && k >= 2 && t > 0.3, g2 = d.append("g");
+        var hit = k === 1 ? tagHit && i < shown : k === 3 ? tagHit : false; if (hit) found++; if (hide) hid++;
+        box(g2, x, y, 180, 114, { stroke: hit ? RED : INK, sw: hit ? 4 : 2, fill: hit ? TINT : "#FFFFFF" }); cap(g2, x + 10, y + 34, o[0], { size: 26, weight: 700 }); cap(g2, x + 10, y + 70, "Tag " + o[1], { size: 24, fill: BODY }); cap(g2, x + 10, y + 102, "Layer " + o[2], { size: 24, fill: MUTED });
+        if (hide) { g2.attr("opacity", 0.25); }
+      });
+      if (k === 1) mono(d, 0, 470, "FindGameObjectsWithTag(\"Enemy\") → " + found, { size: 24, weight: 700 });
+      if (k === 2) mono(d, 0, 470, "Visible in Scene view: " + (OBJ.length - hid) + " of " + OBJ.length, { size: 24, weight: 700 });
+      if (k === 3) { mono(d, 0, 470, "Tag Enemy: " + nE + " · layer Enemies hidden: " + nL, { size: 24, weight: 700 }); cap(d, 0, 516, "Ghost has the tag but sits on Default, so it stays visible.", { size: 24, fill: MUTED }); }
+      if (k === 2) cap(d, 0, 516, "The Game view still draws them. Hiding is for the Scene view.", { size: 24, fill: MUTED });
+    }
+    if (k === 0) { clear(d); OBJ.forEach(function (o, i) { var x = (i % 4) * 190, y = 44 + Math.floor(i / 4) * 124; box(d, x, y, 180, 114, { stroke: INK, sw: 2 }); cap(d, x + 10, y + 34, o[0], { size: 26, weight: 700 }); cap(d, x + 10, y + 70, "Tag " + o[1], { size: 24 }); cap(d, x + 10, y + 102, "Layer " + o[2], { size: 24, fill: MUTED }); }); }
+    else run(d, [0, 2500, 3000, 1][k], draw, anim);
+    note(svg, ey, ["", nE + " of " + OBJ.length + " objects carry the Enemy tag.", nL + " objects hidden by one layer eye: " + (OBJ.length - nL) + " remain.", "Tag and layer are set separately: Ghost is an Enemy on Default."][k]);
+  }
+
+  /* ---------- 8. import settings, packages ---------- */
+  function renderImp(el, k, anim) {
+    var svg = svgFor(el, W, H, "Import settings change how big an asset is in memory; the Package Manager adds packages", "Three bars show a 2048 pixel texture's memory with different import settings. Then a package is installed and a new line appears in manifest.json.");
+    var ey = base(svg, [{ id: "importset", s: 1 }, { id: "pkgmgr", s: 2 }], k, anim, ["Import settings", "how one asset is read"], ["Package", "code or assets added to a project"]);
+    var d = svg.append("g");
+    function mb(w, bpp) { return w * w * bpp * 4 / 3 / 1e6; }
+    if (k <= 1) {
+      lab(d, 0, 30, "ONE 2048 × 2048 TEXTURE, MEMORY (MB)");
+      var R = [["uncompressed, Max Size 2048", mb(2048, 4)], ["compressed, Max Size 2048", mb(2048, 1)], ["compressed, Max Size 1024", mb(1024, 1)]];
+      R.forEach(function (r, i) { var y = 60 + i * 120, g2 = d.append("g"); cap(g2, 0, y + 24, r[0], { size: 24, weight: 700 }); bar(g2, 0, y + 40, Math.max(r[1] / R[0][1] * 560, 6), 44, i === 2 ? RED : "#C4C4C4", k === 1 && anim, i * 500); cap(g2, Math.max(r[1] / R[0][1] * 560, 6) + 12, y + 74, r[1].toFixed(1) + " MB", { size: 26, weight: 700 }); });
+      cap(d, 0, 450, "bytes = width × height × bytes per pixel × 4/3 for mipmaps", { size: 24, fill: MUTED });
+      cap(d, 0, 490, "Compressed formats use about 1 byte per pixel.", { size: 24, fill: MUTED });
+      cap(d, 0, 540, "Settings are stored in player.png.meta beside the file.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 30, "PACKAGE MANAGER, THEN MANIFEST.JSON");
+      box(d, 0, 50, 360, 270, { stroke: INK, sw: 2.5 }); cap(d, 14, 84, "Package Manager", { size: 24, weight: 700 });
+      ["Input System", "Test Framework", "Cinemachine"].forEach(function (n, i) { var y = 104 + i * 66; box(d, 10, y, 340, 54, { stroke: FAMILIAR }); cap(d, 22, y + 36, n, { size: 24 }); });
+      box(d, 392, 50, 368, 270, { stroke: INK, sw: 2.5 }); cap(d, 406, 84, "manifest.json", { size: 24, weight: 700 });
+      mono(d, 406, 130, "\"dependencies\": {", { size: 24 }); mono(d, 424, 172, "…inputsystem", { size: 24 }); mono(d, 424, 214, "…test-framework", { size: 24 });
+      var nw = d.append("g"); mono(nw, 424, 256, "…cinemachine", { size: 24, weight: 700, fill: RED }); mono(d, 406, 300, "}", { size: 24 });
+      var inst = d.append("g"); rect(inst, 10, 236, 340, 54, "none", RED, 4); cap(inst, 340, 272, "Install", { size: 24, weight: 700, fill: RED, anchor: "end" });
+      if (anim) { nw.attr("opacity", 0).transition().delay(1500).duration(500).attr("opacity", 1); inst.attr("opacity", 0).transition().delay(700).duration(400).attr("opacity", 1); }
+      cap(d, 0, 400, "Dependencies: 2 before, 3 after the install.", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 450, "Files go under Packages, read-only in the Project window.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Max Size 2048 to 1024: " + mb(2048, 1).toFixed(1) + " MB down to " + mb(1024, 1).toFixed(1) + " MB.", "Install adds one line to Packages/manifest.json."][k]);
+  }
+
+  /* ---------- 9. project settings, preferences, build profiles ---------- */
+  function renderSet(el, k, anim) {
+    var svg = svgFor(el, W, H, "Project Settings are shared by the team; Preferences are yours; a Build Profile is a saved build setup", "Four teammates and a repository. A Project Settings change reaches all four. A Preferences change reaches one. A Build Profile lists scenes and a platform.");
+    var ey = base(svg, [{ id: "projset", s: 1 }, { id: "prefs", s: 2 }, { id: "build", s: 3 }], k, anim, ["Project Settings", "belong to the project"], ["Preferences", "belong to you"]);
+    var d = svg.append("g"), NAMES = ["Ana", "Ben", "Cy", "Di"];
+    function draw(t) {
+      clear(d);
+      if (k <= 2) {
+        lab(d, 0, 30, k === 1 ? "SAVED IN THE PROJECT FOLDER" : "SAVED ON EACH PERSON'S MACHINE");
+        if (k === 1) { box(d, 200, 50, 360, 100, { stroke: RED, sw: 3, fill: TINT }); cap(d, 216, 90, "ProjectSettings/", { size: 26, weight: 700 }); cap(d, 216, 130, "TagManager.asset (layers)", { size: 24 }); }
+        var got = 0;
+        NAMES.forEach(function (n, i) {
+          var x = i * 190, y = 250, g2 = d.append("g"), reach = k === 1 ? t > 0.25 + i * 0.15 : i === 1 && t > 0.3;
+          if (reach) got++;
+          if (k === 1) line(d, 380, 150, x + 80, y, reach ? RED : FAMILIAR, reach ? 4 : 2);
+          box(g2, x, y, 160, 150, { stroke: reach ? RED : INK, sw: reach ? 3 : 2, fill: reach ? TINT : "#FFFFFF" }); cap(g2, x + 12, y + 36, n, { size: 26, weight: 700 });
+          if (k === 1) cap(g2, x + 12, y + 80, reach ? "new layer" : "old layer", { size: 24, fill: reach ? RED : MUTED });
+          if (k === 2) { cap(g2, x + 12, y + 80, ["Dark", "Light", "Dark", "Light"][i], { size: 24 }); cap(g2, x + 12, y + 116, i === 1 && reach ? "changed" : "theme", { size: 24, fill: i === 1 && reach ? RED : MUTED }); }
+        });
+        cap(d, 0, 470, "Change reaches: " + got + " of " + NAMES.length + " people", { size: 26, weight: 700, fill: RED });
+        if (k === 1) cap(d, 0, 516, "After they pull the commit.", { size: 24, fill: MUTED }); else cap(d, 0, 516, "Not in the repository. Colours, keys, editor.", { size: 24, fill: MUTED });
+      } else {
+        lab(d, 0, 30, "FILE → BUILD PROFILES");
+        var PR = ["Windows", "macOS", "WebGL"], act = Math.max(0, Math.min(2, Math.floor(t * 3 - 1e-9))), SC = [["Boot", 1], ["Level1", 1], ["Level2", 1], ["Test", 0]];
+        PR.forEach(function (p, i) { var y = 50 + i * 74, on = i === act; box(d, 0, y, 270, 62, { stroke: on ? RED : INK, sw: on ? 4 : 2, fill: on ? TINT : "#FFFFFF" }); cap(d, 14, y + 41, p, { size: 26, weight: 700, fill: on ? RED : INK }); });
+        box(d, 310, 50, 450, 242, { stroke: INK, sw: 2 }); cap(d, 324, 86, PR[act] + " · scenes in build", { size: 24, weight: 700 });
+        SC.forEach(function (s, i) { var y = 106 + i * 44; rect(d, 326, y, 30, 30, s[1] ? INK : "#FFFFFF", INK, 2); if (s[1]) check(d, 341, y + 14, 8, "#FFFFFF"); cap(d, 372, y + 26, s[0], { size: 24 }); });
+        var n = SC.filter(function (s) { return s[1]; }).length;
+        cap(d, 0, 400, "Scenes in the build: " + n + " of " + SC.length + " · profiles: " + PR.length, { size: 26, weight: 700, fill: RED });
+        cap(d, 0, 446, "Each profile is an asset file, so it can be committed.", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { clear(d); cap(d, 0, 60, "Three places for settings. They differ in who they affect.", { size: 28 }); } else run(d, [0, 3500, 3500, 3600][k], draw, anim);
+    note(svg, ey, ["", "A layer added in Project Settings reaches all 4 teammates.", "A theme set in Preferences stays with one person.", "Profile Windows, macOS or WebGL: pick scenes, then Build."][k]);
+  }
+
+  /* ---------- 10. animation, animator, profiler ---------- */
+  function renderAnim(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Animation window keys a clip, the Animator window chooses clips, the Profiler times frames", "Step 1: a jump clip with three keys on a timeline and a square rising and falling. Step 2: a state graph where a Speed value above 0.1 changes Idle to Run. Step 3: bars of frame time against a 16.7 millisecond line, with the worst frame broken down.");
+    var ey = base(svg, [{ id: "animwin", s: 1 }, { id: "animator", s: 2 }, { id: "profiler", s: 3 }], k, anim, ["Animation window", "makes a clip"], ["Animator window", "chooses which clip plays"]);
+    var d = svg.append("g");
+    function draw(t) {
+      clear(d);
+      if (k === 1) {
+        lab(d, 0, 30, "ANIMATION CLIP: JUMP · POSITION Y");
+        var X = function (s) { return 40 + s * 380; }, KEYS = [[0, 0], [0.5, 2], [1, 0]], Y = function (v) { return 260 - v * 70; };
+        box(d, 0, 50, 480, 280, { stroke: FAMILIAR }); line(d, X(0), Y(0), X(1), Y(0), GRID, 2);
+        var pts = d3.range(0, 1.0001, 0.02).map(function (s) { var v = s <= 0.5 ? KEYS[0][1] + (KEYS[1][1] - KEYS[0][1]) * d3.easeCubicInOut(s / 0.5) : KEYS[1][1] + (KEYS[2][1] - KEYS[1][1]) * d3.easeCubicInOut((s - 0.5) / 0.5); return [X(s), Y(v)]; });
+        d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        KEYS.forEach(function (kk) { d.append("path").attr("d", "M" + X(kk[0]) + "," + (Y(kk[1]) - 11) + " l11,11 l-11,11 l-11,-11Z").attr("fill", RED); });
+        [0, 0.5, 1].forEach(function (s) { cap(d, X(s), 360, s + " s", { size: 24, anchor: "middle", fill: MUTED }); });
+        var cur = Math.min(1, t * 1.1), cv = cur <= 0.5 ? 2 * d3.easeCubicInOut(cur / 0.5) : 2 - 2 * d3.easeCubicInOut((cur - 0.5) / 0.5);
+        line(d, X(cur), 56, X(cur), 326, RED, 3);
+        rect(d, 540, 250 - cv * 70, 70, 70, INK); line(d, 520, 320, 640, 320, GREY, 3);
+        cap(d, 0, 430, "playhead " + cur.toFixed(2) + " s → y = " + cv.toFixed(2), { size: 26, weight: 700 });
+        cap(d, 0, 476, "3 keys; Unity fills the frames in between.", { size: 24, fill: MUTED });
+        cap(d, 0, 516, "First clip on an object also adds an Animator.", { size: 24, fill: MUTED });
+      } else if (k === 2) {
+        lab(d, 0, 30, "ANIMATOR CONTROLLER · PARAMETER SPEED");
+        var sp = t < 0.7 ? 0.6 * Math.max(0, (t - 0.1)) / 0.6 : 0.5, jump = t > 0.85, st = jump ? 2 : sp > 0.1 ? 1 : 0, N = ["Idle", "Run", "Jump"], POS = [[40, 120], [300, 120], [170, 290]];
+        line(d, 200, 160, 300, 160, st === 1 ? RED : GREY, 4); line(d, 120, 200, 210, 290, GREY, 3); line(d, 380, 200, 290, 290, jump ? RED : GREY, 3);
+        N.forEach(function (n, i) { box(d, POS[i][0], POS[i][1], 160, 80, { stroke: st === i ? RED : INK, sw: st === i ? 5 : 2, fill: st === i ? TINT : "#FFFFFF" }); cap(d, POS[i][0] + 80, POS[i][1] + 50, n, { size: 28, anchor: "middle", weight: 700, fill: st === i ? RED : INK }); });
+        cap(d, 250, 108, "Speed > 0.1", { size: 24, anchor: "middle", fill: MUTED });
+        cap(d, 0, 430, "Speed " + sp.toFixed(2) + (jump ? " + Jump trigger" : ""), { size: 26, weight: 700 }); cap(d, 0, 476, "Playing state: " + N[st], { size: 26, weight: 700, fill: RED });
+        cap(d, 0, 520, "Idle to Run fires when Speed passes 0.1.", { size: 24, fill: MUTED });
+      } else {
+        lab(d, 0, 30, "CPU FRAME TIME (MS) · 40 FRAMES");
+        var r = rng(31), N2 = 40, FR = d3.range(N2).map(function (i) { var base_ = 9 + r() * 4, spike = (i === 11 || i === 27 || i === 33) ? 8 + r() * 14 : 0; return base_ + spike; });
+        var bw = 17, maxv = 36, Yb = function (v) { return 380 - v / maxv * 300; }, worst = FR.indexOf(d3.max(FR)), over = FR.filter(function (v) { return v > 16.7; }).length;
+        var show = Math.floor(Math.min(1, t * 1.6) * N2 + 1e-9);
+        FR.forEach(function (v, i) { if (i >= show) return; rect(d, 10 + i * bw, Yb(v), bw - 3, 380 - Yb(v), i === worst && t > 0.7 ? RED : "#C4C4C4"); });
+        line(d, 0, Yb(16.7), 700, Yb(16.7), INK, 3, "8 6"); cap(d, 240, Yb(16.7) - 8, "16.7 ms (60 fps)", { size: 24, weight: 700 });
+        if (t > 0.7) {
+          var parts = [["Scripts", 0.45], ["Rendering", 0.35], ["Physics", 0.2]], wv = FR[worst], x0 = 10;
+          cap(d, 0, 424, "Worst: frame " + (worst + 1) + ", " + wv.toFixed(1) + " ms · over budget: " + over + " of " + N2, { size: 24, weight: 700, fill: RED });
+          parts.forEach(function (p) { var w = p[1] * 700; rect(d, x0, 440, w - 2, 44, p[0] === "Scripts" ? RED : p[0] === "Rendering" ? INK : GREY); x0 += w; });
+          cap(d, 0, 520, "Scripts " + (parts[0][1] * wv).toFixed(1) + " + Render " + (parts[1][1] * wv).toFixed(1) + " + Physics " + (parts[2][1] * wv).toFixed(1) + " ms", { size: 24 });
+        }
+      }
+    }
+    if (k === 0) { clear(d); cap(d, 0, 80, "Three windows from the Window menu.", { size: 28 }); cap(d, 0, 130, "Animation makes clips; Animator picks which clip plays;", { size: 24, fill: MUTED }); cap(d, 0, 166, "Profiler measures how long each frame took.", { size: 24, fill: MUTED }); } else run(d, [0, 3500, 5500, 4500][k], draw, anim);
+    note(svg, ey, ["", "Keys at 0, 0.5 and 1 s; the playhead reads values between.", "Speed passes 0.1: the Animator moves from Idle to Run.", "Spikes above 16.7 ms are the frames to inspect."][k]);
+  }
+
+  /* ---------- 11. mapping to Godot ---------- */
+  var MAPT = [
+    ["Scene view", "edit the world", "2D or 3D main screen"],
+    ["Game view", "what the player sees", "the running game window"],
+    ["Hierarchy", "tree of scene objects", "Scene dock"],
+    ["Project window", "files in the project", "FileSystem dock"],
+    ["Inspector", "properties, components", "Inspector (Node dock: signals)"],
+    ["Console", "messages and errors", "Output and Debugger panels"],
+    ["Play, Pause, Step", "run inside the editor", "Run, Pause, Stop buttons"],
+    ["Prefab", "reusable object template", "a saved scene, instanced"],
+    ["Build Profiles", "a build setup per platform", "Export dialog, export_presets.cfg"],
+    ["Animator window", "state graph of clips", "AnimationTree"],
+    ["Profiler", "time per system per frame", "Debugger Profiler and Monitors"]
+  ];
+  function renderMapping(el, k, anim) {
+    var svg = svgFor(el, W, H, "Each Unity editor part and its Godot equivalent", "A three column table with eleven rows: the Unity part, what it does, and the Godot part. One row is added per click.");
+    var g = svg.append("g"), cx = [0, 340, 840];
+    ["UNITY", "WHAT IT DOES", "GODOT"].forEach(function (h, i) { lab(g, cx[i] + 14, 26, h, { fill: i === 2 ? RED : MUTED }); });
+    g.append("path").attr("d", "M0,38 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPT.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 46 + i * 50, row = g.append("g"), cur = i + 1 === k;
+      box(row, 0, y, 1400, 46, { stroke: cur ? RED : FAMILIAR, sw: cur ? 3 : 1.5, fill: cur ? TINT : "#FFFFFF" });
+      cap(row, cx[0] + 14, y + 33, r[0], { size: 24, weight: 700 }); cap(row, cx[1] + 14, y + 33, r[1], { size: 24 }); cap(row, cx[2] + 14, y + 33, r[2], { size: 24, weight: 700, fill: RED });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,14)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 110, "Click or press → to fill the map one row at a time.", { size: 28, fill: MUTED });
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the Unity editor", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Scene view", "The editor camera you steer"], ["Game view", "What the game's camera renders"]],
+      [["Prefab asset", "The template file; edit it once"], ["Prefab instance", "One copy in a scene, may override"]],
+      [["Tag", "A text label, for finding by name"], ["Layer", "One of 32 numbers, for filtering"]],
+      [["Project Settings", "Saved in the project, shared"], ["Preferences", "Saved on your machine, yours"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 500, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(40,0)"), RG = R.append("g").attr("transform", "translate(40,0)");
+      if (i === 0) {
+        var a = t * 2 * Math.PI;
+        box(LG, 0, 120, 340, 280, { stroke: INK, sw: 3 }); LG.append("circle").attr("cx", 170).attr("cy", 260).attr("r", 18).attr("fill", RED);
+        var cx = 170 + 120 * Math.cos(a), cy = 260 + 90 * Math.sin(a); camBody(LG, cx, cy, Math.atan2(260 - cy, 170 - cx)); cap(LG, 0, 440, "camera orbits: you steer", { size: 24, fill: MUTED });
+        box(RG, 0, 120, 340, 280, { stroke: INK, sw: 3 }); RG.append("circle").attr("cx", 170).attr("cy", 260).attr("r", 18).attr("fill", RED); RG.append("circle").attr("cx", 40).attr("cy", 150).attr("r", 12).attr("fill", INK); rect(RG, 110, 190, 120, 140, "none", RED, 4); cap(RG, 0, 440, "frame stays: camera fixed", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var v = t > 0.5 ? 2 : 1; box(LG, 0, 160, 220, 130, { stroke: RED, sw: 3 }); cap(LG, 14, 206, "Coin.prefab", { size: 24, weight: 700 }); cap(LG, 14, 256, "Value " + v, { size: 26, weight: 700, fill: RED });
+        [0, 1, 2].forEach(function (j) { var ov = j === 1; box(RG, j * 112, 160, 104, 130, { stroke: ov ? RED : INK, sw: ov ? 3 : 2 }); cap(RG, j * 112 + 8, 206, "#" + (j + 1), { size: 24, weight: 700 }); cap(RG, j * 112 + 8, 256, "V " + (ov ? 5 : v), { size: 24, weight: 700, fill: ov ? RED : INK }); });
+        cap(RG, 0, 330, "#2 keeps its override", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        box(LG, 0, 140, 300, 90, { stroke: INK, sw: 3 }); cap(LG, 16, 196, "Tag: " + (t > 0.5 ? "Enemy" : "Untagged"), { size: 28, weight: 700 }); cap(LG, 0, 280, "any name you create", { size: 24, fill: MUTED });
+        for (var q = 0; q < 32; q++) { var on = q === (t > 0.5 ? 8 : 0); rect(RG, (q % 8) * 40, 130 + Math.floor(q / 8) * 40, 34, 34, on ? RED : "#FFFFFF", INK, 2); }
+        cap(RG, 0, 330, "Layer " + (t > 0.5 ? 8 : 0) + " of 0 to 31", { size: 24, fill: MUTED });
+      } else {
+        ["Ana", "Ben", "Cy"].forEach(function (n, j) { LG.append("circle").attr("cx", 40 + j * 100).attr("cy", 280).attr("r", 30).attr("fill", t > 0.3 + j * 0.2 ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); line(LG, 170, 170, 40 + j * 100, 250, t > 0.3 + j * 0.2 ? RED : FAMILIAR, 3); });
+        rect(LG, 100, 130, 140, 44, TINT, RED, 2); cap(LG, 170, 162, "project", { size: 24, anchor: "middle", weight: 700 }); cap(LG, 0, 360, "all 3 get the change", { size: 24, fill: MUTED });
+        ["Ana", "Ben", "Cy"].forEach(function (n, j) { RG.append("circle").attr("cx", 40 + j * 100).attr("cy", 280).attr("r", 30).attr("fill", j === 1 && t > 0.4 ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+        cap(RG, 0, 360, "only Ben changed his", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "show less of the world", x: "Set the Main Camera's Field of View from 60 to 40" },
+    { v: "keep my Play Mode tweak", x: "Copy Component in Play Mode, exit, then Paste Component Values" },
+    { v: "update all the coins", x: "Open Prefab Mode on Coin and set Value to 2; instances with an override keep theirs" },
+    { v: "hide the enemies while I edit", x: "Turn off the Enemies layer in the Layers dropdown (Scene view only)" },
+    { v: "make the texture smaller", x: "In its Inspector set Max Size from 2048 to 1024 and click Apply" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague editor requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one names the window and the field.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(760,60)"), pw = 600, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { var h = function (f) { return 2 * 10 * Math.tan(f * DEG / 2); }; [["FOV 60", h(60), "#C4C4C4"], ["FOV 40", h(40), RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": " + r[1].toFixed(1) + " units tall at 10", { size: 24 }); bar(p, 14, 84 + i * 110, r[1] / h(60) * 540, 40, r[2], anim, i * 400); }); nt = "visible height at 10 units: " + h(60).toFixed(1) + " to " + h(40).toFixed(1); }
+    else if (k === 2) { [["without copy: after exit", 5, "#C4C4C4"], ["with paste: after exit", 9, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + " Speed " + r[1], { size: 24 }); bar(p, 14, 84 + i * 110, r[1] / 9 * 540, 40, r[2], anim, i * 400); }); nt = "scene Speed 5 versus 9"; }
+    else if (k === 3) { var follow = 5 - 2; d3.range(5).forEach(function (j) { var ov = j === 1 || j === 3; var c = p.append("g"); rect(c, 14 + j * 112, 60, 100, 120, ov ? "#FFFFFF" : TINT, ov ? INK : RED, 3); cap(c, 14 + j * 112 + 50, 130, ov ? "keeps" : "2", { size: 26, anchor: "middle", weight: 700, fill: ov ? INK : RED }); fade(c, anim, j * 200); }); nt = follow + " of 5 instances change to 2"; cap(p, 14, 240, "2 keep their override", { size: 24, fill: MUTED }); }
+    else if (k === 4) { var hidden = OBJ.filter(function (o) { return o[2] === "Enemies"; }).length; d3.range(OBJ.length).forEach(function (j) { var hd = OBJ[j][2] === "Enemies"; var c = p.append("rect").attr("x", 14 + (j % 6) * 94).attr("y", 60 + Math.floor(j / 6) * 100).attr("width", 80).attr("height", 80).attr("fill", hd ? "#FFFFFF" : INK).attr("stroke", hd ? FAMILIAR : INK).attr("stroke-width", 3); if (hd) c.attr("stroke-dasharray", "6 5"); if (anim) c.attr("opacity", 0).transition().delay(j * 60).duration(200).attr("opacity", 1); }); nt = (OBJ.length - hidden) + " of " + OBJ.length + " visible; " + hidden + " hidden"; cap(p, 14, 280, "dashed = hidden", { size: 24, fill: MUTED }); }
+    else { var m1 = 2048 * 2048 * 4 * 4 / 3 / 1e6, m2 = 1024 * 1024 * 4 * 4 / 3 / 1e6; [["2048", m1, "#C4C4C4"], ["1024", m2, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, "Max Size " + r[0] + ": " + r[1].toFixed(1) + " MB", { size: 24 }); bar(p, 14, 84 + i * 110, r[1] / m1 * 540, 40, r[2], anim, i * 400); }); nt = "a quarter of the memory (uncompressed)"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Am I in the Scene view or the Game view?",
+    "Is the editor tinted? Then Play Mode will throw my scene edits away.",
+    "Am I editing a prefab instance, or the prefab asset?",
+    "Do I need a tag (find by name) or a layer (filter by number)?",
+    "Is this setting for the project, for me, or for a build?",
+    "Does the Console show errors, and is the Profiler number measured?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you change something in the Unity editor", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “fix the prefab”, but “Apply the Value override on instance 2”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, wina: { steps: 4, render: renderWinA }, winb: { steps: 4, render: renderWinB },
+    sg: { steps: 2, render: renderSG }, tree: { steps: 4, render: renderTree }, nav: { steps: 4, render: renderNav },
+    play: { steps: 4, render: renderPlay }, prefab: { steps: 3, render: renderPrefab }, lt: { steps: 3, render: renderLT },
+    imp: { steps: 2, render: renderImp }, set: { steps: 3, render: renderSet }, anim: { steps: 3, render: renderAnim },
+    mapping: { steps: 11, render: renderMapping }, pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

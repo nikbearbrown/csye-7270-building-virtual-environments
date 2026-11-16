@@ -1,0 +1,381 @@
+{
+ "B17": {
+  "lane": "manim",
+  "class": "B17_Recenter",
+  "visual_intent": "Act title 'Repeat and Fold' (serif 40) top-left. The ramp strip with tick labels 0 and 1 and a terracotta dot at its middle. Mono formula tag 'x × 2 − 1' appears; the tick labels first stretch to 0 and 2 (the '× 2' step), then slide to −1 and 1 (the '− 1' step), with a zero marker landing at the centre under the dot. A small caption 'zero here'.",
+  "motion_claim": "The strip's tick labels stretch to 0..2 and then shift to −1..1 while the strip itself stays put; zero lands under the dot.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "strip with 0 and 1, dot at the middle"
+   },
+   {
+    "at": 0.19,
+    "event": "tag '× 2'; ticks stretch to 0 and 2 (done by 0.30)"
+   },
+   {
+    "at": 0.32,
+    "event": "tag '− 1'; ticks slide to −1 and 1 (done by 0.42)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: ticks −1 and 1 settled, both tags visible"
+   },
+   {
+    "at": 0.58,
+    "event": "a zero marker lands at the centre under the dot"
+   },
+   {
+    "at": 0.74,
+    "event": "caption 'zero here' and a highlight on the left half"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable of before and after ranges",
+  "why": "Moving the ticks of the strip from 0..1 to −1..1 is the whole idea, and a table would not move.",
+  "sparse": true
+ },
+ "B18": {
+  "lane": "manim",
+  "class": "B18_FoldAtZero",
+  "visual_intent": "The ramp strip with ticks −1, 0, 1 (from B17), a terracotta dot at 0. The strip's left half folds over onto the right half like a page about the zero line (a half-turn Transform, finished by 0.44). Below it the standard plot of abs(x) over −1..1: a V with the dot riding down the left arm and up the right arm. Mono tag 'abs(x) · drops the minus sign'. Strip beneath the plot: white, black, white tiles.",
+  "motion_claim": "The left half of the strip folds onto the right half; then the dot rides the V and the strip beneath reads white, black, white.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "strip with −1, 0, 1; tag abs(x)"
+   },
+   {
+    "at": 0.19,
+    "event": "the left half folds over the right half (done by 0.40)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: folded strip settled, dot at 0"
+   },
+   {
+    "at": 0.58,
+    "event": "the V plot draws under the strip"
+   },
+   {
+    "at": 0.61,
+    "event": "dot rides down the left arm and up the right arm (done by 0.85)"
+   },
+   {
+    "at": 0.9,
+    "event": "mirror strip lit"
+   }
+  ],
+  "runner_up": "ShaderLab abs render",
+  "why": "The fold is a motion: the left half of the strip lands on the right half; a render would show only the result.",
+  "sparse": true
+ },
+ "B19": {
+  "lane": "manim",
+  "class": "B19_RampRestarts",
+  "visual_intent": "A small inset number line with a dot at 2.75 splitting into '2' and '.75' and the arrow '2.75 → 0.75'; mono tag 'fract(x) · the part after the point: x minus floor(x)'. Then the standard plot: a steep dashed ramp 4x leaves the top of the plot, and the solid curve is fract(4x): four saw teeth (each climbing 0 to 1, falling back to 0 at x = 0.25, 0.5, 0.75) with open and closed dots at the jumps. The dot rides the teeth; the strip beneath shows four ramps in a row.",
+  "motion_claim": "The dot climbs a tooth, drops back to zero at each whole number and climbs again; the strip repeats four times.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "the fract tag lands"
+   },
+   {
+    "at": 0.23,
+    "event": "inset: 2.75 splits into 2 and 0.75; arrow to 0.75 (done by 0.42)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: inset and tag settled, the plot not yet drawn"
+   },
+   {
+    "at": 0.57,
+    "event": "the dashed 4x line and the four teeth draw (done by 0.70)"
+   },
+   {
+    "at": 0.72,
+    "event": "dot rides the teeth; the strip shows four ramps (done by 0.95)"
+   }
+  ],
+  "runner_up": "ShaderLab fract render",
+  "why": "A dot falling back to zero at each whole number is the sawtooth's meaning; the real render follows in B20.",
+  "sparse": true
+ },
+ "B20": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float count = 4.0;\n\nvoid fragment() {\n\tfloat v = fract(UV.x * count);\n\tCOLOR = vec4(vec3(v), 1.0);\n}",
+   "codeFile": "lab-shaders/05-fract.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.19,
+     "lines": [
+      3,
+      6
+     ]
+    },
+    {
+     "at": 0.56,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/fract-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · count swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C06: Lab rect, lab-shaders/05-fract.gdshader; count held at 1 until 4.5 s, then 1 -> 6 over 4.5-10.5 s, held to 12.5 s; 30 fps, Forward+. Verified: count 1 -> 0.098 / 0.298 / 0.6 / 0.898 at x = 0.1 / 0.3 / 0.6 / 0.9; count 4 -> 0.3961 / 0.1961 / 0.3961 / 0.5961; count 6 -> 0.5961 / 0.7961 / 0.5961 / 0.3961.",
+  "visual_intent": "Code card at left (the eight-line shader with the count dial); at right a real Godot window showing one black-to-white ramp that splits into 2, 3, 4 ... 6 repeating ramps as the count is swept up.",
+  "motion_claim": "The picture fills with more and more repeating ramps while the voice says 'from one up to six'.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "fract line highlighted"
+   },
+   {
+    "at": 0.19,
+    "event": "uniform and fract lines highlighted"
+   },
+   {
+    "at": 0.53,
+    "event": "the count starts to climb (the capture holds 1 until about 4.5 s)"
+   }
+  ],
+  "runner_up": "manim: the count changing on the plot",
+  "why": "Turning the dial and seeing ramps multiply is the effect; the real render beside one line of code is the proof.",
+  "sparse": false
+ },
+ "B21": {
+  "lane": "manim",
+  "class": "B21_RoundDown",
+  "visual_intent": "Mono tag 'floor(x) · rounds down to the whole number below' with a tiny inset '2.75 → 2'. The standard plot with output 0 to 4: a dashed diagonal 4x and the solid staircase floor(4x) with values 0, 1, 2, 3 (closed dot at the left end of each step, open dot at the right end). Strip beneath: four flat bands (shown divided by 3, note '÷ 3 to fit') labelled 0 1 2 3.",
+  "motion_claim": "The staircase builds one step at a time as the voice counts zero, one, two, three; the strip gets four flat bands.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "tag 'floor(x)'"
+   },
+   {
+    "at": 0.16,
+    "event": "inset '2.75 → 2' lands (done by 0.30)"
+   },
+   {
+    "at": 0.38,
+    "event": "plot appears: the dashed 4x diagonal and the first step (done by 0.45)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dashed diagonal and the first step settled"
+   },
+   {
+    "at": 0.63,
+    "event": "steps 1, 2, 3 land one by one (done by 0.82)"
+   },
+   {
+    "at": 0.83,
+    "event": "the strip's four bands lit; open and closed dots visible"
+   }
+  ],
+  "runner_up": "ShaderLab floor render",
+  "why": "A staircase with open and closed dots shows exactly where each step starts; the strip's four flat bands carry the idea.",
+  "sparse": true
+ },
+ "B22": {
+  "lane": "manim",
+  "class": "B22_WholeAndLeftover",
+  "visual_intent": "A number line from 0 to 4 with a dot at 2.75. Two brackets under it: from 0 to 2 labelled 'floor = 2' and from 2 to 2.75 labelled 'fract = 0.75'; equation in serif '2.75 = 2 + 0.75'. Then the dot slides from 0 to 4 with two live read-outs: 'floor' stepping 0, 1, 2, 3 and 'fract' climbing and resetting.",
+  "motion_claim": "The dot splits into a whole part and a leftover; then it slides along the line while 'floor' steps and 'fract' resets at each whole number.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "number line 0 to 4 with the dot at 2.75"
+   },
+   {
+    "at": 0.11,
+    "event": "bracket 'floor = 2' (done by 0.2)"
+   },
+   {
+    "at": 0.24,
+    "event": "bracket 'fract = 0.75' (done by 0.33)"
+   },
+   {
+    "at": 0.37,
+    "event": "equation '2.75 = 2 + 0.75' lands (done by 0.44)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: equation settled"
+   },
+   {
+    "at": 0.61,
+    "event": "dot slides 0 to 4; floor steps, fract resets (done by 0.9)"
+   },
+   {
+    "at": 0.9,
+    "event": "dot ends at 4"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable (x, floor, fract)",
+  "why": "A number line with a dot that splits into two read-outs is the whole-and-leftover idea in motion.",
+  "sparse": true
+ },
+ "B23": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat v = step(0.5, fract(UV.x * 8.0));\n\tCOLOR = vec4(vec3(v), 1.0);\n}",
+   "codeFile": "lab-shaders/06-stripes.gdshader",
+   "cues": [
+    {
+     "at": 0.09,
+     "lines": [
+      4
+     ],
+     "label": "fract · restarts"
+    },
+    {
+     "at": 0.24,
+     "lines": [
+      4
+     ],
+     "label": "step · cuts"
+    },
+    {
+     "at": 0.75,
+     "lines": [
+      4
+     ],
+     "label": "× 8 · the count"
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/stripes.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C07: Lab rect, lab-shaders/06-stripes.gdshader, still PNG 1920x1080. Verified: x = 0.05 -> 0; 0.1 -> 1; 0.15 -> 0; 0.2 -> 1.",
+  "visual_intent": "Code card at left (the six-line shader), at right a real Godot window of black and white vertical stripes (sixteen bands: eight ramps, each cut in half). The step(...fract(...)) line is highlighted with a short label (one or two words) that changes to name each function's job.",
+  "motion_claim": "The same line is highlighted while three labels name what fract does, what step does, and what the multiplier sets.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "stripes visible, line highlighted"
+   },
+   {
+    "at": 0.09,
+    "event": "label: fract · restarts"
+   },
+   {
+    "at": 0.24,
+    "event": "label: step · cuts"
+   },
+   {
+    "at": 0.75,
+    "event": "label: × 8 · the count"
+   }
+  ],
+  "runner_up": "manim: stripes built from two plots",
+  "why": "Stripes from two functions are best shown as real stripes; labels on the code line name each function's job.",
+  "sparse": false
+ },
+ "B24": {
+  "lane": "manim",
+  "class": "B24_Remainder",
+  "visual_intent": "A mono tag 'mod(x, y) · the remainder after dividing x by y' (the GLOSSARY wording) and the formula 'mod(x, y) = x − y · floor(x / y)' assembling term by term. Then a small card 'y = 1: same as fract(x)' and the standard plot of mod(x, 0.25): four teeth of height 0.25 (plot output 0 to 0.25) with the dot riding them; caption 'y = 0.25: repeats every 0.25'. Strip beneath: four ramps.",
+  "motion_claim": "The formula assembles; then the dot rides four teeth that each repeat every quarter.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "'mod(x, y) =' lands"
+   },
+   {
+    "at": 0.15,
+    "event": "the right-hand side assembles term by term (done by 0.40)"
+   },
+   {
+    "at": 0.4,
+    "event": "card 'y = 1: same as fract(x)' lands (done by 0.45)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: formula and card settled, nothing moving"
+   },
+   {
+    "at": 0.67,
+    "event": "teeth plot draws; dot rides four teeth; the strip shows four ramps (done by 0.95)"
+   }
+  ],
+  "runner_up": "LectureCodeTrace of the formula",
+  "why": "The formula assembling term by term, then repeating as teeth on the plot, shows both the rule and what it does.",
+  "sparse": true
+ },
+ "B25": {
+  "lane": "remotion",
+  "pattern": "LectureEvidenceTable",
+  "props": {
+   "title": "mod of a negative number",
+   "headers": [
+    "Where",
+    "Call",
+    "Result"
+   ],
+   "rows": [
+    [
+     "shader",
+     "mod(-0.25, 1.0)",
+     "0.75"
+    ],
+    [
+     "GDScript",
+     "fmod(-0.25, 1.0)",
+     "-0.25"
+    ],
+    [
+     "GDScript",
+     "fposmod(-0.25, 1.0)",
+     "0.75"
+    ]
+   ],
+   "note": "Godot 4.7.2 · Forward+ · shader value read from a render · GDScript values from a script run",
+   "cues": [
+    0.06,
+    0.38,
+    0.6
+   ],
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "A three-row table: the shader row, then GDScript's fmod row (keeps the sign), then fposmod (matches the shader); the active row is ringed as the voice names it.",
+  "motion_claim": "The ring moves down the rows with the voice; the minus sign on the fmod result is the surprise.",
+  "show": [
+   {
+    "at": 0.06,
+    "event": "shader row"
+   },
+   {
+    "at": 0.38,
+    "event": "fmod row (landed by 0.44)"
+   },
+   {
+    "at": 0.6,
+    "event": "fposmod row"
+   }
+  ],
+  "runner_up": "manim: number line with a floor arrow",
+  "why": "A three-row table of measured values from two environments is exactly a comparison of where, call and result.",
+  "sparse": false
+ }
+}

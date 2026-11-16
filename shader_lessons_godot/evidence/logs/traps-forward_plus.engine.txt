@@ -1,0 +1,29 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Metal 4.0 - Forward+ - Using Device #0: Apple - Apple M4 Pro (Apple9)
+
+HEADER godot 4.7.2-stable (official) | renderer forward_plus | adapter Apple M4 Pro (Apple9) | window (1280, 720)
+NOTE transfer curve measured (ALBEDO k/255 -> screen byte): 16:71 32:99 64:137 128:188 188:223 255:255 | monotone true | grey (r=g=b) true
+TRAP-1 sphere mesh arrays | vertices 8514, tangent floats 34056 (4 per vertex = true), uv 8514
+TRAP-1 sphere uv formula u = atan2(x, z) / 2pi, v = acos(y / r) / pi | max |du| 0.000000, max |dv| 0.000000 (every 7th vertex)
+TRAP-1 sphere TANGENT points along +u | 959 of 959 non-polar sampled vertices agree (dot > 0.99); tangent.w = 1.0
+TRAP-1 sphere cross(NORMAL, TANGENT) points along the meridian toward the +Y pole (image-up, against +v) | 959 of 959
+TRAP-1 torus mesh arrays | vertices 2145, has tangents = true
+TRAP-2 colour number the shader sees | A vec3 source_color, default 0.15 -> 0.0196  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-2 colour number the shader sees | B vec3 source_color, set from code with Color(0.15) -> 0.0196  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-2 colour number the shader sees | C vec3 source_color, set from code with Vector3(0.15) -> 0.1490  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-2 colour number the shader sees | D plain vec3, default 0.15 -> 0.1490  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-2 colour number the shader sees | E plain vec3, set from code with Color(0.15) -> 0.0196  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-2 colour number the shader sees | F vec4 source_color, set with Color(0.15) -> 0.0196  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-2 colour number the shader sees | G plain vec4, set with Color(0.15) -> 0.0196  (typed 0.15; linear value of sRGB 0.15 is 0.0196)
+TRAP-3 TIME with the render loop off | step 0.00 -> TIME 0.173 ; step 0.50 -> TIME 0.673 (moved 0.500) ; step 0.50 -> TIME 1.173 (moved 0.500) ; step 1.00 -> TIME 2.173 (moved 1.000) ; step 0.00 -> TIME 2.173 (moved 0.000) ; step 0.25 -> TIME 2.423 (moved 0.250)
+TRAP-4 POSITION written by hand as PROJECTION * VIEW * MODEL * vec4(VERTEX, 1) vs left to Godot | differing pixels 0 of 921600 (the object covers 39450 px; rotated and non-uniformly scaled sphere)
+TRAP-5 texel (226,200,140) read by a sampler | plain sampler -> shader sees (0.890, 0.784, 0.549); source_color sampler -> (0.761, 0.580, 0.263). Raw = (0.886, 0.784, 0.549); decoded to linear = (0.760, 0.578, 0.262)
+TRAP-6 normal matrix | |MODEL_NORMAL_MATRIX*n - transpose(inverse(mat3(MODEL)))*n| = 0.0000 (0 = same matrix); directions differ by 0.0000; length of MODEL_NORMAL_MATRIX*n = 1.208 (CPU inverse-transpose length 1.206; node scale is (2, 0.5, 3), so it is NOT normalised)
+TRAP-6 normal matrix | using plain mat3(MODEL_MATRIX) on a normal instead of the inverse transpose turns the direction by 1.106 (unit-vector distance; CPU expected 1.100)
+TRAP-6 camera position | naive port of Cg ViewInverse[0].w, [1].w, [2].w read as GLSL INV_VIEW_MATRIX[0].w, [1].w, [2].w has length 0.000 (camera is 5.5 from the origin: the port reads the zero 4th ROW of three COLUMNS); INV_VIEW_MATRIX[3].xyz differs from CAMERA_POSITION_WORLD by 0.0000
+TRAP-6 operator order | (MODEL * vec4(1,0,0,1)).x = 0.329 (CPU 0.303) is Cg mul(M, v); the reversed product (v * MODEL).x would be 1.603 on the CPU: it reads the matrix transposed
+TRAP-7 NORMAL at the pixel facing the camera, sphere turned 90 degrees about X | fragment() NORMAL = (0.01, -0.00, 1.00) (view space: toward the camera is +Z); vertex() NORMAL carried in a varying = (0.01, 1.00, 0.01) (object space: the sphere's own +Y)
+TRAP-8 uv.x = 1.0625 (one tile past the edge); red cell raw (0.80, 0.24, 0.20), edge cell raw magenta (0.75, 0.24, 0.67) | no repeat hint -> (0.81, 0.24, 0.20); repeat_disable -> (0.75, 0.24, 0.67); repeat_enable -> (0.81, 0.24, 0.20)
+TRAP-9 normal map red channel (file byte 198 = 0.776) | plain sampler -> 0.776 = decoded x 0.553; with source_color -> 0.565 = decoded x 0.129 (the tilt is wrong by 77%)
+TRAP-10 cube map built with Cubemap.create_from_images([+X, -X, +Y, -Y, +Z, -Z]) and faces written to the OpenGL table | 14 of 14 directions match the file texel; +X axis: GPU (221,40,40) vs file (220,40,40) | -X axis: GPU (40,210,221) vs file (40,210,220) | +Y axis: GPU (40,100,200) vs file (40,100,200) | -Y axis: GPU (120,123,126) vs file (119,123,126) | +Z axis: GPU (240,221,40) vs file (240,220,40) | -Z axis: GPU (221,50,200) vs file (220,50,200) | toward the sun: GPU (255,253,240) vs file (255,252,240) | sun mirrored in x: GPU (70,123,206) vs file (70,122,206) | sun mirrored in z: GPU (70,123,206) vs file (70,122,206) | sky ahead (0.3, 0.6, 1): GPU (97,141,212) vs file (97,141,212) | floor ahead (0.3, -0.6, 1): GPU (140,144,151) vs file (139,144,150) | yellow wall (0.4, 0.05, 1): GPU (240,221,40) vs file (240,220,40) | floor right (1, -0.5, 0.3): GPU (143,151,156) vs file (143,150,156) | floor left (-1, -0.5, -0.3): GPU (143,151,156) vs file (143,150,156)
+TRAP-10 cube map read through a source_color samplerCube, direction +X (file texel raw (220,40,40)) | shader sees (0.718, 0.022, 0.022); raw would be (0.863, 0.157, 0.157), decoded to linear (0.716, 0.021, 0.021)

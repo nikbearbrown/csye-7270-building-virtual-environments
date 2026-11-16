@@ -1,0 +1,297 @@
+1
+00:00:00,000 --> 00:00:09,490
+Shaders in three D. Learn what changes
+when a shader draws a three-D surface, how
+lighting and the renderer change the color
+
+2
+00:00:09,540 --> 00:00:20,670
+Hallo. This is Liam, in for Bear. Many
+people think a three-D shader is a
+different, harder thing. It is not. It has
+
+3
+00:00:20,720 --> 00:00:35,180
+Five terms. A mesh is the points and
+triangles that make a three-D shape. A
+material tells Godot how to draw a
+
+4
+00:00:35,230 --> 00:00:44,440
+This shader comes from a small game. It
+charges a pad from rust to green, and the
+whole effect is ten lines. By the end of
+
+5
+00:00:44,490 --> 00:00:56,220
+A shader is a small program the graphics
+card runs to decide how something is
+drawn. In two-D or three-D, it has the
+
+6
+00:00:56,270 --> 00:01:05,860
+The first line says what the shader is
+for. Canvas item means two-D. Spatial
+means three-D, where the shader draws a
+
+7
+00:01:05,910 --> 00:01:18,830
+Both types use the same three functions.
+Vertex runs once for each vertex, a corner
+point of the mesh. A flat square has four.
+
+8
+00:01:18,880 --> 00:01:29,410
+The other change is the output. A two-D
+shader sets color: four numbers, red,
+green, blue and alpha. A three-D shader
+
+9
+00:01:29,460 --> 00:01:43,320
+Get either one wrong and Godot says so.
+Write color in a three-D shader and it
+answers: constants cannot be modified.
+
+10
+00:01:43,370 --> 00:01:54,520
+Some mix-ups are silent. Give a three-D
+mesh a two-D shader, and the running game
+raises no error. It draws the mesh as if
+
+11
+00:01:54,570 --> 00:02:06,510
+U V is a point's address on the shape:
+zero to one across, zero to one down.
+Paint it as a color, red across and green
+
+12
+00:02:06,560 --> 00:02:16,410
+To use a shader, give the mesh instance a
+shader material. In three-D that slot is
+called material override. The node holds
+
+13
+00:02:16,460 --> 00:02:29,000
+Now run the one-line albedo shader on a
+sphere. You wrote one flat teal, so you
+might expect a flat teal disc. Instead one
+
+14
+00:02:29,050 --> 00:02:39,540
+Back to the lit sphere. A script now moves
+the lamp. The albedo never changes, but
+the same surface goes bright, then dim.
+
+15
+00:02:39,590 --> 00:02:50,440
+In three-D, the fragment function
+describes a surface. Albedo is its base
+color. Alpha is how visible it is.
+
+16
+00:02:50,490 --> 00:03:00,510
+Then Godot's own lighting turns that
+description, and every lamp, into the
+pixel you see. You describe the surface.
+
+17
+00:03:00,560 --> 00:03:10,070
+Sometimes you want no lighting. Add a
+second line: render mode unshaded. Now the
+result is only albedo, and the lamp is
+
+18
+00:03:10,120 --> 00:03:19,650
+Why choose unshaded? No lamp can change
+the color, so a flat, graphic look stays
+flat. Godot's docs add that skipping the
+
+19
+00:03:19,700 --> 00:03:30,570
+You can write the light function yourself.
+Then your function replaces Godot's
+lighting for that surface. An empty one is
+
+20
+00:03:30,620 --> 00:03:41,900
+Another trap. A three-D surface has two
+sides, and by default only the front is
+drawn. Turn a flat square around and it
+
+21
+00:03:41,950 --> 00:03:54,830
+So when a three-D shader looks wrong, ask
+two quick questions. Is a lamp changing my
+color? Add unshaded and see. Is the back
+
+22
+00:03:54,880 --> 00:04:05,710
+Now build a surface that changes. Start
+from a picture you already know: the
+address as a color. On a flat square, the
+
+23
+00:04:05,760 --> 00:04:13,840
+Keep only the across part, x. It is a
+ramp: a smooth run of values from zero up
+to one. Everything that follows starts
+
+24
+00:04:13,890 --> 00:04:24,080
+Multiply x by eight and the ramp runs from
+zero to eight. Fract keeps the part after
+the decimal point, so it starts over at
+
+25
+00:04:24,130 --> 00:04:34,620
+Step turns a ramp into a switch. Step of
+point five and x gives zero when x is
+below one half, and one from one half up.
+
+26
+00:04:34,670 --> 00:04:44,050
+Put both in a shader. Stripe is step of
+point five and fract of eight x: zero or
+one. Scale that into two greys and you get
+
+27
+00:04:44,100 --> 00:04:54,330
+Mix blends two values. At zero you get the
+first, at one you get the second, and in
+between you get a blend. Mix of a, b and t
+
+28
+00:04:54,380 --> 00:05:04,610
+Give mix a dial. A uniform is a value your
+game sets from outside, the same for every
+pixel. Call this one activation, from zero
+
+29
+00:05:04,660 --> 00:05:14,790
+The word after the colon is a hint. It
+tells Godot how to treat the uniform. Hint
+range keeps the dial between zero and one
+
+30
+00:05:14,840 --> 00:05:26,370
+From the game, one line turns the dial.
+Take the mesh instance's material
+override, then call set shader parameter
+
+31
+00:05:26,420 --> 00:05:35,350
+Change the value every frame, or tween it,
+and the surface animates. Set the starting
+value first. A tween cannot start from a
+
+32
+00:05:35,400 --> 00:05:43,630
+Here is the whole pad shader again, ten
+lines. You know every ingredient now. Read
+it like a recipe, top to bottom, while the
+
+33
+00:05:43,680 --> 00:05:51,990
+Line one: spatial, a three-D surface. Line
+two: render mode unshaded. No lamp can
+change this pad's color, whatever the
+
+34
+00:05:52,040 --> 00:06:01,310
+Lines three to five are three dials.
+Activation, from zero to one. And two
+colors, rust and green, each marked source
+
+35
+00:06:01,360 --> 00:06:11,290
+Fragment runs once for each pixel the pad
+covers. Its first line makes the stripe:
+step of point five and fract of eight x.
+
+36
+00:06:11,340 --> 00:06:21,720
+Next, base. It is the rust color,
+multiplied by a mix: point six five on
+stripe zero, full strength on stripe one.
+
+37
+00:06:21,770 --> 00:06:31,410
+The last line sets albedo: a mix from base
+to green, steered by activation. At zero
+it is the striped rust. At one it is flat
+
+38
+00:06:31,460 --> 00:06:41,560
+Notice what is missing. There is no vertex
+function and no light function. Godot's
+default places the corners, and unshaded
+
+39
+00:06:41,610 --> 00:06:52,850
+In the game, this pad is not a flat square
+but a thin box. A box keeps its map in six
+pieces, so its top shows only about a
+
+40
+00:06:52,900 --> 00:07:02,680
+Now run the same pad in two of Godot's
+three renderers: Forward Plus on the left,
+Compatibility on the right. Same file,
+
+41
+00:07:02,730 --> 00:07:12,220
+They do not match. At half charge, the
+green channel of a light stripe reads
+point five four in Forward Plus, and point
+
+42
+00:07:12,270 --> 00:07:23,830
+Neither is a bug. Take the plainest case:
+an albedo of one half, unshaded. Forward
+Plus draws point seven four. Compatibility
+
+43
+00:07:23,880 --> 00:07:34,650
+Forward Plus treats albedo as linear
+light, then converts it to s R G B for
+your screen. The curve lifts the dark and
+
+44
+00:07:34,700 --> 00:07:46,750
+That moves a mix too. The pad's colors are
+marked source color, so Forward Plus turns
+them into linear light first, blends
+
+45
+00:07:46,800 --> 00:07:58,680
+Godot even lets a shader ask. A three-D
+shader can read a value called output is s
+R G B: true in Compatibility, false in
+
+46
+00:07:58,730 --> 00:08:10,330
+Which renderer is yours? Open Project
+Settings, then Rendering, Renderer.
+Rendering Method shows it, and changing it
+
+47
+00:08:10,380 --> 00:08:20,400
+So a pixel you read is true for one
+renderer. When you test a shader, or ask
+an AI to, name the renderer. A number from
+
+48
+00:08:20,450 --> 00:08:43,010
+Let's recap with Claude. A three-D shader
+has the same shape as a two-D one, with
+new names. Albedo is the base color, and
+
+49
+00:08:43,060 --> 00:09:09,930
+Your turn. Paste this into Claude: Write a
+Godot spatial shader for a mesh instance,
+with render mode unshaded. Give it one
+
+50
+00:09:09,980 --> 00:09:14,220
+Shaders in three D. At Nik Bear Brown.

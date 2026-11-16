@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blender: the interface and modeling terms | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Blender, the interface and modeling terms">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Blender: the interface and modeling terms">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 3</p>
+      <h1 class="t-opening rise g2">Blender: the interface and modeling terms</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">What to know to use Blender, with the Blender MCP, for game assets</p>
+      <div class="speaker-notes" hidden><p>Deck 4a of the topic order. 30 terms. Tags: in the book text means Chapter 3 uses and explains it; in the glossary means a glossary row only; editor or docs means the Blender manual names it and Chapter 3 does not explain it. Export and pipeline terms are deck 4b.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3; glossary, 3D assets and Blender; glossary, Textures and materials; Blender manual.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The Blender window: viewport, outliner, properties">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The window</p>
+      <h2 class="t-chart">The Blender window: viewport, outliner, properties</h2>
+      <div class="diagram build" data-build="win" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, "The MCP route"; Blender manual, Interface and Editors.</p>
+      <div class="speaker-notes" hidden><p>Chapter 3 names the 3D viewport only in the MCP steps (press N in the 3D viewport). The three editors are explained from the Blender manual, "Interface" section.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Workspaces and the timeline">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">The window</p>
+      <h2 class="t-chart">Workspaces and the timeline</h2>
+      <div class="diagram build" data-build="wstl" style="flex-basis:700px"></div>
+      <p class="source">Source: Blender manual, Interface, Workspaces; Animation, Timeline.</p>
+      <div class="speaker-notes" hidden><p>Workspace layouts are the default tabs in Blender; the layouts drawn are simplified. Timeline numbers are computed from three keyframes.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Object Mode, Edit Mode and collections">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The window</p>
+      <h2 class="t-chart">Object Mode, Edit Mode and collections</h2>
+      <div class="diagram build" data-build="modes" style="flex-basis:700px"></div>
+      <p class="source">Source: Blender manual, Modeling, Introduction and Scene Layout, Collections.</p>
+      <div class="speaker-notes" hidden><p>Chapter 3 does not explain these modes (its "Edit Mode" is Unity). Counts are computed from the cube mesh and the collection list.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Mesh, vertex, edge and face">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Mesh anatomy</p>
+      <h2 class="t-chart">Mesh, vertex, edge and face</h2>
+      <div class="diagram build" data-build="mesh" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, "Apply transforms"; glossary, 3D assets and Blender.</p>
+      <div class="speaker-notes" hidden><p>V, E and F are counted in code from the face list. The check V minus E plus F equals 2 holds for any closed mesh without holes.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Quads, triangles and the polygon count">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Mesh anatomy</p>
+      <h2 class="t-chart">Quads, triangles and the polygon count</h2>
+      <div class="diagram build" data-build="quad" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, 3D assets and Blender (Quad, Triangle versus face versus vertex count); Chapter 3, low-poly prop.</p>
+      <div class="speaker-notes" hidden><p>Counts computed from the face list: triangles = sum over faces of (corners minus 2).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Normals and flipped normals">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Mesh anatomy</p>
+      <h2 class="t-chart">Normals and flipped normals</h2>
+      <div class="diagram build" data-build="nrm" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, 3D assets and Blender (Normal, Flipped normals).</p>
+      <div class="speaker-notes" hidden><p>A 12-sided cross-section stands in for a mesh. Brightness is the dot product of the normal and the direction to the light.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Transform, origin and pivot">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Placing and measuring</p>
+      <h2 class="t-chart">Transform, origin and pivot</h2>
+      <div class="diagram build" data-build="xf" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, "Apply transforms"; glossary, 3D assets and Blender (Origin, Pivot).</p>
+      <div class="speaker-notes" hidden><p>Rotation corner positions are computed from the transform maths. Post height 1.8 m is from Chapter 3.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Apply transforms, local and global space">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Placing and measuring</p>
+      <h2 class="t-chart">Apply transforms, local and global space</h2>
+      <div class="diagram build" data-build="apply" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, "Apply transforms"; glossary, 3D assets and Blender (Apply transforms, Scale versus size); Blender manual, Transform Orientations.</p>
+      <div class="speaker-notes" hidden><p>Numbers (0.1, 0.1, 0.9) and a 2 m cube are the chapter example. The size you see is scale times mesh size, computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Units and the right-handed +Z up axes">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Placing and measuring</p>
+      <h2 class="t-chart">Units and the right-handed +Z up axes</h2>
+      <div class="diagram build" data-build="units" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, "Units" and "Axes"; glossary, 3D assets and Blender (Unit).</p>
+      <div class="speaker-notes" hidden><p>The 2.1 m player capsule and 1.8 m post are from Chapter 3. Reading 1 unit as 0.01 m is an invented wrong case to show the size error.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Modifiers: mirror, subdivision, bevel">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Shaping and surfacing</p>
+      <h2 class="t-chart">Modifiers: mirror, subdivision, bevel</h2>
+      <div class="diagram build" data-build="mods" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, export "apply modifiers"; Blender manual, Modeling, Modifiers.</p>
+      <div class="speaker-notes" hidden><p>Subdivision counts: faces times 4 per level on an all-quad mesh. Vertex count V+E+F per level.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="UV maps, unwrapping, materials and textures">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Shaping and surfacing</p>
+      <h2 class="t-chart">UV maps, unwrapping, materials and textures</h2>
+      <div class="diagram build" data-build="uv" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, 3D assets and Blender (UV map, Unwrapping, Material versus texture); glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Seam count is computed: 12 cube edges minus 5 edges kept joined in the cross layout. Material values are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, 3D assets and Blender.</p>
+      <div class="speaker-notes" hidden><p>Origin and pivot, scale and size, face count and triangle count, material and texture.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3; glossary, 3D assets and Blender.</p>
+      <div class="speaker-notes" hidden><p>Five requests to an agent driving Blender and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you hand a model to the game">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you hand a model to the game</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, "Apply transforms", "Units", "Axes".</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Blender: the interface and modeling terms (Chapter 3) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 3 uses and explains it; gloss = glossary row only; editor = Blender manual only */
+  var T = {
+    viewport: { n: "3D viewport", tag: "editor", m: "The area where you see and edit the scene in 3D" },
+    outliner: { n: "Outliner", tag: "editor", m: "A tree listing every object and collection in the scene" },
+    props: { n: "Properties editor", tag: "editor", m: "Tabs of settings for the selected object: transform, modifiers, material" },
+    timeline: { n: "Timeline", tag: "editor", m: "Playback controls and a frame scale with keyframes marked" },
+    workspace: { n: "Workspace", tag: "editor", m: "A saved arrangement of editors for one job, chosen from the tabs on top" },
+    objmode: { n: "Object Mode", tag: "editor", m: "Work on whole objects: move, rotate, scale" },
+    editmode: { n: "Edit Mode", tag: "editor", m: "Work on the mesh itself: its vertices, edges and faces" },
+    collection: { n: "Collection", tag: "editor", m: "A named group of objects you can hide, show or export together" },
+    mesh: { n: "Mesh", tag: "book", m: "The vertices, edges and faces that make a 3D shape; the chapter calls it mesh data" },
+    vertex: { n: "Vertex", tag: "gloss", m: "A corner point of a mesh" },
+    edge: { n: "Edge", tag: "gloss", m: "A line joining two vertices" },
+    face: { n: "Face", tag: "gloss", m: "A flat surface bounded by edges" },
+    quad: { n: "Quad", tag: "gloss", m: "A face with four vertices" },
+    polycount: { n: "Polygon count", tag: "gloss", m: "Three tallies of one mesh: engines budget by triangles, Blender shows faces, and vertices are split where UVs or normals differ" },
+    normal: { n: "Normal", tag: "gloss", m: "The direction a surface faces" },
+    flip: { n: "Flipped normals", tag: "gloss", m: "Faces pointing inward, so they look dark or vanish" },
+    xf: { n: "Transform", tag: "book", m: "Location, rotation and scale: where the object is, how it is turned, how much it is stretched" },
+    origin: { n: "Origin", tag: "gloss", m: "The point an object's position and rotation are measured from" },
+    pivot: { n: "Pivot", tag: "gloss", m: "The point an object rotates and scales around" },
+    apply: { n: "Apply transforms", tag: "book", alias: "Also: scale versus size", m: "Bake position, rotation and scale into the mesh and reset them to neutral" },
+    space: { n: "Local and global space", tag: "editor", m: "Local coordinates are measured from the object's origin; global ones from the scene's" },
+    unit: { n: "Unit", tag: "book", m: "The length one coordinate step stands for (usually a metre)" },
+    axes: { n: "Right-handed, +Z up", tag: "book", m: "Blender: X cross Y gives Z, and Z is up. glTF and Godot put +Y up" },
+    modifier: { n: "Modifier", tag: "editor", m: "A live step that changes a mesh without editing it" },
+    mirror: { n: "Mirror modifier", tag: "editor", m: "Copies the mesh across an axis, so you model one half" },
+    subdiv: { n: "Subdivision Surface", tag: "editor", m: "Splits and smooths faces; each level makes 4 times as many" },
+    bevel: { n: "Bevel", tag: "editor", m: "Turns a sharp edge or corner into a small slanted or rounded one" },
+    uvmap: { n: "UV map", tag: "gloss", m: "The flattened 2D layout of a mesh used to place a texture" },
+    unwrap: { n: "Unwrapping", tag: "gloss", m: "Cutting a mesh and flattening it into a UV map" },
+    mattex: { n: "Material versus texture", tag: "gloss", m: "A material is the full surface recipe; a texture is one image it uses" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function cl(t) { return Math.max(0, Math.min(1, t)); }
+  function line(g, x1, y1, x2, y2, c, w, dash) { var l = g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 2).attr("fill", "none"); if (dash) l.attr("stroke-dasharray", dash); return l; }
+  function arrow(g, x1, y1, x2, y2, c, w) {
+    line(g, x1, y1, x2, y2, c, w || 3);
+    var a = Math.atan2(y2 - y1, x2 - x1), s = 12;
+    g.append("path").attr("d", "M" + x2 + "," + y2 + "L" + (x2 - s * Math.cos(a - 0.45)) + "," + (y2 - s * Math.sin(a - 0.45)) + "L" + (x2 - s * Math.cos(a + 0.45)) + "," + (y2 - s * Math.sin(a + 0.45)) + "Z").attr("fill", c || INK);
+  }
+  function dot(g, x, y, r, fill, stroke) { return g.append("circle").attr("cx", x).attr("cy", y).attr("r", r).attr("fill", fill || RED).attr("stroke", stroke || "none").attr("stroke-width", 2); }
+  function poly(g, pts, fill, stroke, sw) { return g.append("path").attr("d", "M" + pts.map(function (p) { return p[0] + "," + p[1]; }).join("L") + "Z").attr("fill", fill || "none").attr("stroke", stroke || INK).attr("stroke-width", sw || 2.5).attr("stroke-linejoin", "round"); }
+
+  /* ---------- geometry: a cube, Blender-style (Z up), and an oblique view ---------- */
+  var CV = [], CF = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
+  (function () { for (var i = 0; i < 8; i++) CV.push([(i & 1) ? 1 : -1, (i & 2) ? 1 : -1, (i & 4) ? 1 : -1]); })();
+  var PV = [[0, 1, -1], [-0.87, -0.5, -1], [0.87, -0.5, -1], [0, 1, 1], [-0.87, -0.5, 1], [0.87, -0.5, 1]], PF = [[0, 2, 1], [3, 4, 5], [0, 1, 4, 3], [1, 2, 5, 4], [2, 0, 3, 5]];
+  function edgesOf(F) { var s = {}; F.forEach(function (f) { f.forEach(function (a, i) { var b = f[(i + 1) % f.length]; s[Math.min(a, b) + "-" + Math.max(a, b)] = [Math.min(a, b), Math.max(a, b)]; }); }); return Object.keys(s).map(function (k) { return s[k]; }); }
+  function euler(V, F) { var E = edgesOf(F).length; return { V: V.length, E: E, F: F.length, chi: V.length - E + F.length }; }
+  function vw(v, yaw, pit) { var c = Math.cos(yaw), s = Math.sin(yaw), x1 = v[0] * c - v[1] * s, y1 = v[0] * s + v[1] * c, cp = Math.cos(pit), sp = Math.sin(pit); return [x1, -(y1 * sp + v[2] * cp), y1 * cp - v[2] * sp]; }
+  var LIGHT = (function () { var l = [0.3, -0.5, 0.8], n = Math.hypot(l[0], l[1], l[2]); return [l[0] / n, l[1] / n, l[2] / n]; })();
+  function shadeOf(n) { var d = n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2], t = 0.4 + 0.6 * Math.max(0, d); return d3.interpolateRgb("#7A7A7A", "#F4F4F4")(cl((t - 0.4) / 0.6)); }
+  function cenOf(V, f) { var c = [0, 0, 0]; f.forEach(function (i) { for (var a = 0; a < 3; a++) c[a] += V[i][a] / f.length; }); return c; }
+  /* draw a mesh; returns screen positions of the vertices */
+  function drawMesh(g, V, F, cx, cy, s, yaw, pit, o) {
+    o = o || {};
+    var P = V.map(function (v) { var p = vw(v, yaw, pit); return [cx + s * p[0], cy + s * p[1], p[2]]; });
+    var fs = F.map(function (f, fi) {
+      var c = cenOf(V, f), n = c, len = Math.hypot(n[0], n[1], n[2]) || 1; n = [c[0] / len, c[1] / len, c[2] / len];
+      var nv = vw(n, yaw, pit), dep = 0; f.forEach(function (i) { dep += P[i][2] / f.length; });
+      return { f: f, fi: fi, n: n, vis: nv[2] < 0, dep: dep };
+    }).sort(function (a, b) { return b.dep - a.dep; });
+    fs.forEach(function (q) {
+      if (!q.vis && !o.back) return;
+      var pts = q.f.map(function (i) { return [P[i][0], P[i][1]]; });
+      var fill = o.fill ? o.fill(q.fi, q.n) : shadeOf(q.n);
+      poly(g, pts, q.vis ? fill : "none", o.stroke || INK, o.sw || 2.5);
+      if (o.diag && q.vis) { line(g, pts[0][0], pts[0][1], pts[2][0], pts[2][1], RED, 3); }
+    });
+    return P;
+  }
+  function wire(g, P, F, color, w) { edgesOf(F).forEach(function (e) { line(g, P[e[0]][0], P[e[0]][1], P[e[1]][0], P[e[1]][1], color, w); }); }
+
+  var MAPROWS = [
+    ["The Blender window", "3D viewport, outliner, properties editor, timeline, workspace, Object Mode, Edit Mode, collection", "Where you work, and what each area shows"],
+    ["Mesh anatomy", "mesh, vertex, edge, face, quad, polygon count, normal, flipped normals", "What a model is made of, and how it is counted"],
+    ["Placing and measuring", "transform, origin, pivot, apply transforms, local and global space, unit, right-handed +Z up", "Where it sits, how big it is, which way is up"],
+    ["Shaping and surfacing", "modifier, mirror, subdivision surface, bevel, UV map, unwrapping, material versus texture", "How it is built faster, and how it gets its look"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of Blender terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "30 terms from Chapter 3, the glossary and the Blender manual. Each is what you need to model a game asset in Blender, by hand or through the Blender MCP.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. the window ---------- */
+  var OBJS = [["Cube", [0, 0, 1]], ["Camera", [4, -4, 3]], ["Light", [2, 2, 5]]];
+  function renderWin(el, k, anim) {
+    var svg = svgFor(el, W, H, "The Blender window: 3D viewport, outliner, properties editor", "A window split into four areas: viewport on the left, outliner and properties on the right, timeline along the bottom. Each is lit in turn.");
+    var ey = base(svg, [{ id: "viewport", s: 1 }, { id: "outliner", s: 2 }, { id: "props", s: 3 }], k, anim, ["Outliner", "lists what is in the scene"], ["Properties editor", "settings for one selected thing"]);
+    var d = svg.append("g"), AR = { vp: [0, 10, 470, 400, "3D viewport"], ol: [480, 10, 260, 200, "Outliner"], pr: [480, 220, 260, 190, "Properties"], tl: [0, 420, 740, 110, "Timeline"] };
+    Object.keys(AR).forEach(function (key) {
+      var a = AR[key], act = (key === "vp" && k === 1) || (key === "ol" && k === 2) || (key === "pr" && k === 3);
+      box(d, a[0], a[1], a[2], a[3], { stroke: act ? RED : INK, sw: act ? 4 : 2 }); lab(d, a[0] + 12, a[1] + 30, a[4], { fill: act ? RED : MUTED });
+    });
+    line(d, 20, 490, 720, 490, FAMILIAR, 3); [1, 30, 60].forEach(function (f) { var x = 20 + (f - 1) / 59 * 700; d.append("rect").attr("x", x - 7).attr("y", 483).attr("width", 14).attr("height", 14).attr("fill", INK).attr("transform", "rotate(45 " + x + " 490)"); });
+    var sel = OBJS[0];
+    if (k >= 1) {
+      var vg = d.append("g");
+      run(vg, 7000, function (t) {
+        vg.selectAll("*").remove();
+        var yaw = 0.5 + t * 1.5, V = CV.map(function (v) { return [v[0] + sel[1][0], v[1] + sel[1][1], v[2] + sel[1][2]]; });
+        var o = vw([0, 0, 0], yaw, 0.5); dot(vg, 235 + 70 * o[0], 330 + 70 * o[1], 7, RED);
+        drawMesh(vg, V, CF, 235, 330, 70, yaw, 0.5);
+      }, k === 1 && anim);
+    }
+    if (k >= 2) {
+      var og = d.append("g");
+      og.append("rect").attr("x", 487).attr("y", 112).attr("width", 246).attr("height", 34).attr("fill", TINT);
+      txt(og, 494, 78, "Collection", { size: 24, weight: 700 });
+      OBJS.forEach(function (o, i) { txt(og, 520, 136 + i * 34, o[0], { size: 24, weight: i === 0 ? 700 : 400, fill: i === 0 ? RED : INK }); });
+      fade(og, k === 2 && anim, 0);
+    }
+    if (k >= 3) {
+      var pg = d.append("g"); txt(pg, 494, 286, "Cube: Location", { size: 24, weight: 700 });
+      ["X", "Y", "Z"].forEach(function (a, i) { mono(pg, 494, 321 + i * 31, a + "  " + sel[1][i].toFixed(1) + " m", { size: 24 }); });
+      fade(pg, k === 3 && anim, 0);
+    }
+    cap(d, 0, 556, ["Three editors and a timeline, in one window.", "The viewport shows the scene; you look at it and edit in it.", "The outliner lists " + OBJS.length + " objects in 1 collection; Cube is selected.", "Properties: the selected Cube sits at (" + OBJS[0][1].join(", ") + ") m."][k], { size: 24, fill: k ? INK : MUTED });
+    note(svg, ey, ["", "The viewport is where you see the model. Every other area shows or changes something about it.", "The outliner is the scene as a list. Click a name to select it.", "The properties editor changes with what is selected: transform, modifiers, material."][k]);
+  }
+
+  /* ---------- 2. workspaces and timeline ---------- */
+  var WS = [
+    ["Layout", [["3D viewport", 0, 0, 0.62, 0.7], ["Outliner", 0.62, 0, 0.38, 0.35], ["Properties", 0.62, 0.35, 0.38, 0.35], ["Timeline", 0, 0.7, 1, 0.3]]],
+    ["Modeling", [["3D viewport", 0, 0, 0.78, 0.7], ["Properties", 0.78, 0, 0.22, 0.7], ["Timeline", 0, 0.7, 1, 0.3]]],
+    ["UV Editing", [["UV editor", 0, 0, 0.5, 1], ["3D viewport", 0.5, 0, 0.5, 1]]],
+    ["Shading", [["3D viewport", 0, 0, 0.55, 0.65], ["Shader editor", 0, 0.65, 0.55, 0.35], ["Properties", 0.55, 0, 0.45, 1]]],
+    ["Animation", [["3D viewport", 0, 0, 1, 0.62], ["Dope sheet", 0, 0.62, 0.5, 0.38], ["Timeline", 0.5, 0.62, 0.5, 0.38]]]
+  ];
+  var KEYS = [[1, 0], [30, 4], [60, 0]];
+  function xOfFrame(f) { for (var i = 0; i < KEYS.length - 1; i++) if (f <= KEYS[i + 1][0]) return lerp(KEYS[i][1], KEYS[i + 1][1], d3.easeCubicInOut((f - KEYS[i][0]) / (KEYS[i + 1][0] - KEYS[i][0]))); return KEYS[KEYS.length - 1][1]; }
+  function renderWsTl(el, k, anim) {
+    var svg = svgFor(el, W, H, "A workspace rearranges the editors; the timeline scrubs through frames", "Five workspace tabs, each with a different set of editors. Then a timeline with three keyframes and a playhead moving an object along a rail.");
+    var ey = base(svg, [{ id: "workspace", s: 1 }, { id: "timeline", s: 2 }], k, anim, ["Workspace", "which editors you see"], ["Timeline", "frames, playback, keyframes"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      var g = d.append("g");
+      run(g, 6000, function (t) {
+        g.selectAll("*").remove();
+        var idx = Math.min(WS.length - 1, Math.floor(t * WS.length)), x = 0;
+        WS.forEach(function (w, i) {
+          var tw = w[0].length * 13 + 30, on = i === idx;
+          box(g, x, 4, tw, 40, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" }); txt(g, x + tw / 2, 33, w[0], { size: 24, anchor: "middle", weight: on ? 700 : 400, fill: on ? RED : MUTED }); x += tw + 8;
+        });
+        WS[idx][1].forEach(function (a) { box(g, a[1] * 740, 60 + a[2] * 460, a[3] * 740, a[4] * 460, { stroke: INK, sw: 2 }); lab(g, a[1] * 740 + 10, 60 + a[2] * 460 + 30, a[0]); });
+        cap(g, 0, 556, WS[idx][0] + ": " + WS[idx][1].length + " editors on screen", { size: 24 });
+      }, k === 1 && anim);
+    } else {
+      lab(d, 0, 30, "FRAMES 1 TO 60, THREE KEYFRAMES");
+      var fx = function (f) { return 20 + (f - 1) / 59 * 700; };
+      box(d, 0, 60, 740, 110, { stroke: INK, sw: 2 });
+      [1, 10, 20, 30, 40, 50, 60].forEach(function (f) { line(d, fx(f), 82, fx(f), 100, GREY, 2); txt(d, fx(f), 126, f, { size: 24, anchor: "middle", fill: MUTED }); });
+      KEYS.forEach(function (q) { d.append("rect").attr("x", fx(q[0]) - 9).attr("y", 141).attr("width", 18).attr("height", 18).attr("fill", INK).attr("transform", "rotate(45 " + fx(q[0]) + " 150)"); });
+      var rx = function (m) { return 20 + m / 4 * 700; };
+      lab(d, 0, 250, "LOCATION X ALONG THE RAIL");
+      line(d, rx(0), 330, rx(4), 330, FAMILIAR, 6);
+      [0, 4].forEach(function (m) { txt(d, rx(m), 400, "x = " + m + " m", { size: 24, anchor: m ? "end" : "start", fill: MUTED }); });
+      var ph = d.append("g"), mk = d.append("g"), rd = cap(d, 0, 500, "", { size: 26, weight: 700 });
+      run(d, 5000, function (t) {
+        var f = Math.round(lerp(1, 60, t)), xm = xOfFrame(f);
+        ph.selectAll("*").remove(); line(ph, fx(f), 56, fx(f), 174, RED, 4); mk.selectAll("*").remove(); mk.append("rect").attr("x", rx(xm) - 20).attr("y", 310).attr("width", 40).attr("height", 40).attr("fill", RED);
+        rd.text("Frame " + f + ": x = " + xm.toFixed(2) + " m");
+      }, k === 2 && anim);
+      cap(d, 0, 545, "Between keyframes the value eases; the keys at 1, 30, 60 are fixed.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A workspace is a saved layout. Modeling, UV Editing and Shading show different editors over the same scene.", "The timeline plays frames. Diamonds mark keyframes; the values between them are worked out for you."][k]);
+  }
+
+  /* ---------- 3. modes and collections ---------- */
+  var COLS = [["Props", ["Post", "Pennant"]], ["Level", ["Floor", "Wall", "Lamp"]]];
+  function renderModes(el, k, anim) {
+    var svg = svgFor(el, W, H, "Object Mode moves the whole cube; Edit Mode moves one vertex; a collection hides a group", "A cube sliding across the view, then one corner of a cube pulled up while the rest stay, then two collections whose objects hide when the collection is hidden.");
+    var ey = base(svg, [{ id: "objmode", s: 1 }, { id: "editmode", s: 2 }, { id: "collection", s: 3 }], k, anim, ["Object Mode", "the cube is one thing"], ["Edit Mode", "the cube is 8 points"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "OBJECT MODE: SELECT AND MOVE THE WHOLE OBJECT");
+      var g = d.append("g"), x0 = 150, x1 = 560, cy = 300;
+      drawMesh(d, CV, CF, x0, cy, 70, 0.6, 0.5, { fill: function () { return "none"; }, stroke: GREY, sw: 1.5 });
+      line(d, x0 + 90, cy + 130, x1 - 20, cy + 130, RED, 3, "8 6");
+      run(g, 3500, function (t) { g.selectAll("*").remove(); drawMesh(g, CV, CF, lerp(x0, x1, d3.easeCubicInOut(t)), cy, 70, 0.6, 0.5); cap(g, 0, 556, "All " + CV.length + " vertices moved together, " + ((x1 - x0) / 70).toFixed(1) + " units.", { size: 24 }); }, anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "EDIT MODE: SELECT AND MOVE ONE VERTEX");
+      var g2 = d.append("g");
+      run(g2, 3000, function (t) {
+        g2.selectAll("*").remove();
+        var V = CV.map(function (v, i) { return i === 7 ? [1, 1, 1 + 0.9 * d3.easeCubicInOut(t)] : v; });
+        var P = drawMesh(g2, V, CF, 380, 330, 110, 0.6, 0.5);
+        V.forEach(function (v, i) { dot(g2, P[i][0], P[i][1], i === 7 ? 11 : 8, i === 7 ? RED : "#FFFFFF", INK); });
+        var moved = V.filter(function (v, i) { return v[2] !== CV[i][2]; }).length;
+        cap(g2, 0, 556, (t > 0 ? moved : 0) + " of " + V.length + " vertices moved; the other " + (V.length - (t > 0 ? moved : 0)) + " stayed.", { size: 24 });
+      }, anim);
+    } else if (k === 3) {
+      lab(d, 0, 30, "COLLECTIONS");
+      var g3 = d.append("g");
+      run(g3, 3500, function (t) {
+        g3.selectAll("*").remove();
+        var hid = [false, t > 0.5], vis = 0, tot = 0, y = 70;
+        COLS.forEach(function (c, ci) {
+          box(g3, 0, y - 28, 330, 40 + 36 * c[1].length, { stroke: INK, sw: 2 }); txt(g3, 14, y, c[0], { size: 26, weight: 700 });
+          dot(g3, 300, y - 8, 11, hid[ci] ? "#FFFFFF" : RED, INK);
+          c[1].forEach(function (o, i) { txt(g3, 34, y + 34 + i * 36, o, { size: 24, fill: hid[ci] ? GREY : INK }); tot++; if (!hid[ci]) vis++; });
+          y += 100 + 36 * c[1].length - 36 * 0 - 0;
+          y -= 0;
+        });
+        box(g3, 380, 40, 360, 400, { stroke: FAMILIAR, sw: 2 }); lab(g3, 392, 70, "VIEWPORT");
+        var n = 0;
+        COLS.forEach(function (c, ci) { c[1].forEach(function (o, i) { var x = 410 + (n % 3) * 105, yy = 110 + Math.floor(n / 3) * 130; n++; if (!hid[ci]) { g3.append("rect").attr("x", x).attr("y", yy).attr("width", 80).attr("height", 80).attr("fill", ci ? "#C4C4C4" : TINT).attr("stroke", ci ? INK : RED).attr("stroke-width", 3); } else { g3.append("rect").attr("x", x).attr("y", yy).attr("width", 80).attr("height", 80).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-dasharray", "6 6"); } }); });
+        cap(g3, 0, 556, "Visible objects: " + vis + " of " + tot + ".", { size: 24, weight: 700 });
+      }, anim);
+    }
+    note(svg, ey, ["", "Object Mode treats the cube as one object: one move changes the location, the mesh is untouched.", "Edit Mode opens the mesh. Moving one vertex changes the shape.", "Hiding the Level collection hides all its objects at once; Props stays."][k]);
+  }
+
+  /* ---------- 4. mesh anatomy ---------- */
+  function renderMesh(el, k, anim) {
+    var svg = svgFor(el, W, H, "A mesh is vertices joined by edges into faces; V minus E plus F is 2", "A cube slowly turning. First solid, then its 8 vertices as dots, its 12 edges as red lines, its 6 faces tinted, with the count shown.");
+    var ey = base(svg, [{ id: "mesh", s: 1 }, { id: "vertex", s: 2 }, { id: "edge", s: 3 }, { id: "face", s: 4 }], k, anim, ["Vertex", "a point"], ["Edge", "a line between two points"]);
+    var d = svg.append("g"), g = d.append("g"), C = euler(CV, CF), Pz = euler(PV, PF);
+    lab(d, 0, 30, ["", "A CUBE MESH", "VERTICES: THE CORNER POINTS", "EDGES: THE LINES BETWEEN THEM", "FACES: THE FLAT SURFACES"][k]);
+    run(g, 6000, function (t) {
+      g.selectAll("*").remove();
+      var yaw = 0.6 + t * 1.2;
+      var P = drawMesh(g, CV, CF, 380, 290, 120, yaw, 0.5, { back: k >= 2, fill: k >= 4 ? function () { return TINT; } : null, stroke: k === 3 ? GREY : INK, sw: k === 3 ? 2 : 3 });
+      if (k === 3) wire(g, P, CF, RED, 5);
+      if (k >= 2) P.forEach(function (p) { dot(g, p[0], p[1], 10, RED, "#FFFFFF"); });
+    }, k >= 1 && anim);
+    cap(d, 0, 556, ["", "A mesh is the shape's points, lines and surfaces.", "Vertices: V = " + C.V, "Edges: E = " + C.E + " (each shared by 2 faces)", "Faces: F = " + C.F + ". V − E + F = " + C.V + " − " + C.E + " + " + C.F + " = " + C.chi + ". Prism: " + Pz.V + " − " + Pz.E + " + " + Pz.F + " = " + Pz.chi + "."][k], { size: 24, weight: k ? 700 : 400 });
+    note(svg, ey, ["", "A mesh is what the chapter means by mesh data: the points that carry the real size.", "Every corner is one vertex. A cube has 8.", "Edges join vertices. Count them once each: 12.", "Faces fill the edges in. For a closed shape with no holes, V − E + F is always 2."][k]);
+  }
+
+  /* ---------- 5. quads, triangles, polygon count ---------- */
+  function renderQuad(el, k, anim) {
+    var svg = svgFor(el, W, H, "A quad is two triangles to the GPU; the cube has 6 faces, 12 triangles, 8 vertices", "A square split by a diagonal into two triangles, and a cube with a diagonal on each face. Then four bars: faces, triangles, vertices, GPU vertices.");
+    var ey = base(svg, [{ id: "quad", s: 1 }, { id: "polycount", s: 2 }], k, anim, ["Face count", "what Blender shows"], ["Triangle count", "what the engine budgets"]);
+    var d = svg.append("g"), tris = d3.sum(CF, function (f) { return f.length - 2; }), gpu = d3.sum(CF, function (f) { return f.length; });
+    if (k <= 1) {
+      lab(d, 0, 30, "ONE QUAD, THEN THE CUBE");
+      var g = d.append("g");
+      run(g, 3000, function (t) {
+        g.selectAll("*").remove();
+        var u = d3.easeCubicInOut(cl((t - 0.3) / 0.7)), a = [[60, 120], [260, 120], [260, 320], [60, 320]];
+        poly(g, [a[0], a[1], a[2]].map(function (p) { return [p[0] + u * 28, p[1] - u * 14]; }), "#F4F4F4", INK, 3);
+        poly(g, [a[0], a[2], a[3]].map(function (p) { return [p[0] - u * 12, p[1] + u * 14]; }), "#E3E3E3", INK, 3);
+        cap(g, 160, 390, "1 quad = " + (4 - 2) + " triangles", { size: 24, anchor: "middle", weight: 700 });
+        drawMesh(g, CV, CF, 545, 220, 85, 0.6, 0.5, { diag: true });
+        cap(g, 545, 390, CF.length + " quads = " + tris + " triangles", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      }, k === 1 && anim);
+      cap(d, 0, 480, "A face with 4 vertices adds 4 − 2 = 2 triangles.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "FOUR TALLIES OF THE SAME CUBE");
+      var rows = [["Faces (Blender)", CF.length, "#C4C4C4"], ["Triangles (engine budget)", tris, RED], ["Vertices (Blender)", CV.length, "#C4C4C4"], ["GPU vertices (one per face corner)", gpu, INK]];
+      rows.forEach(function (r, i) { var y = 70 + i * 100, g = d.append("g"); cap(g, 0, y, r[0], { size: 24, weight: 700 }); bar(g, 0, y + 14, r[1] * 20, 40, r[2], A(anim, k, 2), i * 250); cap(g, r[1] * 20 + 14, y + 46, r[1], { size: 26, weight: 700 }); });
+      cap(d, 0, 500, "Hard edges split a vertex per face: " + CF.length + " × 4 = " + gpu + ".", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A quad is a four-sided face. The GPU draws triangles, so each quad is split in two.", "One mesh, four numbers. Ask which one a budget uses before you compare models."][k]);
+  }
+
+  /* ---------- 6. normals ---------- */
+  function renderNormals(el, k, anim) {
+    var svg = svgFor(el, W, H, "A normal points out of a face; a flipped normal turns the face dark", "A 12-sided cross-section with an arrow out of each face and light from the upper left. Faces turned to the light are bright. Then the normals of three bright faces flip and those faces go dark.");
+    var ey = base(svg, [{ id: "normal", s: 1 }, { id: "flip", s: 2 }], k, anim, ["Normal", "which way a face points"], ["Flipped normal", "points into the shape"]);
+    var d = svg.append("g"), N = 12, R = 150, cx = 360, cy = 300, L = [-0.6, -0.8];
+    var faces = d3.range(N).map(function (i) { var a = (i + 0.5) * 2 * Math.PI / N - Math.PI / 2, n = [Math.cos(a), Math.sin(a)]; return { a: a, n: n, dl: n[0] * L[0] + n[1] * L[1] }; });
+    var flipSet = faces.map(function (f, i) { return f.dl > 0.75 ? i : -1; }).filter(function (i) { return i >= 0; });
+    lab(d, 0, 30, k <= 1 ? "NORMALS POINT OUT" : "THREE NORMALS FLIPPED");
+    arrow(d, 30, 70, 30 + 0.6 * 110, 70 + 0.8 * 110, GREY, 4); txt(d, 110, 62, "light", { size: 24, fill: MUTED });
+    var g = d.append("g");
+    run(g, 2500, function (t) {
+      g.selectAll("*").remove();
+      var u = k >= 2 ? d3.easeCubicInOut(t) : 0, lit = 0;
+      faces.forEach(function (f, i) {
+        var fl = flipSet.indexOf(i) >= 0, s = fl ? 1 - 2 * u : 1, n = [f.n[0] * s, f.n[1] * s], dl = n[0] * L[0] + n[1] * L[1], br = cl(0.2 + 0.8 * Math.max(0, dl));
+        if (dl > 0) lit++;
+        var a0 = f.a - Math.PI / N, a1 = f.a + Math.PI / N;
+        g.append("path").attr("d", "M" + (cx + R * Math.cos(a0)) + "," + (cy + R * Math.sin(a0)) + "L" + (cx + R * Math.cos(a1)) + "," + (cy + R * Math.sin(a1))).attr("stroke", d3.interpolateRgb("#2A1A0E", "#F2F2F2")(br)).attr("stroke-width", 22).attr("stroke-linecap", "butt");
+        var mx = cx + R * Math.cos(f.a), my = cy + R * Math.sin(f.a);
+        arrow(g, mx, my, mx + n[0] * 62, my + n[1] * 62, fl && u > 0.5 ? RED : INK, 3);
+      });
+      poly(g, d3.range(N).map(function (i) { var a = (i + 0.5) * 2 * Math.PI / N - Math.PI / 2 - Math.PI / N; return [cx + (R - 12) * Math.cos(a), cy + (R - 12) * Math.sin(a)]; }), "none", GREY, 1.5);
+      cap(g, 0, 556, "Faces lit by the light: " + lit + " of " + N + (k >= 2 && u > 0.5 ? " (" + flipSet.length + " flipped)" : ""), { size: 24, weight: 700, fill: k >= 2 && u > 0.5 ? RED : INK });
+    }, k === 2 && anim);
+    note(svg, ey, ["", "The normal is the arrow out of the face. Light and culling both use it to decide what the face looks like.", "Flip a normal and the face looks away from the light, so it looks dark, or is not drawn at all."][k]);
+  }
+
+  /* ---------- 7. transform, origin, pivot ---------- */
+  function renderXf(el, k, anim) {
+    var svg = svgFor(el, W, H, "Transform is location, rotation and scale; origin and pivot decide what they are measured around", "A square moving, turning and growing on a grid. Then two posts placed at height zero, one with its origin in the middle and one at its base. Then a bar turned 60 degrees about its middle and about its end.");
+    var ey = base(svg, [{ id: "xf", s: 1 }, { id: "origin", s: 2 }, { id: "pivot", s: 3 }], k, anim, ["Origin", "where the object is measured from"], ["Pivot", "what a turn or stretch happens around"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "TOP VIEW: X TO THE RIGHT, Y UP, 1 SQUARE = 1 UNIT");
+      var ox = 300, oy = 330, u = 52;
+      for (var gx = -5; gx <= 8; gx++) line(d, ox + gx * u, 60, ox + gx * u, 540, "#E3E3E3", 1.5);
+      for (var gy = -4; gy <= 5; gy++) line(d, 20, oy - gy * u, 740, oy - gy * u, "#E3E3E3", 1.5);
+      line(d, 20, oy, 740, oy, GREY, 3); line(d, ox, 60, ox, 540, GREY, 3);
+      txt(d, 730, oy - 8, "X", { size: 24, anchor: "end", fill: MUTED }); txt(d, ox + 10, 86, "Y", { size: 24, fill: MUTED });
+      var g = d.append("g");
+      run(g, 6000, function (t) {
+        g.selectAll("*").remove();
+        var p1 = d3.easeCubicInOut(cl(t * 3)), p2 = d3.easeCubicInOut(cl(t * 3 - 1)), p3 = d3.easeCubicInOut(cl(t * 3 - 2));
+        var lx = 3 * p1, ly = 1.5 * p1, rot = 45 * p2, sc = 1 + 0.6 * p3, a = rot * DEG, pts = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]].map(function (q) { var x = q[0] * sc, y = q[1] * sc; return [ox + (lx + x * Math.cos(a) - y * Math.sin(a)) * u, oy - (ly + x * Math.sin(a) + y * Math.cos(a)) * u]; });
+        poly(g, pts, TINT, RED, 3.5); dot(g, ox + lx * u, oy - ly * u, 8, INK);
+        cap(g, 0, 556, "Location (" + lx.toFixed(1) + ", " + ly.toFixed(1) + ")  Rotation " + rot.toFixed(0) + "°  Scale " + sc.toFixed(1), { size: 24, weight: 700 });
+      }, k === 1 && anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "PLACE A 1.8 M POST AT HEIGHT 0");
+      var pxm = 110, fy = 380, H_ = 1.8, g2 = d.append("g");
+      [["ORIGIN AT CENTRE", 190, H_ / 2], ["ORIGIN AT BASE", 560, 0]].forEach(function (c, i) { lab(d, c[1] - 150, 70, c[0]); });
+      d.append("rect").attr("x", 0).attr("y", fy).attr("width", 740).attr("height", 130).attr("fill", "#F6F6F6"); line(d, 0, fy, 740, fy, INK, 4);
+      run(g2, 2600, function (t) {
+        g2.selectAll("*").remove();
+        var drop = 1.2 * (1 - d3.easeCubicOut(t));
+        [[190, H_ / 2], [560, 0]].forEach(function (c) {
+          var zo = drop, bottom = zo - c[1], top = bottom + H_;
+          g2.append("rect").attr("x", c[0] - 15).attr("y", fy - top * pxm).attr("width", 30).attr("height", H_ * pxm).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3);
+          dot(g2, c[0], fy - zo * pxm, 9, INK, "#FFFFFF");
+        });
+        cap(g2, 190, 556, "lowest point " + sgn(0 - H_ / 2, 1) + " m", { size: 24, anchor: "middle", weight: 700, fill: RED }); cap(g2, 560, 556, "lowest point " + sgn(0, 1) + " m", { size: 24, anchor: "middle", weight: 700 });
+      }, anim);
+      cap(d, 190, 522, "sunk into the floor", { size: 24, anchor: "middle", fill: MUTED }); cap(d, 560, 522, "stands on the floor", { size: 24, anchor: "middle", fill: MUTED });
+    } else {
+      lab(d, 0, 30, "SAME 60° TURN OF A 2 UNIT BAR");
+      var u3 = 80, g3 = d.append("g"), pv = [[230, 300, -1], [470, 300, 0]];
+      lab(d, 40, 80, "PIVOT IN THE MIDDLE"); lab(d, 440, 80, "PIVOT AT THE END");
+      run(g3, 3000, function (t) {
+        g3.selectAll("*").remove();
+        var ang = 60 * d3.easeCubicInOut(t) * DEG, tips = [];
+        pv.forEach(function (p) {
+          var ends = [p[2], p[2] + 2].map(function (e) { return [e * Math.cos(ang), e * Math.sin(ang)]; }), g0 = [p[2], p[2] + 2];
+          line(g3, p[0] + g0[0] * u3, p[1], p[0] + g0[1] * u3, p[1], FAMILIAR, 10);
+          line(g3, p[0] + ends[0][0] * u3, p[1] - ends[0][1] * u3, p[0] + ends[1][0] * u3, p[1] - ends[1][1] * u3, RED, 10);
+          dot(g3, p[0], p[1], 11, INK, "#FFFFFF"); tips.push([(p[2] + 2) * Math.cos(ang), (p[2] + 2) * Math.sin(ang)]);
+        });
+        cap(g3, 230, 540, "tip (" + tips[0][0].toFixed(1) + ", " + tips[0][1].toFixed(1) + ")", { size: 24, anchor: "middle", weight: 700 }); cap(g3, 560, 540, "tip (" + tips[1][0].toFixed(1) + ", " + tips[1][1].toFixed(1) + ")", { size: 24, anchor: "middle", weight: 700 });
+      }, anim);
+    }
+    note(svg, ey, ["", "The transform is three things on the object: location, rotation, scale. The mesh itself is not touched.", "Location is the origin's position. An origin in the middle of a post puts half of it under the floor at height 0.", "Rotate about the middle and the tip swings a little. Rotate about the end, like a hinge, and it swings far."][k]);
+  }
+
+  /* ---------- 8. apply, local and global space ---------- */
+  function renderApply(el, k, anim) {
+    var svg = svgFor(el, W, H, "Apply transforms moves scale into the mesh; local coordinates become global ones", "A table of scale, mesh size and size you see for a pole, before and after apply; the size you see does not change. Then a point at fixed local coordinates whose global coordinates change as the parent turns.");
+    var ey = base(svg, [{ id: "apply", s: 1 }, { id: "space", s: 2 }], k, anim, ["Scale", "a multiplier on the object"], ["Size", "the real dimensions"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      var g = d.append("g"), S0 = [0.1, 0.1, 0.9], M0 = [2, 2, 2], S1 = [1, 1, 1], M1 = [0.2, 0.2, 1.8];
+      run(g, 3000, function (t) {
+        g.selectAll("*").remove();
+        var u = k >= 1 ? d3.easeCubicInOut(t) : 1, S = S0.map(function (v, i) { return lerp(v, S1[i], u); }), M = M0.map(function (v, i) { return lerp(v, M1[i], u); }), Z = S.map(function (v, i) { return v * M[i]; });
+        lab(g, 0, 30, u < 0.5 ? "BEFORE APPLY" : "AFTER APPLY", { fill: RED });
+        ["X", "Y", "Z"].forEach(function (a, i) { lab(g, 380 + i * 130, 30, a); });
+        [["Object scale", S], ["Mesh size (m)", M], ["Size you see (m)", Z]].forEach(function (r, ri) {
+          var y = 90 + ri * 56; txt(g, 0, y, r[0], { size: 24, weight: ri === 2 ? 700 : 400, fill: ri === 2 ? RED : INK });
+          r[1].forEach(function (v, i) { mono(g, 380 + i * 130, y, v.toFixed(2), { size: 26, weight: ri === 2 ? 700 : 400, fill: ri === 2 ? RED : INK }); });
+        });
+        line(g, 0, 190, 740, 190, FAMILIAR, 2);
+        var by = 550, pxm = 100;
+        g.append("rect").attr("x", 120).attr("y", by - M[2] * pxm).attr("width", M[0] * pxm).attr("height", M[2] * pxm).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2.5).attr("stroke-dasharray", "8 6");
+        g.append("rect").attr("x", 120).attr("y", by - Z[2] * pxm).attr("width", Z[0] * pxm).attr("height", Z[2] * pxm).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3);
+        cap(g, 380, 330, "dashed: the mesh size", { size: 24, fill: MUTED }); cap(g, 380, 370, "red: what you see", { size: 24, fill: RED, weight: 700 });
+        cap(g, 380, 430, "The pole looks the same either way.", { size: 24 }); cap(g, 380, 470, "Only the mesh now carries the size.", { size: 24, weight: 700 });
+      }, k === 1 && anim);
+    } else {
+      lab(d, 0, 30, "PARENT TURNS; LOCAL POINT STAYS PUT");
+      var ox = 80, oy = 520, u2 = 62, T0 = [3.5, 2.5], PL = [1, 0.5];
+      for (var gx = 0; gx <= 10; gx++) line(d, ox + gx * u2, 60, ox + gx * u2, oy, "#E3E3E3", 1.5);
+      for (var gy = 0; gy <= 7; gy++) line(d, ox, oy - gy * u2, 740, oy - gy * u2, "#E3E3E3", 1.5);
+      line(d, ox, oy, 740, oy, GREY, 3); line(d, ox, 60, ox, oy, GREY, 3);
+      txt(d, 730, oy - 8, "X", { size: 24, anchor: "end", fill: MUTED }); txt(d, ox + 10, 86, "Y", { size: 24, fill: MUTED });
+      var g2 = d.append("g");
+      run(g2, 3500, function (t) {
+        g2.selectAll("*").remove();
+        var a = 30 * DEG * d3.easeCubicInOut(t), c = Math.cos(a), s = Math.sin(a), X = function (p) { return ox + p[0] * u2; }, Y = function (p) { return oy - p[1] * u2; };
+        var rp = function (q) { return [T0[0] + q[0] * c - q[1] * s, T0[1] + q[0] * s + q[1] * c]; };
+        poly(g2, [[-1.2, -0.8], [1.2, -0.8], [1.2, 0.8], [-1.2, 0.8]].map(rp).map(function (p) { return [X(p), Y(p)]; }), "#F6F6F6", INK, 2.5);
+        var o = rp([0, 0]), ax = rp([1.6, 0]), ay = rp([0, 1.6]), pw = rp(PL);
+        arrow(g2, X(o), Y(o), X(ax), Y(ax), RED, 3); arrow(g2, X(o), Y(o), X(ay), Y(ay), RED, 3);
+        line(g2, X(o), Y(o), X(pw), Y(pw), INK, 2.5, "6 6"); dot(g2, X(pw), Y(pw), 10, RED, INK);
+        cap(g2, 0, 556, "Local (" + PL[0].toFixed(1) + ", " + PL[1].toFixed(1) + ") → global (" + pw[0].toFixed(2) + ", " + pw[1].toFixed(2) + ")", { size: 24, weight: 700 });
+      }, anim);
+    }
+    note(svg, ey, ["", "Scaling a 2 m cube to (0.1, 0.1, 0.9) makes a pole, but the mesh is still 2 m. Apply puts 0.2 × 0.2 × 1.8 m in the mesh.", "A point has two sets of numbers. Local ones stay put; global ones change when the parent moves or turns."][k]);
+  }
+
+  /* ---------- 9. units and axes ---------- */
+  function renderUnits(el, k, anim) {
+    var svg = svgFor(el, W, H, "A unit is a metre only if you keep it one; Blender is Z up and right-handed", "Two bars, a 2.1 metre player and a 1.8 unit post, with the post shrinking to 1.8 centimetres if a unit is read as a centimetre. Then the post upright in Blender and lying on its side in Godot until the exporter converts the axes.");
+    var ey = base(svg, [{ id: "unit", s: 1 }, { id: "axes", s: 2 }], k, anim, ["Right-handed", "X × Y = Z"], ["Y up (Godot)", "a different axis points up"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "A 1.8 UNIT POST NEXT TO THE 2.1 M PLAYER");
+      var by = 490, pxm = 100, g = d.append("g");
+      line(d, 60, by, 700, by, INK, 4);
+      d.append("rect").attr("x", 160).attr("y", by - 2.1 * pxm).attr("width", 60).attr("height", 2.1 * pxm).attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3); txt(d, 190, by + 36, "player", { size: 24, anchor: "middle" });
+      d.append("rect").attr("x", 420).attr("y", by - 1.8 * pxm).attr("width", 40).attr("height", 1.8 * pxm).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "8 6");
+      run(g, 4000, function (t) {
+        g.selectAll("*").remove();
+        var s = Math.pow(10, -2 * (k >= 1 ? d3.easeCubicInOut(t) : 1)), h = 1.8 * s;
+        g.append("rect").attr("x", 420).attr("y", by - Math.max(h * pxm, 3)).attr("width", 40).attr("height", Math.max(h * pxm, 3)).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3);
+        txt(g, 440, by + 36, "post", { size: 24, anchor: "middle" });
+        cap(g, 0, 556, "1 unit = " + (s >= 0.1 ? s.toFixed(2) : s.toFixed(3)) + " m: post is " + (h >= 0.1 ? h.toFixed(2) : h.toFixed(3)) + " m", { size: 24, weight: 700, fill: s < 0.99 ? RED : INK });
+      }, k === 1 && anim);
+      cap(d, 0, 66, "Dashed: the post at 1 unit = 1 m.", { size: 24, fill: MUTED });
+    } else {
+      var X = cross3([1, 0, 0], [0, 1, 0]), g2 = d.append("g"), pxm2 = 130;
+      lab(d, 30, 40, "BLENDER: Z UP"); lab(d, 410, 40, "GODOT: Y UP");
+      [[60, "Y", "Z"], [440, "Z", "Y"]].forEach(function (p) {
+        arrow(d, p[0], 450, p[0] + 290, 450, INK, 3); txt(d, p[0] + 290, 486, p[1], { size: 24, anchor: "end", fill: MUTED });
+        arrow(d, p[0], 450, p[0], 100, INK, 3); txt(d, p[0] + 14, 120, p[2], { size: 24, fill: MUTED });
+      });
+      d.append("rect").attr("x", 90).attr("y", 450 - 1.8 * pxm2).attr("width", 0.2 * pxm2).attr("height", 1.8 * pxm2).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3);
+      var toG = function (e) { return [e[0], e[2], e[1]]; }, B = [0.2, 0.2, 1.8];
+      run(g2, 3500, function (t) {
+        g2.selectAll("*").remove();
+        var u = k >= 2 ? d3.easeCubicInOut(t) : 1, a = -90 * u, ext = u > 0.5 ? toG(B) : B;
+        g2.append("rect").attr("x", 470).attr("y", 450 - 0.2 * pxm2).attr("width", 1.8 * pxm2).attr("height", 0.2 * pxm2).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3).attr("transform", "rotate(" + a + " 470 450)");
+        cap(g2, 0, 520, "", {});
+        txt(g2, 440, 522, "extents " + ext.map(function (v) { return v.toFixed(1); }).join(", "), { size: 24, fill: u > 0.5 ? INK : RED, weight: 700 });
+        txt(g2, 30, 522, "extents " + B.map(function (v) { return v.toFixed(1); }).join(", "), { size: 24, weight: 700 });
+      }, k === 2 && anim);
+      txt(d, 30, 558, "X × Y = (" + X.join(", ") + "): right-handed", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "One unit is one metre in Blender, glTF and Godot, so nothing converts. Read a unit as a centimetre and the post is 100 times too small.", "Blender is right-handed, Z up. Godot is Y up. The exporter's +Y Up option puts Z extent 1.8 on Godot's Y; without it the post lies down."][k]);
+  }
+  function cross3(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+
+  /* ---------- 10. modifiers ---------- */
+  function chaikin(P) { var o = []; P.forEach(function (p, i) { var q = P[(i + 1) % P.length]; o.push([0.75 * p[0] + 0.25 * q[0], 0.75 * p[1] + 0.25 * q[1]]); o.push([0.25 * p[0] + 0.75 * q[0], 0.25 * p[1] + 0.75 * q[1]]); }); return o; }
+  var HALF = [[0, 2.6], [1.3, 1.5], [1.9, 0], [1.2, -1.6], [0, -2.2]];
+  function renderMods(el, k, anim) {
+    var svg = svgFor(el, W, H, "Modifiers change a mesh without editing it: mirror halves the work, subdivision multiplies faces, bevel rounds corners", "A base mesh, a modifier and a result. Then a half shape mirrored into a whole. Then a square cut into more corners at each level with face counts. Then a square with its corners bevelled in 0 to 3 segments.");
+    var ey = base(svg, [{ id: "modifier", s: 1 }, { id: "mirror", s: 2 }, { id: "subdiv", s: 3 }, { id: "bevel", s: 4 }], k, anim, ["Modifier", "live, can be switched off"], ["Apply", "bakes the result into the mesh"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "BASE MESH → MODIFIER → RESULT");
+      var C = euler(CV, CF), sub = { V: C.V + C.E + C.F, F: d3.sum(CF, function (f) { return f.length; }) }, g = d.append("g");
+      run(g, 4500, function (t) {
+        g.selectAll("*").remove();
+        var on = !(t > 0.34 && t < 0.67);
+        box(g, 0, 90, 220, 200, { stroke: INK, sw: 3 }); lab(g, 12, 120, "BASE MESH");
+        box(g, 260, 90, 220, 200, { stroke: on ? RED : GREY, sw: 3, fill: on ? TINT : "#FFFFFF" }); lab(g, 272, 120, "MODIFIER", { fill: on ? RED : MUTED });
+        box(g, 520, 90, 220, 200, { stroke: INK, sw: 3 }); lab(g, 532, 120, "RESULT");
+        arrow(g, 224, 190, 256, 190, INK, 3); arrow(g, 484, 190, 516, 190, INK, 3);
+        dot(g, 370, 210, 13, on ? RED : "#FFFFFF", INK); txt(g, 370, 262, on ? "on" : "off", { size: 24, anchor: "middle", weight: 700, fill: on ? RED : MUTED });
+        txt(g, 110, 190, C.V + " vertices", { size: 24, anchor: "middle" }); txt(g, 110, 226, C.F + " faces", { size: 24, anchor: "middle" });
+        txt(g, 630, 190, (on ? sub.V : C.V) + " vertices", { size: 24, anchor: "middle", weight: 700, fill: on ? RED : INK }); txt(g, 630, 226, (on ? sub.F : C.F) + " faces", { size: 24, anchor: "middle", weight: 700, fill: on ? RED : INK });
+      }, anim);
+      cap(d, 0, 380, "Here the modifier is Subdivision Surface, level 1.", { size: 24, fill: MUTED }); cap(d, 0, 430, "Switch it off: the result is the base mesh again.", { size: 24, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "MODEL THE RIGHT HALF; MIRROR ON X");
+      var cx = 380, cy = 300, s = 85, g2 = d.append("g"), onAx = HALF.filter(function (p) { return p[0] === 0; }).length, total = 2 * HALF.length - onAx;
+      line(d, cx, 60, cx, 540, GREY, 3, "10 6"); txt(d, cx + 16, 140, "x = 0", { size: 24, fill: MUTED });
+      run(g2, 3000, function (t) {
+        g2.selectAll("*").remove();
+        var u = d3.easeCubicInOut(t), mir = HALF.map(function (p) { return [cx - p[0] * s * u, cy - p[1] * s]; }), orig = HALF.map(function (p) { return [cx + p[0] * s, cy - p[1] * s]; });
+        poly(g2, mir.concat(orig.slice().reverse()), "#F6F6F6", INK, 3);
+        poly(g2, orig, TINT, RED, 3.5);
+        orig.forEach(function (p) { dot(g2, p[0], p[1], 8, RED, "#FFFFFF"); }); if (u > 0.01) mir.forEach(function (p, i) { if (HALF[i][0] !== 0) dot(g2, p[0], p[1], 8, INK, "#FFFFFF"); });
+        cap(g2, 0, 556, "You model " + HALF.length + " vertices; the shape has " + (HALF.length + Math.round((total - HALF.length) * u)) + ".", { size: 24, weight: 700 });
+      }, anim);
+    } else if (k === 3) {
+      lab(d, 0, 30, "ONE FACE'S OUTLINE, THEN 2× THE CORNERS PER LEVEL");
+      var sq = [[-1, -1], [1, -1], [1, 1], [-1, 1]], lv = [sq], g3 = d.append("g"); lv.push(chaikin(lv[0])); lv.push(chaikin(lv[1]));
+      run(g3, 3000, function (t) {
+        g3.selectAll("*").remove();
+        lv.forEach(function (P, i) {
+          if (t < i / 3 && i > 0) return;
+          var cx = 120 + i * 260, cy = 140, s = 85;
+          poly(g3, P.map(function (p) { return [cx + p[0] * s, cy - p[1] * s]; }), i ? TINT : "#F6F6F6", i ? RED : INK, 3);
+          txt(g3, cx, 280, "level " + i, { size: 24, anchor: "middle", weight: 700 }); txt(g3, cx, 312, 6 * Math.pow(4, i) + " faces", { size: 24, anchor: "middle" });
+          var y = 360 + i * 62; txt(g3, 0, y + 28, "L" + i, { size: 24, weight: 700 }); bar(g3, 56, y, 6 * Math.pow(4, i) * 6, 36, i ? RED : "#C4C4C4", false); txt(g3, 56 + 6 * Math.pow(4, i) * 6 + 12, y + 28, 6 * Math.pow(4, i), { size: 24, weight: 700 });
+        });
+      }, anim);
+    } else if (k === 4) {
+      lab(d, 0, 30, "A SQUARE CORNER, CUT IN 0 TO 3 SEGMENTS");
+      var g4 = d.append("g");
+      run(g4, 3200, function (t) {
+        g4.selectAll("*").remove();
+        d3.range(4).forEach(function (sg) {
+          if (t < sg / 4 && sg > 0) return;
+          var cx = 95 + sg * 190, cy = 150, s = 70, r = 0.4, pts = [];
+          [[1, 1, 0], [-1, 1, 90], [-1, -1, 180], [1, -1, 270]].forEach(function (c) {
+            if (sg === 0) { pts.push([c[0], c[1]]); return; }
+            for (var j2 = 0; j2 <= sg; j2++) { var a2 = (c[2] + 90 * j2 / sg) * DEG; pts.push([c[0] * (1 - r) + r * Math.cos(a2), c[1] * (1 - r) + r * Math.sin(a2)]); }
+          });
+          poly(g4, pts.map(function (p) { return [cx + p[0] * s, cy - p[1] * s]; }), sg ? TINT : "#F6F6F6", sg ? RED : INK, 3);
+          txt(g4, cx, 270, sg ? sg + (sg === 1 ? " segment" : " segments") : "sharp", { size: 24, anchor: "middle", weight: 700 }); txt(g4, cx, 302, pts.length + " vertices", { size: 24, anchor: "middle" });
+        });
+      }, anim);
+      wrap(d, 0, 400, "A sharp edge has no width, so it cannot catch a highlight. A bevel gives it one, for the cost of more vertices.", 56, { size: 26, lh: 34 });
+    }
+    note(svg, ey, ["", "A modifier is a step in a stack. The base mesh never changes, so you can reorder or switch steps off.", "Mirror copies across x = 0. You build and edit one half; both sides always match.", "Each subdivision level multiplies the faces of an all-quad mesh by 4: 6, 24, 96. Watch the triangle budget.", "Bevel adds corners. More segments give a rounder edge and more vertices."][k]);
+  }
+
+  /* ---------- 11. UV maps, unwrapping, material versus texture ---------- */
+  var CELL = { 1: [1, 0], 4: [0, 1], 2: [1, 1], 5: [2, 1], 3: [3, 1], 0: [1, 2] };
+  function renderUv(el, k, anim) {
+    var svg = svgFor(el, W, H, "A UV map lays the cube flat; unwrapping makes it; a material uses a texture", "A cube beside its cross-shaped UV layout, with matching face tones. Then the faces flying from the cube to the layout with the cut edges in red. Then a material card with its settings and an image slot filled by a checker texture.");
+    var ey = base(svg, [{ id: "uvmap", s: 1 }, { id: "unwrap", s: 2 }, { id: "mattex", s: 3 }], k, anim, ["UV map", "the flat layout"], ["Material", "the whole surface recipe"]);
+    var d = svg.append("g"), tone = function (fi) { return d3.interpolateRgb("#D9D9D9", "#8C8C8C")(fi / 5); };
+    var CS = 80, OX = 400, OY = 140, cellPts = function (fi) { var c = CELL[fi]; return [[OX + c[0] * CS, OY + c[1] * CS], [OX + (c[0] + 1) * CS, OY + c[1] * CS], [OX + (c[0] + 1) * CS, OY + (c[1] + 1) * CS], [OX + c[0] * CS, OY + (c[1] + 1) * CS]]; };
+    var inLayout = function (c, r) { return Object.keys(CELL).map(function (q) { return CELL[q]; }).some(function (q) { return q[0] === c && q[1] === r; }); };
+    var seamSegs = 0; Object.keys(CELL).map(function (q) { return CELL[q]; }).forEach(function (q) { [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (dd) { if (!inLayout(q[0] + dd[0], q[1] + dd[1])) seamSegs++; }); });
+    var Ec = euler(CV, CF), kept = Object.keys(CELL).length - 1, seams = Ec.E - kept;
+    if (k <= 2) {
+      var cube = d.append("g"), flat = d.append("g");
+      var cs = 75, ccx = 170, ccy = 250, yaw = 0.6, pit = 0.5;
+      if (k === 1) {
+        lab(d, 0, 30, "CUBE FACES ↔ CELLS OF THE UV MAP");
+        var P = drawMesh(cube, CV, CF, ccx, ccy, cs, yaw, pit, { fill: function (fi) { return tone(fi); } });
+        CF.forEach(function (f, fi) { var c = cenOf(CV, f), p = vw(c, yaw, pit), nv = vw(c, yaw, pit); if (nv[2] < 0.0) txt(cube, ccx + cs * p[0], ccy + cs * p[1] + 8, fi + 1, { size: 24, anchor: "middle", weight: 700 }); });
+        Object.keys(CELL).forEach(function (fi) { var pts = cellPts(+fi); poly(flat, pts, tone(+fi), INK, 2.5); txt(flat, pts[0][0] + CS / 2, pts[0][1] + CS / 2 + 8, +fi + 1, { size: 24, anchor: "middle", weight: 700 }); });
+        cap(d, 0, 556, "6 faces, 6 cells. Each cell is where that face reads the texture.", { size: 24 });
+      } else {
+        lab(d, 0, 30, "UNWRAP: CUT THE SEAMS, FLATTEN");
+        var order = [[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [3, 0, 1, 2], [0, 3, 2, 1], [3, 2, 1, 0], [2, 1, 0, 3], [1, 0, 3, 2]];
+        var PP = CV.map(function (v) { var p = vw(v, yaw, pit); return [ccx + cs * p[0], ccy + cs * p[1]]; });
+        var plan = CF.map(function (f, fi) { var A_ = f.map(function (i) { return PP[i]; }), B_ = cellPts(fi), best = null, bd = 1e9; order.forEach(function (o) { var s = 0; o.forEach(function (j, i) { s += Math.hypot(A_[i][0] - B_[j][0], A_[i][1] - B_[j][1]); }); if (s < bd) { bd = s; best = o; } }); return { A: A_, B: best.map(function (j, i) { return B_[best[i]]; }) }; });
+        var g = d.append("g"), pf = d.append("g");
+        run(g, 3500, function (t) {
+          g.selectAll("*").remove(); pf.selectAll("*").remove();
+          var u = d3.easeCubicInOut(t);
+          plan.forEach(function (p, fi) { poly(g, p.A.map(function (a, i) { return [lerp(a[0], p.B[i][0], u), lerp(a[1], p.B[i][1], u)]; }), tone(fi), INK, 2.5); });
+          if (t > 0.98 || !anim) { Object.keys(CELL).forEach(function (fi) { var pts = cellPts(+fi); [[0, 1, 0, -1], [1, 2, 1, 0], [2, 3, 0, 1], [3, 0, -1, 0]].forEach(function (e) { var c = CELL[fi], nb = [c[0] + e[2], c[1] + e[3]]; if (!inLayout(nb[0], nb[1])) line(pf, pts[e[0]][0], pts[e[0]][1], pts[e[1]][0], pts[e[1]][1], RED, 6); }); }); }
+        }, anim);
+        cap(d, 0, 520, "Red: cuts (seams). " + Ec.E + " edges − " + kept + " kept joined = " + seams + " seams.", { size: 24, weight: 700, fill: RED });
+        cap(d, 0, 556, "Check: " + seamSegs + " red segments ÷ 2 = " + seamSegs / 2 + ".", { size: 24, fill: MUTED });
+      }
+    } else {
+      lab(d, 0, 30, "MATERIAL (THE RECIPE)"); lab(d, 410, 30, "TEXTURE (ONE IMAGE)");
+      box(d, 0, 50, 360, 440, { stroke: INK, sw: 3 });
+      [["Base colour", "swatch"], ["Metallic", 0.0], ["Roughness", 0.6], ["Base colour image", "slot"]].forEach(function (r, i) {
+        var y = 110 + i * 100; txt(d, 16, y, r[0], { size: 24, weight: 700 });
+        if (r[1] === "swatch") d.append("rect").attr("x", 16).attr("y", y + 14).attr("width", 120).attr("height", 40).attr("fill", "#8C8C8C").attr("stroke", INK).attr("stroke-width", 2);
+        else if (r[1] === "slot") { box(d, 16, y + 14, 56, 56, { stroke: RED, sw: 3 }); txt(d, 90, y + 50, "← filled by the texture", { size: 24, fill: RED }); }
+        else { d.append("rect").attr("x", 16).attr("y", y + 20).attr("width", 240).attr("height", 24).attr("fill", "#F6F6F6").attr("stroke", GREY).attr("stroke-width", 1.5); d.append("rect").attr("x", 16).attr("y", y + 20).attr("width", 240 * r[1]).attr("height", 24).attr("fill", INK); txt(d, 344, y + 40, r[1].toFixed(1), { size: 24, anchor: "end" }); }
+      });
+      var tg = d.append("g"), n = 8, ts = 38;
+      d3.range(n * n).forEach(function (i) { var r = Math.floor(i / n), c = i % n, cell = tg.append("rect").attr("x", 410 + c * ts).attr("y", 60 + r * ts).attr("width", ts).attr("height", ts).attr("fill", (r + c) % 2 ? "#6E6E6E" : "#F4F4F4"); if (anim) cell.attr("opacity", 0).transition().delay(i * 12).duration(200).attr("opacity", 1); });
+      d.append("rect").attr("x", 410).attr("y", 60).attr("width", n * ts).attr("height", n * ts).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      var arc = d.append("path").attr("d", "M410,380 C 300,420 160,456 76,456").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3); if (anim) drawIn(arc, 600, 800);
+      wrap(d, 0, 530, "One material can use no texture, one, or many. Illustrative values.", 56, { size: 24, lh: 30, fill: MUTED });
+    }
+    note(svg, ey, ["", "The UV map gives every face a place on the image. U and V are the 2D axes of that image.", "Unwrapping cuts the mesh along seams so it can lie flat. A cube cut as a cross keeps 5 edges joined and cuts 7.", "The material says how the surface looks. A texture is one image the material can read, for example for its colour."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from Blender modeling", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Origin", "The point position and rotation are measured from"], ["Pivot", "The point a turn or stretch happens around"]],
+      [["Scale", "A multiplier left on the object"], ["Size", "The real dimensions in the mesh"]],
+      [["Face count", "What Blender shows"], ["Triangle count", "What the engine budgets"]],
+      [["Material", "The whole surface recipe"], ["Texture", "One image the recipe can use"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        [[LG, 1], [RG, 2]].forEach(function (p) {
+          var g = p[0], a = 50 * t * DEG, c = [140, 250];
+          line(g, 20, 330, c[0], c[1] + 0, FAMILIAR, 2, "6 6");
+          var px = p[1] === 1 ? c[0] : c[0] - 60, py = p[1] === 1 ? c[1] : c[1] + 60, pts = [[-60, -60], [60, -60], [60, 60], [-60, 60]].map(function (q) { var x = q[0] + (c[0] - px) * 0, y = q[1]; var rx = (c[0] + q[0]) - px, ry = (c[1] + q[1]) - py; return [px + rx * Math.cos(a) - ry * Math.sin(a), py + rx * Math.sin(a) + ry * Math.cos(a)]; });
+          poly(g, pts, TINT, RED, 3); dot(g, px, py, 10, INK, "#FFFFFF");
+        });
+        cap(LG, 20, 350, "● origin: the object's own point", { size: 24, fill: MUTED }); cap(RG, 20, 350, "● pivot: set to a corner here", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var sc = lerp(1, 0.5, d3.easeCubicInOut(t)), mesh = 2, size = sc * mesh;
+        LG.append("rect").attr("x", 20).attr("y", 140).attr("width", 300).attr("height", 40).attr("fill", INK).attr("opacity", 0.15); LG.append("rect").attr("x", 20).attr("y", 140).attr("width", 300 * sc).attr("height", 40).attr("fill", INK);
+        cap(LG, 20, 230, "scale " + sc.toFixed(2), { size: 26, weight: 700 }); cap(LG, 20, 330, "a multiplier; the mesh is still " + mesh + " m", { size: 24, fill: MUTED });
+        RG.append("rect").attr("x", 20).attr("y", 140).attr("width", 150 * size).attr("height", 40).attr("fill", RED); cap(RG, 20, 230, "size " + size.toFixed(2) + " m", { size: 26, weight: 700, fill: RED }); cap(RG, 20, 330, "scale × mesh = what you see", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        d3.range(6).forEach(function (j) { var x = 20 + (j % 3) * 100, y = 160 + Math.floor(j / 3) * 100; LG.append("rect").attr("x", x).attr("y", y).attr("width", 90).attr("height", 90).attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3); RG.append("rect").attr("x", x).attr("y", y).attr("width", 90).attr("height", 90).attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3); if (j / 6 < t) line(RG, x, y, x + 90, y + 90, RED, 4); });
+        var tr = Math.round(12 * cl(t * 6 / 6 * (6 / 6))); cap(LG, 20, 400, CF.length + " faces", { size: 26, weight: 700 }); cap(RG, 20, 400, d3.sum(CF, function (f) { return f.length - 2; }) + " triangles", { size: 26, weight: 700, fill: RED });
+      } else {
+        var rs = rng(3);
+        [0.3, 0.6, 0.0].forEach(function (v, j) { LG.append("rect").attr("x", 20).attr("y", 150 + j * 70).attr("width", 300).attr("height", 36).attr("fill", "#F6F6F6").attr("stroke", GREY).attr("stroke-width", 1.5); LG.append("rect").attr("x", 20).attr("y", 150 + j * 70).attr("width", 300 * (j === 2 ? 0.8 : v) * t).attr("height", 36).attr("fill", INK); });
+        cap(LG, 20, 400, "colour, roughness, metal…", { size: 24, fill: MUTED });
+        d3.range(36).forEach(function (j) { var r = Math.floor(j / 6), c = j % 6; RG.append("rect").attr("x", 20 + c * 40).attr("y", 140 + r * 40).attr("width", 40).attr("height", 40).attr("fill", (r + c) % 2 ? "#6E6E6E" : "#F4F4F4").attr("opacity", j / 36 < t ? 1 : 0.1); });
+        cap(RG, 20, 400, "a picture, nothing more", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make it smoother", x: "Add a Subdivision Surface modifier, level 2: 6 faces become 96" },
+    { v: "I only want to model half", x: "Add a Mirror modifier on X and model 5 vertices; the shape has 8" },
+    { v: "it lies on its side in Godot", x: "Export glTF with +Y Up, so Blender's Z extent 1.8 m lands on Godot's Y" },
+    { v: "the scale is wrong", x: "Select it, then Object > Apply > Rotation & Scale: scale (0.1, 0.1, 0.9) becomes (1, 1, 1)" },
+    { v: "the model is too heavy", x: "Read the triangle count, then lower the subdivision level: level 3 is 768 triangles, level 1 is 48" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests to an agent driving Blender turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    function rows(list, max, fmt) { list.forEach(function (r, i) { var y = 40 + i * (list.length > 3 ? 62 : 80); cap(p, 14, y, r[0], { size: 24 }); bar(p, 14, y + 8, 560 * r[1] / max, 24, r[2] || "#C4C4C4", anim, i * 300); }); }
+    if (k === 1) { rows([0, 1, 2].map(function (l) { return ["level " + l + ": " + 6 * Math.pow(4, l) + " faces", 6 * Math.pow(4, l), l === 2 ? RED : "#C4C4C4"]; }), 96); nt = "faces: 6 × 4 × 4 = 96"; }
+    else if (k === 2) { var tot = 2 * HALF.length - HALF.filter(function (q) { return q[0] === 0; }).length; rows([["you model: " + HALF.length + " vertices", HALF.length, RED], ["the shape has: " + tot + " vertices", tot]], tot); nt = "you place " + Math.round((1 - HALF.length / tot) * 100) + "% fewer vertices"; }
+    else if (k === 3) { rows([["Godot height without +Y Up: 0.2 m", 0.2], ["Godot height with +Y Up: 1.8 m", 1.8, RED]], 1.8); nt = "the post stands, 1.8 m tall"; }
+    else if (k === 4) { rows([["scale Z before: 0.9", 0.9], ["scale Z after: 1.0", 1.0, RED], ["mesh height before: 2.0 m", 2.0], ["mesh height after: 1.8 m", 1.8, RED]], 2.0); nt = "the size you see is the same: 0.9 × 2.0 = 1.0 × 1.8"; }
+    else { rows([0, 1, 2, 3].map(function (l) { return ["level " + l + ": " + 12 * Math.pow(4, l) + " triangles", 12 * Math.pow(4, l), l === 1 ? RED : "#C4C4C4"]; }), 768); nt = "each level quadruples the triangles"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is the origin where I want to place it, such as the base of the post?",
+    "Is the scene in metres, with unit scale 1.0?",
+    "Is the transform applied, so scale reads (1, 1, 1)?",
+    "Do all normals point out, so no face is dark or missing?",
+    "Is the triangle count within budget after the modifiers run?",
+    "Is it unwrapped, and does each material have the name the game expects?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you hand a model to the game", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “fix the scale”, but “apply rotation and scale, then check it reads (1, 1, 1)”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, win: { steps: 3, render: renderWin }, wstl: { steps: 2, render: renderWsTl },
+    modes: { steps: 3, render: renderModes }, mesh: { steps: 4, render: renderMesh }, quad: { steps: 2, render: renderQuad },
+    nrm: { steps: 2, render: renderNormals }, xf: { steps: 3, render: renderXf }, apply: { steps: 2, render: renderApply },
+    units: { steps: 2, render: renderUnits }, mods: { steps: 4, render: renderMods }, uv: { steps: 3, render: renderUv },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

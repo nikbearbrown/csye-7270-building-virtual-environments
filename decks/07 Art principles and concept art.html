@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Art principles: concept art and character art | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: art principles, concept art and character art">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Art principles: concept art and character art">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Riot art videos 1 to 3</p>
+      <h1 class="t-opening rise g2">Art principles: concept art and character art</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for making game art read, finding a design, and building a character</p>
+      <div class="speaker-notes" hidden><p>Deck 3b of the topic order. 34 terms. Tags: in the book text means a course chapter uses and explains it; in the glossary means a glossary row; video only means the term comes from the Riot videos and no chapter or glossary row defines it. Meanings are in the deck\u2019s own words.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four art terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four art terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art; Riot Ep 2, Concept Art; Riot Ep 3, Character Art.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click. Most terms are video only: the course chapters teach the engine side of art, and the glossary has only Palette, Silhouette and the UV rows from this topic.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Clarity, satisfaction and style">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">What art must do</p>
+      <h2 class="t-chart">Clarity, satisfaction and style</h2>
+      <div class="diagram build" data-build="style" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art.</p>
+      <div class="speaker-notes" hidden><p>The 16 px and 3:1 rule, the 40 ms and 700 ms delays, and the head ratios are illustrative. Saturation is computed with HSL. Palette is covered in the 2D art deck.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Visual hierarchy and contrast">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Steering the eye</p>
+      <h2 class="t-chart">Visual hierarchy and contrast</h2>
+      <div class="diagram build" data-build="hier" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art; Chapter 6, Shader foundations, the flash-colour exercise (contrast ratio).</p>
+      <div class="speaker-notes" hidden><p>Attention share is size squared times contrast ratio, a simple stand-in. The contrast ratio formula and the 1.11 and 11.23 examples are from Chapter 6.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Shape, silhouette and shape language">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Steering the eye</p>
+      <h2 class="t-chart">Shape, silhouette and shape language</h2>
+      <div class="diagram build" data-build="shape" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art; Riot Ep 2, Concept Art; Chapter 2, section 1, silhouette row; glossary, Textures and materials (Silhouette).</p>
+      <div class="speaker-notes" hidden><p>Silhouette rasters are computed from polygons; tell-apart = 1 minus the overlap of the two black masks. Chapter 2 gives the check: fill it black at game size.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Focus, rest and distance">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Steering the eye</p>
+      <h2 class="t-chart">Focus, rest and distance</h2>
+      <div class="diagram build" data-build="focus" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art.</p>
+      <div class="speaker-notes" hidden><p>Checkerboard shades and ratios are computed from sRGB values; detail counts and the falloff constant 0.35 are illustrative inputs.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Concept art, reference and mood boards">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Concept art</p>
+      <h2 class="t-chart">Concept art, reference and mood boards</h2>
+      <div class="diagram build" data-build="concept" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Ep 2, Concept Art.</p>
+      <div class="speaker-notes" hidden><p>Forty sketches and 24 images are seeded random data. Mood board spread is the mean distance from the set centre.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Constraints narrow the search">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Concept art</p>
+      <h2 class="t-chart">Constraints narrow the search</h2>
+      <div class="diagram build" data-build="cons" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Ep 2, Concept Art.</p>
+      <div class="speaker-notes" hidden><p>Sixty seeded ideas with three random scores. Each constraint keeps the ideas that pass its threshold.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Many rough ideas, narrowed and repeated">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Concept art</p>
+      <h2 class="t-chart">Many rough ideas, narrowed and repeated</h2>
+      <div class="diagram build" data-build="ideate" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Ep 2, Concept Art.</p>
+      <div class="speaker-notes" hidden><p>Thumbnails, colour field and scores are seeded. Five seconds per sketch is an assumed figure.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Iconic elements, proxy and readability">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Character art</p>
+      <h2 class="t-chart">Iconic elements, proxy and readability</h2>
+      <div class="diagram build" data-build="icon" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Ep 3, Character Art.</p>
+      <div class="speaker-notes" hidden><p>Feature sizes are invented for one illustrative character; the 3 px rule is an assumption. Proxy error is the mean relative size error against the target.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="From sculpt to game model">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Character art</p>
+      <h2 class="t-chart">From sculpt to game model</h2>
+      <div class="diagram build" data-build="chain" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Ep 3, Character Art; glossary, 3D assets and Blender (UV map, Unwrapping).</p>
+      <div class="speaker-notes" hidden><p>Triangle counts come from the UV sphere formula 2 x s x (s/2 - 1). Cube net counts are from the net layout. Shading uses a 2D light.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Anatomy and the neutral pose">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Character art</p>
+      <h2 class="t-chart">Anatomy and the neutral pose</h2>
+      <div class="diagram build" data-build="anat" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Ep 3, Character Art.</p>
+      <div class="speaker-notes" hidden><p>Joint angles from the law of cosines. The blocking angle is found by scanning the arm through the plate.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art; Riot Ep 2, Concept Art; Riot Ep 3, Character Art.</p>
+      <div class="speaker-notes" hidden><p>Contrast and hierarchy, reference and mood board, proxy and low-poly, silhouette and readability.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art; Riot Ep 2, Concept Art; Riot Ep 3, Character Art.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions, with the numbers taken from earlier slides.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you call a piece of art ready">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you call a piece of art ready</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot Games, “So You Wanna Make Games??” Ep 1, Intro to Game Art; Riot Ep 2, Concept Art; Riot Ep 3, Character Art.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Art principles: concept art and character art (Riot Eps 1 to 3) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090", HEXBG = "#F6F3EC";
+  /* tag: book = a course chapter uses and explains it; gloss = glossary row; video = Riot videos only */
+  var T = {
+    clarity: { n: "Clarity", tag: "video", m: "The player can tell at once what is happening" },
+    satis: { n: "Satisfaction", tag: "video", m: "Actions get quick, responsive feedback" },
+    style: { n: "Art style", tag: "video", m: "A consistent look: colour, designs, shapes" },
+    pushed: { n: "Pushed proportions", tag: "video", m: "Exaggerated shapes, as in a cartoon look" },
+    hier: { n: "Visual hierarchy", tag: "video", m: "The most important things are seen first" },
+    contrast: { n: "Contrast", tag: "video", m: "A difference that pulls the eye to one place" },
+    value: { n: "Light and dark contrast", tag: "video", m: "The gap between light and dark areas" },
+    colour: { n: "Colour contrast", tag: "video", m: "Strong colour or saturation differences" },
+    shape: { n: "Shape and size contrast", tag: "video", m: "Distinct shapes or sizes make one thing stand out, or point the way" },
+    sil: { n: "Silhouette", tag: "book", m: "The outline of an object; it should still read when filled black at game size" },
+    slang: { n: "Shape language", tag: "video", m: "How the forms of a design express its personality or idea" },
+    focus: { n: "Area of focus", tag: "video", m: "The place in the image where the artist wants the eye to land" },
+    rest: { n: "Rest and high detail", tag: "video", m: "Plain regions beside busy ones, so the busy part reads as important" },
+    atmo: { n: "Atmospheric perspective", tag: "video", m: "Faraway things lose detail and contrast, which adds depth and guides the eye" },
+    concept: { n: "Concept art", tag: "video", m: "Early drawings that solve a design problem for the team, not finished art" },
+    ref: { n: "Reference", tag: "video", m: "Real-world images and examples gathered for research" },
+    mood: { n: "Mood board", tag: "video", m: "A set of reference images showing the theme and tone, shown to the team early" },
+    con: { n: "Constraint", tag: "video", m: "A limit that narrows what the artist designs" },
+    thematic: { n: "Thematic constraint", tag: "video", m: "A limit from lore, setting and tone" },
+    persp: { n: "Perspective constraint", tag: "video", m: "A limit from the view: first, third, top down" },
+    mech: { n: "Mechanics constraint", tag: "video", m: "A limit from rules and numbers, such as health" },
+    ideation: { n: "Ideation", tag: "video", m: "Many quick, rough ideas before choosing one" },
+    two: { n: "Two-tone sketching", tag: "video", m: "Sketching in two colours to avoid small detail" },
+    doors: { n: "Closing doors", tag: "video", m: "Each round closes the options that failed" },
+    iter: { n: "Iteration", tag: "video", m: "Repeat draft, feedback and change" },
+    icon: { n: "Iconic elements", tag: "video", m: "The few features that keep a character recognisable even when tiny on screen" },
+    proxy: { n: "Proxy model", tag: "video", m: "A rough block model of big shapes, used to check proportions and silhouette early" },
+    read: { n: "Readability", tag: "video", m: "How well a character can be understood in the game's real view" },
+    hi: { n: "High-poly sculpt", tag: "video", m: "A very detailed sculpt, too heavy for the engine" },
+    lo: { n: "Low-poly mesh", tag: "video", m: "A simplified copy with far fewer polygons" },
+    uv: { n: "UV map and unwrapping", tag: "gloss", m: "Flat layout of a surface; unwrapping makes it" },
+    bake: { n: "Texture baking", tag: "video", m: "Sculpt detail stored as an image on the low-poly" },
+    anat: { n: "Anatomy", tag: "video", m: "Knowing how bones and muscles work, so a sculpt is believable and can be animated" },
+    neutral: { n: "Neutral pose", tag: "video", m: "The default pose a model is built in; some designs fail once the character moves" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+
+  /* ---------- colour maths: WCAG relative luminance and contrast ratio (Chapter 6) ---------- */
+  function lin(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  function lum(h) { var c = d3.rgb(h); return 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b); }
+  function crat(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  function grayOf(L) { var v = L <= 0.0031308 ? 12.92 * L : 1.055 * Math.pow(L, 1 / 2.4) - 0.055, g = Math.round(255 * v); return d3.rgb(g, g, g).formatHex(); }
+  function sv(v) { var g = Math.round(255 * v); return d3.rgb(g, g, g).formatHex(); }
+  function lumV(v) { return lin(Math.round(255 * v)); }
+  function ratioV(a, b) { var x = lumV(a), y = lumV(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+
+  /* ---------- silhouette rasters ---------- */
+  function inPoly(p, x, y) { var ins = false; for (var i = 0, j = p.length - 1; i < p.length; j = i++) { var xi = p[i][0], yi = p[i][1], xj = p[j][0], yj = p[j][1]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) ins = !ins; } return ins; }
+  function inShape(sh, x, y) { for (var i = 0; i < sh.length; i++) { var s = sh[i]; if (s.c) { if (Math.hypot(x - s.c[0], y - s.c[1]) <= s.c[2]) return true; } else if (inPoly(s.p, x, y)) return true; } return false; }
+  function mask(sh, n) { var m = []; for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) m.push(inShape(sh, (i + 0.5) * 100 / n, (j + 0.5) * 100 / n) ? 1 : 0); return m; }
+  function iou(a, b) { var I = 0, U = 0; for (var i = 0; i < a.length; i++) { if (a[i] && b[i]) I++; if (a[i] || b[i]) U++; } return U ? I / U : 0; }
+  function rast(g, m, n, x, y, s, fill) {
+    var c = s / n, d = "";
+    for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) if (m[j * n + i]) d += "M" + (x + i * c) + "," + (y + j * c) + "h" + c + "v" + c + "h" + (-c) + "Z";
+    g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", s).attr("height", s).attr("fill", HEXBG).attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+    g.append("path").attr("d", d).attr("fill", fill || INK);
+  }
+  var KNIGHT = [{ p: [[38, 46], [62, 46], [67, 92], [33, 92]] }, { p: [[42, 24], [58, 24], [58, 45], [42, 45]] }, { p: [[71, 4], [76, 4], [76, 72], [71, 72]] }, { p: [[14, 48], [38, 50], [38, 58], [12, 70]] }, { c: [50, 22, 10] }];
+  var BLOB = [{ c: [50, 62, 32] }, { p: [[47, 12], [54, 12], [56, 32], [45, 32]] }];
+  var KNIGHT2 = [{ p: [[38, 46], [62, 46], [67, 92], [33, 92]] }, { p: [[42, 24], [58, 24], [58, 45], [42, 45]] }, { p: [[71, 4], [76, 4], [76, 72], [71, 72]] }, { p: [[16, 48], [38, 50], [38, 58], [14, 64]] }, { c: [50, 22, 10] }, { p: [[62, 46], [70, 44], [70, 51], [62, 52]] }];
+  var NS = [48, 24, 12, 6], MS = {};
+  [["A", KNIGHT], ["B", BLOB], ["A2", KNIGHT2]].forEach(function (e) { MS[e[0]] = {}; NS.forEach(function (n) { MS[e[0]][n] = mask(e[1], n); }); });
+  function tell(y, n) { return 1 - iou(MS.A[n], MS[y][n]); }
+
+  /* ---------- character features, model box 64 wide by 128 tall ---------- */
+  var FEAT = [["sword", 50, 8, 12, 60], ["pauldron", 6, 30, 22, 14], ["scarf", 20, 40, 28, 12], ["boots", 14, 116, 36, 8], ["hands", 2, 62, 10, 10], ["hair", 22, 0, 20, 10], ["buckle", 30, 70, 4, 4]];
+  function readsAt(f, H) { return Math.min(f[3], f[4]) * H / 128 >= 3; }
+  function drawFig(g, x, yb, H) {
+    var s = H / 128, n = 0;
+    g.append("circle").attr("cx", x + 32 * s).attr("cy", yb - H + 17 * s).attr("r", 10 * s).attr("fill", "#E3E3E3");
+    g.append("rect").attr("x", x + 16 * s).attr("y", yb - H + 28 * s).attr("width", 32 * s).attr("height", 52 * s).attr("fill", "#E3E3E3");
+    g.append("rect").attr("x", x + 18 * s).attr("y", yb - H + 80 * s).attr("width", 28 * s).attr("height", 44 * s).attr("fill", "#E3E3E3");
+    FEAT.forEach(function (f) {
+      var ok = readsAt(f, H); if (ok) n++;
+      g.append("rect").attr("x", x + f[1] * s).attr("y", yb - H + f[2] * s).attr("width", f[3] * s).attr("height", f[4] * s)
+        .attr("fill", ok ? INK : "none").attr("stroke", ok ? INK : RED).attr("stroke-width", ok ? 1 : 2).attr("stroke-dasharray", ok ? null : "4 3");
+    });
+    return n;
+  }
+
+  var MAPROWS = [
+    ["What art must do", "clarity, satisfaction, art style, pushed proportions", "The three jobs of game art, and the look it sets"],
+    ["Steering the eye", "visual hierarchy, contrast (light and dark, colour, shape and size), silhouette, shape language, area of focus, rest and high detail, atmospheric perspective", "How a picture decides what is seen first"],
+    ["Concept art", "concept art, reference, mood board, constraint (thematic, perspective, mechanics), ideation, two-tone sketching, closing doors, iteration", "How early designs are found and narrowed"],
+    ["Character art", "iconic elements, proxy model, readability, high-poly sculpt, low-poly mesh, UV map and unwrapping, texture baking, anatomy, neutral pose", "How a design becomes a character in the game"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Thirty-four art terms in four groups", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from the first three Riot art videos: intro, concept art and character art.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 112, h); });
+    g.append("path").attr("d", "M0,128 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 144 + i * 138, row = g.append("g");
+      box(row, 0, y, 1400, 126, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 127).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 52, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 300, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. clarity, satisfaction, art style, pushed proportions ---------- */
+  var CLR = [["enemy", 44, "#C8102E"], ["ally", 40, "#2F6FB5"], ["health", 36, "#3E7D3E"], ["exit", 30, "#E8B820"], ["coin", 10, "#B88A00"], ["trap", 26, "#D9D2BE"], ["hint", 12, "#8A8F5A"], ["key", 22, "#1E1E1E"]];
+  function clarityStatus(e) { var c = crat(e[2], HEXBG); return e[1] < 16 ? ["too small", false] : c < 3 ? ["low contrast", false] : ["reads", true]; }
+  var PALS = [{ n: "style A", c: ["#BFE3FF", "#6CC24A", "#2E9E4B", "#FF5A36", "#FFD23F"] }, { n: "style B", c: ["#C9CFCB", "#8B8F7A", "#5E6B58", "#6F6A5A", "#B5A58C"] }];
+  function meanSat(c) { return d3.mean(c, function (h) { return d3.hsl(h).s; }); }
+  function scene(g, x, y, w, h, c) {
+    g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", c[0]);
+    g.append("rect").attr("x", x).attr("y", y + h * 0.72).attr("width", w).attr("height", h * 0.28).attr("fill", c[1]);
+    g.append("path").attr("d", "M" + (x + w * 0.2) + "," + (y + h * 0.75) + " l" + (w * 0.13) + ",-" + (h * 0.5) + " l" + (w * 0.13) + "," + (h * 0.5) + "Z").attr("fill", c[2]);
+    g.append("rect").attr("x", x + w * 0.56).attr("y", y + h * 0.5).attr("width", w * 0.14).attr("height", h * 0.25).attr("fill", c[3]);
+    g.append("circle").attr("cx", x + w * 0.63).attr("cy", y + h * 0.4).attr("r", w * 0.075).attr("fill", c[4]);
+  }
+  function renderStyle(el, k, anim) {
+    var svg = svgFor(el, W, H, "Clarity, satisfaction, style and pushed proportions", "Eight things at game size with a count of those that read. A fast answer against a slow answer to a button press. The same scene in two palettes with their saturation. Three figures with growing head sizes.");
+    var ey = base(svg, [{ id: "clarity", s: 1 }, { id: "satis", s: 2 }, { id: "style", s: 3 }, { id: "pushed", s: 4 }], k, anim, ["Clarity", "can you tell what is going on"], ["Satisfaction", "does it feel good to act"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "EIGHT THINGS AT GAME SIZE");
+      box(d, 0, 50, 740, 380, { fill: HEXBG, stroke: FAMILIAR });
+      var n = 0;
+      CLR.forEach(function (e, i) {
+        var cx = 92 + (i % 4) * 185, cy = 130 + Math.floor(i / 4) * 190, g = d.append("g"), st = clarityStatus(e); if (st[1]) n++;
+        g.append("rect").attr("x", cx - e[1] / 2).attr("y", cy - e[1] / 2).attr("width", e[1]).attr("height", e[1]).attr("fill", e[2]);
+        cap(g, cx, cy + 62, e[0], { size: 24, anchor: "middle", weight: 700 });
+        cap(g, cx, cy + 90, st[0], { size: 24, anchor: "middle", fill: st[1] ? INK : RED });
+        fade(g, A(anim, k, 1), i * 140);
+      });
+      cap(d, 0, 480, "Readable: " + n + " of " + CLR.length, { size: 28, weight: 700, fill: RED });
+      cap(d, 0, 522, "Rule used here: at least 16 px and 3 : 1 contrast.", { size: 24, fill: MUTED });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "PRESS AT 0 MS, WATCH THE ANSWER");
+      var DL = [["fast answer", 40], ["slow answer", 700]], sc = 590 / 800, dyn = d.append("g");
+      DL.forEach(function (r, i) {
+        var y = 110 + i * 200;
+        d.append("path").attr("d", "M130," + (y + 50) + " H720").attr("stroke", FAMILIAR).attr("stroke-width", 3);
+        d.append("rect").attr("x", 130).attr("y", y + 30).attr("width", r[1] * sc).attr("height", 40).attr("fill", FAMILIAR);
+        d.append("rect").attr("x", 130 + r[1] * sc).attr("y", y + 20).attr("width", 8).attr("height", 60).attr("fill", RED);
+        cap(d, 130, y + 120, r[0] + ": " + r[1] + " ms", { size: 26, weight: 700, fill: i ? RED : INK });
+      });
+      run(d, 3200, function (t) {
+        dyn.selectAll("*").remove();
+        var tt = t * 800;
+        DL.forEach(function (r, i) {
+          var y = 110 + i * 200, p = tt >= r[1] ? Math.exp(-(tt - r[1]) / 140) : 0, s = 40 + 36 * p;
+          dyn.append("rect").attr("x", 64 - s / 2).attr("y", y + 50 - s / 2).attr("width", s).attr("height", s).attr("fill", INK);
+        });
+        dyn.append("path").attr("d", "M" + (130 + tt * sc) + ",90 V470").attr("stroke", INK).attr("stroke-width", 3);
+      }, A(anim, k, 2));
+      cap(d, 0, 530, "The slow answer arrives " + (DL[1][1] - DL[0][1]) + " ms later than the fast one.", { size: 24, fill: MUTED });
+    } else if (kk === 3) {
+      lab(d, 0, 30, "SAME SCENE, TWO STYLES");
+      PALS.forEach(function (p, i) {
+        var g = d.append("g"); scene(g, i * 380, 60, 360, 330, p.c);
+        cap(g, i * 380, 430, p.n, { size: 26, weight: 700 });
+        cap(g, i * 380, 466, "mean saturation " + meanSat(p.c).toFixed(2), { size: 24 });
+        fade(g, A(anim, k, 3), i * 300);
+      });
+      cap(d, 0, 520, "Same shapes, same layout. Only colour use differs.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "HEAD AS A SHARE OF HEIGHT");
+      var FR = [1 / 7, 1 / 4.5, 1 / 3], LB = ["realistic", "halfway", "pushed"], dyn2 = d.append("g"), HT = 330;
+      run(d, 1800, function (t) {
+        dyn2.selectAll("*").remove();
+        FR.forEach(function (f, i) {
+          var ff = FR[0] + (f - FR[0]) * t, hh = ff * HT, cx = 130 + i * 250, yb = 450, body = HT - hh;
+          dyn2.append("rect").attr("x", cx - 22).attr("y", yb - body * 0.5).attr("width", 44).attr("height", body * 0.5).attr("fill", INK);
+          dyn2.append("rect").attr("x", cx - 36).attr("y", yb - body).attr("width", 72).attr("height", body * 0.5).attr("fill", INK);
+          dyn2.append("circle").attr("cx", cx).attr("cy", yb - body - hh / 2).attr("r", hh / 2).attr("fill", RED);
+          cap(dyn2, cx, 490, LB[i], { size: 24, anchor: "middle", weight: 700 });
+          cap(dyn2, cx, 524, "head " + Math.round(ff * 100) + "%", { size: 24, anchor: "middle", fill: i === 2 ? RED : INK });
+        });
+      }, A(anim, k, 4));
+    }
+    note(svg, ey, ["", "Clarity: can you tell what is going on? Size and contrast decide it. Here 4 of 8 things fail one of the two.", "Satisfaction: the game answers the press at once. a 40 ms answer feels immediate, a 700 ms answer lags (illustrative).", "Art style: colour, design and shape choices. The same scene reads very differently in two palettes.", "Pushed proportions: exaggerated on purpose. Here the head grows from 14% to 33% of the height."][k]);
+  }
+
+  /* ---------- 2. visual hierarchy, contrast, light and dark, colour ---------- */
+  var OBJ = [["boss", 60, "#C8102E"], ["player", 44, "#2F6FB5"], ["door", 36, "#7A5A2A"], ["coin", 30, "#E8B820"], ["tree", 28, "#3E7D3E"], ["rock", 26, "#B0AAA0"]];
+  var SWS = ["#C8102E", "#3A5FCD", "#2E8B57", "#E8B820", "#7B3FA0", "#D9731A"];
+  function renderHier(el, k, anim) {
+    var svg = svgFor(el, W, H, "Visual hierarchy is built from contrast: light and dark, colour, saturation", "Attention shares for six objects sorted from most to least. Contrast ratios for three colour pairs. Six colours converted to grey by luminance. Two rows of circles showing strong and weak saturation contrast.");
+    var ey = base(svg, [{ id: "hier", s: 1 }, { id: "contrast", s: 2 }, { id: "value", s: 3 }, { id: "colour", s: 4 }], k, anim, ["Contrast", "a difference that pulls the eye"], ["Visual hierarchy", "the order the eye visits"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "SIX THINGS ON SCREEN");
+      box(d, 0, 50, 740, 200, { fill: HEXBG, stroke: FAMILIAR });
+      var rows = OBJ.map(function (o, i) { return { n: o[0], r: o[1], c: o[2], x: [75, 205, 315, 415, 520, 640][i], a: o[1] * o[1] * crat(o[2], HEXBG) }; });
+      var tot = d3.sum(rows, function (r) { return r.a; });
+      rows.forEach(function (r) { r.p = r.a / tot * 100; });
+      var rk = rows.slice().sort(function (a, b) { return b.a - a.a; });
+      rk.forEach(function (r, i) { r.rank = i + 1; });
+      rows.forEach(function (r) {
+        var g = d.append("g"); g.append("circle").attr("cx", r.x).attr("cy", 150).attr("r", r.r).attr("fill", r.c);
+        cap(g, r.x, 159, "" + r.rank, { size: 24, weight: 700, anchor: "middle", fill: lum(r.c) > 0.3 ? INK : "#FFFFFF" }); fade(g, A(anim, k, 1), r.rank * 120);
+      });
+      lab(d, 0, 296, "ATTENTION SHARE: SIZE × CONTRAST");
+      rk.forEach(function (r, i) {
+        var y = 312 + i * 38, g = d.append("g"); cap(g, 0, y + 25, r.n, { size: 24, weight: 700 });
+        bar(g, 100, y + 3, r.p / rk[0].p * 500, 28, r.rank === 1 ? RED : "#C4C4C4", A(anim, k, 1), i * 150);
+        cap(g, 100 + r.p / rk[0].p * 500 + 10, y + 25, Math.round(r.p) + "%", { size: 24 });
+      });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "THREE COLOUR PAIRS");
+      var PR = [["A", "#FFFFFF", HEXBG], ["B", "#25354A", HEXBG], ["C", "#000000", "#FFFFFF"]];
+      PR.forEach(function (p, i) {
+        var g = d.append("g"), x = i * 260, ra = crat(p[1], p[2]);
+        box(g, x, 56, 220, 120, { fill: p[2], stroke: FAMILIAR, sw: 2 }); txt(g, x + 110, 140, "Aa", { size: 56, weight: 700, anchor: "middle", fill: p[1] });
+        cap(g, x + 10, 86, p[0], { size: 24, weight: 700, fill: i === 0 ? RED : MUTED });
+        cap(g, x, 216, ra.toFixed(2) + " : 1", { size: 28, weight: 700 });
+        cap(g, x, 248, "L " + lum(p[1]).toFixed(2) + " and " + lum(p[2]).toFixed(2), { size: 24, fill: MUTED });
+        fade(g, A(anim, k, 2), i * 250);
+      });
+      lab(d, 0, 296, "CONTRAST RATIO ON A 1 TO 21 SCALE");
+      PR.forEach(function (p, i) {
+        var y = 312 + i * 58, ra = crat(p[1], p[2]), g = d.append("g");
+        cap(g, 0, y + 28, p[0], { size: 24, weight: 700 }); bar(g, 40, y + 4, ra / 21 * 580, 36, i === 0 ? RED : INK, A(anim, k, 2), i * 250); cap(g, 40 + ra / 21 * 580 + 10, y + 30, ra.toFixed(2), { size: 24 });
+      });
+      mono(d, 0, 520, "(L light + 0.05) / (L dark + 0.05)", { size: 24, fill: MUTED });
+    } else if (kk === 3) {
+      lab(d, 0, 30, "COLOUR ABOVE, LUMINANCE GREY BELOW");
+      SWS.forEach(function (c, i) {
+        var g = d.append("g"), x = i * 125, L = lum(c);
+        g.append("rect").attr("x", x).attr("y", 56).attr("width", 112).attr("height", 120).attr("fill", c);
+        g.append("rect").attr("x", x).attr("y", 190).attr("width", 112).attr("height", 120).attr("fill", grayOf(L)).attr("stroke", FAMILIAR);
+        cap(g, x + 56, 346, L.toFixed(2), { size: 24, anchor: "middle", weight: 700, fill: (i === 0 || i === 1) ? RED : INK });
+        if (A(anim, k, 3)) g.select("rect:nth-child(2)").attr("opacity", 0).transition().delay(300 + i * 150).duration(500).attr("opacity", 1);
+      });
+      d.append("path").attr("d", "M56,380 V400 H181 V380").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      wrap(d, 0, 436, "Red and blue are far apart in hue but land at " + lum(SWS[0]).toFixed(2) + " and " + lum(SWS[1]).toFixed(2) + ": almost the same grey. Contrast of hue alone does not separate them.", 52, { size: 24, lh: 32 });
+    } else {
+      lab(d, 0, 30, "ONE ODD CIRCLE AMONG EIGHT");
+      var ROWS = [["#D81E3C", "#A89F9A", "strong"], ["#B59590", "#A89F9A", "weak"]];
+      ROWS.forEach(function (r, j) {
+        var y = 120 + j * 220, g = d.append("g"), sOth = d3.hsl(r[1]).s, sOdd = d3.hsl(r[0]).s;
+        d3.range(8).forEach(function (i) { g.append("circle").attr("cx", 45 + i * 90).attr("cy", y).attr("r", 34).attr("fill", i === 5 ? r[0] : r[1]); });
+        cap(g, 0, y + 78, r[2] + ": odd " + sOdd.toFixed(2) + " vs others " + sOth.toFixed(2) + ", gap " + (sOdd - sOth).toFixed(2), { size: 24, weight: 700, fill: j ? INK : RED });
+        fade(g, A(anim, k, 4), j * 400);
+      });
+      cap(d, 0, 540, "Saturation is HSL saturation, 0 (grey) to 1 (pure colour).", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Hierarchy: attention follows size and contrast. The boss gets " + Math.round(OBJ[0][1] * OBJ[0][1] * crat(OBJ[0][2], HEXBG) / d3.sum(OBJ, function (o) { return o[1] * o[1] * crat(o[2], HEXBG); }) * 100) + "% of it; the rock the least.", "Contrast has a number. White on the cream background is 1.11 : 1, the dark ink 11.23 : 1, from Chapter 6.", "Light and dark contrast survives a black-and-white copy. Colour alone often does not.", "Colour contrast: one strongly saturated thing among muted ones jumps out. A small gap does not."][k]);
+  }
+
+  /* ---------- 3. shape and size contrast, silhouette, shape language ---------- */
+  function polyAngle(P) {
+    var mn = 180;
+    P.forEach(function (p, i) { var a = P[(i + P.length - 1) % P.length], b = P[(i + 1) % P.length], v1 = [a[0] - p[0], a[1] - p[1]], v2 = [b[0] - p[0], b[1] - p[1]], c = (v1[0] * v2[0] + v1[1] * v2[1]) / (Math.hypot(v1[0], v1[1]) * Math.hypot(v2[0], v2[1])); mn = Math.min(mn, Math.acos(Math.max(-1, Math.min(1, c))) / DEG); });
+    return mn;
+  }
+  function ngon(n, r, rot) { return d3.range(n).map(function (i) { var a = rot + i * 2 * Math.PI / n; return [r * Math.cos(a), r * Math.sin(a)]; }); }
+  function star(n, ro, ri) { return d3.range(2 * n).map(function (i) { var a = -Math.PI / 2 + i * Math.PI / n, r = i % 2 ? ri : ro; return [r * Math.cos(a), r * Math.sin(a)]; }); }
+  var FORMS = [["rounded", ngon(24, 100, 0)], ["blocky", ngon(4, 100, Math.PI / 4)], ["spiky", star(8, 100, 38)]];
+  function renderShape(el, k, anim) {
+    var svg = svgFor(el, W, H, "Shape and size contrast, silhouette and shape language", "Rows of seven shapes with one that differs. Two black silhouettes shrinking with a score for how well they tell apart. Three forms with their sharpest corner angle.");
+    var ey = base(svg, [{ id: "shape", s: 1 }, { id: "sil", s: 2 }, { id: "slang", s: 4 }], k, anim, ["Shape and size contrast", "one thing differs from the rest"], ["Shape language", "what the forms say about the design"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "SIZE");
+      var R1 = [24, 24, 24, 48, 24, 24, 24], med = d3.median(R1);
+      R1.forEach(function (r, i) { var c = d.append("circle").attr("cx", 55 + i * 105).attr("cy", 120).attr("r", r).attr("fill", i === 3 ? RED : "#909090"); if (A(anim, k, 1)) c.attr("r", 24).transition().delay(400).duration(700).attr("r", r); });
+      cap(d, 0, 215, "1 of 7 is " + (d3.max(R1) / med).toFixed(1) + "× the median size.", { size: 24, weight: 700 });
+      lab(d, 0, 290, "SHAPE");
+      for (var i = 0; i < 7; i++) {
+        var cx = 55 + i * 105, cy = 380;
+        if (i === 3) d.append("path").attr("d", "M" + cx + "," + (cy - 36) + " L" + (cx + 34) + "," + (cy + 28) + " L" + (cx - 34) + "," + (cy + 28) + "Z").attr("fill", RED);
+        else d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", 30).attr("fill", "#909090");
+      }
+      cap(d, 0, 475, "1 of 7 has 3 corners; the other 6 have none.", { size: 24, weight: 700 });
+      cap(d, 0, 520, "Enough to say which one to watch, or which way to look.", { size: 24, fill: MUTED });
+    } else if (kk === 2 || kk === 3) {
+      var Y = kk === 2 ? "B" : "A2", dyn = d.append("g");
+      lab(d, 0, 30, kk === 2 ? "KNIGHT (BLACK) AND BLOB, SHRINKING" : "KNIGHT AND A NEAR COPY, SHRINKING");
+      lab(d, 0, 300, "TELL-APART SCORE = 1 − OVERLAP");
+      var TA = NS.map(function (n) { return tell(Y, n); });
+      NS.forEach(function (n, i) { cap(d, 60 + i * 170 + 45, 550, "" + n, { size: 24, anchor: "middle", weight: 700 }); });
+      d.append("path").attr("d", "M30,510 H740").attr("stroke", INK).attr("stroke-width", 2);
+      run(d, 4200, function (t) {
+        dyn.selectAll("*").remove();
+        var ix = Math.min(3, Math.floor(t * 4)), n = NS[ix], ov = iou(MS.A[n], MS[Y][n]);
+        rast(dyn, MS.A[n], n, 0, 56, 200); rast(dyn, MS[Y][n], n, 230, 56, 200);
+        cap(dyn, 470, 100, n + " × " + n + " cells", { size: 24, weight: 700 }); cap(dyn, 470, 150, "overlap " + ov.toFixed(2), { size: 24 }); cap(dyn, 470, 200, "tell apart " + (1 - ov).toFixed(2), { size: 24, weight: 700, fill: RED });
+        TA.forEach(function (v, i) { var bh = v * 190; dyn.append("rect").attr("x", 60 + i * 170).attr("y", 510 - bh).attr("width", 90).attr("height", bh).attr("fill", i === ix ? RED : "#C4C4C4"); cap(dyn, 60 + i * 170 + 45, 510 - bh - 8, v.toFixed(2), { size: 24, anchor: "middle" }); });
+      }, A(anim, k, k));
+    } else {
+      lab(d, 0, 30, "THREE FORMS, ONE MEASURE");
+      FORMS.forEach(function (f, i) {
+        var g = d.append("g"), cx = 125 + i * 250, ang = polyAngle(f[1]);
+        g.append("path").attr("d", "M" + f[1].map(function (p) { return (cx + p[0]) + "," + (200 + p[1]); }).join(" L") + "Z").attr("fill", i === 2 ? RED : INK);
+        cap(g, cx, 350, f[0], { size: 26, weight: 700, anchor: "middle" });
+        cap(g, cx, 384, "corner " + Math.round(ang) + "°", { size: 24, anchor: "middle" });
+        fade(g, A(anim, k, 4), i * 300);
+      });
+      wrap(d, 0, 450, "The number only describes the form. What each form says about the character is the artist's choice.", 52, { size: 24, lh: 32, fill: MUTED });
+    }
+    note(svg, ey, ["", "Shape and size contrast: one thing is bigger or has a different outline, so it is seen first.", "Silhouette: fill it black and shrink it. The knight and the blob still tell apart at every size.", "A near copy with small differences stops telling apart as it shrinks: " + tell("A2", 48).toFixed(2) + " at 48, " + tell("A2", 6).toFixed(2) + " at 6.", "Shape language: the forms of a design carry its character. Corner angle is one way to measure the form."][k]);
+  }
+
+  /* ---------- 4. area of focus, rest and detail, atmospheric perspective ---------- */
+  function renderFocus(el, k, anim) {
+    var svg = svgFor(el, W, H, "Focus is made by lowering contrast and detail everywhere else", "A checkerboard whose outer squares fade toward grey so the centre stands out. Two strips of eight tiles with detail spread evenly or concentrated in one. Six trees at growing distance with falling contrast and detail.");
+    var ey = base(svg, [{ id: "focus", s: 1 }, { id: "rest", s: 2 }, { id: "atmo", s: 3 }], k, anim, ["Area of focus", "where the eye should land"], ["Rest and high detail", "plain regions that make it land"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "A CHECKERBOARD, OUTER SQUARES FADING");
+      var dyn = d.append("g");
+      run(d, 2600, function (t) {
+        dyn.selectAll("*").remove();
+        var c = 1 - 0.75 * t, nb = 0.5 + 0.5 * c, nd = 0.5 - 0.5 * c;
+        for (var j = 0; j < 9; j++) for (var i = 0; i < 9; i++) {
+          var ctr = i === 4 && j === 4, b = (i + j) % 2 ? 1 : 0, v = ctr ? b : 0.5 + (b - 0.5) * c;
+          dyn.append("rect").attr("x", i * 44).attr("y", 56 + j * 44).attr("width", 44).attr("height", 44).attr("fill", sv(v));
+        }
+        dyn.append("rect").attr("x", 4 * 44 - 1).attr("y", 56 + 4 * 44 - 1).attr("width", 46).attr("height", 46).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+        cap(dyn, 430, 100, "centre against", { size: 24, weight: 700, fill: MUTED }); cap(dyn, 430, 130, "its neighbour", { size: 24, weight: 700, fill: MUTED }); cap(dyn, 430, 180, ratioV(0, nb).toFixed(1) + " : 1", { size: 36, weight: 700, fill: RED });
+        cap(dyn, 430, 270, "two outer", { size: 24, weight: 700, fill: MUTED }); cap(dyn, 430, 300, "neighbours", { size: 24, weight: 700, fill: MUTED }); cap(dyn, 430, 350, ratioV(nd, nb).toFixed(1) + " : 1", { size: 36, weight: 700 });
+      }, A(anim, k, 1));
+    } else if (kk === 2) {
+      var rr = rng(5), BUD = 64, SC = [["EVEN DETAIL", [8, 8, 8, 8, 8, 8, 8, 8]], ["REST AROUND ONE BUSY TILE", [3, 3, 3, 43, 3, 3, 3, 3]]], dyn2 = d.append("g");
+      var strokes = SC.map(function (s) { return s[1].map(function (n, i) { var q = rng(40 + i + n); return d3.range(n).map(function () { return [q() * 70 + 8, q() * 100 + 8, q() * 20 - 10, q() * 20 - 10]; }); }); });
+      run(d, 2400, function (t) {
+        dyn2.selectAll("*").remove();
+        SC.forEach(function (s, j) {
+          var y = 70 + j * 230; lab(dyn2, 0, y - 14, s[0]);
+          s[1].forEach(function (n, i) {
+            var x = i * 92, foc = i === 3;
+            dyn2.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", 86).attr("height", 120).attr("fill", HEXBG).attr("stroke", foc ? RED : FAMILIAR).attr("stroke-width", foc ? 4 : 1.5);
+            strokes[j][i].forEach(function (q, m) { if (m < Math.ceil(n * t)) dyn2.append("path").attr("d", "M" + (x + q[0]) + "," + (y + q[1]) + " l" + q[2] + "," + q[3]).attr("stroke", INK).attr("stroke-width", 2); });
+          });
+          cap(dyn2, 0, y + 160, "focus tile holds " + Math.round(s[1][3] / BUD * 100) + "% of the detail", { size: 24, weight: 700, fill: j ? RED : INK });
+        });
+      }, A(anim, k, 2));
+    } else {
+      lab(d, 0, 30, "SIX TREES, FARTHER TO THE RIGHT");
+      var KD = 0.35, SKY = "#DDE6EE";
+      d.append("rect").attr("x", 0).attr("y", 50).attr("width", 740).attr("height", 400).attr("fill", SKY);
+      var dyn3 = d.append("g");
+      run(d, 2200, function (t) {
+        dyn3.selectAll("*").remove();
+        d3.range(6).forEach(function (i) {
+          var c = Math.exp(-KD * i), w = 110 / (1 + 0.25 * i), h = 300 / (1 + 0.25 * i), yb = 420 - 12 * i, cx = 70 + i * 125, vis = Math.min(1, Math.max(0, t * 6 - i + 0.5));
+          var col = d3.interpolateRgb(SKY, "#2F5D3A")(c);
+          dyn3.append("path").attr("d", "M" + cx + "," + (yb - h) + " L" + (cx + w / 2) + "," + yb + " L" + (cx - w / 2) + "," + yb + "Z").attr("fill", col).attr("opacity", vis);
+          var nl = Math.round(10 * c); d3.range(nl).forEach(function (m) { var yy = yb - h + (m + 1) * h / (nl + 1), hw = (yy - (yb - h)) / h * w / 2; dyn3.append("path").attr("d", "M" + (cx - hw * 0.8) + "," + yy + " H" + (cx + hw * 0.8)).attr("stroke", SKY).attr("stroke-width", 2).attr("opacity", vis * 0.8); });
+          cap(dyn3, cx, 484, Math.round(c * 100) + "%", { size: 24, anchor: "middle", weight: 700, fill: INK });
+        });
+      }, A(anim, k, 3));
+      cap(d, 0, 530, "Contrast left, by distance 0 to 5 (k = 0.35, illustrative).", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Area of focus: lowering the contrast of everything else makes the centre the place the eye lands.", "Rest and high detail: the same detail budget of 64 strokes. Spread out it is 13% on the focus tile; concentrated, 67%.", "Atmospheric perspective: with distance, contrast falls from 100% to " + Math.round(Math.exp(-KD * 5) * 100) + "% and detail drops, which also adds depth."][k]);
+  }
+  var KD = 0.35;
+
+  /* ---------- 5. concept art, reference, mood board ---------- */
+  var SK = (function () { var r = rng(6), q = rng(66), a = []; for (var i = 0; i < 40; i++) a.push({ p: r() * 100, s: Math.floor(r() * 5), j: (q() - 0.5) * 44 }); return a; })();
+  function pearson(a) { var mp = d3.mean(a, function (y) { return y.p; }), ms = d3.mean(a, function (y) { return y.s; }), c = 0, vp = 0, vs = 0; a.forEach(function (y) { c += (y.p - mp) * (y.s - ms); vp += Math.pow(y.p - mp, 2); vs += Math.pow(y.s - ms, 2); }); return c / Math.sqrt(vp * vs); }
+  var REFS = (function () { var r = rng(19), C = [[150, 190], [400, 340], [610, 160]], a = []; C.forEach(function (c, ci) { for (var i = 0; i < 8; i++) a.push({ x: c[0] + (r() + r() + r() - 1.5) * 90, y: c[1] + (r() + r() + r() - 1.5) * 70, c: ci }); }); return a; })();
+  function spread(a) { var cx = d3.mean(a, function (p) { return p.x; }), cy = d3.mean(a, function (p) { return p.y; }); return d3.mean(a, function (p) { return Math.hypot(p.x - cx, p.y - cy); }); }
+  var NARROW = (function () { var c = REFS.filter(function (p) { return p.c === 1; }).slice(0, 6); return c; })();
+  var SCATTER = (function () { var s = [REFS[0]]; while (s.length < 6) { var best = null, bd = -1; REFS.forEach(function (p) { if (s.indexOf(p) >= 0) return; var m = d3.min(s, function (q) { return Math.hypot(p.x - q.x, p.y - q.y); }); if (m > bd) { bd = m; best = p; } }); s.push(best); } return s; })();
+  function renderConcept(el, k, anim) {
+    var svg = svgFor(el, W, H, "Concept art solves problems; reference and mood boards guide it", "A scatter of 40 sketches by polish and problems solved. Twenty-four gathered images in three clusters. A narrow mood board against a scattered one with their spreads.");
+    var ey = base(svg, [{ id: "concept", s: 1 }, { id: "ref", s: 2 }, { id: "mood", s: 3 }], k, anim, ["Reference", "one image or example you gather"], ["Mood board", "a chosen set that shows the tone"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "40 SKETCHES: PROBLEMS SOLVED OF 4");
+      d.append("path").attr("d", "M80,50 V450 H740").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      d3.range(5).forEach(function (s) { cap(d, 66, 450 - s * 80 + 8, "" + s, { size: 24, anchor: "end" }); d.append("path").attr("d", "M80," + (450 - s * 80) + " H740").attr("stroke", GRID).attr("stroke-width", 1.5); });
+      var n3 = 0;
+      SK.forEach(function (y, i) { var g = d.append("circle").attr("cx", 100 + y.p * 6.2).attr("cy", 450 - y.s * 80 + y.j * 0.7).attr("r", 9).attr("fill", y.s >= 3 ? RED : "#909090"); if (y.s >= 3) n3++; if (A(anim, k, 1)) g.attr("opacity", 0).transition().delay(i * 40).duration(300).attr("opacity", 1); });
+      lab(d, 80, 490, "POLISH OF THE DRAWING, LOW TO HIGH →");
+      cap(d, 0, 540, "Red: solves 3 or 4 of 4, " + n3 + " of 40. Polish vs solved: r = " + pearson(SK).toFixed(2), { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 30, kk === 2 ? "24 IMAGES GATHERED" : "SAME 24, TWO WAYS TO CHOOSE SIX");
+      box(d, 0, 50, 740, 410, { fill: HEXBG, stroke: FAMILIAR });
+      REFS.forEach(function (p, i) {
+        var nar = NARROW.indexOf(p) >= 0, sc = SCATTER.indexOf(p) >= 0;
+        var c = d.append("circle").attr("cx", p.x).attr("cy", p.y + 20).attr("r", 11).attr("fill", kk === 3 && nar ? INK : "#B5B5B5").attr("stroke", kk === 3 && sc ? RED : "none").attr("stroke-width", 4);
+        if (kk === 3 && sc) c.attr("r", 14);
+        if (A(anim, k, kk)) c.attr("opacity", 0).transition().delay(i * 50).duration(300).attr("opacity", 1);
+      });
+      if (kk === 2) cap(d, 0, 510, "3 groups of 8, gathered from different places.", { size: 24, fill: MUTED });
+      else {
+        cap(d, 0, 512, "ink dots: narrow board, spread " + spread(NARROW).toFixed(0) + " px", { size: 24, weight: 700 });
+        cap(d, 0, 548, "red rings: scattered board, spread " + spread(SCATTER).toFixed(0) + " px", { size: 24, weight: 700, fill: RED });
+      }
+    }
+    note(svg, ey, ["", "Concept art is judged by whether it solves the problem, not by polish. Here polish tells you almost nothing (r near 0).", "Reference: images and examples gathered to research the subject before drawing.", "A mood board is a chosen set. The narrow one is about " + Math.round(spread(SCATTER) / spread(NARROW)) + " times tighter, so the team sees one direction."][k]);
+  }
+
+  /* ---------- 6. constraints ---------- */
+  var IDEAS = (function () { var r = rng(11), a = []; for (var i = 0; i < 60; i++) a.push({ t: r(), v: r(), m: r() }); return a; })();
+  function renderCons(el, k, anim) {
+    var svg = svgFor(el, W, H, "Each constraint closes part of the idea space", "Sixty dots in a grid. After each constraint the dots that fail it turn hollow, and the number still open is counted.");
+    var ey = base(svg, [{ id: "con", s: 1 }, { id: "thematic", s: 2 }, { id: "persp", s: 3 }, { id: "mech", s: 4 }], k, anim, ["Constraint", "a limit that narrows the design"], ["Reference", "images gathered for research"]);
+    var d = svg.append("g"), kk = Math.max(k, 1), ALIVE = [IDEAS.map(function () { return true; })];
+    var TH = [["t", 0.35], ["v", 0.4], ["m", 0.45]];
+    TH.forEach(function (h, s) { ALIVE.push(ALIVE[s].map(function (a, i) { return a && IDEAS[i][h[0]] >= h[1]; })); });
+    var cnt = ALIVE.map(function (a) { return d3.sum(a, function (x) { return x ? 1 : 0; }); });
+    lab(d, 0, 30, ["60 IDEAS, NO LIMITS", "60 IDEAS, THEMATIC LIMIT", "THEN THE VIEW LIMIT", "THEN THE RULES LIMIT"][kk - 1]);
+    IDEAS.forEach(function (idea, i) {
+      var cx = 40 + (i % 10) * 74, cy = 80 + Math.floor(i / 10) * 66, on = ALIVE[kk - 1][i], was = ALIVE[Math.max(0, kk - 2)][i], newly = was && !on;
+      var c = d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", 15).attr("fill", on ? INK : "none").attr("stroke", on ? INK : newly ? RED : FAMILIAR).attr("stroke-width", newly ? 3.5 : 2);
+      if (A(anim, k, kk) && newly) c.attr("fill", INK).attr("stroke", INK).transition().delay(300 + (i % 10) * 50).duration(500).attr("fill", "none").attr("stroke", RED);
+    });
+    cap(d, 0, 500, "Still open: " + cnt.slice(0, kk).join(" → "), { size: 28, weight: 700, fill: RED });
+    cap(d, 0, 540, "Seeded random ideas; each limit keeps those that pass it.", { size: 24, fill: MUTED });
+    note(svg, ey, ["", "A constraint is a limit. Without one there are 60 directions and nothing says which to take.", "Thematic: lore, setting and tone close off " + (cnt[0] - cnt[1]) + " ideas that do not fit the world.", "Perspective: the player's view, first person, third person or top down, closes " + (cnt[1] - cnt[2]) + " more.", "Mechanics: rules and numbers, like an ability or a health total, close " + (cnt[2] - cnt[3]) + " more. " + cnt[3] + " are left."][k]);
+  }
+
+  /* ---------- 7. ideation, two-tone, closing doors, iteration ---------- */
+  var THUMBS = (function () { var r = rng(9), a = []; for (var i = 0; i < 24; i++) { var sh = []; for (var j = 0; j < 3; j++) sh.push({ t: Math.floor(r() * 3), x: 12 + r() * 60, y: 12 + r() * 40, w: 14 + r() * 32, h: 12 + r() * 28 }); a.push(sh); } return a; })();
+  var FIELD = (function () { var a = []; for (var j = 0; j < 16; j++) for (var i = 0; i < 16; i++) { var v = 0.5 + 0.5 * Math.sin(i * 0.45 + 0.5) * Math.cos(j * 0.4) + 0.35 * Math.exp(-(Math.pow(i - 10, 2) + Math.pow(j - 5, 2)) / 14); a.push(Math.max(0, Math.min(1, v / 1.3))); } return a; })();
+  var NCOLS = (function () { var u = []; FIELD.forEach(function (v) { var q = Math.round(v * 11) / 11, c = d3.hsl(210 - 170 * q, 0.6, 0.3 + 0.4 * q).formatHex(); if (u.indexOf(c) < 0) u.push(c); }); return u.length; })();
+  var DOORSC = (function () { var r = rng(33), a = []; for (var i = 0; i < 24; i++) a.push(r()); var o = a.map(function (v, i) { return i; }).sort(function (x, y) { return a[y] - a[x]; }), rank = []; o.forEach(function (i, ri) { rank[i] = ri; }); return rank; })();
+  var GAP = (function () { var r = rng(7), g = [1]; for (var i = 0; i < 5; i++) g.push(g[i] * (0.4 + 0.25 * r())); return g; })();
+  function renderIdeate(el, k, anim) {
+    var svg = svgFor(el, W, H, "From many rough ideas to a narrow, repeated design", "Twenty-four rough thumbnails. A full-colour grid and the same grid in two tones. Four rows of 24 dots where each round closes half. A line of the gap to what the team needs falling over five cycles.");
+    var ey = base(svg, [{ id: "ideation", s: 1 }, { id: "two", s: 2 }, { id: "doors", s: 3 }, { id: "iter", s: 4 }], k, anim, ["Iteration", "repeat draft, feedback, change"], ["Closing doors", "drop rejected options each round"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "24 ROUGH THUMBNAILS");
+      var dyn = d.append("g");
+      run(d, 3000, function (t) {
+        dyn.selectAll("*").remove();
+        THUMBS.forEach(function (sh, i) {
+          if (i >= Math.ceil(t * 24)) return;
+          var x = (i % 6) * 124, y = 50 + Math.floor(i / 6) * 100, g = dyn.append("g");
+          g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", 112).attr("height", 90).attr("fill", HEXBG).attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+          sh.forEach(function (s) {
+            var X = x + s.x, Y = y + s.y;
+            if (s.t === 0) g.append("rect").attr("x", X).attr("y", Y).attr("width", s.w).attr("height", s.h).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5);
+            else if (s.t === 1) g.append("ellipse").attr("cx", X + s.w / 2).attr("cy", Y + s.h / 2).attr("rx", s.w / 2).attr("ry", s.h / 2).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5);
+            else g.append("path").attr("d", "M" + X + "," + (Y + s.h) + " L" + (X + s.w / 2) + "," + Y + " L" + (X + s.w) + "," + (Y + s.h) + "Z").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5);
+          });
+        });
+      }, A(anim, k, 1));
+      cap(d, 0, 520, "24 ideas at about 5 seconds each: " + 24 * 5 + " seconds.", { size: 24, weight: 700 });
+      cap(d, 0, 552, "Illustrative: the time per sketch is assumed.", { size: 24, fill: MUTED });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "FULL COLOUR");
+      lab(d, 380, 30, "TWO-TONE");
+      var cols = [], sw = 20;
+      for (var j = 0; j < 16; j++) for (var i = 0; i < 16; i++) {
+        var v = FIELD[j * 16 + i], q = Math.round(v * 11) / 11, c = d3.hsl(210 - 170 * q, 0.6, 0.3 + 0.4 * q).formatHex();
+        if (cols.indexOf(c) < 0) cols.push(c);
+        d.append("rect").attr("x", i * sw).attr("y", 50 + j * sw).attr("width", sw).attr("height", sw).attr("fill", c).attr("shape-rendering", "crispEdges");
+        d.append("rect").attr("x", 380 + i * sw).attr("y", 50 + j * sw).attr("width", sw).attr("height", sw).attr("fill", v >= 0.45 ? HEXBG : INK).attr("shape-rendering", "crispEdges");
+      }
+      d.append("rect").attr("x", 380.5).attr("y", 50.5).attr("width", 320).attr("height", 320).attr("fill", "none").attr("stroke", FAMILIAR);
+      cap(d, 0, 420, cols.length + " colours to decide", { size: 26, weight: 700 }); cap(d, 380, 420, "2 colours to decide", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 470, "Same shapes, far fewer choices, so the big shapes stay in view.", { size: 24, fill: MUTED });
+    } else if (kk === 3) {
+      lab(d, 0, 30, "EACH ROUND CLOSES THE WEAKER HALF");
+      var dyn2 = d.append("g");
+      run(d, 3200, function (t) {
+        dyn2.selectAll("*").remove();
+        [24, 12, 6, 3].forEach(function (keep, r) {
+          if (r > Math.floor(t * 4 - 0.01)) return;
+          var y = 100 + r * 100; cap(dyn2, 0, y + 8, r ? "R" + r : "R0", { size: 24, weight: 700 });
+          d3.range(24).forEach(function (i) { var on = DOORSC[i] < keep; dyn2.append("circle").attr("cx", 100 + i * 26).attr("cy", y).attr("r", 9).attr("fill", on ? INK : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 2); });
+          cap(dyn2, 100, y + 40, keep + " left", { size: 24, fill: r === 3 ? RED : INK, weight: 700 });
+        });
+      }, A(anim, k, 3));
+    } else {
+      lab(d, 0, 30, "GAP TO WHAT THE TEAM NEEDS, BY CYCLE");
+      var xs = function (i) { return 100 + i * 124; }, ys = function (v) { return 440 - v * 330; };
+      d.append("path").attr("d", "M70,60 V440 H740").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      var dyn3 = d.append("g");
+      run(d, 3000, function (t) {
+        dyn3.selectAll("*").remove();
+        var n = t * 5, pts = GAP.map(function (v, i) { return [xs(i), ys(v)]; });
+        for (var i = 0; i < 5; i++) { if (n < i) break; var f = Math.min(1, n - i); dyn3.append("path").attr("d", "M" + pts[i][0] + "," + pts[i][1] + " L" + (pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f) + "," + (pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f)).attr("stroke", RED).attr("stroke-width", 4); }
+        GAP.forEach(function (v, i) { if (n >= i - 0.01) { dyn3.append("circle").attr("cx", xs(i)).attr("cy", ys(v)).attr("r", 10).attr("fill", RED); cap(dyn3, xs(i) + 16, ys(v) - 12, v.toFixed(2), { size: 24 }); } });
+      }, A(anim, k, 4));
+      GAP.forEach(function (v, i) { cap(d, xs(i), 476, "" + i, { size: 24, anchor: "middle", weight: 700 }); });
+      lab(d, 100, 520, "CYCLES OF DRAFT, FEEDBACK, CHANGE");
+    }
+    note(svg, ey, ["", "Ideation: many quick, rough ideas first. Drawing fast and loose gets the idea across without polish.", "Two-tone sketching: " + NCOLS + " colour choices become 2, so the big graphic shapes stay the focus.", "Closing doors: each round keeps the better half and does not reopen what was closed. 24, 12, 6, 3.", "Iteration: each cycle of feedback shrinks the gap, here from 1.00 to " + GAP[5].toFixed(2) + ". Show work early."][k]);
+  }
+
+  /* ---------- 8. iconic elements, proxy model, readability ---------- */
+  function renderIcon(el, k, anim) {
+    var svg = svgFor(el, W, H, "Iconic elements survive small sizes; a proxy checks proportions early", "Seven features ranked by the smallest size at which each still reads. A block proxy corrected over three rounds toward a target. The same character drawn at three sizes with unreadable features dashed.");
+    var ey = base(svg, [{ id: "icon", s: 1 }, { id: "proxy", s: 2 }, { id: "read", s: 3 }], k, anim, ["Silhouette", "the outline alone"], ["Readability", "understood in the game's real view"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      lab(d, 0, 30, "SMALLEST SIZE WHERE EACH STILL READS");
+      var rk = FEAT.map(function (f) { return { n: f[0], px: 3 * 128 / Math.min(f[3], f[4]) }; }).sort(function (a, b) { return a.px - b.px; });
+      rk.forEach(function (r, i) {
+        var y = 60 + i * 52, g = d.append("g"), w = r.px * 4.6; cap(g, 0, y + 30, r.n, { size: 24, weight: 700 });
+        bar(g, 130, y + 6, w, 32, i < 3 ? RED : "#C4C4C4", A(anim, k, 1), i * 150); cap(g, 130 + w + 10, y + 32, Math.round(r.px) + " px", { size: 24 });
+      });
+      wrap(d, 0, 470, "Survive smallest: " + rk.slice(0, 3).map(function (r) { return r.n; }).join(", ") + ". Rule: 3 px on the thinnest side (illustrative).", 52, { size: 24, lh: 32, weight: 700 });
+    } else if (kk === 2) {
+      lab(d, 0, 30, "BLOCK PROXY (BLACK) AGAINST THE TARGET (DASHED)");
+      var TG = [["head", 44, 44], ["torso", 64, 90], ["legs", 54, 100]], PX = [["head", 58, 56], ["torso", 66, 76], ["legs", 54, 64]];
+      var err = function (f) { return d3.mean(TG, function (t, i) { var p = PX[i], w = t[1] + (p[1] - t[1]) * f, h = t[2] + (p[2] - t[2]) * f; return (Math.abs(w - t[1]) / t[1] + Math.abs(h - t[2]) / t[2]) / 2; }); };
+      var ERR = [0, 1, 2, 3].map(function (r) { return err(Math.pow(0.5, r)); }), dyn = d.append("g");
+      function fig(g, dims, x, yb, dash) {
+        var y = yb, cx = x, Z = 1.5;
+        [2, 1, 0].forEach(function (i) { var w = dims[i][0] * Z, h = dims[i][1] * Z; y -= h; g.append("rect").attr("x", cx - w / 2).attr("y", y).attr("width", w).attr("height", h).attr("fill", dash ? "none" : INK).attr("stroke", dash ? RED : "none").attr("stroke-width", 3).attr("stroke-dasharray", dash ? "8 6" : null); });
+      }
+      fig(d, TG.map(function (t) { return [t[1], t[2]]; }), 200, 540, true);
+      run(d, 3600, function (t) {
+        dyn.selectAll("*").remove();
+        var r = Math.min(3, Math.floor(t * 4)), f = Math.pow(0.5, r);
+        fig(dyn, TG.map(function (tt, i) { return [tt[1] + (PX[i][1] - tt[1]) * f, tt[2] + (PX[i][2] - tt[2]) * f]; }), 200, 540, false);
+        ERR.forEach(function (e, i) { if (i <= r) cap(dyn, 400, 140 + i * 56, "round " + i + ": " + (e * 100).toFixed(0) + "% off", { size: 26, weight: 700, fill: i === r ? RED : INK }); });
+      }, A(anim, k, 2));
+    } else {
+      lab(d, 0, 30, "ONE CHARACTER, THREE SIZES");
+      var HS = [200, 64, 32], XS = [40, 330, 560];
+      HS.forEach(function (h, i) { var g = d.append("g"), n = drawFig(g, XS[i], 440, h); cap(g, XS[i], 490, h + " px: " + n + " of 7", { size: 24, weight: 700, fill: n < 7 ? RED : INK }); fade(g, A(anim, k, 3), i * 350); });
+      cap(d, 0, 540, "Dashed red: below 3 px on the thinnest side, so it no longer reads.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Iconic elements are the features that still read when the character is tiny. Choose the wrong ones and the essence is lost.", "A proxy is a rough block model. Check proportions and silhouette on it first: the error falls " + (ERRS()[0] * 100).toFixed(0) + "% to " + (ERRS()[3] * 100).toFixed(0) + "%.", "Readability depends on the view. Judge the character at the size it really appears in the game."][k]);
+  }
+  function ERRS() {
+    var TG = [[44, 44], [64, 90], [54, 100]], PX = [[58, 56], [66, 76], [54, 64]];
+    return [0, 1, 2, 3].map(function (r) { var f = Math.pow(0.5, r); return d3.mean(TG, function (t, i) { var p = PX[i], w = t[0] + (p[0] - t[0]) * f, h = t[1] + (p[1] - t[1]) * f; return (Math.abs(w - t[0]) / t[0] + Math.abs(h - t[1]) / t[1]) / 2; }); });
+  }
+
+  /* ---------- 9. high-poly, low-poly, UV, baking ---------- */
+  function sphereTris(s) { return 2 * s * (s / 2 - 1); }
+  function circPath(cx, cy, r, n) { var p = []; for (var i = 0; i < n; i++) { var a = i * 2 * Math.PI / n; p.push((cx + r * Math.cos(a)).toFixed(2) + "," + (cy + r * Math.sin(a)).toFixed(2)); } return "M" + p.join(" L") + "Z"; }
+  var NET = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]];
+  var BH = function (x) { return 16 * Math.sin(x * 0.55) + 8 * Math.sin(x * 1.7 + 1); }, BDH = function (x) { return 16 * 0.55 * Math.cos(x * 0.55) + 8 * 1.7 * Math.cos(x * 1.7 + 1); };
+  var BL = (function () { var l = [0.5, 0.866], L = Math.hypot(l[0], l[1]); l = [l[0] / L, l[1] / L]; var o = { hi: [], flat: [], baked: [] }; for (var i = 0; i < 24; i++) { var x = 0.5 + i * 0.5, dh = BDH(x) * 0.18, nl = Math.hypot(dh, 1), n = [-dh / nl, 1 / nl], hv = Math.max(0, n[0] * l[0] + n[1] * l[1]); var q = Math.round(((Math.atan2(n[0], n[1]) / DEG + 60) / 120) * 8) / 8 * 120 - 60, nb = [Math.sin(q * DEG), Math.cos(q * DEG)]; o.hi.push(hv); o.flat.push(Math.max(0, l[1])); o.baked.push(Math.max(0, nb[0] * l[0] + nb[1] * l[1])); } return o; })();
+  function renderChain(el, k, anim) {
+    var svg = svgFor(el, W, H, "From a detailed sculpt to a game model: low-poly, UV map and baking", "A smooth circle with a million-triangle sphere count beside a coarse 16-sided one. A cube net unfolding with the edges cut. Three rows of shading, original, flat and baked.");
+    var ey = base(svg, [{ id: "hi", s: 1 }, { id: "lo", s: 2 }, { id: "uv", s: 3 }, { id: "bake", s: 4 }], k, anim, ["High-poly sculpt", "all the detail, too heavy to run"], ["Low-poly mesh", "few polygons, runs in the engine"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk <= 2) {
+      var HS = 1024, LS = 16, tH = sphereTris(HS), tL = sphereTris(LS), dH = 1 - Math.cos(Math.PI / HS), dL = 1 - Math.cos(Math.PI / LS);
+      lab(d, 0, 30, kk === 1 ? "SILHOUETTE OF A SPHERE, " + HS + " SIDES" : "THE SAME SPHERE: " + HS + " SIDES AND " + LS + " SIDES");
+      var gh = d.append("g"); gh.append("path").attr("d", circPath(190, 230, 140, 256)).attr("fill", "#E3E3E3").attr("stroke", INK).attr("stroke-width", 2);
+      cap(gh, 190, 440, fmtInt(tH) + " triangles", { size: 26, weight: 700, anchor: "middle" }); cap(gh, 190, 476, "edge error " + (dH * 100).toFixed(2) + "%", { size: 24, anchor: "middle" });
+      fade(gh, A(anim, k, 1));
+      if (kk === 2) {
+        var gl = d.append("g"); gl.append("path").attr("d", circPath(560, 230, 140, LS)).attr("fill", "#E3E3E3").attr("stroke", RED).attr("stroke-width", 4);
+        cap(gl, 560, 440, tL + " triangles", { size: 26, weight: 700, anchor: "middle", fill: RED }); cap(gl, 560, 476, "edge error " + (dL * 100).toFixed(1) + "%", { size: 24, anchor: "middle" });
+        fade(gl, A(anim, k, 2));
+        cap(d, 0, 540, "The low-poly sphere has " + fmtInt(tH / tL) + " times fewer triangles.", { size: 24, weight: 700 });
+      }
+    } else if (kk === 3) {
+      lab(d, 0, 30, "A CUBE CUT OPEN AND LAID FLAT");
+      var dyn = d.append("g"), U = 84, ox = 20, oy = 60;
+      var hinge = 0, tot = 0; NET.forEach(function (a, i) { NET.forEach(function (b, j) { if (j > i && Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) === 1) hinge++; }); });
+      var cut = 12 - hinge;
+      run(d, 2400, function (t) {
+        dyn.selectAll("*").remove();
+        var e = d3.easeCubicInOut(t);
+        NET.forEach(function (c, i) {
+          var x = ox + (c[0] * U) * e + (1 - e) * 80 + (1 - e) * i * 5, y = oy + (c[1] * U) * e + (1 - e) * 60 + (1 - e) * i * 5;
+          dyn.append("rect").attr("x", x).attr("y", y).attr("width", U).attr("height", U).attr("fill", i === 2 ? TINT : "#FFFFFF").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 5");
+          cap(dyn, x + U / 2, y + U / 2 + 8, "F" + (i + 1), { size: 24, weight: 700, anchor: "middle" });
+        });
+        if (t > 0.98) NET.forEach(function (a, i) { NET.forEach(function (b, j) { if (j > i && Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) === 1) { var x1 = ox + Math.max(a[0], b[0]) * U, y1 = oy + Math.max(a[1], b[1]) * U; var vert = a[0] !== b[0]; dyn.append("path").attr("d", vert ? "M" + x1 + "," + (oy + a[1] * U) + " V" + (oy + a[1] * U + U) : "M" + (ox + a[0] * U) + "," + y1 + " H" + (ox + a[0] * U + U)).attr("stroke", INK).attr("stroke-width", 6); } }); });
+      }, A(anim, k, 3));
+      cap(d, 400, 110, "faces: 6", { size: 26 }); cap(d, 400, 150, "edges: 12", { size: 26 }); cap(d, 400, 190, "joined in the net: " + hinge, { size: 26 }); cap(d, 400, 230, "edges cut: " + cut, { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 400, "Red dashes: cut edges (shown on both faces). Black: still joined.", { size: 24, fill: MUTED });
+      cap(d, 0, 440, "Each face now has a place on a flat image to paint on.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "BUMPY SURFACE, AND HOW LIGHT SHADES IT");
+      var pts = d3.range(0, 121).map(function (i) { var x = i * 0.1; return [40 + x * 55, 110 - BH(x) * 1.2]; });
+      d.append("path").attr("d", "M" + pts.map(function (p) { return p.join(","); }).join(" L")).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      d.append("path").attr("d", "M40,116 H700").attr("stroke", RED).attr("stroke-width", 4).attr("stroke-dasharray", "10 6");
+      var rows = [["high-poly bumps", BL.hi], ["low-poly, flat", BL.flat], ["low-poly + baked image", BL.baked]], dyn2 = d.append("g");
+      rows.forEach(function (r, j) {
+        var y = 190 + j * 110; cap(d, 40, y - 10, r[0], { size: 24, weight: 700, fill: j === 1 ? RED : INK });
+        r[1].forEach(function (v, i) { d.append("rect").attr("x", 40 + i * 28).attr("y", y).attr("width", 28).attr("height", 44).attr("fill", sv(v)).attr("stroke", "#FFFFFF").attr("stroke-width", 1); });
+      });
+      var eF = d3.mean(BL.hi, function (v, i) { return Math.abs(v - BL.flat[i]); }), eB = d3.mean(BL.hi, function (v, i) { return Math.abs(v - BL.baked[i]); });
+      cap(d, 0, 540, "mean shading error: flat " + eF.toFixed(2) + ", baked " + eB.toFixed(2), { size: 24, weight: 700 });
+    }
+    note(svg, ey, ["", "The high-poly sculpt holds all the detail: over a million triangles, far too many for the engine to draw in real time.", "The low-poly mesh keeps the silhouette with " + fmtInt(sphereTris(16)) + " triangles. It runs, but the detail is gone.", "UV map: cut the surface open and lay it flat as an image. Unwrapping is the cutting; a cube needs 7 cut edges.", "Baking stores the sculpt's bumps as an image on the low-poly. The flat shading is off by " + d3.mean(BL.hi, function (v, i) { return Math.abs(v - BL.flat[i]); }).toFixed(2) + "; baked, by " + d3.mean(BL.hi, function (v, i) { return Math.abs(v - BL.baked[i]); }).toFixed(2) + "."][k]);
+  }
+
+  /* ---------- 10. anatomy, neutral pose ---------- */
+  function renderAnat(el, k, anim) {
+    var svg = svgFor(el, W, H, "Anatomy lets a limb bend to reach; a neutral pose can hide what blocks movement", "A two-bone arm reaching six targets against a rigid bar of the same length. Two arms raised until a shoulder plate blocks them, with the stopping angle.");
+    var ey = base(svg, [{ id: "anat", s: 1 }, { id: "neutral", s: 2 }], k, anim, ["Anatomy", "how the body works"], ["Neutral pose", "the default pose it is built in"]);
+    var d = svg.append("g"), kk = Math.max(k, 1);
+    if (kk === 1) {
+      var L1 = 200, L2 = 190, SX = 60, SY = 280, TG = [[110, -45], [210, 25], [300, -15], [360, 35], [385, 0], [440, -28]];
+      lab(d, 0, 30, "SHOULDER ON THE LEFT, SIX TARGETS");
+      var tp = TG.map(function (t) { return [SX + t[0] * Math.cos(t[1] * DEG), SY + t[0] * Math.sin(t[1] * DEG), t[0]]; });
+      var reachJ = tp.filter(function (p) { return p[2] <= L1 + L2 && p[2] >= Math.abs(L1 - L2); }).length, reachR = tp.filter(function (p) { return Math.abs(p[2] - (L1 + L2)) <= 8; }).length;
+      tp.forEach(function (p, i) { d.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 14).attr("fill", "none").attr("stroke", p[2] <= L1 + L2 ? RED : GREY).attr("stroke-width", 3); });
+      var dyn = d.append("g");
+      function ik(px, py) {
+        var dx = px - SX, dy = py - SY, D = Math.min(Math.hypot(dx, dy), L1 + L2 - 0.001), phi = Math.atan2(dy, dx), al = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + D * D - L2 * L2) / (2 * L1 * D))));
+        var ex = SX + L1 * Math.cos(phi - al), ey2 = SY + L1 * Math.sin(phi - al), hx = SX + D * Math.cos(phi), hy = SY + D * Math.sin(phi); return [ex, ey2, hx, hy];
+      }
+      run(d, 6000, function (t) {
+        dyn.selectAll("*").remove();
+        var s = t * (tp.length - 1), i = Math.min(tp.length - 2, Math.floor(s)), f = d3.easeCubicInOut(s - i), px = tp[i][0] + (tp[i + 1][0] - tp[i][0]) * f, py = tp[i][1] + (tp[i + 1][1] - tp[i][1]) * f;
+        var j = ik(px, py), rd = Math.atan2(py - SY, px - SX);
+        dyn.append("path").attr("d", "M" + SX + "," + SY + " L" + (SX + (L1 + L2) * Math.cos(rd)) + "," + (SY + (L1 + L2) * Math.sin(rd))).attr("stroke", GREY).attr("stroke-width", 6).attr("stroke-dasharray", "4 8");
+        dyn.append("path").attr("d", "M" + SX + "," + SY + " L" + j[0] + "," + j[1] + " L" + j[2] + "," + j[3]).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 14).attr("stroke-linejoin", "round").attr("stroke-linecap", "round");
+        dyn.append("circle").attr("cx", j[0]).attr("cy", j[1]).attr("r", 10).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        dyn.append("circle").attr("cx", j[2]).attr("cy", j[3]).attr("r", 10).attr("fill", RED);
+      }, A(anim, k, 1));
+      cap(d, 0, 540, "Jointed limb reaches " + reachJ + " of 6; the rigid bar (dashed) reaches " + reachR + ".", { size: 24, weight: 700 });
+      cap(d, 0, 574, "Red rings: within reach. Grey: out of range (390 px).", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "ARM RAISED FROM THE NEUTRAL POSE");
+      var AL = 150, PL = [["heavy plate", 90], ["trimmed plate", 30]], dyn2 = d.append("g");
+      function blockAt(W) { for (var a = 0; a <= 180; a += 0.25) { for (var s = 0; s <= AL; s += 1) { var x = s * Math.sin(a * DEG), y = s * Math.cos(a * DEG); if (x >= -15 && x <= W && y >= -27 && y <= -9) return a; } } return 180; }
+      var BA = PL.map(function (p) { return blockAt(p[1]); });
+      PL.forEach(function (p, i) {
+        var sx = 170 + i * 400, sy = 380; cap(d, sx - 100, 90, p[0], { size: 26, weight: 700, fill: i ? INK : RED });
+        d.append("rect").attr("x", sx - 15).attr("y", sy - 27).attr("width", p[1] + 15).attr("height", 18).attr("fill", INK);
+        d.append("path").attr("d", "M" + sx + "," + sy + " v" + AL).attr("stroke", FAMILIAR).attr("stroke-width", 12).attr("stroke-dasharray", "6 8");
+        cap(d, sx + 30, 470, "stops at " + Math.round(BA[i]) + "°", { size: 26, weight: 700, fill: i ? INK : RED });
+      });
+      run(d, 3200, function (t) {
+        dyn2.selectAll("*").remove();
+        PL.forEach(function (p, i) {
+          var sx = 170 + i * 400, sy = 380, a = Math.min(t * 180, BA[i]), ex = sx + AL * Math.sin(a * DEG), ey3 = sy + AL * Math.cos(a * DEG);
+          dyn2.append("path").attr("d", "M" + sx + "," + sy + " L" + ex + "," + ey3).attr("stroke", INK).attr("stroke-width", 12).attr("stroke-linecap", "round");
+          dyn2.append("circle").attr("cx", sx).attr("cy", sy).attr("r", 12).attr("fill", RED);
+          if (t * 180 >= BA[i] && BA[i] < 180) dyn2.append("circle").attr("cx", ex).attr("cy", ey3).attr("r", 12).attr("fill", RED);
+        });
+      }, A(anim, k, 2));
+    }
+    note(svg, ey, ["", "Anatomy: where the bones and joints are decides how a creature can move. A joint gives reach that a rigid bar lacks.", "The neutral pose looks right at rest. A plate over the shoulder stops the raised arm at " + Math.round((function () { var AL = 150; for (var a = 0; a <= 180; a += 0.25) for (var s = 0; s <= AL; s++) { var x = s * Math.sin(a * DEG), y = s * Math.cos(a * DEG); if (x >= -15 && x <= 90 && y >= -27 && y <= -9) return a; } return 180; })()) + "°; trimming it moves the stop later."][k]);
+  }
+
+  /* ---------- look-alike pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from the art terms", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Contrast", "A difference between two things"], ["Visual hierarchy", "The order in which things are seen"]],
+      [["Reference", "Any image gathered for research"], ["Mood board", "A narrow chosen set that sets the tone"]],
+      [["Proxy model", "Rough blocks to check proportions"], ["Low-poly mesh", "The light copy of a sculpt the engine runs"]],
+      [["Silhouette", "The outline alone, filled black"], ["Readability", "Understood in the game's real view"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 500, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    var rp = rng(14), rr = [], ri;
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(30,0)"), RG = R.append("g").attr("transform", "translate(30,0)");
+      if (i === 0) {
+        var a = crat("#25354A", HEXBG);
+        box(LG, 20, 130, 150, 100, { fill: HEXBG, stroke: FAMILIAR, sw: 2 }); box(LG, 190, 130, 150, 100, { fill: "#25354A", stroke: FAMILIAR, sw: 2 }); cap(LG, 20, 290, "ratio " + (1 + (a - 1) * t).toFixed(1) + " : 1", { size: 28, weight: 700 }); cap(LG, 20, 330, "two things, one difference", { size: 24, fill: MUTED });
+        var vals = [60, 30, 18, 10]; vals.forEach(function (v, j) { RG.append("rect").attr("x", 20).attr("y", 130 + j * 56).attr("width", v * 5 * t).attr("height", 40).attr("fill", j ? "#C4C4C4" : RED); cap(RG, 20 + v * 5 * t + 10, 160 + j * 56, "" + (j + 1), { size: 24, weight: 700 }); });
+        cap(RG, 20, 380, "many things, one order", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var q = rng(3); d3.range(12).forEach(function (j) { LG.append("circle").attr("cx", 40 + q() * 320).attr("cy", 140 + q() * 190).attr("r", 12).attr("fill", "#B5B5B5").attr("opacity", j / 12 < t ? 1 : 0.1); });
+        cap(LG, 20, 380, "12 gathered, spread " + (110 + 0 * t).toFixed(0) + " px", { size: 24, fill: MUTED });
+        var q2 = rng(4), P2 = d3.range(5).map(function () { return [200 + (q2() - 0.5) * 70, 235 + (q2() - 0.5) * 70]; }); P2.forEach(function (p, j) { RG.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 14).attr("fill", INK).attr("opacity", j / 5 < t ? 1 : 0.1); });
+        cap(RG, 20, 380, "5 chosen, tight and on theme", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        var dims = [[56, 56], [66, 76], [54, 64]], y = 340;
+        [2, 1, 0].forEach(function (j) { y -= dims[j][1] * t; LG.append("rect").attr("x", 190 - dims[j][0] / 2).attr("y", y).attr("width", dims[j][0]).attr("height", dims[j][1] * t).attr("fill", INK); });
+        cap(LG, 20, 380, "3 blocks: size only", { size: 24, fill: MUTED });
+        RG.append("path").attr("d", circPath(190, 230, 100, 16)).attr("fill", "#E3E3E3").attr("stroke", RED).attr("stroke-width", 4).attr("opacity", t); cap(RG, 20, 380, "16 sides, " + sphereTris(16) + " triangles", { size: 24, fill: MUTED });
+      } else {
+        rast(LG, MS.A[24], 24, 90, 120, 200); cap(LG, 20, 380, "outline only, 24 × 24", { size: 24, fill: MUTED });
+        [128, 64, 32].forEach(function (h, j) { var g = RG.append("g").attr("opacity", j / 3 < t ? 1 : 0.15), n = drawFig(g, 30 + j * 130, 330, h); cap(g, 30 + j * 130, 370, n + " of 7", { size: 24, weight: 700, fill: n < 7 ? RED : INK }); });
+        cap(RG, 20, 430, "three sizes, one view each", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAYC = { bef: "#8C9360", aft: "#6B1D2A", floor: "#9AA070" };
+  var SAY = [
+    { v: "make the enemy pop", x: "Raise the enemy against the floor from " + crat(SAYC.bef, SAYC.floor).toFixed(1) + " : 1 to at least 3 : 1" },
+    { v: "make the hero readable", x: "Fill the silhouette black at 24 px and keep its tell-apart score from the enemy above 0.30" },
+    { v: "draw the eye to the hero", x: "Put at least 60% of the detail budget on the focal tile: 43 of 64 is 67%" },
+    { v: "the mood is all over the place", x: "Choose 6 images within 60 px of their centre; the scattered set spreads " + spread(SCATTER).toFixed(0) + " px" },
+    { v: "I cannot pick one idea", x: "Close half each round: 24, 12, 6, 3 ideas, and do not reopen a closed door" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague art requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one can be checked.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    function limit(x, label) { p.append("path").attr("d", "M" + x + ",6 V" + (ph - 6)).attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6"); cap(p, x + 8, 34, label, { size: 24, fill: RED, weight: 700 }); }
+    if (k === 1) { var rb = crat(SAYC.bef, SAYC.floor), ra = crat(SAYC.aft, SAYC.floor), sx = 520 / 6; [["now", rb, "#C4C4C4"], ["after", ra, RED]].forEach(function (r, i) { cap(p, 14, 100 + i * 100, r[0] + " " + r[1].toFixed(1) + " : 1", { size: 24 }); bar(p, 14, 116 + i * 100, r[1] * sx, 36, r[2], anim, i * 400); }); limit(3 * sx + 14, "3 : 1"); nt = "after passes the 3 : 1 check"; }
+    else if (k === 2) { var tAB = tell("B", 24), tA2 = tell("A2", 24); [["vs enemy blob", tAB, INK], ["vs near copy", tA2, RED]].forEach(function (r, i) { cap(p, 14, 100 + i * 100, r[0] + " " + r[1].toFixed(2), { size: 24 }); bar(p, 14, 116 + i * 100, r[1] * 520 / 1, 36, r[2], anim, i * 400); }); limit(0.3 * 520 + 14, "0.30"); nt = tA2 < 0.3 ? "the near copy fails at 24 px" : "both pass at 24 px"; }
+    else if (k === 3) { [["even", 8 / 64 * 100, "#C4C4C4"], ["concentrated", 43 / 64 * 100, RED]].forEach(function (r, i) { cap(p, 14, 100 + i * 100, r[0] + " " + Math.round(r[1]) + "%", { size: 24 }); bar(p, 14, 116 + i * 100, r[1] * 5.2, 36, r[2], anim, i * 400); }); limit(60 * 5.2 + 14, "60%"); nt = "only the concentrated tile passes"; }
+    else if (k === 4) { var sN = spread(NARROW), sS = spread(SCATTER); [["narrow", sN, INK], ["scattered", sS, RED]].forEach(function (r, i) { cap(p, 14, 100 + i * 100, r[0] + " " + r[1].toFixed(0) + " px", { size: 24 }); bar(p, 14, 116 + i * 100, r[1] * 2, 36, r[2], anim, i * 400); }); limit(60 * 2 + 14, "60 px"); nt = "the narrow board passes; the scattered one does not"; }
+    else { [24, 12, 6, 3].forEach(function (n, i) { cap(p, 14, 60 + i * 64, "round " + i + ": " + n, { size: 24 }); bar(p, 180, 36 + i * 64, n / 24 * 420, 36, i === 3 ? RED : "#C4C4C4", anim, i * 300); }); nt = "24 ideas become 3 in three rounds"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Can a player tell what is happening at once, and does the game answer?",
+    "Where does the eye land first, and is that the most important thing?",
+    "Does the silhouette still read, filled black at game size?",
+    "Which constraint does this design solve, and what is the reference?",
+    "Did I show it early and ask a specific question about the goal?",
+    "Does the character read at the size it has in the game's real view?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you call a piece of art ready", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: a number, a size, a limit, not “make it better”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, style: { steps: 4, render: renderStyle }, hier: { steps: 4, render: renderHier },
+    shape: { steps: 4, render: renderShape }, focus: { steps: 3, render: renderFocus }, concept: { steps: 3, render: renderConcept },
+    cons: { steps: 4, render: renderCons }, ideate: { steps: 4, render: renderIdeate }, icon: { steps: 3, render: renderIcon },
+    chain: { steps: 4, render: renderChain }, anat: { steps: 2, render: renderAnat }, pairs: { steps: 4, render: renderPairs },
+    say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

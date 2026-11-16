@@ -4,7 +4,7 @@ CSYE 7270 · Fall 2026 · Week 10
 
 ## Executive summary
 
-In Godot an animation is data: a clip holds tracks, each bound to a node, each holding keys that are times and values in a text scene file, which is why an agent can retime one in seconds and why a wrong number raises no error. This module teaches Godot 4.7.2 animation through the Week 10 rule: establish behavior checks before changing animation tracks, timing or transitions. You pin the sword timing of a combo demo with a frame-stepped headless check, make one animation change, read what the check says, fix what it catches, and re-pin on purpose. The run on 27 September 2026 found that the demo's second combo swing never plays on screen even though the build's own combo test passed; the final check passes 20 of 20, though Claude Code hit its usage limit before writing the test and Codex completed the same prompts. None of this shows that the swings look right, that the hitbox matches the blade, or that anything is hit, because the demo has no enemy; those judgments are yours. This module and Module 11 feed Assignment 8.
+In Godot an animation is data: a clip holds tracks, each bound to a node, each holding keys that are times and values in a text scene file, which is why an agent can retime one in seconds and why a wrong number raises no error. This module teaches Godot 4.7.2 animation through the Week 10 rule: establish behavior checks before changing animation tracks, timing or transitions. You pin the sword timing of a combo demo with a frame-stepped headless check, make one animation change, read what the check says, fix what it catches, and re-pin on purpose. The run on 27 September 2026 found that the demo's second combo swing never plays on screen even though the build's own combo test passed; the final check passes 20 of 20, though Claude Code hit its usage limit before writing the test and Codex completed the same prompts. None of this shows that the swings look right, that the hitbox matches the blade, or that anything is hit, because the demo has no enemy; those judgments are yours. This module and Module 11 feed Assignment 7.
 
 ## The question
 
@@ -310,7 +310,7 @@ Write down what you saw, including anything that looks wrong. In the chapter's f
 
 Commit in steps, so each can be diffed alone: baseline, pinned test, animation change, fix, re-pin. Add a dated entry to `FRICTIONAL.md`: what you asked for, what the check reported (every FAIL line, including the ones you did not ask for), what you saw when you played, and what stays unverified (no enemy to hit; feel judged by you alone). The old course asked for original animation project files, never just an exported GIF; in Godot the project file is the scene and its keys, so commit them.
 
-For this practice, `godot-gamedev` fits: the one-line `seek(0.0)` and swing two, before and after. Assignment 8 requires a `godot-walkthrough` film, which shows the game running, so capture it on a real screen. The Brutalist skills come from a course-provided checkout; if yours lacks the skill, request the update.
+For this practice, `godot-gamedev` fits: the one-line `seek(0.0)` and swing two, before and after. Assignment 7 requires a `godot-walkthrough` film, which shows the game running, so capture it on a real screen. The Brutalist skills come from a course-provided checkout; if yours lacks the skill, request the update.
 
 ### 5. Verify
 
@@ -361,7 +361,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to pin ti
 
 ## The next step
 
-This module and Module 11 feed **Assignment 8 - Animation Wired to Player Actions**, which opens in Module 10 and is due about Day 80. Keep the habit from this week: pin the behavior, change one thing, and read every failure before you approve it. Module 11 connects animation states to player actions. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 10 — Animation Foundations](../../chapters/10-animation-foundations.md).
+This module and Module 11 feed **Assignment 7 - Doing Animation with Claude and Godot**, which opens in Module 10 and is due November 15. Keep the habit from this week: pin the behavior, change one thing, and read every failure before you approve it. Module 11 connects animation states to player actions. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 10 — Animation Foundations](../../chapters/10-animation-foundations.md).
 
 ## If you know Unity or Unreal
 

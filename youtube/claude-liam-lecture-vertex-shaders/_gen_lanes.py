@@ -353,12 +353,12 @@ lab("B38", 4, "a Polygon2D has no UV without a texture", "06-flag-pinned.gdshade
     readouts=[{"at": 0.4, "text": "no texture", "x": 0.27, "y": 0.9}, {"at": 0.4, "text": "with texture", "x": 0.73, "y": 0.9}])
 lab("B39", 4, "a vertex shader changes the drawing, not the node", "16-slide-far.gdshader", "vertex-shaders/drawing-only.mp4",
     "Godot 4.7.2 · Apple M4 Pro · Forward+ · scripted: shader switched on at 30 % of the beat", [{"at": 0.3, "lines": [4]}],
-    "Code card at left with `VERTEX.x += 200.0;` highlighted; at right a real Godot window with a thin grey outline marking the node's own rectangle (from get_rect()). The checker square starts inside it, then the picture slides 200 px to the right while the outline stays. Readouts 'rect unchanged' and 'collision unchanged'. Caption: 'collision shape: what physics collides with'.",
+    "Code card at left with `VERTEX.x += 200.0;` highlighted; at right a real Godot window with a thin grey outline marking the node's own rectangle (from get_rect()). The checker square starts inside it, then the picture slides 200 px to the right while the outline stays. Readouts 'rect unchanged' and 'collision unchanged'. Caption: 'collision shape: where physics collides'.",
     "The picture slides away from its outline, which does not move.",
     [{"at": 0.3, "event": "slide line highlighted; picture slides away from the outline"}, {"at": 0.75, "event": "readouts: rect and collision unchanged"}],
     "manim: a node and a ghost picture", "The outline staying put while the picture leaves is the claim, and the numbers come from get_rect and an Area2D overlap test.",
     f"C25: scene `drawing-only` of {SCENES} (canvas 640 x 360): Sprite2D checker 128 px at scale 1.0 with a grey outline drawn from get_rect(); 16-slide-far assigned at 0.3 of the beat; record to the event plus 1.5 s, then hold. Verified: get_rect() = (-64, -64, 128, 128) before and after; an Area2D collision shape on the node overlaps the probe at the node's position and not the probe where the picture is drawn; the picture's left edge moves from x 156 to 356.",
-    "verify9.gd 9a, 9b, 9c", caption="collision shape: what physics collides with",
+    "verify9.gd 9a, 9b, 9c", caption="collision shape: where physics collides",
     readouts=[{"at": 0.75, "text": "rect unchanged", "x": 0.3, "y": 0.9}, {"at": 0.75, "text": "collision unchanged", "x": 0.7, "y": 0.9}])
 rem("B40", 4, "count the vertices: print the mesh's vertex array", "terminal", "CCPlainShell",
     {"title": "Godot output", "lines": ["print($Flag.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].size())",

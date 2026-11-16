@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2D art and sound assets in the engine | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: 2D art and sound assets in the engine">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="2D art and sound assets in the engine">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 2</p>
+      <h1 class="t-opening rise g2">2D art and sound assets in the engine</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for getting a picture or a sound to work inside Godot</p>
+      <div class="speaker-notes" hidden><p>Deck 3a of the topic order (art, first deck). 34 terms. Tags: in the book text means a chapter uses and explains it; in the glossary means a glossary row only; editor or docs means the Godot documentation only; video only means the Riot art episodes only.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 2 and 12; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Resolution, viewport and aspect ratio">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Size and pixels</p>
+      <h2 class="t-chart">Resolution, viewport and aspect ratio</h2>
+      <div class="diagram build" data-build="res" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “The question”; glossary, 2D art and sound assets; Godot docs, Multiple resolutions (viewport).</p>
+      <div class="speaker-notes" hidden><p>The 1,024 × 873 file and the 640 × 360 viewport are from Chapter 2, “The question”. The scale factors are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Texels, nearest and linear, integer scaling">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Size and pixels</p>
+      <h2 class="t-chart">Texels, nearest and linear, integer scaling</h2>
+      <div class="diagram build" data-build="filt" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “Texture settings that decide whether a sprite survives”; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>The 6 × 6 sprite is invented. Shade counts and pixel widths are computed from it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Sprite sheets, atlases and frame rate">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Frames and cutouts</p>
+      <h2 class="t-chart">Sprite sheets, atlases and frame rate</h2>
+      <div class="diagram build" data-build="sheet" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “Frames: SpriteFrames and AnimatedSprite2D”; glossary, 2D art and sound assets and Animation section.</p>
+      <div class="speaker-notes" hidden><p>Cell size 48 × 48 is from the Chapter 2 exercise. The 5 FPS default is from Chapter 2.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Alpha, transparent backgrounds, PNG and JPEG, fringe">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Frames and cutouts</p>
+      <h2 class="t-chart">Alpha, transparent backgrounds, PNG and JPEG, fringe</h2>
+      <div class="diagram build" data-build="alpha" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “Ideas you need”, items 1 and 4; Chapter 7, finding F-2 (JPEG, no alpha); glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>Memory sizes are width × height × channels. The halo is computed by mixing stored colours.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Import settings, lossy copies and mipmaps">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Import, readability, collider</p>
+      <h2 class="t-chart">Import settings, lossy copies and mipmaps</h2>
+      <div class="diagram build" data-build="imp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “The import pipeline” and “Texture settings”; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>The three import lines are from Chapter 2. The lossy row is modelled by averaging, not by a real codec.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Silhouette and readability">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Import, readability, collider</p>
+      <h2 class="t-chart">Silhouette and readability</h2>
+      <div class="diagram build" data-build="sil" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, prompting table (Silhouette row); Riot series, Ep 1 and Ep 3 (readability); glossary, 2D art and sound assets, Textures and materials section.</p>
+      <div class="speaker-notes" hidden><p>436 px and the 4 px legs are from Chapter 2, Predict question 1. The bug is invented.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The collider is not the art">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Import, readability, collider</p>
+      <h2 class="t-chart">The collider is not the art</h2>
+      <div class="diagram build" data-build="coll" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “The collider is not the art”; glossary, Game movement and collision.</p>
+      <div class="speaker-notes" hidden><p>18 × 28 is the player collider in Chapter 2. The 42 × 34 art size is invented.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="PCM, sample rate, Nyquist limit and synthesis">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Sound</p>
+      <h2 class="t-chart">PCM, sample rate, Nyquist limit and synthesis</h2>
+      <div class="diagram build" data-build="samp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “Procedural audio is not generative audio”; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>440 Hz at 22,050 Hz is the generator demo in Chapter 2. All numbers are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="WAV and Ogg, loop point, one-shot">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Sound</p>
+      <h2 class="t-chart">WAV and Ogg, loop point, one-shot</h2>
+      <div class="diagram build" data-build="loop" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “Sound: import, loop, trigger”; Chapter 12, “Import”; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>The waveform is invented. 4.000 s, 44,100 Hz and loop end 176,399 are from Chapter 2.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="AudioStreamPlayer and polyphony">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Sound</p>
+      <h2 class="t-chart">AudioStreamPlayer and polyphony</h2>
+      <div class="diagram build" data-build="player" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, “Sound: import, loop, trigger”; Chapter 12, “Polyphony, restart and pause”; glossary, Audio and triggers.</p>
+      <div class="speaker-notes" hidden><p>Three hits 40 ms apart on a 60 ms click is the Chapter 12 question.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Buses, decibels, headroom and clipping">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Sound</p>
+      <h2 class="t-chart">Buses, decibels, headroom and clipping</h2>
+      <div class="diagram build" data-build="mix" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 12, “Buses: where levels live”; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>Music at −12 dB is from Chapter 12. Amplitudes and percentages are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 2 and 12; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>Resolution and viewport, mipmaps and filtering, sample rate and frame rate, loop point and one-shot.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 2 and 12; glossary, 2D art and sound assets.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before a generated asset goes in the game">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before a generated asset goes in the game</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2, prompting table and “Verify”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= 2D art and sound assets in the engine (Chapter 2, with Chapter 12 for the mix) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = a chapter uses AND explains it; gloss = glossary row only; editor = Godot docs only; video = Riot series only */
+  var T = {
+    res: { n: "Resolution", tag: "gloss", m: "Width and height in pixels" },
+    vp: { n: "Viewport", tag: "editor", m: "The area the game draws into, set in Project Settings; the window scales it" },
+    asp: { n: "Aspect ratio", tag: "gloss", m: "Width divided by height" },
+    uni: { n: "Uniform vs non-uniform", tag: "gloss", m: "Same factor on both axes versus different factors that distort" },
+    texel: { n: "Texel", tag: "gloss", m: "One pixel of a texture" },
+    filt: { n: "Nearest vs linear", tag: "book", m: "Nearest reads one texel and keeps hard edges; linear blends four and smooths" },
+    intsc: { n: "Integer scaling", tag: "gloss", m: "Scaling by whole numbers so pixel art stays crisp" },
+    sheet: { n: "Sprite sheet", tag: "book", m: "One image of many frames in a grid" },
+    atlas: { n: "Texture atlas", tag: "book", m: "Many small images packed into one big texture; a frame is a region of it" },
+    sf: { n: "SpriteFrames", tag: "book", m: "A Godot resource of named animations: frames, speed and a loop flag" },
+    fps: { n: "Frame rate", tag: "book", m: "Frames shown per second" },
+    alpha: { n: "Alpha channel", tag: "gloss", m: "The extra channel storing opacity" },
+    transp: { n: "Transparent background", tag: "book", m: "Cut the background to alpha 0; ask for a solid colour, not for transparent" },
+    pj: { n: "PNG vs JPEG", tag: "book", m: "Lossless with alpha versus lossy without alpha" },
+    fringe: { n: "Fringe (halo)", tag: "book", m: "The halo of edge colour left around a cutout; fix_alpha_border removes it" },
+    imp: { n: "Import settings", tag: "book", m: "Per-asset options controlling how the engine converts it, kept in the .import file" },
+    lossy: { n: "Lossless vs lossy", tag: "gloss", m: "Exact reconstruction versus smaller files with lost detail" },
+    mip: { n: "Mipmaps", tag: "book", m: "Pre-shrunk copies of a texture used when drawn small; about 33% more memory" },
+    sil: { n: "Silhouette", tag: "book", m: "The outline of an object; it should still read when filled black at game size" },
+    read: { n: "Readability", tag: "video", m: "How well a character can be understood in the game's real view" },
+    coll: { n: "Collider", tag: "book", m: "Shape used for contact tests; separate from the art and sized from the body" },
+    pcm: { n: "PCM", tag: "gloss", m: "Uncompressed digital audio samples" },
+    sr: { n: "Sample rate", tag: "gloss", m: "Audio samples per second" },
+    nyq: { n: "Nyquist limit", tag: "gloss", m: "The highest frequency a sample rate can hold: half the rate" },
+    proc: { n: "Procedural synthesis", tag: "book", m: "Sound made by a formula evaluated sample by sample, with no file and no model" },
+    wo: { n: "WAV vs Ogg Vorbis", tag: "book", m: "WAV for short effects; Ogg Vorbis for music, speech and long sounds" },
+    loop: { n: "Loop point", tag: "book", m: "Where a looping sound jumps back to; WAV has begin and end, Ogg only a start offset" },
+    shot: { n: "One-shot", tag: "gloss", m: "Plays once and stops" },
+    asp2: { n: "AudioStreamPlayer", tag: "book", m: "Godot node that plays sound with no position" },
+    poly: { n: "Polyphony", tag: "book", m: "How many copies of a sound can play at once; Godot's default is 1" },
+    bus: { n: "Bus", tag: "book", m: "A channel that sounds are routed through for shared volume and effects" },
+    db: { n: "Decibel", tag: "gloss", m: "Logarithmic loudness unit" },
+    head: { n: "Headroom", tag: "gloss", m: "Spare level left below the maximum" },
+    clip: { n: "Clipping", tag: "gloss", m: "Distortion when a signal exceeds the maximum level" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  var FMT = d3.format(",");
+  function line(g, x1, y1, x2, y2, c, w, dash) { var p = g.append("path").attr("d", "M" + x1 + "," + y1 + " L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 2).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function arrow(g, x1, y1, x2, y2, c) { line(g, x1, y1, x2, y2, c || INK, 3); var a = Math.atan2(y2 - y1, x2 - x1); g.append("path").attr("d", "M" + x2 + "," + y2 + " L" + (x2 - 14 * Math.cos(a - 0.45)) + "," + (y2 - 14 * Math.sin(a - 0.45)) + " L" + (x2 - 14 * Math.cos(a + 0.45)) + "," + (y2 - 14 * Math.sin(a + 0.45)) + "Z").attr("fill", c || INK); }
+  function checker(g, x, y, w, h, c) { c = c || 20; for (var i = 0; i * c < w; i++) for (var j = 0; j * c < h; j++) g.append("rect").attr("x", x + i * c).attr("y", y + j * c).attr("width", Math.min(c, w - i * c)).attr("height", Math.min(c, h - j * c)).attr("fill", (i + j) % 2 ? "#FFFFFF" : "#D9D9D9"); }
+  function wavePath(f, x0, w, cy, amp, u0, u1, n) { var d = ""; for (var i = 0; i <= n; i++) { var u = u0 + (u1 - u0) * i / n; d += (i ? "L" : "M") + (x0 + w * i / n).toFixed(1) + "," + (cy - amp * f(u)).toFixed(1); } return d; }
+  /* the illustrative music loop: three whole cycles plus seven, so it repeats exactly and starts and ends at 0 */
+  function wave(u) { return (0.55 * Math.sin(2 * Math.PI * 3 * u) + 0.3 * Math.sin(2 * Math.PI * 7 * u)) * (0.65 + 0.35 * Math.cos(2 * Math.PI * u)); }
+  /* a top-down bug, h = height in px, legs optional strength */
+  function bug(g, cx, by, h, o) {
+    o = o || {};
+    var G = g.append("g"), body = o.fill || INK, head = o.head || RED, lw = o.legW || Math.max(2, h * 0.02), lo = o.legO === undefined ? 1 : o.legO;
+    [-1, 1].forEach(function (s) {
+      [0.62, 0.5, 0.38].forEach(function (yy, j) {
+        G.append("path").attr("d", "M0," + (by - yy * h) + " L" + (s * (0.3 + 0.04 * j) * h) + "," + (by - (yy - 0.12 + 0.12 * j) * h)).attr("stroke", body).attr("stroke-width", lw).attr("fill", "none").attr("opacity", lo).attr("transform", "translate(" + cx + ",0)");
+      });
+      G.append("path").attr("d", "M0," + (by - 0.9 * h) + " L" + (s * 0.14 * h) + "," + (by - 1.0 * h)).attr("stroke", body).attr("stroke-width", lw).attr("fill", "none").attr("opacity", lo).attr("transform", "translate(" + cx + ",0)");
+    });
+    G.append("ellipse").attr("cx", cx).attr("cy", by - 0.22 * h).attr("rx", 0.2 * h).attr("ry", 0.22 * h).attr("fill", body);
+    G.append("ellipse").attr("cx", cx).attr("cy", by - 0.52 * h).attr("rx", 0.13 * h).attr("ry", 0.12 * h).attr("fill", body);
+    G.append("circle").attr("cx", cx).attr("cy", by - 0.78 * h).attr("r", 0.14 * h).attr("fill", head);
+    return G;
+  }
+
+  var MAPROWS = [
+    ["Size and pixels", "resolution, viewport, aspect ratio, uniform vs non-uniform, texel, nearest vs linear, integer scaling", "How a file's pixels land on the screen"],
+    ["Frames and cutouts", "sprite sheet, texture atlas, SpriteFrames, frame rate, alpha channel, transparent background, PNG vs JPEG, fringe", "How frames are cut and how edges stay clean"],
+    ["Import, readability, collider", "import settings, lossless vs lossy, mipmaps, silhouette, readability, collider", "What the engine does to a file, and what the player sees"],
+    ["Sound", "PCM, sample rate, Nyquist limit, procedural synthesis, WAV vs Ogg Vorbis, loop point, one-shot, AudioStreamPlayer, polyphony, bus, decibel, headroom, clipping", "How a sound is stored, looped, played and mixed"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of 2D art and sound terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from Chapter 2, Chapter 12 and the glossary. Every one is about getting a picture or a sound to work inside the engine.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1060];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 56, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 26, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. resolution, viewport, aspect ratio, uniform scaling ---------- */
+  var IW = 1024, IH = 873, VW = 640, VH = 360;
+  function renderRes(el, k, anim) {
+    var svg = svgFor(el, W, H, "A 1,024 by 873 image has to fit a 640 by 360 viewport", "The image file, then the viewport beside it at the same scale, then their aspect ratios, then the image scaled by one factor and by two different factors.");
+    var ey = base(svg, [{ id: "res", s: 1 }, { id: "vp", s: 2 }, { id: "asp", s: 3 }, { id: "uni", s: 4 }], k, anim, ["Resolution", "pixels in the file"], ["Viewport", "pixels the game draws into"]);
+    var d = svg.append("g");
+    function img(g, x, y, sx, sy, circ) { box(g, x, y, IW * sx, IH * sy, { stroke: INK, sw: 3, fill: "#F6F6F6" }); g.append("ellipse").attr("cx", x + IW * sx / 2).attr("cy", y + IH * sy / 2).attr("rx", circ * sx).attr("ry", circ * sy).attr("fill", RED); }
+    if (k <= 1) {
+      lab(d, 0, 30, "THE IMAGE FILE, DRAWN AT HALF SIZE");
+      if (k >= 1) { img(d, 10, 70, 0.5, 0.5, 300); cap(d, 10, 548, "1,024 × 873 = " + FMT(IW * IH) + " pixels", { size: 26, weight: 700 }); }
+    } else if (k === 2) {
+      lab(d, 0, 30, "SAME SCALE (0.4): FILE AND VIEWPORT");
+      img(d, 10, 70, 0.4, 0.4, 300); box(d, 440, 70, VW * 0.4, VH * 0.4, { stroke: RED, sw: 3, fill: TINT });
+      cap(d, 10, 470, "image 1,024 × 873", { size: 24, weight: 700 }); cap(d, 440, 250, "viewport 640 × 360", { size: 24, weight: 700, fill: RED });
+      wrap(d, 440, 310, "The file is " + (IW / VW).toFixed(2) + " times wider and " + (IH / VH).toFixed(2) + " times taller than the viewport.", 26, { size: 24, lh: 30 });
+    } else if (k === 3) {
+      lab(d, 0, 30, "WIDTH ÷ HEIGHT, BOTH DRAWN 150 PX TALL");
+      var ia = IW / IH, va = VW / VH;
+      box(d, 10, 90, 150 * ia, 150, { stroke: INK, sw: 3, fill: "#F6F6F6" }); box(d, 300, 90, 150 * va, 150, { stroke: RED, sw: 3, fill: TINT });
+      cap(d, 10, 290, "image: " + IW + " ÷ " + IH + " = " + ia.toFixed(2), { size: 26, weight: 700 }); cap(d, 300, 290, "viewport: " + VW + " ÷ " + VH + " = " + va.toFixed(2), { size: 26, weight: 700, fill: RED });
+      wrap(d, 10, 380, "The ratios differ, so no single scale can make the image fill the viewport exactly.", 60, { size: 26, lh: 34 });
+    } else {
+      lab(d, 0, 30, "SCALE FACTORS: 640 ÷ 1,024 AND 360 ÷ 873");
+      var sy = VH / IH, sxu = VW / IW, ps = 0.5;
+      cap(d, 0, 84, "Two factors: distorted", { size: 26, weight: 700, fill: RED }); cap(d, 400, 84, "One factor " + sy.toFixed(3) + ": fits", { size: 26, weight: 700 });
+      box(d, 0, 110, VW * ps, VH * ps, { stroke: RED, sw: 2, fill: TINT }); box(d, 400, 110, VW * ps, VH * ps, { stroke: INK, sw: 2, fill: TINT });
+      var uw = IW * sy;
+      d.append("rect").attr("x", 400 + (VW - uw) * ps / 2).attr("y", 110).attr("width", uw * ps).attr("height", VH * ps).attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 2);
+      d.append("ellipse").attr("cx", 400 + VW * ps / 2).attr("cy", 110 + VH * ps / 2).attr("rx", 300 * sy * ps).attr("ry", 300 * sy * ps).attr("fill", RED);
+      var dyn = d.append("g"), lt = d.append("text").attr("x", 0).attr("y", 340).attr("font-family", SANS).attr("font-size", 24).attr("font-weight", 400).attr("fill", BODY);
+      run(dyn, 1600, function (t) {
+        var sx = sy + (sxu - sy) * t; dyn.selectAll("*").remove();
+        dyn.append("rect").attr("x", (VW - IW * sx) * ps / 2).attr("y", 110).attr("width", IW * sx * ps).attr("height", VH * ps).attr("fill", "#F6F6F6").attr("stroke", RED).attr("stroke-width", 2);
+        dyn.append("ellipse").attr("cx", VW * ps / 2).attr("cy", 110 + VH * ps / 2).attr("rx", 300 * sx * ps).attr("ry", 300 * sy * ps).attr("fill", RED);
+        lt.text("×" + sx.toFixed(3) + " across, ×" + sy.toFixed(3) + " down: " + (sx / sy).toFixed(2) + " : 1");
+      }, anim && k === 4);
+      cap(d, 400, 340, "422 × 360, bars " + ((VW - uw) / 2).toFixed(0) + " px each side", { size: 24 });
+      cap(d, 0, 420, "The circle in the file becomes an ellipse on the left.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "The resolution is a fact about the file: 893,952 pixels.", "The viewport is the game's own size; the file is bigger, so it must be scaled down.", "Different shapes: scaling to fill would change the picture, not just its size.", "Use one factor (the smaller, 0.412) and accept bars; two factors squash the art."][k]);
+  }
+
+  /* ---------- 2. texel, nearest vs linear, integer scaling ---------- */
+  var SPR = [[0, 0, 1, 1, 0, 0], [0, 1, 1, 1, 1, 0], [1, 1, 0, 0, 1, 1], [1, 1, 1, 1, 1, 1], [0, 0, 1, 1, 0, 0], [0, 1, 1, 1, 1, 0]];
+  function shade(v) { return d3.interpolateRgb("#FFFFFF", INK)(v); }
+  function bil(px, py, n) {
+    var f = n / 6, x = (px + 0.5) / f - 0.5, y = (py + 0.5) / f - 0.5, x0 = Math.floor(x), y0 = Math.floor(y), tx = x - x0, ty = y - y0;
+    function g(i, j) { i = Math.max(0, Math.min(5, i)); j = Math.max(0, Math.min(5, j)); return SPR[j][i]; }
+    return (g(x0, y0) * (1 - tx) + g(x0 + 1, y0) * tx) * (1 - ty) + (g(x0, y0 + 1) * (1 - tx) + g(x0 + 1, y0 + 1) * tx) * ty;
+  }
+  function nearV(px, py, n) { var f = n / 6; return SPR[Math.floor(py / f)][Math.floor(px / f)]; }
+  function shades(fn, n) { var s = {}; for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) s[fn(i, j, n).toFixed(3)] = 1; return Object.keys(s).length; }
+  function renderFilter(el, k, anim) {
+    var svg = svgFor(el, W, H, "A texel is one pixel of a texture; nearest keeps it hard, linear blends it", "A 6 by 6 sprite with one texel marked. Then the same sprite enlarged to 24 by 24 with nearest and with linear filtering. Then widths of enlarged pixels at three scales.");
+    var ey = base(svg, [{ id: "texel", s: 1 }, { id: "filt", s: 2 }, { id: "intsc", s: 3 }], k, anim, ["Nearest", "one texel, hard edge"], ["Linear", "four texels blended"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "A 6 × 6 SPRITE: 36 TEXELS");
+      var c = 70;
+      SPR.forEach(function (r, j) { r.forEach(function (v, i) { d.append("rect").attr("x", 20 + i * c).attr("y", 60 + j * c).attr("width", c).attr("height", c).attr("fill", v ? INK : "#FFFFFF").attr("stroke", FAMILIAR).attr("stroke-width", 1.5); }); });
+      var hl = d.append("rect").attr("x", 20 + 2 * c + 2).attr("y", 60 + 2 * c + 2).attr("width", c - 4).attr("height", c - 4).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 5);
+      if (anim) hl.attr("opacity", 0).transition().delay(300).duration(500).attr("opacity", 1);
+      cap(d, 460, 220, "one texel", { size: 26, weight: 700, fill: RED }); cap(d, 460, 256, "its value: 0 (white)", { size: 24 });
+      cap(d, 20, 520, "6 × 6 = 36 texels; the file stores each one", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THE SAME SPRITE DRAWN 4 TIMES LARGER (24 × 24)");
+      var n = 24, cs = 12, pans = [[0, nearV], [350, bil]];
+      pans.forEach(function (p, pi) { var g = d.append("g"); for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) g.append("rect").attr("x", p[0] + i * cs).attr("y", 60 + j * cs).attr("width", cs + 0.4).attr("height", cs + 0.4).attr("fill", shade(p[1](i, j, n))); fade(g, A(anim, k, 2), pi * 600); });
+      cap(d, 0, 420, "nearest: " + shades(nearV, n) + " shades", { size: 26, weight: 700 }); cap(d, 350, 420, "linear: " + shades(bil, n) + " shades", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 470, "Every blended shade is a grey that is not in the art.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "ON-SCREEN WIDTH OF EACH SPRITE PIXEL (SCREEN PIXELS)");
+      [2, 2.5, 3].forEach(function (s, r) {
+        var y = 70 + r * 160, g = d.append("g"), ws = [];
+        for (var i = 0; i < 6; i++) ws.push(Math.floor((i + 1) * s) - Math.floor(i * s));
+        cap(g, 0, y, "scale " + s + (s % 1 ? " (not whole)" : " (whole)"), { size: 26, weight: 700, fill: s % 1 ? RED : INK });
+        var x = 0; ws.forEach(function (w, i) { g.append("rect").attr("x", x).attr("y", y + 14).attr("width", w * 20).attr("height", 50).attr("fill", i % 2 ? GREY : INK); x += w * 20; });
+        cap(g, 0, y + 104, "widths: " + ws.join(" "), { size: 24, fill: s % 1 ? RED : BODY });
+        fade(g, A(anim, k, 3), r * 350);
+      });
+    }
+    if (k === 0) { cap(d, 0, 200, "A 6 × 6 pixel-art sprite is the example for this slide.", { size: 26, fill: INK }); }
+    note(svg, ey, ["", "A texel is a pixel counted inside the texture, before it is drawn.", "Nearest keeps 2 shades. Linear invents greys. Pixel art needs nearest, set on the node.", "Whole-number scales keep every pixel the same width; 2.5 makes some pixels 50% wider."][k]);
+  }
+
+  /* ---------- 3. sprite sheet, atlas, SpriteFrames, frame rate ---------- */
+  function renderSheet(el, k, anim) {
+    var svg = svgFor(el, W, H, "A sprite sheet holds the frames; SpriteFrames plays them at a frame rate", "A strip of four frames in cells of 48 pixels, then one frame cut out as a region, then an animation list playing at 5 frames a second, then 5 against 12 frames a second.");
+    var ey = base(svg, [{ id: "sheet", s: 1 }, { id: "atlas", s: 2 }, { id: "sf", s: 3 }, { id: "fps", s: 4 }], k, anim, ["Sprite sheet", "the image with all frames"], ["SpriteFrames", "the resource that plays them"]);
+    var d = svg.append("g"), dyn = d.append("g"), CW = 140, SY = 70;
+    function strip(d, hi) {
+      for (var i = 0; i < 4; i++) { var cell = box(d, i * CW, SY, CW, CW, { stroke: i === hi ? RED : INK, sw: i === hi ? 5 : 2, fill: i === hi ? TINT : "#FFFFFF" }); bug(d, i * CW + CW / 2, SY + CW - 8, 110, { legW: 3 }).attr("transform", "translate(0," + ([0, -3, 0, -3][i]) + ")"); cap(d, i * CW + CW / 2, SY + CW + 30, "frame " + i, { size: 24, anchor: "middle", fill: i === hi ? RED : MUTED }); }
+    }
+    function preview(g, cx, by, i) { box(g, cx - 90, by - 190, 180, 190, { stroke: INK, sw: 2 }); bug(g, cx, by - 8, 150, { legW: 3 }).attr("transform", "translate(0," + ([0, -3, 0, -3][i]) + ")"); }
+    if (k === 1) {
+      lab(d, 0, 30, "ONE IMAGE FILE: 4 CELLS OF 48 × 48 PIXELS");
+      strip(d, -1);
+      cap(d, 0, 330, "the file is " + (4 * 48) + " × 48 pixels", { size: 26, weight: 700 }); cap(d, 0, 370, "cells are equal and the same scale, so a test can count them", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "A FRAME IS A REGION OF THE SHEET");
+      var rt = cap(d, 0, 330, "", { size: 26, weight: 700, fill: RED });
+      run(dyn, 2400, function (t) { var i = Math.min(3, Math.floor(t * 4)); dyn.selectAll("*").remove(); strip(dyn, i); rt.text("region = (" + (i * 48) + ", 0, 48, 48)"); preview(dyn, 620, 560, i); }, anim);
+    } else if (k === 3) {
+      lab(d, 0, 30, "ONE ANIMATION: FRAMES, SPEED, LOOP");
+      box(d, 0, 60, 440, 200, { stroke: INK, sw: 3 });
+      ["name: walk", "frames: 0, 1, 2, 3", "speed: 5 FPS", "loop: on"].forEach(function (s, i) { mono(d, 16, 104 + i * 44, s, { size: 24, fill: i === 2 ? RED : INK, weight: i === 2 ? 700 : 400 }); });
+      cap(d, 0, 310, "5 FPS is a new animation's default", { size: 24, fill: MUTED });
+      run(dyn, 4000, function (t) { var i = Math.floor(t * 4 * 5) % 4; dyn.selectAll("*").remove(); preview(dyn, 600, 330, i); cap(dyn, 600, 370, "frame " + i, { size: 24, anchor: "middle" }); }, anim);
+    } else if (k === 4) {
+      lab(d, 0, 30, "SAME 4 FRAMES, TWO SPEEDS (REAL TIME, 2 S)");
+      [[5, 190], [12, 570]].forEach(function (p, pi) {
+        var fps = p[0], cx = p[1];
+        cap(d, cx, 76, fps + " FPS", { size: 26, weight: 700, anchor: "middle", fill: pi ? RED : INK });
+        cap(d, cx, 436, "one cycle: " + (4 / fps).toFixed(2) + " s", { size: 24, anchor: "middle" });
+        cap(d, cx, 472, fps + " frames shown per second", { size: 24, anchor: "middle", fill: MUTED });
+        for (var i = 0; i < fps; i++) d.append("rect").attr("x", cx - 150 + i * 300 / fps).attr("y", 500).attr("width", 6).attr("height", 40).attr("fill", pi ? RED : INK);
+      });
+      run(dyn, 2000, function (t) { dyn.selectAll("*").remove(); preview(dyn, 190, 410, Math.floor(t * 2 * 5) % 4); preview(dyn, 570, 410, Math.floor(t * 2 * 12) % 4); }, anim);
+    }
+    if (k === 0) cap(d, 0, 200, "Four frames of a walking bug is the example for this slide.", { size: 26 });
+    note(svg, ey, ["", "A sheet is an image; the frames are fixed cells in it.", "Godot cuts a frame as an AtlasTexture: the sheet plus a rectangle.", "SpriteFrames lists frames per animation, with a speed and a loop flag.", "Frame rate sets the cycle: 4 frames at 5 FPS take 0.80 s, at 12 FPS 0.33 s."][k]);
+  }
+
+  /* ---------- 4. alpha channel, transparent background, PNG vs JPEG, fringe ---------- */
+  function renderAlpha(el, k, anim) {
+    var svg = svgFor(el, W, H, "Alpha stores opacity; a PNG can carry it, a JPEG cannot, and edges can pick up a halo", "Nine pixels from alpha 0 to alpha 1 over a checkerboard. Then a baked checkerboard against a real cutout. Then PNG and JPEG channels. Then an edge with and without a halo.");
+    var ey = base(svg, [{ id: "alpha", s: 1 }, { id: "transp", s: 2 }, { id: "pj", s: 3 }, { id: "fringe", s: 4 }], k, anim, ["Alpha channel", "opacity stored in the file"], ["Transparent background", "a cutout, not a checkerboard"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "ONE PIXEL AT NINE ALPHA VALUES");
+      for (var i = 0; i < 9; i++) {
+        var a = i / 8, g = d.append("g"); checker(g, i * 80, 90, 80, 80, 20); g.append("rect").attr("x", i * 80).attr("y", 90).attr("width", 80).attr("height", 80).attr("fill", INK).attr("opacity", a);
+        cap(g, i * 80 + 40, 210, a.toFixed(2), { size: 24, anchor: "middle" }); fade(g, A(anim, k, 1), i * 120);
+      }
+      cap(d, 0, 300, "0.00 = fully see-through, 1.00 = fully solid", { size: 26, weight: 700 });
+      cap(d, 0, 346, "alpha is the fourth channel after red, green and blue", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "“TRANSPARENT” REQUEST VERSUS A CUTOUT");
+      [0, 1].forEach(function (j) {
+        var x = j * 390, g = d.append("g"); box(g, x, 60, 350, 280, { stroke: INK, sw: 2, fill: TINT });
+        if (j === 0) checker(g, x + 55, 80, 240, 240, 20);
+        g.append("circle").attr("cx", x + 175).attr("cy", 200).attr("r", 80).attr("fill", INK); g.append("circle").attr("cx", x + 205).attr("cy", 180).attr("r", 18).attr("fill", RED);
+        cap(g, x, 380, j ? "solid gray, then cut" : "asked for “transparent”", { size: 26, weight: 700, fill: j ? INK : RED });
+        wrap(g, x, 420, j ? "corner pixel: alpha 0. The level shows through." : "corner pixel: alpha 1. The checkerboard is painted pixels.", 28, { size: 24, lh: 30 });
+        fade(g, A(anim, k, 2), j * 500);
+      });
+    } else if (k === 3) {
+      lab(d, 0, 30, "CHANNELS STORED PER PIXEL");
+      [["PNG", true, 4], ["JPEG", false, 3]].forEach(function (r, i) {
+        var y = 70 + i * 100, g = d.append("g"); cap(g, 0, y + 36, r[0], { size: 26, weight: 700 });
+        ["R", "G", "B", "A"].forEach(function (c, j) { var has = j < 3 || r[1]; box(g, 130 + j * 80, y, 70, 54, { stroke: has ? (j === 3 ? RED : INK) : FAMILIAR, sw: 3, fill: has ? (j === 3 ? RED : "#FFFFFF") : "#F6F6F6" }); cap(g, 165 + j * 80, y + 38, c, { size: 26, weight: 700, anchor: "middle", fill: has ? (j === 3 ? "#FFFFFF" : INK) : FAMILIAR }); });
+        cap(g, 470, y + 36, r[1] ? "lossless, has alpha" : "lossy, no alpha", { size: 24 }); fade(g, A(anim, k, 3), i * 400);
+      });
+      var by = [["RGBA (PNG)", IW * IH * 4, RED], ["RGB (JPEG)", IW * IH * 3, "#C4C4C4"]];
+      cap(d, 0, 320, "the same 1,024 × 873 image, uncompressed in memory", { size: 24, fill: MUTED });
+      by.forEach(function (r, i) { var y = 350 + i * 90; cap(d, 0, y + 24, r[0] + ": " + FMT(r[1]) + " bytes", { size: 24, weight: 700 }); bar(d, 0, y + 36, r[1] / (IW * IH * 4) * 700, 28, r[2], A(anim, k, 3), i * 300); });
+    } else if (k === 4) {
+      lab(d, 0, 30, "ONE EDGE, SAMPLED IN 12 STEPS, OVER A DARK RED LEVEL");
+      var cases = [["transparent texels store white", "#FFFFFF"], ["fix_alpha_border: store the edge colour", INK]];
+      cases.forEach(function (c, ci) {
+        var y = 70 + ci * 200, g = d.append("g"), maxL = 0, bg = d3.rgb("#7A1C2B");
+        cap(g, 0, y, c[0], { size: 24, weight: 700, fill: ci ? INK : RED });
+        for (var i = 0; i < 12; i++) {
+          var f = i / 11, a = 1 - f, col = d3.rgb(d3.interpolateRgb(INK, c[1])(f)), out = d3.rgb(col.r * a + bg.r * (1 - a), col.g * a + bg.g * (1 - a), col.b * a + bg.b * (1 - a));
+          maxL = Math.max(maxL, d3.hsl(out).l);
+          g.append("rect").attr("x", i * 60).attr("y", y + 16).attr("width", 60).attr("height", 90).attr("fill", out.toString());
+        }
+        cap(g, 0, y + 146, "lightest edge sample: " + maxL.toFixed(2) + (ci ? " (no halo)" : " (a pale halo)"), { size: 24, fill: ci ? INK : RED, weight: 700 });
+        fade(g, A(anim, k, 4), ci * 600);
+      });
+      cap(d, 0, 500, "left of each strip: the sprite edge; right: transparent texels", { size: 24, fill: MUTED });
+    }
+    if (k === 0) cap(d, 0, 200, "Alpha, cutouts and file formats for a sprite.", { size: 26 });
+    note(svg, ey, ["", "Alpha 0 is see-through. A game sprite needs it at every background pixel.", "A requested transparency can come back as a painted checkerboard. Check the corners.", "A JPEG has no alpha, so a JPEG sprite keeps its white box. PNG keeps alpha.", "Filtering blends in the colour of transparent texels. Fill them with the edge colour."][k]);
+  }
+
+  /* ---------- 5. import settings, lossless vs lossy, mipmaps ---------- */
+  function renderImport(el, k, anim) {
+    var svg = svgFor(el, W, H, "Import settings convert a file; lossy loses detail; mipmaps add shrunk copies", "A source file, its .import text file and the cache. Then a row of pixels kept exactly or averaged. Then a chain of mipmaps from 256 down.");
+    var ey = base(svg, [{ id: "imp", s: 1 }, { id: "lossy", s: 2 }, { id: "mip", s: 3 }], k, anim, ["Lossless", "exact copy of every pixel"], ["Lossy", "smaller, detail lost"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "SOURCE FILE → .IMPORT FILE → CACHE");
+      box(d, 0, 60, 460, 60, { stroke: INK, sw: 3 }); mono(d, 16, 100, "termite_soldiers.png", { size: 26, weight: 700 }); cap(d, 490, 100, "your file", { size: 24, fill: MUTED });
+      arrow(d, 230, 124, 230, 170);
+      box(d, 0, 176, 700, 190, { stroke: RED, sw: 3 }); mono(d, 16, 212, "termite_soldiers.png.import", { size: 26, weight: 700, fill: RED });
+      ["compress/mode=0", "mipmaps/generate=false", "process/fix_alpha_border=true"].forEach(function (s, i) { var g = d.append("g"); mono(g, 36, 258 + i * 40, s, { size: 24 }); fade(g, A(anim, k, 1), 300 + i * 250); });
+      arrow(d, 230, 370, 230, 416);
+      box(d, 0, 422, 460, 60, { stroke: GREY, sw: 3 }); mono(d, 16, 462, ".godot/imported/", { size: 26, weight: 700, fill: MUTED });
+      cap(d, 490, 462, "cache", { size: 24, fill: MUTED });
+      cap(d, 0, 540, "commit the .import file; do not commit .godot/", { size: 24, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SIMULATION: ONE ROW OF 24 PIXELS");
+      var bits = "110010110001010011101000".split("").map(Number), cs = 30;
+      var lossy = bits.map(function (v, i) { var b = Math.floor(i / 4) * 4, s = 0; for (var j = 0; j < 4; j++) s += bits[b + j]; return s / 4; });
+      var err = d3.mean(bits.map(function (v, i) { return Math.abs(v - lossy[i]); }));
+      [["lossless: every pixel kept", bits, 0], ["lossy (modelled): one average per 4 pixels", lossy, 1]].forEach(function (r, ri) {
+        var y = 70 + ri * 170, g = d.append("g"); cap(g, 0, y, r[0], { size: 24, weight: 700, fill: ri ? RED : INK });
+        r[1].forEach(function (v, i) { g.append("rect").attr("x", i * cs).attr("y", y + 16).attr("width", cs).attr("height", 70).attr("fill", shade(v)).attr("stroke", "#FFFFFF").attr("stroke-width", 1); });
+        cap(g, 0, y + 124, ri ? "average error per pixel: " + err.toFixed(2) : "average error per pixel: 0.00", { size: 24, fill: ri ? RED : BODY, weight: 700 });
+        fade(g, A(anim, k, 2), ri * 700);
+      });
+      cap(d, 0, 430, "Single-pixel details are the first thing a lossy copy loses.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "A 256 × 256 TEXTURE AND ITS SHRUNK COPIES");
+      var tot = 0, base0 = 256 * 256, lv = [256, 128, 64, 32, 16, 8], all = 0;
+      for (var s = 256; s >= 1; s = s / 2) all += s * s;
+      lv.forEach(function (s, i) {
+        var y = 64 + i * 62, g = d.append("g"), px = s * s; tot += px;
+        cap(g, 0, y + 32, s + " × " + s, { size: 24, weight: 700 }); bar(g, 150, y + 8, Math.max(px / base0 * 520, 3), 36, i ? INK : RED, A(anim, k, 3), i * 250); cap(g, 150 + Math.max(px / base0 * 520, 3) + 10, y + 34, FMT(px), { size: 24 });
+        fade(g, A(anim, k, 3), 0);
+      });
+      cap(d, 0, 470, "all 9 sizes down to 1 × 1: " + FMT(all) + " pixels", { size: 24, weight: 700 });
+      cap(d, 0, 510, "= " + (all / base0 * 100).toFixed(1) + "% of the original: about 33% more memory", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 556, "Drawn at 1/4 size, the engine reads the 64 × 64 copy.", { size: 24, fill: MUTED });
+    }
+    if (k === 0) cap(d, 0, 200, "What Godot does to a PNG before the game uses it.", { size: 26 });
+    note(svg, ey, ["", "Godot never uses your PNG or WAV directly. A text file beside it records the conversion.", "For pixel art, Lossless is recommended. Lossy trades small files for lost detail.", "Mipmaps help when art is drawn small. A 2D sprite at 1:1 does not need them."][k]);
+  }
+
+  /* ---------- 6. silhouette, readability ---------- */
+  function renderSil(el, k, anim) {
+    var svg = svgFor(el, W, H, "A silhouette must read at game size; thin parts fade when shrunk", "A coloured bug beside the same bug filled black. Then the bug at 436, 96 and 48 pixels, and the 48 pixel version magnified with its legs faint.");
+    var ey = base(svg, [{ id: "sil", s: 1 }, { id: "read", s: 2 }], k, anim, ["Silhouette", "the outline alone"], ["Readability", "understood at game size"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "FILL IT BLACK: DOES THE SHAPE STILL SAY WHAT IT IS?");
+      var g1 = d.append("g"), g2 = d.append("g"); bug(g1, 190, 500, 330, { legW: 3 }); bug(g2, 570, 500, 330, { head: INK, legW: 3 });
+      cap(d, 190, 548, "colour", { size: 24, anchor: "middle" }); cap(d, 570, 548, "filled black", { size: 24, anchor: "middle", weight: 700, fill: RED });
+      fade(g2, A(anim, k, 1), 500);
+    } else if (k === 2) {
+      lab(d, 0, 30, "436 PX → 96 PX → 48 PX (DRAWN AT HALF SIZE)");
+      var ratio = 436 / 48, lw = 4 / ratio;
+      [[436, 90], [96, 250], [48, 330]].forEach(function (p, i) { var g = d.append("g"); bug(g, p[1], 330, p[0] / 2, { legW: Math.max(1, 4 * p[0] / 436 / 2) }); cap(g, p[1], 370, p[0] + " px", { size: 24, anchor: "middle" }); fade(g, A(anim, k, 2), i * 400); });
+      var mg = d.append("g"); bug(mg, 590, 330, 288, { legW: lw * 6, legO: Math.min(1, lw) }); cap(mg, 590, 372, "48 px, magnified ×6", { size: 24, anchor: "middle", weight: 700, fill: RED }); fade(mg, A(anim, k, 2), 1200);
+      cap(d, 0, 450, "436 ÷ 48 = " + ratio.toFixed(2) + " source pixels per sprite pixel", { size: 24, weight: 700 });
+      cap(d, 0, 490, "a 4 px leg becomes 4 ÷ " + ratio.toFixed(2) + " = " + lw.toFixed(2) + " px wide", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 530, "under one pixel: drawn at " + Math.round(lw * 100) + "% strength, a faint smear", { size: 24 });
+    }
+    if (k === 0) cap(d, 0, 200, "A top-down bug: big head, thin legs and antennae.", { size: 26 });
+    note(svg, ey, ["", "The black-fill test removes colour and detail. What is left is what the player sees first.", "Readable at 1:1 in the real scene beside the player, not in an image viewer."][k]);
+  }
+
+  /* ---------- 7. collider ---------- */
+  function renderCollider(el, k, anim) {
+    var svg = svgFor(el, W, H, "The collider is a separate box; the art can extend past it", "A character drawn larger than its 18 by 28 collider. Then the art flipping while the collider stays. Then a spike that overlaps the art before it hits the collider.");
+    var ey = base(svg, [{ id: "coll", s: 1 }], k, anim, ["Collider", "what counts as solid"], ["Art", "what the player sees"]);
+    var d = svg.append("g"), u = 8, cx = 330, fy = 460;
+    var AW = 21;
+    function art(g, sx) {
+      var a = g.append("g").attr("transform", "translate(" + cx + ",0) scale(" + sx + ",1) translate(" + (-cx) + ",0)");
+      a.append("rect").attr("x", cx - 15 * u).attr("y", fy - 34 * u).attr("width", 30 * u).attr("height", 34 * u).attr("fill", TINT).attr("stroke", INK).attr("stroke-width", 3);
+      a.append("rect").attr("x", cx - AW * u).attr("y", fy - 20 * u).attr("width", 6 * u).attr("height", 8 * u).attr("fill", INK); a.append("rect").attr("x", cx + 15 * u).attr("y", fy - 20 * u).attr("width", 6 * u).attr("height", 8 * u).attr("fill", INK);
+      a.append("path").attr("d", "M" + (cx + 15 * u) + "," + (fy - 32 * u) + " l" + 5 * u + "," + 2 * u + " l" + (-5 * u) + "," + 2 * u + "Z").attr("fill", RED);
+    }
+    function colBox(g) { g.append("rect").attr("x", cx - 9 * u + 0.5).attr("y", fy - 28 * u + 0.5).attr("width", 18 * u).attr("height", 28 * u).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4).attr("stroke-dasharray", "10 6"); }
+    if (k >= 1) {
+      lab(d, 0, 30, k === 1 ? "ART (SOLID) AND COLLIDER (RED DASHES)" : k === 2 ? "FLIP THE ART: THE COLLIDER STAYS" : "THE SPIKE OVERLAPS THE ART, THEN HITS THE BOX");
+      var dyn = d.append("g");
+      if (k === 1) { art(dyn, 1); colBox(dyn); }
+      else if (k === 2) run(dyn, 1600, function (t) { dyn.selectAll("*").remove(); art(dyn, Math.cos(Math.PI * t)); colBox(dyn); }, anim);
+      else run(dyn, 2200, function (t) {
+        dyn.selectAll("*").remove(); art(dyn, 1); colBox(dyn);
+        var tip = 740 - t * (740 - (cx + 9 * u));
+        dyn.append("path").attr("d", "M" + tip + "," + (fy - 14 * u) + " l" + 80 + "," + (-4 * u) + " l0," + 8 * u + "Z").attr("fill", RED);
+      }, anim);
+      if (k === 1) { cap(d, 0, 510, "collider 18 × 28 = " + (18 * 28) + " px²; art 42 × 34 (illustrative)", { size: 24, weight: 700 }); cap(d, 0, 548, "the art reaches " + (AW - 9) + " px past each side of the box", { size: 24, fill: MUTED }); }
+      if (k === 2) cap(d, 0, 510, "keep the collider a sibling of the sprite, not its child", { size: 24, weight: 700 });
+      if (k === 3) { cap(d, 0, 510, "the spike overlaps the art for " + (AW - 9) + " px before a hit", { size: 24, weight: 700, fill: RED }); cap(d, 0, 548, "fair if thin or decorative; unfair if it looks like the part that hurts", { size: 24, fill: MUTED }); }
+    } else cap(d, 0, 200, "A 42 px wide character with an 18 × 28 box.", { size: 26 });
+    note(svg, ey, ["", "The box is sized from what the player believes is solid: the body.", "Mirroring the art would mirror the collider too, if it were a child. Keep it a sibling.", "Art past the box is a design choice. Write down why."][k]);
+  }
+
+  /* ---------- 8. PCM, sample rate, Nyquist limit, procedural synthesis ---------- */
+  var F0 = 440, FS = 22050;
+  function renderSamples(el, k, anim) {
+    var svg = svgFor(el, W, H, "A sound is a list of samples; the sample rate sets the highest pitch it can hold", "Stems for one cycle of a 440 hertz tone sampled at 22,050 a second. Then the same tone at 22,050 and 2,000 a second. Then a chart of the pitch heard against the pitch played. Then the first six values of the formula.");
+    var ey = base(svg, [{ id: "pcm", s: 1 }, { id: "sr", s: 2 }, { id: "nyq", s: 3 }, { id: "proc", s: 4 }], k, anim, ["Sample rate", "samples per second"], ["Nyquist limit", "half the sample rate"]);
+    var d = svg.append("g"), x0 = 20, pw = 720, T0 = 1 / F0;
+    function sine(u) { return Math.sin(2 * Math.PI * u); }
+    function stems(g, cy, amp, fs, n) {
+      g.append("path").attr("d", wavePath(sine, x0, pw, cy, amp, 0, 1, 200)).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 3);
+      line(g, x0, cy, x0 + pw, cy, GREY, 1);
+      var per = fs / F0, out = [];
+      for (var i = 0; i * 1 <= per; i++) { var u = i / per, x = x0 + pw * u, y = cy - amp * sine(u); out.push([x, y]); line(g, x, cy, x, y, INK, 2); g.append("circle").attr("cx", x).attr("cy", y).attr("r", 4.5).attr("fill", INK); }
+      return out;
+    }
+    if (k === 1) {
+      lab(d, 0, 30, "ONE CYCLE OF A 440 HZ TONE AT 22,050 SAMPLES A SECOND");
+      var g = d.append("g"), n = Math.floor(FS / F0) + 1; stems(g, 215, 120, FS, n);
+      cap(d, 0, 400, "1 cycle = 1 ÷ 440 = " + (T0 * 1000).toFixed(2) + " ms", { size: 26, weight: 700 }); cap(d, 0, 440, "each stem is one number between −1 and 1", { size: 24 }); cap(d, 0, 480, "the list of numbers is the PCM data", { size: 24, fill: RED, weight: 700 });
+      fade(g, A(anim, k, 1), 0);
+    } else if (k === 2) {
+      lab(d, 0, 30, "SAME TONE, TWO SAMPLE RATES, ONE CYCLE EACH");
+      [[FS, 120], [2000, 330]].forEach(function (r, i) {
+        var g = d.append("g"), pts = stems(g, r[1], 55, r[0], 0);
+        if (i) { pts.push([x0 + pw, r[1]]); g.append("path").attr("d", "M" + pts.map(function (p) { return p.join(","); }).join(" L")).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3); }
+        cap(g, 0, r[1] + 100, FMT(r[0]) + " a second: " + (r[0] / F0).toFixed(1) + " samples per cycle" + (i ? " (a crude copy)" : ""), { size: 24, weight: 700, fill: i ? RED : INK });
+        fade(g, A(anim, k, 2), i * 700);
+      });
+    } else if (k === 3) {
+      lab(d, 0, 30, "PITCH HEARD VS PLAYED AT 22,050 A SECOND");
+      var px = 70, pwid = 670, py = 380, ph = 250, fmax = 20000, hmax = FS / 2;
+      function heard(f) { return Math.abs(f - FS * Math.round(f / FS)); }
+      function X(f) { return px + pwid * f / fmax; } function Y(h) { return py - ph * h / hmax; }
+      line(d, px, py, px + pwid, py, INK, 2); line(d, px, py, px, py - ph - 10, INK, 2);
+      var path = ""; for (var i = 0; i <= 200; i++) { var f = fmax * i / 200; path += (i ? "L" : "M") + X(f).toFixed(1) + "," + Y(heard(f)).toFixed(1); }
+      d.append("path").attr("d", path).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 4);
+      line(d, px, Y(hmax), px + pwid, Y(hmax), RED, 2, "8 6"); cap(d, px + pwid, Y(hmax) - 8, "Nyquist limit " + FMT(hmax) + " Hz", { size: 24, anchor: "end", fill: RED, weight: 700 });
+      [0, 10000, 20000].forEach(function (f) { cap(d, X(f), py + 30, FMT(f), { size: 24, anchor: "middle" }); });
+      cap(d, px + pwid, py + 66, "pitch played (Hz)", { size: 24, anchor: "end", fill: MUTED }); cap(d, 0, 100, "heard (Hz)", { size: 24, fill: MUTED });
+      var tone = 15000, mk = d.append("circle").attr("r", 9).attr("fill", RED), dl = line(d, 0, 0, 0, 0, RED, 2, "4 4");
+      run(d.append("g"), 2200, function (t) { var f = tone * t; mk.attr("cx", X(f)).attr("cy", Y(heard(f))); dl.attr("d", "M" + X(f) + "," + py + " L" + X(f) + "," + Y(heard(f))); }, anim);
+      cap(d, 0, 500, "a " + FMT(tone) + " Hz tone is heard as " + FMT(heard(tone)) + " Hz", { size: 26, weight: 700, fill: RED });
+    } else if (k === 4) {
+      lab(d, 0, 30, "NO FILE: A FORMULA FILLS THE BUFFER ONE SAMPLE AT A TIME");
+      mono(d, 0, 84, "push_frame(Vector2.ONE * sin(phase * TAU))", { size: 24, weight: 700 });
+      cap(d, 0, 130, "sample n = sin(2π · n · 440 ÷ 22,050)", { size: 26, weight: 700, fill: RED });
+      mono(d, 0, 190, " n   phase    sample", { size: 24, fill: MUTED });
+      for (var n2 = 0; n2 < 6; n2++) { var ph2 = n2 * F0 / FS, g2 = d.append("g"); mono(g2, 0, 236 + n2 * 44, " " + n2 + "   " + ph2.toFixed(5) + "  " + (Math.sin(2 * Math.PI * ph2) >= 0 ? " " : "") + Math.sin(2 * Math.PI * ph2).toFixed(4), { size: 24 }); fade(g2, A(anim, k, 4), n2 * 250); }
+      cap(d, 0, 540, "a formula, not a recording and not a generative model", { size: 24, weight: 700 });
+    }
+    if (k === 0) cap(d, 0, 200, "A 440 Hz tone at 22,050 samples a second is the example.", { size: 26 });
+    note(svg, ey, ["", "PCM is the plain list: one number per sample.", "More samples per cycle give a closer copy; 2,000 a second gives about 4.", "Above half the rate, a pitch folds back down: 15,000 Hz sounds like 7,050 Hz.", "Godot's generator demo makes sound this way, with no file. Procedural, not generative."][k]);
+  }
+
+  /* ---------- 9. WAV vs Ogg, loop point, one-shot ---------- */
+  function renderLoop(el, k, anim) {
+    var svg = svgFor(el, W, H, "WAV and Ogg loop differently; a loop point sets where playback jumps back", "A 4 second waveform with sample numbers. Then loop begin and end markers with a moving playhead. Then a looping lane beside a one-shot lane. Then a loop cut in the middle of a cycle against one cut at zero.");
+    var ey = base(svg, [{ id: "wo", s: 1 }, { id: "loop", s: 2 }, { id: "shot", s: 3 }], k, anim, ["Loop point", "where it jumps back"], ["One-shot", "plays once and stops"]);
+    var d = svg.append("g"), x0 = 20, pw = 720, N = 4 * 44100;
+    function lane(g, cy, amp, f) { g.append("path").attr("d", wavePath(f, x0, pw, cy, amp, 0, 1, 360)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5); line(g, x0, cy, x0 + pw, cy, FAMILIAR, 1); }
+    function head(g, cy, amp, pos) { line(g, x0 + pw * pos, cy - amp - 10, x0 + pw * pos, cy + amp + 10, RED, 4); }
+    if (k === 1) {
+      lab(d, 0, 30, "4 S MUSIC LOOP, 44,100 SAMPLES A SECOND");
+      lane(d, 150, 80, wave); cap(d, x0, 268, "sample 0", { size: 24 }); cap(d, x0 + pw, 268, "sample " + FMT(N - 1), { size: 24, anchor: "end" });
+      [["WAV", "loop begin and end,", "counted in samples"], ["Ogg Vorbis", "loop on or off and", "one start offset only"]].forEach(function (r, i) {
+        var x = i * 380, g = d.append("g"); box(g, x, 310, 350, 150, { stroke: i ? RED : INK, sw: 2 }); cap(g, x + 16, 350, r[0], { size: 26, weight: 700, fill: i ? RED : INK }); cap(g, x + 16, 392, r[1], { size: 24 }); cap(g, x + 16, 426, r[2], { size: 24 }); fade(g, A(anim, k, 1), i * 500);
+      });
+      cap(d, 0, 510, "4.000 × 44,100 = " + FMT(N) + " samples; last index " + FMT(N - 1), { size: 24, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "WAV: LOOP MODE FORWARD, BEGIN 0, END " + FMT(N - 1));
+      lane(d, 150, 80, wave); line(d, x0, 50, x0, 250, INK, 4); line(d, x0 + pw, 50, x0 + pw, 250, INK, 4);
+      cap(d, x0 + 6, 296, "loop begin", { size: 24, weight: 700 }); cap(d, x0 + pw, 296, "loop end", { size: 24, weight: 700, anchor: "end" });
+      d.append("path").attr("d", "M" + (x0 + pw) + ",306 C" + (x0 + pw) + ",380 " + x0 + ",380 " + x0 + ",312").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      d.append("path").attr("d", "M" + x0 + ",306 l-9,16 l18,0Z").attr("fill", RED);
+      cap(d, 380, 390, "jump back", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      var ph = d.append("g"); run(ph, 3600, function (t) { ph.selectAll("*").remove(); head(ph, 150, 80, (t * 2) % 1); }, anim);
+      cap(d, 0, 470, "Ogg has only the start offset: cut the file at a bar line first.", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "LOOPING AND ONE-SHOT, PLAYED TOGETHER");
+      mono(d, 0, 74, "music_loop.wav  loop: forward", { size: 24, weight: 700 }); lane(d, 150, 60, wave);
+      mono(d, 0, 284, "jump.wav  loop: disabled", { size: 24, weight: 700, fill: RED }); lane(d, 370, 60, function (u) { return Math.exp(-5 * u) * Math.sin(2 * Math.PI * 14 * u); });
+      var ph = d.append("g"), st = cap(d, x0 + pw, 480, "", { size: 24, weight: 700, anchor: "end", fill: RED });
+      run(ph, 3600, function (t) { ph.selectAll("*").remove(); head(ph, 150, 60, (t * 2) % 1); var p2 = Math.min(1, t * 2); head(ph, 370, 60, p2); st.text(p2 >= 1 ? "stopped: finished once" : ""); }, anim);
+    } else if (k === 4) {
+      lab(d, 0, 30, "THE SEAM: END OF THE LOOP, THEN THE START AGAIN");
+      [[0.9, 165, "cut at u = 0.90, mid-cycle"], [1.0, 400, "cut at the zero crossing"]].forEach(function (r, i) {
+        var g = d.append("g"), cy = r[1], endU = r[0], span = 0.13, jump = Math.abs(wave(endU) - wave(0));
+        cap(g, 0, cy - 96, r[2], { size: 24, weight: 700, fill: i ? INK : RED });
+        g.append("path").attr("d", wavePath(wave, x0, pw / 2, cy, 70, endU - span, endU, 200) + wavePath(wave, x0 + pw / 2, pw / 2, cy, 70, 0, span, 200).replace("M", "L")).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5);
+        line(g, x0 + pw / 2, cy - 90, x0 + pw / 2, cy + 90, i ? FAMILIAR : RED, 3, "6 5");
+        cap(g, x0 + pw, cy + 110, i ? "jump 0.00: no click" : "jump " + jump.toFixed(2) + " of full scale: a click", { size: 24, anchor: "end", weight: 700, fill: i ? INK : RED });
+        fade(g, A(anim, k, 4), i * 700);
+      });
+    }
+    if (k === 0) cap(d, 0, 200, "A 4-second music loop and a short effect are the examples.", { size: 26 });
+    note(svg, ey, ["", "WAV for short effects, Ogg for music. Loop settings are not the same in both.", "At the loop end, playback jumps back to the begin. The ends must match.", "A one-shot ends. A loop never does, so a “finished” signal never arrives for it.", "Start and end the loop on a zero crossing, and listen across the seam three times."][k]);
+  }
+
+  /* ---------- 10. AudioStreamPlayer, polyphony ---------- */
+  function renderPlayer(el, k, anim) {
+    var svg = svgFor(el, W, H, "AudioStreamPlayer plays a stream; polyphony decides how many plays can overlap", "A sound file feeding a player feeding a bus. Then three play calls 40 milliseconds apart on a 60 millisecond click with one voice, then with four voices.");
+    var ey = base(svg, [{ id: "asp2", s: 1 }, { id: "poly", s: 2 }], k, anim, ["AudioStreamPlayer", "plays one stream, no position"], ["Polyphony", "copies playing at once"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "SOUND FILE → PLAYER → BUS");
+      box(d, 0, 90, 230, 76, { stroke: INK, sw: 3 }); mono(d, 14, 134, "hit_click.wav", { size: 26, weight: 700 });
+      box(d, 290, 90, 260, 76, { stroke: RED, sw: 3, fill: TINT }); cap(d, 420, 118, "AudioStreamPlayer", { size: 24, anchor: "middle", weight: 700 }); cap(d, 420, 150, "play()", { size: 24, anchor: "middle", fill: RED });
+      box(d, 610, 90, 150, 76, { stroke: INK, sw: 3 }); cap(d, 685, 136, "Master bus", { size: 24, anchor: "middle", weight: 700 });
+      arrow(d, 232, 128, 288, 128); arrow(d, 552, 128, 608, 128);
+      var dot = d.append("circle").attr("r", 9).attr("fill", RED), dg = d.append("g");
+      run(dg, 2400, function (t) { dot.attr("cx", 40 + 740 * t).attr("cy", 128).attr("opacity", t < 0.99 ? 1 : 0.3); }, anim);
+      ["AudioStreamPlayer: no position (music, interface)", "AudioStreamPlayer2D: pans and fades with position", "AudioStreamPlayer3D: the same, in a 3D world"].forEach(function (s, i) { cap(d, 0, 260 + i * 44, s, { size: 24, weight: i ? 400 : 700, fill: i ? MUTED : INK }); });
+    } else if (k >= 2) {
+      var ms = 5, calls = [0, 40, 80], len = 60;
+      lab(d, 0, 30, k === 2 ? "MAX_POLYPHONY = 1 (DEFAULT): EACH PLAY CUTS THE LAST" : "MAX_POLYPHONY = 4: THEY OVERLAP");
+      cap(d, 0, 78, "three play() calls, 40 ms apart, on a 60 ms click", { size: 24, fill: MUTED });
+      function lane(label, y, bars, col, delay, stack) {
+        var g = d.append("g"); cap(g, 0, y - 8, label, { size: 24, weight: 700, fill: col });
+        bars.forEach(function (b, i) { bar(g, 40 + b[0] * ms, y + (stack ? i * 48 : 0), (b[1] - b[0]) * ms, 36, col, A(anim, k, k), delay + i * 200); });
+        return g;
+      }
+      lane("one voice: heard 40 + 40 + 60 ms", 130, [[0, 40], [40, 80], [80, 140]], INK, 0);
+      cap(d, 40 + 40 * ms, 196, "cut", { size: 24, anchor: "middle", fill: RED, weight: 700 }); cap(d, 40 + 80 * ms, 196, "cut", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      if (k === 3) lane("four voices: each heard in full, 60 ms", 270, [[0, 60], [40, 100], [80, 140]], RED, 300, true);
+      var ax = k === 3 ? 440 : 250;
+      [0, 40, 80, 120].forEach(function (t) { cap(d, 40 + t * ms, ax, t + " ms", { size: 24, anchor: "middle", fill: MUTED }); });
+      if (k === 3) cap(d, 0, 520, "the overlap is 60 − 40 = 20 ms between neighbours", { size: 24, weight: 700 });
+    }
+    if (k === 0) cap(d, 0, 200, "A 60 ms click played three times in 80 ms.", { size: 26 });
+    note(svg, ey, ["", "A player node plays a stream and sends it to a bus. The plain one has no position.", "Default is one voice: a second play() cuts the first, so fast hits stutter.", "With four voices every click is heard whole. Or play only on the transition into a state."][k]);
+  }
+
+  /* ---------- 11. bus, decibel, headroom, clipping ---------- */
+  function renderMix(el, k, anim) {
+    var svg = svgFor(el, W, H, "Buses carry levels in decibels; a peak past the maximum clips", "Players routed to Music and SFX buses and then Master. Then decibel values and their amplitudes. Then a sine below the maximum with headroom. Then the same sine turned up until its peaks flatten.");
+    var ey = base(svg, [{ id: "bus", s: 1 }, { id: "db", s: 2 }, { id: "head", s: 3 }, { id: "clip", s: 4 }], k, anim, ["Headroom", "level left below the maximum"], ["Clipping", "level past the maximum"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "PLAYERS → BUSES → MASTER");
+      [["Music player", "volume −12 dB", 90, "Music"], ["SFX player", "volume 0 dB", 270, "SFX"]].forEach(function (r) {
+        box(d, 0, r[2], 230, 80, { stroke: INK, sw: 3 }); cap(d, 115, r[2] + 34, r[0], { size: 24, anchor: "middle", weight: 700 }); cap(d, 115, r[2] + 66, r[1], { size: 24, anchor: "middle", fill: MUTED });
+        box(d, 290, r[2], 180, 80, { stroke: RED, sw: 3, fill: TINT }); cap(d, 380, r[2] + 48, "bus " + r[3], { size: 24, anchor: "middle", weight: 700 });
+        arrow(d, 232, r[2] + 40, 288, r[2] + 40); arrow(d, 472, r[2] + 40, 528, r[2] + 40 + (r[2] < 200 ? 50 : -50));
+      });
+      box(d, 530, 180, 220, 100, { stroke: INK, sw: 3 }); cap(d, 640, 222, "Master", { size: 26, anchor: "middle", weight: 700 }); cap(d, 640, 258, "to speakers", { size: 24, anchor: "middle", fill: MUTED });
+      cap(d, 0, 440, "each bus can be lowered, ducked or muted on its own", { size: 24, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "AMPLITUDE = 10 ^ (DECIBELS ÷ 20)");
+      [0, -6, -12, -20, -40, -60].forEach(function (db, i) {
+        var a = Math.pow(10, db / 20), y = 64 + i * 72, g = d.append("g");
+        cap(g, 0, y + 32, (db === 0 ? "0" : "−" + Math.abs(db)) + " dB", { size: 24, weight: 700 }); bar(g, 120, y + 6, Math.max(a * 520, 3), 38, db ? INK : RED, A(anim, k, 2), i * 200); cap(g, 120 + Math.max(a * 520, 3) + 10, y + 34, a.toFixed(3), { size: 24 });
+      });
+      cap(d, 0, 520, "every −6 dB about halves the amplitude", { size: 24, weight: 700, fill: RED });
+    } else if (k >= 3) {
+      var cy = 290, sc = 110, x0 = 20, pw = 720;
+      lab(d, 0, 30, k === 3 ? "A SINE WITH PEAK 0.50" : "THE SAME SINE, TURNED UP BY 7.60 DB");
+      line(d, x0, cy - sc, x0 + pw, cy - sc, INK, 3); line(d, x0, cy + sc, x0 + pw, cy + sc, INK, 3); line(d, x0, cy, x0 + pw, cy, FAMILIAR, 1);
+      cap(d, x0 + pw, cy - sc - 8, "maximum level 1.0", { size: 24, anchor: "end", weight: 700 });
+      var dyn = d.append("g"), txtA = cap(d, 0, 500, "", { size: 26, weight: 700, fill: RED }), txtB = cap(d, 0, 544, "", { size: 24 });
+      function draw(a) {
+        dyn.selectAll("*").remove();
+        var nS = 1000, clipped = 0;
+        for (var i = 0; i < nS; i++) if (Math.abs(a * Math.sin(2 * Math.PI * 2 * i / nS)) > 1) clipped++;
+        if (a > 1) dyn.append("path").attr("d", wavePath(function (u) { return a * Math.sin(2 * Math.PI * 2 * u); }, x0, pw, cy, sc, 0, 1, 400)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+        dyn.append("path").attr("d", wavePath(function (u) { return Math.max(-1, Math.min(1, a * Math.sin(2 * Math.PI * 2 * u))); }, x0, pw, cy, sc, 0, 1, 400)).attr("fill", "none").attr("stroke", a > 1 ? RED : INK).attr("stroke-width", 4);
+        txtA.text(a <= 1 ? "peak " + a.toFixed(2) + " = " + (20 * Math.log10(a)).toFixed(2) + " dB" : "peak " + a.toFixed(2) + ": " + (clipped / nS * 100).toFixed(1) + "% of samples flattened");
+        txtB.text(a <= 1 ? "headroom: " + (20 * Math.log10(1 / a)).toFixed(2) + " dB below the maximum" : "gain " + (20 * Math.log10(a / 0.5)).toFixed(2) + " dB over the first sine; the tops are cut");
+      }
+      if (k === 3) draw(0.5); else run(dyn, 1800, function (t) { draw(0.5 + 0.7 * t); }, anim);
+    }
+    if (k === 0) cap(d, 0, 200, "Music at −12 dB and a click at 0 dB are the examples.", { size: 26 });
+    note(svg, ey, ["", "A bus is a shared mixing point: levels live there, not in the file.", "Decibels are logarithmic. Halving the amplitude is −6 dB, so the scale stays short.", "Peak 0.5 leaves 6.02 dB of headroom. That space is for loud moments.", "Past the maximum the tops flatten. That is distortion you hear as a crackle."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from 2D art and sound", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Resolution", "Pixels in the image file"], ["Viewport", "Pixels the game draws into"]],
+      [["Mipmaps", "Pre-shrunk copies, chosen by size on screen"], ["Filtering", "How one sample is read: nearest or linear"]],
+      [["Sample rate", "Audio samples per second"], ["Frame rate", "Animation frames per second"]],
+      [["Loop point", "Where playback jumps back to"], ["One-shot", "Plays once and stops"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 520, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(60,0)"), RG = R.append("g").attr("transform", "translate(60,0)");
+      if (i === 0) {
+        var s = 0.25 * t;
+        LG.append("rect").attr("x", 20).attr("y", 440 - IH * s).attr("width", IW * s).attr("height", IH * s).attr("fill", "#F6F6F6").attr("stroke", INK).attr("stroke-width", 3); cap(LG, 20, 480, "1,024 × 873", { size: 24 });
+        RG.append("rect").attr("x", 20).attr("y", 440 - VH * s).attr("width", VW * s).attr("height", VH * s).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3); cap(RG, 20, 480, "640 × 360", { size: 24 });
+      } else if (i === 1) {
+        [200, 100, 50, 25].forEach(function (z, j) { var x = [20, 240, 360, 430][j]; LG.append("rect").attr("x", x).attr("y", 440 - z).attr("width", z).attr("height", z).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3).attr("opacity", j / 4 < t ? 1 : 0.12); });
+        cap(LG, 20, 480, "4 sizes of one texture", { size: 24 });
+        for (var a = 0; a < 2; a++) for (var b = 0; b < 2; b++) { var hot = t < 0.5 ? (a === 0 && b === 0) : true; RG.append("rect").attr("x", 40 + b * 100).attr("y", 240 + a * 100).attr("width", 100).attr("height", 100).attr("fill", hot ? (t < 0.5 ? INK : GREY) : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); }
+        cap(RG, 40, 480, t < 0.5 ? "nearest: 1 texel read" : "linear: 4 texels blended", { size: 24 });
+      } else if (i === 2) {
+        for (var q = 0; q < 44; q++) LG.append("rect").attr("x", 20 + q * 7).attr("y", 330).attr("width", 3).attr("height", 100).attr("fill", INK).attr("opacity", q / 44 < t ? 1 : 0.1);
+        cap(LG, 20, 480, "22,050 a second: too many to draw", { size: 24 });
+        for (var q2 = 0; q2 < 5; q2++) RG.append("rect").attr("x", 20 + q2 * 70).attr("y", 330).attr("width", 40).attr("height", 100).attr("fill", RED).attr("opacity", q2 / 5 < t ? 1 : 0.1);
+        cap(RG, 20, 480, "5 a second: every one visible", { size: 24 });
+      } else {
+        LG.append("path").attr("d", wavePath(wave, 20, 320, 380, 60, 0, 1, 200)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5); line(LG, 20 + 320 * ((t * 2) % 1), 300, 20 + 320 * ((t * 2) % 1), 460, RED, 4);
+        RG.append("path").attr("d", wavePath(wave, 20, 320, 380, 60, 0, 1, 200)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2.5); line(RG, 20 + 320 * Math.min(1, t * 2), 300, 20 + 320 * Math.min(1, t * 2), 460, RED, 4);
+        cap(LG, 20, 480, "goes round again", { size: 24 }); cap(RG, 20, 480, t * 2 >= 1 ? "stopped" : "still playing", { size: 24 });
+      }
+    }
+    if (k === 0) { draw(0, 0.99); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the art fit the game", x: "Scale 1,024 × 873 by one factor, 0.412 on both axes, to 422 × 360 in the 640 × 360 viewport" },
+    { v: "make the pixels crisp", x: "Set Texture > Filter to Nearest on the sprite node; import Lossless with mipmaps off" },
+    { v: "the walk is too fast", x: "Set the walk animation in SpriteFrames from 12 to 6 FPS: one 4-frame cycle takes 0.67 s" },
+    { v: "make the music loop", x: "Import music_loop.wav with Loop Mode Forward, begin 0, end 176,399, cut on a zero crossing" },
+    { v: "the effect is too loud and crackles", x: "Lower the SFX bus by 6 dB: a 1.20 peak becomes 0.60 and nothing clips" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      var sy = VH / IH, sx = VW / IW;
+      [["two factors: stretch " + (sx / sy).toFixed(2) + " : 1", sx / sy, "#C4C4C4"], ["one factor: stretch 1.00 : 1", 1, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, r[1] / 1.6 * 560, 40, r[2], anim, i * 400); });
+      nt = "the second keeps the shape";
+    } else if (k === 2) {
+      [["linear", shades(bil, 24), "#C4C4C4"], ["nearest", shades(nearV, 24), RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": " + r[1] + " shades after 4× enlarging", { size: 24 }); bar(p, 14, 84 + i * 110, r[1] / shades(bil, 24) * 560, 40, r[2], anim, i * 400); });
+      nt = "nearest adds no new colours";
+    } else if (k === 3) {
+      [["12 FPS: 0.33 s", 4 / 12, "#C4C4C4"], ["6 FPS: 0.67 s", 4 / 6, RED], ["5 FPS (default): 0.80 s", 4 / 5, "#C4C4C4"]].forEach(function (r, i) { cap(p, 14, 54 + i * 88, r[0], { size: 24 }); bar(p, 14, 66 + i * 88, r[1] / 0.8 * 560, 36, r[2], anim, i * 300); });
+      nt = "cycle time = frames ÷ FPS";
+    } else if (k === 4) {
+      p.append("path").attr("d", wavePath(wave, 14, 610, 150, 100, 0, 1, 300)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      line(p, 14, 40, 14, 260, RED, 4); line(p, 624, 40, 624, 260, RED, 4);
+      cap(p, 24, 290, "sample 0", { size: 24 }); cap(p, 620, 290, "sample 176,399", { size: 24, anchor: "end" });
+      nt = "both ends sit on 0: no click";
+    } else {
+      var a0 = 1.2, a1 = a0 * Math.pow(10, -6 / 20), s1 = 520 / 1.3;
+      [["before: peak " + a0.toFixed(2) + " (clips at 1.0)", a0, "#C4C4C4"], ["after −6 dB: peak " + a1.toFixed(2), a1, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, r[1] * s1, 40, r[2], anim, i * 400); });
+      line(p, 14 + s1, 70, 14 + s1, 250, INK, 3, "6 5"); nt = "the dashed line is the maximum, 1.0";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is the image scaled by one factor to the viewport, with its shape kept?",
+    "Is the background alpha 0 at the corners, with no halo or checkerboard?",
+    "Is the filter Nearest on the node, with mipmaps off and Lossless import?",
+    "Do frame count, layout and speed match the SpriteFrames?",
+    "Is the collider sized from the body, as a sibling of the sprite?",
+    "Is the sound imported with the right loop mode, played once per event, at a safe level?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before a generated asset goes in the game", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 30, c, 62, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it crisp”, but “Nearest on the node, Lossless, no mipmaps”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, res: { steps: 4, render: renderRes }, filt: { steps: 3, render: renderFilter },
+    sheet: { steps: 4, render: renderSheet }, alpha: { steps: 4, render: renderAlpha }, imp: { steps: 3, render: renderImport },
+    sil: { steps: 2, render: renderSil }, coll: { steps: 3, render: renderCollider }, samp: { steps: 4, render: renderSamples },
+    loop: { steps: 4, render: renderLoop }, player: { steps: 3, render: renderPlayer }, mix: { steps: 4, render: renderMix },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

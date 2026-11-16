@@ -1,0 +1,1847 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-building-3d-particle-effects-in-godot-redo",
+    "title": "Building 3D Particle Effects in Godot",
+    "channel": "claude-liam",
+    "channel_title": "@NikBearBrown",
+    "engine": "kokoro",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "register": "Teardown",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "aspect_ratio": "16:9",
+    "fps": 30,
+    "series_title": "Particle Systems and VFX in Godot",
+    "lecture_opening_description": "Build readable mesh and billboard effects"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Particle Systems and VFX in Godot. Building 3D Particle Effects in Godot. Connect motion, meshes, and materials, then test particles from several angles.",
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold"
+      },
+      "audio_file": "mp3/beat-BOPEN.mp3",
+      "actual_duration_s": 10.73
+    },
+    {
+      "beat_id": "BIDEA",
+      "narration_text": "Hallo. This is Liam, in for Bear. Does a particle effect become three-dimensional just because its node says Three D? We will build the missing draw setup and inspect what survives a moving camera.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A particle node is\nthe whole effect",
+            "triggerWords": "whole",
+            "replacementWords": "start of an",
+            "fontSize": 72,
+            "charMs": 26,
+            "hesitateBetween": 7,
+            "hesitateWithin": 1,
+            "mistakeRate": 5,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-building-3d-particle-effects-in-godot",
+            "durationSeconds": 12.021333
+          },
+          "rendered": {
+            "out": "media/BIDEA.mp4",
+            "at": "2026-10-23T22:48:14.861645+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The required hesitant writer corrects one misconception; deliberate sparse bookend."
+      },
+      "audio_file": "mp3/beat-BIDEA.mp3",
+      "actual_duration_s": 12.021333,
+      "speech_duration_s": 11.22,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "BDEFS",
+      "narration_text": "Mesh. The geometry drawn for a particle. Material. A resource for behavior or appearance. Camera. The view through which the scene is seen. Axis. One direction in a coordinate system.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Mesh",
+                "meaning": "The geometry drawn for a particle"
+              },
+              {
+                "term": "Material",
+                "meaning": "A resource for behavior or appearance"
+              },
+              {
+                "term": "Camera",
+                "meaning": "The view through which the scene is seen"
+              },
+              {
+                "term": "Axis",
+                "meaning": "One direction in a coordinate system"
+              }
+            ],
+            "durationSeconds": 10.73
+          },
+          "rendered": {
+            "out": "media/BDEFS.mp4",
+            "at": "2026-10-23T22:48:36.416752+00:00"
+          }
+        }
+      },
+      "audio_file": "mp3/beat-BDEFS.mp3",
+      "actual_duration_s": 10.73
+    },
+    {
+      "beat_id": "B01",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "This is the three-dimensional test stage. The floor and the one-meter reference stay fixed while we change the effect. We are using Godot’s Compatibility renderer. The camera will move so depth has to survive more than one flattering angle.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "open",
+          "path": "res://arena.tscn"
+        },
+        {
+          "at": 0.5,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B01.mp3",
+      "actual_duration_s": 14.341333,
+      "speech_duration_s": 13.14,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B02",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add G P U Particles Three D. Set the amount to sixty-four and lifetime to two seconds. There is no visible result yet. A particle node needs both a simulation resource and something to draw.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "class_name": "GPUParticles3D",
+          "name": "Particles",
+          "properties": {
+            "amount": 64,
+            "lifetime": 2,
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "position": {
+              "v3": [
+                0,
+                0.3,
+                0
+              ]
+            }
+          },
+          "checkpoint": true
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B02.mp3",
+      "actual_duration_s": 13.317333,
+      "speech_duration_s": 12.12,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B03",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Create a Particle Process Material. This is the behavior resource. It can give particles velocity and gravity, but it is not the surface material that will color a sphere or draw a soft image.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "process_material",
+          "value": {
+            "new": "ParticleProcessMaterial",
+            "props": {}
+          },
+          "node": "Particles"
+        },
+        {
+          "at": 1,
+          "op": "resource",
+          "node": "Particles",
+          "property": "process_material"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B03.mp3",
+      "actual_duration_s": 12.762667,
+      "speech_duration_s": 11.56,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B04",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Assign a small sphere to Draw Pass One, with a standard surface material. Now the particle positions have visible geometry. This is the separate draw decision: the process material moves particles, and the mesh gives each one a shape.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "draw_pass_1",
+          "value": {
+            "new": "SphereMesh",
+            "props": {
+              "radius": 0.12,
+              "height": 0.24,
+              "radial_segments": 12,
+              "rings": 6,
+              "material": {
+                "new": "StandardMaterial3D",
+                "props": {
+                  "albedo_color": {
+                    "color": "ffffff"
+                  }
+                }
+              }
+            }
+          },
+          "node": "Particles"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B04.mp3",
+      "actual_duration_s": 14.810667,
+      "speech_duration_s": 13.61,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B05",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Launch upward with positive Y, using a speed range from three to five. Gravity points downward at negative six. That differs from our two-dimensional canvas convention. Watch the spheres rise, slow, and return toward the floor.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "direction",
+          "value": {
+            "v3": [
+              0,
+              1,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "direction"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "initial_velocity_min",
+          "value": 3,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity min"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 5,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity max"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              -6,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        },
+        {
+          "at": 1.2,
+          "op": "set",
+          "property": "spread",
+          "value": 25,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B05.mp3",
+      "actual_duration_s": 14.597333,
+      "speech_duration_s": 13.4,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B06",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Orbit the editor camera. The particles occupy a volume, and the spheres keep their shape as our viewpoint changes. The camera motion is scripted for this recording; the scene and its particle simulation are running in the real editor.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": true
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B06.mp3",
+      "actual_duration_s": 14.512,
+      "speech_duration_s": 13.31,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B07",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Here is a staged drawing fault. Remove Draw Pass One. The emission and process resource still exist, but the spheres disappear. More amount or more speed would not repair a missing draw mesh.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "draw_pass_1",
+          "value": null,
+          "node": "Particles"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B07.mp3",
+      "actual_duration_s": 12.4,
+      "speech_duration_s": 11.2,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B08",
+      "act": "Add Depth And A Draw Pass",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Restore the sphere and the picture returns. Save this checkpoint. When an effect is missing, separate three questions: are particles being emitted, are they moving where expected, and does the draw setup make them visible?",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Add Depth And A Draw Pass"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "draw_pass_1",
+          "value": {
+            "new": "SphereMesh",
+            "props": {
+              "radius": 0.12,
+              "height": 0.24,
+              "radial_segments": 12,
+              "rings": 6,
+              "material": {
+                "new": "StandardMaterial3D",
+                "props": {
+                  "albedo_color": {
+                    "color": "ffffff"
+                  }
+                }
+              }
+            }
+          },
+          "node": "Particles"
+        },
+        {
+          "at": 1,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B08.mp3",
+      "actual_duration_s": 13.552,
+      "speech_duration_s": 12.35,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B09",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Change the emission shape from a point to a box. The particles are now born across a region, instead of sharing one exact source. The box controls birth positions; it does not replace the launch direction.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Make Shape And Color Read",
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "emission_shape",
+          "value": 3,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "emission shape"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "emission_box_extents",
+          "value": {
+            "v3": [
+              0.8,
+              0.1,
+              0.8
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "emission box extents"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B09.mp3",
+      "actual_duration_s": 13.082667,
+      "speech_duration_s": 11.88,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B10",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Compare a sphere-shaped emission volume with the box, then restore the box. Shape changes where the effect begins. Keep speed, lifetime, and gravity fixed during this comparison so that one visible difference has one explanation.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "emission_shape",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "emission shape"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "emission_sphere_radius",
+          "value": 0.8,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "emission sphere radius"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "emission_shape",
+          "value": 3,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "emission shape"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B10.mp3",
+      "actual_duration_s": 14.96,
+      "speech_duration_s": 13.76,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B11",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Reverse the launch direction for a moment. Negative Y sends the initial motion down toward the floor. Restore positive Y. A direction is only meaningful in the coordinate system of this scene, not from the word up in our notes.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "direction",
+          "value": {
+            "v3": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "direction"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "direction",
+          "value": {
+            "v3": [
+              0,
+              1,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "direction"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B11.mp3",
+      "actual_duration_s": 14.192,
+      "speech_duration_s": 12.99,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B12",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Set gravity to zero. The particles keep traveling along their launch motion. Restore negative six and the path bends back down. Gravity changes the velocity over time; it is not another name for the initial speed.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              0,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              -6,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B12.mp3",
+      "actual_duration_s": 14.085333,
+      "speech_duration_s": 12.89,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B13",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Set a controlled scale range, from four tenths to one. The same sphere mesh now produces varied sizes. The one-meter reference makes that choice visible in scene units. Variation should support a readable effect, rather than conceal a weak silhouette.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "scale_min",
+          "value": 0.4,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale min"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "scale_max",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale max"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B13.mp3",
+      "actual_duration_s": 15.642667,
+      "speech_duration_s": 14.44,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B14",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Assign a hot-to-cool color ramp in the process material. The spheres stay white because their draw material is not using particle vertex colors yet. This is a deliberately staged connection fault between simulation data and appearance.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "color_ramp",
+          "value": {
+            "resource": "res://assets/hot-fade.tres"
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "color ramp"
+        },
+        {
+          "at": 1,
+          "op": "resource",
+          "node": "Particles",
+          "property": "process_material",
+          "resource_chain": [
+            "color_ramp",
+            "gradient"
+          ]
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B14.mp3",
+      "actual_duration_s": 14.896,
+      "speech_duration_s": 13.7,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B15",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Enable Vertex Color Use As Albedo in the sphere’s material. Now the same particle color data reaches the visible mesh. The process ramp and the draw material have to agree about which data becomes the picture.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "vertex_color_use_as_albedo",
+          "value": true,
+          "node": "Particles",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "vertex color use as albedo"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B15.mp3",
+      "actual_duration_s": 13.786667,
+      "speech_duration_s": 12.59,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B16",
+      "act": "Make Shape And Color Read",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "The ramp ends at zero alpha, but an opaque material does not show that fade. Switch transparency to Alpha. The spheres now fade as they age. Color, transparency mode, and particle lifetime are related choices with different jobs.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Shape And Color Read"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "transparency",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "transparency"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "transparency",
+          "value": 0,
+          "node": "Particles",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "transparency"
+        },
+        {
+          "at": 8,
+          "op": "set",
+          "property": "transparency",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "transparency"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B16.mp3",
+      "actual_duration_s": 15.344,
+      "speech_duration_s": 14.14,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B17",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Duplicate the emitter as Smoke, then make its process material unique. Put the two sources beside each other. We will keep their different visual jobs visible while changing the smoke’s drawing and motion.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Make Soft Particles",
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "duplicate",
+          "node": "Particles",
+          "name": "Smoke",
+          "properties": {
+            "position": {
+              "v3": [
+                2,
+                0.3,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.6,
+          "op": "unique",
+          "node": "Smoke",
+          "property": "process_material"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "position",
+          "value": {
+            "v3": [
+              -2,
+              0.3,
+              0
+            ]
+          },
+          "node": "Particles"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B17.mp3",
+      "actual_duration_s": 12.762667,
+      "speech_duration_s": 11.56,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B18",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Replace the smoke’s sphere with a quad and our procedural soft-dot texture. Its material is unshaded and uses alpha transparency. This is a flat image placed in three dimensions; it will need a deliberate camera-facing setup.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "draw_pass_1",
+          "value": {
+            "new": "QuadMesh",
+            "props": {
+              "size": {
+                "v2": [
+                  0.7,
+                  0.7
+                ]
+              },
+              "material": {
+                "new": "StandardMaterial3D",
+                "props": {
+                  "shading_mode": 0,
+                  "transparency": 1,
+                  "vertex_color_use_as_albedo": true,
+                  "albedo_texture": {
+                    "resource": "res://assets/soft-dot.tres"
+                  }
+                }
+              }
+            }
+          },
+          "node": "Smoke"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B18.mp3",
+      "actual_duration_s": 15.024,
+      "speech_duration_s": 13.82,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B19",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Orbit with billboarding off and the flat cards turn away from us. Enable particle billboarding and Keep Scale. The cards face the camera while preserving the particle size. This repairs the view-dependent silhouette without turning each card into a sphere.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": true
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "billboard_mode",
+          "value": 3,
+          "node": "Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "billboard mode"
+        },
+        {
+          "at": 4.4,
+          "op": "set",
+          "property": "billboard_keep_scale",
+          "value": true,
+          "node": "Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "billboard keep scale"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B19.mp3",
+      "actual_duration_s": 15.109333,
+      "speech_duration_s": 13.91,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B20",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Give the smoke a slow upward speed, narrow spread, and zero gravity. Replace the hot ramp with a muted smoke ramp. The two effects now share a particle model but communicate different material behavior.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "initial_velocity_min",
+          "value": 0.5,
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity min"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 1,
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity max"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              0,
+              0
+            ]
+          },
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        },
+        {
+          "at": 1.2,
+          "op": "set",
+          "property": "spread",
+          "value": 12,
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        },
+        {
+          "at": 1.5,
+          "op": "set",
+          "property": "color_ramp",
+          "value": {
+            "resource": "res://assets/smoke-fade.tres"
+          },
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "color ramp"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B20.mp3",
+      "actual_duration_s": 13.317333,
+      "speech_duration_s": 12.12,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B21",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Attach the growth curve and increase the smoke’s scale. New particles start small and expand as they rise. A curve expresses a change over age, while the random scale range supplies variation between individual particles.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "scale_min",
+          "value": 1.5,
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale min"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "scale_max",
+          "value": 2.2,
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale max"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "scale_curve",
+          "value": {
+            "resource": "res://assets/grow.tres"
+          },
+          "node": "Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale curve"
+        },
+        {
+          "at": 1,
+          "op": "resource",
+          "node": "Smoke",
+          "property": "process_material",
+          "resource_chain": [
+            "scale_curve",
+            "curve"
+          ]
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B21.mp3",
+      "actual_duration_s": 14.554667,
+      "speech_duration_s": 13.35,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B22",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Compare additive blending with ordinary alpha blending. Additive smoke brightens the background, which changes its visual meaning. Restore alpha for this plume. Choose a blend mode for what the effect represents, then inspect it in the lighting where it will be used.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "blend_mode",
+          "value": 1,
+          "node": "Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "blend mode"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "blend_mode",
+          "value": 0,
+          "node": "Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "blend mode"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B22.mp3",
+      "actual_duration_s": 15.813333,
+      "speech_duration_s": 14.61,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B23",
+      "act": "Make Soft Particles",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Orbit both results together. Mesh particles remain small solid forms; the smoke remains soft camera-facing imagery. Neither drawing method is universally better. The visible job and camera distance determine which one earns its cost.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make Soft Particles"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": true
+        },
+        {
+          "at": 8,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "at": 9,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B23.mp3",
+      "actual_duration_s": 15.450667,
+      "speech_duration_s": 14.25,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B24",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Move the original emitter with local coordinates off. New particles appear at the moving source, while older particles stay in world space. This is the behavior needed for a trail left behind an object.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Make The Effect Survive The Scene",
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "move_source",
+          "value": true,
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Particles"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B24.mp3",
+      "actual_duration_s": 12.741333,
+      "speech_duration_s": 11.54,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B25",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Turn local coordinates on and the existing cloud follows the source. Turn them off again. Both behaviors are useful, but they tell different stories: an attached aura moves with its owner, while a trail records where that owner has been.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "local_coords",
+          "value": true,
+          "node": "Particles"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Particles"
+        },
+        {
+          "at": 9,
+          "op": "set",
+          "property": "move_source",
+          "value": false,
+          "node": "."
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B25.mp3",
+      "actual_duration_s": 14.618667,
+      "speech_duration_s": 13.42,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B26",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Shrink the visibility box, then restore a box that covers the measured motion. The box is a culling bound, not a wall for the particles. Inspect it from the camera angles the game can actually reach.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "visibility_aabb",
+          "value": {
+            "aabb": [
+              -0.1,
+              -0.1,
+              -0.1,
+              0.2,
+              0.2,
+              0.2
+            ]
+          },
+          "node": "Particles"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "visibility_aabb",
+          "value": {
+            "aabb": [
+              -5,
+              -5,
+              -5,
+              10,
+              10,
+              10
+            ]
+          },
+          "node": "Particles"
+        },
+        {
+          "at": 8,
+          "op": "view3d",
+          "angle": 100,
+          "orbit": false
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B26.mp3",
+      "actual_duration_s": 12.869333,
+      "speech_duration_s": 11.67,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B27",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Duplicate Smoke as Shared Smoke without making its process material unique. Change the duplicate’s launch speed and both plumes change. That is a shared resource doing exactly what sharing means; the mistake is expecting independent behavior.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "at": 0.3,
+          "op": "duplicate",
+          "node": "Smoke",
+          "name": "SharedSmoke",
+          "properties": {
+            "position": {
+              "v3": [
+                -2,
+                0.3,
+                -2
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 3,
+          "node": "SharedSmoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity max"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B27.mp3",
+      "actual_duration_s": 15.344,
+      "speech_duration_s": 14.14,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B28",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Make the duplicate’s process material unique, then reduce only its speed. Its original partner keeps the faster setting. Keep intentional texture sharing, but separate the behavior resource that needs an independent edit.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "unique",
+          "node": "SharedSmoke",
+          "property": "process_material"
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 0.7,
+          "node": "SharedSmoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity max"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "SharedSmoke"
+        },
+        {
+          "at": 5.3,
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Smoke"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B28.mp3",
+      "actual_duration_s": 14.213333,
+      "speech_duration_s": 13.01,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B29",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "For the collision experiment, put the emitter above the floor and aim it down. Add a particle collision box that matches the floor’s top. A visible floor mesh alone does not establish particle collision.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "position",
+          "value": {
+            "v3": [
+              0,
+              3,
+              0
+            ]
+          },
+          "node": "Particles"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "direction",
+          "value": {
+            "v3": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "direction"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "initial_velocity_min",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity min"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 2,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity max"
+        },
+        {
+          "at": 1.2,
+          "op": "set",
+          "property": "lifetime",
+          "value": 2.5,
+          "node": "Particles"
+        },
+        {
+          "at": 1.5,
+          "op": "add",
+          "class_name": "GPUParticlesCollisionBox3D",
+          "name": "ParticleFloor",
+          "properties": {
+            "position": {
+              "v3": [
+                0,
+                -0.2,
+                0
+              ]
+            },
+            "size": {
+              "v3": [
+                10,
+                0.4,
+                10
+              ]
+            }
+          }
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B29.mp3",
+      "actual_duration_s": 12.698667,
+      "speech_duration_s": 11.5,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B30",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Enable rigid collision in the particle process material and give it a visible bounce. Now compare the floor contact with collision disabled, then restore collision. This box setup is supported by the renderer used for this recorded test.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "collision_mode",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "collision mode"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "collision_bounce",
+          "value": 0.5,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "collision bounce"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "collision_mode",
+          "value": 0,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "collision mode"
+        },
+        {
+          "at": 9,
+          "op": "set",
+          "property": "collision_mode",
+          "value": 1,
+          "node": "Particles",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "collision mode"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B30.mp3",
+      "actual_duration_s": 15.173333,
+      "speech_duration_s": 13.97,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B31",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Orbit the contact area. The particle collision box affects the visual simulation; it does not award damage or change the game’s rules. Keep gameplay decisions in gameplay code, even when a particle bounce helps sell the event.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": true
+        },
+        {
+          "at": 8,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B31.mp3",
+      "actual_duration_s": 14.554667,
+      "speech_duration_s": 13.35,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B32",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Keep renderer requirements with the effect. This box example does not establish support for signed-distance-field collision, trails, or every GPU feature. A clean offline capture is also not a frame-time measurement on the target device.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "select",
+          "node": "ParticleFloor"
+        },
+        {
+          "at": 5,
+          "op": "select",
+          "node": "Particles"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B32.mp3",
+      "actual_duration_s": 15.770667,
+      "speech_duration_s": 14.57,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B33",
+      "act": "Make The Effect Survive The Scene",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Save the stage and separate mesh and smoke scenes. The useful result includes the draw setup, motion resource, coordinate choice, and bounds. Those choices can now be tested together when the effects enter a real game.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Make The Effect Survive The Scene"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "visible",
+          "value": true,
+          "node": "Smoke"
+        },
+        {
+          "at": 0.3,
+          "op": "save_branch",
+          "node": "Particles",
+          "path": "res://effects/mesh-sparks.tscn"
+        },
+        {
+          "at": 0.6,
+          "op": "save_branch",
+          "node": "Smoke",
+          "path": "res://effects/soft-smoke.tscn"
+        },
+        {
+          "at": 1,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B33.mp3",
+      "actual_duration_s": 13.978667,
+      "speech_duration_s": 12.78,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "BVDT",
+      "narration_text": "Let's recap with Claude. A 3D emitter needs behavior and a draw mesh. Emission shape, velocity, and gravity have separate jobs. Vertex color and transparency connect particle data to appearance. Billboards keep soft images readable as the camera moves. Coordinate space, bounds, and resource ownership need deliberate choices. Visual collision does not replace gameplay rules.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "What The Editor Demonstrated",
+            "artifactHeading": "The Useful Part",
+            "artifactLines": [
+              "A 3D emitter needs behavior and a draw mesh.",
+              "Emission shape, velocity, and gravity have separate jobs.",
+              "Vertex color and transparency connect particle data to appearance.",
+              "Billboards keep soft images readable as the camera moves.",
+              "Coordinate space, bounds, and resource ownership need deliberate choices.",
+              "Visual collision does not replace gameplay rules."
+            ],
+            "lectureLayout": true,
+            "brandLabel": "@NikBearBrown",
+            "durationSeconds": 21.577958
+          },
+          "rendered": {
+            "out": "media/BVDT.mp4",
+            "at": "2026-10-23T22:49:14.152266+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "audio_file": "mp3/beat-BVDT.mp3",
+      "actual_duration_s": 21.577958,
+      "speech_duration_s": 21.08,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "BHTF",
+      "narration_text": "Create mesh sparks and soft smoke from the same launch behavior. Predict what changes when the camera moves, then test both effects from several angles and preserve a revision.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "YOUR TURN · PARTICLE LAB",
+            "segment": "Build, Change, Check",
+            "command": "Create mesh sparks and soft smoke from the same launch behavior. Predict what changes when the camera moves, then test both effects from several angles and preserve a revision.",
+            "output": [
+              "Check: both effects remain readable as the camera moves.",
+              "Check: the draw setup explains their different appearance."
+            ],
+            "runningText": "Your next experiment",
+            "largeText": true,
+            "animateTyping": false,
+            "modelLabel": "Your local project",
+            "effortLabel": "One change",
+            "durationSeconds": 10.47
+          },
+          "rendered": {
+            "out": "media/BHTF.mp4",
+            "at": "2026-10-23T22:49:34.880420+00:00"
+          }
+        }
+      },
+      "audio_file": "mp3/beat-BHTF.mp3",
+      "actual_duration_s": 10.47
+    },
+    {
+      "beat_id": "BSIGN",
+      "narration_text": "This is Liam, in for Bear. Keep the version that survives the test.",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Original-speed final native 3D result under Liam signoff"
+      },
+      "audio_file": "mp3/beat-BSIGN.mp3",
+      "actual_duration_s": 4.5
+    },
+    {
+      "beat_id": "BOUT",
+      "narration_text": "Building 3D Particle Effects in Godot. At Nik Bear Brown.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Building 3D Particle Effects in Godot",
+            "slug": "claude-liam-lecture-building-3d-particle-effects-in-godot-redo",
+            "lectureLayout": true,
+            "handle": "@NikBearBrown",
+            "durationSeconds": 5.608
+          },
+          "rendered": {
+            "out": "media/BOUT.mp4",
+            "at": "2026-10-23T22:49:47.149758+00:00"
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Locked channel outro contains the exact title, handle and mascot; deliberate identity card."
+      },
+      "audio_file": "mp3/beat-BOUT.mp3",
+      "actual_duration_s": 5.608,
+      "speech_duration_s": 4.61,
+      "padding_applied": true
+    }
+  ]
+}

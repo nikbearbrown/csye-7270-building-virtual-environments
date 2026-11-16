@@ -1,0 +1,26 @@
+# Godot Shader Films
+
+Sixteen standalone Liam lecture packages, one per shader. Source review passed 268 numerical checks. Audio and final-film rendering are pending under the two-stage lecture workflow. Each package includes a complete narration, source-linked beat sheet, acts, shot decisions, fact check, preserved sources, build instructions and a real 16-second Godot demonstration. Estimated spoken length is roughly three minutes per film; measured audio and deliberate visual holds determine the final duration. No promised runtime cap.
+
+| Shader | Film | Narration words | Build status |
+|---|---|---:|---|
+| `00_super_simple.gdshader` | [The Smallest Shader](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-the-smallest-shader/BUILD-PROMPT.md) | 380 | Authored; not rendered |
+| `01_base.gdshader` | [Passing Normals to Pixels](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-passing-normals-to-pixels/BUILD-PROMPT.md) | 388 | Authored; not rendered |
+| `02_lambert.gdshader` | [Lambert: Light Is an Angle](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-lambert-light-is-an-angle/BUILD-PROMPT.md) | 393 | Authored; not rendered |
+| `03_lambert_ambient.gdshader` | [Ambient: The Lighting Floor](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-ambient-the-lighting-floor/BUILD-PROMPT.md) | 387 | Authored; not rendered |
+| `04_fresnel.gdshader` | [Fresnel: The View-Dependent Rim](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-fresnel-the-view-dependent-rim/BUILD-PROMPT.md) | 399 | Authored; not rendered |
+| `05_phong.gdshader` | [Phong: The Moving Highlight](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-phong-the-moving-highlight/BUILD-PROMPT.md) | 406 | Authored; not rendered |
+| `06_diffuse_mapped.gdshader` | [Diffuse Maps: Paint Before Light](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-diffuse-maps-paint-before-light/BUILD-PROMPT.md) | 401 | Authored; not rendered |
+| `07_spec_mapped.gdshader` | [Specular Maps: Where It Shines](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-specular-maps-where-it-shines/BUILD-PROMPT.md) | 399 | Authored; not rendered |
+| `08_normal_mapped.gdshader` | [Normal Maps Without New Geometry](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-normal-maps-without-new-geometry/BUILD-PROMPT.md) | 388 | Authored; not rendered |
+| `09_cube_mapped.gdshader` | [Cube Maps: A Stored World](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-cube-maps-a-stored-world/BUILD-PROMPT.md) | 407 | Authored; not rendered |
+| `10_vertex_anim.gdshader` | [Vertex Animation: Moving the Mesh](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-vertex-animation-moving-the-mesh/BUILD-PROMPT.md) | 399 | Authored; not rendered |
+| `11_uv_manip.gdshader` | [UV Manipulation: Moving the Address](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-uv-manipulation-moving-the-address/BUILD-PROMPT.md) | 405 | Authored; not rendered |
+| `12_techniques.gdshader` | [Render States: Four Behaviors](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-render-states-four-behaviors/BUILD-PROMPT.md) | 396 | Authored; not rendered |
+| `13_blended.gdshader` | [Blend Maps: Three Colors](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-blend-maps-three-colors/BUILD-PROMPT.md) | 410 | Authored; not rendered |
+| `14_car_shader.gdshader` | [Car Paint: Tuning Reflections](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-car-paint-tuning-reflections/BUILD-PROMPT.md) | 393 | Authored; not rendered |
+| `15_uber.gdshader` | [The Uber Shader: Reading the Whole](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-shader-the-uber-shader-reading-the-whole/BUILD-PROMPT.md) | 403 | Authored; not rendered |
+
+Base and Lambert compute the same image. They receive separate films with different objectives: stage-to-stage normal data flow, then the angular lighting model. These titles are unnumbered; source filenames retain their existing identifiers.
+
+The prior fifteen-film SERIES-PLAN was left intact. This new batch follows the current request for one film per shader, and uses compact standalone treatments rather than padding each to ten minutes.

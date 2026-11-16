@@ -1,0 +1,66 @@
+{
+  "id": 1,
+  "slug": "passing-normals-to-pixels",
+  "title": "Passing Normals to Pixels",
+  "objective": "Trace a surface normal from the mesh through a varying into fragment lighting.",
+  "wrong": "the normal is already in world space",
+  "right": "the normal needs a space conversion",
+  "terms": {
+    "Normal": "A direction perpendicular to the surface",
+    "World space": "Coordinates shared by objects and lights",
+    "Varying": "A value passed and interpolated between shader stages"
+  },
+  "exercise": "Rotate a Godot mesh using this shader. Trace its normal through the vertex function, varying, and fragment function. Explain why the light direction and normal must use the same coordinate space.",
+  "checks": [
+    "The normal is transformed before the dot product.",
+    "The interpolated normal is normalized again."
+  ],
+  "recap": [
+    "Mesh normals start in local space.",
+    "The normal matrix carries them to world space.",
+    "Varyings interpolate across triangles.",
+    "Normalize before comparing directions."
+  ],
+  "beats": [
+    [
+      "Follow The Normal",
+      "varying vec3",
+      "The input normal belongs to the mesh's local coordinates. Our light direction is defined in world coordinates. Comparing them directly would compare directions expressed in different reference frames."
+    ],
+    [
+      "Transform At Vertices",
+      "MODEL_NORMAL_MATRIX",
+      "The vertex function multiplies the normal by the model normal matrix. This is a direction transformation, not a position transformation. Translation must not move a normal."
+    ],
+    [
+      "Carry The Value",
+      "world_normal =",
+      "The varying carries transformed normals toward the fragment stage. Rasterization interpolates their components across each triangle. It does not run the vertex function again for every fragment."
+    ],
+    [
+      "Normalize Again",
+      "normalize(world_normal)",
+      "Interpolation can change a vector's length. Normalize the interpolated normal before using it in a dot product. Otherwise its length would accidentally change the brightness."
+    ],
+    [
+      "Rotate The Object",
+      "MODEL_NORMAL_MATRIX",
+      "Watch the torus rotate while the light remains fixed in world space. Different surface directions face the light. The normal transformation is what keeps those directions consistent with the scene."
+    ],
+    [
+      "Reverse The Light",
+      "normalize(-light_direction)",
+      "This uniform stores the direction light travels. Lighting needs the direction toward the light. The minus sign converts between those conventions; removing it illuminates the opposite side."
+    ],
+    [
+      "One Lighting Result",
+      "clamp(dot(l, n)",
+      "The normalized directions meet in a clamped dot product. A surface facing the light gets a positive weight. A surface facing away gets zero. That weight multiplies the surface color."
+    ],
+    [
+      "Read Behavior",
+      "ALBEDO =",
+      "Despite its name, the base shader already implements Lambert lighting. Its executable code matches the separate Lambert file. This lesson is about the data path, not a new lighting model."
+    ]
+  ]
+}

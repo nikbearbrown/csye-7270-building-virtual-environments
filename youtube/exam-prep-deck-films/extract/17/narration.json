@@ -1,0 +1,472 @@
+{
+ "deck": "17",
+ "opening_summary": "Thirty-four terms for tying a character's actions to its animation, from clips and blends to state machines, hit windows and tests. The exact term tells an AI coding agent what to change, and how to check it.",
+ "opening_description": "34 terms: blends, state machines, hits and tests.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers often say a blend tree switches a character from one state to another. It does not. A blend tree mixes clips by a value, such as speed. Moving between states over time is the job of a transition. Animation is full of look-alike pairs like that one. This film goes through the terms group by group, each one shown.",
+  "text": "A blend tree\nswitches between states.",
+  "triggerWords": "switches between states",
+  "replacementWords": "mixes clips by a value"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty-four terms in four groups, about tying a character's actions to its animation, and testing that wiring. The first group is clips and blends. AnimationPlayer, loop, OneShot, animation tree, blend tree, blend space and parameter. They say how code mixes clips by numbers.",
+   "figures": [
+    "34"
+   ]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is state machines. State, transition, condition, advance mode, travel, priority, interrupt, exit-time transition, cross-fade and current node. These terms say how a character commits to one mode, and how it moves to the next.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is keys, events and hit windows. Property track, method track, tween, startup, active, recovery and hit list. These terms say how a gameplay fact, such as whether the hitbox that deals damage is switched on, is tied to the clip.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is proving it, in three engines. Sampling, intermittent fault, input probe and mutation check say what a headless test, one that runs with no window, can see. Then the same ideas in Unity and Unreal.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "Four bars, one for each clip in the robot's player. An AnimationPlayer is the Godot node that holds a character's clips and plays one at a time. A Loop is a clip that starts again from its beginning every time it ends. Here idle, walk and run loop, and shooting plays once. For example, a coin's spin clip on an AnimationPlayer is set to loop, so the coin keeps turning for as long as it sits in the level.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "Now a shooting clip sits over the looping run. A OneShot is a node in a blend tree that plays a clip once over whatever is playing below it, then hands back. In this example the fire request comes at one second, the shot ends at one point four three three seconds, and the run never stopped underneath. For example, in a platformer where the hero fires while running, a OneShot lays one firing clip over the run, and then only the run is left.",
+   "figures": [
+    "fire request at 1.000 s",
+    "1.433 s"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "A list of five numbers above six bars. An Animation tree is Godot's graph that runs an AnimationPlayer's clips through blends and state machines, so several clips can share one pose. Code writes the five numbers, and the six clip weights follow. Here falling gets zero point four, shooting gets zero point six, and the weights add up to one. For example, the Walker robot's script writes five numbers like these into its animation tree on every physics tick.",
+   "figures": [
+    "0.40",
+    "0.60",
+    "weights add up to 1.00"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "Three stick figures, idle, mixed and run. A Blend tree is a graph of nodes that mixes clips by numbers your code writes. This blend node mixes idle with run by speed divided by top speed. In this simulated run the speed is at its top, so run takes all the weight. A blend tree mixes, while a state machine commits to one state. For example, the Walker robot mixes idle, walk and run by its horizontal speed, with no change of state.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "Now three clips sit on a line, idle at zero, walk in the middle, run at one. A Blend space places clips on a line or a plane, and a position between them mixes only the nearest ones. In this simulated example the position is zero point three, so idle gets zero point four, walk zero point six, and run nothing. For example, a top-down hero can use a BlendSpace2D with walk clips facing up, down, left and right, picked by the stick direction.",
+   "figures": [
+    "0.0",
+    "1.0",
+    "blend_position = 0.30",
+    "idle 0.40 walk 0.60 run 0.00"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "Three traces across one hop, in this simulated run. A Parameter is a tunable number on the tree, reached by a path, and code drives the tree by writing it. These are written every physics tick, one hundred twenty times a second. The state value flips from zero to one in one tick, while air direction and the gun value move smoothly. For example, nest the run blend inside another node, and its path changes, so a script writing the old path changes nothing.",
+   "figures": [
+    "120 A SECOND"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "Three boxes, ground, jump and fall, with ground lit in red. A State is one named mode of a state machine, such as idle or run. The machine is always in exactly one, so the robot is in ground, jump or fall, never two at once. A state is where the machine is now, and a transition is how it moves on. For example, Clawd, the Walker character drawn in code, always shows exactly one animation state, such as idle, walk, run or jump.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "Arrows now join the boxes. A Transition is a connection from one state to another, with its own rule for when it fires and how long it blends. Six are drawn, the five an AI coding agent first built, plus the later fix, fall to jump. For example, the transition from fall to ground fires when the robot touches the floor, and blends the falling pose into the standing one over a short fade.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "A table steps the machine with scripted input. A Condition is a test on a parameter that must hold before a transition may fire. Here the tests are expressions that check whether the robot is on the floor, and its vertical speed. Leave the floor rising, and jump fires. Start falling, and fall fires. On the last tick nothing is true, so it stays in ground. For example, fall to ground fires only while a true or false parameter named landed is true.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 4,
+   "narration": "A second row runs the same input with every transition set to Enabled. Advance mode decides how a transition may fire. Enabled means only a travel call from code may use it. Auto means it fires by itself when its condition or expression is true. With Enabled, the bottom row stays in ground the whole time. For example, the first agent left the robot's five transitions at Enabled, the default, and none of them fired until they were switched to Auto.",
+   "figures": []
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "A small made-up machine, idle, walk, run and jump, and a lone swim box. Travel asks the machine to go to a named state by the shortest path of transitions. The dot walks from idle through walk to run, two hops. If no path exists, as with swim, the machine just jumps there. For example, when the player presses attack, the player script can travel to the attack state at that moment, telling the tree instead of waiting for a test to come true.",
+   "figures": [
+    "2 hops"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "Three transitions out of run, all tested on the same tick. Priority decides which transition wins when several are true at once, and in Godot the lower number is preferred. Run to jump and run to walk are both true, so priority one wins, and the machine goes to jump. For example, if stagger and walk are both true on the tick an enemy strikes, give stagger the lower number, so the hit always shows.",
+   "figures": [
+    "priority 1"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 3,
+   "narration": "A bar for the run clip, with the switch set to Immediate. An Interrupt is a transition that cuts the current state off early. In this example the request comes at zero point three seconds and the new state starts at once, so the last zero point five three three seconds of run never plays. For example, pressing reset while the Walker robot is rising should cut its jump short, and its test expects the machine to leave jump within a short fade.",
+   "figures": [
+    "0.3 s",
+    "0.533 s"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 4,
+   "narration": "Below it, the same request with the switch set to At End. An Exit-time transition waits for the clip to reach a set point before the new state starts. Godot calls it switch mode At End, and Unity calls it Has Exit Time. Here the new state waits zero point five three three seconds, and starts at zero point eight three three. For example, a sword swing that must finish its follow-through before the character returns to idle.",
+   "figures": [
+    "0.533 s",
+    "0.833 s"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "Two weight lines across a tenth of a second. A Cross-fade blends smoothly from one clip to the next over a short time, called the transition time. The old state's weight falls as the new one's rises, and the two always add up to one. A cut switches in one tick, with no blend. For example, the Walker robot first cut from its ground pose to its air pose in one tick, and the new state machine gave each transition a short cross-fade instead.",
+   "figures": [
+    "TRANSITION TIME 0.10 S",
+    "The two weights always add up to 1."
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "Three lines for three transition times. A transition time of zero is a cut, done in one tick. Zero point zero five seconds is three frames at sixty frames per second, and zero point one seconds is six. So count frames before you choose seconds. For example, film yourself landing a small hop, count the frames the landing takes, and compare that count with the frames in your cross-fade before you set its seconds.",
+   "figures": [
+    "xfade 0.00 s",
+    "3 frames at 60 fps",
+    "0.1 s is 6"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "Now the question is what the machine reports during the fade. Get current node is the playback's reading of the current state, and during a cross-fade it already names the new state. At zero point zero five seconds ground has only half the weight, yet it is reported as current. Get fading from node still says fall. For example, a test that asks only for the current node could say the robot has left jump while the jump pose still shows.",
+   "figures": [
+    "0.05 s",
+    "0.50"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "The Walker sword's fast attack clip, in this simulated playback, with two value tracks. A Property track animates any property of a node, not just bones. Each key is a value at a time. One track turns the blade, ending at seventy-five degrees. Another switches monitoring, the hitbox's on switch, true and then false. A property track sets a value, and a method track calls a function. For example, a track that keys a sprite's frame number to play a walk cycle.",
+   "figures": [
+    "rotation 75.0°"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "A third track adds two keys, marked in red. A Method track calls a function when the playhead reaches a key. At zero point one seconds the sword starts listening for the next attack, and at zero point two five seconds it says the next swing may start. Unity calls this an Animation Event, and Unreal an Anim Notify. Scrubbing in the editor does not fire it. For example, a key on a footstep frame that calls the function playing a step sound.",
+   "figures": [
+    "0.10 s",
+    "0.25 s"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 3,
+   "narration": "Two bars ask who turns the hitbox off. A Tween is animation made in code, moving a value toward a target, then thrown away, and it can be killed halfway. In this made-up case the tween is killed at zero point zero seven seconds, so its off call never runs and the hitbox stays on. The clip key turns it off at zero point one five. For example, a health bar sliding to the player's current health suits a tween, since gameplay sets its end.",
+   "figures": [
+    "0.07 s",
+    "0.15 s"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "A bar for one sword swing, in this made-up example at one hundred twenty frames a second. Startup is the run-up of an attack, the frames before it can hit. The blade moves, but the hitbox is still off. Here startup is twelve frames, a tenth of a second. Active and recovery come next. For example, a heavy hammer swing with a long startup gives the target time to see it coming and step away.",
+   "figures": [
+    "120 FRAMES A SECOND",
+    "12 f",
+    "0.10 s"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "The playhead moves on through the red section. Active is the frames in which an attack can hit, the window when the hitbox is switched on. Here it lasts eighteen frames, and this is the window a test must pin to a frame number. A hit can land in active, and not in recovery. For example, the Walker sword's hitbox is keyed on and off inside its fast attack clip, and a check that steps frame by frame pins exactly when.",
+   "figures": [
+    "18 f"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 3,
+   "narration": "The last section fills. Recovery is the frames after an attack, before the character can act again. Nothing can hit, and the swing comes to rest. Here it lasts twenty-four frames, to the end of the fifty-four frame swing. Recovery follows active, and no hit lands in it. For example, a combo finisher with a long recovery leaves the player open, so a missed swing has a cost.",
+   "figures": [
+    "24 f",
+    "frame 54 of 54"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 4,
+   "narration": "Two targets now sit inside the hitbox. A Hit list records which targets one swing has already hit, so each is hit only once. Without it, every active frame hits again, eighteen plus ten, twenty-eight hits. With it, one each, two hits. For example, a sword sweep through a row of three slimes adds each slime to the swing's hit list as the blade first touches it, so each slime takes damage once.",
+   "figures": [
+    "no hit list: 18 + 10 = 28 hits",
+    "with a hit list: 1 + 1 = 2 hits"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "A table of physics ticks around a landing, in this simulated run. Sampling means reading a value at one moment, so a brief event between two readings can be missed. Physics runs one hundred twenty ticks a second and the tree updates sixty times, so it sees one tick in two. The robot is on the floor for one tick, and the tree still shows fall. For example, a Walker arm test once looked at a pose between skeleton updates, and failed a working rig.",
+   "figures": [
+    "120 ticks",
+    "60 frames"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "A second table lands one tick later. An Intermittent fault is a bug that shows up only some of the time. Land on the first tick of a frame and take off on the next, and the tree never sees the floor, so the robot rises in its falling pose. Land on the second tick, and the tree sees ground, then jump. Same key, two outcomes. For example, a check that fails after an unrelated change to the test's own timing may be catching one.",
+   "figures": []
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "Four checks, marked with and without the animation tree. An Input probe is a script that loads the real scene, presses only ordinary actions, and records what happens. The platformer's probe checks that the player moved, jumped upward, made a Bullet node, and came back near the start on reset. Each check looks at the body, never the pose, so all four would pass with the tree deleted. For example, a probe that holds the right arrow, then checks the player has moved right.",
+   "figures": [
+    "4 of 4"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "This is the probe's own list of what it did not check. Coin pickup, enemy impact, the camera image, audio, physical controls and fun. Animation is not on the list either, and nothing checks it. Those need a person playing the game. For example, whether a new jump clip looks like a jump is judged by playing it on a screen, not by the probe.",
+   "figures": []
+  },
+  {
+   "slide": 10,
+   "step": 3,
+   "narration": "A grid of pass and fail, by landing tick. A Mutation check means putting the old broken version back and running the new test, which must fail. In this simulated grid, the fixed scene passes both. On the pre-fix scene the test fails at the first-tick landing only, so one landing could pass by luck. The real check, over three hops, failed at both. For example, after fixing a coin that counted twice, restore the old coin script and confirm the new test fails.",
+   "figures": [
+    "1st tick",
+    "2nd tick"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "Three states in Unity, Idle, Run and Jump, stepped by two inputs. An Animator Controller is the Unity asset that holds an animation state machine, with its states, transitions and parameters in one place. A script sets the parameters, here speed and grounded, and the conditions look at them. For example, a character script sets grounded to false when the character leaves the floor, and a condition on that parameter moves the controller into Jump.",
+   "figures": []
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "Two weight lines across a quarter of a second. A Unity transition moves from one state to another over a set time, so it is driven by time. Over its duration the old state's weight drops to zero and the new one's rises to one, in this simulated run by zero point two five seconds. For example, a transition from Run to Jump that blends over a fixed duration once the jump begins.",
+   "figures": [
+    "0.25 s",
+    "from 0.00, to 1.00"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "A second chart beside it, with weight against speed. A Unity blend tree mixes several clips by a parameter value, with no time involved. At a speed of four, run takes all the weight. The walk and run thresholds here are made up. A transition changes state over a time, and a blend tree mixes by a value. For example, idle, walk and run placed along one speed parameter, so the gait follows how fast the character moves.",
+   "figures": [
+    "speed 4.0"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "Two boxes inside one Unreal asset. An Animation Blueprint is the Unreal asset that holds an animation state machine and its logic. Its event graph writes variables from gameplay, here Speed and Is Falling. Its anim graph uses them to choose a state and to blend. For example, the event graph copies a character's speed from its movement, and the anim graph uses that number to pick Run.",
+   "figures": []
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "A speed trace, in this simulated run, with a dashed line at three. A Transition rule is a small graph on one transition that outputs true or false, and true lets the state change. This rule is speed above three and not falling. The red bar shows it true while both hold, and false during the fall. For example, a rule on the change from Walk to Run that is true only while the character is fast enough and on the ground.",
+   "figures": [
+    "3"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Four states on the left, three on the right, joined through a diamond. A Conduit is a hub that joins many states to many with one set of transitions. Wired directly, four sources and three targets need twelve transitions. Through a conduit they need seven. A transition rule decides one change, and a conduit gathers many. For example, Idle, Walk, Run and Land can all route through one conduit to Jump, Fall or Hit, instead of each needing its own arrows.",
+   "figures": [
+    "4 × 3 = 12",
+    "4 + 3 = 7"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "Each pair sets look-alike terms side by side. A Transition moves between states over time. On the left, run reaches full weight when the clock reaches one second. A Blend tree mixes clips by a value. On the right, run reaches full weight because the speed is one.",
+   "figures": [
+    "t = 1.00 s",
+    "speed = 1.00"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "Pull, with Auto transitions, means the tree asks the game on every update, six times in six updates. Push, with travel, means the game tells the tree once, at the moment the action happens. Pull can miss a change that comes and goes between two updates.",
+   "figures": [
+    "asked 6 times",
+    "told 1 time"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "A Property track sets a value on a node, here the blade's rotation, keyed to seventy-five degrees. A Method track calls a function at a key, here the one that says the next attack may start. One changes a value, and the other runs code.",
+   "figures": [
+    "75.0°"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Active is the frames where a hit can land, eighteen of eighteen here. Recovery is where none can, zero of twenty-four frames, while the swing comes to rest. Both belong to the same swing, so only the frame number tells them apart.",
+   "figures": [
+    "18 of 18",
+    "0 of 24"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 1,
+   "narration": "A vague request sits above the exact instruction that replaces it. Make the landing smoother becomes, set the fall to ground cross-fade to zero point one seconds, which is six frames at sixty frames per second. The chart shows the six frames of blend.",
+   "figures": [
+    "0.1 s",
+    "6 frames at 60 fps"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 2,
+   "narration": "Make the animation follow speed becomes, on each physics tick, write the run blend amount as the horizontal speed divided by the top speed. In this example, a speed of three out of six writes zero point five.",
+   "figures": [
+    "3.0 of 6.0",
+    "0.50"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 3,
+   "narration": "Do not let it miss a landing becomes, add a transition from fall to jump, set to Auto, with the expression not on the floor and vertical velocity above zero. Before it, the first-tick landing ended in fall. After it, both landings end in jump.",
+   "figures": [
+    "velocity.y > 0.0",
+    "1st tick"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 4,
+   "narration": "Only hurt during the swing becomes, key monitoring true at zero seconds and false at zero point one five, then check it frame by frame. On paper that is frame eighteen at one hundred twenty frames a second. The run showed frame twenty, two late, so pin what you observe.",
+   "figures": [
+    "0.0 s",
+    "0.15 s",
+    "0.15 s × 120 = frame 18",
+    "frame 20",
+    "2 frames"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 5,
+   "narration": "Test the animation becomes, press real inputs, look at the current node each tick, and run both landing cases. On the pre-fix scene the input probe would pass four of four, while in this simulated pair the state test passes only one of two landings. Only the state test can see the missed landing.",
+   "figures": [
+    "4 of 4 pass",
+    "1 of 2 landings pass"
+   ]
+  },
+  {
+   "slide": 15,
+   "step": 1,
+   "narration": "This is a checklist of six questions to ask before you trust an animation change. First, is the machine pulled by expressions or pushed by travel calls, and how often does the tree look at the game?",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 2,
+   "narration": "Second, can every transition fire? Each one needs advance mode set to Auto, or a travel call that uses it. A transition left at Enabled, with no travel call, never fires.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 3,
+   "narration": "Third, is each state reachable, and can it exit? And is there one owner of the state, so that two machines never disagree about what the character is doing?",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 4,
+   "narration": "Fourth, is each cross-fade written in seconds, and do you know how many frames that is at your frame rate? Count the frames before you choose the seconds.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 5,
+   "narration": "Fifth, does the hitbox window sit on the clip, as keys, and not in code that can be killed halfway? And is it pinned by a check that steps frame by frame?",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 6,
+   "narration": "Sixth, what did the test not see? Feel, look and fun need a person, so say what you checked. Then say it exactly. Not make it smoother, but a zero point one second cross-fade, tested at both landings.",
+   "figures": [
+    "0.1 s"
+   ]
+  }
+ ],
+ "recap_lines": [
+  "A blend tree mixes clips by a value, and a state machine commits to one state.",
+  "A transition left at Enabled never fires by itself. Auto does.",
+  "An interrupt cuts a state short, and an exit-time transition waits for the clip.",
+  "During a cross-fade, the current node already names the new state.",
+  "Keep a gameplay fact like the hitbox window on the clip, not in a tween.",
+  "A probe checks the body, and a mutation check shows a test can see the bug."
+ ],
+ "your_turn": {
+  "segment": "Name The Animation Term",
+  "command": "Quiz me on animation terms with short game-making cases, one at a time. Use the terms blend tree, transition, advance mode, interrupt, exit-time transition, cross-fade, method track, tween, active and recovery. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is a game-making situation, and the answer waits for you.",
+   "Check: you named the exact term and said why its look-alike is wrong."
+  ]
+ },
+ "say_as": [],
+ "deck_problems": [
+  "Slide 8 (Startup, active, recovery): the illustrative split puts the hitbox on from frame 12 to frame 30 (0.10 s to 0.25 s), lined up with the method keys. But slide 7 and slide 14 step 4 show the sword's real keyed window as monitoring true at 0.0 s and false at 0.15 s, which has no startup at all. The notes tie 0.1 s and 0.25 s to 'its method keys', but those keys open the combo buffer and allow the next swing, they are not the hitbox window. A viewer can take slide 8 as the sword's real timing. The narration calls slide 8 a made-up example and does not tie its frames to the sword.",
+  "Slide 8 steps 1 and 2: the caption under the bar names the frame the playhead has reached, not the section the step is about. Step 1, about startup, prints 'frame 12 of 54: active' and 'hitbox live: yes'. Step 2, about active, prints 'frame 30 of 54: recovery' and 'hitbox live: no'.",
+  "Slide 10 step 1 shows the input probe's four assertions ticked in a 'no tree' column, and slide 14 step 5 says 'input probe on the pre-fix scene: 4 of 4 pass'. Chapter 11 only says the four assertions 'would pass' with the AnimationTree deleted, and records the probe run on the final scene, not on the pre-fix scene. The badge on slide 10 is Conceptual illustration, but the ticks look like results. The narration says 'would pass'.",
+  "Slide 10 step 3 and slide 14 step 5: the pre-fix scene passes at the second-tick landing ('pass', '1 of 2 landings pass'). Chapter 11's real mutation check failed 2a and 2b at both offsets, because three hops hit the unlucky tick at least once. The note admits this, but the slide shows a single-landing simulation, so a viewer can think the real check passed at one offset.",
+  "Slide 4 step 3: Condition is defined as 'A test on a parameter', but the caption says the test 'reads floor and vertical speed', which in the chapter's machine are advance expressions (is_on_floor(), velocity.y), not advance conditions on a parameter. The chapter separates the two settings.",
+  "Slide 2 step 3: the bar labelled 'shooting' gets the gun blend's weight, but in Chapter 11 the gun Blend2's input is the clip 'shooting_standing', and that blend is filtered to upper-body bones, so 'weights add up to 1.00' over six whole-body clips is a simplification.",
+  "Slide 3 step 3: 'air_dir is between 0 and 1 for 22 ticks' while Chapter 11 says it blends over 21 ticks; the note says 'near the chapter's 21', but the slide states 22 without that caveat.",
+  "Slide 9: the tick numbers do not match the chapter's trace. In case 1 the floor is true on tick 136 and the take-off is on 137; in Chapter 11's trace the floor is true on tick 137 and vy is 12.50 on tick 138.",
+  "Slide 11 step 1: the Unity table enters Run at speed 0.2 and lands back in Run at speed 0.0, because the drawn graph has no Jump to Idle arrow. It reads oddly for a speed-driven controller.",
+  "Slide 1 says '34 terms' and the map's term lists name 28 terms plus 'Unity, Unreal'; the six engine terms (Animator Controller, Unity transition, Unity blend tree, Animation Blueprint, Transition rule, Conduit) are only on slides 11 and 12. The map also says 'current node' where slide 6 says get_current_node().",
+  "Task numbering: the brief for this film calls the Unity and Unreal slides 12 and 13; in deck.json they are slides 11 and 12 (13 is the look-alike pairs). The narration follows deck.json."
+ ]
+}

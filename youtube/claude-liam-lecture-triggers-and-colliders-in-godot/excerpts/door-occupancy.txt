@@ -1,0 +1,9 @@
+func _entered(actor: Node2D) -> void:
+    occupants[actor.get_instance_id()] = weakref(actor)
+func _exited(actor: Node2D) -> void:
+    occupants.erase(actor.get_instance_id())
+    for id in occupants.keys():
+        if occupants[id].get_ref() == null:
+            occupants.erase(id)
+    if not occupants.is_empty():
+        return false

@@ -1,0 +1,12 @@
+# REPLACE LOG — slots needing better media
+- B01: clip 3.3s slowed 6.3x into 20.9s beat — extreme slow-mo; replace with a longer generation (pantry, B01.mp4)
+- B02: clip 3.1s slowed 7.2x into 22.2s beat — extreme slow-mo; replace with a longer generation (pantry, B02.mp4)
+- B03: clip 3.2s slowed 6.7x into 21.8s beat — extreme slow-mo; replace with a longer generation (pantry, B03.mp4)
+- B04: clip 2.9s slowed 12.0x into 35.1s beat — extreme slow-mo; replace with a longer generation (pantry, B04.mp4)
+- B05: clip 3.1s slowed 8.6x into 26.5s beat — extreme slow-mo; replace with a longer generation (pantry, B05.mp4)
+- B07: clip 2.3s slowed 14.3x into 33.5s beat — extreme slow-mo; replace with a longer generation (pantry, B07.mp4)
+- B08: clip 2.9s slowed 13.0x into 38.0s beat — extreme slow-mo; replace with a longer generation (pantry, B08.mp4)
+- B09: clip 2.9s slowed 13.2x into 38.5s beat — extreme slow-mo; replace with a longer generation (pantry, B09.mp4)
+- B10: clip 3.0s slowed 10.7x into 32.0s beat — extreme slow-mo; replace with a longer generation (pantry, B10.mp4)
+- B11: clip 3.1s slowed 12.5x into 38.5s beat — extreme slow-mo; replace with a longer generation (pantry, B11.mp4)
+- B12: clip 3.1s slowed 18.1x into 55.9s beat — extreme slow-mo; replace with a longer generation (pantry, B12.mp4)

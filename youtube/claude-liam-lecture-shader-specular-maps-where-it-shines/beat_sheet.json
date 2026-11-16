@@ -1,0 +1,1030 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-specular-maps-where-it-shines",
+    "title": "Specular Maps: Where It Shines",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Packed masks control rim and highlight strength.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending",
+    "build": {
+      "at": "2026-10-18T14:01:44",
+      "cut": "master",
+      "filled": 14,
+      "of": 14,
+      "slates": [],
+      "skin_warnings": [
+        "BOPEN: palette=claude but the cold open is 'un-annotated' — COLD OPEN LAW wants ClaudeComposerAsk"
+      ]
+    }
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Specular Maps: Where It Shines. Explain independently packed masks for rim and highlight strength.",
+      "estimated_duration_s": 7.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      },
+      "actual_duration_s": 7.637333,
+      "audio_file": "mp3/beat-BOPEN.mp3",
+      "render_duration_s": 7.666666666666667,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BOPEN.mp4",
+        "filled_by": "media",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Ahoj. This is Liam, in for Bear. The key correction is that channels can carry independent masks. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nall channels describe color.",
+            "triggerWords": "all channels describe color",
+            "replacementWords": "channels can carry independent masks",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-specular-maps-where-it-shines",
+            "banner": "",
+            "durationSeconds": 11.232
+          },
+          "rendered": {
+            "out": "media/BIDEA.mp4",
+            "at": "2026-10-18T17:52:24.393427+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      },
+      "actual_duration_s": 11.232,
+      "audio_file": "mp3/beat-BIDEA-padded.wav",
+      "render_duration_s": 11.25,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BIDEA.mp4",
+        "filled_by": "remotion:BrutalistHesitantWriter",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Mask: A number controlling a contribution's strength. Channel: One component of a texture sample. Specular: The view-dependent highlight contribution.",
+      "estimated_duration_s": 8.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Specular",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Mask"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Channel"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Specular"
+          }
+        ],
+        "motion_claim": "Reveal Specular",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Mask",
+                "meaning": "A number controlling a contribution's strength"
+              },
+              {
+                "term": "Channel",
+                "meaning": "One component of a texture sample"
+              },
+              {
+                "term": "Specular",
+                "meaning": "The view-dependent highlight contribution"
+              }
+            ],
+            "durationSeconds": 9.429333
+          },
+          "rendered": {
+            "out": "media/BDEFS.mp4",
+            "at": "2026-10-18T17:52:47.042622+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 9.429333,
+      "audio_file": "mp3/beat-BDEFS.mp3",
+      "render_duration_s": 9.458333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BDEFS.mp4",
+        "filled_by": "remotion:ClaudeDefinitions",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "A texture sample can hold controls rather than paint. Here the red channel is a rim mask and the green channel is a highlight mask. Blue does not contribute to either term.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: texture(spec_map, UV)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Two Independent Controls"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: texture(spec_map, UV)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: texture(spec_map, UV)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec4 color_map = texture(diffuse_map, UV);\n\tvec4 specular_map = texture(spec_map, UV);\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 9.792
+          },
+          "rendered": {
+            "out": "media/B01.mp4",
+            "at": "2026-10-18T17:53:04.147357+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 44,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.792,
+      "audio_file": "mp3/beat-B01.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 9.833333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B01.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Multiply the rim contribution by red. A zero removes it at that texel. A one preserves it. Intermediate values scale the contribution, allowing a patterned rim on one material.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: fresnel * specular_map.r",
+        "show": [
+          {
+            "at": 0,
+            "event": "Mask The Rim"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: fresnel * specular_map.r"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: fresnel * specular_map.r",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Mask The Rim",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 fresnel = vec3(pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power));\n\tvec3 total_spec = (fresnel * specular_map.r) + (specular * specular_map.g);\n\tALBEDO = (lambert + ambient_color) * (shader_color * color_map.rgb) + total_spec;",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 11.178667
+          },
+          "rendered": {
+            "out": "media/B02.mp4",
+            "at": "2026-10-18T17:53:28.031874+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 49,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.178667,
+      "audio_file": "mp3/beat-B02.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 11.208333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B02.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Green independently scales the Phong highlight. A matte cell can suppress a highlight even when the reflection directions line up. Its neighboring cell can retain the same lighting lobe.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: specular * specular_map.g",
+        "show": [
+          {
+            "at": 0,
+            "event": "Mask The Highlight"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: specular * specular_map.g"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: specular * specular_map.g",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Mask The Highlight",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 fresnel = vec3(pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power));\n\tvec3 total_spec = (fresnel * specular_map.r) + (specular * specular_map.g);\n\tALBEDO = (lambert + ambient_color) * (shader_color * color_map.rgb) + total_spec;",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 10.304
+          },
+          "rendered": {
+            "out": "media/B03.mp4",
+            "at": "2026-10-18T17:53:45.882525+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 49,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.304,
+      "audio_file": "mp3/beat-B03.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 10.333333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B03.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The mask sampler has no source-color hint. These values are controls, not display colors. Color conversion would change intermediate mask strengths and therefore change the material's response.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: uniform sampler2D spec_map",
+        "show": [
+          {
+            "at": 0,
+            "event": "Treat Masks As Numbers"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: uniform sampler2D spec_map"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: uniform sampler2D spec_map",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Treat Masks As Numbers",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "uniform sampler2D diffuse_map : source_color, hint_default_white, filter_linear_mipmap, repeat_enable;\nuniform sampler2D spec_map : hint_default_white, filter_linear_mipmap, repeat_enable;\nvarying vec3 world_normal;",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 11.136
+          },
+          "rendered": {
+            "out": "media/B04.mp4",
+            "at": "2026-10-18T17:54:11.566665+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 25,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.136,
+      "audio_file": "mp3/beat-B04.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 11.166666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B04.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Compare an all-white mask with the packed texture. First both effects are allowed everywhere. Then patterned regions suppress them independently. The geometry and light stay the same.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Reveal The Masks"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/07_spec_mapped.mp4",
+            "durationSeconds": 16.0
+          },
+          "rendered": {
+            "out": "media/B05.mp4",
+            "at": "2026-10-18T17:55:04.961317+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 49,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0,
+      "actual_duration_s": 16.0,
+      "audio_file": "mp3/beat-B05-padded.wav",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 16.0,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B05.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "There is another change in this file: the rim is no longer multiplied by Lambert plus ambient. The mask addition is not the only difference from the diffuse-map shader.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 fresnel",
+        "show": [
+          {
+            "at": 0,
+            "event": "A Hidden Model Change"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 fresnel"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 fresnel",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "A Hidden Model Change",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 specular = pow(clamp(dot(r, l), 0.0, 1.0), specular_power) * specular_color;\n\tvec3 fresnel = vec3(pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power));\n\tvec3 total_spec = (fresnel * specular_map.r) + (specular * specular_map.g);",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 9.792
+          },
+          "rendered": {
+            "out": "media/B06.mp4",
+            "at": "2026-10-18T17:55:25.144827+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 48,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.792,
+      "audio_file": "mp3/beat-B06.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 9.833333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B06.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Because that lighting factor is absent, the rim can remain bright on the unlit side. Do not diagnose that glow as a broken specular map. It follows directly from the changed rim formula.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Explain The Dark Rim"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Explain The Dark Rim",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 total_spec = (fresnel * specular_map.r) + (specular * specular_map.g);\n\tALBEDO = (lambert + ambient_color) * (shader_color * color_map.rgb) + total_spec;\n}",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 11.349333
+          },
+          "rendered": {
+            "out": "media/B07.mp4",
+            "at": "2026-10-18T17:55:57.714312+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 51,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.349333,
+      "audio_file": "mp3/beat-B07.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 11.375,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B07.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Channel meanings belong to this shader. Another material might use red for a different purpose. Read the channel contract before reusing the texture; a valid image can still drive the wrong effect.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: uniform sampler2D spec_map",
+        "show": [
+          {
+            "at": 0,
+            "event": "Packing Is A Contract"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: uniform sampler2D spec_map"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: uniform sampler2D spec_map",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Packing Is A Contract",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "uniform sampler2D diffuse_map : source_color, hint_default_white, filter_linear_mipmap, repeat_enable;\nuniform sampler2D spec_map : hint_default_white, filter_linear_mipmap, repeat_enable;\nvarying vec3 world_normal;",
+            "codeFile": "07_spec_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/07_spec_mapped.jpg",
+            "durationSeconds": 11.285333
+          },
+          "rendered": {
+            "out": "media/B08.mp4",
+            "at": "2026-10-18T17:56:22.097668+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/07_spec_mapped.gdshader",
+        "sha256": "d4f72f3ceb1cea618efdedb6049b856fce353c05e4dc8ad606b9b4dad72ffd6f",
+        "line": 25,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.285333,
+      "audio_file": "mp3/beat-B08.mp3",
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      },
+      "render_duration_s": 11.291666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B08.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. The specular texture carries data masks. Red controls this shader's rim strength. Green controls its highlight strength. This rim no longer has the diffuse lighting factor. Liam, in for Bear.",
+      "estimated_duration_s": 14.17,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Specular Maps: Where It Shines",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "The specular texture carries data masks.",
+              "Red controls this shader's rim strength.",
+              "Green controls its highlight strength.",
+              "This rim no longer has the diffuse lighting factor."
+            ],
+            "lectureLayout": true,
+            "durationSeconds": 12.596
+          },
+          "rendered": {
+            "out": "media/BVDT.mp4",
+            "at": "2026-10-18T17:56:50.499387+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "actual_duration_s": 12.596,
+      "audio_file": "mp3/beat-BVDT-padded.wav",
+      "render_duration_s": 12.625,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BVDT.mp4",
+        "filled_by": "remotion:ClaudeVerdictArtifact",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Paint the red and green channels of the specular map separately. Predict which channel changes the rim and which changes the highlight. Test a zero mask and a one mask. Check two things: Red masks the rim; green masks the highlight. Mask values are read without source-color conversion.",
+      "estimated_duration_s": 20.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Paint the red and green channels of the specular map separately. Predict which channel changes the rim and which changes the highlight. Test a zero mask and a one mask. Check two things: Red masks the rim; green masks the highlight. Mask values are read without source-color conversion.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "Red masks the rim; green masks the highlight.",
+              "Mask values are read without source-color conversion."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "durationSeconds": 15.637333
+          },
+          "rendered": {
+            "out": "media/BHTF.mp4",
+            "at": "2026-10-18T17:57:29.506190+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 15.637333,
+      "audio_file": "mp3/beat-BHTF.mp3",
+      "render_duration_s": 15.666666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BHTF.mp4",
+        "filled_by": "remotion:ClaudeComposerAsk",
+        "at": "2026-10-18T14:01:44"
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Specular Maps: Where It Shines. At Nik Bear Brown.",
+      "estimated_duration_s": 3.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Specular Maps: Where It Shines",
+            "slug": "claude-liam-lecture-shader-specular-maps-where-it-shines",
+            "lectureLayout": true,
+            "durationSeconds": 4.605333,
+            "handle": "@NikBearBrown"
+          },
+          "rendered": {
+            "out": "media/BOUT.mp4",
+            "at": "2026-10-18T17:57:47.801331+00:00"
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "actual_duration_s": 4.605333,
+      "audio_file": "mp3/beat-BOUT-padded.wav",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "ClaudeTitleOutro uses intentional centered layout per OUTRO-LOCK.md: exact film title, @NikBearBrown handle and slug-seeded mascot centered on cream. 17% fill is by design; the sparse layout IS the locked outro specification."
+      },
+      "render_duration_s": 4.625,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BOUT.mp4",
+        "filled_by": "remotion:ClaudeTitleOutro",
+        "at": "2026-10-18T14:01:44"
+      }
+    }
+  ]
+}

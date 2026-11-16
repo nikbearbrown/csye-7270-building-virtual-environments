@@ -286,7 +286,7 @@ Run the game yourself (F5 in the editor, or `godot --path godot`) and play the e
 
 Commit in the order you worked: baseline, the agent's state machine and test, the setup fix, the stronger test. In `FRICTIONAL.md`, record every check that failed on the way and what you decided about it, including any time the agent, or you, called a failure a test problem. Record your play verdicts as verdicts, with dates.
 
-The Brutalist skill that fits is `godot-walkthrough` (the toolkit's original spelling, `godot-waikthrough`, is also accepted). The Week 11 syllabus note is "Check feel and readability through play," so a played walkthrough of the four edges is the natural film, and Assignment 8 asks for one. Use the course-provided Brutalist checkout, and request the update if your copy lacks the skill.
+The Brutalist skill that fits is `godot-walkthrough` (the toolkit's original spelling, `godot-waikthrough`, is also accepted). The Week 11 syllabus note is "Check feel and readability through play," so a played walkthrough of the four edges is the natural film, and Assignment 7 asks for one. Use the course-provided Brutalist checkout, and request the update if your copy lacks the skill.
 
 ### 5. Verify
 
@@ -326,7 +326,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test s
 
 ## The next step
 
-This module completes the material for Assignment 8, "Animation Wired to Player Actions." It covers Modules 10 and 11, opened with Module 10, and is due about Day 80 (Canvas dates govern); its page sets the exact task and the required `godot-walkthrough` film. This lesson adds no graded deliverable. Module 12, audio and triggers, comes next. The long reading is the companion chapter, [Chapter 11 — Animation and Interaction](../../chapters/11-animation-and-interaction.md).
+This module completes the material for Assignment 7, "Doing Animation with Claude and Godot." It covers Modules 10 and 11, opened with Module 10, and is due November 15 (Canvas dates govern); its page sets the exact task and the required `godot-walkthrough` film. This lesson adds no graded deliverable. Module 12, audio and triggers, comes next. The long reading is the companion chapter, [Chapter 11 — Animation and Interaction](../../chapters/11-animation-and-interaction.md).
 
 ## If you know Unity or Unreal
 

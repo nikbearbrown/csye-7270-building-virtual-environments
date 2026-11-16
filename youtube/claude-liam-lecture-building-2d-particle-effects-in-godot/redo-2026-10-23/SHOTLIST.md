@@ -1,0 +1,41 @@
+# Beat-level visual work order
+
+Native Godot is the body lane. A reconstruction was auditioned and rejected because it cannot prove an actual edit. A diagram was considered for motion and lifetime; the original runnable visualization supplies actual state and visible consequences. Bookends use the registered lecture components.
+
+- BOPEN · CARD · Opening · hold · CARD
+- BIDEA · CARD · Lecture bookend · component animation · BrutalistHesitantWriter
+- BDEFS · CARD · Lecture bookend · component animation · ClaudeDefinitions
+- B01 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B02 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B03 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B04 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B05 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B06 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B07 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B08 · SHOW · Make The First Particle Visible · Genuine native editor actions and particles at original speed · CAPTURE
+- B09 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B10 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B11 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B12 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B13 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B14 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B15 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B16 · SHOW · Shape A Burst · Genuine native editor actions and particles at original speed · CAPTURE
+- B17 · SHOW · Make It Respond · Genuine native editor actions and particles at original speed · CAPTURE
+- B18 · SHOW · Make It Respond · Genuine native editor actions and particles at original speed · CAPTURE
+- B19 · SHOW · Make It Respond · Genuine native editor actions and particles at original speed · CAPTURE
+- B20 · SHOW · Make It Respond · Genuine native editor actions and particles at original speed · CAPTURE
+- B21 · SHOW · Make It Respond · Genuine native editor actions and particles at original speed · CAPTURE
+- B22 · SHOW · Make It Respond · Genuine native editor actions and particles at original speed · CAPTURE
+- B23 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B24 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B25 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B26 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B27 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B28 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B29 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- B30 · SHOW · Turn A Burst Into A Stream · Genuine native editor actions and particles at original speed · CAPTURE
+- BVDT · CARD · Lecture bookend · component animation · ClaudeVerdictArtifact
+- BHTF · CARD · Lecture bookend · component animation · ClaudeComposerAsk
+- BSIGN · CARD · Lecture bookend · component animation · ClaudeComposerAsk
+- BOUT · CARD · Lecture bookend · component animation · ClaudeTitleOutro

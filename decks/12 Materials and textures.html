@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Materials and textures | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Materials and textures">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Materials and textures">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 7</p>
+      <h1 class="t-opening rise g2">Materials and textures</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for what a surface holds, how maps are read, and how they reach the screen</p>
+      <div class="speaker-notes" hidden><p>Deck 6b of the shaders topic (second of three). 34 terms. Tags: in the book text means Chapter 7 (or Chapter 6 for UV) uses and explains it; in the glossary means a glossary row only; video only means the Riot art episodes only.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7; glossary, Textures and materials; Riot Ep 3.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Material, PBR and lighting">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a material holds</p>
+      <h2 class="t-chart">Material, PBR and lighting</h2>
+      <div class="diagram build" data-build="mat" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “A PBR material is a set of measurements, not a picture”; glossary, Shaders and materials.</p>
+      <div class="speaker-notes" hidden><p>A toy model: Lambert diffuse, a power-law highlight and a flat sky term. Colours are computed per pixel.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Albedo, roughness and metallic">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What a material holds</p>
+      <h2 class="t-chart">Albedo, roughness and metallic</h2>
+      <div class="diagram build" data-build="rgb" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “A PBR material is a set of measurements”; glossary, Textures and materials; glossary, Shaders and materials.</p>
+      <div class="speaker-notes" hidden><p>Highlight widths come from the specular exponent the model derives from roughness.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Colour or data: sRGB and the decode trap">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps are data</p>
+      <h2 class="t-chart">Colour or data: sRGB and the decode trap</h2>
+      <div class="diagram build" data-build="decode" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “Colour versus data: why the decode matters”; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>0.502 decoded as sRGB gives 0.216 and tilts a flat normal 38.8°; N·L 0.779. These are the chapter’s numbers, recomputed here.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Normal map, tangent space, green channel">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps are data</p>
+      <h2 class="t-chart">Normal map, tangent space, green channel</h2>
+      <div class="diagram build" data-build="normal" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, glTF rules and import settings; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Normals computed from a height profile; the dome is lit from above with green up and down.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Ambient occlusion, emission and SSAO">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Maps are data</p>
+      <h2 class="t-chart">Ambient occlusion, emission and SSAO</h2>
+      <div class="diagram build" data-build="ao" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “Lighting and global illumination”; glossary, Textures and materials; glossary, Shaders and materials.</p>
+      <div class="speaker-notes" hidden><p>AO at a floor point beside a wall is 1 minus the blocked angle over pi. The SSAO bars use illustrative inputs.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="ORM, channel packing and slot naming">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Packing and engines</p>
+      <h2 class="t-chart">ORM, channel packing and slot naming</h2>
+      <div class="diagram build" data-build="pack" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “StandardMaterial3D, ORMMaterial3D, ShaderMaterial”; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Texel values are generated from a seeded random source.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Smoothness, HDRP mask map and URP maps">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Packing and engines</p>
+      <h2 class="t-chart">Smoothness, HDRP mask map and URP maps</h2>
+      <div class="diagram build" data-build="engine" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “Doing the same thing in Unity”; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Unity was not run for the chapter; the table follows Unity documentation as the chapter cites it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="UV, unwrapping and baking">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Fitting textures to a mesh</p>
+      <h2 class="t-chart">UV, unwrapping and baking</h2>
+      <div class="diagram build" data-build="uv" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6, UV; glossary, 3D assets and Blender; Riot Ep 3, Character Art; glossary, Shaders and materials.</p>
+      <div class="speaker-notes" hidden><p>Point positions are interpolated from the triangle’s vertex UVs; the cube cut count is faces, edges and folds.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Resolution, texel density and UV scale">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Fitting textures to a mesh</p>
+      <h2 class="t-chart">Resolution, texel density and UV scale</h2>
+      <div class="diagram build" data-build="density" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 2 and 7 (texture sizes); glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Density = texture pixels × UV scale ÷ metres.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Tiling, wrap mode and mipmaps">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Fitting textures to a mesh</p>
+      <h2 class="t-chart">Tiling, wrap mode and mipmaps</h2>
+      <div class="diagram build" data-build="tile" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, import options; Chapter 2, mipmaps; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Mip chain 1024 to 1 is 11 levels; the sum of quarter-size levels is 1.333 of level 0.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Baked lighting, global illumination, probes">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Fitting textures to a mesh</p>
+      <h2 class="t-chart">Baked lighting, global illumination, probes</h2>
+      <div class="diagram build" data-build="gi" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7, “Lighting and global illumination decide what a material can show”; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Shadow test is computed per floor cell. The bounce factor 0.40 is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Roughness and smoothness, texture AO and SSAO, colour and data, resolution and density.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7; glossary, Textures and materials.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a material">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a material</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 7.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Materials and textures (Chapter 7, glossary "Textures and materials", Riot Ep 3) ================= */
+  var DEG = Math.PI / 180, GREY = "#909090";
+  /* tag: book = Chapter 7 (or 6) uses and explains it; gloss = glossary row only; video = Riot series only */
+  var T = {
+    material: { n: "Material", tag: "book", m: "A stack of textures and numbers that says how a surface looks" },
+    pbr: { n: "PBR", tag: "book", m: "Physically based rendering: a few measured quantities per pixel, so a material holds up under any light" },
+    lighting: { n: "Lighting", tag: "book", m: "Light and camera turn the material's quantities into the colour you see" },
+    albedo: { n: "Albedo", alias: "also: base colour", tag: "book", m: "The colour the surface reflects, before any lighting" },
+    rough: { n: "Roughness", tag: "book", m: "How blurred the reflections are: 0 is mirror-sharp, 1 is wide and dull" },
+    metal: { n: "Metallic", tag: "book", m: "Whether the surface behaves like a metal: 0 is non-metal, 1 is metal" },
+    colourtex: { n: "Colour texture", tag: "book", m: "A texture holding colours people see; only the base colour is one" },
+    datatex: { n: "Data texture", tag: "book", m: "A texture whose numbers are the values, such as normals or roughness" },
+    srgb: { n: "sRGB", tag: "book", m: "The encoding for images shown to people; steps are spaced for eyes" },
+    linear: { n: "Linear and decoding", tag: "book", m: "Values proportional to light. Colour is decoded to linear first; data must not be" },
+    normal: { n: "Normal map", tag: "book", m: "Per-pixel surface direction that fakes bumps in the lighting; red, green, blue are X, Y, Z" },
+    tangent: { n: "Tangent space", tag: "gloss", m: "Normal directions relative to the surface itself, so the map works on any mesh" },
+    greenconv: { n: "Green channel convention", tag: "book", m: "Whether green points up (OpenGL, Godot) or down (DirectX)" },
+    ao: { n: "Ambient occlusion", tag: "book", m: "Darkening in creases where ambient light cannot reach; direct light is not affected" },
+    emission: { n: "Emission", tag: "gloss", m: "Light the surface gives off itself" },
+    ssao: { n: "SSAO", tag: "book", m: "Screen-space ambient occlusion: a real-time estimate from the depth image, separate from a texture's AO" },
+    orm: { n: "ORM", tag: "book", m: "A packed map: occlusion in red, roughness in green, metallic in blue" },
+    pack: { n: "Channel packing", tag: "gloss", m: "Storing different maps in the red, green and blue channels of one image" },
+    slot: { n: "Map slot naming", tag: "gloss", m: "The agreed names for each texture slot, such as albedo, normal, roughness" },
+    smooth: { n: "Smoothness", tag: "gloss", m: "The inverse of roughness: how mirror-like a surface is" },
+    maskmap: { n: "HDRP mask map", tag: "book", m: "Unity HDRP's packed map: red metallic, green AO, blue detail mask, alpha smoothness" },
+    urp: { n: "URP Lit maps", tag: "book", m: "Base, Metallic, Normal and Occlusion maps; smoothness comes from an alpha channel" },
+    uv: { n: "UV", tag: "book", m: "2D coordinates that map each point of a surface to a spot on a texture" },
+    unwrap: { n: "Unwrapping", tag: "gloss", m: "Cutting a mesh along seams and flattening it into a UV map" },
+    bake: { n: "Texture baking", tag: "video", m: "Transferring the detail of a high-poly model into an image used on the low-poly one" },
+    res: { n: "Resolution", tag: "gloss", m: "Width and height of a texture in pixels" },
+    texeld: { n: "Texel density", tag: "gloss", m: "Texels per unit of world size: texture pixels per metre. Should match across objects" },
+    uvscale: { n: "UV scale", tag: "gloss", m: "A multiplier on UVs that sets how often a texture repeats" },
+    tiling: { n: "Tiling", tag: "gloss", m: "Repeating a texture across a surface; a seamless texture shows no join" },
+    wrap: { n: "Wrap mode", tag: "gloss", m: "What sampling outside 0 to 1 does: repeat (tile) or clamp (stretch the edge)" },
+    mip: { n: "Mipmap", tag: "book", m: "One of the pre-shrunk copies of a texture; without them, distant surfaces shimmer" },
+    bakedlight: { n: "Baked lighting", tag: "gloss", m: "Light and shadow stored in a texture or lightmap ahead of time" },
+    gi: { n: "Global illumination", tag: "book", m: "Light that bounces off surfaces and lights others; Godot has several techniques" },
+    probe: { n: "Reflection probe", tag: "book", m: "A point that captures the surroundings so shiny surfaces have something to reflect" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function f2(v) { return v.toFixed(2); }
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function vnorm(v) { var l = Math.hypot(v[0], v[1], v[2]); return [v[0] / l, v[1] / l, v[2] / l]; }
+  function dot3(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function srgbOut(c) { return Math.round(255 * Math.pow(clamp01(c), 1 / 2.2)); }
+  function srgbToLin(c) { return Math.pow((c + 0.055) / 1.055, 2.4); }
+  function hex3(rgbLin) { return "rgb(" + rgbLin.map(srgbOut).join(",") + ")"; }
+
+  /* the toy lighting model: Lambert diffuse + a power-law specular highlight + a flat sky term.
+     P: a = albedo (linear rgb), r = roughness, m = metallic, L = light direction. The camera looks down -z. */
+  var VIEW = [0, 0, 1], LDEF = [-0.45, 0.55, 0.7], AMB = 0.05, LUMW = [0.3, 0.59, 0.11];
+  function lit(P, N) {
+    var L = vnorm(P.L || LDEF), ndl = Math.max(0, dot3(N, L)), H = vnorm([L[0] + VIEW[0], L[1] + VIEW[1], L[2] + VIEW[2]]), ndh = Math.max(0, dot3(N, H));
+    var a = Math.max(P.r, 0.05), shin = Math.min(2000, Math.max(2, 2 / Math.pow(a, 4) - 2)), peak = 0.35 + 0.65 * (1 - a);
+    var spec = ndl > 0 ? Math.pow(ndh, shin) * peak : 0, ndv = N[2];
+    var R = [2 * ndv * N[0] - VIEW[0], 2 * ndv * N[1] - VIEW[1], 2 * ndv * N[2] - VIEW[2]], sky = 0.1 + 0.4 * (R[1] * 0.5 + 0.5), env = sky * (1 - a) + 0.25 * a;
+    var rgb = [0, 1, 2].map(function (i) {
+      var F = 0.5 * (1 - P.m) + P.a[i] * P.m, F0 = 0.04 * (1 - P.m) + P.a[i] * P.m;
+      return P.a[i] * (1 - P.m) * (AMB + ndl) + F * spec + F0 * env * 0.6;
+    });
+    var lum = dot3(P.a, LUMW);
+    return { ndl: ndl, spec: spec, rgb: rgb, amb: AMB * lum * (1 - P.m), dif: lum * (1 - P.m) * ndl, sp: spec * (0.5 * (1 - P.m) + lum * P.m), shin: shin };
+  }
+  function halfWidth(r) { var a = Math.max(r, 0.05), shin = Math.min(2000, Math.max(2, 2 / Math.pow(a, 4) - 2)); return Math.acos(Math.pow(0.5, 1 / shin)) / DEG; }
+  function sphere(g, cx, cy, r, P, res) {
+    res = res || 80;
+    var c = document.createElement("canvas"); c.width = c.height = res;
+    var x = c.getContext("2d"), im = x.createImageData(res, res);
+    for (var j = 0; j < res; j++) for (var i = 0; i < res; i++) {
+      var px = (i + 0.5) / res * 2 - 1, py = (j + 0.5) / res * 2 - 1, d = px * px + py * py, o = (j * res + i) * 4;
+      if (d > 1) { im.data[o + 3] = 0; continue; }
+      var col = lit(P, [px, -py, Math.sqrt(1 - d)]).rgb;
+      im.data[o] = srgbOut(col[0]); im.data[o + 1] = srgbOut(col[1]); im.data[o + 2] = srgbOut(col[2]); im.data[o + 3] = 255;
+    }
+    x.putImageData(im, 0, 0);
+    g.append("image").attr("href", c.toDataURL()).attr("x", cx - r).attr("y", cy - r).attr("width", 2 * r).attr("height", 2 * r);
+    g.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+  }
+  /* a small image from a function f(i,j) -> [r,g,b] 0..255, drawn as an SVG image */
+  function pic(g, x, y, w, h, nx, ny, f, smooth) {
+    var c = document.createElement("canvas"); c.width = nx; c.height = ny;
+    var cx = c.getContext("2d"), im = cx.createImageData(nx, ny);
+    for (var j = 0; j < ny; j++) for (var i = 0; i < nx; i++) { var v = f(i, j), o = (j * nx + i) * 4; im.data[o] = v[0]; im.data[o + 1] = v[1]; im.data[o + 2] = v[2]; im.data[o + 3] = 255; }
+    cx.putImageData(im, 0, 0);
+    var m = g.append("image").attr("href", c.toDataURL()).attr("x", x).attr("y", y).attr("width", w).attr("height", h);
+    if (!smooth) m.style("image-rendering", "pixelated");
+    return m;
+  }
+
+  var ALB = [0.72, 0.28, 0.17], P0 = { a: ALB, r: 0.5, m: 0 };
+
+  var MAPROWS = [
+    ["What a material holds", "material, PBR, lighting, albedo, roughness, metallic", "The numbers per pixel and how light turns them into colour"],
+    ["Maps are data", "colour texture, data texture, sRGB, linear, normal map, tangent space, green channel, ambient occlusion, SSAO, emission", "What each image means and how to read it"],
+    ["Packing and engines", "ORM, channel packing, map slot naming, smoothness, HDRP mask map, URP Lit maps", "How maps share one file, and why engines differ"],
+    ["Fitting textures to a mesh", "UV, unwrapping, texture baking, resolution, texel density, UV scale, tiling, wrap mode, mipmap, baked lighting, global illumination, reflection probe", "Where a texture lands, how sharp it is, how it is lit"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of materials and textures terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from Chapter 7, the glossary and Riot's art episodes. Every one is about what a surface holds and how it reaches the screen.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 330, 1030];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    var hs = [100, 150, 118, 170], ys = [184, 294, 454, 584];
+    ys = [184, 0, 0, 0]; ys[1] = ys[0] + hs[0] + 12; ys[2] = ys[1] + hs[1] + 12; ys[3] = ys[2] + hs[2] + 12;
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = ys[i], row = g.append("g"), h = hs[i];
+      box(row, 0, y, 1400, h, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", h + 1).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 40, r[0], 20, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 52, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 28, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. material, PBR, lighting ---------- */
+  function renderMat(el, k, anim) {
+    var svg = svgFor(el, W, H, "A material is values per pixel; light and camera turn them into colour", "A sphere with one point marked and its material values listed. Then the same material under three lights. Then a light orbiting the sphere with diffuse and specular bars.");
+    var ey = base(svg, [{ id: "material", s: 1 }, { id: "pbr", s: 2 }, { id: "lighting", s: 3 }], k, anim, ["Albedo", "the colour before lighting"], ["Final colour", "what you see after lighting"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "ONE SURFACE POINT, ITS VALUES AND ITS COLOUR");
+      var cx = 190, cy = 290, r = 150, N = [0.35, 0.35, Math.sqrt(1 - 0.245)];
+      sphere(d, cx, cy, r, P0);
+      d.append("circle").attr("cx", cx + N[0] * r).attr("cy", cy - N[1] * r).attr("r", 10).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      var res = lit(P0, N), col = res.rgb.map(srgbOut);
+      var rows = [["albedo", ALB.map(f2).join(" ")], ["metallic", f2(P0.m)], ["roughness", f2(P0.r)], ["normal", N.map(f2).join(" ")], ["light", "upper left"], ["colour", col.join(" ")]];
+      rows.forEach(function (rw, i) {
+        var y = 110 + i * 62, g = d.append("g");
+        cap(g, 400, y, rw[0], { size: 24, fill: i === 5 ? RED : MUTED, weight: i === 5 ? 700 : 400 }); mono(g, 530, y, rw[1], { size: 24, weight: i === 5 ? 700 : 400, fill: i === 5 ? RED : INK });
+        fade(g, A(anim, k, 1), i * 250);
+      });
+      cap(d, 400, 500, "Colour is 8-bit sRGB, computed from the values.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THE SAME MATERIAL UNDER THREE LIGHTS");
+      [[[-0.8, 0.5, 0.45], "light A"], [[0, 0.9, 0.4], "light B"], [[0.8, -0.2, 0.55], "light C"]].forEach(function (l, i) {
+        var cx = 120 + i * 260, g = d.append("g"), P = { a: ALB, r: 0.5, m: 0, L: l[0] };
+        sphere(g, cx, 230, 105, P); var N = [0.35, 0.35, Math.sqrt(1 - 0.245)], rs = lit(P, N);
+        g.append("circle").attr("cx", cx + 0.35 * 105).attr("cy", 230 - 0.35 * 105).attr("r", 7).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+        cap(g, cx, 380, l[1], { anchor: "middle", weight: 700 }); cap(g, cx, 416, "N·L " + f2(rs.ndl), { anchor: "middle" }); cap(g, cx, 452, "rgb " + rs.rgb.map(srgbOut).join(" "), { anchor: "middle", size: 24, fill: MUTED });
+        fade(g, A(anim, k, 2), i * 300);
+      });
+      cap(d, 0, 520, "Same albedo, metallic, roughness. Three different colours.", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "LIGHT ORBITS; THE MARKED POINT CHANGES COLOUR");
+      var cx3 = 240, cy3 = 300, r3 = 120, sg = d.append("g"), bars = d.append("g");
+      var dot = d.append("circle").attr("r", 16).attr("fill", RED), lt = d.append("g");
+      var eye = d.append("g"); eye.append("rect").attr("x", cx3 - 40).attr("y", 510).attr("width", 80).attr("height", 30).attr("fill", INK); cap(eye, cx3 + 56, 534, "camera", { size: 24, fill: MUTED });
+      d.append("path").attr("d", "M" + cx3 + ",508 V" + (cy3 + r3 + 14)).attr("stroke", INK).attr("stroke-width", 2).attr("stroke-dasharray", "5 5");
+      var N3 = [0, 0, 1];
+      function frame(t) {
+        var a = (-60 + t * 120) * DEG, L = [Math.sin(a), 0.35, Math.cos(a)];
+        dot.attr("cx", cx3 + 175 * Math.sin(a)).attr("cy", 110 + 45 * (1 - Math.cos(a)));
+        sg.selectAll("*").remove(); bars.selectAll("*").remove(); sphere(sg, cx3, cy3, r3, { a: ALB, r: 0.35, m: 0, L: L }, 64);
+        sg.append("circle").attr("cx", cx3).attr("cy", cy3).attr("r", 8).attr("fill", "none").attr("stroke", "#FFFFFF").attr("stroke-width", 4); sg.append("circle").attr("cx", cx3).attr("cy", cy3).attr("r", 8).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+        var rs = lit({ a: ALB, r: 0.35, m: 0, L: L }, N3), vals = [["ambient", rs.amb], ["diffuse", rs.dif], ["specular", rs.sp]];
+        vals.forEach(function (v, i) { var y = 150 + i * 70; cap(bars, 500, y, v[0], { size: 24 }); bar(bars, 500, y + 12, Math.max(1, v[1] * 220), 26, i === 2 ? RED : INK); cap(bars, 500 + v[1] * 220 + 8, y + 34, f2(v[1]), { size: 24, weight: 700 }); });
+        cap(bars, 500, 400, "light angle " + Math.round(a / DEG) + "°", { size: 24, weight: 700 }); cap(bars, 500, 436, "N·L = " + f2(rs.ndl), { size: 24 });
+      }
+      run(d, 6000, function (t) { frame(kf(t, [0, 1, 0.5])); }, anim); if (!anim) frame(0.5);
+      cap(d, 500, 490, "Bars: the three parts of the", { size: 24, fill: MUTED }); cap(d, 500, 520, "colour at the ringed point.", { size: 24, fill: MUTED }); cap(d, 0, 530, "red dot: the light", { size: 24, fill: RED });
+    }
+    note(svg, ey, ["", "A material is not a picture. It is values per pixel: colour, metallic, roughness, normal, AO.", "PBR keeps those values measured, so the same material stays believable under any light.", "Light and camera finish the job. Move the light and the same point changes colour."][k]);
+  }
+
+  /* ---------- 2. albedo, roughness, metallic ---------- */
+  var PAL = [[0.72, 0.28, 0.17], [0.80, 0.62, 0.18], [0.18, 0.45, 0.22], [0.15, 0.28, 0.62], [0.80, 0.80, 0.78]];
+  function renderRGB(el, k, anim) {
+    var svg = svgFor(el, W, H, "Albedo is flat colour; roughness widens the highlight; metallic removes the diffuse part", "Five swatches and five lit spheres. Then five roughness values with highlight widths. Then five metallic values.");
+    var ey = base(svg, [{ id: "albedo", s: 1 }, { id: "rough", s: 2 }, { id: "metal", s: 3 }], k, anim, ["Roughness", "how wide the highlight is"], ["Smoothness", "the opposite number"]);
+    var d = svg.append("g"), r = 62, cxs = [0, 1, 2, 3, 4].map(function (i) { return 74 + i * 153; });
+    if (k <= 1) {
+      lab(d, 0, 30, "SWATCH (ALBEDO) AND THE SAME ALBEDO LIT");
+      PAL.forEach(function (a, i) { var g = d.append("g"); g.append("rect").attr("x", cxs[i] - 55).attr("y", 60).attr("width", 110).attr("height", 70).attr("fill", hex3(a)).attr("stroke", INK).attr("stroke-width", 1.5);
+        sphere(g, cxs[i], 240, r, { a: a, r: 0.6, m: 0 }); cap(g, cxs[i], 345, a.map(function (v) { return f2(v).slice(1); }).join(" "), { size: 24, anchor: "middle" });
+        fade(g, A(anim, k, 1), i * 200); });
+      cap(d, 0, 420, "Top: albedo as stored. Bottom: what you see.", { size: 24, weight: 700 }); cap(d, 0, 456, "The lit sphere is darker on one side: albedo is not the final colour.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "ROUGHNESS 0.10 TO 0.90, METALLIC 0");
+      var g = d.append("g");
+      run(g, 2400, function (t) {
+        g.selectAll("*").remove();
+        [0.1, 0.3, 0.5, 0.7, 0.9].forEach(function (v, i) { var cur = 1 - t * (1 - v); sphere(g, cxs[i], 170, r, { a: ALB, r: cur, m: 0 }, 60); cap(g, cxs[i], 270, f2(v), { anchor: "middle", weight: 700 });
+          cap(g, cxs[i], 306, halfWidth(v).toFixed(0) + "°", { anchor: "middle", fill: RED, weight: 700 }); });
+      }, anim);
+      cap(d, 0, 380, "Number under each sphere: half-width of the highlight, in degrees.", { size: 24, weight: 700 });
+      cap(d, 0, 416, "Computed from the model: highlight where the half-vector cosine^n falls to 0.5.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "METALLIC 0 TO 1, ROUGHNESS 0.30");
+      var g2 = d.append("g");
+      run(g2, 2400, function (t) {
+        g2.selectAll("*").remove();
+        [0, 0.25, 0.5, 0.75, 1].forEach(function (v, i) { var cur = t * v; sphere(g2, cxs[i], 170, r, { a: ALB, r: 0.3, m: cur }, 60); cap(g2, cxs[i], 270, f2(v), { anchor: "middle", weight: 700 });
+          var dl = lit({ a: ALB, r: 0.3, m: v }, [0.3, 0.3, 0.9]).dif; cap(g2, cxs[i], 306, "diffuse " + f2(dl).slice(0, 4), { anchor: "middle", size: 24, fill: RED, weight: 700 }); });
+      }, anim);
+      cap(d, 0, 380, "Under each sphere: its diffuse part at a lit point.", { size: 24, weight: 700 });
+      cap(d, 0, 416, "A metal has no diffuse part; its colour is all reflection, tinted by albedo.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Albedo is flat colour before any light. Lit, the same albedo shows shading.", "Rough surfaces spread the highlight: 0.10 is a 2° spot, 0.90 a 45° glow. Smoothness is 1 minus this.", "Metallic 1 removes diffuse. Metal looks dark without a bright surrounding to reflect."][k]);
+  }
+
+  /* ---------- 3. colour vs data, sRGB, decode ---------- */
+  function renderDecode(el, k, anim) {
+    var svg = svgFor(el, W, H, "Colour is decoded from sRGB; data must be read as it is", "Three textures sorted into colour and data. Then eight grey steps, a decode curve with the point 0.502 to 0.216, and a flat normal texel read two ways.");
+    var ey = base(svg, [{ id: "colourtex", s: 1 }, { id: "datatex", s: 1 }, { id: "srgb", s: 2 }, { id: "linear", s: 3 }], k, anim, ["Colour texture", "decode sRGB to linear"], ["Data texture", "use the number as it is"]);
+    var d = svg.append("g");
+    var c = 128 / 255, s = srgbToLin(c), nl = 2 * c - 1, ns = 2 * s - 1;
+    function tilt(x) { return Math.atan(Math.hypot(x, x)) / DEG; }
+    if (k <= 1) {
+      lab(d, 0, 30, "WHICH TEXTURES NEED THE DECODE");
+      [["base colour", "colour", "decode sRGB to linear", true], ["metallic-roughness", "data", "linear: use as is", false], ["normal", "data", "linear: use as is", false]].forEach(function (r, i) {
+        var y = 70 + i * 120, g = d.append("g");
+        box(g, 0, y, 740, 100, { stroke: r[3] ? RED : INK, sw: r[3] ? 3 : 1.5 }); cap(g, 20, y + 42, r[0], { weight: 700 }); cap(g, 20, y + 82, r[1] + " texture", { size: 24, fill: MUTED });
+        cap(g, 720, y + 62, r[2], { anchor: "end", weight: 700, fill: r[3] ? RED : INK }); fade(g, A(anim, k, 1), i * 350);
+      });
+      cap(d, 0, 470, "glTF 2.0 rules, as listed in Chapter 7.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "EIGHT EVEN sRGB STEPS AND THE LIGHT THEY STAND FOR");
+      d3.range(8).forEach(function (i) { var v = i * 255 / 7 / 255, g = d.append("g"), x = i * 92; var lin = srgbToLin(v);
+        g.append("rect").attr("x", x).attr("y", 70).attr("width", 84).attr("height", 84).attr("fill", "rgb(" + Math.round(v * 255) + "," + Math.round(v * 255) + "," + Math.round(v * 255) + ")").attr("stroke", INK).attr("stroke-width", 1.5);
+        cap(g, x + 42, 190, Math.round(v * 255), { size: 24, anchor: "middle" }); bar(g, x + 20, 480 - lin * 220, 44, lin * 220, RED, A(anim, k, 2), i * 100); cap(g, x + 42, 480 - lin * 220 - 8, f2(lin), { size: 24, anchor: "middle", weight: 700 });
+        fade(g.select("rect"), A(anim, k, 2), i * 100); });
+      cap(d, 0, 230, "Stored value (0 to 255), even steps for eyes", { size: 24, fill: MUTED });
+      cap(d, 0, 520, "Red: light amount after decode. Steps are not equal.", { size: 24, weight: 700 });
+    } else if (k === 3) {
+      lab(d, 0, 30, "DECODE CURVE: STORED VALUE TO LINEAR");
+      var x0 = 40, y0 = 440, sz = 340; d.append("path").attr("d", "M" + x0 + "," + y0 + " h" + sz + " M" + x0 + "," + y0 + " v-" + sz).attr("stroke", INK).attr("stroke-width", 2).attr("fill", "none");
+      var pts = d3.range(0, 1.0001, 0.02).map(function (v) { return [x0 + v * sz, y0 - srgbToLin(v) * sz]; });
+      d.append("path").attr("d", "M" + x0 + "," + y0 + " L" + (x0 + sz) + "," + (y0 - sz)).attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 6").attr("fill", "none");
+      var curve = d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4); drawIn(curve, 0, anim ? 900 : 0);
+      var px = x0 + c * sz; d.append("path").attr("d", "M" + px + "," + y0 + " V" + (y0 - s * sz) + " H" + x0).attr("stroke", RED).attr("stroke-width", 3).attr("fill", "none");
+      d.append("circle").attr("cx", px).attr("cy", y0 - s * sz).attr("r", 9).attr("fill", RED);
+      cap(d, px + 14, y0 - s * sz - 22, "128/255 = " + c.toFixed(3) + " becomes " + s.toFixed(3), { size: 24, weight: 700, fill: RED });
+      cap(d, x0 + sz / 2, y0 + 36, "stored value", { size: 24, anchor: "middle", fill: MUTED }); cap(d, x0 + 20, y0 - sz - 14, "linear", { size: 24, fill: MUTED });
+      cap(d, 440, 150, "Dashed: no decode.", { size: 24, fill: MUTED }); cap(d, 440, 186, "Solid: the sRGB decode.", { size: 24 });
+      cap(d, 440, 270, "Colour needs the solid line.", { size: 24, weight: 700 }); cap(d, 440, 306, "Data needs the dashed one.", { size: 24, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "FLAT NORMAL TEXEL (128, 128, 255), READ TWO WAYS");
+      [[0, "read as linear data", c, nl, false], [390, "decoded as sRGB (wrong)", s, ns, true]].forEach(function (r) {
+        var g = d.append("g").attr("transform", "translate(" + r[0] + ",0)"), n = vnorm([r[3], r[3], 1]), ang = Math.acos(n[2]) / DEG, ndl = n[2];
+        cap(g, 175, 80, r[1], { size: 24, anchor: "middle", weight: 700, fill: r[4] ? RED : INK });
+        g.append("path").attr("d", "M30,300 H320").attr("stroke", INK).attr("stroke-width", 4);
+        var tx = -Math.hypot(n[0], n[1]) * 140, ty = -n[2] * 140; var arrow = g.append("path").attr("d", "M175,300 L" + (175 + tx) + "," + (300 + ty)).attr("stroke", r[4] ? RED : INK).attr("stroke-width", 6);
+        g.append("path").attr("d", "M175,300 V160").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+        if (anim) arrow.attr("opacity", 0).transition().delay(300).duration(700).attr("opacity", 1);
+        cap(g, 175, 350, "value " + r[2].toFixed(3), { size: 24, anchor: "middle" }); cap(g, 175, 386, "unpacked " + sgn(r[3], 3), { size: 24, anchor: "middle" });
+        cap(g, 175, 422, "tilt " + ang.toFixed(1) + "°", { size: 26, anchor: "middle", weight: 700, fill: r[4] ? RED : INK }); cap(g, 175, 458, "N·L " + ndl.toFixed(3), { size: 24, anchor: "middle", fill: r[4] ? RED : INK });
+      });
+      cap(d, 0, 520, "Same file, one word differs: " + Math.round((1 - Math.cos(Math.acos(vnorm([ns, ns, 1])[2]))) * 100) + "% too dark and lopsided.", { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Only the base colour is a colour. Normals, roughness and metallic are numbers stored in an image.", "sRGB spaces its steps for eyes, not for arithmetic: even steps are not even amounts of light.", "Decode a colour before lighting. Decode data and you corrupt it.", "0.502 read as sRGB gives 0.216: a flat normal tilts 38.8°."][k]);
+  }
+
+  /* ---------- 4. normal map, tangent space, green channel ---------- */
+  function renderNormal(el, k, anim) {
+    var svg = svgFor(el, W, H, "A normal map stores directions; in tangent space it works on any mesh; green up or down changes the bump", "A bumpy normal strip as colours with shading. Then the same map on a flat, a tilted and a curved surface. Then a dome lit with green up and green down.");
+    var ey = base(svg, [{ id: "normal", s: 1 }, { id: "tangent", s: 2 }, { id: "greenconv", s: 3 }], k, anim, ["Normal map", "fakes bumps with no new geometry"], ["Displacement", "actually moves the vertices"]);
+    var d = svg.append("g"), Lh = vnorm([-0.5, 0, 0.87]);
+    function prof(x) { var h = 0.55 * Math.cos(x / 38) + 0.25 * Math.cos(x / 13), dh = -0.55 / 38 * Math.sin(x / 38) - 0.25 / 13 * Math.sin(x / 13); return vnorm([-dh * 24, 0, 1]); }
+    if (k <= 1) {
+      lab(d, 0, 30, "FLAT QUAD + NORMAL MAP = BUMPS IN THE SHADING");
+      d.append("path").attr("d", "M0,90 H740").attr("stroke", INK).attr("stroke-width", 4); cap(d, 0, 70, "geometry: one flat quad", { size: 24, fill: MUTED });
+      var cg = d.append("g"), sg = d.append("g");
+      cap(d, 0, 140, "normal map (R, G, B = X, Y, Z)", { size: 24, fill: MUTED }); cap(d, 0, 300, "lit result: N·L along the strip", { size: 24, fill: MUTED });
+      var segs = d3.range(0, 740, 5), cols = [], sh = [];
+      segs.forEach(function (x) { var n = prof(x); cols.push("rgb(" + Math.round((n[0] + 1) / 2 * 255) + ",128," + Math.round((n[2] + 1) / 2 * 255) + ")"); sh.push(Math.max(0, dot3(n, Lh))); });
+      function drawTo(t) { cg.selectAll("*").remove(); sg.selectAll("*").remove(); var m = Math.floor(t * segs.length);
+        for (var i = 0; i < m; i++) { cg.append("rect").attr("x", segs[i]).attr("y", 152).attr("width", 5.5).attr("height", 70).attr("fill", cols[i]);
+          var gv = Math.round(Math.pow(sh[i], 1 / 2.2) * 255); sg.append("rect").attr("x", segs[i]).attr("y", 312).attr("width", 5.5).attr("height", 90).attr("fill", "rgb(" + gv + "," + gv + "," + gv + ")"); } }
+      run(d, 2600, drawTo, anim); if (!anim) drawTo(1);
+      var n0 = prof(100), n1 = prof(60);
+      cap(d, 0, 450, "texel at x=100: (" + cols[20].replace("rgb(", "").replace(")", "") + ")", { size: 24 }); cap(d, 0, 486, "normal (" + n0.map(function (v) { return sgn(v, 2); }).join(", ") + "), N·L " + f2(Math.max(0, dot3(n0, Lh))), { size: 24, weight: 700, fill: RED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THE SAME TEXEL ON THREE SURFACES");
+      var tex = vnorm([-0.45, 0, 0.9]), rgb = [Math.round((tex[0] + 1) / 2 * 255), 128, Math.round((tex[2] + 1) / 2 * 255)];
+      var surfs = [[40, 250, "flat"], [270, 250, "tilted"], [520, 250, "curved"]];
+      surfs.forEach(function (s_, i) {
+        var g = d.append("g"), pts = d3.range(0, 7).map(function (j) { var u = j / 6, x = s_[0] + u * 190;
+          var y = s_[1] - (i === 1 ? u * 100 : i === 2 ? Math.sin(u * Math.PI) * 60 : 0), th = i === 1 ? Math.atan(100 / 190) : i === 2 ? Math.atan(60 * Math.PI * Math.cos(u * Math.PI) / 190) : 0; return [x, y, th]; });
+        g.append("path").attr("d", d3.line()(pts.map(function (p) { return [p[0], p[1]]; }))).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+        pts.forEach(function (p) { var th = p[2], wx = tex[0] * Math.cos(th) - tex[2] * Math.sin(th), wy = tex[0] * Math.sin(th) + tex[2] * Math.cos(th), len = 70;
+          g.append("path").attr("d", "M" + p[0] + "," + p[1] + " l" + (wx * len) + "," + (-wy * len)).attr("stroke", RED).attr("stroke-width", 3); g.append("circle").attr("cx", p[0]).attr("cy", p[1]).attr("r", 4).attr("fill", INK); });
+        cap(g, s_[0] + 95, 400, s_[2], { size: 24, anchor: "middle", weight: 700 }); fade(g, A(anim, k, 2), i * 400);
+      });
+      var tl = Math.atan2(tex[0], tex[2]) / DEG;
+      cap(d, 0, 470, "texel (" + rgb.join(", ") + ") = " + Math.abs(tl).toFixed(1) + "° off the surface normal", { size: 24, weight: 700 }); cap(d, 0, 506, "on every surface. Tangent space is measured from the surface.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "A DOME, LIT FROM ABOVE: GREEN UP OR GREEN DOWN");
+      [[0, "green up (OpenGL, Godot)", 1], [380, "green down (DirectX)", -1]].forEach(function (r, i) {
+        var g = d.append("g").attr("transform", "translate(" + r[0] + ",0)"), Lt = vnorm([0, 0.7, 0.7]);
+        function nOf(px, py) { var q = px * px + py * py; if (q > 0.98) return [0, 0, 1]; var z = Math.sqrt(1 - q) ; return vnorm([px, py * r[2], z]); }
+        pic(g, 20, 70, 300, 300, 90, 90, function (ii, jj) { var px = (ii + 0.5) / 90 * 2 - 1, py = 1 - (jj + 0.5) / 90 * 2, q = px * px + py * py; if (q > 0.98) return [255, 255, 255]; var n = nOf(px, py); var v = Math.max(0, dot3(n, Lt)); v = Math.round(255 * Math.pow(v, 1 / 2.2)); return [v, v, v]; }, true);
+        var top = nOf(0, 0.8), vtop = Math.max(0, dot3(top, Lt));
+        cap(g, 170, 412, r[1], { size: 24, anchor: "middle", weight: 700, fill: i ? RED : INK }); cap(g, 170, 448, "top of dome N·L " + f2(vtop), { size: 24, anchor: "middle" });
+        cap(g, 170, 484, i ? "reads as a dent" : "reads as a bump", { size: 24, anchor: "middle", fill: MUTED });
+      });
+    }
+    note(svg, ey, ["", "Red, green, blue store X, Y, Z of the surface direction. Flat is (128, 128, 255), a pale blue.", "Directions are relative to the surface, so one map works on any mesh, flat or curved.", "Flip the green channel and every bump becomes a dent. Poly Haven maps are green-up, as Godot expects."][k]);
+  }
+
+  /* ---------- 5. AO, emission, SSAO ---------- */
+  function renderAO(el, k, anim) {
+    var svg = svgFor(el, W, H, "Ambient occlusion darkens creases; emission adds its own light; SSAO is a separate effect", "A floor beside a wall with rays reaching a moving point. Then a dim lit surface with and without emission. Then four bars of ambient and direct light with texture AO and SSAO.");
+    var ey = base(svg, [{ id: "ao", s: 1 }, { id: "emission", s: 2 }, { id: "ssao", s: 3 }], k, anim, ["Texture AO", "baked, in the ORM red channel"], ["SSAO", "estimated live from depth"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "HOW MUCH SKY A FLOOR POINT SEES NEXT TO A WALL");
+      var fx = 60, fy = 420, u = 90, hw = 2.6;
+      d.append("path").attr("d", "M" + fx + "," + fy + " H720 M" + fx + "," + fy + " V" + (fy - hw * u)).attr("stroke", INK).attr("stroke-width", 6);
+      cap(d, fx + 14, fy - hw * u + 28, "wall, height " + hw + " units", { size: 24, fill: MUTED });
+      var g = d.append("g");
+      function ao(dd) { return 1 - Math.atan(hw / dd) / Math.PI; }
+      function frame(t) {
+        g.selectAll("*").remove(); var dd = 0.25 + t * 6.5, px = fx + dd * u;
+        d3.range(0, 14).forEach(function (j) { var xx = fx + (j * 0.5 + 0.25) * u, v = ao(j * 0.5 + 0.25), gv = Math.round(255 * Math.pow(v, 1.4)); g.append("rect").attr("x", xx - 22).attr("y", fy + 12).attr("width", 44).attr("height", 30).attr("fill", "rgb(" + gv + "," + gv + "," + gv + ")").attr("stroke", FAMILIAR); });
+        var lim = Math.atan2(hw * u, px - fx); /* angle (from +x) at which the wall blocks */
+        d3.range(0, 9).forEach(function (i) { var a = (i + 0.5) / 9 * Math.PI, blocked = a > Math.PI - lim - 1e-9 && false; var A_ = a; var ca = Math.cos(A_), sa = Math.sin(A_); /* ray dir (ca, sa) up */
+          var tw = ca < 0 ? (fx - px) / ca : 1e9, yh = sa * tw, hit = ca < 0 && yh <= hw * u; var len = hit ? tw : 150; g.append("path").attr("d", "M" + px + "," + (fy - 4) + " l" + (ca * len) + "," + (-sa * len)).attr("stroke", hit ? RED : INK).attr("stroke-width", 3).attr("opacity", hit ? 0.9 : 0.6); });
+        g.append("circle").attr("cx", px).attr("cy", fy - 4).attr("r", 10).attr("fill", RED);
+        cap(g, 720, 120, "AO = " + f2(ao(dd)), { size: 28, weight: 700, anchor: "end", fill: RED }); cap(g, 720, 156, "distance " + dd.toFixed(1), { size: 24, anchor: "end" });
+      }
+      run(d, 6500, function (t) { frame(kf(t, [0, 1, 0.3])); }, k === 1 && anim); if (k !== 1 || !anim) { frame(0.12); }
+      cap(d, 0, 520, "Grey squares: AO along the floor. At the wall's foot a point sees half the sky: 0.50.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "A SURFACE IN A DARK ROOM: AMBIENT 0.05, ALBEDO 0.80");
+      var emis = 0.6, lamb = 0.8 * 0.05;
+      [[60, "no emission", lamb, 0], [400, "emission 0.60", lamb + emis, 1]].forEach(function (r, i) {
+        var g = d.append("g"), gv = Math.round(255 * Math.pow(clamp01(r[2]), 1 / 2.2));
+        g.append("rect").attr("x", r[0]).attr("y", 80).attr("width", 280).attr("height", 280).attr("fill", "rgb(" + gv + "," + gv + "," + gv + ")").attr("stroke", INK).attr("stroke-width", 2);
+        cap(g, r[0] + 140, 400, r[1], { size: 24, anchor: "middle", weight: 700 }); cap(g, r[0] + 140, 436, "output " + f2(r[2]), { size: 26, anchor: "middle", weight: 700, fill: i ? RED : INK });
+        fade(g, A(anim, k, 2), i * 450);
+      });
+      cap(d, 0, 500, "output = albedo × ambient + emission. Emission needs no light to reach it.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "BRIGHTNESS = AMBIENT × AO + DIRECT");
+      var cases = [["no AO", 1, 1], ["texture AO 0.50", 0.5, 1], ["SSAO 0.80", 1, 0.8], ["both", 0.5, 0.8]];
+      cases.forEach(function (c, i) {
+        var y = 80 + i * 110, g = d.append("g"), amb = 0.3 * c[1] * c[2], dir = 0.7;
+        cap(g, 0, y + 26, c[0], { size: 24, weight: 700 }); bar(g, 250, y, amb * 450, 40, "#C4C4C4", A(anim, k, 3), i * 200); bar(g, 250 + amb * 450, y, dir * 450, 40, INK, A(anim, k, 3), i * 200);
+        cap(g, 250 + (amb + dir) * 450 + 10, y + 30, f2(amb + dir), { size: 26, weight: 700, fill: i === 3 ? RED : INK });
+      });
+      cap(d, 0, 540, "ambient 0.30, direct 0.70. Grey: ambient part. Black: direct, unchanged.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A crease sees less sky, so ambient light there is dimmer. At the wall's foot the AO value is 0.50.", "Emission is the surface's own light. In a dark room it is the whole picture.", "To judge a texture's AO, turn SSAO off, or you will not know which one you are seeing."][k]);
+  }
+
+  /* ---------- 6. ORM, channel packing, slot naming ---------- */
+  function renderPack(el, k, anim) {
+    var svg = svgFor(el, W, H, "ORM packs occlusion, roughness and metallic into red, green and blue of one image", "Three small grey maps combine into one coloured map. Then one texel is split into its three channel values. Then three file names go to three material slots.");
+    var ey = base(svg, [{ id: "orm", s: 1 }, { id: "pack", s: 2 }, { id: "slot", s: 3 }], k, anim, ["ORM", "occlusion, roughness, metallic"], ["Separate maps", "one image for each quantity"]);
+    var d = svg.append("g"), r = rng(11), N = 6;
+    var AO = [], RO = [], MT = [];
+    for (var j = 0; j < N; j++) for (var i = 0; i < N; i++) { var cre = (i === 2 || j === 3) ? 0.45 : 0; AO.push(0.82 + 0.18 * r() - cre * 0.5); RO.push(0.3 + 0.6 * r()); MT.push(i >= 3 && j <= 2 ? 1 : 0); }
+    function cellsDraw(g, x, y, cs, vals, ch) { vals.forEach(function (v, idx) { var i = idx % N, j = Math.floor(idx / N), q = Math.round(v * 255), col = ch === 0 ? [q, q, q] : ch === 1 ? [q, 0, 0] : ch === 2 ? [0, q, 0] : ch === 3 ? [0, 0, q] : [Math.round(AO[idx] * 255), Math.round(RO[idx] * 255), Math.round(MT[idx] * 255)];
+      g.append("rect").attr("x", x + i * cs).attr("y", y + j * cs).attr("width", cs).attr("height", cs).attr("fill", "rgb(" + col.join(",") + ")"); }); g.append("rect").attr("x", x).attr("y", y).attr("width", N * cs).attr("height", N * cs).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2); }
+    if (k <= 1) {
+      lab(d, 0, 30, "THREE GREY MAPS BECOME ONE COLOURED MAP");
+      [["AO", AO, 1, "R"], ["roughness", RO, 2, "G"], ["metallic", MT, 3, "B"]].forEach(function (m, i) { var g = d.append("g"); cellsDraw(g, 20 + i * 250, 60, 36, m[1], 0); cap(g, 20 + i * 250 + 108, 305, m[0] + " → " + m[3], { size: 24, anchor: "middle", weight: 700 }); });
+      var g2 = d.append("g"); d.append("path").attr("d", "M380,322 V362").attr("stroke", INK).attr("stroke-width", 4); d.append("path").attr("d", "M366,350 L380,366 L394,350").attr("stroke", INK).attr("stroke-width", 4).attr("fill", "none");
+      cellsDraw(g2, 272, 375, 26, AO, 4); N; fade(g2, A(anim, k, 1), 600);
+      var g3 = d.append("g"); cap(g3, 480, 440, "one ORM image", { size: 24, weight: 700 }); cap(g3, 480, 476, "(" + (N * N) + " texels shown)", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "ONE TEXEL, THREE VALUES");
+      var ci = 2, cj = 3, idx = cj * N + ci, vals = [AO[idx], RO[idx], MT[idx]];
+      var g = d.append("g"); cellsDraw(g, 20, 60, 50, AO, 4); g.append("rect").attr("x", 20 + ci * 50).attr("y", 60 + cj * 50).attr("width", 50).attr("height", 50).attr("fill", "none").attr("stroke", "#FFFFFF").attr("stroke-width", 4); g.append("rect").attr("x", 20 + ci * 50 - 2).attr("y", 60 + cj * 50 - 2).attr("width", 54).attr("height", 54).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      ["R", "G", "B"].forEach(function (c, i) { var y = 100 + i * 110, gg = d.append("g"); cap(gg, 400, y, c + " channel = " + ["AO", "roughness", "metallic"][i], { size: 24, weight: 700 });
+        bar(gg, 400, y + 14, vals[i] * 300, 34, [RED, INK, GREY][i], A(anim, k, 2), i * 300); cap(gg, 400 + vals[i] * 300 + 10, y + 42, f2(vals[i]) + " = " + Math.round(vals[i] * 255), { size: 24, weight: 700 }); });
+      cap(d, 20, 400, "texel (" + Math.round(vals[0] * 255) + ", " + Math.round(vals[1] * 255) + ", " + Math.round(vals[2] * 255) + ")", { size: 26, weight: 700 }); cap(d, 20, 440, "As a picture it is just a colour. Read per channel, it is three maps.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "FILE NAMES TO SLOTS, AS IN THE SHIP");
+      [["dutch_ship_medium_hull_diff", "albedo slot", false], ["dutch_ship_medium_hull_nor_gl", "normal slot", false], ["dutch_ship_medium_hull_arm", "ORM texture slot", true]].forEach(function (rw, i) {
+        var y = 70 + i * 110, g = d.append("g"); box(g, 0, y, 520, 70, { stroke: INK, sw: 2 }); mono(g, 12, y + 44, rw[0].replace("dutch_ship_medium_", "…"), { size: 24 }); g.append("path").attr("d", "M520," + (y + 35) + " H590").attr("stroke", RED).attr("stroke-width", 4);
+        box(g, 590, y, 150, 70, { stroke: rw[2] ? RED : INK, sw: rw[2] ? 3 : 2 }); cap(g, 665, y + 32, rw[1].split(" ")[0], { size: 24, anchor: "middle", weight: 700 }); cap(g, 665, y + 60, rw[1].split(" ").slice(1).join(" "), { size: 24, anchor: "middle", fill: MUTED });
+        fade(g, A(anim, k, 3), i * 350);
+      });
+      cap(d, 0, 450, "arm = AO, roughness, metalness: the same R, G, B order as ORM.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "One file, three maps. Fewer files to load, and the GPU reads all three with one lookup.", "Packing is just assigning a map to each channel. The reader must know which channel is which.", "Agreed names keep it straight: _diff to albedo, _nor_gl to normal, _arm to the ORM slot."][k]);
+  }
+
+  /* ---------- 7. engine names: smoothness, HDRP mask map, URP ---------- */
+  function renderEngine(el, k, anim) {
+    var svg = svgFor(el, W, H, "Unity wants smoothness and a different channel order; Godot's ORM must be repacked", "Five roughness values and their smoothness. Then an ORM texel rewritten as an HDRP mask texel. Then a table matching Godot slots to Unity URP and HDRP slots.");
+    var ey = base(svg, [{ id: "smooth", s: 1 }, { id: "maskmap", s: 2 }, { id: "urp", s: 3 }], k, anim, ["Roughness", "0 is mirror, 1 is dull"], ["Smoothness", "0 is dull, 1 is mirror"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "SMOOTHNESS = 1 − ROUGHNESS");
+      [0.1, 0.3, 0.5, 0.7, 0.9].forEach(function (v, i) { var y = 70 + i * 90, g = d.append("g"); cap(g, 0, y + 28, "roughness " + f2(v), { size: 24 }); bar(g, 210, y, v * 400, 34, INK, A(anim, k, 1), i * 150); cap(g, 210 + v * 400 + 8, y + 28, f2(v), { size: 24 });
+        cap(g, 0, y + 62, "smoothness " + f2(1 - v), { size: 24, fill: RED, weight: 700 }); bar(g, 210, y + 40, (1 - v) * 400, 34, RED, A(anim, k, 1), i * 150 + 100); });
+    } else if (k === 2) {
+      lab(d, 0, 30, "REPACK ONE TEXEL: GODOT ORM TO HDRP MASK MAP");
+      var o = [0.99, 0.60, 0.0];
+      var from = [["R", "AO", o[0]], ["G", "roughness", o[1]], ["B", "metallic", o[2]]], to = [["R", "metallic", o[2]], ["G", "AO", o[0]], ["B", "detail mask", 0], ["A", "smoothness", 1 - o[1]]];
+      cap(d, 0, 90, "Godot ORM", { size: 24, weight: 700 }); cap(d, 400, 90, "HDRP mask map", { size: 24, weight: 700, fill: RED });
+      from.forEach(function (f, i) { var y = 120 + i * 70, g = d.append("g"); box(g, 0, y, 300, 56, { stroke: INK, sw: 2 }); cap(g, 10, y + 38, f[0] + " " + f[1] + " " + f2(f[2]), { size: 24 }); });
+      to.forEach(function (t, i) { var y = 120 + i * 70, g = d.append("g"); box(g, 400, y, 340, 56, { stroke: RED, sw: 2 }); cap(g, 410, y + 38, t[0] + " " + t[1] + " " + f2(t[2]), { size: 24 }); fade(g, A(anim, k, 2), i * 300); });
+      [[0, 1], [2, 0]].forEach(function (p) { var pth = d.append("path").attr("d", "M300," + (148 + p[0] * 70) + " C350," + (148 + p[0] * 70) + " 350," + (148 + p[1] * 70) + " 400," + (148 + p[1] * 70)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 3); });
+      var rp = d.append("path").attr("d", "M300," + (148 + 1 * 70) + " C350," + (148 + 1 * 70) + " 350," + (148 + 3 * 70) + " 400," + (148 + 3 * 70)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      cap(d, 0, 450, "Roughness 0.60 becomes smoothness 0.40, in the alpha channel.", { size: 24, weight: 700 }); cap(d, 0, 486, "A Poly Haven arm file cannot be dropped in as is.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "SLOT BY SLOT");
+      cap(d, 0, 80, "Godot", { size: 24, weight: 700 }); cap(d, 400, 80, "Unity URP Lit / HDRP", { size: 24, weight: 700, fill: RED });
+      [["albedo", "Base Map"], ["metallic, roughness", "Metallic Map (smoothness in alpha)"], ["normal", "Normal Map"], ["ambient occlusion", "Occlusion Map"], ["ORM texture", "HDRP Mask Map"]].forEach(function (r, i) { var y = 110 + i * 78, g = d.append("g"); box(g, 0, y, 330, 60, { stroke: INK, sw: 1.5 }); cap(g, 10, y + 40, r[0], { size: 24 }); g.append("path").attr("d", "M330," + (y + 30) + " H400").attr("stroke", GREY).attr("stroke-width", 3);
+        box(g, 400, y, 360, 60, { stroke: RED, sw: 1.5 }); wrap(g, 410, r[1].length > 28 ? y + 26 : y + 38, r[1], 28, { size: 24, lh: 26 }); fade(g, A(anim, k, 3), i * 250); });
+    }
+    note(svg, ey, ["", "Smoothness is just 1 minus roughness. The numbers run the opposite way.", "HDRP's mask map orders channels differently and stores smoothness. The ORM must be repacked.", "Same ideas, different slot names. URP reads smoothness from an alpha channel."][k]);
+  }
+
+  /* ---------- 8. UV, unwrapping, baking ---------- */
+  function renderUV(el, k, anim) {
+    var svg = svgFor(el, W, H, "UV points each mesh point at a spot in the texture; unwrapping flattens a mesh; baking copies detail", "A triangle on a mesh and the same triangle in a 4 by 4 checker texture with a moving point. Then a cube cut into a flat net. Then a bumpy profile baked into a normal map on a flat low-poly surface.");
+    var ey = base(svg, [{ id: "uv", s: 1 }, { id: "unwrap", s: 2 }, { id: "bake", s: 3 }], k, anim, ["UV map", "the flattened layout"], ["Texture baking", "copies detail into an image"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "A POINT ON THE MESH LANDS ON A TEXEL");
+      var A_ = [40, 360, 0.1, 0.1], B_ = [300, 330, 0.9, 0.2], C_ = [130, 110, 0.5, 0.9];
+      d.append("path").attr("d", "M" + A_[0] + "," + A_[1] + " L" + B_[0] + "," + B_[1] + " L" + C_[0] + "," + C_[1] + "Z").attr("fill", TINT).attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 0, 400, "mesh triangle", { size: 24, fill: MUTED });
+      var ux = 400, uy = 90, us = 320; for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) d.append("rect").attr("x", ux + i * us / 4).attr("y", uy + j * us / 4).attr("width", us / 4).attr("height", us / 4).attr("fill", (i + j) % 2 ? "#C4C4C4" : "#F6F6F6");
+      d.append("rect").attr("x", ux).attr("y", uy).attr("width", us).attr("height", us).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+      function uvp(p) { return [ux + p[2] * us, uy + (1 - p[3]) * us]; }
+      d.append("path").attr("d", "M" + uvp(A_) + " L" + uvp(B_) + " L" + uvp(C_) + "Z").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      cap(d, ux, uy + us + 34, "UV square, texture 4 × 4", { size: 24, fill: MUTED });
+      var dot1 = d.append("circle").attr("r", 10).attr("fill", RED), dot2 = d.append("circle").attr("r", 10).attr("fill", RED), rd = d.append("g");
+      function frame(t) { var w = [0.34 + 0.3 * Math.sin(t * 6.28 * 1), 0.33 + 0.2 * Math.cos(t * 6.28 * 1), 0]; w[2] = 1 - w[0] - w[1]; if (w[2] < 0) { var s = w[0] + w[1]; w[0] /= s; w[1] /= s; w[2] = 0; }
+        var px = w[0] * A_[0] + w[1] * B_[0] + w[2] * C_[0], py = w[0] * A_[1] + w[1] * B_[1] + w[2] * C_[1], u = w[0] * A_[2] + w[1] * B_[2] + w[2] * C_[2], v = w[0] * A_[3] + w[1] * B_[3] + w[2] * C_[3];
+        dot1.attr("cx", px).attr("cy", py); var q = uvp([0, 0, u, v]); dot2.attr("cx", q[0]).attr("cy", q[1]); rd.selectAll("*").remove();
+        cap(rd, 0, 470, "(u, v) = (" + f2(u) + ", " + f2(v) + ")", { size: 26, weight: 700, fill: RED }); cap(rd, 0, 506, "texel column " + Math.min(3, Math.floor(u * 4)) + ", row " + Math.min(3, Math.floor((1 - v) * 4)) + " from the top", { size: 24 }); }
+      run(d, 5000, frame, anim); if (!anim) frame(0.1);
+    } else if (k === 2) {
+      lab(d, 0, 30, "A CUBE CUT OPEN: 6 FACES, 12 EDGES");
+      var cs = 100, net = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], ox = 150, oy = 80;
+      var g = d.append("g");
+      function nf(t) { g.selectAll("*").remove(); net.forEach(function (c, i) { var x = ox + c[0] * cs, y = oy + c[1] * cs, mx = ox + 1.5 * cs, my = oy + 1.5 * cs, e = d3.easeCubicInOut(t);
+        var xx = mx + (x - mx) * e, yy = my + (y - my) * e; g.append("rect").attr("x", xx).attr("y", yy).attr("width", cs - 4 * (1 - e)).attr("height", cs - 4 * (1 - e)).attr("fill", i === 2 ? TINT : "#FFFFFF").attr("stroke", RED).attr("stroke-width", 4).attr("opacity", 0.9);
+        cap(g, xx + cs / 2, yy + cs / 2 + 8, i + 1, { size: 24, anchor: "middle", fill: MUTED }); }); }
+      run(g, 2200, nf, anim); if (!anim) nf(1);
+      var faces = 6, edges = 12, folds = faces - 1, cuts = edges - folds;
+      cap(d, 0, 430, "faces " + faces + ", edges " + edges + ", a net keeps " + folds + " as folds", { size: 24, weight: 700 }); cap(d, 0, 466, "so " + cuts + " edges are cut: those are the seams (red).", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 520, "Cut fewer edges and the texture stretches; cut more and it splits.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "HIGH-POLY DETAIL BAKED INTO A NORMAL MAP");
+      var xs = d3.range(0, 740, 4), L2 = vnorm([-0.5, 0, 0.87]);
+      function hp(x) { return 0.55 * Math.cos(x / 38) + 0.25 * Math.cos(x / 13); } function hn(x) { var dh = -0.55 / 38 * Math.sin(x / 38) - 0.25 / 13 * Math.sin(x / 13); return vnorm([-dh * 24, 0, 1]); }
+      var hi = xs.map(function (x) { return [x, 125 - hp(x) * 26]; }); d.append("path").attr("d", d3.line()(hi)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); cap(d, 0, 66, "high-poly: " + xs.length + " vertices on this line", { size: 24, fill: MUTED });
+      d.append("path").attr("d", "M0,200 H740").attr("stroke", INK).attr("stroke-width", 4); cap(d, 0, 178, "low-poly: 2 vertices", { size: 24, fill: MUTED });
+      var cg = d.append("g"); cap(d, 0, 250, "baked normals as colour", { size: 24, fill: MUTED }); cap(d, 0, 345, "shading N·L: grey = low-poly alone,", { size: 24, fill: MUTED }); cap(d, 0, 375, "black = low-poly + bake", { size: 24, fill: MUTED });
+      var flat = Math.max(0, dot3([0, 0, 1], L2)), maxd = 0, pts = [];
+      xs.forEach(function (x) { var n = hn(x); cg.append("rect").attr("x", x).attr("y", 262).attr("width", 4.5).attr("height", 40).attr("fill", "rgb(" + Math.round((n[0] + 1) / 2 * 255) + ",128," + Math.round((n[2] + 1) / 2 * 255) + ")"); var sh = Math.max(0, dot3(n, L2)); pts.push([x, 520 - sh * 80]); maxd = Math.max(maxd, Math.abs(sh - flat)); });
+      d.append("path").attr("d", "M0," + (520 - flat * 80) + " H740").attr("stroke", GREY).attr("stroke-width", 4); var cv = d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); drawIn(cv, 0, anim ? 1200 : 0);
+      cap(d, 0, 556, "bake changes shading by up to " + f2(maxd), { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Each mesh point stores a (u, v). The engine reads the texel at that spot, so the checker follows the surface.", "Unwrapping cuts along seams and lays the surface flat. A cube needs 7 cuts.", "Baking copies the sculpt's detail into an image, so a cheap flat mesh shades like the heavy one."][k]);
+  }
+
+  /* ---------- 9. resolution, texel density, UV scale ---------- */
+  function renderDensity(el, k, anim) {
+    var svg = svgFor(el, W, H, "Resolution is the pixel count; texel density is pixels per metre", "A circle drawn at 8, 16 and 32 pixels across. Then a 2 metre wall and an 8 metre wall with the same 1024 pixel texture and their densities. Then the 8 metre wall with UV scale 4.");
+    var ey = base(svg, [{ id: "res", s: 1 }, { id: "texeld", s: 2 }, { id: "uvscale", s: 3 }], k, anim, ["Resolution", "pixels in the image"], ["Texel density", "pixels per metre of surface"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "THE SAME CIRCLE AT THREE RESOLUTIONS");
+      [8, 16, 32].forEach(function (n, i) { var g = d.append("g"), x = 20 + i * 250;
+        pic(g, x, 70, 220, 220, n, n, function (ii, jj) { var px = (ii + 0.5) / n * 2 - 1, py = (jj + 0.5) / n * 2 - 1; var v = Math.hypot(px, py) < 0.75 ? 40 : 235; var ring = Math.abs(Math.hypot(px, py) - 0.75) < 0.12; return ring ? [200, 16, 46] : [v, v, v]; });
+        g.append("rect").attr("x", x).attr("y", 70).attr("width", 220).attr("height", 220).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+        cap(g, x + 110, 330, n + " × " + n, { size: 26, anchor: "middle", weight: 700 }); cap(g, x + 110, 366, d3.format(",")(n * n) + " texels", { size: 24, anchor: "middle" }); fade(g, A(anim, k, 1), i * 350); });
+      cap(d, 0, 450, "A 1024 × 1024 texture has " + d3.format(",")(1024 * 1024) + " texels.", { size: 26, weight: 700, fill: RED }); cap(d, 0, 486, "Four times the pixels for every doubling of width.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, k === 2 ? "ONE 1024 TEXTURE ON TWO WALLS" : "UV SCALE 4 ON THE LONG WALL");
+      var walls = [[2, 1, "2 m wall"], [8, k === 2 ? 1 : 4, "8 m wall"]], px = 70;
+      walls.forEach(function (w, i) { var g = d.append("g"), y = 80 + i * 200, wd = w[0] * px, dens = 1024 * w[1] / w[0];
+        var reps = w[1], cells = 16 * reps, cw = wd / cells;
+        for (var a = 0; a < cells; a++) for (var b = 0; b < 4; b++) g.append("rect").attr("x", a * cw).attr("y", y + b * cw).attr("width", cw).attr("height", cw).attr("fill", (a + b) % 2 ? "#C4C4C4" : "#F6F6F6");
+        g.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", wd).attr("height", 4 * cw).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 2);
+        cap(g, wd + 14, y + 20, w[2], { size: 24, weight: 700 }); cap(g, wd + 14, y + 56, Math.round(dens) + " px/m", { size: 26, weight: 700, fill: i && k === 2 ? RED : INK });
+        if (i && k === 3) cap(g, wd + 14, y + 92, "UV scale 4", { size: 24, fill: RED, weight: 700 });
+        fade(g, A(anim, k, k), i * 300); });
+      cap(d, 0, 480, k === 2 ? "512 versus 128: the checker squares are four times coarser on the long wall." : "1024 × 4 ÷ 8 m = 512 px/m: both walls now match.", { size: 24, weight: 700, fill: k === 2 ? RED : INK });
+      cap(d, 0, 516, "density = texture pixels × UV scale ÷ metres of surface", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Resolution says how big the image is. A 1024 × 1024 map holds a million texels.", "Density says how sharp it looks on the surface. Same image, longer wall, blurrier look.", "Raising the UV scale repeats the image, so the long wall now has as many texels per metre as the short one."][k]);
+  }
+
+  /* ---------- 10. tiling, wrap, mipmaps ---------- */
+  function renderTile(el, k, anim) {
+    var svg = svgFor(el, W, H, "Tiling repeats a texture; wrap mode decides what lies outside; mipmaps are shrunk copies", "A ramp texture that jumps at every join and a periodic texture that does not. Then repeat and clamp read past the edge. Then a chain of mip levels and the extra memory.");
+    var ey = base(svg, [{ id: "tiling", s: 1 }, { id: "wrap", s: 2 }, { id: "mip", s: 3 }], k, anim, ["Repeat", "tile the texture"], ["Clamp", "stretch the edge pixel"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "THREE TILES SIDE BY SIDE");
+      [["ramp texture (not seamless)", function (u) { return u; }, 70], ["periodic texture (seamless)", function (u) { return 0.5 - 0.5 * Math.cos(2 * Math.PI * u); }, 290]].forEach(function (r, i) {
+        var g = d.append("g"), y = r[2], w = 240, pts = [];
+        d3.range(0, 3).forEach(function (t) { d3.range(0, 41).forEach(function (j) { var u = j / 40; pts.push([t * w + u * w, y + 150 - r[1](u) * 120]); }); });
+        for (var t = 0; t < 3; t++) g.append("path").attr("d", "M" + (t * w) + "," + (y + 10) + " V" + (y + 160)).attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "5 5");
+        var ln = g.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", i ? INK : RED).attr("stroke-width", 4); if (A(anim, k, 1)) drawIn(ln, i * 600, 1200);
+        var jump = Math.abs(r[1](1) - r[1](0)); cap(g, 0, y - 4, r[0] + ": join jump " + f2(jump), { size: 24, weight: 700, fill: i ? INK : RED });
+      });
+      cap(d, 0, 500, "Dashed lines: where tiles meet. A jump there is a visible seam.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SAMPLING PAST THE EDGE: u FROM 0 TO 1.6");
+      var x0 = 40, y0 = 300, wu = 400, g = d.append("g"); d.append("path").attr("d", "M" + x0 + "," + y0 + " h" + wu).attr("stroke", INK).attr("stroke-width", 2);
+      function tex(u) { return 0.5 - 0.5 * Math.cos(2 * Math.PI * u * 2); }
+      function sample(u, mode) { return tex(mode ? Math.min(u, 1) : u - Math.floor(u)); }
+      [["repeat", 0, INK], ["clamp", 1, RED]].forEach(function (m, i) { var pts = d3.range(0, 1.6001, 0.01).map(function (u) { return [x0 + u / 1.6 * wu, 140 + i * 160 - sample(u, m[1]) * 100 + 100]; });
+        d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", m[2]).attr("stroke-width", 4); cap(d, 460, 190 + i * 160, m[0], { size: 24, weight: 700, fill: m[2] }); });
+      d.append("path").attr("d", "M" + (x0 + wu / 1.6) + ",90 V440").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6"); cap(d, x0 + wu / 1.6, 470, "u = 1", { size: 24, anchor: "middle" });
+      var mk = d.append("g"), rd = d.append("g");
+      function fr(t) { var u = t * 1.6; mk.selectAll("*").remove(); rd.selectAll("*").remove(); mk.append("path").attr("d", "M" + (x0 + u / 1.6 * wu) + ",90 V440").attr("stroke", RED).attr("stroke-width", 3);
+        cap(rd, 460, 400, "u = " + f2(u), { size: 24 }); cap(rd, 460, 436, "repeat reads " + f2(u - Math.floor(u)) + " → " + f2(sample(u, 0)), { size: 24 }); cap(rd, 460, 472, "clamp reads " + f2(Math.min(u, 1)) + " → " + f2(sample(u, 1)), { size: 24, fill: RED }); }
+      run(d, 4500, fr, anim); if (!anim) fr(0.9);
+    } else {
+      var lv = d3.range(0, 11), sz = lv.map(function (i) { return 1024 / Math.pow(2, i); }), cum = 0, base0 = 1024 * 1024 * 4, tot = d3.sum(sz, function (s) { return s * s * 4; });
+      if (k === 3) {
+        lab(d, 0, 30, "A 1024 TEXTURE AND ITS MIP LEVELS");
+        var gx = 0, g = d.append("g");
+        lv.slice(0, 7).forEach(function (i) { var s = Math.max(sz[i] / 1024 * 250, 6); var gg = g.append("g"); gg.append("rect").attr("x", gx).attr("y", 340 - s).attr("width", s).attr("height", s).attr("fill", i ? "#C4C4C4" : "#FBE7EA").attr("stroke", INK).attr("stroke-width", 2); fade(gg, A(anim, k, 3), i * 250); gx += s + 12; });
+        cap(d, 0, 385, "levels 0 to 6: 1024, 512, 256, 128, 64, 32, 16 pixels wide", { size: 24 }); cap(d, 0, 416, "and on down to 1 × 1: " + lv.length + " levels in all.", { size: 24, weight: 700 });
+        cap(d, 0, 470, "Each level has a quarter of the texels of the one before.", { size: 24, fill: MUTED });
+      } else {
+        lab(d, 0, 30, "MEMORY (RGBA, 4 BYTES A TEXEL) AND WHICH LEVEL IS USED");
+        var mb = 1024 * 1024; var g2 = d.append("g"); bar(g2, 0, 70, base0 / mb * 100, 46, INK, A(anim, k, 4), 0); bar(g2, base0 / mb * 100, 70, (tot - base0) / mb * 100, 46, RED, A(anim, k, 4), 600);
+        cap(g2, 0, 150, "level 0: " + (base0 / mb).toFixed(2) + " MiB", { size: 24 }); cap(g2, 0, 186, "all levels: " + (tot / mb).toFixed(2) + " MiB  (+" + ((tot / base0 - 1) * 100).toFixed(1) + "%)", { size: 26, weight: 700, fill: RED });
+        var scr = 64, tpp = 1024 / scr, lev = Math.log2(tpp);
+        cap(d, 0, 290, "drawn " + scr + " pixels wide on screen:", { size: 24 }); cap(d, 0, 326, tpp + " texels share a pixel (minification)", { size: 24 }); cap(d, 0, 362, "level " + lev + " is used (" + sz[lev] + " × " + sz[lev] + ")", { size: 26, weight: 700, fill: RED });
+        cap(d, 0, 430, "Without mips the shader skips over texels: it shimmers.", { size: 24, fill: MUTED });
+      }
+    }
+    note(svg, ey, ["", "Tiling repeats one texture over a long surface. A seamless texture has no jump at the join.", "Repeat wraps back to 0. Clamp holds the edge pixel, which streaks when stretched.", "Each mip is a quarter the size of the last. Distant surfaces read a small one and stop shimmering.", "The whole chain adds only about a third. Chapter 2 gives the same 33% figure."][k]);
+  }
+
+  /* ---------- 11. baked lighting, GI, probe ---------- */
+  function renderGI(el, k, anim) {
+    var svg = svgFor(el, W, H, "Baked lighting is stored ahead of time; global illumination adds bounce; a probe captures surroundings", "A moving box with a baked shadow that stays and a real-time shadow that follows. Then a lit red floor bouncing light onto a wall and a table of Godot techniques. Then a ring of reflection samples on a shiny sphere.");
+    var ey = base(svg, [{ id: "bakedlight", s: 1 }, { id: "gi", s: 2 }, { id: "probe", s: 3 }], k, anim, ["Baked lighting", "stored ahead of time"], ["Real-time lighting", "worked out every frame"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "SUN LOW ON THE LEFT; THE BOX MOVES");
+      var cells = 30, cw = 24, sun = [-1, 0.6];
+      function shadow(bx, cx) { var bw = 70, bh = 70; /* ray from floor cell toward sun hits the box? */ var t0 = (bx - cx) / sun[0], t1 = (bx + bw - cx) / sun[0]; var lo = Math.min(t0, t1), hi = Math.max(t0, t1); if (hi <= 0) return 0; var ylo = sun[1] * Math.max(lo, 0), yhi = sun[1] * hi; return ylo < bh && yhi > 0 ? 1 : 0; }
+      var rows = [["baked: made once at bake time", 0], ["real-time: redone every frame", 1]], gs = [d.append("g"), d.append("g")];
+      function fr(t) { var bx = 120 + t * 360; gs.forEach(function (g, i) { g.selectAll("*").remove(); var y = 80 + i * 210;
+        var b0 = 120; for (var c = 0; c < cells; c++) { var cx = c * cw + cw / 2, sh = shadow(i === 0 ? b0 : bx, cx); g.append("rect").attr("x", c * cw).attr("y", y + 80).attr("width", cw).attr("height", 30).attr("fill", sh ? "#7A7A7A" : "#F6F6F6").attr("stroke", FAMILIAR); }
+        g.append("rect").attr("x", bx).attr("y", y + 10).attr("width", 70).attr("height", 70).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        cap(g, 0, y - 6, rows[i][0], { size: 24, weight: 700, fill: i ? INK : RED }); }); }
+      run(d, 5000, function (t) { fr(kf(t, [0, 1, 0])); }, k === 1 && anim); if (k !== 1 || !anim) fr(0.9);
+      cap(d, 0, 520, "The baked shadow stays where the box was. It cannot follow a moving object.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "BOUNCE LIGHT: A RED FLOOR TINTS A WHITE WALL");
+      d.append("path").attr("d", "M0,260 H460 M460,260 V60").attr("stroke", INK).attr("stroke-width", 6); d.append("rect").attr("x", 120).attr("y", 255).attr("width", 220).attr("height", 10).attr("fill", RED);
+      var arrow = function (x1, y1, x2, y2, c) { var p = d.append("path").attr("d", "M" + x1 + "," + y1 + " L" + x2 + "," + y2).attr("stroke", c).attr("stroke-width", 4); if (anim && k === 2) drawIn(p, 0, 800); return p; };
+      arrow(130, 60, 200, 250, "#C4A000"); cap(d, 20, 90, "sun", { size: 24 });
+      arrow(300, 240, 440, 140, RED); arrow(260, 240, 440, 100, RED);
+      var direct = 0, wallA = [0.8, 0.8, 0.8], floorA = [0.8, 0.12, 0.1], k2 = 0.4, bounce = floorA.map(function (f) { return f * 1.0 * k2; }), wallC = wallA.map(function (a, i) { return a * (direct + bounce[i]); });
+      d.append("rect").attr("x", 470).attr("y", 80).attr("width", 60).attr("height", 120).attr("fill", hex3(wallC)).attr("stroke", INK).attr("stroke-width", 2);
+      cap(d, 0, 320, "wall point: direct light " + f2(direct), { size: 24 }); cap(d, 0, 354, "bounce (illustrative 0.40 of the floor's lit colour): " + bounce.map(f2).join(" "), { size: 24 });
+      var tbl = [["ReflectionProbe", "optionally real-time"], ["LightmapGI", "baked"], ["VoxelGI", "real-time"], ["SDFGI", "semi-real-time"], ["SSIL", "real-time"]];
+      tbl.forEach(function (r, i) { var g = d.append("g"); cap(g, 0, 410 + i * 34, r[0], { size: 24, weight: 700 }); cap(g, 260, 410 + i * 34, r[1], { size: 24 }); fade(g, A(anim, k, 2), i * 200); });
+      cap(d, 480, 444, "VoxelGI, SDFGI and SSIL", { size: 24, fill: MUTED }); cap(d, 480, 474, "are not in Mobile or", { size: 24, fill: MUTED }); cap(d, 480, 504, "Compatibility", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "A PROBE'S SAMPLES; A MIRROR SPHERE SHOWS THEM");
+      var SECT = [["sky", [127, 169, 214]], ["wall", [110, 155, 110]], ["ground", [123, 91, 58]], ["wall", [217, 162, 94]]];
+      var cx = 250, cy = 290, R0 = 130;
+      SECT.forEach(function (s_, i) { var a0 = (i * 90 - 45) * DEG, a1 = (i * 90 + 45) * DEG; d.append("path").attr("d", d3.arc().innerRadius(R0 + 30).outerRadius(R0 + 70).startAngle(a0).endAngle(a1)()).attr("transform", "translate(" + cx + "," + cy + ")").attr("fill", "rgb(" + s_[1].join(",") + ")"); });
+      var rr = R0 - 10, mid = [0, 1, 2].map(function (c) { return d3.mean(SECT, function (q) { return q[1][c]; }); });
+      pic(d, cx - rr, cy - rr, 2 * rr, 2 * rr, 80, 80, function (ii, jj) { var px = (ii + 0.5) / 80 * 2 - 1, py = (jj + 0.5) / 80 * 2 - 1, q = px * px + py * py; if (q > 1) return [255, 255, 255]; var nz = Math.sqrt(1 - q), n = [px, -py, nz], rx = 2 * nz * n[0], ry = 2 * nz * n[1], m = Math.min(1, Math.hypot(rx, ry)), th = Math.atan2(rx, ry), col = [0, 0, 0], wsum = 0;
+        SECT.forEach(function (sq, i) { var w = Math.pow(Math.max(0, Math.cos(th - i * Math.PI / 2)), 3); wsum += w; for (var c = 0; c < 3; c++) col[c] += w * sq[1][c]; });
+        return col.map(function (v, c) { return Math.round(m * (wsum ? v / wsum : mid[c]) + (1 - m) * mid[c]); }); }, true);
+      d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", rr).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 1.5);
+      var g3 = d.append("g"); cap(g3, 480, 140, "the probe", { size: 24, weight: 700 }); cap(g3, 480, 176, "stores the colour around", { size: 24 }); cap(g3, 480, 212, "it in every direction", { size: 24 });
+      cap(g3, 480, 290, "a shiny surface looks up", { size: 24 }); cap(g3, 480, 326, "the colour in its reflection", { size: 24 }); cap(g3, 480, 362, "direction", { size: 24 });
+      fade(g3, A(anim, k, 3), 200);
+      cap(d, 0, 520, "Conceptual: four colour sectors stand in for the probe's capture.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "Bake once, play many times. Cheap and soft, but a baked shadow cannot move with the object.", "Bounce light is global illumination. Godot offers baked, real-time and screen-space kinds, as listed.", "A rough metal looks like plastic with nothing to reflect. A probe supplies the surroundings."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from materials and textures", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Roughness", "0 is mirror, 1 is dull"], ["Smoothness", "1 is mirror, 0 is dull"]],
+      [["Texture AO", "baked into a map, ambient only"], ["SSAO", "estimated live from depth"]],
+      [["Colour texture", "decode sRGB before lighting"], ["Data texture", "use the number as it is"]],
+      [["Resolution", "how many pixels in the image"], ["Texel density", "pixels per metre of surface"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 490, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(30,0)"), RG = R.append("g").attr("transform", "translate(30,0)");
+      if (i === 0) {
+        var v = 0.15 + 0.7 * t;
+        sphere(LG, 160, 250, 105, { a: ALB, r: v, m: 0 }, 60); sphere(RG, 160, 250, 105, { a: ALB, r: 1 - v, m: 0 }, 60);
+        cap(LG, 160, 400, "roughness " + f2(v), { size: 24, anchor: "middle", weight: 700 }); cap(RG, 160, 400, "smoothness " + f2(v), { size: 24, anchor: "middle", weight: 700, fill: RED });
+        cap(LG, 160, 436, "highlight " + halfWidth(v).toFixed(0) + "° wide", { size: 24, anchor: "middle", fill: MUTED }); cap(RG, 160, 436, "= roughness " + f2(1 - v), { size: 24, anchor: "middle", fill: MUTED });
+      } else if (i === 1) {
+        var aoT = 0.5, ssao = 0.8, amb = 0.3, dir = 0.7, p = Math.min(1, t * 1.2);
+        [[LG, aoT, "texture AO 0.50"], [RG, ssao, "SSAO 0.80"]].forEach(function (c, j) { var g = c[0], v = 1 - (1 - c[1]) * p, a = amb * v; g.append("rect").attr("x", 20).attr("y", 150).attr("width", amb * 560).attr("height", 40).attr("fill", "#E3E3E3"); g.append("rect").attr("x", 20).attr("y", 150).attr("width", a * 560).attr("height", 40).attr("fill", j ? RED : INK);
+          g.append("rect").attr("x", 20 + amb * 560).attr("y", 150).attr("width", dir * 280).attr("height", 40).attr("fill", INK); cap(g, 20, 130, c[2], { size: 24, weight: 700 }); cap(g, 20, 240, "ambient " + f2(a) + " (was " + f2(amb) + ")", { size: 24 }); cap(g, 20, 276, "direct " + f2(dir) + " (unchanged)", { size: 24, fill: MUTED }); });
+        cap(LG, 20, 340, "stored in the ORM red channel", { size: 24, fill: MUTED }); cap(RG, 20, 340, "computed from the depth image", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        var c = 128 / 255, s = srgbToLin(c), q = Math.min(1, t * 1.3);
+        [[LG, "sRGB 0.502", "decode → " + f2(0.216) , s, "brightness 0.22 (right for colour)", false], [RG, "stored 0.502", "use as is → 0.50", c, "value 0.502 (right for data)", true]].forEach(function (r) { var g = r[0], v = r[3]; g.append("rect").attr("x", 20).attr("y", 130).attr("width", 300).attr("height", 40).attr("fill", "#E3E3E3"); g.append("rect").attr("x", 20).attr("y", 130).attr("width", 300 * v * q).attr("height", 40).attr("fill", r[5] ? RED : INK);
+          cap(g, 20, 120 + 90, r[1], { size: 24, weight: 700 }); cap(g, 20, 270, r[2], { size: 24 }); cap(g, 20, 306, "result " + f2(v * q), { size: 24, weight: 700, fill: r[5] ? RED : INK }); });
+        cap(LG, 20, 360, "only a colour should do this", { size: 24, fill: MUTED }); cap(RG, 20, 360, "a normal map or roughness map", { size: 24, fill: MUTED });
+      } else {
+        var m = d3.easeCubicInOut(t), wd = 2 + 6 * m; /* wall length grows 2 to 8 m, texture stays 1024 */
+        LG.append("text").attr("x", 20).attr("y", 130).attr("font-size", 24).attr("font-family", SANS).attr("font-weight", 700).attr("fill", INK).text("same 1024 × 1024 file");
+        RG.append("text").attr("x", 20).attr("y", 130).attr("font-size", 24).attr("font-family", SANS).attr("font-weight", 700).attr("fill", RED).text("wall " + wd.toFixed(1) + " m");
+        LG.append("rect").attr("x", 20).attr("y", 170).attr("width", 300).attr("height", 40).attr("fill", INK); RG.append("rect").attr("x", 20).attr("y", 170).attr("width", wd * 36).attr("height", 40).attr("fill", RED);
+        cap(LG, 20, 270, "resolution 1024: unchanged", { size: 24 }); cap(RG, 20, 270, "density " + Math.round(1024 / wd) + " px/m", { size: 24, weight: 700, fill: RED });
+        cap(LG, 20, 306, "a file property", { size: 24, fill: MUTED }); cap(RG, 20, 306, "a surface property", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make it look like metal", x: "Set metallic to 1.0 and roughness to 0.3; keep albedo as the metal's tint" },
+    { v: "the normal map looks wrong", x: "Read it as linear data: 128 is 0.502, not the sRGB-decoded 0.216; tilt must be 0°, not 38.8°" },
+    { v: "make the wall texture sharper", x: "Match texel density: 1024 px over 2 m is 512 px/m; give the 8 m wall UV scale 4" },
+    { v: "stop the shimmer in the distance", x: "Turn on mipmaps; a 1024 RGBA texture grows from 4.00 to 5.33 MiB" },
+    { v: "use the Poly Haven arm file in Unity HDRP", x: "Repack: R metallic, G AO, A smoothness = 1 minus roughness" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests about materials turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) {
+      [[0.2, "metallic 0, roughness 0.8"], [1, "metallic 1.0, roughness 0.3"]].forEach(function (r, i) { var m = r[0] === 1 ? 1 : 0, rr = r[0] === 1 ? 0.3 : 0.8, rs = lit({ a: ALB, r: rr, m: m }, [0.3, 0.3, 0.9]); var y = 30 + i * 130; cap(p, 14, y + 18, r[1], { size: 24 });
+        bar(p, 14, y + 30, Math.max(2, rs.dif * 560), 30, "#C4C4C4", anim, i * 300); cap(p, 20 + rs.dif * 560, y + 54, "diffuse " + f2(rs.dif), { size: 24, weight: 700 }); bar(p, 14, y + 66, Math.max(2, rs.sp * 560), 30, RED, anim, i * 300 + 150); cap(p, 20 + rs.sp * 560, y + 90, "specular " + f2(rs.sp), { size: 24, weight: 700, fill: RED }); });
+      nt = "a metal has no diffuse part";
+    } else if (k === 2) {
+      var c = 128 / 255, s = srgbToLin(c), tl = function (x) { return Math.acos(vnorm([2 * x - 1, 2 * x - 1, 1])[2]) / DEG; };
+      [["linear data: 0.502", c, tl(c)], ["sRGB-decoded: 0.216", s, tl(s)]].forEach(function (r, i) { var y = 50 + i * 120; cap(p, 14, y, r[0], { size: 24 }); bar(p, 14, y + 14, Math.max(3, r[2] / 40 * 560), 40, i ? RED : INK, anim, i * 400); cap(p, 20 + r[2] / 40 * 560, y + 46, "tilt " + r[2].toFixed(1) + "°", { size: 24, weight: 700, fill: i ? RED : INK }); });
+      nt = "only the linear read is flat";
+    } else if (k === 3) {
+      [["2 m wall, scale 1", 1024 / 2], ["8 m wall, scale 1", 1024 / 8], ["8 m wall, scale 4", 1024 * 4 / 8]].forEach(function (r, i) { var y = 40 + i * 86; cap(p, 14, y, r[0], { size: 24 }); bar(p, 14, y + 12, r[1] / 512 * 330, 30, i === 1 ? RED : INK, anim, i * 250); cap(p, 20 + r[1] / 512 * 330, y + 36, Math.round(r[1]) + " px/m", { size: 24, weight: 700, fill: i === 1 ? RED : INK }); });
+      nt = "512 px/m on both walls";
+    } else if (k === 4) {
+      var mb = 1024 * 1024, bs = 1024 * 1024 * 4, tot = 0; for (var l = 0; l < 11; l++) tot += Math.pow(1024 / Math.pow(2, l), 2) * 4;
+      cap(p, 14, 60, "no mipmaps: " + (bs / mb).toFixed(2) + " MiB", { size: 24 }); bar(p, 14, 74, bs / tot * 560, 40, INK, anim, 0);
+      cap(p, 14, 180, "with mipmaps: " + (tot / mb).toFixed(2) + " MiB", { size: 24 }); bar(p, 14, 194, 560, 40, RED, anim, 300); nt = "about a third more memory";
+    } else {
+      var smp = [0.99, 0.60, 0], rows = [["R metallic", smp[2]], ["G AO", smp[0]], ["A smoothness", 1 - smp[1]]];
+      rows.forEach(function (r, i) { var y = 50 + i * 90; cap(p, 14, y, r[0], { size: 24 }); bar(p, 14, y + 14, Math.max(3, r[1] * 400), 34, i === 2 ? RED : INK, anim, i * 250); cap(p, 20 + r[1] * 400, y + 40, f2(r[1]), { size: 24, weight: 700 }); });
+      nt = "arm (0.99, 0.60, 0.00) repacked";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is each map colour or data, and decoded that way?",
+    "Is the normal map tangent space, green up for Godot?",
+    "Which channel does each packed map read: R, G, B?",
+    "Is texel density the same on neighbouring objects?",
+    "Are mipmaps on, and is wrap repeat or clamp as intended?",
+    "Under which lighting did I judge it?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a material", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it metal”, but “metallic 1.0, roughness 0.3”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, mat: { steps: 3, render: renderMat }, rgb: { steps: 3, render: renderRGB },
+    decode: { steps: 4, render: renderDecode }, normal: { steps: 3, render: renderNormal }, ao: { steps: 3, render: renderAO },
+    pack: { steps: 3, render: renderPack }, engine: { steps: 3, render: renderEngine }, uv: { steps: 3, render: renderUV },
+    density: { steps: 3, render: renderDensity }, tile: { steps: 4, render: renderTile }, gi: { steps: 3, render: renderGI },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

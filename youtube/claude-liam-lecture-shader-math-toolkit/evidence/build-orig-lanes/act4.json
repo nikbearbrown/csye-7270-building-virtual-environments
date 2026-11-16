@@ -1,0 +1,393 @@
+{
+ "B26": {
+  "lane": "manim",
+  "class": "B26_HowLong",
+  "visual_intent": "Act title 'Distance and Curves' (serif 40) top-left. A pair of axes with the origin at the top left, x to the right and y counting DOWN (a small label 'y counts down', as the address does), and a vector arrow from the origin to (3, 4): dashed legs 3 across and 4 down, hypotenuse labelled 5; mono tag 'length(v) · the length of a vector' (the GLOSSARY wording, cut before its 'of an offset' clause because the film never says offset) and the formula '√(x² + y²)', plus 'v = (3, 4)'.",
+  "motion_claim": "The legs draw (three across, then four down), the arrow follows, and the length 5 lands last.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, tag length(v)"
+   },
+   {
+    "at": 0.12,
+    "event": "vector (3, 4) arrow drawn from the origin; label 'v = (3, 4)' (done by 0.30)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: arrow and label settled"
+   },
+   {
+    "at": 0.58,
+    "event": "legs draw: 3 across, then 4 down (done by 0.72)"
+   },
+   {
+    "at": 0.78,
+    "event": "label '5' lands on the arrow; formula '3² + 4² = 25' (done by 0.9)"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable",
+  "why": "A right triangle drawn leg by leg is what 'length' means; the number five lands last.",
+  "sparse": true
+ },
+ "B27": {
+  "lane": "manim",
+  "class": "B27_UnitArrow",
+  "visual_intent": "The axes of B26 (origin top left, y counting down) with the vector (3, 4) in grey and a unit circle (radius 1, the quarter that lies in the picture) drawn at the origin. The arrow shrinks along its own line until its tip rests on the circle at (0.6, 0.8). Labels change from 'length 5' to 'length 1'; mono tag 'normalize(v) · same direction, length 1'.",
+  "motion_claim": "The arrow slides back along its own line onto the unit circle: the direction stays, the length becomes one.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, unit circle, tag normalize(v)"
+   },
+   {
+    "at": 0.31,
+    "event": "grey arrow (3, 4) drawn; label 'length 5' (done by 0.42)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: arrow and circle settled, nothing moving"
+   },
+   {
+    "at": 0.58,
+    "event": "the arrow shrinks along its own line onto the circle; label '(0.6, 0.8)' (done by 0.72)"
+   },
+   {
+    "at": 0.86,
+    "event": "label 'length 1' lands"
+   }
+  ],
+  "runner_up": "ShaderLab normalize render",
+  "why": "The arrow shrinking along its own line onto the unit circle is the idea; a render would hide it.",
+  "sparse": true
+ },
+ "B28": {
+  "lane": "manim",
+  "class": "B28_AskEveryPixel",
+  "visual_intent": "The UV square (0 to 1 across, 0 to 1 down, y pointing down) with a terracotta dot at the middle labelled 'middle'. Mono tag 'distance(a, b) = length(a − b)'. Five pixel dots appear one at a time, each joined to the middle by a dashed line and carrying its real distance: (0.9, 0.5) 0.40, (0.5, 0.2) 0.30, (0.15, 0.85) 0.49, (0.95, 0.95) 0.64, (0.55, 0.55) 0.07.",
+  "motion_claim": "Pixel dots land one by one with dashed lines to the middle and their distances; near dots read small, far dots read big.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "UV square, tag distance(a, b) = length(a − b)"
+   },
+   {
+    "at": 0.24,
+    "event": "'middle' dot lands (done by 0.32)"
+   },
+   {
+    "at": 0.34,
+    "event": "pixel dots land one by one with dashed lines and numbers: 0.40, 0.30, 0.49 (done by 0.45)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: three pixel dots settled with their distances"
+   },
+   {
+    "at": 0.65,
+    "event": "a near dot (0.07) lands"
+   },
+   {
+    "at": 0.83,
+    "event": "a far dot (0.64) lands"
+   }
+  ],
+  "runner_up": "ShaderLab distance render",
+  "why": "A middle dot and several pixels with dashed lines and numbers is 'ask every pixel how far'; the real render is next.",
+  "sparse": true
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tCOLOR = vec4(vec3(d), 1.0);\n}",
+   "codeFile": "lab-shaders/08-distance.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.35,
+     "lines": [
+      5
+     ]
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/distance.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a square shape",
+   "readouts": [
+    {
+     "at": 0.63,
+     "text": "0.5",
+     "x": 0.725,
+     "y": 0.5
+    },
+    {
+     "at": 0.83,
+     "text": "0.71",
+     "x": 0.275,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C08: Lab square render of lab-shaders/08-distance.gdshader (720x720 centred in the 1280x720 canvas), still. Verified (360x360 Lab): middle 0.0039; (0.75, 0.5) 0.2471; edge middle 0.4941; corner 0.7059 (the exact corner value is 0.7071).",
+  "visual_intent": "Code card at left (the six-line shader); at right a real Godot window with a square picture: black in the middle growing to light grey at the edges and corners, like a cone seen from above. Two read-outs: '0.5' at the middle of the right edge and '0.71' near a corner.",
+  "motion_claim": "The distance line is highlighted, then the COLOR line; read-outs land on the edge middle and on a corner.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "distance line highlighted"
+   },
+   {
+    "at": 0.35,
+    "event": "COLOR line highlighted"
+   },
+   {
+    "at": 0.63,
+    "event": "read-out 0.5 at the edge middle"
+   },
+   {
+    "at": 0.83,
+    "event": "read-out 0.71 at a corner"
+   }
+  ],
+  "runner_up": "manim: the UV square shaded",
+  "why": "The real distance picture beside its one line shows the ramp that grows outward and carries the two key numbers, 0.5 and 0.71.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "manim",
+  "class": "B30_RoundOnSquare",
+  "visual_intent": "A square UV picture with the ticks '0 → 1' across the top and '0 → 1' down the left side (y counts down, as everywhere in the film) and an outlined circle of radius 0.3 drawn in it, label 'square: round'. The square then stretches horizontally into a 2:1 rectangle and the circle stretches with it into an oval; the ticks across and down still read '0 → 1'. Labels 'wide: oval' and a small grey credit 'measured: 384 × 192 px · Godot 4.7.2 · Forward+'.",
+  "motion_claim": "The square stretches into a wide rectangle and carries the circle with it into an oval while the tick labels stay 0 to 1.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "square with the circle; label 'square: round'"
+   },
+   {
+    "at": 0.22,
+    "event": "the square stretches to 2:1, the circle becomes an oval (done by 0.40)"
+   },
+   {
+    "at": 0.44,
+    "event": "label 'wide: oval' lands"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: wide rectangle and oval settled"
+   },
+   {
+    "at": 0.58,
+    "event": "tick labels on both sides highlighted: 0 → 1 (done by 0.64)"
+   },
+   {
+    "at": 0.81,
+    "event": "credit line lands"
+   }
+  ],
+  "runner_up": "ShaderLab: a real wide render",
+  "why": "A square stretching into a rectangle and carrying the circle with it is the cause (the address runs 0 to 1 on both sides); the measured proof sits in the evidence.",
+  "sparse": true
+ },
+ "B31": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat glow = 1.0 - smoothstep(0.0, 0.5, d);\n\tCOLOR = vec4(vec3(glow), 1.0);\n}",
+   "codeFile": "lab-shaders/09-glow.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      4
+     ]
+    },
+    {
+     "at": 0.23,
+     "lines": [
+      5
+     ]
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/glow.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · a square shape",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "1",
+     "x": 0.5,
+     "y": 0.5
+    },
+    {
+     "at": 0.81,
+     "text": "0",
+     "x": 0.725,
+     "y": 0.5
+    }
+   ],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C09: Lab square render of lab-shaders/09-glow.gdshader, still. Verified (360x360 Lab): middle 1.0; (0.75, 0.5) 0.5059; edge middle 0.0; corner 0.0.",
+  "visual_intent": "Code card at left (the seven-line shader); at right a real Godot window with a square picture: a soft white spot in the middle fading to black at the edges. Read-outs '1' in the middle and '0' near the edge.",
+  "motion_claim": "The distance line is highlighted, then the glow line; read-outs land on the middle and the edge.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "distance line highlighted"
+   },
+   {
+    "at": 0.23,
+    "event": "glow line highlighted"
+   },
+   {
+    "at": 0.62,
+    "event": "read-out 1 in the middle"
+   },
+   {
+    "at": 0.81,
+    "event": "read-out 0 near the edge"
+   }
+  ],
+  "runner_up": "manim: the three curves multiplied",
+  "why": "A real soft spot beside the line '1 - smoothstep' shows the composition of the two functions.",
+  "sparse": false
+ },
+ "B32": {
+  "lane": "manim",
+  "class": "B32_BendTheCurve",
+  "visual_intent": "The standard plot with three curves: the diagonal (power 1), a sagging curve (power 3) and a bowing curve (power 1/2), each labelled in mono ('x^3', 'x', 'x^0.5') and mono tag 'pow(x, y) · x to the power y'. The dot rides power 3 with a strip that is bright only near the right end; then power 1/2 with a brighter strip; then power 1 (the diagonal).",
+  "motion_claim": "The dot rides the sagging curve and the strip stays dark until the far end; on the bowing curve the strip is bright early; on power 1 nothing changes.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, tag pow(x, y)"
+   },
+   {
+    "at": 0.23,
+    "event": "power-3 curve draws; dot appears at x = 0 (done by 0.34)"
+   },
+   {
+    "at": 0.36,
+    "event": "dot rides the power-3 curve to x = 0.5; the strip fills dark so far (done by 0.44)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot at x = 0.5 on the power-3 curve, strip dark so far, settled"
+   },
+   {
+    "at": 0.58,
+    "event": "dot rides on to 1; the strip is bright only near the right end (done by 0.72)"
+   },
+   {
+    "at": 0.73,
+    "event": "power-1/2 curve draws; dot rides it; the strip is bright early (done by 0.88)"
+   },
+   {
+    "at": 0.89,
+    "event": "diagonal highlighted; dot rides it"
+   }
+  ],
+  "runner_up": "ShaderLab pow render",
+  "why": "Three curves of different powers with the strip changing under the travelling dot show 'pulls down, pushes up' better than any one render.",
+  "sparse": true
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float power = 1.0;\n\nvoid fragment() {\n\tfloat v = pow(UV.x, power);\n\tCOLOR = vec4(vec3(v), 1.0);\n}",
+   "codeFile": "lab-shaders/07-pow.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.2,
+     "lines": [
+      3,
+      6
+     ]
+    },
+    {
+     "at": 0.61,
+     "lines": [
+      6
+     ],
+     "label": "first number ≥ 0"
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/pow-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · power swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C10: Lab rect, lab-shaders/07-pow.gdshader; power held at 1 until 3.0 s, then 1 -> 6 over 3.0-11.0 s, held to 15.5 s; 30 fps, Forward+. Verified: power 1 -> 0.498 / 0.898 at x = 0.5 / 0.9; power 3 -> 0.1255 / 0.7255; power 6 -> 0.0157 / 0.5294.",
+  "visual_intent": "Code card at left (the eight-line shader with the power dial); at right a real Godot window with a black-to-white gradient whose bright part squeezes toward the right edge as the power is swept from 1 up to 6. The pow line carries the short label 'first number ≥ 0' (the docs' warning is in the voice).",
+  "motion_claim": "The bright region shrinks toward the right edge while the voice says 'squeezes toward the right edge'.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "pow line highlighted"
+   },
+   {
+    "at": 0.2,
+    "event": "uniform and pow lines highlighted; the sweep begins (the capture holds 1 until about 3 s)"
+   },
+   {
+    "at": 0.61,
+    "event": "pow line highlighted with the warning label"
+   }
+  ],
+  "runner_up": "manim: the bright region shrinking",
+  "why": "Turning the power dial on a real render is the effect; the caution about a negative base sits on the code line.",
+  "sparse": false
+ },
+ "B34": {
+  "lane": "manim",
+  "class": "B34_SmoothRepeat",
+  "visual_intent": "A plot of sin over two cycles with the output from −1 to 1 and a dot riding it; range ticks −1 and 1. Mono tag 'sin(x) · a smooth wave between −1 and 1'. The curve is then squeezed and lifted into 0..1 ('0.5 + 0.5 · sin(x)') and the strip beneath shows two soft bands. A faint grey ghost of the fract saw teeth appears behind it with the caption 'smooth cousin'.",
+  "motion_claim": "The wave rolls between −1 and 1, is squeezed into 0 to 1, and a ghost of fract's sharp teeth shows the smooth version beside it.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, tag sin(x)"
+   },
+   {
+    "at": 0.07,
+    "event": "the wave draws; dot rides it; ticks −1 and 1 land (done by 0.40)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: wave and ticks settled, nothing moving"
+   },
+   {
+    "at": 0.56,
+    "event": "the wave squeezes and lifts into 0 to 1; the strip shows two soft bands (done by 0.68)"
+   },
+   {
+    "at": 0.71,
+    "event": "fract ghost and caption 'smooth cousin'"
+   }
+  ],
+  "runner_up": "ShaderLab sine render",
+  "why": "A wave squeezed from −1..1 into 0..1 is a change of axes, and a ghost of fract's teeth beside it makes 'smooth cousin' literal.",
+  "sparse": true
+ }
+}

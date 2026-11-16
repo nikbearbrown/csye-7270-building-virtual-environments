@@ -1,0 +1,245 @@
+{
+  "slug": "claude-liam-lecture-scenes-and-instances-in-godot",
+  "title": "Scenes and Instances in Godot",
+  "acts": [
+    "A Scene Is an Object",
+    "Reuse Without Surprises",
+    "Connect Clear Boundaries",
+    "Verify the Composition"
+  ],
+  "summary": "Build reusable objects with clear scene boundaries.",
+  "description": "Build reusable scene boundaries",
+  "title_lines": [
+    "Scenes and Instances",
+    "in Godot"
+  ],
+  "framing": "A scene is one level",
+  "trigger": "one level",
+  "replacement": "a reusable object",
+  "intro": "Hallo. This is Liam, in for Bear. If scene means level to you, Godot's structure seems larger than it is. Start with a door: one reusable object whose parts have clear jobs.",
+  "terms": [
+    [
+      "Node",
+      "One capability in a tree."
+    ],
+    [
+      "Tree",
+      "A parent-child arrangement."
+    ],
+    [
+      "Instance",
+      "A live copy of a definition."
+    ],
+    [
+      "Resource",
+      "Data that nodes can share."
+    ]
+  ],
+  "recap": [
+    "A scene packages nodes into a reusable object.",
+    "Instance settings and shared resources have different ownership.",
+    "Signals keep communication at explicit object boundaries.",
+    "A small fixture makes composition testable."
+  ],
+  "prompt": "Help me build a reusable Godot four door scene with a visible panel, a solid body, and an approach area. Export a locked setting. Instantiate two doors with different settings, connect an approach signal in the level, and test that opening one leaves the other closed. State which resources are shared and which state must persist outside a scene.",
+  "checks": [
+    "Check: two instances have independent state and explicit resource ownership.",
+    "Check: the door reports an event without a hard-coded parent path."
+  ],
+  "body": [
+    {
+      "id": "BS01",
+      "topic": "A scene is not necessarily a level",
+      "lane": "capture",
+      "asset": "docs-nodes",
+      "narration": "A scene can be a door, a character, or a whole level. Nodes supply capabilities. Saving their arrangement lets us reuse the object without rebuilding every part. Think of the scene as a reusable object boundary, not a synonym for level.",
+      "motion": "Move from the official scene definition to its node illustration",
+      "why": "Official engine documentation grounds the term before a custom example",
+      "runner_up": "A conceptual node diagram is useful after the actual definition",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 0
+    },
+    {
+      "id": "B03",
+      "act": 0,
+      "topic": "Read the scene",
+      "lane": "code",
+      "asset": "scene",
+      "narration": "A scene is a reusable node tree, usually saved as a text scene file. One root owns this small example. A complete level, a player, a coin, and a menu can each be scenes.",
+      "motion": "Reveal the root and then its child in the actual engine-saved scene.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B04",
+      "act": 0,
+      "topic": "Transform inheritance",
+      "lane": "manim",
+      "asset": "Transforms",
+      "narration": "Node itself has no position. Two D and three D spatial nodes provide transforms. Here a child keeps its local offset when its parent moves. Top-level settings and different node types can change that relationship.",
+      "motion": "Move a parent and child together while a local-offset ruler stays fixed.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "BS02",
+      "topic": "Read the actual door hierarchy",
+      "lane": "code",
+      "asset": "door-tree",
+      "narration": "Our door combines a visible panel, a solid body, and an approach area. Each collision shape belongs directly to the object it describes. This tree is derived from the saved door scene; the door owns the behavior of the assembly.",
+      "motion": "Reveal the root, visual children, solid branch and sensor branch in that order",
+      "why": "The real saved hierarchy answers where each capability belongs",
+      "runner_up": "A generic organization chart would omit the actual node types",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 0
+    },
+    {
+      "id": "B05",
+      "act": 1,
+      "topic": "Instance a definition",
+      "lane": "code",
+      "asset": "instances",
+      "narration": "PackedScene holds a saved definition. Instantiate creates a live copy. These two copies have different positions, while resources inside them may still be shared. Independent nodes do not automatically mean independent materials or shapes.",
+      "motion": "Highlight instantiate twice, then the two distinct assigned positions.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "BS03",
+      "topic": "Export a setting, preserve the boundary",
+      "lane": "code",
+      "asset": "door-exports",
+      "narration": "The locked property is exported so each door instance can start with a different setting. Is open is runtime state. Both belong to the door script. The level can configure the public setting without reaching through the scene to manipulate private children.",
+      "motion": "Reveal exported configuration before runtime fields",
+      "why": "Executed script exposes the configuration/state distinction directly",
+      "runner_up": "An Inspector mockup would not be actual engine evidence",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 1
+    },
+    {
+      "id": "B18",
+      "act": 1,
+      "topic": "Shared shape resources",
+      "lane": "code",
+      "asset": "unique",
+      "narration": "Two nodes can share the same Shape resource. Resize that shared resource and both boundaries change. Duplicate the resource when you need one independent boundary. This is resource ownership, separate from whether the nodes were instanced separately.",
+      "motion": "Highlight the shared shape assignment, then the duplicate before resize.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B06",
+      "act": 1,
+      "topic": "Composition and variants",
+      "lane": "capture",
+      "asset": "docs-scenes",
+      "narration": "A level has a player and coins: composition. An inherited scene specializes a base scene: a variant relationship. Prefer exported settings over repeatedly exposing editable children. Reuse should preserve a clear boundary around the object.",
+      "motion": "Focus the real scene-organization documentation after establishing its title.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B07",
+      "act": 2,
+      "topic": "Call down, signal up",
+      "lane": "manim",
+      "asset": "Signals",
+      "narration": "Let the level connect a coin's collected signal to the score update. The coin reports what happened without locating a distant parent. Unique names help inside a scene; persistent state can live in an autoload.",
+      "motion": "Trace the signal from coin to level, then a separate call from level to score.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "BS04",
+      "topic": "Connect at the composition boundary",
+      "lane": "code",
+      "asset": "door-wiring",
+      "narration": "The level creates two doors and connects the first door's approach signal. The door reports an actor; the level decides what that means for the level. No hard-coded chain of parent lookups is needed to find the recipient.",
+      "motion": "Reveal instantiation, exported override and parent signal connection",
+      "why": "Exact executed fixture demonstrates real signal ownership",
+      "runner_up": "A conceptual signal diagram is already used for the coin",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 2
+    },
+    {
+      "id": "B08",
+      "act": 2,
+      "topic": "Stateful blocks",
+      "lane": "code",
+      "asset": "block",
+      "narration": "A question block remembers whether it was used, so give it a small scene and an explicit state. Animate its visual child for a cosmetic bump. If the solid surface must push something, use an animatable body.",
+      "motion": "Highlight the used guard before the state change and deferred spawn.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "BS05",
+      "topic": "State has a lifetime",
+      "lane": "code",
+      "asset": "door-open",
+      "narration": "A fresh door starts closed. Opening one instance changes that instance's state and shape; it does not open its neighbor. If a door must remain unlocked across level changes, store that progression outside the disposable instance and restore it deliberately.",
+      "motion": "Reveal the state guard, state update and deferred shape change",
+      "why": "Executed door state is a concrete example; persistence is explicitly a design extension",
+      "runner_up": "A global-state diagram would introduce an unimplemented save system",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 2
+    },
+    {
+      "id": "B09",
+      "act": 3,
+      "topic": "Scene files and ownership",
+      "lane": "code",
+      "asset": "format",
+      "narration": "Keep actors, blocks, levels, interface, and layer definitions organized by responsibility. Test scenes in isolation. When editing text scenes, preserve resource references and existing identifiers; letting the engine save a PackedScene avoids hand-copying node identifiers.",
+      "motion": "Reveal the engine pack-and-save calls, then their real saved artifact.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B02",
+      "act": 3,
+      "topic": "Pin the engine",
+      "lane": "shell",
+      "asset": "version",
+      "narration": "This lab ran in Godot four point seven point two. Match your documentation and project settings to the installed engine. A saved version is reproducible context; calling something the latest release is a claim that soon expires.",
+      "motion": "Reveal the recorded version, then the actual project feature line.",
+      "runner_up": "BrowserCapture of terminal output",
+      "why": "Verbatim recorded output establishes the observation and keeps its evidence limits visible."
+    },
+    {
+      "id": "B53",
+      "act": 3,
+      "topic": "Audit the seed",
+      "lane": "shell",
+      "asset": "audit",
+      "narration": "Before an agent extends reference code, inspect the seed for old APIs, scaled collision nodes, hard-coded parent paths, and movement outside physics callbacks. Static searches are leads. A clean search does not prove behavior, and we have not audited an unseen course game.",
+      "motion": "Show the actual local source-audit command and its output, labeled as a search rather than behavioral proof.",
+      "runner_up": "BrowserCapture of terminal output",
+      "why": "Verbatim recorded output establishes the observation and keeps its evidence limits visible."
+    },
+    {
+      "id": "B52",
+      "act": 3,
+      "topic": "Give agents a contract",
+      "lane": "code",
+      "asset": "conventions",
+      "narration": "Write the engine version, scene boundaries, named layers, movement callback, and test commands into the repository conventions. These are project policies, not universal laws. Require the agent to report what ran and what still needs a playtest.",
+      "motion": "Reveal the real companion conventions excerpt section by section.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B54",
+      "act": 3,
+      "topic": "Keep the reference nearby",
+      "lane": "capture",
+      "asset": "docs-nodes",
+      "narration": "Use the documentation matching your engine, beginning with nodes and scenes, physics introduction, and the character-body reference. Keep the runnable lab beside those pages. Predict an outcome, run one controlled test, and use the evidence to revise your explanation.",
+      "motion": "Focus the real Nodes and Scenes heading and retain the exact versioned URL.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    }
+  ],
+  "source_parent": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-scenes-collision-physics",
+  "preparation": "stage one; no rendered film"
+}

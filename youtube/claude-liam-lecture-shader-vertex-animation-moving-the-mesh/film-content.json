@@ -1,0 +1,66 @@
+{
+  "id": 10,
+  "slug": "vertex-animation-moving-the-mesh",
+  "title": "Vertex Animation: Moving the Mesh",
+  "objective": "Trace a time-dependent displacement and recognize stale lighting inputs.",
+  "wrong": "deformation fixes its own lighting",
+  "right": "deformation also needs updated lighting inputs",
+  "terms": {
+    "Vertex": "A mesh position processed by the vertex stage",
+    "Amplitude": "The size and direction of an offset",
+    "Frequency": "How quickly a phase varies across space"
+  },
+  "exercise": "Set the vertex offset to zero, then raise its vertical component. Compare silhouette motion with the highlight. Explain which lighting inputs would need updating for a physically consistent deformed surface.",
+  "checks": [
+    "Zero offset produces no displacement.",
+    "The current shader retains its original normal and eye vector."
+  ],
+  "recap": [
+    "A sine wave controls the displacement.",
+    "Time animates its phase.",
+    "The offset sets amplitude and direction.",
+    "The port retains undeformed lighting inputs."
+  ],
+  "beats": [
+    [
+      "Move Before Projection",
+      "VERTEX = VERTEX",
+      "The vertex function adds an offset to the mesh position before Godot projects it. Unlike normal mapping, this operation really moves mesh vertices and can change the visible outline."
+    ],
+    [
+      "Build A Phase",
+      "sin(TIME * animation_speed",
+      "The sine receives time multiplied by speed, plus the original horizontal position multiplied by frequency. Time moves the wave forward. Position makes different vertices sit at different phases."
+    ],
+    [
+      "Choose Amplitude",
+      "uniform vec3 vert_offset",
+      "The offset vector controls both amplitude and direction. A vertical offset makes an up-and-down deformation. A sideways offset pushes along a different local axis. It is an object-space displacement."
+    ],
+    [
+      "The Zero Case",
+      "vec3 vert_offset =",
+      "If the offset is zero, multiplying it by any sine value still produces zero. The untouched default shader does not wobble. The demo material supplies a nonzero override to make the effect visible."
+    ],
+    [
+      "Grow The Motion",
+      "VERTEX = VERTEX",
+      "Watch the vertical offset grow. The silhouette now moves because actual vertices move. The finite mesh resolution limits how smoothly that displacement can describe the intended wave."
+    ],
+    [
+      "Check Operation Order",
+      "vec3 world_pos =",
+      "Before changing VERTEX, this port computes the world position used for the eye vector. It therefore keeps the direction to the original position, not the displaced one."
+    ],
+    [
+      "The Stale Normal",
+      "world_normal =",
+      "The normal is also carried from the original mesh. It is not recomputed from the deformed surface. A moving outline with inconsistent shading is an expected limitation of this teaching port."
+    ],
+    [
+      "Make The Model Honest",
+      "ALBEDO =",
+      "For a more complete deformation, update the lighting position and derive suitable deformed normals. The lesson here is the vertex displacement mechanism and the extra responsibilities that come with moving geometry."
+    ]
+  ]
+}

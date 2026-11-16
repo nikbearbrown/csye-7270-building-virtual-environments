@@ -1,0 +1,66 @@
+{
+  "id": 2,
+  "slug": "lambert-light-is-an-angle",
+  "title": "Lambert: Light Is an Angle",
+  "objective": "Predict diffuse brightness from the dot product of normalized directions.",
+  "wrong": "brightness measures distance",
+  "right": "brightness measures alignment",
+  "terms": {
+    "Normal": "The surface's outward direction",
+    "Dot product": "A measure of alignment between directions",
+    "Clamp": "Restrict a value to a specified interval"
+  },
+  "exercise": "For unit directions separated by zero, sixty, and ninety degrees, predict the Lambert weights. Then rotate the light in Godot and explain why the back-facing side stays black.",
+  "checks": [
+    "The predicted weights are one, one half, and zero.",
+    "Negative dot products are clamped to zero."
+  ],
+  "recap": [
+    "Normalize both directions.",
+    "Their dot product measures alignment.",
+    "Clamp away negative light.",
+    "This directional-light model has no distance attenuation."
+  ],
+  "beats": [
+    [
+      "Light As Alignment",
+      "normalize(world_normal)",
+      "Start with a unit surface normal and a unit direction toward the light. Their dot product is the cosine of the angle between them. That is the entire diffuse brightness model here."
+    ],
+    [
+      "The Brightest Point",
+      "clamp(dot(l, n)",
+      "When both directions line up, the dot product is one. Multiply the surface color by one and its diffuse contribution reaches full strength. This is a lighting weight, not a screen-byte measurement."
+    ],
+    [
+      "Turn Sixty Degrees",
+      "clamp(dot(l, n)",
+      "At sixty degrees, the dot product is one half. The diffuse contribution is halved before display conversion. Do not assume the displayed pixel will be half as bright numerically."
+    ],
+    [
+      "Turn Away",
+      "clamp(dot(l, n)",
+      "At ninety degrees, the dot product reaches zero. Beyond ninety degrees it becomes negative. Clamp removes that negative contribution; the back of the object cannot receive negative light."
+    ],
+    [
+      "Move The Lit Side",
+      "light_direction =",
+      "Watch the direction rotate around the object. The bright region follows the surfaces facing the incoming light. We never changed a light's distance, because this shader has no light position."
+    ],
+    [
+      "A Sign Matters",
+      "normalize(-light_direction)",
+      "The stored direction points along the traveling light. Negating it points back toward the source. If the vector points upward before negation, the shader lights downward-facing surfaces."
+    ],
+    [
+      "One Shared Space",
+      "MODEL_NORMAL_MATRIX",
+      "The normal is transformed into world space before interpolation. The light direction is also world space. A plausible-looking dot product can still be wrong when its vectors use different spaces."
+    ],
+    [
+      "Know The Boundary",
+      "ALBEDO =",
+      "This manually computed Lambert material does not ask Godot for scene-light shadows or distance falloff. It teaches one mechanism: surface orientation controls the diffuse term. Those other effects need additional machinery."
+    ]
+  ]
+}

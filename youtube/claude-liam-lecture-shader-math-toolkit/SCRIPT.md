@@ -168,7 +168,7 @@
 
 *Motion.* The camera pushes in on the formula the voice describes, then on the warning sentence.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: manim: the formula typed out
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: manim: the formula typed out
 
 ### B13 · 33 words · ~11 s
 

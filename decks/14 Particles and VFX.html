@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Particles and VFX | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Particles and VFX">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Particles and VFX">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 9</p>
+      <h1 class="t-opening rise g2">Particles and VFX</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for short-lived effects: how they spawn, move, look and cost</p>
+      <div class="speaker-notes" hidden><p>Deck 7 of the topic order. 35 terms. Tags: in the book text means Chapter 9 uses and explains it; in the glossary means a glossary row only; editor or docs means the engine class reference only; video only means Riot episode 7 only.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-five terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-five terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9; glossary, Particles; Riot “So You Wanna Make Games??” episode 7, Game VFX.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Particle, emitter and particle system">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">What spawns</p>
+      <h2 class="t-chart">Particle, emitter and particle system</h2>
+      <div class="diagram build" data-build="A" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “A particle system is a birth–life–death loop”; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>The arc uses gravity 260; the fountain fires 12 a second with a seeded speed and angle.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Amount, lifetime and steady state">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">What spawns</p>
+      <h2 class="t-chart">Amount, lifetime and steady state</h2>
+      <div class="diagram build" data-build="B" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “The timing model: one emission cycle”; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>Live count is computed from the birth times: amount 60, lifetime 2 s, so 30 born a second.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Explosiveness, one_shot and preprocess">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">When they are born</p>
+      <h2 class="t-chart">Explosiveness, one_shot and preprocess</h2>
+      <div class="diagram build" data-build="C" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “The timing model”; “Hands-on”; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>Birth times follow the chapter: 0 spreads births evenly across the cycle, 1 puts them all at the start. The 32-particle, 0.6 s burst is the chapter’s DeathBurst.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Emission shape, velocity, spread and seed">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Where they start</p>
+      <h2 class="t-chart">Emission shape, velocity, spread and seed</h2>
+      <div class="diagram build" data-build="D" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “The process material is 3D, even in 2D”; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>Seeded random numbers: seed 7 twice gives identical particles, seed 8 does not. In 3D a spread of 180 includes the Z axis.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Gravity, damping and the age curves">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">How they change</p>
+      <h2 class="t-chart">Gravity, damping and the age curves</h2>
+      <div class="diagram build" data-build="E" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Particle shaders”; Godot ParticleProcessMaterial reference, damping; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>Gravity is added to velocity each 1/60 s step. Damping 150 takes a speed of 300 to 0 in 2 s. Damping is defined in the Godot class reference, not in the chapter.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Texture, blend mode and billboard">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">How each is drawn</p>
+      <h2 class="t-chart">Texture, blend mode and billboard</h2>
+      <div class="diagram build" data-build="F" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Session 3”, “Doing the same thing”; glossary, Particles and Shaders and materials; Riot “So You Wanna Make Games??” episode 7, Game VFX.</p>
+      <div class="speaker-notes" hidden><p>The pixel counts use a 480 × 720 screen and 32 particles. The null texture warning is from the chapter’s Session 3.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Local space, update rate and bounds">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Engine settings</p>
+      <h2 class="t-chart">Local space, update rate and bounds</h2>
+      <div class="diagram build" data-build="G" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Triggering”, “The timing model”, “Where particle cost lands”.</p>
+      <div class="speaker-notes" hidden><p>Steps of 0.2 s are an exaggerated fixed_fps; the default is 30. The rect sizes are examples.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="GPU nodes, CPU nodes and the process material">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Engine parts</p>
+      <h2 class="t-chart">GPU nodes, CPU nodes and the process material</h2>
+      <div class="diagram build" data-build="H" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Four node types, two families”, “The cost measurement”; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>The table is the chapter’s ClassDB check on 4.7.2. The costs are its measured CPU values with --fixed-fps 60.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Sub-emitters, trails and particle shaders">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Engine parts</p>
+      <h2 class="t-chart">Sub-emitters, trails and particle shaders</h2>
+      <div class="diagram build" data-build="I" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Sub-emitters”, “Particle shaders”; Riot “So You Wanna Make Games??” episode 7, Game VFX.</p>
+      <div class="speaker-notes" hidden><p>A trail here is Riot’s ribbon. In Godot, trail_enabled is a GPU-node feature; the Dodge the Creeps node named Trail is something else.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Reads and restraint">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Design (Riot)</p>
+      <h2 class="t-chart">Reads and restraint</h2>
+      <div class="diagram build" data-build="R1" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot “So You Wanna Make Games??” episode 7, Game VFX.</p>
+      <div class="speaker-notes" hidden><p>Visual weight is area times an invented brightness; it is illustrative. The three reads and restraint are from the episode.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Shape, colour and timing">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Design (Riot)</p>
+      <h2 class="t-chart">Shape, colour and timing</h2>
+      <div class="diagram build" data-build="R2" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot “So You Wanna Make Games??” episode 7, Game VFX.</p>
+      <div class="speaker-notes" hidden><p>Hue angles are computed from the swatch colours. The ease is a cubic ease-out, an example of fast then slow.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9; glossary, Particles.</p>
+      <div class="speaker-notes" hidden><p>Amount and rate, local and world, one-shot and looping, gravity and damping.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Session 3”, “The timing model”.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions, each with a computed result.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a particle effect">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a particle effect</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 9, “Verify” and “What is still unverified”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Particles and VFX (Chapter 9, glossary "Particles", Riot episode 7) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 9 uses and explains it; gloss = glossary row only; editor = engine class reference only; video = Riot episode 7 only */
+  var T = {
+    particle: { n: "Particle", tag: "book", m: "One small short-lived sprite or mesh in an effect" },
+    emitter: { n: "Emitter", tag: "book", m: "The thing that spawns particles" },
+    psys: { n: "Particle system", tag: "book", m: "The emitter plus the rules for its particles" },
+    amount: { n: "amount", tag: "book", m: "Particles in one emission cycle; a looping emitter never has more alive" },
+    lifetime: { n: "lifetime", tag: "book", m: "Seconds a particle lives; also the length of one emission cycle" },
+    steady: { n: "Steady state", tag: "gloss", m: "Births equal deaths, so the live count levels off" },
+    explos: { n: "explosiveness", tag: "book", alias: "a burst is explosiveness = 1", m: "0 spreads births across the cycle; 1 emits them all at its start" },
+    oneshot: { n: "one_shot", tag: "book", m: "Only one emission cycle occurs; otherwise it loops forever" },
+    preproc: { n: "preprocess", tag: "book", alias: "also called prewarm", m: "Starts as if the effect had already run this many seconds" },
+    shape: { n: "Emission shape", tag: "gloss", m: "The volume particles spawn in: point, sphere, box" },
+    ivel: { n: "Initial velocity", tag: "gloss", m: "The speed and direction a particle starts with" },
+    spread: { n: "spread", tag: "book", m: "The cone angle of random variation around the emission direction" },
+    seed: { n: "Seed, determinism", tag: "gloss", m: "Same seed and inputs give the same random choices and output every run" },
+    gravity: { n: "Gravity", tag: "gloss", m: "Constant downward acceleration applied to particles" },
+    damping: { n: "Damping", tag: "editor", m: "The rate at which particles lose velocity. 100 takes a speed of 100 to 0 in 1 second" },
+    scale: { n: "Scale curve", tag: "gloss", m: "A curve for particle size over its life" },
+    ramp: { n: "Colour ramp", tag: "gloss", m: "A gradient for particle colour over its life" },
+    texture: { n: "texture", tag: "book", m: "The image drawn for each particle. If null, 1 by 1 pixel squares" },
+    additive: { n: "Additive blending", tag: "gloss", alias: "a blend mode", m: "Adds the new colour to what is behind it; glows and fire" },
+    billboard: { n: "Billboard", tag: "gloss", alias: "Riot: camera-facing card", m: "A flat quad that always faces the camera" },
+    local: { n: "local_coords", tag: "book", alias: "off: world coordinates", m: "On: particles move with the emitter. Off: they are left behind" },
+    fixedfps: { n: "fixed_fps, interpolate", tag: "book", m: "Update at a fixed rate; interpolate smooths motion between updates" },
+    visrect: { n: "visibility_rect", tag: "book", alias: "3D: visibility_aabb", m: "The region that must be on screen for the effect to be active" },
+    gpu: { n: "GPUParticles2D / 3D", tag: "book", m: "Simulated on the graphics card; many particles, more features" },
+    cpu: { n: "CPUParticles2D / 3D", tag: "book", m: "Simulated on the processor; wider hardware support, fewer particles" },
+    ppm: { n: "ParticleProcessMaterial", tag: "book", m: "The resource that holds a GPU particle system's rules for moving and changing" },
+    subem: { n: "Sub-emitter", tag: "book", m: "A second GPU particle system that spawns from the first one's particles" },
+    trail: { n: "Trail (ribbon)", tag: "video", m: "A strip that follows a moving object, textured to look like a tail" },
+    pshader: { n: "Particle shader", tag: "book", m: "A shader that sets each particle's properties in start() and process()" },
+    reads: { n: "Primary to tertiary read", tag: "video", m: "The order the eye notices an effect's parts: head, tail, then sparks" },
+    restraint: { n: "Restraint", tag: "video", m: "Keeping most effects modest so the important ones stand out" },
+    shapelang: { n: "Shape language", tag: "video", m: "The same shapes for the same meaning across the whole game" },
+    colorcode: { n: "Colour coding", tag: "video", m: "Colours that signal team, damage type or tone" },
+    analogous: { n: "Analogous colours", tag: "video", m: "Neighbouring hues, used to tie an effect to the model that casts it" },
+    timing: { n: "Timing curve", tag: "video", m: "Varying how fast an effect grows and slows, not a constant rate" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function simG(d, dur, fn, anim, ease) { var G = d.append("g"); run(G, dur, function (t) { G.selectAll("*").remove(); fn(G, t); }, anim, ease); return G; }
+  function dot(g, x, y, r, fill, op) { return g.append("circle").attr("cx", x).attr("cy", y).attr("r", r).attr("fill", fill).attr("opacity", op == null ? 1 : op); }
+  function ln(g, x1, y1, x2, y2, c, w, dash) { var l = g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2).attr("stroke", c || INK).attr("stroke-width", w || 2).attr("fill", "none"); if (dash) l.attr("stroke-dasharray", dash); return l; }
+  function pth(g, pts, c, w, dash) { var p = g.append("path").attr("d", "M" + pts.map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join("L")).attr("stroke", c || INK).attr("stroke-width", w || 2).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function rr(a, b) { return Math.round(a * 10) / 10; }
+  function glowDef(svg, id, rgb) {
+    var df = svg.append("defs").append("radialGradient").attr("id", id);
+    df.append("stop").attr("offset", "0%").attr("stop-color", rgb).attr("stop-opacity", 1);
+    df.append("stop").attr("offset", "100%").attr("stop-color", rgb).attr("stop-opacity", 0);
+    return "url(#" + id + ")";
+  }
+
+  var MAPROWS = [
+    ["What spawns, and when", "particle, emitter, particle system, amount, lifetime, steady state, explosiveness, one_shot, preprocess", "How many particles, how long they live, when they are born"],
+    ["How it moves and looks", "emission shape, initial velocity, spread, seed, gravity, damping, scale curve, colour ramp, texture, additive blending, billboard", "Where they start, how they move and change, how each is drawn"],
+    ["Engine parts and cost", "local_coords, fixed_fps, visibility_rect, GPU and CPU nodes, process material, sub-emitter, trail, particle shader", "Which node, which rules, and where the work lands"],
+    ["Designing the effect (Riot)", "reads, restraint, shape language, colour coding, analogous colours, timing curve", "How a VFX artist makes an effect clear and distinct"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of particle terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "35 terms from Chapter 9, the glossary and Riot's VFX episode. Every one is about making short-lived points that look like fire, smoke or a burst.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 128, row = g.append("g");
+      box(row, 0, y, 1400, 116, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 117).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- shared fountain simulation (seeded) ---------- */
+  var FR = (function () { var r = rng(21), a = []; for (var i = 0; i < 120; i++) { var ang = (-90 + (r() - 0.5) * 36) * DEG, sp = 230 + r() * 100; a.push([Math.cos(ang) * sp, Math.sin(ang) * sp]); } return a; })();
+  function fountain(g, ex, ey, rate, life, grav, Tm, rad) {
+    var n = Math.floor(Tm * rate), alive = 0;
+    for (var i = 0; i <= n && i < FR.length; i++) {
+      var a = Tm - i / rate; if (a < 0 || a > life) continue; alive++;
+      dot(g, ex + FR[i][0] * a, ey + FR[i][1] * a + 0.5 * grav * a * a, rad || 7, RED, 1 - a / life);
+    }
+    return alive;
+  }
+
+  /* ---------- A. particle, emitter, particle system ---------- */
+  function renderA(el, k, anim) {
+    var svg = svgFor(el, W, H, "A particle is born, moves and dies; the emitter spawns them", "One particle follows an arc from birth to death. Then an emitter fires a stream, and the emitter plus its rules make a particle system.");
+    var ey = base(svg, [{ id: "particle", s: 1 }, { id: "emitter", s: 2 }, { id: "psys", s: 3 }], k, anim, ["Particle", "one short-lived point"], ["Emitter", "the spawner, not the points"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "ONE PARTICLE: BORN, MOVES, DIES");
+      var x0 = 100, y0 = 480, vx = 190, vy = -300, g0 = 260, life = 2.2;
+      var P = function (a) { return [x0 + vx * a, y0 + vy * a + 0.5 * g0 * a * a]; };
+      pth(d, d3.range(0, 41).map(function (i) { return P(life * i / 40); }), FAMILIAR, 3, "8 6");
+      [0, 1.1, 2.2].forEach(function (a) { var p = P(a); dot(d, p[0], p[1], 9, "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+      cap(d, 100, 525, "born", { size: 24, anchor: "middle" }); cap(d, 309, 280, "age 1.1 s", { size: 24, anchor: "middle" }); cap(d, 342, 500, "dies at 2.2 s", { size: 24, anchor: "start" });
+      var rd = cap(d, 0, 565, "", { size: 26, weight: 700, fill: RED });
+      var G = d.append("g");
+      run(G, 4000, function (t) { var a = life * t, p = P(a); G.selectAll("*").remove(); dot(G, p[0], p[1], 14, RED, t >= 1 ? 0.35 : 1); rd.text("age " + a.toFixed(2) + " s of " + life + " s"); }, k === 1 && anim);
+    } else {
+      lab(d, 0, 30, k === 2 ? "AN EMITTER FIRING 12 A SECOND" : "THE EMITTER PLUS ITS RULES");
+      var ex = k === 2 ? 380 : 200, cnt = cap(d, 0, 70, "", { size: 26, weight: 700, fill: RED });
+      d.append("rect").attr("x", ex - 14).attr("y", 496).attr("width", 28).attr("height", 28).attr("fill", INK);
+      cap(d, ex + 24, 520, "emitter", { size: 24, anchor: "start", weight: 700 });
+      simG(d, 4500, function (G, t) { var Tm = 3 * t, n = fountain(G, ex, 490, 12, 1.5, 220, Tm, 7); cnt.text("alive now: " + n + " of " + Math.min(36, Math.floor(Tm * 12) + 1) + " born"); }, k === 2 && anim);
+      if (k === 3) {
+        var RUL = [["rules:", 1], ["start: a point", 0], ["speed: 230 to 330", 0], ["gravity: 220", 0], ["lifetime: 1.5 s", 0], ["size: shrinks", 0]];
+        box(d, 440, 60, 320, 320, { stroke: RED, sw: 3 });
+        RUL.forEach(function (r, i) { var g2 = d.append("g"); if (r[1]) lab(g2, 460, 104, "RULES", { fill: RED }); else mono(g2, 460, 104 + i * 46, r[0], { size: 24 }); fade(g2, A(anim, k, 3), i * 200); });
+        d.append("path").attr("d", "M330,300 H440").attr("stroke", RED).attr("stroke-width", 4); d.append("path").attr("d", "M440,300 l-16,-9 v18 z").attr("fill", RED);
+        cap(d, 440, 440, "emitter + rules = a system", { size: 24, weight: 700, fill: RED });
+      }
+    }
+    note(svg, ey, ["", "A particle is a point with an age. It is born, moves by the rules, and dies at its lifetime.", "The emitter is the spawner. It fires new particles at a steady rate; each one lives and fades.", "The emitter and the rules it spawns by are the particle system."][k]);
+  }
+
+  /* ---------- B. amount, lifetime, steady state ---------- */
+  var B_AM = 60, B_LF = 2, B_RATE = B_AM / B_LF;
+  function liveCount(births, life, t) { var n = 0; births.forEach(function (b) { if (b <= t + 1e-9 && t < b + life - 1e-9) n++; }); return n; }
+  function renderB(el, k, anim) {
+    var svg = svgFor(el, W, H, "Amount and lifetime set the birth rate, and the live count levels off", "A chart of live count over six seconds with amount 60 and lifetime 2 seconds: it climbs for two seconds then stays at 60.");
+    var ey = base(svg, [{ id: "amount", s: 1 }, { id: "lifetime", s: 2 }, { id: "steady", s: 4 }], k, anim, ["amount", "particles per cycle"], ["Emission rate", "particles born per second"]);
+    var d = svg.append("g"), x0 = 80, y0 = 440, sx = 650 / 6, sy = 4.7;
+    var births = d3.range(0, 6 * B_RATE).map(function (i) { return i / B_RATE; });
+    lab(d, 0, 30, "LIVE COUNT (PARTICLES ALIVE)");
+    ln(d, x0, y0, 730, y0, INK, 2); ln(d, x0, y0, x0, 90, INK, 2);
+    [0, 2, 4, 6].forEach(function (s) { cap(d, x0 + s * sx, 478, s + " s", { size: 24, anchor: "middle" }); });
+    cap(d, 66, y0 + 8, "0", { size: 24, anchor: "end" }); cap(d, 66, y0 - B_AM * sy + 8, "60", { size: 24, anchor: "end" });
+    if (k >= 1) { ln(d, x0, y0 - B_AM * sy, 730, y0 - B_AM * sy, RED, 3, "10 6"); cap(d, 100, y0 - B_AM * sy - 12, "amount = " + B_AM, { size: 24, weight: 700, fill: RED }); }
+    if (k >= 2) { var lb = bar(d, x0, 498, B_LF * sx, 22, INK, A(anim, k, 2), 0); cap(d, x0 + B_LF * sx + 14, 518, "lifetime = " + B_LF + " s", { size: 24, weight: 700 }); }
+    if (k >= 3) { var tk = d.append("g"); births.forEach(function (b) { ln(tk, x0 + b * sx, y0 - 12, x0 + b * sx, y0, GREY, 1.5); }); fade(tk, A(anim, k, 3), 0);
+      cap(d, 0, 565, "rate = amount ÷ lifetime = " + B_AM + " ÷ " + B_LF + " = " + B_RATE + " born per second", { size: 26, weight: 700, fill: RED }); }
+    if (k >= 4) {
+      var pts = d3.range(0, 361).map(function (i) { var t = i / 60; return [x0 + t * sx, y0 - liveCount(births, B_LF, t) * sy]; });
+      var c = pth(d, pts, INK, 5); if (A(anim, k, 4)) drawIn(c, 0, 1500);
+      dot(d, x0 + B_LF * sx, y0 - B_AM * sy, 10, RED);
+      cap(d, 730, 214, "steady state:", { size: 24, weight: 700, anchor: "end" }); cap(d, 730, 244, "births = deaths", { size: 24, anchor: "end" });
+    }
+    note(svg, ey, ["", "amount is how many particles one cycle holds. It caps how many can be alive.", "lifetime is how long each lives. It is also the length of one cycle.", "Spread " + B_AM + " births over " + B_LF + " s: " + B_RATE + " a second.", "After one lifetime, as many die as are born. The count stops at " + B_AM + "."][k]);
+  }
+
+  /* ---------- C. explosiveness, one-shot, preprocess ---------- */
+  function birthsFor(amount, life, expl, cycles) { var a = []; for (var c = 0; c < cycles; c++) for (var i = 0; i < amount; i++) a.push(c * life + (i / amount) * life * (1 - expl)); return a; }
+  var BURST = (function () { var r = rng(33), a = []; for (var i = 0; i < 32; i++) { var ang = r() * 2 * Math.PI, sp = 150 + r() * 150; a.push([Math.cos(ang) * sp, Math.sin(ang) * sp]); } return a; })();
+  function renderC(el, k, anim) {
+    var svg = svgFor(el, W, H, "Explosiveness sets the birth schedule; one_shot and preprocess set the cycles", "Birth times for three explosiveness values, a burst of 32 particles flying out, looping versus one-shot over three seconds, and a looping effect with and without preprocess.");
+    var ey = base(svg, [{ id: "explos", s: 1 }, { id: "oneshot", s: 3 }, { id: "preproc", s: 4 }], k, anim, ["one_shot", "a single cycle, then stops"], ["Looping", "cycles repeat forever"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "WHEN 32 PARTICLES ARE BORN (LIFETIME 0.6 S)");
+      var X = function (t) { return 170 + t / 0.6 * 560; };
+      [0, 0.5, 1].forEach(function (e, i) {
+        var y = 120 + i * 130, g = d.append("g"), b = birthsFor(32, 0.6, e, 1);
+        cap(g, 0, y + 8, "e = " + e, { size: 26, weight: 700, fill: e === 1 ? RED : INK });
+        ln(g, 170, y + 30, 730, y + 30, FAMILIAR, 2);
+        b.forEach(function (t) { ln(g, X(t), y - 22, X(t), y + 30, e === 1 ? RED : INK, 3); });
+        cap(g, 170, y + 62, "last birth at " + d3.max(b).toFixed(2) + " s", { size: 24, fill: MUTED });
+        fade(g, A(anim, k, 1), i * 350);
+      });
+      cap(d, 170, 520, "0 s", { size: 24 }); cap(d, 730, 520, "0.6 s", { size: 24, anchor: "end" });
+    } else if (k === 2) {
+      lab(d, 0, 30, "A BURST: 32 PARTICLES AT ONCE");
+      var rd = cap(d, 0, 565, "", { size: 26, weight: 700, fill: RED });
+      dot(d, 380, 290, 6, INK);
+      simG(d, 2400, function (G, t) { var Tm = t < 1 ? 0.6 * t : 0.33, n = 0; BURST.forEach(function (v) { var a = Tm; if (a < 0.6) { n++; dot(G, 380 + v[0] * a, 290 + v[1] * a, 8, RED, 1 - a / 0.6); } }); rd.text("alive: " + n + " of 32 at " + Tm.toFixed(2) + " s"); }, anim);
+    } else if (k === 3) {
+      lab(d, 0, 30, "LOOPING VERSUS ONE-SHOT, 3 SECONDS");
+      var X3 = function (t) { return 190 + t / 3 * 540; };
+      [["looping", 5], ["one_shot", 1]].forEach(function (r, i) {
+        var y = 150 + i * 170, g = d.append("g");
+        cap(g, 0, y + 8, r[0], { size: 24, weight: 700, fill: i ? RED : INK }); ln(g, 190, y + 30, 730, y + 30, FAMILIAR, 2);
+        for (var c = 0; c < r[1]; c++) { var xs = X3(c * 0.6); g.append("rect").attr("x", xs).attr("y", y - 40).attr("width", 0.6 / 3 * 540 - 6).attr("height", 70).attr("fill", i ? RED : INK).attr("opacity", 0.9); }
+        cap(g, 190, y + 66, "born in 3 s: " + birthsFor(32, 0.6, 1, r[1]).length, { size: 24, fill: MUTED });
+        fade(g, A(anim, k, 3), i * 400);
+      });
+    } else {
+      lab(d, 0, 30, "LIVE COUNT, AMOUNT 60, LIFETIME 2 S");
+      var x0 = 80, y0 = 420, sx = 215, sy = 4.7, bs = birthsFor(60, 2, 0, 3);
+      ln(d, x0, y0, 730, y0, INK, 2); ln(d, x0, y0, x0, 100, INK, 2);
+      [0, 1, 2, 3].forEach(function (s) { cap(d, x0 + s * sx * 1, 458, s + " s", { size: 24, anchor: "middle" }); });
+      cap(d, 66, y0 + 8, "0", { size: 24, anchor: "end" }); cap(d, 66, y0 - 60 * sy + 8, "60", { size: 24, anchor: "end" });
+      var cold = d3.range(0, 181).map(function (i) { var t = i / 60; return [x0 + t * sx, y0 - liveCount(bs, 2, t) * sy]; });
+      var warm = d3.range(0, 181).map(function (i) { var t = i / 60; return [x0 + t * sx, y0 - liveCount(bs, 2, t + 2) * sy]; });
+      var p1 = pth(d, cold, GREY, 4), p2 = pth(d, warm, RED, 5); if (A(anim, k, 4)) { drawIn(p1, 0, 1200); drawIn(p2, 300, 1200); }
+      cap(d, 380, 330, "no preprocess", { size: 24, fill: MUTED }); cap(d, 330, 118, "preprocess 2 s", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 565, "frame 1: " + liveCount(bs, 2, 0.0) + " alive, or " + liveCount(bs, 2, 2.0001) + " with preprocess", { size: 26, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "explosiveness 0 spreads births across the cycle. 1 puts them all at its start.", "A burst is explosiveness 1: all 32 appear together and die together.", "one_shot runs one cycle: 32 born. Looping repeats it: 160 in the same 3 s.", "preprocess skips the empty start: the smoke is already full on frame 1."][k]);
+  }
+
+  /* ---------- D. emission shape, initial velocity, spread, seed ---------- */
+  function renderD(el, k, anim) {
+    var svg = svgFor(el, W, H, "Where particles start, how fast, in which directions, and how a seed repeats it", "Spawn points in a point, sphere and box; a fan of speeds; three cone angles; and three runs with seeds 7, 7 and 8.");
+    var ey = base(svg, [{ id: "shape", s: 1 }, { id: "ivel", s: 2 }, { id: "spread", s: 3 }, { id: "seed", s: 4 }], k, anim, ["spread", "the angle of random variation"], ["Initial velocity", "the speed and direction at birth"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "40 SPAWN POINTS EACH");
+      var r = rng(5), pts = [["point", function () { return [0, 0]; }], ["sphere", function () { var a = r() * 2 * Math.PI, q = 80 * Math.sqrt(r()); return [q * Math.cos(a), q * Math.sin(a)]; }], ["box", function () { return [(r() - 0.5) * 180, (r() - 0.5) * 100]; }]];
+      pts.forEach(function (p, i) { var cx = 120 + i * 260, g = d.append("g"); box(g, cx - 120, 70, 240, 240, { stroke: FAMILIAR }); for (var j = 0; j < 40; j++) { var q = p[1](); dot(g, cx + q[0], 190 + q[1], 5, RED, 0.9); } cap(g, cx, 350, p[0], { size: 26, weight: 700, anchor: "middle" }); fade(g, A(anim, k, 1), i * 300); });
+      cap(d, 0, 450, "Same emitter, three places particles can start.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SPEED AT BIRTH: ARROW LENGTH");
+      var r2 = rng(9), sp = [], g2 = d.append("g");
+      for (var i = 0; i < 14; i++) { var ang = (-90 + (r2() - 0.5) * 50) * DEG, s = 150 + r2() * 150; sp.push(s); var ex = 380 + Math.cos(ang) * s * 1.3, ey2 = 520 + Math.sin(ang) * s * 1.3; var l = ln(g2, 380, 520, ex, ey2, RED, 3); dot(g2, ex, ey2, 7, RED); }
+      fade(g2, A(anim, k, 2), 0); dot(d, 380, 520, 9, INK);
+      cap(d, 0, 565, "speeds drawn: " + Math.round(d3.min(sp)) + " to " + Math.round(d3.max(sp)) + " px/s (range set: 150 to 300)", { size: 26, weight: 700, fill: RED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "24 RAYS EACH, DIRECTION UP");
+      var r3 = rng(14), up = [];
+      [0, 45, 180].forEach(function (s, i) {
+        var cx = 120 + i * 260, g = d.append("g"), n = 0; box(g, cx - 120, 70, 240, 330, { stroke: FAMILIAR }); dot(g, cx, 260, 6, INK);
+        for (var j = 0; j < 24; j++) { var a = (-90 + (r3() * 2 - 1) * s) * DEG; if (Math.sin(a) <= 0.0001) n++; ln(g, cx, 260, cx + Math.cos(a) * 95, 260 + Math.sin(a) * 95, RED, 2.5); }
+        up.push(Math.round(100 * n / 24)); cap(g, cx, 440, "spread " + s, { size: 26, weight: 700, anchor: "middle" }); fade(g, A(anim, k, 3), i * 300);
+      });
+      cap(d, 0, 520, "rays pointing upward: " + up.join("%, ") + "%", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "10 PARTICLES AFTER 0.6 S, SPREAD 60");
+      function run10(seed) { var r = rng(seed), a = []; for (var i = 0; i < 10; i++) { var ang = (-90 + (r() * 2 - 1) * 60) * DEG, s = 150 + r() * 150; a.push([Math.cos(ang) * s * 0.35, Math.sin(ang) * s * 0.35]); } return a; }
+      var RS = [[7, "seed 7, run 1"], [7, "seed 7, run 2"], [8, "seed 8"]], ps = RS.map(function (q) { return run10(q[0]); }), diff = function (a, b) { return d3.max(a.map(function (p, i) { return Math.hypot(p[0] - b[i][0], p[1] - b[i][1]); })); };
+      RS.forEach(function (q, i) { var cx = 120 + i * 260, g = d.append("g"); box(g, cx - 120, 70, 240, 250, { stroke: FAMILIAR }); dot(g, cx, 290, 5, INK); ps[i].forEach(function (p) { dot(g, cx + p[0] * 0.9, 290 + p[1] * 0.9, 7, i === 2 ? INK : RED); }); cap(g, cx, 365, q[1], { size: 24, weight: 700, anchor: "middle" }); fade(g, A(anim, k, 4), i * 300); });
+      cap(d, 0, 480, "run 1 vs run 2: largest difference " + diff(ps[0], ps[1]).toFixed(1) + " px", { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 525, "run 1 vs seed 8: largest difference " + diff(ps[0], ps[2]).toFixed(1) + " px", { size: 26, weight: 700 });
+    }
+    note(svg, ey, ["", "Emission shape: a point, a sphere or a box.", "Initial velocity: each particle gets a speed from a range.", "spread 0 is a beam; 180 goes every way. In 3D that includes toward the screen.", "A fixed seed repeats the same random choices: a test can compare runs."][k]);
+  }
+
+  /* ---------- E. gravity, damping, scale curve, colour ramp ---------- */
+  function renderE(el, k, anim) {
+    var svg = svgFor(el, W, H, "Gravity and damping change velocity; curves change size and colour over a particle's life", "Arcs with and without gravity; dots slowing under damping; circles shrinking along a scale curve; circles fading along a colour ramp.");
+    var ey = base(svg, [{ id: "gravity", s: 1 }, { id: "damping", s: 2 }, { id: "scale", s: 3 }, { id: "ramp", s: 4 }], k, anim, ["Gravity", "adds speed downward, every step"], ["Damping", "takes speed away, every step"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "12 PARTICLES, 1.2 S, GRAVITY 300");
+      var r = rng(3), PP = d3.range(12).map(function (i) { var a = (25 + i / 11 * 40) * DEG, s = 280 + r() * 60; return [s * Math.sin(a), -s * Math.cos(a)]; });
+      function pathOf(v, g, Tm) { var pts = [], x = 50, y = 510, vx = v[0], vy = v[1], dt = 1 / 60; for (var t = 0; t <= Tm + 1e-9; t += dt) { pts.push([x, y]); vy += g * dt; x += vx * dt; y += vy * dt; } return pts; }
+      var drop = d3.mean(PP.map(function (v) { var a = pathOf(v, 0, 1.2), b = pathOf(v, 300, 1.2); return b[b.length - 1][1] - a[a.length - 1][1]; }));
+      ln(d, 440, 66, 480, 66, GREY, 3, "6 6"); cap(d, 490, 74, "gravity 0", { size: 24 }); ln(d, 440, 106, 480, 106, RED, 4); cap(d, 490, 114, "gravity 300", { size: 24 });
+      simG(d, 3600, function (G, t) { var Tm = 1.2 * t; PP.forEach(function (v) { var a = pathOf(v, 0, Tm), b = pathOf(v, 300, Tm); pth(G, a, GREY, 2, "6 6"); pth(G, b, RED, 3); dot(G, b[b.length - 1][0], b[b.length - 1][1], 7, RED); }); }, k === 1 && anim);
+      cap(d, 0, 565, "mean drop: " + Math.round(drop) + " px (½ × 300 × 1.2² = 216)", { size: 26, weight: 700, fill: RED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "A DOT EVERY 0.1 S, START SPEED 300");
+      function row(damp) { var x = 40, v = 300, pts = [[0, x]], dt = 0.01; for (var i = 1; i <= 200; i++) { v = Math.max(0, v - damp * dt); x += v * dt; if (i % 10 === 0) pts.push([i * dt, x]); } return pts; }
+      [[0, 190, GREY], [150, 380, RED]].forEach(function (c, i) {
+        var pts = row(c[0]), g = d.append("g"); cap(g, 0, c[1] - 40, "damping " + c[0], { size: 24, weight: 700, fill: i ? RED : INK }); ln(g, 40, c[1], 740, c[1], FAMILIAR, 2);
+        pts.forEach(function (p) { dot(g, p[1], c[1], 8, c[2]); }); var last = pts[pts.length - 1][1] - 40;
+        cap(g, 40, c[1] + 50, i ? "stops after " + (300 / c[0]).toFixed(1) + " s, " + Math.round(last) + " px from the start" : "keeps going: " + Math.round(last) + " px in 2 s", { size: 24, fill: i ? RED : MUTED });
+        fade(g, A(anim, k, 2), i * 500);
+      });
+      cap(d, 0, 565, "speed after t seconds = 300 − 150 × t, never below 0", { size: 26, weight: 700, fill: RED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "SIZE OVER AGE: 1 − AGE²");
+      var S = function (a) { return 1 - a * a; };
+      box(d, 40, 60, 300, 200, { stroke: FAMILIAR }); pth(d, d3.range(0, 41).map(function (i) { return [40 + 300 * i / 40, 260 - 200 * S(i / 40)]; }), INK, 4);
+      cap(d, 30, 292, "0", { size: 24, anchor: "end" }); cap(d, 340, 292, "age 1", { size: 24, anchor: "end" });
+      var rd = cap(d, 400, 140, "", { size: 26, weight: 700, fill: RED }), rd2 = cap(d, 400, 180, "", { size: 24 });
+      simG(d, 3000, function (G, t) {
+        var a = t; dot(G, 40 + 300 * a, 260 - 200 * S(a), 9, RED); rd.text("age " + a.toFixed(2)); rd2.text("size " + S(a).toFixed(2) + " × full");
+        [0, 0.2, 0.4, 0.6, 0.8, 1].forEach(function (q, i) { var cx = 70 + i * 124; dot(G, cx, 400, 44 * S(q), q <= a + 1e-9 ? INK : FAMILIAR, 1); cap(G, cx, 500, q.toFixed(1), { size: 24, anchor: "middle", fill: MUTED }); });
+      }, A(anim, k, 3), d3.easeLinear);
+      cap(d, 0, 565, "age 0.6: size " + S(0.6).toFixed(2) + ", about " + Math.round(S(0.6) * 100) + "% of full", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "COLOUR OVER AGE: ORANGE TO RED, FADING OUT");
+      var ip = d3.interpolateRgb("#FFB02E", "#C8102E");
+      for (var i = 0; i < 68; i++) { var a = i / 67; d.append("rect").attr("x", 40 + i * 10).attr("y", 70).attr("width", 10).attr("height", 70).attr("fill", ip(a)).attr("opacity", 1 - a); }
+      box(d, 40, 70, 680, 70, { fill: "none", stroke: INK, sw: 2 });
+      cap(d, 40, 176, "age 0", { size: 24 }); cap(d, 720, 176, "age 1", { size: 24, anchor: "end" });
+      var g4 = d.append("g");
+      [0, 0.2, 0.4, 0.6, 0.8, 1].forEach(function (q, i) { var cx = 70 + i * 124; dot(g4, cx, 330, 44, ip(q), 1 - q).attr("stroke", FAMILIAR).attr("stroke-width", 1.5); cap(g4, cx, 430, q.toFixed(1), { size: 24, anchor: "middle", fill: MUTED }); cap(g4, cx, 466, (1 - q).toFixed(1), { size: 24, anchor: "middle", fill: RED }); });
+      cap(g4, 0, 500, "", {}); fade(g4, A(anim, k, 4), 0);
+      cap(d, 0, 565, "age 0.5: colour " + (function (c) { return "(" + c.r + ", " + c.g + ", " + c.b + ")"; })(d3.rgb(ip(0.5))) + ", alpha 0.50", { size: 26, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Each step adds gravity × step time to the velocity. The path bends into an arc.", "Damping subtracts speed each second until the particle stops.", "A scale curve reads the particle's age (0 to 1) and gives its size.", "A colour ramp does the same for colour; the red numbers are alpha."][k]);
+  }
+
+  /* ---------- F. texture, additive blending, billboard ---------- */
+  function renderF(el, k, anim) {
+    var svg = svgFor(el, W, H, "The texture decides what is drawn, the blend mode how it combines, the billboard which way it faces", "A burst drawn with a null texture and with a radial dot; alpha and additive blending of overlapping glows; flat quads versus billboards as the camera turns.");
+    var ey = base(svg, [{ id: "texture", s: 1 }, { id: "additive", s: 2 }, { id: "billboard", s: 3 }], k, anim, ["Additive blending", "adds light; overlaps get brighter"], ["Alpha blending", "mixes by opacity; overlaps stay dull"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "SAME BURST, 200 × 200 PX OF A 480 × 720 SCREEN, 1.5×");
+      var g1 = glowDef(svg, "gd" + (uid++), "#C8102E"), r = rng(33), V = [];
+      for (var i = 0; i < 32; i++) { var a = r() * 2 * Math.PI, s = 150 + r() * 150; V.push([Math.cos(a) * s * 0.3, Math.sin(a) * s * 0.3]); }
+      [0, 1].forEach(function (c) {
+        var ox = 40 + c * 380, g = d.append("g"); box(g, ox, 60, 300, 300, { stroke: FAMILIAR });
+        V.forEach(function (v) { var x = ox + 150 + v[0] * 1.5, y = 210 + v[1] * 1.5; if (c === 0) g.append("rect").attr("x", x - 0.75).attr("y", y - 0.75).attr("width", 1.5).attr("height", 1.5).attr("fill", INK); else dot(g, x, y, 12, g1, 1); });
+        cap(g, ox + 150, 402, c ? "16 × 16 radial dot" : "texture = null", { size: 26, weight: 700, anchor: "middle", fill: c ? RED : INK });
+        fade(g, A(anim, k, 1), c * 500);
+      });
+      var area = 32 * Math.PI * 64, scr = 480 * 720;
+      cap(d, 0, 470, "null: 32 squares of 1 px = 32 px (" + (100 * 32 / scr).toFixed(3) + "% of the screen)", { size: 24, fill: INK });
+      cap(d, 0, 510, "radial dot: about " + d3.format(",")(Math.round(area)) + " px (" + (100 * area / scr).toFixed(1) + "% of the screen)", { size: 24, weight: 700, fill: RED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THREE OVERLAPPING GLOWS ON A DARK BACKGROUND");
+      var BG = [30, 26, 24], SRC = [255, 140, 30], BL = [[130, 130], [210, 130], [170, 200]], cell = 12;
+      function px(mode, x, y) { var c = BG.slice(); BL.forEach(function (b) { var a = 0.65 * Math.max(0, 1 - Math.hypot(x - b[0], y - b[1]) / 110); for (var j = 0; j < 3; j++) c[j] = mode ? Math.min(255, c[j] + SRC[j] * a) : c[j] * (1 - a) + SRC[j] * a; }); return c.map(Math.round); }
+      [0, 1].forEach(function (m) {
+        var ox = m ? 400 : 0, g = d.append("g");
+        for (var cx = 0; cx < 30; cx++) for (var cy = 0; cy < 25; cy++) { var c = px(m, cx * cell + 6, cy * cell + 6); g.append("rect").attr("x", ox + cx * cell).attr("y", 60 + cy * cell).attr("width", cell + 0.5).attr("height", cell + 0.5).attr("fill", "rgb(" + c.join(",") + ")"); }
+        var q = px(m, 170, 165); dot(g, ox + 170, 60 + 165, 7, "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2);
+        cap(g, ox, 402, m ? "additive" : "alpha", { size: 26, weight: 700, fill: m ? RED : INK });
+        cap(g, ox, 446, "centre (" + q.join(", ") + ")", { size: 24, fill: m ? RED : INK, weight: m ? 700 : 400 });
+        fade(g, A(anim, k, 2), m * 500);
+      });
+      cap(d, 0, 520, "Additive adds each glow's light to the pixel, up to 255.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "CAMERA TURNS AROUND THE EFFECT");
+      var ANG = [0, 30, 60, 80];
+      simG(d, 3000, function (G, t) {
+        cap(G, 0, 100, "flat quad (does not turn)", { size: 24, weight: 700 }); cap(G, 0, 300, "billboard (turns to face the camera)", { size: 24, weight: 700, fill: RED });
+        ANG.forEach(function (a, i) { var cx = 90 + i * 190, th = a * t, w = 100 * Math.cos(th * DEG);
+          G.append("rect").attr("x", cx - w / 2).attr("y", 130).attr("width", Math.max(w, 1)).attr("height", 100).attr("fill", INK);
+          G.append("rect").attr("x", cx - 50).attr("y", 330).attr("width", 100).attr("height", 100).attr("fill", RED);
+          cap(G, cx, 480, Math.round(th) + "°", { size: 24, anchor: "middle", fill: MUTED });
+        });
+      }, A(anim, k, 3));
+      cap(d, 0, 565, "at 80°: flat quad " + Math.round(100 * Math.cos(80 * DEG)) + " px wide, billboard 100 px", { size: 26, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "No texture means a 1 by 1 pixel square per particle. Set a soft dot.", "Additive blending adds light, so overlapping glows get brighter. Alpha mixes and stays dull.", "A billboard quad always turns to face the camera, so it never goes edge-on."][k]);
+  }
+
+  /* ---------- G. local_coords, fixed_fps and interpolate, visibility_rect ---------- */
+  function lane(g, local, Tm, x0, x1, yc, T1, rad) {
+    var ex = function (t) { return x0 + (x1 - x0) * t / T1; }, r = rng(77), life = 0.8, n = Math.floor(Tm / 0.06), alive = 0;
+    for (var i = 0; i <= n; i++) { var vx = (r() - 0.5) * 60, vy = -30 - r() * 60, a = Tm - i * 0.06; if (a < 0 || a > life) continue; alive++; var bx = local ? ex(Tm) : ex(i * 0.06); dot(g, bx + vx * a, yc + vy * a, rad || 6, RED, 1 - a / life); }
+    g.append("rect").attr("x", ex(Tm) - 11).attr("y", yc - 11).attr("width", 22).attr("height", 22).attr("fill", INK); return alive;
+  }
+  function renderG(el, k, anim) {
+    var svg = svgFor(el, W, H, "Space, update rate and bounds: where particles live, how often they move, when they stop", "Two lanes where an emitter moves, one leaving particles behind and one carrying them; a curve sampled at a fixed rate with and without interpolation; a camera view and a visibility rect.");
+    var ey = base(svg, [{ id: "local", s: 1 }, { id: "fixedfps", s: 2 }, { id: "visrect", s: 3 }], k, anim, ["Local coordinates", "particles ride with the emitter"], ["World coordinates", "particles stay where they were born"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "EMITTER MOVING RIGHT, LIFETIME 0.8 S");
+      cap(d, 0, 76, "local_coords off (world, the default)", { size: 24, weight: 700 }); cap(d, 0, 336, "local_coords on", { size: 24, weight: 700, fill: RED });
+      ln(d, 0, 300, 760, 300, FAMILIAR, 2); ln(d, 0, 560, 760, 560, FAMILIAR, 2);
+      simG(d, 4000, function (G, t) { lane(G, false, 2.4 * t, 40, 720, 230, 2.4); lane(G, true, 2.4 * t, 40, 720, 490, 2.4); }, k === 1 && anim, d3.easeLinear);
+    } else if (k === 2) {
+      lab(d, 0, 30, "HEIGHT OF ONE PARTICLE, UPDATED 5 TIMES A SECOND");
+      var x0 = 80, y0 = 470, sx = 600, h = function (t) { return 800 * t * (1 - t); }, st = 0.2;
+      ln(d, x0, y0, 700, y0, INK, 2); cap(d, x0, 506, "0 s", { size: 24, anchor: "middle" }); cap(d, x0 + sx, 506, "1 s", { size: 24, anchor: "middle" });
+      var tr = pth(d, d3.range(0, 101).map(function (i) { return [x0 + sx * i / 100, y0 - h(i / 100)]; }), GREY, 3);
+      var stair = [], interp = [], ks = d3.range(0, 6);
+      ks.forEach(function (j) { var t = j * st; stair.push([x0 + sx * t, y0 - h(t)]); if (j < 5) stair.push([x0 + sx * (t + st), y0 - h(t)]); interp.push([x0 + sx * t, y0 - h(t)]); });
+      var es = 0, ei = 0; for (var i = 0; i <= 100; i++) { var t = i / 100, j = Math.min(4, Math.floor(t / st + 1e-9)), a = h(j * st), b = h((j + 1) * st); es = Math.max(es, Math.abs(h(j * st) - h(t))); ei = Math.max(ei, Math.abs(a + (b - a) * (t - j * st) / st - h(t))); }
+      var s1 = pth(d, stair, INK, 4); if (k >= 3 || A(anim, k, 2)) drawIn(s1, 0, 1200);
+      ks.forEach(function (j) { dot(d, x0 + sx * j * st, y0 - h(j * st), 8, INK); });
+      var s2 = pth(d, interp, RED, 4);
+      ln(d, 440, 70, 480, 70, GREY, 3); cap(d, 490, 78, "true motion", { size: 24 }); ln(d, 440, 106, 480, 106, INK, 4); cap(d, 490, 114, "fixed_fps only", { size: 24 }); ln(d, 440, 142, 480, 142, RED, 4); cap(d, 490, 150, "with interpolate", { size: 24, fill: RED });
+      cap(d, 0, 565, "largest error: " + Math.round(es) + " px stepped, " + Math.round(ei) + " px interpolated", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "CAMERA VIEW MOVING RIGHT, EFFECT AT X 480");
+      var r = rng(8), DT = d3.range(34).map(function () { var a = r() * 2 * Math.PI, q = 110 * Math.sqrt(r()); return [480 + q * Math.cos(a), q * Math.sin(a)]; });
+      [["rect ±30 px", 30, 90], ["rect ±130 px", 130, 350]].forEach(function (L, i) {
+        var yc = L[2] + 100, g = d.append("g"); cap(g, 0, L[2] - 8, L[0], { size: 24, weight: 700, fill: i ? INK : RED }); ln(g, 0, yc + 120, 760, yc + 120, FAMILIAR, 2);
+        simG(g, 3600, function (G, t) {
+          var v = 150 * t, vw = 260, act = !(480 + L[1] < v || 480 - L[1] > v + vw);
+          G.append("rect").attr("x", v).attr("y", L[2] + 10).attr("width", vw).attr("height", 180).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+          G.append("rect").attr("x", 480 - L[1]).attr("y", yc - 20).attr("width", 2 * L[1]).attr("height", 40).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 5");
+          DT.forEach(function (p) { if (act) dot(G, p[0], yc + p[1] * 0.8, 6, RED, 0.9); });
+          if (!act) { G.append("circle").attr("cx", 480).attr("cy", yc).attr("r", 88).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6"); }
+          var seen = !(480 + 110 < v || 480 - 110 > v + vw);
+          cap(G, 760, L[2] - 8, act ? "active" : seen ? "stopped, still on screen" : "stopped", { size: 24, weight: 700, anchor: "end", fill: act ? INK : RED });
+        }, A(anim, k, 3), d3.easeLinear);
+      });
+    }
+    note(svg, ey, ["", "World: particles stay where they were born. Local: they travel with the emitter.", "fixed_fps updates 5 times a second here. interpolate smooths the steps.", "A rect too small stops the effect while its particles are still on screen."][k]);
+  }
+
+  /* ---------- H. GPU, CPU, process material ---------- */
+  function renderH(el, k, anim) {
+    var svg = svgFor(el, W, H, "Which node, which rules: GPU and CPU particles and the process material", "A table of which properties each node type has, a chart of CPU particle cost by amount, and three boxes: emission on the node, process on the material, draw on the texture.");
+    var ey = base(svg, [{ id: "gpu", s: 1 }, { id: "cpu", s: 2 }, { id: "ppm", s: 3 }], k, anim, ["GPUParticles", "the graphics card does the work"], ["CPUParticles", "the processor does the work"]);
+    var d = svg.append("g");
+    if (k <= 2) {
+      lab(d, 0, 30, "PROPERTY ON THE NODE? (4.7.2 CLASS LIST)"); lab(d, 480, 74, "GPU"); lab(d, 620, 74, "CPU");
+      var ROWS = [["process_material", 1, 0], ["sub_emitter", 1, 0], ["trail_enabled", 1, 0], ["amount_ratio", 1, 0], ["emission_shape", 0, 1]];
+      ROWS.forEach(function (r, i) { var y = 110 + i * 44; mono(d, 0, y, r[0], { size: 24 }); ln(d, 0, y + 12, 740, y + 12, GRID, 1.5);
+        [[1, 480], [2, 620]].forEach(function (c) { if (k < c[0]) return; var on = r[c[0]]; var g = d.append("g"); if (on) check(g, c[1] + 28, y - 8, 12, INK); else txt(g, c[1] + 28, y, "no", { size: 24, anchor: "middle", fill: MUTED }); fade(g, A(anim, k, c[0]), i * 100); }); });
+      var ng = ROWS.filter(function (r) { return r[1]; }).length, nc = ROWS.filter(function (r) { return r[2]; }).length;
+      cap(d, 0, 370, k >= 2 ? "GPU node has " + ng + " of 5, CPU node has " + nc + " of 5." : "GPU node has " + ng + " of these 5.", { size: 24, weight: 700, fill: RED });
+      if (k >= 2) {
+        lab(d, 0, 420, "CPU PARTICLES: MS PER FRAME", { fill: RED });
+        var CP = [[1000, 0.035], [10000, 0.33], [50000, 1.61]], mx = 1.61, gb = d.append("g");
+        CP.forEach(function (c, i) { var y = 440 + i * 42; cap(gb, 0, y + 22, d3.format(",")(c[0]), { size: 24 }); bar(gb, 130, y + 2, Math.max(c[1] / mx * 420, 3), 26, RED, A(anim, k, 2), i * 300); cap(gb, 130 + Math.max(c[1] / mx * 420, 3) + 12, y + 24, c[1] + " ms", { size: 24, weight: 700 }); });
+      }
+    } else {
+      lab(d, 0, 30, "THREE PARTS OF AN EFFECT");
+      [["Emission: on the node", "amount  lifetime  explosiveness  one_shot", 0], ["Process: the material", "velocity  spread  gravity  scale curve  colour ramp", 1], ["Draw: texture and material", "texture  blend mode  billboard", 0]].forEach(function (b, i) {
+        var y = 60 + i * 160, g = d.append("g"); box(g, 0, y, 740, 140, { stroke: b[2] ? RED : INK, sw: b[2] ? 4 : 2 });
+        cap(g, 20, y + 44, b[0], { size: 28, weight: 700, fill: b[2] ? RED : INK }); wrap(g, 20, y + 90, b[1], 45, { size: 24, lh: 30, fill: BODY }).attr("font-family", MONO);
+        fade(g, A(anim, k, 3), i * 350);
+      });
+    }
+    note(svg, ey, ["", "GPU nodes run a material of rules and have sub-emitters, trails and shaders.", "CPU nodes cost more with every particle: 50,000 took 1.61 ms a frame in Chapter 9.", "A GPU node keeps the movement rules in its ParticleProcessMaterial."][k]);
+  }
+
+  /* ---------- I. sub-emitters, trails, particle shaders ---------- */
+  function renderI(el, k, anim) {
+    var svg = svgFor(el, W, H, "A sub-emitter spawns from particles, a trail follows a mover, a shader writes each step", "Six sparks each leave a puff when they die; a ribbon fading behind a moving head; the start and process steps of a particle shader as dots on an arc.");
+    var ey = base(svg, [{ id: "subem", s: 1 }, { id: "trail", s: 2 }, { id: "pshader", s: 3 }], k, anim, ["Sub-emitter", "spawns from particles"], ["Trail (ribbon)", "follows one mover's path"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "6 SPARKS, EACH LEAVES 5 PUFFS WHEN IT DIES");
+      var r = rng(41), PS = d3.range(6).map(function () { var a = (-90 + (r() * 2 - 1) * 35) * DEG, s = 330 + r() * 70; return [Math.cos(a) * s, Math.sin(a) * s]; }), CH = d3.range(5).map(function (i) { var a = (i / 5) * 2 * Math.PI + 0.3; return [Math.cos(a) * 130, Math.sin(a) * 130]; });
+      var rd = cap(d, 0, 565, "", { size: 26, weight: 700, fill: RED });
+      dot(d, 380, 540, 8, INK);
+      simG(d, 4200, function (G, t) {
+        var Tm = t < 1 ? 1.6 * t : 1.15, np = 0, nc = 0;
+        PS.forEach(function (v) { var a = Tm, px = 380 + v[0] * Math.min(a, 1), py = 540 + v[1] * Math.min(a, 1) + 150 * Math.min(a, 1) * Math.min(a, 1);
+          if (a < 1) { np++; dot(G, px, py, 10, RED); } else { var b = a - 1; if (b < 0.5) CH.forEach(function (c) { nc++; dot(G, px + c[0] * b, py + c[1] * b, 6, INK, 1 - b / 0.5); }); } });
+        rd.text("sparks alive: " + np + ", puffs alive: " + nc);
+      }, k === 1 && anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "A RIBBON OF THE LAST 30 POSITIONS");
+      var pos = function (t) { return [380 + 300 * Math.sin(2.1 * t), 290 + 150 * Math.sin(3.2 * t + 1)]; };
+      var rl = cap(d, 0, 565, "", { size: 26, weight: 700, fill: RED });
+      simG(d, 4000, function (G, t) {
+        var Tm = 0.9 + 2.1 * t, N = 30, pts = d3.range(N + 1).map(function (i) { return pos(Tm - i * 0.03); }), len = 0;
+        for (var i = 0; i < N; i++) { len += Math.hypot(pts[i][0] - pts[i + 1][0], pts[i][1] - pts[i + 1][1]); G.append("path").attr("d", "M" + pts[i] + "L" + pts[i + 1]).attr("stroke", RED).attr("stroke-width", 22 * (1 - i / N) + 2).attr("stroke-linecap", "round").attr("opacity", 1 - i / N); }
+        dot(G, pts[0][0], pts[0][1], 15, INK); rl.text("ribbon length now: " + Math.round(len) + " px");
+      }, A(anim, k, 2), d3.easeLinear);
+    } else {
+      lab(d, 0, 30, "SHADER_TYPE PARTICLES");
+      var cb = d.append("g"); cb.append("rect").attr("x", 0.5).attr("y", 50.5).attr("width", 740).attr("height", 140).attr("fill", INK);
+      ["start():    VELOCITY = (60, -120)", "process():  VELOCITY += gravity * DELTA", "gravity (0, 98), DELTA = 0.1 s"].forEach(function (s, i) { mono(cb, 18, 90 + i * 38, s, { size: 24, fill: i === 2 ? "#C4C4C4" : "#FFFFFF" }); });
+      var rd2 = cap(d, 0, 565, "", { size: 26, weight: 700, fill: RED });
+      var ST = [], x = 60, y = 520, vx = 60, vy = -120; for (var s = 0; s <= 22; s++) { ST.push([x, y, vy]); vy += 98 * 0.1; x += vx * 0.1; y += vy * 0.1; }
+      var P = function (s) { return [80 + (ST[s][0] - 60) * 3, 520 + (ST[s][1] - 520) * 3]; };
+      simG(d, 4500, function (G, t) {
+        var n = Math.round(22 * t), pts = d3.range(n + 1).map(P); pth(G, pts, FAMILIAR, 3); pts.forEach(function (q, i) { dot(G, q[0], q[1], 7, i === n ? RED : INK); });
+        rd2.text("step " + n + ": VELOCITY.y " + ST[n][2].toFixed(1) + ", height " + Math.round(520 - ST[n][1]) + " px");
+      }, A(anim, k, 3), d3.easeLinear);
+    }
+    note(svg, ey, ["", "A sub-emitter turns each dying spark into a puff: 6 sparks, 30 puffs.", "A ribbon joins the last positions of a moving head, thin and faint at the end.", "start() sets a new particle's velocity. process() changes it every step."][k]);
+  }
+
+  /* ---------- R1. primary to tertiary read, restraint ---------- */
+  function renderR1(el, k, anim) {
+    var svg = svgFor(el, W, H, "A fireball in three layers, and why most effects stay quiet", "A glowing head, then a tapering ribbon tail, then a few sparks, with the share of visual weight each carries. Then five loud effects against one loud effect among four quiet ones.");
+    var ey = base(svg, [{ id: "reads", s: 1 }, { id: "restraint", s: 4 }], k, anim, ["Primary read", "what the eye finds first"], ["Tertiary read", "small support the eye finds last"]);
+    var d = svg.append("g");
+    if (k <= 3) {
+      lab(d, 0, 30, "A FIREBALL, BUILT IN LAYERS");
+      var gl = glowDef(svg, "gr" + (uid++), "#E8620C"), hx = 560, hy = 270, hr = 60, rw = 70, rl = 400;
+      var tail = d.append("g"); tail.append("path").attr("d", "M" + hx + "," + (hy - rw / 2) + "L" + (hx - rl) + "," + hy + "L" + hx + "," + (hy + rw / 2) + "Z").attr("fill", "#E8620C").attr("opacity", 0.6);
+      var sp = d.append("g"), r = rng(12), nsp = 8; for (var i = 0; i < nsp; i++) dot(sp, hx - 120 - r() * 260, hy + (r() - 0.5) * 150, 5, "#C8102E");
+      var head = d.append("g"); dot(head, hx, hy, hr, gl); dot(head, hx, hy, 14, "#FFF3C4");
+      var wt = [Math.PI * hr * hr * 1.0, 0.5 * rl * rw * 0.6, nsp * Math.PI * 25 * 0.4], tot = d3.sum(wt.slice(0, Math.max(1, k)));
+      if (k < 2) tail.attr("opacity", 0); if (k < 3) sp.attr("opacity", 0);
+      if (A(anim, k, 2)) fade(tail, true, 0); if (A(anim, k, 3)) fade(sp, true, 0); if (A(anim, k, 1)) fade(head, true, 0);
+      var lbl = ["", "1. glow texture on a camera-facing card", "2. ribbon, a scrolling texture", "3. a few sparks"][k] || "";
+      cap(d, 0, 420, lbl, { size: 26, weight: 700, fill: RED });
+      if (k >= 1) cap(d, 0, 470, "visual weight (illustrative): head " + Math.round(100 * wt[0] / tot) + "%" + (k >= 2 ? ", tail " + Math.round(100 * wt[1] / tot) + "%" : "") + (k >= 3 ? ", sparks " + Math.round(100 * wt[2] / tot) + "%" : ""), { size: 24 });
+      if (k === 3) cap(d, 0, 520, "Too many sparks would pull weight from the head.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "HOW LOUD EACH EFFECT IS (ILLUSTRATIVE)");
+      var groups = [["5 loud effects", [1, 1, 1, 1, 1]], ["1 loud, 4 quiet", [1, 0.3, 0.3, 0.3, 0.3]]], rat = [];
+      groups.forEach(function (gp, gi) { var ox = 30 + gi * 380, g = d.append("g"); ln(g, ox, 420, ox + 300, 420, INK, 2);
+        gp[1].forEach(function (v, i) { var b = g.append("rect").attr("x", ox + 10 + i * 58).attr("y", 420 - v * 280).attr("width", 44).attr("height", v * 280).attr("fill", v === 1 && gi === 1 && i === 0 ? RED : (gi === 0 ? GREY : "#C4C4C4")); if (A(anim, k, 4)) b.attr("height", 0).attr("y", 420).transition().delay(gi * 300 + i * 80).duration(500).attr("y", 420 - v * 280).attr("height", v * 280); });
+        cap(g, ox, 462, gp[0], { size: 24, weight: 700 }); var oth = d3.mean(gp[1].slice(1)); rat.push(gp[1][0] / oth); });
+      cap(d, 0, 520, "top effect ÷ the others: " + rat[0].toFixed(1) + " against " + rat[1].toFixed(1), { size: 26, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Primary read: a bright glow on a camera-facing card. The eye lands here first.", "Secondary read: a ribbon off the head, a texture scrolling along it.", "Tertiary read: a few sparks. Too many steal focus.", "If every effect is epic, none is. Quiet effects make the loud one clear."][k]);
+  }
+
+  /* ---------- R2. shape language, colour coding, analogous colours, timing curve ---------- */
+  function renderR2(el, k, anim) {
+    var svg = svgFor(el, W, H, "Shape, colour and timing make effects distinct and readable", "Three shapes for three meanings in one colour; four colour codes with hue angles; caster and effect hue gaps; an explosion growing at a constant rate and with a fast start.");
+    var ey = base(svg, [{ id: "shapelang", s: 1 }, { id: "colorcode", s: 2 }, { id: "analogous", s: 3 }, { id: "timing", s: 4 }], k, anim, ["Shape language", "shape carries the meaning"], ["Colour coding", "colour carries the meaning"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "SAME BLUE, THREE MEANINGS");
+      var col = "#2F6FB5", star = function (cx, cy, n, R, r0) { var p = []; for (var i = 0; i < 2 * n; i++) { var a = -Math.PI / 2 + i * Math.PI / n, q = i % 2 ? r0 : R; p.push([cx + q * Math.cos(a), cy + q * Math.sin(a)]); } return p; };
+      [["heal", 0], ["shield", 1], ["damage", 2]].forEach(function (s, i) {
+        var cx = 120 + i * 260, g = d.append("g"); box(g, cx - 120, 70, 240, 240, { stroke: FAMILIAR });
+        if (i === 0) { g.append("rect").attr("x", cx - 20).attr("y", 130).attr("width", 40).attr("height", 120).attr("fill", col); g.append("rect").attr("x", cx - 60).attr("y", 170).attr("width", 120).attr("height", 40).attr("fill", col); }
+        else if (i === 1) g.append("circle").attr("cx", cx).attr("cy", 190).attr("r", 75).attr("fill", "none").attr("stroke", col).attr("stroke-width", 18);
+        else g.append("path").attr("d", "M" + star(cx, 190, 8, 90, 28).join("L") + "Z").attr("fill", col);
+        cap(g, cx, 352, s[0], { size: 26, weight: 700, anchor: "middle" }); fade(g, A(anim, k, 1), i * 350);
+      });
+      cap(d, 0, 450, "Plus: 4 arms. Ring: 0 corners. Star: 8 spikes.", { size: 24 }); cap(d, 0, 490, "In a crowded fight, the shape still tells them apart.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "FOUR CODES AND THEIR HUE ANGLE");
+      var CC = [["team A", "#D62828"], ["team B", "#2E9E4F"], ["fire", "#F28C28"], ["ice", "#3AB0D8"]];
+      CC.forEach(function (c, i) { var cx = 90 + i * 190, g = d.append("g"); dot(g, cx, 170, 60, c[1]); cap(g, cx, 290, c[0], { size: 26, weight: 700, anchor: "middle" }); cap(g, cx, 330, Math.round(d3.hsl(c[1]).h) + "°", { size: 24, anchor: "middle", fill: MUTED }); fade(g, A(anim, k, 2), i * 300); });
+      cap(d, 0, 440, "red to green: " + Math.round(d3.hsl(CC[1][1]).h - d3.hsl(CC[0][1]).h) + "° apart, easy to tell at a glance.", { size: 24, weight: 700, fill: RED });
+    } else if (k === 3) {
+      lab(d, 0, 30, "CASTER COLOUR AND EFFECT COLOUR");
+      [[215, 195], [330, 345], [215, 30]].forEach(function (p, i) {
+        var cx = 120 + i * 260, g = d.append("g"), dh = Math.abs(((p[0] - p[1] + 540) % 360) - 180), cc = d3.hsl(p[0], 0.7, 0.5), ec = d3.hsl(p[1], 0.8, 0.55);
+        box(g, cx - 120, 70, 240, 270, { stroke: FAMILIAR }); dot(g, cx, 210, 54, cc); g.append("circle").attr("cx", cx).attr("cy", 210).attr("r", 90).attr("fill", "none").attr("stroke", ec.toString()).attr("stroke-width", 16);
+        cap(g, cx, 390, dh + "° apart", { size: 26, weight: 700, anchor: "middle", fill: dh <= 30 ? INK : RED }); cap(g, cx, 430, dh <= 30 ? "analogous" : "clashes", { size: 24, anchor: "middle", fill: dh <= 30 ? MUTED : RED });
+        fade(g, A(anim, k, 3), i * 350);
+      });
+      cap(d, 0, 520, "Neighbouring hues (within 30°) tie the effect to its caster.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "EXPLOSION RADIUS OVER TIME");
+      var lin = function (t) { return t; }, eas = d3.easeCubicOut;
+      box(d, 40, 60, 300, 200, { stroke: FAMILIAR }); pth(d, d3.range(0, 41).map(function (i) { return [40 + 300 * i / 40, 260 - 200 * lin(i / 40)]; }), GREY, 4); pth(d, d3.range(0, 41).map(function (i) { return [40 + 300 * i / 40, 260 - 200 * eas(i / 40)]; }), RED, 4);
+      cap(d, 400, 110, "grey: constant rate", { size: 24 }); cap(d, 400, 150, "red: fast, then slows", { size: 24, weight: 700, fill: RED });
+      cap(d, 400, 210, "at 40% of the time:", { size: 24 }); cap(d, 400, 246, "constant " + Math.round(100 * lin(0.4)) + "%, eased " + Math.round(100 * eas(0.4)) + "% of size", { size: 24, weight: 700 });
+      simG(d, 3000, function (G, t) { var u = 0.4 * t; G.append("circle").attr("cx", 160).attr("cy", 430).attr("r", 70).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-dasharray", "6 6"); G.append("circle").attr("cx", 540).attr("cy", 430).attr("r", 70).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-dasharray", "6 6"); dot(G, 160, 430, 70 * lin(u), "#C4C4C4"); dot(G, 540, 430, 70 * eas(u), RED, 0.85); cap(G, 160, 548, "constant", { size: 24, anchor: "middle" }); cap(G, 540, 548, "eased", { size: 24, anchor: "middle", fill: RED, weight: 700 }); }, A(anim, k, 4));
+    }
+    note(svg, ey, ["", "Plus for health, ring for shield, spikes for damage: the same shape means the same thing.", "Colour tells team, damage type or mood. Keep the palette small.", "Choose the effect's colour next to the model's hue so players see who cast it.", "A growth that starts fast and slows feels like energy. A constant one feels flat."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from particles", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["amount", "How many a cycle holds; the cap on live"], ["Emission rate", "Born per second: amount ÷ lifetime"]],
+      [["Local coordinates", "Particles travel with the emitter"], ["World coordinates", "Particles stay where they were born"]],
+      [["one_shot", "One cycle, then it stops"], ["Looping", "Cycles repeat forever"]],
+      [["Gravity", "Adds speed downward every step"], ["Damping", "Takes speed away every step"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 530, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g"), RG = R.append("g");
+      if (i === 0) {
+        [2, 4].forEach(function (lf, j) { var y = 150 + j * 150;
+          cap(LG, 0, y, "lifetime " + lf + " s", { size: 24 }); LG.append("rect").attr("x", 0).attr("y", y + 14).attr("width", 60 * 4.5 * Math.min(1, t * 1.5)).attr("height", 40).attr("fill", INK); cap(LG, 60 * 4.5 + 12, y + 46, "60", { size: 26, weight: 700 });
+          cap(RG, 0, y, "lifetime " + lf + " s", { size: 24 }); var rate = 60 / lf; RG.append("rect").attr("x", 0).attr("y", y + 14).attr("width", rate * 9 * Math.min(1, t * 1.5)).attr("height", 40).attr("fill", RED); cap(RG, rate * 9 + 12, y + 46, rate + " a second", { size: 26, weight: 700, fill: RED }); });
+        cap(LG, 0, 440, "same amount, same cap", { size: 24, fill: MUTED }); cap(RG, 0, 440, "twice the life, half the rate", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var Tm = 2.4 * t; lane(LG, true, Tm, 40, 600, 280, 2.4); lane(RG, false, Tm, 40, 600, 280, 2.4);
+        cap(LG, 0, 380, "carried along", { size: 24, fill: MUTED }); cap(RG, 0, 380, "left behind", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        [[LG, 5, INK], [RG, 1, RED]].forEach(function (c) { var X = function (s) { return 0 + s / 3 * 640; }; ln(c[0], 0, 330, 640, 330, FAMILIAR, 2); for (var q = 0; q < c[1]; q++) { var f = Math.max(0, Math.min(1, t * 5 - q)); c[0].append("rect").attr("x", X(q * 0.6)).attr("y", 330 - 120 * f).attr("width", 0.6 / 3 * 640 - 8).attr("height", 120 * f).attr("fill", c[2]); } });
+        cap(LG, 0, 380, "160 born in 3 s", { size: 24, fill: MUTED }); cap(RG, 0, 380, "32 born in 3 s", { size: 24, fill: MUTED });
+      } else {
+        var r = rng(2), v0 = [[120, -150], [170, -190], [220, -120], [90, -210]];
+        v0.forEach(function (v) { var pts = []; for (var s = 0; s <= 60 * t; s++) { var a = s / 60; pts.push([20 + v[0] * a, 420 + v[1] * a + 0.5 * 300 * a * a]); } if (pts.length > 1) pth(LG, pts, RED, 3); var q = pts[pts.length - 1]; dot(LG, q[0], q[1], 7, RED); });
+        var x = 20, vv = 300; ln(RG, 0, 300, 640, 300, FAMILIAR, 2); for (var s = 0; s <= 200 * t; s++) { vv = Math.max(0, vv - 150 * 0.01); x += vv * 0.01; if (s % 10 === 0) dot(RG, x, 300, 8, RED); }
+        cap(LG, 0, 470, "path bends down", { size: 24, fill: MUTED }); cap(RG, 0, 380, "slows to a stop", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.99); cap(svg.append("g"), 0, 575, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "the smoke should already be rising", x: "Set preprocess to 2 s, the lifetime, so the first frame is already full" },
+    { v: "I want a burst, not a stream", x: "Set explosiveness to 1 and one_shot to true, with amount 32" },
+    { v: "the burst looks like specks of dust", x: "Give it a 16 × 16 radial texture; null means 1 × 1 pixel squares" },
+    { v: "the 2D burst looks thin", x: "Turn on particle_flag_disable_z so no speed goes into Z" },
+    { v: "the test never sees finished", x: "Set the flag through a Dictionary; a lambda cannot reassign a local" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests about particles turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { var bs = birthsFor(60, 2, 0, 3); [["frame 1, no preprocess", liveCount(bs, 2, 0), "#C4C4C4"], ["frame 1, preprocess 2 s", liveCount(bs, 2, 2.0001), RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": " + r[1] + " alive", { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(r[1] / 60 * 560, 4), 40, r[2], anim, i * 400); }); nt = "the second one starts full"; }
+    else if (k === 2) {
+      var bn = function (e) { var c = [0, 0, 0, 0, 0, 0]; birthsFor(32, 0.6, e, 1).forEach(function (t) { c[Math.min(5, Math.floor(t / 0.1 + 1e-9))]++; }); return c; };
+      [[0, "explosiveness 0: births per 0.1 s", 120, "#C4C4C4"], [1, "explosiveness 1: births per 0.1 s", 280, RED]].forEach(function (r) { var c = bn(r[0]); cap(p, 14, r[2] - 100, r[1], { size: 24 }); c.forEach(function (v, i) { var b = p.append("rect").attr("x", 14 + i * 96).attr("y", r[2] - v * 2.6).attr("width", 80).attr("height", v * 2.6).attr("fill", r[3]); if (anim) b.attr("opacity", 0).transition().delay(i * 90).duration(300).attr("opacity", 1); }); });
+      nt = "32 in the first 0.1 s"; }
+    else if (k === 3) { var scr = 480 * 720, aN = 32, aR = 32 * Math.PI * 64; [["null: " + aN + " px (" + (100 * aN / scr).toFixed(3) + "%)", aN, "#C4C4C4"], ["16 × 16 dot: " + d3.format(",")(Math.round(aR)) + " px (" + (100 * aR / scr).toFixed(1) + "%)", aR, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(r[1] / aR * 560, 4), 40, r[2], anim, i * 400); }); nt = "about 200 times the area"; }
+    else if (k === 4) { var rz = rng(5), s2 = 0, N = 2000; for (var i = 0; i < N; i++) { var z = rz() * 2 - 1; s2 += Math.sqrt(1 - z * z); } var vis = s2 / N; [["3D directions: " + Math.round(vis * 100) + "% of speed shows", vis, "#C4C4C4"], ["disable_z on: 100% shows", 1, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, r[1] * 560, 40, r[2], anim, i * 400); }); nt = "mean over 2,000 seeded directions"; }
+    else {
+      function lam(useDict) { var flag = false, box_ = { v: false }; (function (flagCopy) { flagCopy = true; box_.v = true; })(flag); return useDict ? box_.v : flag; }
+      [["bool set in lambda: reads " + lam(false), lam(false)], ["Dictionary set in lambda: reads " + lam(true), lam(true)]].forEach(function (r, i) { var g2 = p.append("g"); cap(g2, 14, 90 + i * 100, r[0], { size: 24, weight: 700, fill: r[1] ? INK : RED }); if (r[1]) check(g2, 590, 76 + i * 100, 18, RED); else cross(g2, 590, 76 + i * 100, 16, RED); fade(g2, anim, i * 400); }); nt = "the signal fired both times"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is the effect's parent still visible when it fires?",
+    "Is the texture set, and is disable_z on in 2D?",
+    "Do amount, lifetime and explosiveness give the count and timing I meant?",
+    "Does a one-shot restart on every later use?",
+    "Is the visibility rect big enough, and is overdraw cheap on a real GPU?",
+    "Did a person watch it on a screen, and does it read as one clear effect?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a particle effect", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "A headless test proves state. Only a screen shows the effect.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, A: { steps: 3, render: renderA }, B: { steps: 4, render: renderB }, C: { steps: 4, render: renderC },
+    D: { steps: 4, render: renderD }, E: { steps: 4, render: renderE }, F: { steps: 3, render: renderF }, G: { steps: 3, render: renderG },
+    H: { steps: 3, render: renderH }, I: { steps: 3, render: renderI }, R1: { steps: 4, render: renderR1 }, R2: { steps: 4, render: renderR2 },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

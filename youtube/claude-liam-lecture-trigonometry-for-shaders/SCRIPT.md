@@ -125,7 +125,7 @@ triangles on paper." then deletes "triangles on paper" and types "turning angles
 
 *Motion.* The camera pushes in on the sentence the voice is describing and a terracotta ring marks it.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: manim: GDScript line Vector2.from_angle(a) beside Vector2(cos(a), sin(a))
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: manim: GDScript line Vector2.from_angle(a) beside Vector2(cos(a), sin(a))
 
 ### B09 · 33 words · ~11 s
 
@@ -395,7 +395,7 @@ triangles on paper." then deletes "triangles on paper" and types "turning angles
 
 *Motion.* The camera pushes in on the entry's description and range while the voice reads them.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: LectureCodeTrace: atan(p.y, p.x)
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: LectureCodeTrace: atan(p.y, p.x)
 
 ### B34 · 41 words · ~14 s
 

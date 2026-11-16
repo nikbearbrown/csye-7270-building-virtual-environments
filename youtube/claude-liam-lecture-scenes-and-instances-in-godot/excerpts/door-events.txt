@@ -1,0 +1,8 @@
+func _ready() -> void:
+    sensor.body_entered.connect(_entered)
+    sensor.body_exited.connect(_exited)
+func _entered(actor: Node2D) -> void:
+    occupants[actor.get_instance_id()] = weakref(actor)
+    approach_requested.emit(actor)
+func _exited(actor: Node2D) -> void:
+    occupants.erase(actor.get_instance_id())

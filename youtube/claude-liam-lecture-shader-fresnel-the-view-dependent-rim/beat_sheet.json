@@ -1,0 +1,712 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-fresnel-the-view-dependent-rim",
+    "title": "Fresnel: The View-Dependent Rim",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Explain the artistic rim weight and distinguish it from physical Fresnel reflectance.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Fresnel: The View-Dependent Rim. Explain the artistic rim weight and distinguish it from physical Fresnel reflectance.",
+      "estimated_duration_s": 7.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Hallo. This is Liam, in for Bear. The key correction is that the rim also depends on the viewer. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 14.17,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nthe rim depends only on the lamp.",
+            "triggerWords": "the rim depends only on the lamp",
+            "replacementWords": "the rim also depends on the viewer",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-fresnel-the-view-dependent-rim",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Eye vector: Direction from the surface toward the camera. Silhouette: The visible outline of an object. Exponent: A power controlling the rim's concentration.",
+      "estimated_duration_s": 10.42,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Exponent",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Eye vector"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Silhouette"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Exponent"
+          }
+        ],
+        "motion_claim": "Reveal Exponent",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Eye vector",
+                "meaning": "Direction from the surface toward the camera"
+              },
+              {
+                "term": "Silhouette",
+                "meaning": "The visible outline of an object"
+              },
+              {
+                "term": "Exponent",
+                "meaning": "A power controlling the rim's concentration"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Diffuse shading uses the light direction. A rim needs another direction: from the surface toward the camera. The vertex function computes that vector in world space and passes it onward.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: eye_vector =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Introduce The Viewer"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: eye_vector ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: eye_vector =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 world_camera_pos = INV_VIEW_MATRIX[3].xyz;\n\teye_vector = world_camera_pos - world_pos;\n}",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 33,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Normalize the eye vector and compare it with the normal. When they align, their dot product is one. Subtracting that from one makes the rim weight zero.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: dot(e, n)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Face The Camera"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: dot(e, n)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: dot(e, n)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Face The Camera",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));\n\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tALBEDO = (lambert + ambient_color) * shader_color + fresnel;",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 42,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Toward the silhouette, the view and normal become nearly perpendicular. Their dot product approaches zero, so the rim's base approaches one. That is why the effect gathers at the edge.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 fresnel",
+        "show": [
+          {
+            "at": 0,
+            "event": "Approach The Edge"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 fresnel"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 fresnel",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Approach The Edge",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));\n\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tALBEDO = (lambert + ambient_color) * shader_color + fresnel;",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 42,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "For a base between zero and one, a larger positive exponent reduces intermediate values. Watch the power increase: the transition tightens toward the silhouette. The rim becomes narrower.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: fresnel_power",
+        "show": [
+          {
+            "at": 0,
+            "event": "Shape The Rim"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: fresnel_power"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: fresnel_power",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Shape The Rim",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "uniform vec3 ambient_color : source_color = vec3(0.15);\nuniform float fresnel_power : hint_range(0.0, 10.0, 0.01) = 3.0;\nvarying vec3 world_normal;",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 24,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "If the view-normal dot product is one half, the base is also one half. Cubing it gives one eighth. That is the geometric rim weight before the lighting factor multiplies it.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. A Worked Weight"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/04_fresnel.mp4"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 42,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This implementation multiplies the rim by Lambert plus ambient. The dark side therefore receives a smaller rim contribution. An angle-based effect does not automatically glow independently of lighting.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: lambert + ambient_color",
+        "show": [
+          {
+            "at": 0,
+            "event": "Check The Shadow"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: lambert + ambient_color"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: lambert + ambient_color",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Check The Shadow",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));\n\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tALBEDO = (lambert + ambient_color) * shader_color + fresnel;",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 42,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The shader adds the rim to the base color. It does not conserve reflected energy or calculate a material's refractive index. Call this a Fresnel-inspired rim, not complete physical reflectance.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "An Artistic Model"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "An Artistic Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tALBEDO = (lambert + ambient_color) * shader_color + fresnel;\n}",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 44,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Camera position comes from the inverse view matrix's translation column. Move the camera and the rim follows the new view direction. Its behavior belongs to the surface-camera relationship.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: INV_VIEW_MATRIX[3]",
+        "show": [
+          {
+            "at": 0,
+            "event": "Predict The Change"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: INV_VIEW_MATRIX[3]"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: INV_VIEW_MATRIX[3]",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Predict The Change",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;\n\tvec3 world_camera_pos = INV_VIEW_MATRIX[3].xyz;\n\teye_vector = world_camera_pos - world_pos;",
+            "codeFile": "04_fresnel.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/04_fresnel.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/04_fresnel.gdshader",
+        "sha256": "7b74a7bc306d2160d050d9a697d9e3a5437b18e4ffbdab52fbc6940fafaab9ff",
+        "line": 32,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. The view-normal angle drives the rim. A higher positive exponent narrows it. Lighting modulates the rim in this shader. This is an artistic approximation to Fresnel behavior. Liam, in for Bear.",
+      "estimated_duration_s": 14.58,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Fresnel: The View-Dependent Rim",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "The view-normal angle drives the rim.",
+              "A higher positive exponent narrows it.",
+              "Lighting modulates the rim in this shader.",
+              "This is an artistic approximation to Fresnel behavior."
+            ],
+            "lectureLayout": true
+          }
+        }
+      },
+      "lead_silence_s": 0.5
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Compare Fresnel powers of one, three, and six. Predict whether the bright rim gets wider or narrower. Explain why this shader's rim can still fade on the unlit side. Check two things: Larger positive powers narrow the rim. The rim is multiplied by the lighting term.",
+      "estimated_duration_s": 19.17,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Compare Fresnel powers of one, three, and six. Predict whether the bright rim gets wider or narrower. Explain why this shader's rim can still fade on the unlit side. Check two things: Larger positive powers narrow the rim. The rim is multiplied by the lighting term.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "Larger positive powers narrow the rim.",
+              "The rim is multiplied by the lighting term."
+            ],
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Fresnel: The View-Dependent Rim. At Nik Bear Brown.",
+      "estimated_duration_s": 3.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Fresnel: The View-Dependent Rim",
+            "slug": "claude-liam-lecture-shader-fresnel-the-view-dependent-rim",
+            "lectureLayout": true
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

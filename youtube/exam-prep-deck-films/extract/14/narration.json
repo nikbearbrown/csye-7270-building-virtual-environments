@@ -1,0 +1,569 @@
+{
+ "deck": "14",
+ "opening_summary": "Thirty-five terms for particle effects, from what spawns and when, to how particles move and look, which engine parts do the work, and how to design an effect. The exact term tells an agent precisely what to change.",
+ "opening_description": "35 terms for particles, emitters and game VFX.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers often think amount is how many particles are born each second. It is not. Amount is how many one emission cycle holds, so it caps how many are alive. The birth rate is amount divided by lifetime. This film goes through the terms, each one shown, so you can name the exact one.",
+  "text": "Amount sets how many\nparticles are born each second.",
+  "triggerWords": "are born each second",
+  "replacementWords": "one cycle holds"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty-five terms about particle effects, short-lived points that look like fire, smoke or a burst, in four groups. The first group is what spawns, and when. Particle, emitter, particle system, amount, lifetime, steady state, explosiveness, one shot and preprocess.",
+   "figures": [
+    "35"
+   ]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is how it moves and looks. Emission shape, initial velocity, spread, seed, gravity, damping, scale curve, colour ramp, texture, additive blending and billboard. These say where particles start, how they move and change, and how each one is drawn.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is engine parts and cost. Local coords, fixed fps, visibility rect, the GPU and CPU nodes, which run on the graphics card or on the processor, the process material, sub-emitter, trail and particle shader. Which node, which rules, and where the work lands.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is designing the effect. Reads, restraint, shape language, colour coding, analogous colours and timing curve. These say how a VFX artist, a visual effects artist, makes an effect clear and easy to tell apart.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "This drawing follows one dot through its life. A Particle is one small, short-lived sprite or mesh inside an effect. It is born, moves by the rules, and dies when it reaches its lifetime. In this simulated run it is born on the left, reaches the top at one point one seconds, and dies at two point two. For example, when the player dies in the Walker dodge game, each dot that flies out of the death burst is one particle.",
+   "figures": [
+    "age 1.1 s",
+    "dies at 2.2 s"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "The dark square at the bottom is the Emitter, the thing that spawns particles. It is the spawner, not the points it makes. Here it fires twelve a second, and each dot rises, fades and dies, so nineteen are alive out of thirty-six born. For example, when a mob touches the player in the Walker dodge game, code moves the burst's emitter to the spot where the player was, so the new particles are born there.",
+   "figures": [
+    "12 A SECOND",
+    "alive now: 19 of 36 born"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "The red box lists the rules. A Particle system is the emitter plus the rules for its particles, where they start, how fast they go and how long each one lasts. Here the rules say speeds of two hundred thirty to three hundred thirty, gravity two hundred twenty, and a lifetime of one point five seconds. For example, a campfire in your level is one particle system, a spawn point at the logs plus rules that send embers up and fade them out.",
+   "figures": [
+    "speed: 230 to 330",
+    "gravity: 220",
+    "lifetime: 1.5 s"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "This chart will count the particles alive over six seconds. The setting amount is how many particles one emission cycle holds, and so the most a looping emitter can ever have alive. In this simulated chart the red dashed line marks amount at sixty, a ceiling the count cannot pass. Its look-alike, emission rate, is births per second. For example, a looping torch in your level with amount sixty never shows more than sixty flames at once, however long it burns.",
+   "figures": [
+    "6 s",
+    "60"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "The black bar under the axis is the lifetime, two seconds here. The setting lifetime is how many seconds each particle lasts before it dies. It is also the length of one emission cycle, so here one cycle takes two seconds. For example, the death burst in the Walker dodge game uses a short lifetime, so its dots are gone soon after the hit and the screen is clear again.",
+   "figures": [
+    "lifetime = 2 s"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "Now tick marks along the bottom show each birth. Spread sixty births over a two second cycle and you get thirty born per second. That is the emission rate, amount divided by lifetime, and it is not the same as amount. For example, if you give the dust behind a running player a longer lifetime and leave amount alone, fewer puffs are born each second, and each one hangs around longer.",
+   "figures": [
+    "60 ÷ 2 = 30 born per second"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 4,
+   "narration": "The count of particles alive climbs for two seconds and then goes flat. Steady state means births equal deaths, so the number alive levels off. After one lifetime, as many particles die each moment as are born, and the count stays at sixty. For example, the spray at the foot of a waterfall in your level fills in over its first moments, then holds at steady state for as long as the player stands and watches.",
+   "figures": [
+    "2 s",
+    "60"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "In this simulated run, three rows of tick marks show when thirty-two particles are born in one cycle of zero point six seconds. The setting explosiveness decides how bunched the births are. At zero they spread across the whole cycle, at zero point five they crowd into the first half, and at one they all come at the start. For example, the coin pickup burst in the Walker 3D platformer sets explosiveness to one, so every sparkle appears the instant the coin is taken.",
+   "figures": [
+    "32",
+    "0.6 s",
+    "e = 0",
+    "e = 0.5",
+    "e = 1"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "Now all thirty-two appear together in a ring and fly out, and they will die together. That is a burst, which in Godot simply means explosiveness set to one. Here all thirty-two are still alive at zero point three three seconds. For example, the death burst an AI coding agent added to the Walker dodge game uses explosiveness one, so every dot leaves the spot where the player was hit at the same instant.",
+   "figures": [
+    "alive: 32 of 32 at 0.33 s",
+    "explosiveness = 1"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "Two timelines over three seconds compare one shot with looping. The setting one shot means only one emission cycle happens, and then the emitter stops. Without it, cycles repeat forever, which is looping. Here the looping emitter gives one hundred sixty births in three seconds, and the one shot emitter only thirty-two. For example, in the Walker 3D platformer an enemy's explosion is one shot, while the glow behind each bullet keeps looping.",
+   "figures": [
+    "3 SECONDS",
+    "born in 3 s: 160",
+    "born in 3 s: 32"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 4,
+   "narration": "The grey line climbs from empty, while the red line starts full. The setting preprocess, also called prewarm, starts an effect as if it had already been running for that many seconds. Without preprocess, the first frame has one particle alive. With preprocess of two seconds, the full lifetime here, it has sixty. For example, chimney smoke in a level should already be rising when the level loads, so you set preprocess instead of letting the player watch it start from nothing.",
+   "figures": [
+    "frame 1: 1 alive, or 60 with preprocess",
+    "preprocess 2 s",
+    "LIFETIME 2 S"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "Three boxes, each with forty spawn points from a seeded simulation. Emission shape is the volume particles are born in. A point puts them all on one spot, a sphere scatters them through a ball, and a box spreads them through a block. Its neighbour, spread, is about direction, not where they start. For example, the coin burst in the Walker 3D platformer uses a sphere emission shape, so its sparkles start all around the coin, not from a single spot.",
+   "figures": [
+    "40 SPAWN POINTS EACH"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "Arrows fan up from one point, each as long as its speed. Initial velocity is the speed and direction a particle starts with. Each particle takes its speed from a range, here one hundred fifty to three hundred pixels per second, and in this seeded run the speeds drawn land between one hundred fifty and two hundred eighty-five. For example, the dust kicked up when the player lands from a jump wants a slow initial velocity, so the puffs drift out instead of shooting away.",
+   "figures": [
+    "150 to 285 px/s",
+    "150 to 300"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 3,
+   "narration": "Three fans of twenty-four rays, all aimed up. The setting spread is the cone angle of random variation around the emission direction. A spread of zero is a single beam, forty-five is a fan, and one hundred eighty goes every way, so only fifty-four percent of those rays still point upward. In 3D, every way includes toward the screen. For example, the death burst in the Walker dodge game uses a spread of one hundred eighty, so its dots fly out in every direction.",
+   "figures": [
+    "24 RAYS",
+    "spread 0",
+    "spread 45",
+    "spread 180",
+    "54%"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 4,
+   "narration": "Three boxes show ten particles after zero point six seconds. A seed is the starting number for the random choices, and determinism means the same seed and inputs give the same output every run. Seed seven, run twice, matches to zero point zero pixels. Seed eight lands up to one hundred seventeen point one pixels away. For example, a test run from the command line can fix the seed of a spark effect, then check that two runs match exactly.",
+   "figures": [
+    "10 PARTICLES AFTER 0.6 S",
+    "seed 7, run 1",
+    "largest difference 0.0 px",
+    "seed 8",
+    "largest difference 117.1 px"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "Twelve particles fly for one point two seconds. Gravity, for particles, is a constant downward acceleration. Each step adds a little downward speed, so a straight path, the grey dashes, bends into an arc, the red lines. With gravity three hundred, the mean drop in this simulated run is two hundred nineteen pixels, near the formula's two hundred sixteen. For example, sparks from a smashed crate in a platformer arc up and fall back to the floor because their effect has gravity.",
+   "figures": [
+    "12 PARTICLES, 1.2 S, GRAVITY 300",
+    "219 px",
+    "216"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "Two rows of dots, one every tenth of a second, starting at three hundred. Damping is the rate at which particles lose speed. A damping of one hundred takes a speed of one hundred to zero in one second. With no damping the dots keep going. With damping one hundred fifty they stop after two seconds, two hundred ninety-nine pixels out. For example, smoke from a car's exhaust pipe in your game shoots out and then hangs in the air because of damping.",
+   "figures": [
+    "0.1 S",
+    "START SPEED 300",
+    "100",
+    "damping 150",
+    "stops after 2.0 s, 299 px from the start"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "A curve sits above a row of dots that shrink with age. A Scale curve sets a particle's size over its life. It takes the particle's age, from zero at birth to one at death, and gives back a size. At age zero point six the size is about sixty-four percent of full, and at age one it is zero. For example, the Trail behind the player in the Walker dodge game uses a scale curve, so each faded copy of the player shrinks.",
+   "figures": [
+    "age 0.6: size 0.64, about 64% of full",
+    "age 1"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 4,
+   "narration": "A gradient bar runs from orange at age zero to almost nothing at age one. A Colour ramp is a gradient for particle colour over its life. It does for colour what the scale curve does for size. The red numbers under the circles are alpha, the opacity, falling from one to zero, so at age zero point five the alpha is zero point five. For example, the death burst in the Walker dodge game fades from solid white to transparent through a colour ramp.",
+   "figures": [
+    "age 0",
+    "age 1",
+    "1.0",
+    "0.0",
+    "age 0.5",
+    "alpha 0.50"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "The same burst of thirty-two particles, drawn twice. The texture is the image drawn for each particle. If it is null, not set, each particle is one pixel square. On the left, null covers thirty-two pixels, zero point zero zero nine percent of the screen. On the right, a sixteen by sixteen radial dot covers about six thousand four hundred thirty-four. For example, the first death burst an agent built for the Walker dodge game had no texture, so it was thirty-two single pixels.",
+   "figures": [
+    "32 squares",
+    "1 by 1",
+    "32 px",
+    "0.009%",
+    "16 × 16 radial dot",
+    "6,434 px"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "Two dark squares, each with three overlapping glows. Additive blending is a blend mode that adds the new colour to what is behind it. Where glows overlap, the light piles up and gets brighter, up to the limit of two hundred fifty-five. Its look-alike, alpha blending, mixes by opacity and stays dull. The right-hand centre is much brighter. For example, the particle material file in the Walker 3D platformer uses additive blending, so its glows brighten where they overlap.",
+   "figures": [
+    "255"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 3,
+   "narration": "Two rows of squares as the camera turns around the effect. A Billboard is a flat quad, a square card, that always turns to face the camera. It is also called a camera-facing card. The dark flat quad does not turn, so at eighty degrees it is only seventeen pixels wide. The red billboard stays one hundred pixels wide and never goes edge-on. For example, the particle material in the Walker 3D platformer turns on billboarding, so every glow faces the player's camera.",
+   "figures": [
+    "80°",
+    "17 px",
+    "100 px"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "Two lanes, each with an emitter moving to the right. The setting local coords decides whose coordinates the particles use. Off, the default, means world coordinates. Each particle stays where it was born, so the top lane leaves dots behind. On means local coordinates. Particles ride with the emitter, so the bottom lane carries its cloud along. For example, sparkles circling a player who has picked up a shield should use local coords, so they stay wrapped around the player as the player runs.",
+   "figures": []
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "One particle's height over a second. fixed fps updates particles at a fixed rate, not every frame, and interpolate smooths the motion between those updates. Here the rate is slowed on purpose to five times a second. The dark steps miss the true grey curve by up to one hundred twenty-eight pixels, the red interpolated line by only eight. For example, a smoke effect in the background can update less often to save work, with interpolate on so it still moves smoothly.",
+   "figures": [
+    "5 times a second",
+    "128 px stepped",
+    "8 px interpolated"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 3,
+   "narration": "Two camera views move right. The visibility rect is the region that must be on screen for the effect to run. In this made-up example, the top rect, thirty pixels each way, has left the view, so the effect stops with its particles still on screen. The lower rect, one hundred thirty pixels each way, still overlaps, so it runs. For example, a bonfire at a scrolling level's edge vanishes early if its visibility rect is smaller than its flames.",
+   "figures": [
+    "rect ±30 px",
+    "rect ±130 px"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "A table asks which of five properties each node type has, from the engine's own class list. GPUParticles2D and its 3D twin are simulated on the GPU, the graphics card. They handle many particles and have more features. They run a material of rules, and only they have sub-emitters, trails and particle shaders. The GPU node has four of these five. For example, the death burst in the Walker dodge game is a GPUParticles2D node, a child of the main scene.",
+   "figures": [
+    "4 of these 5"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "The CPU column fills in. CPUParticles2D and its 3D twin are simulated on the CPU, the processor. They run on a wider range of hardware but handle fewer particles. The CPU node has only one of the five, emission shape. Its cost rises with every particle. Measured on one machine, one thousand cost zero point zero three five milliseconds a frame, and fifty thousand cost one point six one. For example, the coin burst in the Walker 3D platformer uses the 3D CPU node.",
+   "figures": [
+    "1 of 5",
+    "1,000",
+    "0.035 ms",
+    "50,000",
+    "1.61 ms"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "Three boxes split an effect into emission, process and draw. ParticleProcessMaterial is the resource that holds a GPU particle system's rules for moving and changing. Amount, lifetime, explosiveness and one shot sit on the node. Velocity, spread, gravity, scale curve and colour ramp sit in this material. Texture, blend mode and billboard belong to drawing. For example, the death burst in the Walker dodge game keeps its spread, its speed range and its colour ramp in a ParticleProcessMaterial.",
+   "figures": []
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "Six sparks have died, each leaving a cluster of puffs. A Sub-emitter is a second GPU particle system that spawns particles from the first one's particles. In this simulated run each of six sparks leaves five puffs when it dies, so no sparks remain and thirty puffs are alive. Its look-alike, the trail, follows one moving object instead. For example, firework sparks that each pop into a tiny cloud of smoke as they die use a sub-emitter, which only a GPU node offers.",
+   "figures": [
+    "6 SPARKS",
+    "5 PUFFS",
+    "sparks alive: 0",
+    "puffs alive: 30"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "A red ribbon curves behind a dark moving head. A Trail, or ribbon, is a strip that follows a moving object, textured to look like a tail. It joins the head's last thirty positions and thins and fades toward the end. Here it is four hundred forty-six pixels long. For example, a ribbon behind a thrown magic dagger shows the arc it flew. The node named Trail in the Walker dodge game is not a ribbon. It stamps faded copies of the player.",
+   "figures": [
+    "LAST 30 POSITIONS",
+    "446 px"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 3,
+   "narration": "Code in the dark box moves these dots. A Particle shader sets each particle's properties in two functions. The start function runs once for each new particle, here setting its velocity. The process function runs on every step, here adding gravity times the time step. At step twenty-two the vertical velocity is ninety-five point six and the dot is sixteen pixels up. For example, when the process material's checkboxes cannot describe a swirling spell, you swap that material for a particle shader.",
+   "figures": [
+    "step 22",
+    "95.6",
+    "16 px"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "A fireball, built in layers, starts with a glowing head. Primary to tertiary read is the order the eye notices an effect's parts, the head first, then the tail, then the sparks. The primary read is what the eye finds first, here a bright glow texture on a camera-facing card. In this made-up example it holds all of the visual weight so far. For example, in a spell that fires a bolt at an enemy, the bright core of the bolt is the primary read.",
+   "figures": []
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "A tail now streams off the head. The secondary read is that tail, a ribbon with a texture scrolling along it to suggest motion. The eye finds it after the head. In this made-up example the head keeps fifty-seven percent of the visual weight and the tail takes forty-three. For example, the streak behind a fireball thrown in your game is its secondary read. It tells the player which way the ball is flying, once the eye has found the glow.",
+   "figures": [
+    "head 57%, tail 43%"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "A few small sparks scatter around the tail. The tertiary read is small support that the eye finds last. It adds life, but too many sparks would pull weight away from the head. Here the sparks hold just one percent of the visual weight. The primary read is found first, and the tertiary read last. For example, a handful of embers drifting off a torch flame in a dungeon level are a tertiary read.",
+   "figures": [
+    "sparks 1%"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 4,
+   "narration": "Two bar charts show how loud each effect is, in made-up numbers. Restraint means keeping most effects modest so the important ones stand out. On the left, all five are loud, and none stands out. On the right, one is loud and four are quiet, so the top effect is three point three times the others, against one point zero. For example, if every coin, footstep and jump flashes brightly, the death burst gets lost, so you tone the small effects down.",
+   "figures": [
+    "5 loud effects",
+    "1 loud, 4 quiet",
+    "1.0 against 3.3"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "Three icons in the same blue, each with a different meaning. Shape language means using the same shapes for the same meaning across the whole game. A plus with four arms means heal, a ring with no corners means shield, and a star with eight spikes means damage. Even in a crowded fight, the shape tells them apart. For example, if every healing pickup and healing spell in your game shows a plus, players learn that a plus means health.",
+   "figures": [
+    "4 arms",
+    "0 corners",
+    "8 spikes"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "Four coloured circles, each with its hue angle on the colour wheel. Colour coding means using colours to signal team, damage type or tone. Red marks team A, at zero degrees, green marks team B, at one hundred thirty-eight, orange is fire at thirty, and blue is ice at one hundred ninety-five. Red and green are easy to tell apart at a glance. For example, if every ice attack in your game glows light blue, players know a blue hit means ice damage.",
+   "figures": [
+    "0°",
+    "138°",
+    "30°",
+    "195°"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Three pairs of colours, a caster colour around an effect colour. Analogous colours are neighbouring hues on the colour wheel, used to tie an effect to the model that casts it. Twenty degrees apart and fifteen degrees apart both look related. One hundred seventy-five degrees apart clashes. Here neighbouring means within thirty degrees. For example, a purple wizard in your game should cast a violet spell, not a yellow one, so players see at once who cast it.",
+   "figures": [
+    "20° apart",
+    "15° apart",
+    "175° apart",
+    "within 30°"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 4,
+   "narration": "Explosion radius over time, grown two ways. A Timing curve varies how fast an effect grows and slows, instead of using a constant rate. The grey line grows at a steady rate. The red one starts fast and then slows. At forty percent of the time, the steady one has reached forty percent of its size and the eased one, seventy-eight. For example, a grenade blast in your game that bursts out quickly and then settles feels powerful, while a steady growth feels flat.",
+   "figures": [
+    "at 40% of the time:",
+    "constant 40%, eased 78% of size"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "Each pair sets two look-alike terms side by side. On the left, amount, how many a cycle holds, stays at sixty whether the lifetime is two seconds or four. On the right, emission rate, born per second, falls from thirty a second to fifteen. Twice the life, half the rate.",
+   "figures": [
+    "60",
+    "lifetime 2 s",
+    "lifetime 4 s",
+    "30 a second",
+    "15 a second"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "Local coordinates, on the left, carry the particles along with the emitter. World coordinates, on the right, leave each particle where it was born, so the dots are left behind as the emitter moves away.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "The setting one shot runs one emission cycle and then stops, so it gives thirty-two births in three seconds. Looping repeats the cycle forever, so it gives one hundred sixty births in the same three seconds.",
+   "figures": [
+    "32 born in 3 s",
+    "160 born in 3 s"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Gravity adds speed downward on every step, so the path bends down into an arc. Damping takes speed away on every step, so the dots bunch up and slow to a stop. One bends the path, the other shortens it.",
+   "figures": []
+  },
+  {
+   "slide": 14,
+   "step": 1,
+   "narration": "Each row turns a vague request into an exact instruction. The smoke should already be rising becomes, set preprocess to two seconds, the lifetime, so the first frame is already full. On frame one, one particle is alive without it, and sixty with it.",
+   "figures": [
+    "2 s",
+    "1 alive",
+    "60 alive"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 2,
+   "narration": "I want a burst, not a stream becomes, set explosiveness to one and one shot to true, with amount thirty-two. With explosiveness zero the births spread out evenly, a few in each tenth of a second. With explosiveness one, all thirty-two come in the first tenth of a second.",
+   "figures": [
+    "explosiveness to 1",
+    "amount 32",
+    "explosiveness 0",
+    "32 in the first 0.1 s"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 3,
+   "narration": "The burst looks like specks of dust becomes, give it a sixteen by sixteen radial texture, because null means single pixel squares. Null covers thirty-two pixels, and the dot covers six thousand four hundred thirty-four, about two hundred times the area.",
+   "figures": [
+    "16 × 16",
+    "32 px",
+    "6,434 px",
+    "about 200 times the area"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 4,
+   "narration": "The 2D burst looks thin becomes, turn on particle flag disable Z, so no speed goes into the Z axis that a 2D camera never shows. Over two thousand seeded directions, only seventy-eight percent of the speed shows without it, and all of it with it.",
+   "figures": [
+    "2,000",
+    "78%",
+    "100%"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 5,
+   "narration": "The test never sees finished becomes, set the flag through a Dictionary, because a lambda cannot reassign a local variable. The signal fired both times, but a true or false flag set inside the lambda still showed false, and the Dictionary showed true.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 1,
+   "narration": "This is a checklist of six questions to ask before you trust a particle effect. First, is the effect's parent still visible when it fires? A burst under a hidden player can be emitting and still unseen. A headless test proves state. Only a screen shows the effect.",
+   "figures": [
+    "Six checks"
+   ]
+  },
+  {
+   "slide": 15,
+   "step": 2,
+   "narration": "Second, is the texture set, and is disable Z on in 2D? Without a texture each particle is a tiny dot, and without disable Z part of its speed goes into an axis the camera cannot see.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 3,
+   "narration": "Third, do amount, lifetime and explosiveness give the count and timing you meant? Work out the rate, amount divided by lifetime, and check whether the births spread out or come all at once.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 4,
+   "narration": "Fourth, does a one-shot effect restart on every later use? A burst that fires on the first death and never again passes a quick test and fails in the second game.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 5,
+   "narration": "Fifth, is the visibility rect big enough, and is overdraw cheap on a real GPU? A headless run measures neither, because nothing is drawn. Large, overlapping, transparent particles cost drawing time on real hardware.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 6,
+   "narration": "Sixth, did a person watch it on a screen, and does it read as one clear effect? A headless test proves state. Only a person at a screen can say whether the effect looks like anything.",
+   "figures": []
+  }
+ ],
+ "recap_lines": [
+  "A particle is one short-lived point, and the emitter is what spawns it.",
+  "Amount caps how many are alive, and the rate is amount divided by lifetime.",
+  "Explosiveness one makes a burst, and one shot stops after a single cycle.",
+  "Gravity adds speed downward, and damping takes speed away.",
+  "A GPU node keeps its movement rules in its ParticleProcessMaterial.",
+  "Restraint keeps most effects quiet, so the important one reads clearly."
+ ],
+ "your_turn": {
+  "segment": "Name The Particle Term",
+  "command": "Quiz me on particle effect terms with short game-making cases, one at a time. Use the terms amount, emission rate, lifetime, explosiveness, one shot, preprocess, spread, initial velocity, gravity and damping. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is a game effect, and the answer waits for your reply.",
+   "Check: you named the exact term and said why its look-alike is wrong."
+  ]
+ },
+ "say_as": [
+  {
+   "term": "preprocess",
+   "say": "pre-process"
+  },
+  {
+   "term": "prewarm",
+   "say": "pre-warm"
+  }
+ ],
+ "deck_problems": [
+  "Slide 13 step 3 (pair 3, one_shot vs Looping): the counts and pictures are swapped. renderPairs draws five cycle blocks with '160 born in 3 s' under one_shot and one block with '32 born in 3 s' under Looping. Slide 4 step 3 (correctly) gives one_shot 32 and looping 160. The narration states the correct counts without pointing left or right.",
+  "Slide 12 steps 2 and 3: the colour codes put fire at 30 degrees, only 30 degrees from team A's red at 0 degrees. By step 3's own rule (neighbouring hues within 30 degrees read as related), fire and team A would look related, so the example palette is a weak colour code.",
+  "Glossary and slide define the GPU and CPU nodes differently: the glossary says GPU particles have 'many particles, less control' and CPU particles are 'flexible, fewer particles'; slide 9 says GPU nodes have 'more features' and CPU nodes 'wider hardware support'. Chapter 9's ClassDB table supports the slide.",
+  "Slide 9 step 2 caption says '50,000 took 1.61 ms a frame in Chapter 9.' A chapter reference printed on a slide in a self-contained film. The cost is a headless --fixed-fps 60 measurement on one Mac, which the slide does not say.",
+  "Slide 6 step 1: the caption 'mean drop: 219 px (½ × 300 × 1.2² = 216)' is drawn through the landing dots of the arcs, so the formula is partly covered.",
+  "Slide 6 step 4: the header says 'ORANGE TO RED, FADING OUT', but because alpha falls to zero at the same time the ramp and circles look orange to pale pink; no red is visible.",
+  "Slide 8 step 3: the top lane ('stopped, still on screen') shows only an empty dashed circle, no particles, so the point that particles are still on screen while the effect has stopped is not visible. The dashed circle barely touches the camera box.",
+  "Slide 2 step 2: an emitter firing 12 a second with lifetime 1.5 s (the rules box) can hold at most 18 at steady state, but the counter reads 'alive now: 19 of 36 born' (an inclusive-endpoint count). The speaker note's 'gravity 260' (the arc) differs from the rules box 'gravity: 220' (the fountain); both are right for their own drawing but read as a conflict.",
+  "Slide 14 step 2: the label 'explosiveness 0: births per 0.1 s' sits on the top border line of the chart box.",
+  "TELL THESE APART boxes do not change with the step: slide 5 step 1 (emission shape) shows spread vs initial velocity, slide 7 steps 1 and 3 (texture, billboard) show additive vs alpha, and slide 12 steps 3 and 4 (analogous colours, timing curve) show shape language vs colour coding."
+ ]
+}

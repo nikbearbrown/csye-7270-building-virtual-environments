@@ -1,0 +1,626 @@
+# Scenes, Collision, and Physics in Godot 4.7
+
+*Research notes for the CSYE 7270 platformer reference game and assignment rewrite. Current as of October 2026.*
+
+---
+
+## The core problem
+
+Godot bundles three different ideas into one node tree, and most student bugs (and most agent-generated bugs) come from mistaking one for another.
+
+A **scene** is a unit of composition and reuse: a saved tree of nodes that can be instanced anywhere. **Collision** is geometry plus filtering: which shapes exist, and which objects are allowed to notice each other. **Physics** is a fixed-rate, time-stepped process that resolves motion and contact. Because all three live in the same tree, a mistake in one surfaces as a symptom in another. A coin that won't collect looks like a scripting bug and is usually a mask bit. A jump whose height changes with frame rate looks like a physics bug and is usually code running in the wrong callback. A level that breaks when duplicated looks like a collision bug and is usually a scene reaching outside itself with a hard-coded node path.
+
+The second problem is specific to a Mario-style game: almost none of it is physics in the simulation sense. The player is a `CharacterBody2D` whose motion is hand-authored; the engine is used as a collision-query service, not a simulator. "Mario physics" is a set of designed curves (asymmetric gravity, jump cuts, terminal velocity, coyote time) layered on top of collision resolution. If an assignment is called "Collision and Physics" and students never touch a simulated body, it is teaching collision and kinematics under a misleading name. Part 11 returns to this.
+
+The third problem is version drift. Godot's 2D collision behavior changed in ways that matter for a tile platformer in 4.5 and again in 4.7, and coding agents were trained heavily on Godot 3 and early Godot 4 code. Reference code that agents extend needs to be pinned to a version and defended against that.
+
+---
+
+## Part 1 — Version landscape (October 2026)
+
+Current stable is the 4.7 branch: 4.7.0 shipped in June 2026, and 4.7.2 (August) is the latest maintenance release. 4.8 has passed its final feature snapshot (dev 7) and is heading into beta. It may be stable before a spring term starts, but not before you need to freeze assignment text.
+
+| Version | Change | Why it matters for this course |
+|---|---|---|
+| 4.3 | `TileMapLayer` replaces the multi-layer `TileMap` node (now deprecated) | Every tile tutorial from before mid-2024 uses the wrong node |
+| 4.3 / 4.4 | Built-in physics interpolation (2D in 4.3, 3D in 4.4) | Smooth motion on high-refresh displays without raising the tick rate |
+| 4.4 | Jolt Physics integrated as a 3D option | Only matters if later assignments go 3D |
+| 4.5 | TileMapLayer physics chunking: tile shapes are merged per quadrant (`physics_quadrant_size`, default 16) | Fewer seam snags, but **breaks code that maps a collision RID back to a tile cell** |
+| 4.6 | Jolt becomes the default 3D engine for *new* projects; scene files now store a per-node `unique_id` | Existing projects keep their engine setting; agents hand-editing `.tscn` must preserve IDs |
+| 4.7 | `CollisionShape2D.one_way_collision_direction` (any direction, default down); 2D Scene Paint tool; `AwaitTweener`; Jolt-only 3D breaking changes | Rotating one-way platforms work; easier placement of stateful objects |
+| 4.8 | In development, past feature freeze | Don't target it yet |
+
+**Implementation note.** State the engine version in the assignment text and the repo README, and keep `project.godot` under version control (the editor records the engine feature version there). When a student or an agent opens the project in a different version, the editor warns about it; make "I saw that warning and ignored it" a non-excuse.
+
+---
+
+## Part 2 — Scenes: the unit of composition
+
+A scene is a `.tscn` file holding a tree of nodes. Loaded, it becomes a `PackedScene` resource; `instantiate()` produces a live copy. The editor's mental model ("scene", "instance", "inherited scene") maps to three distinct relationships, and students conflate them.
+
+**Instancing** is has-a: a level *has* coins. **Inheritance** is is-a-variant-of: `level_1_2.tscn` inherits `level_base.tscn` and overrides what differs. **Editable Children** (reaching into an instance to change its internals from outside) is the escape hatch, and its frequent use is a smell: the instanced scene is exposing internals instead of exported properties.
+
+### Proposed layout for the platformer
+
+```text
+res://
+├── actors/
+│   ├── player/player.tscn         CharacterBody2D + sprite + shape + script
+│   ├── enemies/walker.tscn        CharacterBody2D (Goomba analogue) + contact Area2D
+│   └── pickups/coin.tscn          Area2D
+├── blocks/
+│   ├── question_block.tscn        StaticBody2D with state and contents
+│   └── brick_debris.tscn          RigidBody2D (see Part 11)
+├── levels/
+│   ├── level_base.tscn            TileMapLayer(s), Camera2D, spawn Marker2D
+│   └── level_1_1.tscn             inherits level_base, adds instances
+├── ui/hud.tscn
+├── autoload/game_state.gd         score, lives, current level, and nothing else
+└── physics/layers.gd              named collision-layer constants (Part 4)
+```
+
+### Coupling rules worth enforcing
+
+Every scene should run on its own (Run Current Scene, F6). If it crashes without its parent, it is coupled to its environment. Godot's own scene-organization guidance makes the same argument: sub-scenes should be instantiable without knowing where they'll be used, and when a scene must talk to its surroundings, inject the dependency or connect a signal rather than hard-coding a path.
+
+The working rule is **call down, signal up**. Parents call methods on children; children emit signals and never reach up the tree. Use `%UniqueName` for references within the same scene. Autoloads are for state that outlives a scene (score, lives), not for wiring gameplay together.
+
+```gdscript
+# level.gd — the level owns its children and wires them (call down, signal up).
+extends Node2D
+
+@onready var _player: Player = %Player
+
+func _ready() -> void:
+	_player.head_bumped.connect(_on_player_head_bumped)
+	_player.hurt.connect(_on_player_hurt)
+	for coin in get_tree().get_nodes_in_group("coins"):
+		coin.collected.connect(_on_coin_collected)
+
+func _on_coin_collected(value: int) -> void:
+	GameState.add_coins(value)  # GameState emits coins_changed; the HUD listens to that.
+
+func _on_player_hurt() -> void:
+	GameState.lose_life()
+
+func go_to(level_path: String) -> void:
+	# Often triggered from a physics signal (goal flag); defer the tree change.
+	get_tree().change_scene_to_file.call_deferred(level_path)
+```
+
+### Tiles versus scenes for stateful objects
+
+Tiles are cheap and stateless. A "?" block has state (used or unused), contents, and an animation, so it should be a scene instance, not a tile. The old excuse for making it a tile was placement convenience: scene tiles in a TileSet can't carry per-instance properties. The 4.7 Scene Paint tool removes that excuse by letting you paint pre-configured scene instances onto a grid.
+
+```gdscript
+# question_block.gd
+class_name QuestionBlock
+extends StaticBody2D
+
+@export var contents: PackedScene
+var _used := false
+
+func bump() -> void:
+	if _used:
+		return
+	_used = true
+	%Sprite.play("used")
+	%BumpAnimation.play("bump")  # animates the Sprite child's offset, not the body
+	if contents:
+		var item := contents.instantiate() as Node2D
+		item.position = position + Vector2(0, -16)
+		add_sibling.call_deferred(item)  # we're inside a physics callback chain
+```
+
+If the block body itself needs to move (so it actually pushes whatever stands on it), use `AnimatableBody2D` instead of animating a `StaticBody2D`.
+
+### The `.tscn` file is text, and agents will edit it
+
+Scene files are human-readable, which tempts agents to write them directly. Since 4.6, each node header carries a `unique_id` used to track nodes across renames and moves, and the old `load_steps` attribute is gone from newly saved files. The change is backward and forward compatible, but an agent that hand-writes or copy-pastes node blocks can duplicate IDs or mismatch `ext_resource` references in ways that load with warnings or silently lose data.
+
+Illustrative excerpt of a 4.6+ scene (IDs elided):
+
+```text
+[gd_scene format=3 uid="uid://…"]
+
+[ext_resource type="Script" path="res://actors/pickups/coin.gd" id="1_coin"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_a"]
+radius = 6.0
+
+[node name="Coin" type="Area2D" unique_id=…]
+collision_layer = 16
+collision_mask = 4
+script = ExtResource("1_coin")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=…]
+shape = SubResource("CircleShape2D_a")
+```
+
+**Implementation note.** For agent workflows, prefer one of two patterns: keep scenes thin and put structure in scripts, or have the agent generate scenes through a `@tool` script or `EditorScript` that the editor saves. Either way, require a headless run of the project after every change so load errors surface immediately.
+
+---
+
+## Part 3 — The collision objects
+
+Godot's docs describe four collision object types, all extending `CollisionObject2D`. In practice there is a fifth worth teaching, `AnimatableBody2D`, which subclasses `StaticBody2D`.
+
+| Node | What moves it | Use in the platformer |
+|---|---|---|
+| `StaticBody2D` | Nothing. Can impart motion to touching bodies via `constant_linear_velocity` | Blocks, walls, conveyor belts |
+| `AnimatableBody2D` | Your animation or code; the engine computes the velocity it imparts | Moving and falling platforms |
+| `RigidBody2D` | The simulation (forces, impulses, gravity) | Debris, crates, physics props. Not the player |
+| `CharacterBody2D` | Your code, via `move_and_slide()` / `move_and_collide()` | Player, walking enemies |
+| `Area2D` | Nothing. Detects overlap and can override gravity or damping in a region | Coins, hazards, stomp zones, water, triggers |
+
+**Shapes.** A body needs at least one `CollisionShape2D` or `CollisionPolygon2D` child. Never scale shapes or physics bodies with the transform scale handles; resize the `Shape2D` resource itself. Godot's troubleshooting guide is blunt that scaling of bodies and shapes isn't supported, and the symptoms (shapes that collide where they aren't drawn, inconsistent normals) are hard for students to trace back to a scale value of `(2, 2)` set weeks earlier.
+
+**Player shape choice.** A `RectangleShape2D` gives authentic NES-style edge behavior: you can stand on a ledge by a pixel, and head bumps resolve cleanly against a single block. It also catches on internal edges between adjacent tiles more often. A `CapsuleShape2D` glides over seams and slopes, but slips off ledges early and makes head-bump detection fuzzier because the rounded top contacts at an angle. For this game I'd use a rectangle and rely on the 4.5 quadrant merging (Part 7); if snagging persists, a `CollisionPolygon2D` with slightly beveled bottom corners is the usual compromise.
+
+---
+
+## Part 4 — Collision layers and masks
+
+The docs call this the most powerful and most misunderstood part of the collision system, and that matches classroom experience. Each collision object has 32 layers. `collision_layer` is the set of layers the object **is on**. `collision_mask` is the set of layers it **scans**. If something isn't on a layer in your mask, you don't see it. Everything defaults to layer 1 and mask 1, which is why the system "works" until the first time it doesn't.
+
+### A course-standard layer table
+
+Name these in **Project Settings → Layer Names → 2D Physics** and mirror them in a constants script, so neither students nor agents write magic numbers.
+
+| # | Name | Who is on it |
+|---|---|---|
+| 1 | `world` | TileMapLayer solids, blocks |
+| 2 | `one_way` | Jump-through platforms |
+| 3 | `player` | Player body |
+| 4 | `enemy` | Enemy bodies |
+| 5 | `pickup` | Coins, power-ups |
+| 6 | `hazard` | Spikes, pits, lava |
+| 7 | `debris` | Simulated props (Part 11) |
+
+And the interaction matrix that should be a graded deliverable (Part 11):
+
+| Object | Layer (is on) | Mask (scans) | Why |
+|---|---|---|---|
+| Player body | `player` | `world`, `one_way` | Player passes *into* enemies; damage is decided by areas, not blocking |
+| Enemy body | `enemy` | `world`, `one_way`, `enemy` | Walkers turn around on each other |
+| Enemy contact Area2D | none | `player` | Detects the player for stomp-or-hurt |
+| Coin Area2D | `pickup` | `player` | Only the player collects |
+| Hazard Area2D | `hazard` | `player`, `enemy` | Pits kill both |
+| Debris RigidBody2D | `debris` | `world` | Falls and bounces; never blocks the player |
+
+```gdscript
+# physics/layers.gd — mirrors Project Settings > Layer Names > 2D Physics. Change both together.
+class_name Layers
+
+const WORLD := 1
+const ONE_WAY := 2
+const PLAYER := 3
+const ENEMY := 4
+const PICKUP := 5
+const HAZARD := 6
+const DEBRIS := 7
+
+static func bit(layer: int) -> int:
+	return 1 << (layer - 1)
+```
+
+```gdscript
+# Usage: set_collision_*_value() takes a 1-based layer number.
+set_collision_mask_value(Layers.ONE_WAY, false)
+
+# Raw bitmask for queries (e.g., PhysicsRayQueryParameters2D.collision_mask):
+var mask := Layers.bit(Layers.WORLD) | Layers.bit(Layers.ONE_WAY)
+
+# Inspector-friendly export with the named-layer grid:
+@export_flags_2d_physics var hit_layers: int
+```
+
+**Off-by-one trap.** Godot 3's `set_collision_mask_bit(bit, value)` was 0-based. Godot 4's `set_collision_mask_value(layer, value)` is 1-based. Agents that half-remember Godot 3 produce code that is wrong by exactly one layer, which is the hardest kind of wrong to spot.
+
+---
+
+## Part 5 — CharacterBody2D: the platformer core
+
+`CharacterBody2D` is not affected by gravity or friction; you write all motion. You set the `velocity` property and call `move_and_slide()`, which moves the body, slides along surfaces, and updates `is_on_floor()`, `is_on_wall()`, and `is_on_ceiling()`. Two rules from the docs that students violate constantly: `move_and_slide()` applies the timestep internally, so **don't multiply velocity by delta**; but gravity is an acceleration, so **do multiply gravity by delta** when adding it to velocity.
+
+The properties that matter for a platformer are `up_direction` (default up), `floor_max_angle` (default 45°), `floor_snap_length` (keeps you glued to downward slopes), `floor_stop_on_slope`, `motion_mode` (`GROUNDED` for platformers, `FLOATING` for top-down), `platform_on_leave` (what happens to inherited velocity when you leave a moving platform), and `safe_margin`.
+
+### A reference controller
+
+This parameterizes the jump by height and time-to-apex rather than raw gravity, which is how designers think and makes tuning legible: `g = 2h / t²` and `v₀ = g · t`.
+
+```gdscript
+# player.gd
+class_name Player
+extends CharacterBody2D
+
+signal head_bumped(collision: KinematicCollision2D)
+signal hurt
+
+@export_group("Run")
+@export var max_speed := 180.0        # px/s
+@export var ground_accel := 1400.0    # px/s²
+@export var ground_decel := 1800.0
+@export var air_accel := 900.0
+
+@export_group("Jump")
+@export var jump_height := 72.0       # px (4.5 tiles at 16 px)
+@export var time_to_apex := 0.38      # s
+@export var fall_gravity_multiplier := 1.8
+@export var jump_cut_multiplier := 0.45
+@export var max_fall_speed := 600.0   # px/s; also our tunneling guard (Part 8)
+@export var coyote_time := 0.08
+@export var jump_buffer_time := 0.10
+@export var stomp_bounce := 0.6       # fraction of jump velocity
+
+@export_group("Props")
+@export var push_strength := 40.0
+
+@onready var _rise_gravity: float = 2.0 * jump_height / (time_to_apex * time_to_apex)
+@onready var _jump_velocity: float = -_rise_gravity * time_to_apex
+
+var _coyote_timer := 0.0
+var _buffer_timer := 0.0
+
+func _physics_process(delta: float) -> void:
+	_update_timers(delta)
+	_apply_gravity(delta)
+	_apply_horizontal(delta)
+	_try_jump()
+	move_and_slide()
+	_handle_slide_collisions()
+
+func _update_timers(delta: float) -> void:
+	# is_on_floor() here reflects the previous tick's move_and_slide(), which is what coyote time wants.
+	_coyote_timer = coyote_time if is_on_floor() else maxf(_coyote_timer - delta, 0.0)
+	if Input.is_action_just_pressed("jump"):
+		_buffer_timer = jump_buffer_time
+	else:
+		_buffer_timer = maxf(_buffer_timer - delta, 0.0)
+
+func _apply_gravity(delta: float) -> void:
+	var g := _rise_gravity
+	if velocity.y > 0.0:
+		g *= fall_gravity_multiplier
+	velocity.y = minf(velocity.y + g * delta, max_fall_speed)
+
+func _apply_horizontal(delta: float) -> void:
+	var dir := Input.get_axis("move_left", "move_right")
+	var rate := air_accel
+	if is_on_floor():
+		rate = ground_decel if is_zero_approx(dir) else ground_accel
+	velocity.x = move_toward(velocity.x, dir * max_speed, rate * delta)
+
+func _try_jump() -> void:
+	if _buffer_timer > 0.0 and _coyote_timer > 0.0:
+		velocity.y = _jump_velocity
+		_buffer_timer = 0.0
+		_coyote_timer = 0.0
+	if Input.is_action_just_released("jump") and velocity.y < 0.0:
+		velocity.y *= jump_cut_multiplier  # variable jump height
+
+func _handle_slide_collisions() -> void:
+	for i in get_slide_collision_count():
+		var c := get_slide_collision(i)
+		# The normal points away from what we hit. A ceiling gives a downward (+y) normal.
+		if c.get_normal().y > 0.7:
+			head_bumped.emit(c)
+		# CharacterBody2D does not push rigid bodies on its own; do it explicitly.
+		var rb := c.get_collider() as RigidBody2D
+		if rb:
+			rb.apply_central_impulse(-c.get_normal() * push_strength)
+
+func bounce() -> void:
+	velocity.y = _jump_velocity * stomp_bounce
+
+func take_hit() -> void:
+	hurt.emit()
+
+func respawn(at: Vector2) -> void:
+	global_position = at
+	velocity = Vector2.ZERO
+	reset_physics_interpolation()  # otherwise the renderer interpolates a streak to the spawn point
+```
+
+### Implementation notes
+
+Everything here runs in `_physics_process`. Moving a body in `_process` ties motion to render frame rate, which is how students end up with jump heights that differ between their laptop and the grader.
+
+The controller uses designer-authored gravity instead of the project's default gravity, which means `Area2D` gravity overrides (water, low-gravity zones) won't affect the player automatically. If you want those, scale by the ratio of local to default gravity: `get_gravity().length() / ProjectSettings.get_setting("physics/2d/default_gravity")`. `PhysicsBody2D.get_gravity()` (4.3+) already accounts for area overrides.
+
+Drop-through on one-way platforms works because one-way platforms have their own layer:
+
+```gdscript
+func drop_through() -> void:
+	set_collision_mask_value(Layers.ONE_WAY, false)
+	await get_tree().create_timer(0.2, true, true).timeout  # process_in_physics = true
+	set_collision_mask_value(Layers.ONE_WAY, true)
+```
+
+---
+
+## Part 6 — Areas, signals, and the flushing-queries trap
+
+`Area2D` provides detection and influence: it reports overlaps through `body_entered` / `body_exited` / `area_entered` / `area_exited`, and it can override gravity or damping inside its bounds. For an area to detect a body, the area's **mask** must include the body's **layer**, and `monitoring` must be on.
+
+The trap: signal callbacks from areas fire while the physics server is processing. Changing physics state synchronously inside them (disabling a shape, toggling `monitoring`, changing layers, adding a body to the tree) triggers errors about not being able to change state while flushing queries. The class reference for `CollisionShape2D` explicitly says `disabled` should be changed with `set_deferred()`. Teach the habit as a rule: **inside any physics callback, defer physics-state changes.**
+
+```gdscript
+# coin.gd
+class_name Coin
+extends Area2D
+
+signal collected(value: int)
+
+@export var value := 1
+
+func _ready() -> void:
+	add_to_group("coins")
+	body_entered.connect(_on_body_entered)
+
+func _on_body_entered(body: Node2D) -> void:
+	if not (body is Player):  # redundant given the mask, but cheap insurance
+		return
+	set_deferred("monitoring", false)
+	collected.emit(value)
+	%AnimationPlayer.play("collect")
+	await %AnimationPlayer.animation_finished
+	queue_free()
+```
+
+### Stomp or hurt
+
+Two common designs: separate top and side areas on each enemy, or one contact area plus a rule. The rule version is closer to how the original game decides, is easier to tune, and has fewer shapes to misconfigure:
+
+```gdscript
+# walker.gd — root CharacterBody2D on `enemy`; child Area2D %Contact scans `player`.
+class_name Walker
+extends CharacterBody2D
+
+signal defeated
+
+@export var speed := 40.0
+var _dir := -1.0
+
+func _ready() -> void:
+	%Contact.body_entered.connect(_on_contact)
+
+func _physics_process(delta: float) -> void:
+	velocity.x = _dir * speed
+	velocity += get_gravity() * delta
+	move_and_slide()
+	if is_on_wall():
+		_dir = -_dir
+
+func _on_contact(body: Node2D) -> void:
+	var player := body as Player
+	if player == null:
+		return
+	# Stomp if the player is falling and above our origin (assumes both origins sit at the feet).
+	if player.velocity.y > 0.0 and player.global_position.y < global_position.y:
+		player.bounce()
+		_defeat()
+	else:
+		player.take_hit()
+
+func _defeat() -> void:
+	%Contact.set_deferred("monitoring", false)
+	set_deferred("collision_layer", 0)
+	defeated.emit()
+	queue_free()
+```
+
+The comparison of origins depends on where each scene's pivot is. Make "all actor origins sit at the feet" a project convention and the rule stays correct.
+
+---
+
+## Part 7 — Tiles: collision, seams, and the 4.5 quadrant change
+
+Tile collision is authored on the `TileSet`: add a physics layer (with its own collision layer and mask), then draw collision polygons per tile. Polygons can be marked one-way, which is how jump-through platforms usually get built in a tile game. The `TileMapLayer` node owns the resulting bodies.
+
+### Ghost collisions and chunking
+
+Before 4.5, each cell was its own collision body, so a box sliding across a flat floor of tiles could catch on the internal edge between two cells. Since 4.5, cells with matching physics properties inside a quadrant (16×16 tiles by default, set by `physics_quadrant_size`) are merged into larger shapes. The PR author is explicit that this reduces seam problems without eliminating them, since seams still exist at quadrant boundaries.
+
+### The breaking change nobody notices
+
+With merging, `TileMapLayer.get_coords_for_body_rid()` returns the coordinates of the **quadrant**, not the tile. Forum reports from 4.5 upgrades show exactly the failure this game is set up for: code that worked out which tile was hit now resolves to the wrong place. Setting `physics_quadrant_size` to 1 restores the old behavior at the cost of the performance and seam improvements. The better fix is to derive the cell from the contact point:
+
+```gdscript
+# In level.gd, connected to Player.head_bumped
+func _on_player_head_bumped(c: KinematicCollision2D) -> void:
+	var collider := c.get_collider()
+	if collider.has_method("bump"):  # a scene-instanced block handles itself
+		collider.bump()
+		return
+	var tiles := collider as TileMapLayer
+	if tiles == null:
+		return
+	# Probe a couple of pixels into the surface we hit (against the normal), then map to a cell.
+	var probe := c.get_position() - c.get_normal() * 2.0
+	var cell := tiles.local_to_map(tiles.to_local(probe))
+	var data := tiles.get_cell_tile_data(cell)
+	if data and data.get_custom_data("breakable"):  # requires a "breakable" custom data layer
+		tiles.erase_cell(cell)
+```
+
+When the player straddles two blocks, the original game bumps the one nearer the player's center. That refinement is a good stretch goal and a good test of whether students understand contact points versus body positions.
+
+### One-way platforms in 4.7
+
+`CollisionShape2D` now has `one_way_collision_direction` (default `Vector2(0, 1)`), and one-way resolution works in any direction rather than being hard-coded to "up." For a standard platformer the default matches the old behavior. Where it matters is rotating or tilted platforms, which previously behaved incorrectly.
+
+---
+
+## Part 8 — Time: ticks, interpolation, determinism
+
+### The physics tick
+
+Physics runs at a fixed rate (60 Hz default), independent of frame rate. `_physics_process(delta)` runs before each step. Use `delta` even if you never change the tick rate, so the game survives a slow machine or a later rate change.
+
+### Tunneling, with numbers
+
+Tunneling happens when a body moves farther in one tick than the thickness of what it should hit. The rule students can actually apply: **max speed ÷ tick rate must be less than the thinnest collider.** The controller's `max_fall_speed` of 600 px/s at 60 Hz is 10 px per tick, below a 16 px tile, so the player can't fall through the floor. Raise terminal velocity to 1200 px/s and you're at 20 px per tick, and thin one-way platforms start getting skipped. The troubleshooting guide's other remedies (raising Physics Ticks per Second, continuous collision detection on rigid bodies) are real but treat symptoms; clamping speed treats the cause and is also faithful to the source material.
+
+### Physics interpolation
+
+On a 120 or 144 Hz display, a 60 Hz simulation visibly stutters. Physics interpolation (Project Settings → Physics → Common → Physics Interpolation) renders positions interpolated between ticks. Its requirements are exactly the habits this course should enforce anyway: move things only in physics ticks (including tweens and animations that move physics objects), and call `reset_physics_interpolation()` after any teleport such as a respawn or pipe warp. The docs recommend testing at 10 ticks per second, where every interpolation mistake becomes obvious. That is also a superb classroom demo.
+
+For rigid bodies, teleporting has to happen through the physics state in `_integrate_forces()`, then reset interpolation afterward, because the engine otherwise overwrites the position.
+
+If the game uses pixel snapping (`rendering/2d/snap/snap_2d_transforms_to_pixel`), test it together with interpolation at a low tick rate. The two settings interact, and whether the result looks right is project-specific.
+
+### Determinism
+
+Godot's physics docs state that physics isn't deterministic, regardless of which engine is used. Seemingly identical runs can diverge. For a 2D platformer driven by `CharacterBody2D` this rarely shows up in play, but it matters for grading: an autograder that replays recorded inputs and compares positions will be flaky. If a future assignment genuinely needs determinism, the Rapier GDExtension advertises deterministic behavior for both 2D and 3D, at the cost of a third-party dependency.
+
+---
+
+## Part 9 — Failure-mode field guide
+
+| Symptom | Usual cause | Fix |
+|---|---|---|
+| Coin or trigger never fires | Area's mask doesn't include the body's layer, or `monitoring` is off | Check the layer matrix; turn on Debug → Visible Collision Shapes |
+| Player falls through floor at speed | Tunneling | Clamp max speed below collider thickness × tick rate |
+| Player snags on flat tile floors | Internal-edge ghost collisions | Keep quadrant merging on; bevel the player's bottom corners |
+| Collision happens where nothing is drawn | Scaled shape or body | Reset scale to (1, 1); resize the Shape resource |
+| "Can't change this state while flushing queries" | Physics state changed inside a callback | `set_deferred()` / `call_deferred()` |
+| `is_on_floor()` flickers on slopes | Reading it before `move_and_slide()`, or snap too short | Read after the move; raise `floor_snap_length` |
+| Wrong brick breaks (4.5+) | RID-to-cell mapping returns the quadrant | Derive the cell from contact point minus normal |
+| Jump height varies by machine | Movement in `_process` | Move to `_physics_process` |
+| Jitter on high-refresh monitors | No interpolation | Enable physics interpolation; reset on teleports |
+| Streak across the screen on respawn | Interpolation without reset | `reset_physics_interpolation()` after teleport |
+| Rigid body ignores position changes | Engine overwrites the transform | Use `_integrate_forces()` and the body state |
+| Player can't push crates | CharacterBody2D doesn't push rigid bodies | Apply impulses from slide collisions |
+| Rigid body `body_entered` never fires | Contact monitoring off | `contact_monitor = true`, `max_contacts_reported > 0` |
+| Everything collides with everything | Every object left on layer 1 / mask 1 | Adopt the named layer table on day one |
+
+---
+
+## Part 10 — If later assignments go 3D
+
+Since 4.6, new projects default to Jolt for 3D; existing projects keep whatever they were set to. The 4.7 migration notes list several Jolt-specific behavior changes (the sign convention of `WorldBoundaryShape3D.plane.d`, `SoftBody3D` default mass and stiffness, and `Area3D` now reporting soft-body overlaps). None of this touches the 2D platformer. The concepts transfer directly: `CharacterBody3D`, `Area3D`, layers and masks, and the tick and interpolation rules all work the same way.
+
+---
+
+## Part 11 — Where I'd push back on the assignment design
+
+I haven't seen the current state of the reference code, so treat these as questions to check it against, not a diagnosis.
+
+**1. The name promises physics; the game delivers kinematics.** A Mario clone exercises collision filtering and hand-authored motion. That is a fine learning objective, but students will leave believing they "did physics." Either own the framing (collision and character kinematics) or add one genuinely simulated element so students have to reason across both paradigms. Brick debris is the natural candidate: a `RigidBody2D` on the `debris` layer that collides only with `world`, spawned in pieces when a brick breaks. It forces them to think about layers between paradigms, impulses versus velocity, sleeping, and cleanup, in about fifteen lines.
+
+```gdscript
+# In the brick-breaking branch of _on_player_head_bumped
+const DEBRIS := preload("res://blocks/brick_debris.tscn")
+
+func _shatter(at: Vector2) -> void:
+	for dir in [Vector2(-1, -2), Vector2(1, -2), Vector2(-1, -1), Vector2(1, -1)]:
+		var piece := DEBRIS.instantiate() as RigidBody2D
+		piece.position = at
+		add_child.call_deferred(piece)
+		piece.apply_central_impulse.call_deferred(dir * 120.0)
+```
+
+**2. Agents write Godot 3, and they write it confidently.** This is the most predictable failure in agent-generated Godot code, and it is a gift for a computational-skepticism framing: hand students an agent-written controller and have them find the version errors.
+
+| Godot 3 (what agents often emit) | Godot 4.x |
+|---|---|
+| `KinematicBody2D` | `CharacterBody2D` |
+| `velocity = move_and_slide(velocity, Vector2.UP)` | set `velocity`, call `move_and_slide()` (returns bool) |
+| `export var`, `onready var` | `@export`, `@onready` |
+| `yield(obj, "signal")` | `await obj.signal` |
+| `scene.instance()` | `scene.instantiate()` |
+| `connect("body_entered", self, "_on_x")` | `body_entered.connect(_on_x)` |
+| `TileMap` with internal layers | one `TileMapLayer` node per layer |
+| `get_tree().change_scene(path)` | `get_tree().change_scene_to_file(path)` |
+| `set_collision_mask_bit(bit, v)` (0-based) | `set_collision_mask_value(layer, v)` (1-based) |
+
+**3. Version-sensitive behavior should be written into the assignment.** The 4.5 quadrant change is the clearest case: an assignment that says "break the brick the player hits" without naming the pitfall will get a split between students whose agent used the RID API (broken) and students whose agent used contact points (working), and neither group will know why. Naming it turns a hidden trap into a teachable moment.
+
+**4. Make the collision matrix a graded artifact.** Students should submit the layer/mask table from Part 4 for their own level, including at least one interaction they deliberately excluded and why. It makes their thinking visible, it is trivially checkable against the project file, and it is the single most transferable thing in the unit.
+
+**5. Don't grade trajectories.** Given non-deterministic physics, grade structure (scenes run standalone, layers named and used, no upward node paths, movement in physics callbacks) and behavior within tolerances (jump apex within ±10% of the declared height), not exact replays.
+
+**6. Agents amplify whatever the reference code does.** Reference code used as a seed for Walker, Cowork, and Claude Code isn't neutral: every extension inherits its habits. Before seeding, check it for scaled shapes, magic layer numbers, upward node paths, movement in `_process`, and any use of the deprecated `TileMap` node. Each one will be replicated across every student extension.
+
+---
+
+## Part 12 — Conventions block for agents extending the reference game
+
+Paste this into the reference repo's `CLAUDE.md` / `AGENTS.md`.
+
+```markdown
+# Godot conventions for this repo
+
+Engine: Godot 4.7.x, GDScript. Do not target 4.8 or any Godot 3 API.
+
+## Engine and API
+- Never use Godot 3 APIs: no KinematicBody2D, no move_and_slide(velocity, up), no `export var` / `onready var`, no yield, no .instance(), no string-based connect(). Use CharacterBody2D with the velocity property, @export / @onready, await, .instantiate(), and signal.connect(callable).
+- Tiles use TileMapLayer, one node per layer. Never use the deprecated TileMap node.
+- If you are unsure whether an API exists in 4.7, say so and check the 4.7 class reference. Do not guess.
+
+## Scenes
+- Every .tscn must run standalone (Run Current Scene) without errors.
+- Children never reach up the tree: no get_node("../..") and no absolute /root paths. Parents call down; children emit signals.
+- Use %UniqueName for references inside a scene.
+- Autoloads hold persistent state only (GameState). No gameplay wiring in autoloads.
+- Prefer creating or editing scenes through a @tool script or EditorScript. If you edit .tscn text directly, preserve every unique_id, uid, and ext_resource id, and never create duplicates.
+- Stateful objects (question blocks, doors, switches) are scene instances, not tiles.
+- All actor scene origins sit at the actor's feet.
+
+## Collision
+- Layer numbers come only from res://physics/layers.gd, which mirrors Project Settings > Layer Names > 2D Physics. No magic numbers.
+- set_collision_layer_value() and set_collision_mask_value() are 1-based.
+- Never scale a CollisionShape2D, CollisionPolygon2D, or physics body. Resize the Shape resource.
+- Inside body_entered, area_entered, or any other physics callback, change physics state only with set_deferred() or call_deferred(). This includes disabled, monitoring, collision_layer, collision_mask, and adding bodies to the tree.
+- Never map collision RIDs to tile cells; TileMapLayer merges tile shapes into quadrants. Derive the cell from the collision contact point minus the normal.
+- When you add a new collidable object, update the layer/mask matrix in docs/collision-matrix.md in the same change.
+
+## Movement
+- All movement code runs in _physics_process. Never move bodies in _process.
+- CharacterBody2D: set velocity, call move_and_slide() once per tick. Do not multiply velocity by delta for move_and_slide(). Gravity is an acceleration and is multiplied by delta.
+- Read is_on_floor() / is_on_wall() / is_on_ceiling() after move_and_slide() for the current tick's result.
+- After teleporting any body (respawn, warp), call reset_physics_interpolation().
+- Never set position or linear_velocity of a RigidBody2D from _physics_process. Use impulses or _integrate_forces().
+- Keep max speed per tick below the thinnest collider (speed / 60 < tile thickness in px).
+
+## Verification
+- After every change, run the project headless and report any errors or warnings verbatim.
+- You cannot see the running game. Do not claim collision or movement behavior was verified visually. State what you ran and what the output showed, and list what still needs a human playtest.
+```
+
+---
+
+## Reference lineage and further reading
+
+### Godot documentation (check the 4.7 version of each page)
+
+- Physics introduction: collision object types, layers and masks, `move_and_slide()` rules. https://docs.godotengine.org/en/latest/tutorials/physics/physics_introduction.html
+- Troubleshooting physics issues: tunneling, scaling, stacking, TileMapLayer chunking. https://docs.godotengine.org/en/stable/tutorials/physics/troubleshooting_physics_issues.html
+- Using physics interpolation: enabling, tick-rate testing, `reset_physics_interpolation()`. https://docs.godotengine.org/en/4.4/tutorials/physics/interpolation/using_physics_interpolation.html
+- Scene organization: loose coupling, dependency injection, signals. https://docs.godotengine.org/en/latest/tutorials/best_practices/scene_organization.html
+- TSCN file format: `unique_id` and the 4.6 format changes. https://docs.godotengine.org/en/latest/engine_details/file_formats/tscn.html
+- `CollisionShape2D` class reference: `one_way_collision_direction`, deferred `disabled`. https://docs.godotengine.org/en/latest/classes/class_collisionshape2d.html
+- `TileMapLayer` class reference: `physics_quadrant_size`. https://docs.godotengine.org/en/4.5/classes/class_tilemaplayer.html
+- `CharacterBody2D` class reference: floor, wall, and platform properties. https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+- Using TileSets (collision, one-way, custom data). https://docs.godotengine.org/en/latest/tutorials/2d/using_tilesets.html
+- Upgrading from 4.5 to 4.6. https://docs.godotengine.org/en/latest/tutorials/migrating/upgrading_to_godot_4.6.html
+- Upgrading from 4.6 to 4.7. https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html
+
+### Engine development record
+
+- Godot 4.7 beta 1 highlights (one-way direction, Scene Paint, `AwaitTweener`). https://godotengine.org/article/dev-snapshot-godot-4-7-beta-1/
+- PR #102662, "Chunk tilemap physics": the design and stated limits of quadrant merging. https://github.com/godotengine/godot/pull/102662
+- Proposal #12289: the staged plan to make Jolt the 3D default. https://github.com/godotengine/godot-proposals/issues/12289
+- Forum report of the 4.5 `get_coords_for_body_rid()` behavior change. https://forum.godotengine.org/t/s-this-a-bug-in-4-5-or-my-code/123489
+- Godot Rapier Physics (deterministic 2D/3D alternative). https://github.com/appsinacup/godot-rapier-physics
+
+### Conceptual lineage
+
+- Glenn Fiedler, "Fix Your Timestep!" (Gaffer on Games, 2004). The origin of the fixed-step-plus-interpolation pattern Godot now ships built in.
+- Christer Ericson, *Real-Time Collision Detection* (Morgan Kaufmann). The standard reference for broadphase, shapes, and why tunneling happens.
+- Erin Catto's GDC physics talks and the Box2D project. The lineage behind most 2D rigid-body engines, including the ideas Godot's 2D solver borrows.
+- Kyle Pittman, "Math for Game Programmers: Building a Better Jump" (GDC 2016). The height/time-to-apex parameterization used in Part 5.
+- Maddy Thorson, "Celeste and TowerFall Physics" (2017). The argument for integer-precise, designer-first kinematic collision over simulation in platformers.
+- Rodrigo Monteiro, "The Guide to Implementing 2D Platformers" (Higher-Order Fun, 2012). A taxonomy of platformer collision approaches from tile-based to bitmask to polygon.
+- Steve Swink, *Game Feel* (Morgan Kaufmann, 2008). The design vocabulary for why coyote time and jump buffering matter even though they aren't physics.

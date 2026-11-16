@@ -311,9 +311,9 @@ one number at a time." then deletes "one number" and types "a bundle of numbers"
 
 *Picture.* The real Godot 4.7 'Built-in shader functions' page in a browser window, scrolled to the 'Trigonometric functions' table: three columns 'Return Type', 'Function', 'Description / Return value' with the rows radians, degrees, sin, cos, tan. The camera pushes in on the sin row, `vec_type` / `sin(vec_type x)` / 'Sine.', and a terracotta ring marks the signature.
 
-*Motion.* The camera pushes in on the sin row and the ring marks the type going in and the type coming out.
+*Motion.* The quoted signature lands; the voice reads it.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: LectureEvidenceTable of sin, mix, length signatures
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: LectureEvidenceTable of sin, mix, length signatures
 
 ### B27 · 41 words · ~14 s
 
@@ -369,9 +369,9 @@ one number at a time." then deletes "one number" and types "a bundle of numbers"
 
 *Picture.* The real Godot 4.7 'Flow control' section in a browser window: the for and while snippets with their comments, and the paragraph below them about infinite loops. The camera pushes in on that paragraph and a terracotta ring marks the sentence about freezing the application, including the editor.
 
-*Motion.* The camera drifts from the for and while snippets to the warning paragraph and rings it.
+*Motion.* The quoted warning lands; the voice reads it.
 
-*Lane.* remotion · `BrowserCapture` · runner-up: manim: a loop arrow that never ends
+*Lane.* remotion · `ClaudeCodeBeat` · runner-up: manim: a loop arrow that never ends
 
 ### B32 · 43 words · ~15 s
 

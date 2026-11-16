@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game AI: decisions, generation and systems | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Game AI decisions, generation and systems">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Game AI: decisions, generation and systems">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 14</p>
+      <h1 class="t-opening rise g2">Game AI: decisions, generation and systems</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for how a character decides, how levels are generated and proved, and how two computers share state</p>
+      <div class="speaker-notes" hidden><p>Deck 9b, the second Game AI deck. 33 terms. Tags: in the book text means Chapter 14 (or Chapter 6 for compute shader) uses and explains it; in the glossary means a glossary row only. Movement, perception, navigation and search are deck 9a. Chapter 14 does not cover cooldowns or dynamic difficulty, so they are not terms here.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-three terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-three terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="State machines, and how to stop flicker">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Deciding with states</p>
+      <h2 class="t-chart">State machines, and how to stop flicker</h2>
+      <div class="diagram build" data-build="fsm" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Finite state machines, as this project builds them” and Task 2; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>The distances are an illustrative script run through the real rules; the noisy signal is seeded. The chapter sets lose_radius above sight_radius for exactly this reason.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Behavior trees: tick, results and the blackboard">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Trees, scores and plans</p>
+      <h2 class="t-chart">Behavior trees: tick, results and the blackboard</h2>
+      <div class="diagram build" data-build="bt" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Behavior trees: priority, re-evaluated or remembered”; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Each tick is evaluated by the tree code in this page: a Selector over two Sequences and a patrol action, the same shape as the chapter’s Task 3 tree.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Conditions, actions, selectors and sequences">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Trees, scores and plans</p>
+      <h2 class="t-chart">Conditions, actions, selectors and sequences</h2>
+      <div class="diagram build" data-build="comp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Behavior trees”; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Result colours come from the same code. The chapter notes composites with memory resume a RUNNING child; these examples are the reactive kind.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Utility AI and the weighted sum">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Trees, scores and plans</p>
+      <h2 class="t-chart">Utility AI and the weighted sum</h2>
+      <div class="diagram build" data-build="util" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI; Assignment 9.</p>
+      <div class="speaker-notes" hidden><p>The chapter does not cover utility AI; this is from the glossary row and Assignment 9’s list of techniques. Weights and curves are invented; scores are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="GOAP: a plan found by search">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Trees, scores and plans</p>
+      <h2 class="t-chart">GOAP: a plan found by search</h2>
+      <div class="diagram build" data-build="goap" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Game AI; Assignment 9; Chapter 14, “Doing the same thing in Unity”.</p>
+      <div class="speaker-notes" hidden><p>Overview only. The four actions are illustrative; the plan comes from a breadth-first search in the page. The chapter notes Unity’s AI Planner never left preview.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Learning from reward: reward, return and discount">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Learning and networks</p>
+      <h2 class="t-chart">Learning from reward: reward, return and discount</h2>
+      <div class="diagram build" data-build="rl1" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Reinforcement learning: behavior from reward”; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Five rewards of a six-cell corridor, with step cost 0.01 and goal reward 1 as in the chapter’s grid world.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Q-learning and epsilon-greedy">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Learning and networks</p>
+      <h2 class="t-chart">Q-learning and epsilon-greedy</h2>
+      <div class="diagram build" data-build="rl2" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Reinforcement learning” and Lab A; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Tabular Q-learning on the chapter’s 5 by 5 grid, alpha 0.1, gamma 0.95, epsilon from 1.0 to 0.05, run in the page with a seeded generator. Numbers differ from the chapter’s Godot logs.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Seeds, noise and the same output twice">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Generating and checking</p>
+      <h2 class="t-chart">Seeds, noise and the same output twice</h2>
+      <div class="diagram build" data-build="seed" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Procedural content generation: seeds, noise, and proof”; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Value noise written for this page stands in for FastNoiseLite: smooth values in −1 to 1. Fingerprints are computed from the 64 numbers.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Heightmaps: CPU loop and compute shader">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Generating and checking</p>
+      <h2 class="t-chart">Heightmaps: CPU loop and compute shader</h2>
+      <div class="diagram build" data-build="hmap" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “Procedural content generation”; Chapter 7, the heightmap build; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>The chapter’s build multiplies simplex noise by a radial gradient and zeroes values under 0.2. The compute shader is explained in Chapter 6. Both grids here run on the CPU.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Validators, failure policy and the safety margin">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Generating and checking</p>
+      <h2 class="t-chart">Validators, failure policy and the safety margin</h2>
+      <div class="diagram build" data-build="valid" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “A validator makes it playable” and Lab B; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Levels are made in the page. Limits step 2 and jump 6 are the chapter’s Lab B values. A generator that can emit an impossible level is only half a system.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Authority, RPCs and replication">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Learning and networks</p>
+      <h2 class="t-chart">Authority, RPCs and replication</h2>
+      <div class="diagram build" data-build="net" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “High-level multiplayer: peers, authority, RPCs” and Lab C; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Overview only. 188.6, 113.0 and the 3 of 3 forged points are from the chapter’s Lab C logs; the lag and packet loss in the last step are simulated with a seed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Selector and sequence, state machine and tree, generate-and-test and constructive, utility AI and GOAP.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14; glossary, Game AI.</p>
+      <div class="speaker-notes" hidden><p>Five requests turned into exact ones, each with a computed chart.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust a Game AI change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust a Game AI change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 14, “What we actually ran”.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Game AI: decisions, generation and systems (Chapter 14) ================= */
+  var DEG = Math.PI / 180, GREY = "#909090";
+  /* ---------- pure computation (no drawing) ---------- */
+  function fnv(str) { var h = 2166136261 >>> 0; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return ("0000000" + h.toString(16)).slice(-8); }
+  function hash2(seed, i, ver) {
+    var m = ver ? 2246822519 : 1274126177;
+    var h = (Math.imul(i | 0, 374761393) + Math.imul(seed | 0, 668265263)) | 0;
+    h = Math.imul(h ^ (h >>> 13), m | 0); h ^= h >>> 16; return (h >>> 0) / 4294967296;
+  }
+  function vnoise(seed, x, ver) { var i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f), a = hash2(seed, i, ver) * 2 - 1, b = hash2(seed, i + 1, ver) * 2 - 1; return a + (b - a) * u; }
+  function vnoise2(seed, x, y, ver) {
+    var i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+    function c(ii, jj) { return hash2((seed ^ Math.imul(jj, 2654435761)) | 0, ii, ver) * 2 - 1; }
+    var a = c(i, j), b = c(i + 1, j), d = c(i, j + 1), e = c(i + 1, j + 1);
+    return (a + (b - a) * ux) * (1 - uy) + (d + (e - d) * ux) * uy;
+  }
+  function layers(seed, N, oct, ver) { var out = []; for (var o = 0; o < oct; o++) { var f = Math.pow(2, o), a = Math.pow(0.5, o), v = []; for (var i = 0; i < N; i++) v.push(a * vnoise(seed + o * 101, i / 8 * f, ver)); out.push(v); } return out; }
+  function fbm1(seed, N, oct, ver) { var L = layers(seed, N, oct, ver), norm = 0, o; for (o = 0; o < oct; o++) norm += Math.pow(0.5, o); var out = []; for (var i = 0; i < N; i++) { var s = 0; for (o = 0; o < oct; o++) s += L[o][i]; out.push(s / norm); } return out; }
+  function whiteNoise(seed, N) { var r = rng(seed), out = []; for (var i = 0; i < N; i++) out.push(r() * 2 - 1); return out; }
+  function roughness(v) { var s = 0; for (var i = 1; i < v.length; i++) s += Math.abs(v[i] - v[i - 1]); return s / (v.length - 1); }
+  function hashVals(v) { return fnv(v.map(function (x) { return x.toFixed(6); }).join(",")); }
+  function islandAt(seed, x, y, W, H, ver) {
+    var n = 0, norm = 0;
+    for (var o = 0; o < 3; o++) { var f = Math.pow(2, o), a = Math.pow(0.5, o); n += a * vnoise2(seed + o * 77, x / 9 * f, y / 9 * f, ver); norm += a; }
+    var v = (n / norm + 1) / 2, dx = (x - W / 2) / (W / 2), dy = (y - H / 2) / (H / 2), g = Math.max(0, 1 - Math.pow(Math.hypot(dx, dy), 2));
+    v *= g; return v < 0.2 ? 0 : v;
+  }
+  function islandGrid(seed, W, H, ver) { var out = []; for (var y = 0; y < H; y++) { var row = []; for (var x = 0; x < W; x++) row.push(islandAt(seed, x, y, W, H, ver)); out.push(row); } return out; }
+
+  /* finite state machine, scripted distances */
+  var FSM_D = [400, 320, 230, 200, 180, 250, 275, 285, 300, 310, 320, 330];
+  var FSM_ROWS = [["Patrol", "dist < 220", "Chase"], ["Chase", "dist > 260", "Search"], ["Search", "dist < 220", "Chase"], ["Search", "wait 2 ticks", "Patrol"]];
+  function fsmRun() {
+    var s = "Patrol", wait = 0, out = [];
+    FSM_D.forEach(function (d) {
+      var fired = -1;
+      if (s === "Patrol" && d < 220) { s = "Chase"; fired = 0; }
+      else if (s === "Chase" && d > 260) { s = "Search"; fired = 1; wait = 0; }
+      else if (s === "Search") { if (d < 220) { s = "Chase"; fired = 2; } else { wait++; if (wait >= 2) { s = "Patrol"; fired = 3; } } }
+      out.push({ d: d, s: s, f: fired });
+    });
+    return out;
+  }
+  /* noisy distance for flicker versus hysteresis */
+  function noisySignal(n) { var r = rng(11), out = []; for (var t = 0; t < n; t++) out.push(240 + 12 * Math.sin(t / 7) + (r() - 0.5) * 40); return out; }
+  function runThreshold(sig, enter, leave) {
+    var st = [], on = false, sw = 0;
+    sig.forEach(function (d) { var was = on; if (!on && d < enter) on = true; else if (on && d > leave) on = false; if (on !== was) sw++; st.push(on); });
+    return { st: st, sw: sw };
+  }
+
+  /* behaviour tree */
+  function btTick(n, bb, res, order) {
+    var r, i, c; order.push(n.id);
+    if (n.type === "sel") { r = "FAILURE"; for (i = 0; i < n.kids.length; i++) { c = btTick(n.kids[i], bb, res, order); if (c !== "FAILURE") { r = c; break; } } }
+    else if (n.type === "seq") { r = "SUCCESS"; for (i = 0; i < n.kids.length; i++) { c = btTick(n.kids[i], bb, res, order); if (c !== "SUCCESS") { r = c; break; } } }
+    else r = n.fn(bb);
+    res[n.id] = r; return r;
+  }
+  var BT = { type: "sel", id: "root", kids: [
+    { type: "seq", id: "seq1", kids: [{ type: "leaf", id: "can_see", fn: function (b) { return b.visible ? "SUCCESS" : "FAILURE"; } }, { type: "leaf", id: "chase", fn: function () { return "RUNNING"; } }] },
+    { type: "seq", id: "seq2", kids: [{ type: "leaf", id: "last_pos", fn: function (b) { return b.last ? "SUCCESS" : "FAILURE"; } }, { type: "leaf", id: "search", fn: function () { return "RUNNING"; } }] },
+    { type: "leaf", id: "patrol", fn: function () { return "RUNNING"; } }] };
+  var BT_SC = [{ visible: true, last: "(310, 220)" }, { visible: false, last: "(310, 220)" }, { visible: false, last: null }];
+  function btScenario(i) { var res = {}, order = []; btTick(BT, BT_SC[i], res, order); return { res: res, order: order, bb: BT_SC[i] }; }
+  function activeLeaf(res) { return ["chase", "search", "patrol"].filter(function (id) { return res[id] === "RUNNING"; })[0]; }
+  /* composite with preset child results */
+  function evalComp(type, kids) {
+    var ticked = [], r = type === "sel" ? "FAILURE" : "SUCCESS", stop = type === "sel" ? "FAILURE" : "SUCCESS";
+    for (var i = 0; i < kids.length; i++) { ticked.push(true); if (kids[i] !== stop) { r = kids[i]; break; } }
+    while (ticked.length < kids.length) ticked.push(false);
+    return { res: r, ticked: ticked };
+  }
+  var SEL_CASES = [["FAILURE", "SUCCESS", "FAILURE"], ["FAILURE", "FAILURE", "FAILURE"], ["FAILURE", "RUNNING", "FAILURE"]];
+  var SEQ_CASES = [["SUCCESS", "SUCCESS", "SUCCESS"], ["SUCCESS", "FAILURE", "SUCCESS"], ["SUCCESS", "RUNNING", "SUCCESS"]];
+
+  /* utility AI */
+  function utilScores(d, h) {
+    var c = 1 - d / 400;
+    var P = { chase: [0.7 * c * c, 0.3 * h], flee: [0.5 * c, 0.5 * (1 - h)], patrol: [0.6 * (1 - c), 0.4 * 0.5] }, S = {};
+    ["chase", "flee", "patrol"].forEach(function (k) { S[k] = P[k][0] + P[k][1]; });
+    var best = "chase"; ["flee", "patrol"].forEach(function (k) { if (S[k] > S[best]) best = k; });
+    return { P: P, S: S, best: best };
+  }
+
+  /* goal-oriented action planning */
+  var FACTS = ["at_key", "has_key", "at_door", "door_open"];
+  var ACTS = [
+    { n: "go_key", pre: [], add: ["at_key"], del: ["at_door"] },
+    { n: "take_key", pre: ["at_key"], add: ["has_key"], del: [] },
+    { n: "go_door", pre: [], add: ["at_door"], del: ["at_key"] },
+    { n: "open_door", pre: ["has_key", "at_door"], add: ["door_open"], del: [] }];
+  function okAct(a, st) { return a.pre.every(function (f) { return st[f]; }); }
+  function applyAct(a, st) { var o = {}; FACTS.forEach(function (f) { o[f] = st[f]; }); a.del.forEach(function (f) { o[f] = false; }); a.add.forEach(function (f) { o[f] = true; }); return o; }
+  function keyOf(st) { return FACTS.map(function (f) { return st[f] ? 1 : 0; }).join(""); }
+  function planBFS() {
+    var s0 = {}; FACTS.forEach(function (f) { s0[f] = false; });
+    var q = [{ st: s0, plan: [] }], seen = {}, expanded = 0; seen[keyOf(s0)] = 1;
+    while (q.length) {
+      var cur = q.shift(); expanded++;
+      if (cur.st.door_open) return { plan: cur.plan, expanded: expanded, start: s0 };
+      ACTS.forEach(function (a, i) { if (!okAct(a, cur.st)) return; var ns = applyAct(a, cur.st), k = keyOf(ns); if (seen[k]) return; seen[k] = 1; q.push({ st: ns, plan: cur.plan.concat([i]) }); });
+    }
+    return null;
+  }
+
+  /* rewards and discount */
+  var REW = [-0.01, -0.01, -0.01, -0.01, 1.0];
+  function discounted(g) { return REW.map(function (r, t) { return Math.pow(g, t) * r; }); }
+
+  /* tabular Q-learning, 5x5 grid, as the chapter's Lab A describes it (our own seeded generator) */
+  var GW = 5, MV = [[0, -1], [0, 1], [-1, 0], [1, 0]], PITS = [[1, 1], [3, 2]], GOAL = [4, 4];
+  function qStep(x, y, a) {
+    var nx = Math.max(0, Math.min(GW - 1, x + MV[a][0])), ny = Math.max(0, Math.min(GW - 1, y + MV[a][1]));
+    if (nx === GOAL[0] && ny === GOAL[1]) return { x: nx, y: ny, r: 1, done: true, win: true };
+    for (var i = 0; i < PITS.length; i++) if (nx === PITS[i][0] && ny === PITS[i][1]) return { x: nx, y: ny, r: -1, done: true, win: false };
+    return { x: nx, y: ny, r: -0.01, done: false, win: false };
+  }
+  function qTrain(seed, episodes, snaps) {
+    var r = rng(seed), Q = [], i; for (i = 0; i < GW * GW * 4; i++) Q.push(0);
+    var wins = [], eps = [], snap = {};
+    if (snaps.indexOf(0) >= 0) snap[0] = Q.slice();
+    for (var ep = 0; ep < episodes; ep++) {
+      var e = 1 - 0.95 * ep / (episodes - 1), x = 0, y = 0, won = false;
+      for (var st = 0; st < 50; st++) {
+        var s = y * GW + x, a;
+        if (r() < e) a = Math.floor(r() * 4); else { a = 0; for (i = 1; i < 4; i++) if (Q[s * 4 + i] > Q[s * 4 + a]) a = i; }
+        var o = qStep(x, y, a), s2 = o.y * GW + o.x, best = Math.max(Q[s2 * 4], Q[s2 * 4 + 1], Q[s2 * 4 + 2], Q[s2 * 4 + 3]);
+        Q[s * 4 + a] += 0.1 * (o.r + (o.done ? 0 : 0.95 * best) - Q[s * 4 + a]);
+        x = o.x; y = o.y; if (o.done) { won = o.win; break; }
+      }
+      wins.push(won ? 1 : 0); eps.push(e);
+      if (snaps.indexOf(ep + 1) >= 0) snap[ep + 1] = Q.slice();
+    }
+    return { Q: Q, wins: wins, eps: eps, snap: snap };
+  }
+  function greedyAct(Q, s) { var a = 0; for (var i = 1; i < 4; i++) if (Q[s * 4 + i] > Q[s * 4 + a]) a = i; return a; }
+  function greedyPath(Q) { var x = 0, y = 0, n = 0; for (; n < 20; n++) { var a = greedyAct(Q, y * GW + x), o = qStep(x, y, a); x = o.x; y = o.y; if (o.done) return { steps: n + 1, win: o.win }; } return { steps: n, win: false }; }
+  function rolling(w, k) { var out = []; for (var i = 0; i < w.length; i++) { var s = 0, c = 0; for (var j = Math.max(0, i - k + 1); j <= i; j++) { s += w[j]; c++; } out.push(s / c); } return out; }
+
+  /* levels and the validator */
+  var LIM = { step: 2, jump: 6 };
+  function genLevel(seed, constructive) {
+    var r = rng(seed * 7919 + 13), n = 24, h = [], cur = 2;
+    h.push(cur);
+    while (h.length < n) {
+      var gp = constructive ? 0.14 : 0.13;
+      if (r() < gp && !(constructive && h[h.length - 1] === 0)) { var gl = constructive ? 1 + Math.floor(r() * 4) : 1 + Math.floor(r() * 8); for (var j = 0; j < gl && h.length < n; j++) h.push(0); if (constructive && h.length < n) { h.push(Math.max(1, Math.min(6, (function () { for (var q = h.length - 1; q >= 0; q--) if (h[q] > 0) return h[q]; return 2; })() + Math.floor(r() * 4) - 2))); } }
+      else {
+        var last = 0; for (var b = h.length - 1; b >= 0; b--) if (h[b] > 0) { last = h[b]; break; }
+        var d = constructive ? Math.floor(r() * 4) - 2 : Math.floor(r() * 6) - 2;
+        cur = Math.max(1, Math.min(6, last + d)); h.push(cur);
+      }
+    }
+    if (constructive && h[n - 1] === 0) h[n - 1] = Math.max(1, h[n - 2] || 2);
+    return h;
+  }
+  function validate(h, jump) {
+    var n = h.length, reached = [], order = [], i; for (i = 0; i < n; i++) reached.push(false);
+    if (h[0] > 0) { reached[0] = true; order.push(0); }
+    for (var q = 0; q < order.length; q++) {
+      var c = order[q];
+      for (var j = Math.max(0, c - jump); j <= Math.min(n - 1, c + jump); j++) if (j !== c && h[j] > 0 && !reached[j] && h[j] - h[c] <= LIM.step) { reached[j] = true; order.push(j); }
+    }
+    var u = -1, why = "";
+    for (i = 0; i < n; i++) if (h[i] > 0 && !reached[i]) { u = i; break; }
+    var endGap = h[n - 1] === 0;
+    if (u < 0 && endGap) { u = n - 1; why = "the level ends in a gap"; }
+    else if (u >= 0) {
+      var r = -1; for (i = u - 1; i >= 0; i--) if (reached[i]) { r = i; break; }
+      if (r < 0) why = "the start column is empty";
+      else if (u - r > jump) why = "gap too wide: " + (u - r) + " columns, limit " + jump;
+      else why = "step too high: +" + (h[u] - h[r]) + ", limit " + LIM.step;
+    }
+    return { ok: u < 0 && !endGap && reached[n - 1], reached: reached, order: order, first: u, why: why };
+  }
+  var LV_A = [2, 2, 2, 3, 3, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 2, 2, 2, 2, 2, 2];
+  var LV_B = [2, 2, 3, 3, 3, 0, 0, 0, 2, 2, 3, 4, 4, 3, 3, 2, 2, 2, 0, 0, 2, 2, 2, 2];
+
+  /* two-peer rpc check */
+  function rpcAllowed(mode, caller, authority) { return mode === "any_peer" || caller === authority; }
+  function replicate(n) {
+    var r = rng(5), host = [], cli = [], last = 188.6, i;
+    for (i = 0; i < n; i++) host.push(i < 30 ? 188.6 + (113.0 - 188.6) * i / 29 : 113.0);
+    var inbox = {}; for (i = 0; i < n; i++) if (r() > 0.2) inbox[i + 3] = host[i];
+    for (i = 0; i < n; i++) { if (inbox[i] !== undefined) last = inbox[i]; cli.push(last); }
+    return { host: host, cli: cli };
+  }
+  /* tag: book = Chapter 14 uses and explains it; gloss = glossary row only */
+  var T = {
+    fsm: { n: "Finite state machine", tag: "book", m: "A set of states with transitions; one is active" },
+    table: { n: "Transition table", tag: "gloss", m: "A list of every state, condition and next state" },
+    flicker: { n: "Flicker", tag: "book", m: "Rapid back-and-forth switching between states" },
+    hyst: { n: "Hysteresis", tag: "book", m: "Different thresholds for switching on and off, to stop rapid switching" },
+    bt: { n: "Behavior tree", tag: "book", m: "A tree of nodes that decides what an agent does each tick" },
+    tick: { n: "Tick", tag: "book", m: "One update step; the tree is evaluated again from the root" },
+    result: { n: "Success/failure/running", tag: "book", m: "The three results a node can return; running means not finished, tick me again" },
+    bb: { n: "Blackboard", tag: "book", m: "A shared memory of facts the AI reads and writes" },
+    leaf: { n: "Condition and action", tag: "book", m: "A condition asks a question; an action does the work and may keep running" },
+    sel: { n: "Selector", tag: "book", m: "Tries children in order until one succeeds", alias: "Also called a fallback" },
+    seq: { n: "Sequence", tag: "book", m: "Runs children in order and stops at the first failure" },
+    util: { n: "Utility AI", tag: "gloss", m: "Scores every option and picks the highest" },
+    wsum: { n: "Weighted sum", tag: "gloss", m: "Adding scores, each multiplied by an importance weight" },
+    goap: { n: "GOAP", tag: "gloss", m: "Goal-oriented action planning: search for actions that reach a goal" },
+    preff: { n: "Precondition and effect", tag: "gloss", m: "Precondition: what must be true before an action runs. Effect: what it changes" },
+    rl: { n: "Reinforcement learning", tag: "book", m: "Learning behaviour by trial and reward" },
+    reward: { n: "Reward", tag: "book", m: "The number telling the agent how well it did" },
+    disc: { n: "Discount factor", tag: "book", m: "How much future reward is worth compared to now" },
+    q: { n: "Q-learning", tag: "book", m: "Learning the value of each action in each state" },
+    eps: { n: "Epsilon-greedy", tag: "book", m: "Take a random action with probability epsilon, otherwise the best known one" },
+    seed: { n: "Seed", tag: "book", m: "A number that fixes a random sequence", alias: "Pseudo-random: looks random, computed from a seed" },
+    coh: { n: "Coherent noise", tag: "book", m: "Random values that change smoothly (Perlin, simplex)" },
+    oct: { n: "Octave", tag: "gloss", m: "One layer of noise at a set scale, added to others" },
+    det: { n: "Determinism", tag: "book", m: "Same inputs and seed give the same output every run" },
+    hmap: { n: "Heightmap", tag: "book", m: "A grid with one height value per position" },
+    comp: { n: "Compute shader", tag: "book", m: "A GPU program run over many cells at once, outside the drawing pipeline" },
+    valid: { n: "Validator", tag: "book", m: "A check that tests generated content against rules" },
+    gentest: { n: "Generate-and-test", tag: "book", m: "Make content randomly, then reject what fails" },
+    constr: { n: "Constructive generation", tag: "book", m: "Build content by rules that guarantee validity" },
+    margin: { n: "Safety margin", tag: "book", m: "Extra room left so generated content never just barely passes" },
+    auth: { n: "Authority", tag: "book", m: "The part of the system allowed to change a value" },
+    rpc: { n: "RPC", tag: "book", m: "A function one computer asks another computer to run" },
+    repl: { n: "Replication", tag: "book", m: "Copying a value from the peer that owns it to the other peers" }
+  };
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function arrow(g, x1, y1, x2, y2, col, sw) {
+    col = col || INK; sw = sw || 3; var a = Math.atan2(y2 - y1, x2 - x1), hl = 16;
+    g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + (x2 - hl * 0.6 * Math.cos(a)) + "," + (y2 - hl * 0.6 * Math.sin(a))).attr("stroke", col).attr("stroke-width", sw).attr("fill", "none");
+    g.append("path").attr("d", "M" + x2 + "," + y2 + "L" + (x2 - hl * Math.cos(a - 0.4)) + "," + (y2 - hl * Math.sin(a - 0.4)) + "L" + (x2 - hl * Math.cos(a + 0.4)) + "," + (y2 - hl * Math.sin(a + 0.4)) + "Z").attr("fill", col);
+  }
+  /* a node box. mode: idle | on | S | F | R | dim */
+  function nbox(g, cx, cy, w, h, label, mode) {
+    var f = "#FFFFFF", s = INK, sw = 2.5, tf = INK;
+    if (mode === "on") { f = TINT; s = RED; sw = 4; }
+    else if (mode === "S") { f = INK; tf = "#FFFFFF"; }
+    else if (mode === "F") { f = RED; s = RED; tf = "#FFFFFF"; }
+    else if (mode === "R") { f = TINT; s = RED; sw = 4; }
+    else if (mode === "dim") { s = FAMILIAR; tf = MUTED; sw = 2; }
+    g.append("rect").attr("x", cx - w / 2 + 0.5).attr("y", cy - h / 2 + 0.5).attr("width", w).attr("height", h).attr("fill", f).attr("stroke", s).attr("stroke-width", sw);
+    return txt(g, cx, cy + 8, label, { size: 24, weight: 700, anchor: "middle", fill: tf });
+  }
+  function resMode(r) { return r === "SUCCESS" ? "S" : r === "FAILURE" ? "F" : r === "RUNNING" ? "R" : "dim"; }
+  function legend(g, y, items) {
+    var xs = [0, 190, 380, 570];
+    (items || ["S", "F", "R", "dim"]).forEach(function (m, i) {
+      var nm = { S: "SUCCESS", F: "FAILURE", R: "RUNNING", dim: "not ticked" }[m], x = xs[i];
+      g.append("rect").attr("x", x + 0.5).attr("y", y - 20).attr("width", 24).attr("height", 24).attr("fill", m === "S" ? INK : m === "F" ? RED : m === "R" ? TINT : "#FFFFFF").attr("stroke", m === "R" ? RED : m === "dim" ? FAMILIAR : INK).attr("stroke-width", 2.5);
+      txt(g, x + 34, y, nm, { size: 24, fill: BODY });
+    });
+  }
+  var MAPROWS = [
+    ["Deciding with states", "finite state machine, transition table, flicker, hysteresis", "A character that is in one mode at a time, and what stops it flipping"],
+    ["Trees, scores and plans", "behavior tree, tick, results, blackboard, condition and action, selector, sequence, utility AI, weighted sum, GOAP, precondition and effect", "Three ways to decide what to do next"],
+    ["Generating and checking", "seed, coherent noise, octave, determinism, heightmap, compute shader, validator, generate-and-test, constructive, safety margin", "Making levels from a seed, and proving they work"],
+    ["Learning and networks", "reinforcement learning, reward, discount factor, Q-learning, epsilon-greedy, authority, RPC, replication", "Behaviour learned from reward, and state shared by two computers"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of Game AI terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "33 terms from Chapter 14 and the glossary. Movement, perception and navigation are in the other Game AI deck.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 128, row = g.append("g");
+      box(row, 0, y, 1400, 116, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 117).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 28, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 28 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 470, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. finite state machine, transition table, flicker, hysteresis ---------- */
+  var SCOL = { Patrol: "P", Chase: "C", Search: "S" };
+  function fsmStrip(d, y0, upto, final) {
+    var run = fsmRun(); lab(d, 0, y0, "DISTANCE TO PLAYER, THEN STATE, PER TICK");
+    run.forEach(function (o, i) {
+      if (i >= upto) return;
+      var x = i * 62, ch = o.s === "Chase";
+      d.append("rect").attr("x", x + 0.5).attr("y", y0 + 14.5).attr("width", 58).attr("height", 96).attr("fill", ch ? TINT : "#FFFFFF").attr("stroke", o.f >= 0 ? RED : FAMILIAR).attr("stroke-width", o.f >= 0 ? 3 : 1.5);
+      txt(d, x + 29, y0 + 50, o.d, { size: 24, anchor: "middle", fill: BODY });
+      txt(d, x + 29, y0 + 96, SCOL[o.s], { size: 30, anchor: "middle", weight: 700, fill: ch ? RED : INK });
+    });
+  }
+  function renderFsm(el, k, anim) {
+    var svg = svgFor(el, W, H, "A state machine changes state only through its transitions; hysteresis stops flicker", "A guard with three states and four transitions, run through a scripted list of distances. Then a noisy distance with one threshold and with two.");
+    var ey = base(svg, [{ id: "fsm", s: 1 }, { id: "table", s: 2 }, { id: "flicker", s: 3 }, { id: "hyst", s: 4 }], k, anim, ["Flicker", "switching back and forth every tick"], ["Hysteresis", "two thresholds, so no flipping"]);
+    var d = svg.append("g"), rn = fsmRun();
+    if (k <= 2) {
+      var ST = { Patrol: [20, 60], Chase: [520, 60], Search: [265, 290] };
+      function draw(n) {
+        d.selectAll("*").remove();
+        var cur = n > 0 ? rn[n - 1].s : "Patrol", fired = n > 0 ? rn[n - 1].f : -1;
+        if (k === 1) {
+          lab(d, 0, 30, "A GUARD WITH THREE STATES");
+          arrow(d, 220, 95, 520, 95); cap(d, 370, 80, "dist < 220", { size: 24, anchor: "middle", fill: fired === 0 ? RED : BODY, weight: fired === 0 ? 700 : 400 });
+          arrow(d, 570, 130, 450, 290); cap(d, 495, 215, "dist > 260", { size: 24, anchor: "end", fill: fired === 1 ? RED : BODY, weight: fired === 1 ? 700 : 400 });
+          arrow(d, 290, 290, 140, 130); cap(d, 200, 240, "wait 2 ticks", { size: 24, anchor: "end", fill: fired === 3 ? RED : BODY, weight: fired === 3 ? 700 : 400 });
+          arrow(d, 465, 330, 680, 132); cap(d, 590, 262, "dist < 220", { size: 24, fill: fired === 2 ? RED : BODY, weight: fired === 2 ? 700 : 400 });
+          Object.keys(ST).forEach(function (s) { nbox(d, ST[s][0] + (s === "Search" ? 100 : 100), ST[s][1] + (s === "Search" ? 40 : 35), 200, 70, s, s === cur ? "on" : "idle"); });
+        } else {
+          lab(d, 0, 30, "THE SAME FOUR TRANSITIONS AS A TABLE");
+          var cxs = [14, 190, 460, 640];
+          ["FROM", "CONDITION", "TO", "FIRED"].forEach(function (h, i) { lab(d, cxs[i], 74, h); });
+          d.append("path").attr("d", "M0,90 H740").attr("stroke", INK).attr("stroke-width", 2);
+          FSM_ROWS.forEach(function (r, i) {
+            var y = 100 + i * 60, on = fired === i, cnt = rn.slice(0, n).filter(function (o) { return o.f === i; }).length;
+            box(d, 0, y, 740, 52, { stroke: on ? RED : FAMILIAR, sw: on ? 3 : 1.5, fill: on ? TINT : "#FFFFFF" });
+            cap(d, cxs[0], y + 35, r[0], { size: 24, weight: 700 }); mono(d, cxs[1], y + 35, r[1], { size: 24 }); cap(d, cxs[2], y + 35, r[2], { size: 24, weight: 700 }); cap(d, cxs[3] + 20, y + 35, cnt + "", { size: 24, weight: 700, fill: cnt ? RED : MUTED });
+          });
+        }
+        fsmStrip(d, k === 1 ? 410 : 380, n);
+        cap(d, 0, 548, n > 0 ? "tick " + n + ": distance " + rn[n - 1].d + ", state " + rn[n - 1].s : "tick 0: Patrol", { size: 24, weight: 700 });
+      }
+      var N = rn.length;
+      run(d, 7000, function (t) { draw(Math.min(N, Math.floor(t * N) + (t > 0 ? 1 : 0))); }, anim);
+    } else {
+      var sig = noisySignal(90), one = k === 3 ? runThreshold(sig, 240, 240) : null, two = runThreshold(sig, 220, 260), oneAll = runThreshold(sig, 240, 240);
+      var px = 40, pw = 700, yT = 70, yH = 250, lo = 190, hi = 290;
+      function yy(v) { return yT + (hi - v) / (hi - lo) * yH; }
+      function drawS(n) {
+        d.selectAll("*").remove();
+        lab(d, 0, 30, k === 3 ? "ONE THRESHOLD: CHASE WHEN DISTANCE < 240" : "TWO THRESHOLDS: ENTER < 220, LEAVE > 260");
+        d.append("rect").attr("x", px + 0.5).attr("y", yT + 0.5).attr("width", pw).attr("height", yH).attr("fill", "none").attr("stroke", FAMILIAR);
+        var lines = k === 3 ? [240] : [220, 260];
+        lines.forEach(function (v) { d.append("path").attr("d", "M" + px + "," + yy(v) + " H" + (px + pw)).attr("stroke", RED).attr("stroke-width", 2.5).attr("stroke-dasharray", "8 6"); cap(d, px + pw - 6, yy(v) - 8, v + "", { size: 24, anchor: "end", fill: RED, weight: 700 }); });
+        var pts = sig.slice(0, n).map(function (v, i) { return [px + i / (sig.length - 1) * pw, yy(v)]; });
+        d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        var res = k === 3 ? oneAll : two;
+        for (var i = 0; i < n; i++) if (res.st[i]) d.append("rect").attr("x", px + i / (sig.length - 1) * pw).attr("y", 330).attr("width", pw / sig.length + 0.5).attr("height", 46).attr("fill", RED);
+        d.append("rect").attr("x", px + 0.5).attr("y", 330.5).attr("width", pw).attr("height", 46).attr("fill", "none").attr("stroke", FAMILIAR);
+        var sw = 0; for (var j = 1; j < n; j++) if (res.st[j] !== res.st[j - 1]) sw++; if (n > 0 && res.st[0]) sw++;
+        cap(d, 0, 420, "state band: red = Chase, white = Patrol", { size: 24, fill: MUTED });
+        cap(d, 0, 470, "switches so far: " + sw, { size: 28, weight: 700, fill: RED });
+        cap(d, 0, 510, "distance in px, 90 ticks, the same noisy signal in both steps", { size: 24, fill: MUTED });
+        if (k === 4) cap(d, 0, 548, "one threshold gave " + oneAll.sw + " switches; two thresholds give " + two.sw, { size: 24, weight: 700 });
+      }
+      run(d, 6000, function (t) { drawS(Math.max(1, Math.round(t * sig.length))); }, anim);
+    }
+  }
+
+  /* ---------- 2. behavior tree ---------- */
+  var BTPOS = { root: [380, 80, 130], seq1: [157, 190, 130], seq2: [477, 190, 130], patrol: [690, 190, 120], can_see: [80, 300, 140], chase: [235, 300, 140], last_pos: [400, 300, 150], search: [555, 300, 140] };
+  var BTLAB = { root: "Selector", seq1: "Sequence", seq2: "Sequence", patrol: "patrol", can_see: "can_see", chase: "chase", last_pos: "last_pos", search: "search" };
+  var BTEDGE = [["root", "seq1"], ["root", "seq2"], ["root", "patrol"], ["seq1", "can_see"], ["seq1", "chase"], ["seq2", "last_pos"], ["seq2", "search"]];
+  function drawTree(d, sc, shown) {
+    BTEDGE.forEach(function (e) { var a = BTPOS[e[0]], b = BTPOS[e[1]]; d.append("path").attr("d", "M" + a[0] + "," + (a[1] + 26) + " L" + b[0] + "," + (b[1] - 26)).attr("stroke", GREY).attr("stroke-width", 2); });
+    Object.keys(BTPOS).forEach(function (id) {
+      var p = BTPOS[id], idx = sc.order.indexOf(id), mode = (idx >= 0 && idx < shown) ? resMode(sc.res[id]) : "dim";
+      nbox(d, p[0], p[1], p[2], 52, BTLAB[id], mode);
+    });
+  }
+  function renderBt(el, k, anim) {
+    var svg = svgFor(el, W, H, "A behavior tree is ticked from the root and every node returns a result", "A tree with a Selector at the root, two Sequences and a patrol action. Three ticks with different facts on the blackboard; each node is coloured by the result it returned.");
+    var ey = base(svg, [{ id: "bt", s: 1 }, { id: "tick", s: 2 }, { id: "result", s: 3 }, { id: "bb", s: 4 }], k, anim, ["Tick", "re-run the tree from the root"], ["Success/failure/running", "a node's three answers"]);
+    var d = svg.append("g"), g2 = svg.append("g");
+    legend(g2, 548);
+    var names = { chase: "Chase", search: "Search", patrol: "Patrol" };
+    if (k === 2) {
+      lab(g2, 0, 30, "THREE TICKS, THREE SETS OF FACTS");
+      run(d, 6000, function (t) {
+        d.selectAll("*").remove();
+        var i = Math.min(2, Math.floor(t * 3)), sc = btScenario(i); drawTree(d, sc, 99);
+        cap(d, 0, 405, "tick " + (i + 1) + " of 3: root " + sc.res.root + ", doing " + names[activeLeaf(sc.res)], { size: 26, weight: 700, fill: RED });
+        var seqs = [0, 1, 2].map(function (j) { var s2 = btScenario(j); return "tick " + (j + 1) + ": " + names[activeLeaf(s2.res)]; });
+        cap(d, 0, 455, seqs.join(", "), { size: 24, fill: BODY });
+        cap(d, 0, 500, "Each tick starts again at the root, so the choice can change.", { size: 24, fill: MUTED });
+      }, anim);
+    } else {
+      var i = k === 1 ? 0 : 1, sc = btScenario(i), n = sc.order.length;
+      lab(g2, 0, 30, k === 1 ? "TICK 1: THE PLAYER IS VISIBLE" : k === 3 ? "WHAT EACH NODE RETURNED (TICK 2)" : "THE BLACKBOARD (TICK 2)");
+      run(d, 3500, function (t) {
+        d.selectAll("*").remove();
+        var shown = anim && (k === 1 || k === 3) ? Math.floor(t * (n + 1)) : 99; drawTree(d, sc, shown);
+        if (k === 1) cap(d, 0, 405, "can_see returned SUCCESS, so chase ran and returned RUNNING.", { size: 24, weight: 700 }), cap(d, 0, 450, "The Selector stopped at its first child that did not fail.", { size: 24, fill: MUTED });
+        if (k === 3) {
+          var cnt = { SUCCESS: 0, FAILURE: 0, RUNNING: 0 }; sc.order.forEach(function (id) { cnt[sc.res[id]]++; });
+          cap(d, 0, 405, "Nodes ticked: " + n + " of 8.  SUCCESS " + cnt.SUCCESS + ", FAILURE " + cnt.FAILURE + ", RUNNING " + cnt.RUNNING + ".", { size: 24, weight: 700 });
+          cap(d, 0, 450, "patrol was never ticked: the Selector stopped at Sequence 2.", { size: 24, fill: MUTED });
+        }
+        if (k === 4) {
+          box(d, 0, 385, 740, 130, { stroke: INK, sw: 2.5 }); lab(d, 14, 415, "BLACKBOARD");
+          mono(d, 14, 455, "player_visible = " + sc.bb.visible, { size: 24, fill: sc.bb.visible ? INK : RED, weight: 700 }); mono(d, 14, 495, "last_pos = " + sc.bb.last, { size: 24, weight: 700 });
+          cap(d, 420, 455, "can_see reads the first", { size: 24 }); cap(d, 420, 495, "last_pos reads the second", { size: 24 });
+        }
+      }, anim && (k === 1 || k === 3));
+    }
+  }
+
+  /* ---------- 3. condition, action, selector, sequence ---------- */
+  function renderComp(el, k, anim) {
+    var svg = svgFor(el, W, H, "Conditions and actions are leaves; a selector and a sequence stop at different results", "Leaf results over six ticks, then three selector cases and three sequence cases, each with the children that were ticked and the result of the parent.");
+    var ey = base(svg, [{ id: "leaf", s: 1 }, { id: "sel", s: 2 }, { id: "seq", s: 3 }], k, anim, ["Selector", "OR with priority"], ["Sequence", "AND with order"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "LEAF RESULTS, TICK BY TICK");
+      var vis = [false, true, true, true, true, false], dist = 4, rows = [];
+      var act = vis.map(function (v, i) { return null; }), done = false, a = [];
+      for (var t = 0; t < 6; t++) { if (!done) { dist--; if (dist <= 0) { a.push("SUCCESS"); done = true; } else a.push("RUNNING"); } else a.push(null); }
+      cap(d, 0, 82, "Condition: can_see?", { size: 24, weight: 700 });
+      cap(d, 0, 230, "Action: chase", { size: 24, weight: 700 });
+      cap(d, 0, 400, "A condition answers at once. An action returns RUNNING until it arrives.", { size: 24, fill: MUTED });
+      vis.forEach(function (v, i) {
+        var x = i * 123, c1 = v ? "SUCCESS" : "FAILURE", g1 = d.append("g"), g2 = d.append("g");
+        nbox(g1, x + 60, 130, 120, 56, c1.slice(0, 7), resMode(c1)); lab(g1, x + 60, 190, "tick " + (i + 1), { anchor: "middle" });
+        nbox(g2, x + 60, 280, 120, 56, a[i] ? a[i].slice(0, 7) : "done", a[i] ? resMode(a[i]) : "dim"); lab(g2, x + 60, 340, "tick " + (i + 1), { anchor: "middle" });
+        fade(g1, anim, i * 300); fade(g2, anim, i * 300 + 150);
+      });
+      cap(d, 0, 470, "chase moved 1 tile per tick over 4 ticks and arrived on tick 4.", { size: 24, weight: 700, fill: RED });
+    } else {
+      var cases = k === 2 ? SEL_CASES : SEQ_CASES, tp = k === 2 ? "sel" : "seq", nm = k === 2 ? "Selector" : "Sequence";
+      lab(d, 0, 30, k === 2 ? "SELECTOR: STOPS AT FIRST NON-FAILURE" : "SEQUENCE: STOPS AT FIRST NON-SUCCESS");
+      cases.forEach(function (c, i) {
+        var cy = 100 + i * 150, ev = evalComp(tp, c), g = d.append("g");
+        var xs = [330, 480, 630]; xs.forEach(function (x) { g.append("path").attr("d", "M150," + cy + " L" + x + "," + cy).attr("stroke", GREY).attr("stroke-width", 2); });
+        nbox(g, 90, cy, 130, 56, nm, resMode(ev.res));
+        c.forEach(function (r, j) { nbox(g, xs[j], cy, 130, 56, ev.ticked[j] ? r : "skipped", ev.ticked[j] ? resMode(r) : "dim"); });
+        var skipped = ev.ticked.filter(function (x) { return !x; }).length;
+        cap(g, 0, cy + 62, "returns " + ev.res + (skipped ? "; " + skipped + " child" + (skipped > 1 ? "ren" : "") + " not ticked" : "; all ticked"), { size: 24, weight: 700, fill: ev.res === "FAILURE" ? RED : INK });
+        fade(g, A(anim, k, k), i * 500);
+      });
+    }
+    legend(svg.append("g"), 548);
+  }
+
+  /* ---------- 4. utility AI and weighted sum ---------- */
+  var UCOL = { chase: RED, flee: INK, patrol: GREY };
+  function renderUtil(el, k, anim) {
+    var svg = svgFor(el, W, H, "Utility AI scores every option and picks the highest", "Bars of three option scores while the distance to the player falls, with the winner in red. Then stacked bars that show each score as a weighted sum of two inputs.");
+    var ey = base(svg, [{ id: "util", s: 1 }, { id: "wsum", s: 2 }], k, anim, ["Utility AI", "score every option now"], ["GOAP", "search for a plan of actions"]);
+    var d = svg.append("g"), names = ["chase", "flee", "patrol"];
+    if (k <= 1) {
+      var xs = 60, xw = 680, y0 = 300, yh = 220;
+      function draw(dist) {
+        d.selectAll("*").remove();
+        var u = utilScores(dist, 0.8);
+        lab(d, 0, 30, "SCORES AT DISTANCE " + Math.round(dist) + " PX, HEALTH 0.8");
+        names.forEach(function (nme, i) {
+          var y = 52 + i * 52, w = u.S[nme] * 560;
+          cap(d, 0, y + 30, nme, { size: 24, weight: u.best === nme ? 700 : 400, fill: u.best === nme ? RED : BODY });
+          d.append("rect").attr("x", 110).attr("y", y + 6).attr("width", w).attr("height", 32).attr("fill", u.best === nme ? RED : FAMILIAR);
+          cap(d, 110 + w + 10, y + 30, u.S[nme].toFixed(2), { size: 24, weight: 700, fill: u.best === nme ? RED : BODY });
+        });
+        d.append("rect").attr("x", xs + 0.5).attr("y", y0 + 0.5).attr("width", xw).attr("height", yh).attr("fill", "none").attr("stroke", FAMILIAR);
+        names.forEach(function (nme) {
+          var pts = d3.range(0, 401, 10).map(function (v) { return [xs + (400 - v) / 400 * xw, y0 + yh - utilScores(v, 0.8).S[nme] * yh]; });
+          d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", UCOL[nme]).attr("stroke-width", 3);
+        });
+        var cx = xs + (400 - dist) / 400 * xw; d.append("path").attr("d", "M" + cx + "," + y0 + " V" + (y0 + yh)).attr("stroke", RED).attr("stroke-width", 2).attr("stroke-dasharray", "6 5");
+        cap(d, xs, y0 + yh + 32, "400 px", { size: 24, fill: MUTED }); cap(d, xs + xw, y0 + yh + 32, "0 px", { size: 24, fill: MUTED, anchor: "end" }); cap(d, xs + xw / 2, y0 + yh + 32, "distance to player", { size: 24, fill: MUTED, anchor: "middle" });
+        cap(d, xs, y0 - 8, "score curves: black flee, grey patrol, red chase", { size: 24, fill: MUTED });
+      }
+      run(d, 5000, function (t) { draw(400 - 300 * t); }, anim);
+    } else {
+      lab(d, 0, 30, "SCORES AT 150 PX AND HEALTH 0.3");
+      var u = utilScores(150, 0.3), c = 1 - 150 / 400, why = { chase: ["0.7 × c²", "0.3 × health"], flee: ["0.5 × c", "0.5 × (1 − health)"], patrol: ["0.6 × (1 − c)", "0.4 × 0.5"] };
+      names.forEach(function (nme, i) {
+        var y = 60 + i * 130, g = d.append("g"), win = u.best === nme, p = u.P[nme];
+        cap(g, 0, y + 28, nme + ": " + p[0].toFixed(2) + " + " + p[1].toFixed(2) + " = " + u.S[nme].toFixed(2), { size: 26, weight: 700, fill: win ? RED : INK });
+        bar(g, 0, y + 44, p[0] * 600, 36, win ? RED : GREY, anim, i * 250); bar(g, p[0] * 600, y + 44, p[1] * 600, 36, win ? "#E89AA6" : FAMILIAR, anim, i * 250);
+        cap(g, 0, y + 106, why[nme][0] + "  +  " + why[nme][1], { size: 24, fill: MUTED });
+      });
+      var u8 = utilScores(150, 0.8);
+      cap(d, 0, 470, "Same distance, health 0.8: " + u8.best + " wins with " + u8.S[u8.best].toFixed(2) + ".", { size: 24, weight: 700 });
+      cap(d, 0, 510, "c = closeness = 1 − distance / 400 = " + c.toFixed(3) + ". Weights are illustrative.", { size: 24, fill: MUTED });
+    }
+  }
+
+  /* ---------- 5. GOAP ---------- */
+  function renderGoap(el, k, anim) {
+    var svg = svgFor(el, W, H, "GOAP searches for a plan; preconditions and effects are what it searches over", "A goal of opening a door. A search over world states finds a four-step plan, shown with the facts true after each step. Then each action's precondition and effect, and which actions are allowed in the current state.");
+    var ey = base(svg, [{ id: "goap", s: 1 }, { id: "preff", s: 2 }], k, anim, ["GOAP", "search for a plan toward a goal"], ["Utility AI", "score every option right now"]);
+    var d = svg.append("g"), P = planBFS(), st = P.start, states = [st];
+    P.plan.forEach(function (i) { st = applyAct(ACTS[i], st); states.push(st); });
+    if (k === 1) {
+      lab(d, 0, 30, "GOAL: door_open. PLAN FOUND BY SEARCH");
+      P.plan.forEach(function (ai, j) {
+        var x = j * 188, g = d.append("g"), s2 = states[j + 1];
+        nbox(g, x + 85, 100, 170, 56, ACTS[ai].n, j === P.plan.length - 1 ? "on" : "idle");
+        FACTS.forEach(function (f, r) { mono(g, x, 190 + r * 40, (s2[f] ? "✓ " : "· ") + f, { size: 24, weight: s2[f] ? 700 : 400, fill: s2[f] ? INK : MUTED }); });
+        fade(g, anim, j * 600);
+      });
+      cap(d, 0, 400, "Facts that are true after each step. The last step makes the goal true.", { size: 24, fill: MUTED });
+      cap(d, 0, 450, "The search tried " + P.expanded + " world states to find a " + P.plan.length + "-step plan.", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 30, "WHAT EACH ACTION NEEDS AND CHANGES");
+      var cxs = [14, 175, 410, 672];
+      ["ACTION", "NEEDS", "GIVES", "NOW?"].forEach(function (h, i) { lab(d, cxs[i], 74, h); });
+      d.append("path").attr("d", "M0,90 H740").attr("stroke", INK).attr("stroke-width", 2);
+      var cur = d.append("g");
+      function draw(si) {
+        cur.selectAll("*").remove(); var s = states[si];
+        ACTS.forEach(function (a, i) {
+          var y = 100 + i * 66, ok = okAct(a, s);
+          box(cur, 0, y, 740, 58, { stroke: FAMILIAR });
+          mono(cur, cxs[0], y + 38, a.n, { size: 24, weight: 700 }); mono(cur, cxs[1], y + 38, a.pre.length ? a.pre.join(", ") : "nothing", { size: 24, fill: a.pre.length ? INK : MUTED });
+          mono(cur, cxs[2], y + 38, "+" + a.add[0] + (a.del.length ? " −" + a.del[0] : ""), { size: 24 });
+          cap(cur, cxs[3], y + 38, ok ? "yes" : "no", { size: 24, weight: 700, fill: ok ? INK : RED });
+        });
+        var now = FACTS.filter(function (f) { return s[f]; });
+        cap(cur, 0, 410, "After plan step " + si + ", true now:", { size: 24, weight: 700 });
+        mono(cur, 0, 450, now.length ? now.join(", ") : "nothing yet", { size: 24, fill: RED, weight: 700 });
+        cap(cur, 0, 500, "open_door is blocked until both of its preconditions are true.", { size: 24, fill: MUTED });
+      }
+      run(cur, 4200, function (t) { draw(Math.min(2, Math.floor(t * 3))); }, anim);
+    }
+  }
+
+  /* ---------- 6. reward, return, discount ---------- */
+  function renderRl1(el, k, anim) {
+    var svg = svgFor(el, W, H, "The agent acts, the environment answers with a state and a reward", "A loop between an agent and an environment, a six-cell corridor walked to the goal, the five rewards of that walk and their sum, then the same rewards discounted with two discount factors.");
+    var ey = base(svg, [{ id: "rl", s: 1 }, { id: "reward", s: 2 }, { id: "disc", s: 3 }], k, anim, ["Reward", "the number for one step"], ["Return", "all rewards added up over time"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "ONE EPISODE IN A SIX-CELL CORRIDOR");
+      nbox(d, 110, 100, 180, 56, "agent", "idle"); nbox(d, 630, 100, 180, 56, "environment", "idle");
+      arrow(d, 205, 88, 535, 88); cap(d, 370, 72, "action: right", { size: 24, anchor: "middle", weight: 700 });
+      arrow(d, 535, 120, 205, 120, RED); cap(d, 370, 158, "new cell, reward", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      var tok = d.append("g"), info = d.append("g");
+      for (var i = 0; i < 6; i++) { box(d, 20 + i * 116, 230, 108, 90, { stroke: i === 5 ? RED : INK, sw: i === 5 ? 3 : 2, fill: i === 5 ? TINT : "#FFFFFF" }); cap(d, 74 + i * 116, 285, i === 5 ? "goal" : i + "", { size: 24, anchor: "middle", weight: 700, fill: i === 5 ? RED : INK }); }
+      function pos(n) {
+        tok.selectAll("*").remove(); info.selectAll("*").remove();
+        tok.append("circle").attr("cx", 74 + n * 116).attr("cy", 350).attr("r", 18).attr("fill", RED);
+        cap(info, 0, 420, n === 0 ? "step 0: start, no reward yet" : "step " + n + ": action right, reward " + sgn(REW[n - 1], 2), { size: 26, weight: 700 });
+        cap(info, 0, 470, n === 5 ? "reached the goal: the episode ends" : "each step costs 0.01", { size: 24, fill: MUTED });
+      }
+      run(d, 4000, function (t) { pos(Math.min(5, Math.floor(t * 6))); }, anim);
+    } else if (k === 2) {
+      lab(d, 0, 30, "REWARD AT EACH STEP OF THE SAME EPISODE");
+      var base0 = 330, sc = 240;
+      d.append("path").attr("d", "M40," + base0 + " H740").attr("stroke", INK).attr("stroke-width", 2);
+      REW.forEach(function (r, i) {
+        var h = Math.max(Math.abs(r) * sc, 4), g = d.append("g"), x = 70 + i * 130;
+        bar(g, x, r >= 0 ? base0 - h : base0, 70, h, r >= 0 ? RED : GREY, anim, i * 250);
+        cap(g, x + 35, base0 + (r >= 0 ? 40 : h + 40), "step " + (i + 1), { size: 24, anchor: "middle", fill: MUTED });
+        cap(g, x + 35, (r >= 0 ? base0 - h : base0 + h + 70) + (r >= 0 ? -10 : 0), sgn(r, 2), { size: 24, anchor: "middle", weight: 700, fill: r >= 0 ? RED : BODY });
+      });
+      cap(d, 0, 470, "Sum of the rewards, the return: " + sgn(d3.sum(REW), 2), { size: 28, weight: 700, fill: RED });
+      cap(d, 0, 510, "four small step costs and one goal reward", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "EACH REWARD × γ TO THE POWER OF ITS STEP");
+      [0.95, 0.5].forEach(function (gm, r) {
+        var y0 = 230 + r * 230, vals = discounted(gm), g = d.append("g");
+        cap(g, 0, y0 - 150, "γ = " + gm, { size: 26, weight: 700, fill: r ? RED : INK });
+        d.append("path").attr("d", "M0," + y0 + " H520").attr("stroke", INK).attr("stroke-width", 2);
+        vals.forEach(function (v, i) { var h = Math.max(Math.abs(v) * 130, 3); bar(g, 20 + i * 100, y0 - h, 64, h, r ? RED : GREY, anim, i * 200); });
+        cap(g, 540, y0 - 60, "last reward counts", { size: 24, fill: MUTED }); cap(g, 540, y0 - 28, vals[4].toFixed(3), { size: 26, weight: 700, fill: r ? RED : INK });
+        cap(g, 540, y0 + 8, "discounted return " + d3.sum(vals).toFixed(2), { size: 24, weight: 700, fill: r ? RED : INK });
+      });
+    }
+  }
+
+  /* ---------- 7. Q-learning and epsilon-greedy ---------- */
+  var QSNAP = [0, 10, 50, 150, 500], QT = null;
+  function qdata() { if (!QT) QT = qTrain(42, 500, QSNAP); return QT; }
+  var ARW = ["↑", "↓", "←", "→"];
+  function renderRl2(el, k, anim) {
+    var svg = svgFor(el, W, H, "Q-learning fills a table; epsilon-greedy decides when to explore", "A five by five grid with two pits and a goal. The best action in each cell after 0, 10, 50, 150 and 500 episodes of seeded training. Then epsilon falling over training, and the success rate of the last 25 training episodes.");
+    var ey = base(svg, [{ id: "q", s: 1 }, { id: "eps", s: 2 }], k, anim, ["Q-learning", "learns from reward, off-policy"], ["Epsilon-greedy", "sometimes explores at random"]);
+    var d = svg.append("g"), qd = qdata();
+    if (k === 1) {
+      function draw(si) {
+        d.selectAll("*").remove(); var ep = QSNAP[si], Q = qd.snap[ep], gp = greedyPath(Q);
+        lab(d, 0, 30, "BEST ACTION IN EACH CELL, AFTER " + ep + " EPISODES");
+        for (var y = 0; y < GW; y++) for (var x = 0; x < GW; x++) {
+          var s = y * GW + x, pit = PITS.some(function (p) { return p[0] === x && p[1] === y; }), goal = x === GOAL[0] && y === GOAL[1];
+          var any = Q.slice(s * 4, s * 4 + 4).some(function (v) { return v !== 0; });
+          d.append("rect").attr("x", x * 96 + 0.5).attr("y", 50 + y * 96 + 0.5).attr("width", 94).attr("height", 94).attr("fill", pit ? RED : goal ? INK : "#FFFFFF").attr("stroke", x === 0 && y === 0 ? RED : FAMILIAR).attr("stroke-width", x === 0 && y === 0 ? 4 : 1.5);
+          if (pit || goal) cap(d, x * 96 + 47, 50 + y * 96 + 62, pit ? "pit" : "goal", { size: 24, anchor: "middle", weight: 700, fill: "#FFFFFF" });
+          else cap(d, x * 96 + 47, 50 + y * 96 + 64, any ? ARW[greedyAct(Q, s)] : "·", { size: 40, anchor: "middle", weight: 700, fill: any ? INK : FAMILIAR });
+        }
+        cap(d, 500, 90, "episodes", { size: 24, fill: MUTED }); cap(d, 500, 128, ep + "", { size: 36, weight: 700, fill: RED });
+        cap(d, 500, 190, "greedy path", { size: 24, fill: MUTED });
+        cap(d, 500, 226, gp.win ? gp.steps + " steps" : "no goal", { size: 30, weight: 700, fill: gp.win ? INK : RED });
+        cap(d, 500, 262, gp.win ? "to the goal" : "within 20", { size: 24, fill: MUTED });
+        cap(d, 500, 330, "red outline = start", { size: 24, fill: MUTED });
+        cap(d, 500, 366, "α 0.1, γ 0.95", { size: 24, fill: MUTED });
+      }
+      run(d, 5000, function (t) { draw(Math.min(4, Math.floor(t * 5))); }, anim);
+    } else {
+      var px = 70, pw = 660, py = 120, ph = 270, roll = rolling(qd.wins, 25);
+      lab(d, 0, 30, "TRAINING, 500 EPISODES");
+      d.append("rect").attr("x", px + 0.5).attr("y", py + 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR);
+      [0, 0.5, 1].forEach(function (v) { cap(d, px - 10, py + ph - v * ph + 8, v + "", { size: 24, anchor: "end", fill: MUTED }); });
+      function ln(arr, col) { var pts = arr.map(function (v, i) { return [px + i / 499 * pw, py + ph - v * ph]; }); return d.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", col).attr("stroke-width", 3); }
+      var l1 = ln(qd.eps, INK), l2 = ln(roll, RED);
+      if (anim) { drawIn(l1, 0, 1800); drawIn(l2, 300, 1800); }
+      cap(d, 0, 66, "ε, the exploration rate (black)", { size: 24, weight: 700 }); cap(d, 0, 96, "success over the last 25 episodes (red)", { size: 24, weight: 700, fill: RED });
+      cap(d, px, py + ph + 34, "episode 0", { size: 24, fill: MUTED }); cap(d, px + pw, py + ph + 34, "500", { size: 24, fill: MUTED, anchor: "end" });
+      var first = -1; for (var i = 0; i < roll.length; i++) if (roll[i] >= 0.8) { first = i; break; }
+      cap(d, 0, 470, "ε falls from 1.00 to " + qd.eps[499].toFixed(2) + ": early on most moves are random.", { size: 24, weight: 700 });
+      cap(d, 0, 505, "Success first reaches 80% at episode " + first + ", and ends at " + Math.round(roll[499] * 100) + "%.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 540, "Our own seeded run; the chapter's logs differ.", { size: 24, fill: MUTED });
+    }
+  }
+
+  /* ---------- 8. seed, coherent noise, octave, determinism ---------- */
+  function strip(g, x, y, w, h, vals, col, anim, delay) {
+    g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h).attr("fill", "none").attr("stroke", FAMILIAR);
+    g.append("path").attr("d", "M" + x + "," + (y + h / 2) + " H" + (x + w)).attr("stroke", FAMILIAR).attr("stroke-dasharray", "4 4");
+    var pts = vals.map(function (v, i) { return [x + i / (vals.length - 1) * w, y + h / 2 - v * h / 2 * 0.95]; });
+    var p = g.append("path").attr("d", d3.line()(pts)).attr("fill", "none").attr("stroke", col).attr("stroke-width", 3);
+    if (anim) drawIn(p, delay || 0, 900);
+    return p;
+  }
+  function renderSeed(el, k, anim) {
+    var svg = svgFor(el, W, H, "A seed fixes the sequence; noise makes it smooth; octaves layer it", "Noise strips generated in the page from a seed. The same seed twice matches exactly and another seed differs. Then white noise against coherent noise, three octaves and their sum, and a fingerprint of each run.");
+    var ey = base(svg, [{ id: "seed", s: 1 }, { id: "coh", s: 2 }, { id: "oct", s: 3 }, { id: "det", s: 4 }], k, anim, ["Seed", "the starting number"], ["Determinism", "same seed, same output"]);
+    var d = svg.append("g"), N = 64, a = fbm1(42, N, 1), b = fbm1(42, N, 1), c = fbm1(7, N, 1);
+    function mx(u, v) { var m = 0; for (var i = 0; i < u.length; i++) m = Math.max(m, Math.abs(u[i] - v[i])); return m; }
+    if (k === 1) {
+      lab(d, 0, 30, "SMOOTH NOISE FROM A SEED, 64 SAMPLES");
+      [["seed 42, run 1", a, INK], ["seed 42, run 2", b, INK], ["seed 7", c, RED]].forEach(function (r, i) {
+        var y = 60 + i * 130; cap(d, 0, y + 22, r[0], { size: 24, weight: 700, fill: r[2] }); strip(d, 0, y + 34, 740, 76, r[1], r[2], anim, i * 400);
+      });
+      cap(d, 0, 478, "run 1 against run 2: largest difference " + mx(a, b).toFixed(6), { size: 24, weight: 700 });
+      cap(d, 0, 518, "seed 42 against seed 7: largest difference " + mx(a, c).toFixed(2), { size: 24, weight: 700, fill: RED });
+    } else if (k === 2) {
+      var w = whiteNoise(42, N);
+      lab(d, 0, 30, "NEIGHBOURS: UNRELATED OR RELATED");
+      [["white noise: no link to neighbours", w, GREY], ["coherent noise: neighbours are close", a, RED]].forEach(function (r, i) {
+        var y = 60 + i * 170; cap(d, 0, y + 22, r[0], { size: 24, weight: 700, fill: i ? RED : BODY }); strip(d, 0, y + 34, 740, 110, r[1], r[2], anim, i * 500);
+      });
+      cap(d, 0, 450, "mean jump between neighbours: white " + roughness(w).toFixed(2) + ", coherent " + roughness(a).toFixed(2), { size: 24, weight: 700 });
+      cap(d, 0, 490, "values stay in −1 to 1 (largest here: " + Math.max.apply(null, a.map(Math.abs)).toFixed(2) + ")", { size: 24, fill: MUTED });
+    } else if (k === 3) {
+      var L = layers(42, N, 3, 0), sum = fbm1(42, N, 3), norm = 1.75;
+      lab(d, 0, 30, "THREE OCTAVES, THEN THEIR SUM ÷ " + norm);
+      [["octave 1: scale ×1, strength 1", L[0].map(function (v) { return v; }), GREY], ["octave 2: scale ×2, strength 0.5", L[1].map(function (v) { return v / 0.5; }), GREY], ["octave 3: scale ×4, strength 0.25", L[2].map(function (v) { return v / 0.25; }), GREY], ["sum of the three", sum, RED]].forEach(function (r, i) {
+        var y = 52 + i * 118; cap(d, 0, y + 22, r[0], { size: 24, weight: 700, fill: i === 3 ? RED : BODY }); strip(d, 0, y + 30, 740, 70, r[1], r[2], anim, i * 400);
+      });
+      cap(d, 0, 540, "finer layers add detail on top of the large shape", { size: 24, fill: MUTED });
+    } else {
+      var runs = [["seed 42, run 1", hashVals(a), 0], ["seed 42, run 2", hashVals(b), 0], ["seed 7", hashVals(c), 1], ["seed 42, generator changed", hashVals(fbm1(42, N, 1, 1)), 1]];
+      lab(d, 0, 30, "A FINGERPRINT OF EACH RUN'S 64 NUMBERS");
+      runs.forEach(function (r, i) {
+        var y = 60 + i * 100, g = d.append("g"), same = r[1] === runs[0][1];
+        box(g, 0, y, 740, 80, { stroke: same ? INK : RED, sw: 2.5 });
+        cap(g, 20, y + 50, r[0], { size: 26, weight: 700 }); mono(g, 400, y + 50, r[1], { size: 28, weight: 700, fill: same ? INK : RED });
+        cap(g, 600, y + 50, i === 0 ? "reference" : same ? "identical" : "different", { size: 24, weight: 700, fill: same ? INK : RED });
+        fade(g, A(anim, k, k), i * 350);
+      });
+      cap(d, 0, 500, "Reproducible only on the same generator: the chapter says to store", { size: 24, fill: MUTED });
+      cap(d, 0, 530, "the data if a level must survive an engine upgrade.", { size: 24, fill: MUTED });
+    }
+  }
+
+  /* ---------- 9. heightmap and compute shader ---------- */
+  function hcol(v) { return v === 0 ? "#F6F6F6" : d3.interpolateRgb("#C4C4C4", "#2A1A0E")(Math.min(1, (v - 0.2) / 0.5)); }
+  function renderHmap(el, k, anim) {
+    var svg = svgFor(el, W, H, "A heightmap is noise times an island gradient; a compute shader fills every cell at once", "A 48 by 32 grid of heights generated from a seed. Then two small grids: a loop that fills one cell at a time and a compute shader that fills all of them together.");
+    var ey = base(svg, [{ id: "hmap", s: 1 }, { id: "comp", s: 2 }], k, anim, ["Heightmap", "values on a grid"], ["Compute shader", "one program, many cells"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      var Wd = 48, Hd = 32, G = islandGrid(42, Wd, Hd, 0), cs = 14, land = 0;
+      lab(d, 0, 30, "SEED 42: NOISE × RADIAL GRADIENT, BELOW 0.2 → 0");
+      var cells = [];
+      G.forEach(function (row, y) { row.forEach(function (v, x) { if (v > 0) land++; var r = d.append("rect").attr("x", x * cs).attr("y", 50 + y * cs).attr("width", cs + 0.4).attr("height", cs + 0.4).attr("fill", hcol(v)); if (anim) r.attr("opacity", 0).transition().delay(y * 90).duration(200).attr("opacity", 1); }); });
+      cap(d, 0, 548, "land cells: " + land + " of " + Wd * Hd + ", highest " + d3.max(G, function (r) { return d3.max(r); }).toFixed(2), { size: 24, weight: 700 });
+    } else {
+      var Wc = 24, Hc = 16, Gc = islandGrid(42, Wc, Hc, 0), cs2 = 15, same = true;
+      lab(d, 0, 30, "SAME FORMULA, TWO WAYS TO RUN IT");
+      var L = d.append("g").attr("transform", "translate(0,90)"), R = d.append("g").attr("transform", "translate(390,90)");
+      cap(d, 0, 78, "loop: one cell after another", { size: 24, weight: 700 }); cap(d, 390, 78, "compute shader: all at once", { size: 24, weight: 700, fill: RED });
+      var gpu = d3.range(Hc).map(function (y) { return d3.range(Wc).map(function (x) { return islandAt(42, x, y, Wc, Hc, 0); }); });
+      for (var y = 0; y < Hc; y++) for (var x = 0; x < Wc; x++) if (gpu[y][x] !== Gc[y][x]) same = false;
+      function drawL(n) { L.selectAll("*").remove(); for (var i = 0; i < Wc * Hc; i++) { var x2 = i % Wc, y2 = Math.floor(i / Wc); L.append("rect").attr("x", x2 * cs2).attr("y", y2 * cs2).attr("width", cs2 + 0.4).attr("height", cs2 + 0.4).attr("fill", i < n ? hcol(Gc[y2][x2]) : "#FFFFFF").attr("stroke", i === n ? RED : "none"); } }
+      function drawR(on) { R.selectAll("*").remove(); for (var y2 = 0; y2 < Hc; y2++) for (var x2 = 0; x2 < Wc; x2++) R.append("rect").attr("x", x2 * cs2).attr("y", y2 * cs2).attr("width", cs2 + 0.4).attr("height", cs2 + 0.4).attr("fill", on ? hcol(gpu[y2][x2]) : "#FFFFFF"); }
+      run(d, 4500, function (t) { drawL(Math.floor(t * Wc * Hc)); drawR(t > 0.08); }, anim);
+      cap(d, 0, 380, "cells that differ between the two: " + (same ? 0 : "some") + " of " + Wc * Hc, { size: 26, weight: 700, fill: RED });
+      cap(d, 0, 424, "The loop needs " + Wc * Hc + " steps in turn. The shader runs one", { size: 24, fill: BODY });
+      cap(d, 0, 454, "copy of the formula per cell, together on the GPU.", { size: 24, fill: BODY });
+      cap(d, 0, 500, "Both run on the CPU here. In the chapter's build, GPU", { size: 24, fill: MUTED });
+      cap(d, 0, 530, "output matching the CPU output is still unchecked.", { size: 24, fill: MUTED });
+    }
+  }
+
+  /* ---------- 10. validator, generate-and-test, constructive, safety margin ---------- */
+  function drawLevel(g, h, x0, y0, vr, upto, label) {
+    var cw = 31, u = 24;
+    var reached = {}; vr.order.slice(0, upto).forEach(function (c) { reached[c] = true; });
+    g.append("path").attr("d", "M0," + y0 + " H744").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    h.forEach(function (v, i) {
+      if (v > 0) {
+        var r = reached[i], bad = i === vr.first;
+        g.append("rect").attr("x", i * cw + 0.5).attr("y", y0 - v * u + 0.5).attr("width", cw - 3).attr("height", v * u).attr("fill", r ? INK : "#FFFFFF").attr("stroke", bad ? RED : r ? INK : GREY).attr("stroke-width", bad ? 4 : 2);
+      }
+    });
+    if (vr.first >= 0 && upto >= vr.order.length) {
+      var fx = vr.first * cw + cw / 2 - 1.5; cap(g, fx, y0 + 34, "×", { size: 32, weight: 700, anchor: "middle", fill: RED });
+    }
+  }
+  function renderValid(el, k, anim) {
+    var svg = svgFor(el, W, H, "A validator rejects impossible levels; a failure policy decides what happens next", "Two side-view levels checked by flood fill from the first column, with the first unreachable column marked. Then sixty seeds under generate-and-test and under constructive generation, and the effect of a safety margin on 200 seeds.");
+    var ey = base(svg, [{ id: "valid", s: 1 }, { id: "gentest", s: 2 }, { id: "constr", s: 3 }, { id: "margin", s: 4 }], k, anim, ["Generate-and-test", "make it, check it, re-roll"], ["Constructive", "built so it cannot fail"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "FLOOD FILL: STEP ≤ 2, JUMP ≤ 6 COLUMNS");
+      var A_ = validate(LV_A, LIM.jump), B_ = validate(LV_B, LIM.jump);
+      var gA = d.append("g").attr("transform", "translate(0,0)"), gB = d.append("g");
+      cap(d, 0, 64, "level A: " + (A_.ok ? "accepted" : "rejected"), { size: 26, weight: 700, fill: A_.ok ? INK : RED });
+      cap(d, 0, 304, "level B: " + (B_.ok ? "accepted" : "rejected"), { size: 26, weight: 700, fill: B_.ok ? INK : RED });
+      var nA = A_.order.length, nB = B_.order.length;
+      run(d, 4200, function (t) {
+        gA.selectAll("*").remove(); gB.selectAll("*").remove();
+        drawLevel(gA, LV_A, 0, 200, A_, Math.floor(t * (nA + 1)), "A"); drawLevel(gB, LV_B, 0, 440, B_, Math.floor(t * (nB + 1)), "B");
+      }, anim);
+      cap(d, 0, 268, A_.ok ? "every column reached" : "first column it cannot reach: " + A_.first + " (" + A_.why + ")", { size: 24, fill: BODY, weight: 700 });
+      cap(d, 0, 476, B_.ok ? "every column reached: " + nB + " of " + LV_B.filter(function (v) { return v > 0; }).length + " solid columns" : "fails: " + B_.why, { size: 24, weight: 700 });
+      cap(d, 0, 548, "black = reached, outlined = not reached", { size: 24, fill: MUTED });
+    } else if (k === 2 || k === 3) {
+      var cons = k === 3, pass = 0, firstFive = 0, got = 0;
+      lab(d, 0, 30, cons ? "SEEDS 1 TO 60, BUILT BY RULES" : "SEEDS 1 TO 60, MADE AT RANDOM, THEN CHECKED");
+      for (var s = 1; s <= 60; s++) {
+        var ok = validate(genLevel(s, cons), LIM.jump).ok; if (ok) { pass++; got++; if (got === 5 && !firstFive) firstFive = s; }
+        var i = s - 1, r = d.append("rect").attr("x", (i % 12) * 58 + 0.5).attr("y", 52 + Math.floor(i / 12) * 58 + 0.5).attr("width", 52).attr("height", 52).attr("fill", ok ? INK : RED);
+        if (anim) r.attr("opacity", 0).transition().delay(i * 45).duration(150).attr("opacity", 1);
+      }
+      cap(d, 0, 380, "accepted: " + pass + " of 60  (" + Math.round(pass / 60 * 100) + "%)", { size: 28, weight: 700, fill: RED });
+      if (!cons) { cap(d, 0, 425, "Policy: reject and re-roll. Five playable levels took", { size: 24, fill: BODY }); cap(d, 0, 455, firstFive + " seeds, so " + (firstFive - 5) + " levels were thrown away.", { size: 24, fill: BODY, weight: 700 }); }
+      else { cap(d, 0, 425, "No re-roll needed, and the validator still runs", { size: 24, fill: BODY }); cap(d, 0, 455, "as the check that the rules worked.", { size: 24, fill: BODY, weight: 700 }); }
+      cap(d, 0, 505, "black = accepted, red = rejected. One square per seed.", { size: 24, fill: MUTED });
+    } else {
+      var c6 = 0, c5 = 0, ends = 0;
+      for (var s2 = 1; s2 <= 200; s2++) { var lv = genLevel(s2, false); if (validate(lv, 6).ok) c6++; if (validate(lv, 5).ok) c5++; if (lv[lv.length - 1] === 0) ends++; }
+      lab(d, 0, 30, "LEVELS ACCEPTED OF 200 SEEDS");
+      [["limit 6 (no margin)", c6, GREY], ["limit 5 (margin of 1)", c5, RED]].forEach(function (r, i) {
+        var y = 70 + i * 120; cap(d, 0, y + 24, r[0], { size: 26, weight: 700, fill: i ? RED : BODY });
+        bar(d, 0, y + 40, r[1] / c6 * 600, 44, r[2], anim, i * 400); cap(d, r[1] / c6 * 600 + 12, y + 74, r[1] + "", { size: 28, weight: 700, fill: i ? RED : BODY });
+      });
+      cap(d, 0, 350, (c6 - c5) + " levels need the full 6-column jump to be crossable.", { size: 24, weight: 700 });
+      cap(d, 0, 390, "A level that passes only by a hair fails the first time", { size: 24, fill: BODY }); cap(d, 0, 420, "the player's jump is a little short.", { size: 24, fill: BODY });
+      cap(d, 0, 470, "In " + ends + " of the 200 levels the last column is a gap, so no jump helps.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 515, "The margin of 1 is illustrative.", { size: 24, fill: MUTED });
+    }
+  }
+
+  /* ---------- 11. authority, RPC, replication ---------- */
+  function renderNet(el, k, anim) {
+    var svg = svgFor(el, W, H, "Only the owner of a value may change it; replication copies it to the other peer", "Two peers, a host and a client. The client's call to move the host's paddle is rejected. Then two RPC modes and what each lets a client do. Then the host's paddle height and the client's copy over 60 ticks.");
+    var ey = base(svg, [{ id: "auth", s: 1 }, { id: "rpc", s: 2 }, { id: "repl", s: 3 }], k, anim, ["Authority", "who may change the value"], ["Replication", "copies the value to others"]);
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "PLAYER1 BELONGS TO THE HOST (AUTHORITY 1)");
+      [[0, "host, id 1", INK], [500, "client", RED]].forEach(function (p) {
+        box(d, p[0], 60, 260, 330, { stroke: p[2], sw: 3 }); cap(d, p[0] + 130, 100, p[1], { size: 26, weight: 700, anchor: "middle", fill: p[2] });
+        d.append("rect").attr("x", p[0] + 115).attr("y", 140 + 188.6 * 0.5).attr("width", 30).attr("height", 70).attr("fill", p[2]);
+        cap(d, p[0] + 130, 360, "Player1 y = 188.6", { size: 24, anchor: "middle" });
+      });
+      var m = d.append("g");
+      run(m, 3500, function (t) {
+        m.selectAll("*").remove();
+        var x = 300 + (440 - 300) * 0, px = 440 - 140 * Math.min(1, t / 0.5);
+        arrow(m, 500, 200, 260, 200, RED);
+        if (t > 0.5) { cap(m, 380, 170, "×", { size: 52, weight: 700, anchor: "middle", fill: RED }); }
+        cap(m, 380, 240, "set_pos_and_motion", { size: 24, anchor: "middle", fill: BODY });
+        cap(m, 380, 268, "(y = −999)", { size: 24, anchor: "middle", fill: BODY });
+      }, anim);
+      cap(d, 0, 430, "The call is refused: the mode is authority, and the host owns it.", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 470, "authority 1 ≠ caller " + "(client id is not 1)", { size: 24, fill: BODY });
+      cap(d, 0, 510, "Host y stays 188.6: the client could not teleport it.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 30, "THREE CLIENT CALLS, TWO RPC MODES");
+      var RP = [["update_score", "any_peer", "score on host: 0 → "], ["set_pos_and_motion", "authority", "Player1 y on host: "]];
+      RP.forEach(function (r, j) {
+        var y = 60 + j * 200, acc = 0, g = d.append("g");
+        mono(g, 0, y + 20, r[0] + "  @rpc(" + r[1] + ")", { size: 24, weight: 700, fill: j ? INK : RED });
+        for (var i = 0; i < 3; i++) {
+          var ok = rpcAllowed(r[1], 2, 1); if (ok) acc++;
+          var cg = g.append("g"); nbox(cg, 66 + i * 140, y + 70, 124, 56, ok ? "accepted" : "refused", ok ? "S" : "F"); fade(cg, A(anim, k, k), i * 350 + j * 150);
+          lab(cg, 66 + i * 140, y + 118, "call " + (i + 1), { anchor: "middle" });
+        }
+        cap(g, 0, y + 156, j ? "accepted " + acc + " of 3; host's Player1 is unchanged" : "accepted " + acc + " of 3; " + r[2] + acc, { size: 24, weight: 700, fill: j ? INK : RED });
+      });
+      cap(d, 0, 470, "Chapter 14's audit: a client forged 3 of 3 points through the", { size: 24, fill: BODY }); cap(d, 0, 500, "any_peer score RPC. The default mode, authority, blocks that.", { size: 24, fill: BODY });
+    } else {
+      var rp = replicate(60), px = 60, pw = 680, py = 60, ph = 250, mxd = 0;
+      lab(d, 0, 30, "PLAYER1 HEIGHT OVER 60 TICKS");
+      d.append("rect").attr("x", px + 0.5).attr("y", py + 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR);
+      function Y(v) { return py + (v - 100) / 100 * ph; }
+      rp.host.forEach(function (h, i) { mxd = Math.max(mxd, Math.abs(h - rp.cli[i])); });
+      var l1 = d.append("path").attr("d", d3.line()(rp.host.map(function (v, i) { return [px + i / 59 * pw, Y(v)]; }))).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      var l2 = d.append("path").attr("d", d3.line().curve(d3.curveStepAfter)(rp.cli.map(function (v, i) { return [px + i / 59 * pw, Y(v)]; }))).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+      if (anim) { drawIn(l1, 0, 1800); drawIn(l2, 300, 1800); }
+      cap(d, 0, 350, "host's value (black), client's copy (red)", { size: 24, weight: 700 });
+      cap(d, 0, 400, "largest gap while moving: " + mxd.toFixed(1) + " px", { size: 24, weight: 700 });
+      cap(d, 0, 440, "gap at tick 60: " + Math.abs(rp.host[59] - rp.cli[59]).toFixed(1) + " px", { size: 24, weight: 700, fill: RED });
+      cap(d, 0, 490, "Each tick the host sends its value. 3 ticks late and 1 packet", { size: 24, fill: BODY }); cap(d, 0, 520, "in 5 lost, so the copy lags and then catches up.", { size: 24, fill: BODY });
+    }
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from Game AI", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Selector", "Tries children until one succeeds"], ["Sequence", "Runs children until one fails"]],
+      [["Finite state machine", "Exits are stored on each state"], ["Behavior tree", "Priority is the order of the tree"]],
+      [["Generate-and-test", "Make at random, reject the bad"], ["Constructive", "Build so it cannot be bad"]],
+      [["Utility AI", "Score every option, pick the top"], ["GOAP", "Search for a plan toward a goal"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function cells(G, comp, t, kids) {
+      var ev = evalComp(comp, kids), n = Math.min(3, Math.floor(t * 4));
+      nbox(G, 120, 150, 180, 56, comp === "sel" ? "Selector" : "Sequence", n >= 3 || t > 0.9 ? resMode(ev.res) : "idle");
+      kids.forEach(function (r, i) { var on = i < n && ev.ticked[i]; nbox(G, 40 + i * 120, 290, 112, 56, on ? r.slice(0, 7) : ev.ticked[i] ? "" : "skipped", on ? resMode(r) : "dim"); G.append("path").attr("d", "M120,178 L" + (40 + i * 120) + ",262").attr("stroke", GREY).attr("stroke-width", 2); });
+      cap(G, 20, 400, t > 0.7 ? "returns " + ev.res : "", { size: 26, weight: 700, fill: RED });
+    }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(40,0)"), RG = R.append("g").attr("transform", "translate(40,0)");
+      if (i === 0) { cells(LG, "sel", t, ["FAILURE", "SUCCESS", "FAILURE"]); cells(RG, "seq", t, ["SUCCESS", "FAILURE", "SUCCESS"]); }
+      else if (i === 1) {
+        var add = Math.min(1, t * 1.4);
+        cap(LG, 20, 130, "add “flee when hurt”:", { size: 24, fill: MUTED }); cap(RG, 20, 130, "add “flee when hurt”:", { size: 24, fill: MUTED });
+        var edges = 3, branches = 1;
+        d3.range(edges).forEach(function (j) { LG.append("rect").attr("x", 20 + j * 90).attr("y", 200).attr("width", 70).attr("height", 70).attr("fill", j / edges < add ? RED : "#FFFFFF").attr("stroke", RED).attr("stroke-width", 2.5); });
+        d3.range(branches).forEach(function (j) { RG.append("rect").attr("x", 20 + j * 90).attr("y", 200).attr("width", 70).attr("height", 70).attr("fill", j / branches < add ? RED : "#FFFFFF").attr("stroke", RED).attr("stroke-width", 2.5); });
+        cap(LG, 20, 330, "3 new exit edges + a state", { size: 24, weight: 700 }); cap(RG, 20, 330, "1 new branch at the left", { size: 24, weight: 700 });
+      } else if (i === 2) {
+        var m = Math.floor(t * 12);
+        d3.range(12).forEach(function (j) {
+          var ok1 = validate(genLevel(j + 1, false), 6).ok, ok2 = validate(genLevel(j + 1, true), 6).ok, on = j < m;
+          LG.append("rect").attr("x", (j % 6) * 56 + 20).attr("y", 150 + Math.floor(j / 6) * 56).attr("width", 48).attr("height", 48).attr("fill", on ? (ok1 ? INK : RED) : "#FFFFFF").attr("stroke", FAMILIAR);
+          RG.append("rect").attr("x", (j % 6) * 56 + 20).attr("y", 150 + Math.floor(j / 6) * 56).attr("width", 48).attr("height", 48).attr("fill", on ? (ok2 ? INK : RED) : "#FFFFFF").attr("stroke", FAMILIAR);
+        });
+        var p1 = 0, p2 = 0; for (var s = 1; s <= 12; s++) { if (validate(genLevel(s, false), 6).ok) p1++; if (validate(genLevel(s, true), 6).ok) p2++; }
+        cap(LG, 20, 330, "seeds 1 to 12: " + p1 + " accepted", { size: 24, weight: 700 }); cap(RG, 20, 330, "seeds 1 to 12: " + p2 + " accepted", { size: 24, weight: 700 });
+      } else {
+        var u = utilScores(150, 0.8), P = planBFS(), n = Math.floor(t * 5);
+        ["chase", "flee", "patrol"].forEach(function (nme, j) { var w = Math.min(1, t * 1.5) * u.S[nme] * 300; LG.append("rect").attr("x", 20).attr("y", 150 + j * 56).attr("width", w).attr("height", 40).attr("fill", u.best === nme ? RED : FAMILIAR); cap(LG, 30 + w, 182 + j * 56, nme, { size: 24, weight: u.best === nme ? 700 : 400 }); });
+        P.plan.forEach(function (ai, j) { var on = j < n; nbox(RG, 75, 170 + j * 62, 150, 48, ACTS[ai].n, on ? "on" : "dim"); if (j) RG.append("path").attr("d", "M75," + (170 + j * 62 - 24) + " V" + (170 + (j - 1) * 62 + 24)).attr("stroke", GREY).attr("stroke-width", 2); });
+        cap(LG, 20, 400, "one choice, made now", { size: 24, weight: 700 }); cap(RG, 220, 230, "a plan of " + P.plan.length + " actions", { size: 24, weight: 700 });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "stop the guard jittering", x: "Start chasing under 220 px, stop only over 260 px: two thresholds" },
+    { v: "make the levels random but fair", x: "Generate from a seed, run the validator, reject any level that fails" },
+    { v: "make the AI choose sensibly", x: "Score every option from 0 to 1 using distance and health; take the highest" },
+    { v: "make it repeatable", x: "Set seed 42, run twice, and compare the output byte for byte" },
+    { v: "don't let a client cheat", x: "Leave the RPC on authority mode; the host checks who is calling" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague requests to an agent turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    var sig = noisySignal(90);
+    if (k === 1) { var o = runThreshold(sig, 240, 240).sw, t2 = runThreshold(sig, 220, 260).sw; [["one threshold", o, "#C4C4C4"], ["two thresholds", t2, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": " + r[1] + " switches", { size: 24 }); bar(p, 14, 84 + i * 110, 600 * r[1] / o, 40, r[2], anim, i * 400); }); nt = o + " switches become " + t2; }
+    else if (k === 2) { var ac = 0; for (var s = 1; s <= 200; s++) if (validate(genLevel(s, false), 6).ok) ac++; [["accepted", ac, INK], ["rejected", 200 - ac, RED]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": " + r[1] + " of 200 seeds", { size: 24 }); bar(p, 14, 84 + i * 110, 600 * r[1] / 200, 40, r[2], anim, i * 400); }); nt = "only " + ac + " of 200 raw levels can be crossed"; }
+    else if (k === 3) { var u = utilScores(150, 0.8); ["chase", "flee", "patrol"].forEach(function (nme, i) { cap(p, 14, 60 + i * 80, nme + " " + u.S[nme].toFixed(2), { size: 24, weight: u.best === nme ? 700 : 400, fill: u.best === nme ? RED : BODY }); bar(p, 14, 72 + i * 80, u.S[nme] * 600, 30, u.best === nme ? RED : "#C4C4C4", anim, i * 300); }); nt = u.best + " wins at 150 px, health 0.8"; }
+    else if (k === 4) { var h1 = hashVals(fbm1(42, 64, 1)), h2 = hashVals(fbm1(42, 64, 1)), h3 = hashVals(fbm1(7, 64, 1)); [["run 1, seed 42", h1, INK], ["run 2, seed 42", h2, INK], ["seed 7", h3, RED]].forEach(function (r, i) { cap(p, 14, 60 + i * 80, r[0], { size: 24 }); mono(p, 14, 98 + i * 80, r[1], { size: 28, weight: 700, fill: r[2] }); var c = p.append("g"); cap(c, 330, 98 + i * 80, i === 1 ? (h1 === h2 ? "identical" : "different") : i === 2 ? "different" : "reference", { size: 24, weight: 700, fill: r[2] }); fade(c, anim, i * 300); }); nt = "same seed, same fingerprint"; }
+    else { [["any_peer", rpcAllowed("any_peer", 2, 1) ? 3 : 0, RED], ["authority", rpcAllowed("authority", 2, 1) ? 3 : 0, INK]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + ": client calls accepted " + r[1] + " of 3", { size: 24 }); bar(p, 14, 84 + i * 110, 600 * r[1] / 3 + 4, 40, r[2], anim, i * 400); }); nt = "3 forged points in Chapter 14's audit; 0 with authority"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Can the validator reject an impossible output, and what happens to it then?",
+    "Does the same seed give identical output twice, on a pinned engine?",
+    "Are the on and off thresholds different, so the state cannot flicker?",
+    "Which node returned RUNNING last tick, and does the composite remember it?",
+    "Who has authority over this value, and does the receiver check the caller?",
+    "Does the test read only observable state, never the machine's internals?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust a Game AI change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 76, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it fair”, but “validate every seed, reject failures”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, fsm: { steps: 4, render: renderFsm }, bt: { steps: 4, render: renderBt }, comp: { steps: 3, render: renderComp },
+    util: { steps: 2, render: renderUtil }, goap: { steps: 2, render: renderGoap }, rl1: { steps: 3, render: renderRl1 }, rl2: { steps: 2, render: renderRl2 },
+    seed: { steps: 4, render: renderSeed }, hmap: { steps: 2, render: renderHmap }, valid: { steps: 4, render: renderValid }, net: { steps: 3, render: renderNet },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

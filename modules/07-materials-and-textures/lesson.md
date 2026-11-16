@@ -270,7 +270,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to audit 
 
 ## The next step
 
-This module completes Assignment 5, "A Shader and a Material That Say Something About Your Game", which covers Modules 6 and 7 and is due about Day 50. Module 6 covered the shader half; Module 8 turns to reviewing a shader change that looks right and is not. Read the companion chapter, [Chapter 7 — Materials and Textures](../../chapters/07-materials-and-textures.md), for the full run, the transcripts and the Unity and Unreal comparison.
+This module completes Assignment 5, "Shaders, Materials, and the Godot Shading Language", which covers Modules 6 and 7 and is due October 29. Module 6 covered the shader half; Module 8 turns to reviewing a shader change that looks right and is not. Read the companion chapter, [Chapter 7 — Materials and Textures](../../chapters/07-materials-and-textures.md), for the full run, the transcripts and the Unity and Unreal comparison.
 
 ## If you know Unity or Unreal
 

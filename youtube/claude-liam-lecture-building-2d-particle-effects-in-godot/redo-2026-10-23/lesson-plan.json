@@ -1,0 +1,1076 @@
+{
+  "slug": "claude-liam-lecture-building-2d-particle-effects-in-godot",
+  "title": "Building 2D Particle Effects in Godot",
+  "payoff": "Build a burst and a trail you can reuse",
+  "summary": "Build, trigger, and test a burst and a continuous effect.",
+  "framing": "How do we make particles behave on purpose? We will connect emission, motion, and drawing, then test the effect through the input that uses it.",
+  "question": "How do we make particles\nbehave by chance?",
+  "trigger": "chance",
+  "replacement": "design",
+  "terms": [
+    {
+      "term": "Emitter",
+      "meaning": "The source of new particles"
+    },
+    {
+      "term": "Material",
+      "meaning": "A resource that controls behavior or drawing"
+    },
+    {
+      "term": "Signal",
+      "meaning": "A notification that something happened"
+    },
+    {
+      "term": "Lifetime",
+      "meaning": "How long one particle remains alive"
+    }
+  ],
+  "body": [
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "This is our test arena: one marker, a dark half, and a light half. Keep those references steady. A useful particle effect has to read at the size and contrast where the game will use it.",
+      "actions": [
+        {
+          "op": "open",
+          "path": "res://arena.tscn"
+        },
+        {
+          "at": 1,
+          "op": "zoom"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "Add G P U Particles Two D to the arena. The node controls how many particles exist and when they are born. Its empty process slot is the next part of the construction, not evidence that the effect is finished.",
+      "actions": [
+        {
+          "op": "add",
+          "class_name": "GPUParticles2D",
+          "name": "Burst",
+          "properties": {
+            "position": {
+              "v2": [
+                0,
+                100
+              ]
+            },
+            "amount": 48,
+            "lifetime": 0.8,
+            "use_fixed_seed": true,
+            "seed": 7270
+          },
+          "checkpoint": true
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "Create a Particle Process Material in that slot. This resource owns motion and variation. Turn Disable Z on, so this two-dimensional effect stays in its plane. The node and its resource answer different questions.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "process_material",
+          "value": {
+            "new": "ParticleProcessMaterial"
+          },
+          "node": "Burst"
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "particle_flag_disable_z",
+          "value": true,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "disable z"
+        },
+        {
+          "at": 4,
+          "op": "resource",
+          "node": "Burst",
+          "property": "process_material"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "The first particles are tiny. Assign our procedural soft-dot texture and they become legible. This is the draw part of the effect. A running simulation can be difficult to see when its visible mark is missing.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "texture",
+          "value": {
+            "resource": "res://assets/soft-dot.tres"
+          },
+          "node": "Burst"
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "scale_min",
+          "value": 0.4,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale"
+        },
+        {
+          "at": 0.7,
+          "op": "set",
+          "property": "scale_max",
+          "value": 0.8,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "Set the launch direction upward, with negative Y. Give it a speed range from one hundred to two hundred twenty. New particles rise away from the marker. Speed changes travel; it does not change how many are born.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "direction",
+          "value": {
+            "v3": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "direction"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "initial_velocity_min",
+          "value": 100,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 220,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "Gravity is positive one hundred forty on Y. The launch begins upward, then bends down. Set gravity to zero for a straight comparison. Restore it before changing the burst schedule, so we can still explain the difference.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              140,
+              0
+            ]
+          },
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              0,
+              0
+            ]
+          },
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        },
+        {
+          "at": 8,
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              140,
+              0
+            ]
+          },
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "Now inspect the resource and the node separately. Direction, gravity, and speed live in the process material. Amount, lifetime, and one shot live on the particle node. Looking in the right place makes tuning much less mysterious.",
+      "actions": [
+        {
+          "op": "resource",
+          "node": "Burst",
+          "property": "process_material"
+        },
+        {
+          "at": 5,
+          "op": "select",
+          "node": "Burst"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make The First Particle Visible",
+      "narration": "Keep the texture fixed and move the same effect across both backgrounds. Its pale center reads differently against the light area. We are checking visibility, not changing the physics to compensate for a drawing problem.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "position",
+          "value": {
+            "v2": [
+              -250,
+              100
+            ]
+          },
+          "node": "Burst"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "position",
+          "value": {
+            "v2": [
+              250,
+              100
+            ]
+          },
+          "node": "Burst"
+        },
+        {
+          "at": 9,
+          "op": "set",
+          "property": "position",
+          "value": {
+            "v2": [
+              0,
+              100
+            ]
+          },
+          "node": "Burst"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Turn One Shot on. Restart the emitter and watch one complete emission cycle. It stops making new particles, while the existing particles finish their lives. One shot alone does not make every particle appear at the same instant.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Shape A Burst",
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "one_shot",
+          "value": true,
+          "node": "Burst"
+        },
+        {
+          "at": 0.6,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        },
+        {
+          "at": 4,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Set Explosiveness to one and restart. The particles now arrive together, giving the event a crisp onset. Compare it with zero, where births are distributed through the cycle. This control changes timing, not the texture.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "explosiveness",
+          "value": 1,
+          "node": "Burst"
+        },
+        {
+          "at": 0.3,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "explosiveness",
+          "value": 0,
+          "node": "Burst"
+        },
+        {
+          "at": 4.3,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        },
+        {
+          "at": 8,
+          "op": "set",
+          "property": "explosiveness",
+          "value": 1,
+          "node": "Burst"
+        },
+        {
+          "at": 8.3,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Open spread to one hundred eighty degrees. The burst expands around its origin. Narrow it to twenty-five and it points like a small spray. Pick the silhouette that communicates the event, then keep that choice consistent.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "spread",
+          "value": 180,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "spread",
+          "value": 25,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        },
+        {
+          "at": 8,
+          "op": "set",
+          "property": "spread",
+          "value": 180,
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Forty-eight particles make this burst. Double the amount and replay it, then return to forty-eight. The denser result is not automatically clearer. Count is a design control, and it is only one part of rendering cost.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "amount",
+          "value": 96,
+          "node": "Burst",
+          "restart": true
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "amount",
+          "value": 48,
+          "node": "Burst",
+          "restart": true
+        },
+        {
+          "at": 8,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Attach the size curve. Each particle starts small, grows quickly, and shrinks toward its exit. The curve follows normalized lifetime, so the same shape applies to every particle even when the overall lifetime changes.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "scale_curve",
+          "value": {
+            "resource": "res://assets/size-over-life.tres"
+          },
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale"
+        },
+        {
+          "at": 4,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        },
+        {
+          "at": 8,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Attach the color ramp. A pale hot center gives way to orange and then zero alpha. The gradual fade belongs to the drawing, while lifetime still controls when the particle dies. Those two endings should agree.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "color_ramp",
+          "value": {
+            "resource": "res://assets/color-over-life.tres"
+          },
+          "node": "Burst",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "color"
+        },
+        {
+          "at": 4,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        },
+        {
+          "at": 8,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Lengthen lifetime from eight tenths to one point four seconds and replay. The particles have more time to travel. Restore eight tenths for this pickup: a short event needs a short, readable acknowledgement, rather than a lingering cloud.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "lifetime",
+          "value": 1.4,
+          "node": "Burst",
+          "restart": true
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "lifetime",
+          "value": 0.8,
+          "node": "Burst",
+          "restart": true
+        },
+        {
+          "at": 9,
+          "op": "call",
+          "node": "Burst",
+          "method": "restart"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Shape A Burst",
+      "narration": "Save the burst as its own scene, initially inactive. Give its visibility rectangle room for the full path. The saved resource now carries the emission, motion, and drawing choices together, ready for a trigger to instantiate it.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "visibility_rect",
+          "value": {
+            "rect": [
+              -400,
+              -400,
+              800,
+              800
+            ]
+          },
+          "node": "Burst"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Burst"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "emitting",
+          "value": false,
+          "node": "Burst"
+        },
+        {
+          "at": 1,
+          "op": "save_branch",
+          "node": "Burst",
+          "path": "res://effects/pickup_burst.tscn"
+        },
+        {
+          "at": 3,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Make It Respond",
+      "narration": "This is the trigger code. Space instantiates the saved scene at the marker\u2019s position. The finished signal removes that temporary instance. We keep a count because a good-looking burst can still leave an invisible owner behind.",
+      "actions": [
+        {
+          "op": "script",
+          "path": "res://arena.gd",
+          "line": 38
+        }
+      ],
+      "focus": "code"
+    },
+    {
+      "act": "Make It Respond",
+      "narration": "Run the arena and press Space through its ordinary input path. These inputs are scripted for the recording. Watch the burst complete, then the instance counter return to zero. The result comes from the same scene we just saved.",
+      "actions": [
+        {
+          "op": "play_custom",
+          "path": "res://game.tscn"
+        },
+        {
+          "at": 3,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 3.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 7,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 7.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        }
+      ],
+      "focus": "game"
+    },
+    {
+      "act": "Make It Respond",
+      "narration": "Move the marker left and trigger again. Then move right and repeat. Each instance gets the event\u2019s current position. The scene is reusable because it contains the effect, while the caller supplies where and when it belongs.",
+      "actions": [
+        {
+          "op": "game_input",
+          "key": "Left",
+          "pressed": true
+        },
+        {
+          "at": 1,
+          "op": "game_input",
+          "key": "Left",
+          "pressed": false
+        },
+        {
+          "at": 1.3,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 1.5,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 4,
+          "op": "game_input",
+          "key": "Right",
+          "pressed": true
+        },
+        {
+          "at": 6,
+          "op": "game_input",
+          "key": "Right",
+          "pressed": false
+        },
+        {
+          "at": 6.3,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 6.5,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        }
+      ],
+      "focus": "game"
+    },
+    {
+      "act": "Make It Respond",
+      "narration": "Here is a staged ownership fault. Put the burst beneath the marker, then hide the marker on activation. The event still creates an instance, but its parent hides the picture. Emission does not guarantee visibility.",
+      "actions": [
+        {
+          "op": "game_input",
+          "property": "staged_hidden_owner",
+          "value": true
+        },
+        {
+          "at": 0.4,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 0.6,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        }
+      ],
+      "focus": "game"
+    },
+    {
+      "act": "Make It Respond",
+      "narration": "Repair the owner: place the effect under the visible arena. Leave the marker hidden and trigger again. The burst now survives the marker\u2019s visibility change. Choose an owner whose lifetime matches the visual job, rather than the object that happened to trigger it.",
+      "actions": [
+        {
+          "op": "game_input",
+          "property": "staged_hidden_owner",
+          "value": false
+        },
+        {
+          "at": 0.4,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 0.6,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 5,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 5.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        }
+      ],
+      "focus": "game"
+    },
+    {
+      "act": "Make It Respond",
+      "narration": "Reset, then trigger repeatedly. Each finished instance cleans itself up, so the counter comes back to zero. This checks ownership and cleanup. It does not prove that every future game event will call the effect at the right moment.",
+      "actions": [
+        {
+          "op": "game_input",
+          "key": "R",
+          "pressed": true
+        },
+        {
+          "at": 0.2,
+          "op": "game_input",
+          "key": "R",
+          "pressed": false
+        },
+        {
+          "at": 1,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 1.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 3,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 3.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 5,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 5.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        }
+      ],
+      "focus": "game"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Stop play and duplicate the particle node as Trail. Make its process material unique before editing. The texture can remain shared. Sharing an image is useful; accidentally sharing the motion settings would retune the pickup as well.",
+      "actions": [
+        {
+          "op": "stop"
+        },
+        {
+          "at": 1,
+          "op": "duplicate",
+          "node": "Burst",
+          "name": "Trail"
+        },
+        {
+          "at": 2,
+          "op": "unique",
+          "node": "Trail",
+          "property": "process_material"
+        },
+        {
+          "at": 3,
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Burst"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Turn One Shot off and Explosiveness down to zero. The trail now produces a steady stream. Give it a two-second lifetime and forty-eight particles. At steady state, amount divided by lifetime describes its nominal birth rate.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "one_shot",
+          "value": false,
+          "node": "Trail"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "explosiveness",
+          "value": 0,
+          "node": "Trail"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "lifetime",
+          "value": 2,
+          "node": "Trail"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "amount",
+          "value": 48,
+          "node": "Trail"
+        },
+        {
+          "at": 1.2,
+          "op": "set",
+          "property": "emitting",
+          "value": true,
+          "node": "Trail"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Aim the trail upward, narrow the spread, and remove gravity. A slow speed range makes rising embers. We have changed the visual job from a momentary acknowledgement to an ongoing condition, using the same basic particle machinery.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "direction",
+          "value": {
+            "v3": [
+              0,
+              -1,
+              0
+            ]
+          },
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "direction"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "spread",
+          "value": 15,
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "gravity",
+          "value": {
+            "v3": [
+              0,
+              0,
+              0
+            ]
+          },
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "gravity"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "initial_velocity_min",
+          "value": 45,
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity"
+        },
+        {
+          "at": 1.2,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 85,
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Move the source with local coordinates off. Newly born particles follow the marker, while older ones remain in world space. Turn local coordinates on and the existing cloud moves with its source. That difference decides whether you get a trail or an attached aura.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "move_source",
+          "value": true,
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Trail"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "local_coords",
+          "value": true,
+          "node": "Trail"
+        },
+        {
+          "at": 9,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Trail"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Turn the stream condition off. New births stop, and the existing embers finish. Turn it on to resume. A continuous effect needs a condition that can become false; restarting it every frame is not a substitute for that condition.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "stream_enabled",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "stream_enabled",
+          "value": true,
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Inspect the visibility rectangle around the moving trail. A tiny bound may cull a still-visible effect when its emitter leaves the view. Keep a conservative box for the measured motion, and test it with the actual camera rather than guessing from the origin.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "visibility_rect",
+          "value": {
+            "rect": [
+              -20,
+              -20,
+              40,
+              40
+            ]
+          },
+          "node": "Trail"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "visibility_rect",
+          "value": {
+            "rect": [
+              -450,
+              -400,
+              900,
+              800
+            ]
+          },
+          "node": "Trail"
+        },
+        {
+          "at": 8,
+          "op": "set",
+          "property": "move_source",
+          "value": false,
+          "node": "."
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Convert a duplicate to C P U Particles Two D. The settings now live directly on the node. Compare the visible result, then choose for your target and required features. Conversion is a starting point; GPU-specific features still need an explicit check.",
+      "actions": [
+        {
+          "op": "cpu_convert",
+          "node": "Trail",
+          "name": "CpuComparison"
+        },
+        {
+          "at": 5,
+          "op": "select",
+          "node": "CpuComparison"
+        }
+      ],
+      "focus": "viewport"
+    },
+    {
+      "act": "Turn A Burst Into A Stream",
+      "narration": "Save the continuous scene and the test arena. The pickup has a real input trigger and finished cleanup; the trail has a condition and a deliberate coordinate space. Those contracts make the effects useful outside this demonstration.",
+      "actions": [
+        {
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "CpuComparison"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "visible",
+          "value": true,
+          "node": "Trail"
+        },
+        {
+          "at": 0.6,
+          "op": "save_branch",
+          "node": "Trail",
+          "path": "res://effects/rising_trail.tscn"
+        },
+        {
+          "at": 1,
+          "op": "save",
+          "checkpoint": true
+        }
+      ],
+      "focus": "viewport"
+    }
+  ],
+  "recap": [
+    "A visible effect needs emission, motion, and drawing.",
+    "Burst timing and lifetime have different jobs.",
+    "Curves shape appearance over each particle\u2019s age.",
+    "A visible owner and finished cleanup make triggers reliable.",
+    "A stream follows a condition and a coordinate space.",
+    "Reusable scenes still need tests on their target."
+  ],
+  "prompt": "Give the marker a pickup burst and a moving trail. Predict what happens when the marker hides or stops. Test both positions and preserve one before-and-after revision.",
+  "checks": [
+    "Check: repeated bursts remain visible and clean up.",
+    "Check: trail emission follows the stated condition."
+  ],
+  "coverage": "Four acts cover visible GPU setup, Disable Z, texture, node/resource separation, 2D gravity, contrast, one-shot/explosiveness, count, spread/speed, scale curve, color/alpha, lifetime, reusable scenes, ordinary scripted input, two positions, hidden-owner fault and repair, finished cleanup, continuous conditions, local/world coordinates, bounds and CPU conversion. A diagnostic input file injects InputEventKey through Godot; it does not call spawn_burst directly.",
+  "facts": "All parameters are teaching settings, not benchmark results. GPU Amount is a count. Positive Y points down in the 2D scene. One Shot and Explosiveness are distinct. finished cleanup is applicable to the one-shot GPU scene. CPU conversion is inspected, not assumed feature-equivalent. Tiny bounds are demonstrated and corrected; any particular culling result must be observed rather than promised."
+}

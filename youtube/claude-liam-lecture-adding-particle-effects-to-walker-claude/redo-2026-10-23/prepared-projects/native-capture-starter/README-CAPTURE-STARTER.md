@@ -1,0 +1,1 @@
+Native construction starter: effect files restored from original baseline, editor lab has no Burst/Motes nodes yet. Upcoming native actions construct them, save them, then apply the proposed independent revisions. Measured CPU results refer to the selected diagnostic fixture by exact hashes, not this starter. Recapture and tests of the final saved project are required.

@@ -2,9 +2,9 @@
 
 CSYE 7270 · Fall 2026 · Instructor-specified proportions
 
-The ten numbered assignment drafts retain **100-point** rubrics and follow an approximately ten-day rhythm; see the [Fall 2026 schedule](../assignments/fall-2026-assignment-schedule.md) for exact planned dates. The existing October 19 GDD is a separate **five-point milestone** governed by its Canvas brief. The live legacy final portfolio is 250 points, while the local final draft is 100; reconcile that difference before posting the new final. Canvas supplies the actual deadlines; a teaching module is not automatically a separate graded assignment. Each assignment identifies the modules and project work it covers. Ungraded practice assessments do not receive these points.
+The active assignments match the Fall 2026 Canvas export supplied October 14, 2026 and the instructor’s pasted final project. There are seven 100-point assignments, Assignment 4 (GDD) at 5 points, Assignment 8 (pitch) at 50 points, and Assignment 10 (final) at 250 points: 1,005 points in total. The GDD is numbered Assignment 4, not a separate extra milestone. See the [confirmed schedule](../assignments/fall-2026-assignment-schedule.md).
 
-Each numbered 100-point draft reserves **exactly 20 points for Relative Quartile**. This is part of the 100-point total, not a bonus added afterward. The other 80 points are criterion-based.
+The 100-point assignments use 60 / 10 / 10 / 20. The pitch uses 30 / 5 / 5 / 10. The final uses 150 / 25 / 25 / 50. Each allocation includes Relative Quartile in its stated total; the five-point GDD follows its own Canvas requirements. The table below is the regular 100-point example. Individual assignment rubrics are authoritative.
 
 | Component | Points |
 |---|---:|
@@ -14,7 +14,7 @@ Each numbered 100-point draft reserves **exactly 20 points for Relative Quartile
 | Relative Quartile | 20 |
 | **Total** | **100** |
 
-**Every numbered assignment draft includes an explainer video made with Brutalist's Godot skills.** The assignment specifies the appropriate skill and coverage. Its 60-point rubric evaluates the requested work and how accurately it is demonstrated and explained; video production is not a fifth point category. Rendering a film does not replace implementing the required feature. See [Required Brutalist Godot explainers](brutalist-godot-explainers.md).
+**The assignments that specify a film require it made with Brutalist's Godot skills.** The assignment specifies the appropriate skill and coverage. Its 60-point rubric evaluates the requested work and how accurately it is demonstrated and explained; video production is not a fifth point category. Rendering a film does not replace implementing the required feature. See [Required Brutalist Godot explainers](brutalist-godot-explainers.md).
 
 The instructor's 25-point example illustrates the same proportions; it is not a separate scheduled assignment or the point value for this course's regular assignments.
 

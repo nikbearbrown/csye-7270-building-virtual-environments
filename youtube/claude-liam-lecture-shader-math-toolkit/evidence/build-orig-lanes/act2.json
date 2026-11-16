@@ -1,0 +1,476 @@
+{
+ "B07": {
+  "lane": "manim",
+  "class": "B07_StepSwitch",
+  "visual_intent": "Act title 'Cut and Blend' (serif 40) top-left. The standard plot with a dashed vertical line at x = 0.5 labelled 'edge'. The curve is 0 until the edge, then 1; at the edge an open dot at (0.5, 0) and a closed dot at (0.5, 1) mark that the value AT the edge is 1. Mono tag 'step(edge, x) · 0 below the edge, 1 from the edge up' (the GLOSSARY wording). Strip beneath: left half black tiles, right half white tiles.",
+  "motion_claim": "The dot rides the 0 level up to the edge, jumps to 1 at the edge and rides on at 1; the strip's hard split lands with it.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, edge line labelled 'edge', tag 'step(edge, x)'"
+   },
+   {
+    "at": 0.09,
+    "event": "edge line highlighted"
+   },
+   {
+    "at": 0.29,
+    "event": "dot appears at x = 0 on the 0 level and rides toward the edge (arrives just left of it by 0.44)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot rests just left of the edge on the 0 level, everything settled"
+   },
+   {
+    "at": 0.59,
+    "event": "dot jumps to 1 at the edge; closed dot"
+   },
+   {
+    "at": 0.81,
+    "event": "dot rides on at 1; the strip's hard split lit"
+   }
+  ],
+  "runner_up": "ShaderLab step render",
+  "why": "The jump at the edge is the claim; a plot shows it, shows what happens exactly at the edge, and the real render follows in B08.",
+  "sparse": true
+ },
+ "B08": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float edge = 0.5;\n\nvoid fragment() {\n\tfloat v = step(edge, UV.x);\n\tCOLOR = vec4(vec3(v), 1.0);\n}",
+   "codeFile": "lab-shaders/02-step.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.28,
+     "lines": [
+      3
+     ],
+     "label": "a value your game sets from outside"
+    },
+    {
+     "at": 0.71,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/step-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · edge swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "uniform: a value your game sets from outside; every pixel sees the same one",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C03: Lab rect, lab-shaders/02-step.gdshader; edge held at 0.5 until 4.0 s, then 0.5 -> 0.2 over 4.0-6.5 s, then 0.2 -> 0.8 over 6.5-10.5 s, held to 12.5 s; 30 fps, Forward+. Verified: edge 0.5 -> 0 at x = 0.45 and 1 at x = 0.55; edge 0.2 -> 0 at 0.15, 1 at 0.25; edge 0.8 -> 0 at 0.75, 1 at 0.85.",
+  "visual_intent": "Code card at left (the eight-line shader); at right a real Godot window split into a black half and a white half by a hard vertical line. A label on the uniform line gives the first half of the GLOSSARY definition ('a value your game sets from outside') and the caption under the result gives all of it ('uniform: a value your game sets from outside; every pixel sees the same one'). The split slides left and right as the edge dial is swept.",
+  "motion_claim": "The hard split slides along the window as the edge value is swept.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "step line highlighted"
+   },
+   {
+    "at": 0.28,
+    "event": "uniform line highlighted with its label; the caption with the whole definition is on screen"
+   },
+   {
+    "at": 0.71,
+    "event": "the split starts to slide (the capture holds 0.5 until about 4 s)"
+   }
+  ],
+  "runner_up": "manim: the edge marker sliding on the plot",
+  "why": "The real hard split sliding is the proof that the edge is the only choice; the code and the dial definition sit beside it.",
+  "sparse": false
+ },
+ "B09": {
+  "lane": "manim",
+  "class": "B09_ClampPins",
+  "visual_intent": "The standard plot with two horizontal guide lines at y = 0 and y = 1 labelled 'low end' and 'high end'. A dashed overshooting ramp y = 2x - 0.5 runs from (0, -0.5) to (1, 1.5) beyond the guides; the solid curve is clamp(2x - 0.5, 0, 1): flat at 0 until x = 0.25, a ramp to 1 at x = 0.75, flat at 1 after. Short labels 'max · the higher of two' and 'min · the lower of two' on the two ends, mono tag 'clamp(x, low, high) = min(max(x, low), high)'. Strip beneath: black tiles, a ramp of tiles, white tiles.",
+  "motion_claim": "The dashed ramp overshoots; the solid curve cuts it flat at the low end, then at the high end; the dot rides the pinned curve.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, guides 'low end' and 'high end', tag 'clamp(x, low, high)'"
+   },
+   {
+    "at": 0.18,
+    "event": "the dashed overshooting ramp draws; dot on the flat low part, label 'pinned' (done by 0.38)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot rests on the flat low part, label 'pinned', settled"
+   },
+   {
+    "at": 0.56,
+    "event": "dot rides to the flat high part, label 'pinned' (done by 0.66)"
+   },
+   {
+    "at": 0.69,
+    "event": "dot rides back along the middle ramp"
+   },
+   {
+    "at": 0.81,
+    "event": "labels max and min land on the two corners"
+   }
+  ],
+  "runner_up": "ShaderLab clamp render",
+  "why": "Pinning is easiest to see as a dashed overshoot cut flat at both ends; a render of a trapezoid gradient would show less.",
+  "sparse": true
+ },
+ "B10": {
+  "lane": "manim",
+  "class": "B10_SoftSwitch",
+  "visual_intent": "The standard plot with two dashed vertical edges at x = 0.3 and 0.7 labelled 'first edge' and 'second edge'. The curve is flat at 0, a smooth S rising to 1 between the edges, flat at 1 after. Mono tag 'smoothstep(a, b, x) · a smooth S between two edges'. Strip beneath: black tiles, a soft ramp of tiles, white tiles.",
+  "motion_claim": "The curve flattens at 0, swells through a smooth S and lands flat at 1; the dot rides it and the strip's edge is soft.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, tag smoothstep(a, b, x); the full S curve draws (done by 0.2)"
+   },
+   {
+    "at": 0.27,
+    "event": "two edge lines labelled 'first edge' and 'second edge' land (done by 0.36)"
+   },
+   {
+    "at": 0.4,
+    "event": "dot appears on the flat left part"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot rests on the flat left part, label '0', settled"
+   },
+   {
+    "at": 0.56,
+    "event": "dot rides the flat 0 part to the first edge (done by 0.62)"
+   },
+   {
+    "at": 0.63,
+    "event": "dot jumps ahead to the flat 1 beyond the second edge, label '1' (done by 0.72)"
+   },
+   {
+    "at": 0.74,
+    "event": "dot rides the S from the first edge to the second; the strip's soft edge lit (done by 0.95)"
+   }
+  ],
+  "runner_up": "ShaderLab smoothstep render",
+  "why": "The S between two edges is the claim; the plot shows that the corners are gone and the strip shows the soft edge.",
+  "sparse": true
+ },
+ "B11": {
+  "lane": "manim",
+  "class": "B11_NotALine",
+  "visual_intent": "A plot with the input from 0 to 10 and the output from 0 to 1. A dashed straight line from (0, 0) to (10, 1) labelled 'a straight line' and the solid S curve of smoothstep(0, 10, x) labelled 'the S'. A vertical guide at x = 1 drops; two dots land on the two curves; read-outs '0.1' on the line and '0.028' on the S. A terracotta ring (grey-backed) rings the slow start of the S near x = 0 to 2. Small grey credit: 'checked in Godot 4.7.2 · Forward+'.",
+  "motion_claim": "The guide at x = 1 lands two dots on the two curves; the line's reads 0.1, the S's reads 0.028, and the S visibly lies below the line near the start.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "plot with both curves and their labels"
+   },
+   {
+    "at": 0.24,
+    "event": "guide drops at x = 1; two dots land on the curves (done by 0.40)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: guide and both dots settled, no read-outs yet"
+   },
+   {
+    "at": 0.57,
+    "event": "read-out '0.1' on the straight line (done by 0.62)"
+   },
+   {
+    "at": 0.69,
+    "event": "read-out '0.028' on the S; ring on the slow start (done by 0.78)"
+   },
+   {
+    "at": 0.86,
+    "event": "credit line lands"
+   }
+  ],
+  "runner_up": "LectureEvidenceTable (0.1 against 0.028)",
+  "why": "Two curves and two dots at the same input make the difference visible; a table would only list the numbers.",
+  "sparse": true
+ },
+ "B12": {
+  "lane": "remotion",
+  "pattern": "BrowserCapture",
+  "props": {
+   "url": "https://docs.godotengine.org/en/4.7/tutorials/shaders/shader_reference/shader_functions.html#shader-func-smoothstep",
+   "image": "godot-shaders/math-toolkit/docs-smoothstep.png",
+   "caption": "Godot 4.7 documentation · Built-in shader functions · captured at build time",
+   "frame": "browser",
+   "moves": [
+    {
+     "at": 0,
+     "x": 0.5,
+     "y": 0.3,
+     "scale": 1
+    },
+    {
+     "at": 0.12,
+     "x": 0.4,
+     "y": 0.4,
+     "scale": 1.6,
+     "ring": [
+      0.18,
+      0.36,
+      0.5,
+      0.1
+     ]
+    },
+    {
+     "at": 0.63,
+     "x": 0.4,
+     "y": 0.5,
+     "scale": 1.6,
+     "ring": [
+      0.18,
+      0.47,
+      0.5,
+      0.05
+     ]
+    }
+   ],
+   "ringColor": "#A64A24",
+   "durationSeconds": "__AUDIO__"
+  },
+  "visual_intent": "The real Godot 4.7 'Built-in shader functions' page (the /en/4.7/ address) at the smoothstep entry in a browser window; the camera pushes in on the formula (clamp, then t * t * (3.0 - 2.0 * t)) and a terracotta ring marks it; later it pushes to the sentence 'Results are undefined if a >= b' and the ring moves there. Ring and camera numbers are fitted to the real capture.",
+  "motion_claim": "The camera pushes in on the formula the voice describes, then on the warning sentence.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "page at the smoothstep entry"
+   },
+   {
+    "at": 0.12,
+    "event": "push-in + ring on the formula"
+   },
+   {
+    "at": 0.63,
+    "event": "push to the warning sentence + ring"
+   }
+  ],
+  "runner_up": "manim: the formula typed out",
+  "why": "The formula and the warning are documentation claims; the documentation itself is the evidence (SHOW-THE-THING).",
+  "sparse": false
+ },
+ "B13": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nuniform float width = 0.3;\n\nvoid fragment() {\n\tfloat v = smoothstep(0.5 - width, 0.5 + width, UV.x);\n\tCOLOR = vec4(vec3(v), 1.0);\n}",
+   "codeFile": "lab-shaders/03-smoothstep.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.25,
+     "lines": [
+      3,
+      6
+     ]
+    },
+    {
+     "at": 0.68,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/smoothstep-sweep.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · width swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__"
+  },
+  "capture_spec": "C04: Lab rect, lab-shaders/03-smoothstep.gdshader; width held at 0.4 until 3.5 s, then 0.4 -> 0.03 over 3.5-10.0 s, held to 13 s; 30 fps, Forward+. Verified: width 0.45 -> 0.1255 / 0.498 / 0.8745 at x = 0.25 / 0.5 / 0.75; width 0.3 -> 0.0196 / 0.498 / 0.9804; width 0.03 -> 0 / 0.4824 / 1.",
+  "visual_intent": "Code card at left (the eight-line shader with the width dial); at right a real Godot window with a soft black-to-white transition across the middle that sharpens into a near-hard split as the width is swept down.",
+  "motion_claim": "The soft edge tightens into a hard split while the voice says 'pull them together'.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "smoothstep line highlighted"
+   },
+   {
+    "at": 0.25,
+    "event": "uniform and smoothstep lines highlighted"
+   },
+   {
+    "at": 0.68,
+    "event": "the transition starts to narrow (the capture holds width 0.4 until about 3.5 s)"
+   }
+  ],
+  "runner_up": "manim: the S tightening on the plot",
+  "why": "A real render of the edges closing in shows smoothstep turning into a step; the dial and the code are beside it.",
+  "sparse": false
+ },
+ "B14": {
+  "lane": "manim",
+  "class": "B14_MixSlides",
+  "visual_intent": "The standard plot with the weight (the ramp, axis label 't · weight') as input from 0 to 2 and the output going from a start value to an end value: a straight line from (0, 0.2) through (1, 0.9), continuing dashed to (2, 1.6); tick labels 'a · start' and 'b · end' on the y axis at 0.2 and 0.9. Read-outs on the line at weights 0, 1 and one half: 'start', 'end', 'halfway'; then at weight 2 the read-out 'overshoots: 1.6'. Mono tag 'mix(a, b, t) · blends from a to b: t of 0 gives a, 1 gives b' (the GLOSSARY wording) and a smaller 'a x (1 - t) + b x t'. A small bracket 'clamp(t, 0, 1)' lands on the weight axis between 0 and 1. Strip beneath, for weights 0 to 1 only, from the gray of 0.2 up to the gray of 0.9.",
+  "motion_claim": "The dot rides the line from the start value to the end value, stops at three read-outs, then runs on past the end to 1.6 where the clamp bracket marks the safe range.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes, tag"
+   },
+   {
+    "at": 0.09,
+    "event": "'start' and 'end' ticks land on the y axis (done by 0.25)"
+   },
+   {
+    "at": 0.3,
+    "event": "dot at weight 0, read-out 'start'"
+   },
+   {
+    "at": 0.38,
+    "event": "dot at weight 1, read-out 'end' (done by 0.44)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot rests at weight 1 with 'end', everything settled"
+   },
+   {
+    "at": 0.57,
+    "event": "dot at one half, read-out 'halfway' (done by 0.62)"
+   },
+   {
+    "at": 0.62,
+    "event": "dashed continuation appears"
+   },
+   {
+    "at": 0.73,
+    "event": "dot runs to weight 2, read-out 'overshoots: 1.6'"
+   },
+   {
+    "at": 0.89,
+    "event": "bracket 'clamp(t, 0, 1)' lands on the weight axis"
+   }
+  ],
+  "runner_up": "ShaderLab mix render",
+  "why": "mix is a slide between two values; a line from the start to the end value, with read-outs and a visible overshoot past weight one, is the plot grammar applied.",
+  "sparse": true
+ },
+ "B15": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tvec3 gold = vec3(0.96, 0.80, 0.45);\n\tCOLOR = vec4(mix(teal, gold, UV.x), 1.0);\n}",
+   "codeFile": "lab-shaders/04-mix-colors.gdshader",
+   "cues": [
+    {
+     "at": 0.03,
+     "lines": [
+      6
+     ]
+    },
+    {
+     "at": 0.36,
+     "lines": [
+      4,
+      5
+     ]
+    },
+    {
+     "at": 0.68,
+     "lines": [
+      6
+     ]
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/mix-colors.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.56,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C05: Lab rect, lab-shaders/04-mix-colors.gdshader, still PNG 1920x1080. Verified: x = 0.02 -> (0.3804, 0.6431, 0.5686); 0.5 -> (0.6627, 0.7216, 0.5098); 0.98 -> (0.949, 0.7961, 0.451).",
+  "visual_intent": "Code card at left (the seven-line shader), at right a real Godot window showing a smooth teal-to-gold gradient with the thin 0 to 1 ramp under it.",
+  "motion_claim": "The mix line is highlighted, then the two colour lines; the ramp marker sweeps the gradient as the voice says 'with the ramp as the weight'.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "mix line highlighted"
+   },
+   {
+    "at": 0.36,
+    "event": "teal and gold lines highlighted"
+   },
+   {
+    "at": 0.52,
+    "event": "ramp marker sweeps left to right"
+   },
+   {
+    "at": 0.68,
+    "event": "mix line highlighted again"
+   }
+  ],
+  "runner_up": "manim: two colour dots mixing",
+  "why": "A real teal-to-gold blend beside the line that makes it shows 'the same function, now on a whole colour'; there is no dark field, so the type gate stays calm.",
+  "sparse": false
+ },
+ "B16": {
+  "lane": "manim",
+  "class": "B16_AnyWeight",
+  "visual_intent": "Three stacked rows. Each row: a small plot of a weight curve (the plain ramp; step at 0.5; smoothstep 0.4 to 0.6), an arrow drawn as a shape, then a teal-to-gold strip blended with that weight (hard cut for step, soft edge for smoothstep). Row captions 'plain ramp', 'step', 'smoothstep'. At the end a grey-backed bracket round the three weight plots and the GLOSSARY wording in serif: 'mask · a number from 0 to 1 per pixel saying how much of something to show'.",
+  "motion_claim": "Each row builds left to right on its spoken word; the bracket and the word 'mask' land last.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "three row captions"
+   },
+   {
+    "at": 0.15,
+    "event": "row 1: ramp plot, arrow, smooth blend (done by 0.28)"
+   },
+   {
+    "at": 0.31,
+    "event": "row 2: step plot, arrow, hard-cut blend (done by 0.40)"
+   },
+   {
+    "at": 0.36,
+    "event": "row 3 (smoothstep): plot, arrow, soft blend (done by 0.44)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: all three rows settled"
+   },
+   {
+    "at": 0.58,
+    "event": "grey-backed bracket round the three weight plots (done by 0.66)"
+   },
+   {
+    "at": 0.72,
+    "event": "the 'mask' definition types in"
+   },
+   {
+    "at": 0.88,
+    "event": "the word 'mask' highlighted"
+   }
+  ],
+  "runner_up": "ShaderLab: three real renders",
+  "why": "Three weights in a column, each with its curve and its blend, is the comparison itself; the blends are checked against real renders (dense-compare).",
+  "sparse": true
+ }
+}

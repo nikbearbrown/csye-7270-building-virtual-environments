@@ -1,0 +1,280 @@
+1
+00:00:00,000 --> 00:00:07,610
+The Shader Math Toolkit. Learn a dozen
+small functions that shape what a shader
+draws, then use three of them to build a
+
+2
+00:00:07,660 --> 00:00:19,810
+Hallo. This is Liam, in for Bear. People
+think shaders need advanced math. They
+need about a dozen small functions, and
+
+3
+00:00:19,860 --> 00:00:37,000
+Five terms. A shader is a small program
+the graphics card runs to decide how
+something is drawn. A pixel is one dot of
+
+4
+00:00:37,050 --> 00:00:47,090
+This ring is not an image. Three small
+functions draw it: one measures distance,
+one softens an edge, one blends two
+
+5
+00:00:47,140 --> 00:00:58,330
+Start with a ramp: a smooth run of values
+from zero up to one. The simplest ramp is
+a pixel's address across the shape: zero
+
+6
+00:00:58,380 --> 00:01:08,510
+A shader can show a number as gray.
+Fragment runs once for each pixel the
+shape covers, and sets its color. Here the
+
+7
+00:01:08,560 --> 00:01:21,990
+From here on, every function gets the same
+picture. The input runs along the bottom,
+the output up the side. A dot travels the
+
+8
+00:01:22,040 --> 00:01:32,490
+Bend the line and the strip follows. Here
+the function is one minus x. The line runs
+downhill, so the strip runs from white to
+
+9
+00:01:32,540 --> 00:01:46,210
+About a dozen functions come in three
+families. Cut and blend: step, smooth
+step, mix, clamp. Repeat and fold: abs,
+
+10
+00:01:46,260 --> 00:01:55,040
+Step is a switch. Give it an edge and a
+ramp. Where the ramp is below the edge,
+the answer is zero. At the edge or above,
+
+11
+00:01:55,090 --> 00:02:04,040
+In a shader, the edge goes first, then the
+ramp. Here the edge is a uniform, a dial
+your game can turn from outside. Slide it,
+
+12
+00:02:04,090 --> 00:02:13,790
+Clamp pins a number inside a range. Below
+the low end, you get the low end. Above
+the high end, you get the high end. In
+
+13
+00:02:13,840 --> 00:02:23,350
+Smooth step is a switch that eases in and
+out. Give it two edges and a ramp. Below
+the first edge, zero. Above the second,
+
+14
+00:02:23,400 --> 00:02:34,700
+It is not a straight line, and one number
+shows it. Say the edges are zero and ten,
+and the input is one. A straight line
+
+15
+00:02:34,750 --> 00:02:48,030
+The docs spell out the formula. Squeeze
+the input between the edges into zero to
+one, call that t, and return three t
+
+16
+00:02:48,080 --> 00:02:57,100
+In code, the edges are the first two
+numbers. Here they sit either side of one
+half, and a dial sets how far. Pull them
+
+17
+00:02:57,150 --> 00:03:09,560
+Mix slides between two values. Give it a
+start, an end, and a weight. Weight zero
+returns the start, one returns the end,
+
+18
+00:03:09,610 --> 00:03:19,930
+A color is a vector, so mix blends all of
+its numbers at once. Here it blends teal
+into gold, with the ramp as the weight.
+
+19
+00:03:19,980 --> 00:03:31,510
+The weight can be any reshaped ramp. The
+plain ramp gives a smooth blend. Step
+gives a hard cut. Smooth step gives a soft
+
+20
+00:03:31,560 --> 00:03:41,770
+A ramp can be stretched and shifted.
+Multiply by two and subtract one, and it
+runs from minus one to one, with zero in
+
+21
+00:03:41,820 --> 00:03:52,610
+Absolute value, written abs, drops the
+minus sign. Fold the ramp at zero and the
+left half lands on top of the right half.
+
+22
+00:03:52,660 --> 00:04:04,360
+Fract keeps only what comes after the
+decimal point. Two point seven five
+becomes point seven five. Multiply the
+
+23
+00:04:04,410 --> 00:04:13,810
+Fract is one line in a shader. The number
+you multiply by is how many copies you
+get. Turn that dial from one up to six,
+
+24
+00:04:13,860 --> 00:04:24,240
+Floor keeps the whole part instead. It
+rounds down to the whole number below.
+Multiply the ramp by four and take floor:
+
+25
+00:04:24,290 --> 00:04:35,740
+Every number splits in two. Floor is the
+whole part, fract is the leftover. Two
+point seven five is two plus point seven
+
+26
+00:04:35,790 --> 00:04:47,390
+Combine fract with step. Fract makes the
+ramp restart, and step cuts each copy in
+half. Dark, light, dark, light: stripes,
+
+27
+00:04:47,440 --> 00:04:58,570
+Mod gives the remainder after dividing: x
+minus y times floor of x over y. With y
+equal to one, it is exactly fract. With y
+
+28
+00:04:58,620 --> 00:05:11,710
+One trap. In a shader, mod of minus point
+two five and one is point seven five: it
+follows floor. G D script's F mod keeps
+
+29
+00:05:11,760 --> 00:05:22,780
+Now two numbers at once. A vector bundles
+them, and length says how long that bundle
+is, measured from zero. Three across and
+
+30
+00:05:22,830 --> 00:05:33,790
+Normalize keeps a vector's direction and
+sets its length to one. Take the arrow
+three across, four down. Normalize it and
+
+31
+00:05:33,840 --> 00:05:44,820
+Distance is the length of the gap between
+two points. Pick the middle of the shape,
+and ask every pixel how far it is from
+
+32
+00:05:44,870 --> 00:05:56,280
+That is one line of shader: the distance
+from the pixel's address to the middle.
+The result is a ramp that grows outward in
+
+33
+00:05:56,330 --> 00:06:08,210
+A warning before we draw circles: use a
+square shape. On a wide one, the circle
+turns into an oval. The address always
+
+34
+00:06:08,260 --> 00:06:18,920
+Distance is another ramp, so everything so
+far applies. One minus a smooth step of
+the distance gives a soft spot of light.
+
+35
+00:06:18,970 --> 00:06:32,150
+Power, written pow in code, raises each
+value to a power. On a ramp from zero to
+one, a power above one pulls the curve
+
+36
+00:06:32,200 --> 00:06:44,100
+In code, pow takes the ramp and a power.
+Turn the power up and the bright part
+squeezes toward the right edge, like a
+
+37
+00:06:44,150 --> 00:06:54,360
+One more curve. Sine repeats smoothly,
+rolling between minus one and one. Half of
+sine, plus a half, squeezes it into zero
+
+38
+00:06:54,410 --> 00:07:04,170
+Time to build. Take the distance to the
+middle and cut it with step at point
+three. Closer than that is zero, farther
+
+39
+00:07:04,220 --> 00:07:13,040
+Swap the two inputs and the circle flips:
+one inside, zero outside. The edge always
+comes first, so this reads: is the radius
+
+40
+00:07:13,090 --> 00:07:24,090
+For a ring, cut twice and subtract. Step
+at point three is one from there outward.
+Step at point three eight is one from
+
+41
+00:07:24,140 --> 00:07:33,670
+In code, that is step minus step. Here is
+the ring: a mask that is one on the ring
+and zero everywhere else. The edges are
+
+42
+00:07:33,720 --> 00:07:42,350
+Now color it with mix, using the ring as
+the weight. Where the mask is zero, you
+get cream. Where it is one, you get teal.
+
+43
+00:07:42,400 --> 00:07:51,030
+Swap each step for a smooth step. Each
+edge now has a width, so the ring fades in
+and fades out instead of snapping. The
+
+44
+00:07:51,080 --> 00:08:00,650
+Here is the finished shader. Distance
+makes the ramp, smooth step shapes it
+twice, mix paints it. The radius is a
+
+45
+00:08:00,700 --> 00:08:22,300
+Let's recap with Claude. A ramp is a
+smooth run from zero to one, and every
+function reshapes it. Step cuts, smooth
+
+46
+00:08:22,350 --> 00:08:43,870
+Your turn. Paste this into Claude: Write a
+Godot canvas item shader for a square
+Color Rect: a soft teal ring around the
+
+47
+00:08:43,920 --> 00:08:48,090
+The Shader Math Toolkit. At Nik Bear
+Brown.

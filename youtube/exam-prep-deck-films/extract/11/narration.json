@@ -1,0 +1,485 @@
+{
+ "deck": "11",
+ "opening_summary": "Thirty-three terms for shaders in Godot, from the pipeline and its built-ins to uniforms and colour curves. The exact word lets you tell an AI coding agent precisely what to build.",
+ "opening_description": "33 shader terms: pipeline, built-ins, uniforms.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers often think the vertex shader colours the pixels. It does not. A vertex shader runs once per corner and decides where that corner lands. Colour is the fragment shader's job, once per pixel. Shaders are full of look-alike pairs like that one. This film goes through the terms, each one shown, so you can name the exact one.",
+  "text": "The vertex shader\nsets each pixel's colour.",
+  "triggerWords": "sets each pixel's colour",
+  "replacementWords": "decides where each corner lands"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty-three terms about shaders, the small programs that decide where things land and what colour each pixel gets, in four groups. The first group is what a shader is. Shader, vertex shader, fragment shader, programmable stage, fixed-function, rasterization, fragment, varying and interpolation.",
+   "figures": [
+    "33"
+   ]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is the Godot language. Godot shading language, shader type, canvas item, spatial, compile error, UV, SCREEN UV, vertex colour, TEXTURE, COLOR and TIME. This is what you write, and what Godot hands your program to read.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is steering from code. Uniform, hint range, source color, material, ShaderMaterial, set shader parameter and shared material. These terms say how a script sets the values a shader uses.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is colour and curves. RGBA, linear vs sRGB, mix, step, smoothstep and clamp. These are the numbers a fragment shader turns into a colour.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "A grid of small squares fills with colour. A Shader is a small program that runs on the graphics processor, many copies at once. Here one program runs three hundred eighty-four times, once per cell, and each run works out its colour from its own position. No run can look at another run's result. For example, the failure flash in the Walker game is a shader. The same few lines run for every pixel of Clawd, the player character.",
+   "figures": [
+    "384 cells"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "Now nine dots ride a wave. A Vertex shader runs once per vertex, a corner of the geometry, and decides where that corner lands. Nine vertices, nine runs. Each dot is lifted by a sine of TIME, so the line waves, and no pixel colour is decided here. For example, a flag at the end of a level could wave because a vertex shader moves its corners up and down a little on every frame.",
+   "figures": [
+    "9 VERTICES, 9 RUNS"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "A disc of pixels fills in, one cell at a time. A Fragment shader, also called a pixel shader, runs once for each pixel the mesh covers and decides that pixel's colour. Here it ran for all one hundred fifty-six pixels, with a pale glint across the middle. The vertex shader moves corners, and the fragment shader colours pixels. For example, tinting Clawd toward dark ink when a run fails is fragment shader work. Nothing moves, only colours change.",
+   "figures": [
+    "156 of 156 pixels"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "This is the pipeline, one triangle's journey from top to bottom. A Programmable stage is a step of the pipeline where you supply the program, by writing a shader for it. Two of the four stages are yours, lit in red, the vertex shader and the fragment shader. For example, when you ask an AI coding agent for a glow on a coin, the shader code it writes runs in those two stages and nowhere else.",
+   "figures": [
+    "2 of 4 stages"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "Now the other two boxes are lit. Fixed-function means a step that is built in. You can set its options, but you cannot program it. The name comes from older graphics hardware, where every step worked like this. Here two of the four are built in, rasterization, and blending with the depth test. For example, choosing an additive blend for a fire sprite, so it brightens what is behind it, is picking an option, not writing code.",
+   "figures": [
+    "2 of 4 are built in"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "The triangle now sits on a grid of screen cells. Rasterization is the built-in step that turns a triangle into fragments, one for every screen cell whose centre lies inside it. The vertex shader gave three corners. Rasterization gives the cells, eighty-nine out of three hundred eighty-four. For example, when a platform sprite is drawn, rasterization works out which screen pixels it covers, before any fragment shader gives them a colour.",
+   "figures": [
+    "3 corners",
+    "89 of 384"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 4,
+   "narration": "The pipeline is drawn again, now with fragment shaders A, B and C. A scene can use many fragment shaders, one for each material, plus extra passes that work on the 2D image already drawn. For example, each sprite in a level can carry its own fragment shader, and one more pass can then turn the whole finished frame grey.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "The same triangle, with its covered cells in grey. A Fragment is a candidate pixel colour. Rasterization makes one for each screen position the triangle covers, and each one waits for the fragment shader to give it a colour. It is only a candidate, because later steps decide what reaches the screen. Here there are eighty-nine. For example, where the player sprite overlaps a wall, both make fragments for the same pixels, and blending decides what you finally see.",
+   "figures": [
+    "89 fragments"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "Each corner now holds a colour, red, green and blue. A Varying is a value the vertex stage writes at each corner and passes on to the fragment stage, blended on the way. One varying, three values. A uniform is the same for the whole draw, and a varying changes across the triangle. For example, a vertex shader for a hill can write each corner's height into a varying, so the fragment shader shades the low ground darker.",
+   "figures": [
+    "one varying, three values"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "Every covered cell now has a blended colour. Interpolation, in the shader sense, means blending the corner values smoothly across the triangle's fragments. Each fragment takes a mix weighted by how near it is to each corner. The outlined cell has weights of zero point three two, zero point four four and zero point two three. For example, a sky drawn as one big rectangle, dark blue at the top corners and pale at the bottom ones, gets a smooth gradient from interpolation alone.",
+   "figures": [
+    "0.32, 0.44, 0.23"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "A table of the six shader types, and a short shader below it. The shader type line is the first line of every Godot shader. It says what the program draws, and so which functions you may write after it. Here it says canvas item, and a fragment function follows. For example, the failure flash for Clawd begins with shader type canvas item, because Walker is a 2D game.",
+   "figures": []
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "The canvas item row is lit, and a red box moves across a 2D canvas. Canvas item is the Godot shader type for 2D drawing, which means sprites, shapes and the UI, the user interface. You may write vertex, fragment and light functions. A corner is two numbers in pixels, here twenty and seventy. For example, a shader that makes a health bar pulse on screen would be a canvas item shader.",
+   "figures": [
+    "(20, 70) px"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 3,
+   "narration": "Now the spatial row is lit, and a wire cube turns in 3D space. Spatial is the Godot shader type for 3D meshes. A corner now has three numbers, here one, zero point four, and one point three six. Canvas item draws 2D, and spatial draws 3D. For example, a coin modelled in Blender and placed in a 3D level would get its shine from a spatial shader.",
+   "figures": [
+    "(1.00, 0.40, 1.36)"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "A five-line shader, with a note beside each line. The Godot shading language is the language every Godot shader is written in. It is based on GLSL, the OpenGL Shading Language, but simplified. Types such as float, and the word uniform, come from GLSL, while COLOR and the fragment function are Godot's own names. For example, a glow you learned to write in another engine carries over, because the ideas are the same and only the dialect changes.",
+   "figures": []
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "The same shader, with one semicolon deleted from line four. A Compile error means the shader fails to build, and Godot writes an error message, here, shader error, expected a semicolon. In this simulated run, as in the real headless runs it copies, the run still exits with code zero. A compile error is rejected, while a wrong look builds fine. For example, an agent can drop a semicolon from Clawd's flash shader, and the tests still pass, though the shader never built.",
+   "figures": [
+    "line 4",
+    "0"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "Two more lines appear under the log. The uniform list comes back empty, because the shader did not parse, and the run's exit code is zero, so nothing failed. Only the log line, or that empty list, shows the compile error. For example, a test you write for a shader should check that its uniform list holds the names you expect, and fail when the list is empty.",
+   "figures": [
+    "0 (the run did not fail)"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "A checkerboard texture of eight by eight tiles on a square, with a probe moving over it. UV is a pair of coordinates that maps a surface to a texture. U runs left to right and v runs top to bottom, both from zero to one, whatever the size of the surface. The probe stops at zero point five across and zero point eight down. For example, a coin sprite drawn small or large reads the same pixel of its picture at the same UV.",
+   "figures": [
+    "8 × 8",
+    "u = 0.50",
+    "v = 0.80"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "Two copies of the square sit at different places on one screen. SCREEN UV is the position of the current fragment on the screen, from zero to one. Both probes share the same UV, but the left one is zero point two four across the screen and the right one zero point seven nine. UV is the position on the surface, SCREEN UV the position on the screen. For example, a vignette that darkens the corners of the screen is worked out from SCREEN UV.",
+   "figures": [
+    "(0.24, 0.62)",
+    "(0.79, 0.87)"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "A strip of terrain, with a coloured dot at each vertex. Vertex colour is a colour stored on each vertex and blended across the face, the way a varying is. Here each colour comes from the vertex's height, green when low and grey when high. The heights are made up for the picture. For example, Clawd in the Walker game has no image at all. His terracotta body colour is carried as vertex colour by the rectangles that draw him.",
+   "figures": []
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "A small texture on the left, and the same picture drawn as a sprite on the right. TEXTURE is the Godot built-in that holds the default 2D texture the item was drawn with, its image. Reading it at a UV returns one texel, here texel one, three, of a made-up four by four texture. For example, the fragment shader on a coin sprite can read TEXTURE at UV to get the coin's own picture before it tints it gold.",
+   "figures": [
+    "(1, 3)",
+    "4 × 4"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 3,
+   "narration": "Three rows of colour sums. COLOR arrives in the fragment function holding vertex colour times the TEXTURE colour, and whatever you leave in it is drawn. A sprite with an image keeps its image. Clawd, with no image, keeps his vertex colour. But read only the texture, and his colour is dropped, and he comes out white. For example, an agent that copies a sprite tutorial and starts Clawd's flash from the texture turns him white. Starting from COLOR keeps him terracotta.",
+   "figures": []
+  },
+  {
+   "slide": 8,
+   "step": 4,
+   "narration": "A sine wave over ten seconds, and a colour swatch that pulses with it. TIME is Godot's built-in clock, the seconds since the engine started, and it wraps back to zero after three thousand six hundred seconds, one hour. At ten seconds, the mix amount here is zero point nine six. TIME is not the time since your own event. For example, a coin can shimmer forever from TIME alone, but a flash when the player dies needs code that knows when the death happened.",
+   "figures": [
+    "10 s",
+    "3,600 s",
+    "0.96"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "A small made-up sprite, with a slider under it. A Uniform, also called a shader parameter, is a value set from code that stays the same for every pixel of one draw. It is how a script steers a shader. Here the script sets flash amount to zero point five, and the body and the eyes both move halfway toward dark ink. For example, the Walker flash uses a uniform named flash amount, which the player script sets on every frame.",
+   "figures": [
+    "0.5",
+    "0.50"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "Two sliders. Hint range gives a uniform a slider in the Inspector, and the slider stops at its end, here one. It does not clamp a value set from code. Code sets seven, and seven is stored, so the body's red channel works out to minus one thousand sixty-seven, far outside zero to two hundred fifty-five. For example, if a power-up script pushes a glow uniform past its range, the hint will not catch it. Clamp the value in the script first.",
+   "figures": [
+    "1.0",
+    "7.0",
+    "-1067",
+    "0 to 255"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "Five pairs of bars, an sRGB value above its linear value. Source color is a hint that marks a uniform as a colour in sRGB, the encoding of colours people pick by eye, so Godot can decode it to linear before the maths. In 2D, not always. An sRGB zero point five is only zero point two one four in linear. For example, a tint colour you pick in the Inspector for a lava floor in a 3D level should be marked source color.",
+   "figures": [
+    "sRGB 0.50",
+    "linear 0.214"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "One shader file feeds two boxes. A Material is a shader together with its parameter values and textures. A ShaderMaterial is the kind of material that uses your own custom shader and holds its values. The shader alone has no values. Here one flash shader gives a terracotta look at zero and dark ink at one. For example, two crystals can share one glow shader and differ only in their materials, and Walker's player script builds a ShaderMaterial to give Clawd his flash.",
+   "figures": [
+    "flash_amount = 0.0",
+    "flash_amount = 1.0"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "Two calls, one above the other. Set shader parameter changes one uniform's value on a material, found by its name, and the name is a plain string. The top call misspells flash amount, so nothing matches, no error appears, and the value stays zero. The bottom call spells it right, and the value becomes one. For example, if an agent types a coin's sparkle uniform with the wrong capital letter, the sparkle never shows, and nothing in the log says why.",
+   "figures": [
+    "0.0",
+    "1.0"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 3,
+   "narration": "Three squares, two joined to one material and one with its own. A Shared material is one material used by many objects, so a change to it hits them all. Setting flash amount to one on the shared material darkens two nodes together. The third, node C, keeps zero, because it has its own duplicated copy. For example, if every coin in a level shares one material, making one coin flash makes them all flash, unless that coin gets its own copy.",
+   "figures": [
+    "1.00",
+    "0.00"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "Clawd's body colour sits over a checkerboard, with four channel bars beside it. RGBA means red, green, blue and alpha, and alpha is opacity. One is solid and zero is see-through. Here alpha has settled at zero point five, so the checkerboard shows through, and the red channel over white comes out at two hundred thirty-eight. For example, a ghost enemy drawn at half alpha lets the level behind it show through, while its red, green and blue stay the same.",
+   "figures": [
+    "0.50",
+    "238"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "A curve from sRGB values to linear values. Linear vs sRGB are two ways to hold a colour. sRGB is the encoding for images shown to people, with steps spaced for the eye. Linear values are proportional to light, the right space for maths. Halfway up the sRGB scale is only zero point two one four of the light. For example, when a lamp lights a 3D room, the light is added up in linear, and the result is encoded to sRGB for the screen.",
+   "figures": [
+    "sRGB 0.50",
+    "linear 0.214"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "A straight red line, with a colour strip underneath. Mix blends two values by a fraction, and is also called lerp. At zero you get the first value, at one the second, and a straight line between. Here mix of zero point two and zero point nine, at an input of zero point six two, gives zero point six three. For example, a health bar that fades from green toward red as the player loses health is a mix of the two colours.",
+   "figures": [
+    "mix(0.2, 0.9, x)",
+    "x = 0.62 → 0.63"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "Now the red line jumps. Step, with an edge, gives zero below the edge and one from the edge up, a hard switch with nothing in between. Here the edge is zero point five, so an input of zero point six two gives one. For example, a shader that draws the filled part of a health bar can use step, so each pixel is either full colour or empty, with a sharp boundary.",
+   "figures": [
+    "step(0.5, x)",
+    "x = 0.62 → 1.00"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "The red line is now an S. Smoothstep rises from zero to one between two edges along a smooth S-curve. It is a step with a ramp. Here the edges are zero point two five and zero point seven five, and zero point six two gives zero point eight three. Step is a hard switch, and smoothstep eases. For example, the soft edge of a circle of torchlight in a dark cave level is a smoothstep on the distance from its centre.",
+   "figures": [
+    "0.25, 0.75",
+    "x = 0.62 → 0.83"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 4,
+   "narration": "A dashed line runs off the top and bottom, and the red line is cut flat at both ends. Clamp holds a value inside a minimum and a maximum. The dashed line is the input, and the red line is the result, held between zero point one and zero point nine. Here zero point six two gives zero point six nine. For example, Walker's player script clamps the flash amount between zero and one before the shader ever sees it.",
+   "figures": [
+    "0.1, 0.9",
+    "x = 0.62 → 0.69",
+    "0",
+    "1"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "Each pair sets two look-alike terms side by side. On the left, a vertex shader runs per vertex and moves corners, here seven of them. On the right, a fragment shader runs per pixel and sets colour, here twenty-one pixels.",
+   "figures": [
+    "7 corners",
+    "21 pixels"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "A uniform is one value for the whole draw. Every cell on the left shows the same amount, one. A varying changes across the face. On the right it runs from zero on the left to one on the right.",
+   "figures": [
+    "amount = 1.00",
+    "0.00 on the left to 1.00 on the right"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "A shader is the program, and it holds no values. On the left, the flash shader file, code only. A material is the shader plus its values. On the right, the same file with flash amount set to one, and its dark colour.",
+   "figures": [
+    "flash_amount 1.00"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Hint range only shapes the slider, and clamps nothing. On the left, a value of one point five set from code stays one point five. Clamp limits the value in the code. On the right, after clamp, it is one.",
+   "figures": [
+    "1.50",
+    "1.00"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 1,
+   "narration": "A vague request sits above the exact instruction that replaces it, beside a chart of what it does. Make the edge glow smoothly becomes, use smoothstep from zero point three to zero point seven. The grey step jumps. The red smoothstep eases over the same edge.",
+   "figures": [
+    "0.3",
+    "0.7"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 2,
+   "narration": "Make the flag wave becomes, in the vertex function, add twenty times the sine of TIME times three, plus the x position times zero point zero five, to each vertex's height. Half a second later, from grey to red, the peaks have moved thirty pixels.",
+   "figures": [
+    "20.0",
+    "3.0",
+    "0.05",
+    "0.5 s",
+    "30 px"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 3,
+   "narration": "Tint it halfway becomes, mix COLOR toward the flash colour by zero point five. The body, two hundred twenty-one, one hundred nineteen, ninety-one, becomes one hundred twenty-nine, eighty-six, eighty-three. The blue is really eighty-two and a half, rounded up.",
+   "figures": [
+    "0.5",
+    "(221,119,91)",
+    "(129,86,83)",
+    "82.5"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 4,
+   "narration": "Let the script control it becomes, declare flash amount as a uniform with hint range zero to one, and clamp the value in the script before set shader parameter. From code, one point five clamps to one. The hint alone leaves it at one point five.",
+   "figures": [
+    "0.0",
+    "1.0",
+    "1.5"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 5,
+   "narration": "The colours look washed out becomes, mark colour uniforms source color, so sRGB values can be decoded to linear before the maths. In 2D, not always. An sRGB value of zero point five is zero point two one four of the light. Used as linear, it is far too bright.",
+   "figures": [
+    "0.500",
+    "0.214"
+   ]
+  },
+  {
+   "slide": 15,
+   "step": 1,
+   "narration": "This is a checklist of six questions to ask before you trust a shader an AI coding agent wrote. First, does this code run per vertex or per pixel? That tells you whether it moves corners or sets colours.",
+   "figures": [
+    "Six checks"
+   ]
+  },
+  {
+   "slide": 15,
+   "step": 2,
+   "narration": "Second, does it compile, with no shader error line in the log? A broken shader can still leave the run's exit code at zero, so read the log, or check the uniform list.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 3,
+   "narration": "Third, is each uniform spelled the same in the script and in the shader? A misspelled name in set shader parameter does nothing and raises no error.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 4,
+   "narration": "Fourth, is the range enforced in code, and not only by hint range? The slider stops at its end, but a value set from code is stored as given.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 5,
+   "narration": "Fifth, are colours marked source color, with the maths done in linear? A colour picked by eye is sRGB. Source color asks Godot to decode it before the maths. In 2D, that does not always happen.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 6,
+   "narration": "Sixth, which rules can a machine prove, and which need your own eyes? A headless test can prove the shader parsed. Only a person looking at the screen can judge the look. Then say it exactly. Not make it glow, but smoothstep from zero point three to zero point seven.",
+   "figures": [
+    "0.3, 0.7"
+   ]
+  }
+ ],
+ "recap_lines": [
+  "A vertex shader moves corners, and a fragment shader colours pixels.",
+  "Rasterization makes fragments, and a varying is blended across them.",
+  "A compile error can still leave the run's exit code at zero.",
+  "A uniform is set from code, and hint range does not clamp it.",
+  "A shader is the program, and a material is the shader plus its values.",
+  "Step switches hard at its edge, and smoothstep eases between two edges."
+ ],
+ "your_turn": {
+  "segment": "Name The Shader Term",
+  "command": "Quiz me on Godot shader terms with short game-making cases, one at a time. Use the terms vertex shader, fragment shader, varying, uniform, hint range, clamp, material, shared material, step and smoothstep. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: every case comes from making a game, and the answer waits for you.",
+   "Check: you named the exact term and said why its look-alike fails."
+  ]
+ },
+ "say_as": [
+  {
+   "term": "vs",
+   "say": "versus"
+  }
+ ],
+ "deck_problems": [
+  "Slide 12 step 1: the heading reads 'OUTPUT = MIx(0.2, 0.9, X)'. renderCurves upper-cases the formula and then replace('X', 'x') swaps only the first X, which is the one inside MIX. It should read 'MIX(0.2, 0.9, x)'. The term is also printed 'Mix' while step, smoothstep and clamp are lowercase.",
+  "Slide 9 step 1: the label declares 'uniform float flash_amount' but the note says 'GDScript sets it: amount = 0.5', a different name. On the deck that teaches that a misspelled uniform name silently does nothing, this reads as a mismatch.",
+  "Slide 3 step 4 (the new step): fragment shaders A, B and C are drawn chained one under another below a single vertex shader, and the note says 'The vertex shader placed the geometry once'. Per-material fragment shaders run side by side, not in sequence, each material's shader has its own vertex stage, and a full-screen pass has its own vertex stage too. The picture mixes the two ideas. The step adds no glossary term.",
+  "Slide 3: Fixed-function is defined as 'Old hardware steps that could be configured but not programmed', while the same slide labels today's rasterization and blending as fixed-function. The definition and its use differ.",
+  "Slide 1 says '33 terms from Chapter 6 and the glossary', but vertex colour is tagged 'video only', step, smoothstep and clamp 'editor or docs', and Linear vs sRGB cites Chapter 7.",
+  "Slide 2 step 3: the caption 'color = (221, 119, 91) (156 of 156 pixels)' gives the colour of the last pixel only, but reads as if all 156 pixels are that colour; the disc visibly has a pale glint.",
+  "Slide 4 step 3: the printed weights 0.32, 0.44 and 0.23 add to 0.99 while the caption says 'weights sum to 1.00' (rounding).",
+  "Slide 7: the texture has a fixed red tile at (5, 2) that never matches the probe, which ends on tile (3, 6); a viewer can take the red tile for the probe's texel. The probe at u = 0.50 also sits exactly on a tile boundary, so 'tile (3, 6)' comes from floating-point rounding; slide 8 step 2 has the same boundary case at UV (0.50, 0.80).",
+  "Slides 9 step 3, 14 step 5 and checklist item 5 present the source_color decode as unconditional. Chapter 6 says the Compatibility renderer, which Walker uses, does no sRGB-to-linear conversion for canvas uniforms, and Forward+ and Mobile convert in 2D only when the viewport renders in HDR. So the 'washed out' fix may not apply to the course's own 2D game. The narration uses a 3D example for source_color.",
+  "Slide 10 step 3: node A and node B each get their own bracket, with 'one shared material' between them, so the drawing reads as two materials rather than one."
+ ]
+}

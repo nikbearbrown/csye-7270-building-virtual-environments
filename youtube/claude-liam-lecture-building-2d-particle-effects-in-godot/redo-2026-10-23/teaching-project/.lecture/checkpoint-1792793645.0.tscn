@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://ck5jpxssyodix"]
+
+[ext_resource type="Script" uid="uid://dw3jswb83d02o" path="res://arena.gd" id="1_07f3h"]
+[ext_resource type="Script" uid="uid://bo02w8kiwxas3" path="res://marker.gd" id="2_vnqwu"]
+[ext_resource type="Texture2D" uid="uid://dm6vr14kyjbej" path="res://assets/soft-dot.tres" id="3_txfw6"]
+[ext_resource type="Texture2D" uid="uid://cnyibsm1sbqun" path="res://assets/color-over-life.tres" id="4_lo17q"]
+[ext_resource type="Texture2D" uid="uid://b6ixrsa3r76vm" path="res://assets/size-over-life.tres" id="5_gp3w2"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3ee8p"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 220.0
+gravity = Vector3(0, 140, 0)
+scale_min = 0.4
+scale_max = 0.8
+scale_curve = ExtResource("5_gp3w2")
+color_ramp = ExtResource("4_lo17q")
+
+[node name="ParticleArena" type="Node2D" unique_id=1026212067]
+script = ExtResource("1_07f3h")
+heading = "Shape A Burst"
+
+[node name="Marker" type="Node2D" parent="." unique_id=1174331825]
+position = Vector2(0, 100)
+script = ExtResource("2_vnqwu")
+
+[node name="FrameGuide" type="Control" parent="." unique_id=437668412]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -540.0
+offset_top = -360.0
+offset_right = 540.0
+offset_bottom = 360.0
+mouse_filter = 2
+
+[node name="Burst" type="GPUParticles2D" parent="." unique_id=1875134426]
+position = Vector2(0, 100)
+emitting = false
+amount = 48
+texture = ExtResource("3_txfw6")
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+use_fixed_seed = true
+seed = 7270
+visibility_rect = Rect2(-400, -400, 800, 800)
+process_material = SubResource("ParticleProcessMaterial_3ee8p")

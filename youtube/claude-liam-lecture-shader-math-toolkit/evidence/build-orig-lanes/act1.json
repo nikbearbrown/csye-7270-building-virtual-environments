@@ -1,0 +1,254 @@
+{
+ "B01": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "code": "shader_type canvas_item;\n\nuniform float radius = 0.3;\n\nvoid fragment() {\n\tfloat d = distance(UV, vec2(0.5));\n\tfloat inner = smoothstep(radius - 0.04, radius, d);\n\tfloat outer = smoothstep(radius + 0.08, radius + 0.12, d);\n\tvec3 cream = vec3(0.98, 0.96, 0.92);\n\tvec3 teal = vec3(0.37, 0.64, 0.57);\n\tCOLOR = vec4(mix(cream, teal, inner - outer), 1.0);\n}",
+   "codeFile": "lab-shaders/15-ring-final.gdshader",
+   "cues": [],
+   "video": "godot-shaders/math-toolkit/ring-grow.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · radius swept by script",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "title": "Ramps and Plots"
+  },
+  "capture_spec": "C01: Lab render of lab-shaders/15-ring-final.gdshader on a 720x720 square centred in the 1280x720 logical canvas (stage #D9D5CA either side). radius swept 0.12 to 0.38 linearly from 0.5 s to 11.0 s, then held; 13 s, 30 fps, Forward+, no input. Verified: radius 0.12 -> teal at d = 0.16; 0.38 -> teal at d = 0.42.",
+  "visual_intent": "Act title 'Ramps and Plots' (serif 40) top-left. A real Godot render in a framed window on the cream stage: a soft teal ring on cream, centred, that grows smoothly from small to large. No code yet.",
+  "motion_claim": "The ring grows outward the whole time the voice names the three functions that draw it.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "small ring, window labelled"
+   },
+   {
+    "at": 0.29,
+    "event": "ring growing"
+   },
+   {
+    "at": 0.61,
+    "event": "ring near full size"
+   }
+  ],
+  "runner_up": "manim: a ring outline with three function names around it",
+  "why": "A real render is the honest 'what you will build'; a drawing would only claim it, and the same file is read line by line in the last act.",
+  "sparse": false
+ },
+ "B02": {
+  "lane": "manim",
+  "class": "B02_RampStrip",
+  "visual_intent": "A wide horizontal RAMP STRIP on the cream stage (a row of 64 narrow tiles with thin cream gaps, true grays: value v drawn as gray v, 0 black and 1 white), end labels '0' and '1', and a terracotta dot riding it with a live value label. Under the strip, in mono: 'UV.x · across the shape'. Caption in serif, the GLOSSARY wording: 'ramp · a smooth run of values from 0 up to 1'.",
+  "motion_claim": "The dot slides along the strip from 0 to 1 and its value label climbs; the strip is the ramp.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "ramp strip with the end labels 0 and 1; dot not yet shown"
+   },
+   {
+    "at": 0.03,
+    "event": "caption 'ramp' lands with its definition (landed by 0.30)"
+   },
+   {
+    "at": 0.32,
+    "event": "'pixel' dot appears at the left end with the live value 0.0"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot rests at the left end (value 0.0), caption and strip settled"
+   },
+   {
+    "at": 0.57,
+    "event": "dot rides to the right end, the value label climbing to 1.0 (done by 0.76)"
+   },
+   {
+    "at": 0.78,
+    "event": "'UV.x · across the shape' tag lands"
+   }
+  ],
+  "runner_up": "ShaderLab: the real gradient with a marker",
+  "why": "The ramp is the film's one idea; a strip with a travelling value is the cleanest picture of 'a smooth run of values', and the real render follows in B03.",
+  "sparse": true
+ },
+ "B03": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "code": "shader_type canvas_item;\n\nvoid fragment() {\n\tCOLOR = vec4(vec3(UV.x), 1.0);\n}",
+   "codeFile": "lab-shaders/01-ramp.gdshader",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      3
+     ],
+     "label": "runs once for each pixel the shape covers; sets its color"
+    },
+    {
+     "at": 0.56,
+     "lines": [
+      4
+     ],
+     "label": "the color of the pixel being drawn; fragment() sets it"
+    },
+    {
+     "at": 0.9,
+     "lines": [
+      4
+     ],
+     "label": "alpha · how visible a pixel is: 0 invisible, 1 solid"
+    }
+   ],
+   "video": "godot-shaders/math-toolkit/ramp.png",
+   "videoLabel": "Godot 4.7.2 · Forward+ · the shader on the left",
+   "readouts": [],
+   "rings": [],
+   "caption": "",
+   "durationSeconds": "__AUDIO__",
+   "ramp": {
+    "at": 0.81,
+    "from": 0,
+    "to": 1
+   }
+  },
+  "capture_spec": "C02: Lab rect, lab-shaders/01-ramp.gdshader, still PNG 1920x1080 (probes 0.0196 / 0.498 / 0.9804 at x = 0.02 / 0.5 / 0.98; red = green = blue).",
+  "visual_intent": "Code card at left (the five-line shader), at right a real Godot window showing the black-to-white gradient with a thin 0 to 1 ramp strip under it. Labels on the highlighted lines carry the GLOSSARY definitions of fragment() and COLOR word for word (60 characters at most each, so they fit on one line or wrap to two); a last label on the COLOR line gives the GLOSSARY wording of alpha for the final number, 1.0 (the word alpha is on screen only, not spoken).",
+  "motion_claim": "The fragment line is highlighted, then the COLOR line; the ramp marker sweeps the gradient from 0 to 1 as the voice says 'zero is black, one is white'.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "fragment line highlighted with its label"
+   },
+   {
+    "at": 0.56,
+    "event": "COLOR line highlighted with its label"
+   },
+   {
+    "at": 0.81,
+    "event": "ramp marker sweeps left to right under the render"
+   },
+   {
+    "at": 0.9,
+    "event": "marker rests at 1; label 'alpha · how visible a pixel is: 0 invisible, 1 solid' on the COLOR line"
+   }
+  ],
+  "runner_up": "LectureCodeTrace alone",
+  "why": "The sentence is about code and its result together: one line, the whole gradient; a code card alone would hide the result.",
+  "sparse": false
+ },
+ "B04": {
+  "lane": "manim",
+  "class": "B04_ReadThePlot",
+  "visual_intent": "The STANDARD PLOT (defined once in SHOTLIST.md) on the cream stage: square axes, 'input' along the bottom with 0 and 1, 'output' up the side with 0 and 1, the straight diagonal of f(x) = x, a terracotta dot riding it, a thin dashed drop line from the dot to the ramp strip placed under the axes at the same x scale, and the ramp strip filling with its tiles up to the drop line. Mono formula tag 'f(x) = x'. A small gray credit under the plot: 'curves drawn from the formulas · checked against Godot 4.7.2 renders'.",
+  "motion_claim": "The dot travels the diagonal; the drop line keeps its x on the strip and the strip fills up to there.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "axes and ticks"
+   },
+   {
+    "at": 0.19,
+    "event": "'input' label lands along the bottom"
+   },
+   {
+    "at": 0.33,
+    "event": "'output' label lands up the side"
+   },
+   {
+    "at": 0.38,
+    "event": "diagonal draws, dot appears at 0, the empty strip appears below"
+   },
+   {
+    "at": 0.4,
+    "event": "dot hops to x = 0.5 (done by 0.45); drop line and strip filled to the middle"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: dot rests at x = 0.5, drop line and strip settled, labels visible"
+   },
+   {
+    "at": 0.58,
+    "event": "dot rides on to 1; the strip fills fully (done by 0.76)"
+   },
+   {
+    "at": 0.77,
+    "event": "diagonal highlighted; tag 'f(x) = x' and the small credit line land"
+   }
+  ],
+  "runner_up": "ShaderLab: the real gradient with a marker",
+  "why": "The plot grammar is what is being taught and it is reused for every function below, so it is drawn once, slowly, with the dot and the strip locked together.",
+  "sparse": true
+ },
+ "B05": {
+  "lane": "manim",
+  "class": "B05_BendTheLine",
+  "visual_intent": "The standard plot as in B04, now with f(x) = 1 - x: the line starts as the diagonal and swings to run downhill from (0, 1) to (1, 0); the strip beneath flips from dark-to-light to light-to-dark with it. Mono tag 'f(x) = 1 - x'. A small caption 'predict the strip'.",
+  "motion_claim": "The diagonal pivots to run downhill and the strip under it flips; the dot then rides the new line.",
+  "show": [
+   {
+    "at": 0.0,
+    "event": "diagonal plot as in B04, tag f(x) = x"
+   },
+   {
+    "at": 0.16,
+    "event": "tag changes to 1 - x; the line pivots to run downhill (done by 0.34)"
+   },
+   {
+    "at": 0.36,
+    "event": "dot appears on the downhill line and hops to x = 0.5 (done by 0.44)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: pivot complete, the strip still shows the old ramp (a beat to predict)"
+   },
+   {
+    "at": 0.58,
+    "event": "the strip flips to light-to-dark (done by 0.66)"
+   },
+   {
+    "at": 0.65,
+    "event": "dot rides the downhill line to 1; caption 'predict the strip' lands"
+   }
+  ],
+  "runner_up": "ShaderLab: the real flipped gradient",
+  "why": "The point is predicting the strip from the line; the line must visibly bend and the strip must follow, which only a drawn plot can do.",
+  "sparse": true
+ },
+ "B06": {
+  "lane": "manim",
+  "class": "B06_ToolkitMap",
+  "visual_intent": "Three columns of small mono function chips on the cream stage, each under a serif family title: 'Cut and blend' (step, smoothstep, mix, clamp), 'Repeat and fold' (abs, fract, floor, mod), 'Distance and curves' (length, normalize, distance, pow, sin). At the right a ring outline; thin lines run from the chips distance, smoothstep and mix to it.",
+  "motion_claim": "Each family's chips pop in as the voice names it; then three lines draw from distance, smoothstep and mix to the ring and it fills.",
+  "show": [
+   {
+    "at": 0.03,
+    "event": "three family titles land (by 0.18)"
+   },
+   {
+    "at": 0.18,
+    "event": "first column's chips pop in one by one as named (done by 0.38)"
+   },
+   {
+    "at": 0.39,
+    "event": "second column's title and chips pop in together (done by 0.45)"
+   },
+   {
+    "at": 0.5,
+    "event": "midpoint hold: two columns settled; the third column's title is visible, its chips are not"
+   },
+   {
+    "at": 0.56,
+    "event": "third column's chips pop in together (done by 0.62)"
+   },
+   {
+    "at": 0.74,
+    "event": "lines from distance, smoothstep, mix draw to the ring; the ring fills teal"
+   }
+  ],
+  "runner_up": "LibraryIconRow of the function names",
+  "why": "A taxonomy with a destination (the ring) is a diagram drawn on the spoken cue; icons would carry no meaning for function names.",
+  "sparse": true
+ }
+}

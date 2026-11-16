@@ -1,0 +1,1459 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-normal-maps-without-new-geometry",
+    "title": "Normal Maps Without New Geometry",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Tangent-space normals: decode without new geometry.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending",
+    "build": {
+      "at": "2026-10-17T16:35:52",
+      "cut": "master",
+      "filled": 14,
+      "of": 14,
+      "slates": [],
+      "skin_warnings": [
+        "BOPEN: palette=claude but the cold open is 'un-annotated' — COLD OPEN LAW wants ClaudeComposerAsk"
+      ]
+    }
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Normal Maps Without New Geometry. Explain tangent-space normal decoding and its unchanged silhouette.",
+      "estimated_duration_s": 6.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      },
+      "actual_duration_s": 8.341333,
+      "audio_file": "mp3/beat-BOPEN.mp3",
+      "render_duration_s": 8.375,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BOPEN.mp4",
+        "filled_by": "media",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Shalom. This is Liam, in for Bear. The key correction is that normal maps change lighting directions. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nnormal maps move vertices.",
+            "triggerWords": "normal maps move vertices",
+            "replacementWords": "normal maps change lighting directions",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-normal-maps-without-new-geometry",
+            "banner": "",
+            "durationSeconds": 11.296
+          },
+          "rendered": {
+            "out": "media/BIDEA.mp4",
+            "at": "2026-10-17T20:28:53.380197+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      },
+      "actual_duration_s": 11.296,
+      "audio_file": "mp3/beat-BIDEA-padded.wav",
+      "render_duration_s": 11.333333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BIDEA.mp4",
+        "filled_by": "remotion:BrutalistHesitantWriter",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Tangent: A direction along the surface. Binormal: The second direction along the surface. Tangent space: Coordinates relative to the local surface frame.",
+      "estimated_duration_s": 10.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Tangent space",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Tangent"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Binormal"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Tangent space"
+          }
+        ],
+        "motion_claim": "Reveal Tangent space",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Tangent",
+                "meaning": "A direction along the surface"
+              },
+              {
+                "term": "Binormal",
+                "meaning": "The second direction along the surface"
+              },
+              {
+                "term": "Tangent space",
+                "meaning": "Coordinates relative to the local surface frame"
+              }
+            ],
+            "durationSeconds": 9.749333
+          },
+          "rendered": {
+            "out": "media/BDEFS.mp4",
+            "at": "2026-10-17T20:29:14.877333+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 9.749333,
+      "audio_file": "mp3/beat-BDEFS.mp3",
+      "render_duration_s": 9.75,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BDEFS.mp4",
+        "filled_by": "remotion:ClaudeDefinitions",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The normal map stores direction components in RGB. Multiplying by two and subtracting one converts the stored zero-to-one range into signed components between minus one and one.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: texture(normal_map, UV)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. A Direction In A Texture"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: texture(normal_map, UV)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: texture(normal_map, UV)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "void fragment() {\n\tvec3 tn = texture(normal_map, UV).rgb * 2.0 - 1.0;\n\tvec3 n = normalize(tn.x * world_tangent + tn.y * world_binormal + tn.z * world_normal);",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.33,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 11.328
+          },
+          "rendered": {
+            "out": "media/B01.mp4",
+            "at": "2026-10-17T20:29:33.251909+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 48,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.328,
+      "audio_file": "mp3/beat-B01.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.3991,
+              0.8365,
+              0.6843
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 11.333333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B01.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Tangent, binormal, and normal form the surface frame. The vertex stage carries these directions into world space so the sampled direction can be expressed where the light and eye vectors live.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: world_tangent =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Build The Surface Frame"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: world_tangent ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: world_tangent =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Build The Surface Frame",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tworld_normal = MODEL_NORMAL_MATRIX * NORMAL;\n\tworld_tangent = MODEL_NORMAL_MATRIX * TANGENT;\n\tworld_binormal = MODEL_NORMAL_MATRIX * BINORMAL;",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.39,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 11.136
+          },
+          "rendered": {
+            "out": "media/B02.mp4",
+            "at": "2026-10-17T20:29:56.251308+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 39,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.136,
+      "audio_file": "mp3/beat-B02.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4453,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3009,
+              0.4448,
+              0.7454
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4453,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 11.166666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B02.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The sampled red component weights the tangent, green weights the binormal, and blue weights the normal. Add the weighted directions and normalize the result. That becomes the lighting normal.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: tn.x * world_tangent",
+        "show": [
+          {
+            "at": 0,
+            "event": "Combine The Components"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: tn.x * world_tangent"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: tn.x * world_tangent",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Combine The Components",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 tn = texture(normal_map, UV).rgb * 2.0 - 1.0;\n\tvec3 n = normalize(tn.x * world_tangent + tn.y * world_binormal + tn.z * world_normal);\n\tvec3 l = normalize(-light_direction);",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.24,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 10.666667
+          },
+          "rendered": {
+            "out": "media/B03.mp4",
+            "at": "2026-10-17T20:30:13.798860+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 49,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.666667,
+      "audio_file": "mp3/beat-B03.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4292,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.3991,
+              0.8365,
+              0.6843
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4292,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 10.708333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B03.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The perturbed normal drives diffuse, rim, and specular calculations. The shader does not merely paint shadows onto the texture. It changes the direction used by the lighting formulas.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 r =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Reuse The New Normal"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 r ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 r =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Reuse The New Normal",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 e = normalize(eye_vector);\n\tvec3 r = -reflect(e, n);\n\tvec4 color_map = texture(diffuse_map, UV);",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.14,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 11.029333
+          },
+          "rendered": {
+            "out": "media/B04.mp4",
+            "at": "2026-10-17T20:30:36.616817+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 53,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.029333,
+      "audio_file": "mp3/beat-B04.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3898,
+              0.4448,
+              0.6565
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6565,
+              0.4417,
+              0.6935
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6565,
+              0.4417,
+              0.6935
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 11.041666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B04.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Compare a flat map with the dome map. The surface appears bumpy because the directions vary across each cell. Look at the outside edge: the actual sphere has not grown those domes.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Reveal The Domes"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/08_normal_mapped.mp4",
+            "durationSeconds": 16.0
+          },
+          "rendered": {
+            "out": "media/B05.mp4",
+            "at": "2026-10-17T20:31:17.923807+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 48,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0,
+      "actual_duration_s": 16.0,
+      "audio_file": "mp3/beat-B05-padded.wav",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.1376,
+              0.087,
+              0.9251,
+              0.1648
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.1376,
+              0.9019,
+              0.8624,
+              0.9519
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.1376,
+              0.087,
+              0.9251,
+              0.1648
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.1376,
+              0.9019,
+              0.8624,
+              0.9519
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 16.0,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B05.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This version expects the supplied OpenGL-style map. A DirectX-style green channel has the opposite sign. Flipping that channel without adapting the shader reverses the vertical lighting detail.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: tn.y * world_binormal",
+        "show": [
+          {
+            "at": 0,
+            "event": "Green Has A Convention"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: tn.y * world_binormal"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: tn.y * world_binormal",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Green Has A Convention",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 tn = texture(normal_map, UV).rgb * 2.0 - 1.0;\n\tvec3 n = normalize(tn.x * world_tangent + tn.y * world_binormal + tn.z * world_normal);\n\tvec3 l = normalize(-light_direction);",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.59,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 11.797333
+          },
+          "rendered": {
+            "out": "media/B06.mp4",
+            "at": "2026-10-17T20:31:37.183088+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 49,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.797333,
+      "audio_file": "mp3/beat-B06.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4292,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.3991,
+              0.8365,
+              0.6843
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4292,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 11.833333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B06.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This teaching port transforms tangents with the normal matrix too. That agrees for uniform scale, but it is not a general tangent-frame solution for nonuniform scaling. Keep this demonstration uniformly scaled.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: MODEL_NORMAL_MATRIX * TANGENT",
+        "show": [
+          {
+            "at": 0,
+            "event": "A Scale Limitation"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: MODEL_NORMAL_MATRIX * TANGENT"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: MODEL_NORMAL_MATRIX * TANGENT",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "A Scale Limitation",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tworld_normal = MODEL_NORMAL_MATRIX * NORMAL;\n\tworld_tangent = MODEL_NORMAL_MATRIX * TANGENT;\n\tworld_binormal = MODEL_NORMAL_MATRIX * BINORMAL;",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.13,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 13.034667
+          },
+          "rendered": {
+            "out": "media/B07.mp4",
+            "at": "2026-10-17T20:32:03.431245+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 39,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 13.034667,
+      "audio_file": "mp3/beat-B07.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3646,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3009,
+              0.4448,
+              0.7454
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3646,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 13.041666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B07.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "All the apparent bumps happen in the fragment lighting. There is no vertex displacement here. If the outline must change, a normal map alone cannot provide that geometry.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: void fragment",
+        "show": [
+          {
+            "at": 0,
+            "event": "No Displacement"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: void fragment"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: void fragment",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "No Displacement",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "}\nvoid fragment() {\n\tvec3 tn = texture(normal_map, UV).rgb * 2.0 - 1.0;",
+            "codeFile": "08_normal_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.29,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/08_normal_mapped.jpg",
+            "durationSeconds": 9.898667
+          },
+          "rendered": {
+            "out": "media/B08.mp4",
+            "at": "2026-10-17T20:32:19.956389+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/08_normal_mapped.gdshader",
+        "sha256": "73700c5cd6f5d4311b1d89f26990c67812428ff6f7f6e3fa525036676b8ecd8d",
+        "line": 46,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.898667,
+      "audio_file": "mp3/beat-B08.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.4231,
+              0.8365,
+              0.6602
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6602,
+              0.8333,
+              0.6972
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6602,
+              0.8333,
+              0.6972
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      },
+      "render_duration_s": 9.916666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B08.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. Decode the texture into signed components. Use the tangent frame to obtain a world normal. Lighting uses the perturbed direction. The mesh silhouette remains unchanged. Liam, in for Bear.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Normal Maps Without New Geometry",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "Decode the texture into signed components.",
+              "Use the tangent frame to obtain a world normal.",
+              "Lighting uses the perturbed direction.",
+              "The mesh silhouette remains unchanged."
+            ],
+            "lectureLayout": true,
+            "durationSeconds": 12.276
+          },
+          "rendered": {
+            "out": "media/BVDT.mp4",
+            "at": "2026-10-17T20:32:43.712657+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "actual_duration_s": 12.276,
+      "audio_file": "mp3/beat-BVDT-padded.wav",
+      "render_duration_s": 12.291666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BVDT.mp4",
+        "filled_by": "remotion:ClaudeVerdictArtifact",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Compare a flat normal map with the dome map. Inspect the outline, then invert green. Explain why the lighting changes while the mesh silhouette remains the same. Check two things: The silhouette stays unchanged. The green convention matches the expected map.",
+      "estimated_duration_s": 17.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Compare a flat normal map with the dome map. Inspect the outline, then invert green. Explain why the lighting changes while the mesh silhouette remains the same. Check two things: The silhouette stays unchanged. The green convention matches the expected map.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "The silhouette stays unchanged.",
+              "The green convention matches the expected map."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "durationSeconds": 14.186667
+          },
+          "rendered": {
+            "out": "media/BHTF.mp4",
+            "at": "2026-10-17T20:33:11.563351+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 14.186667,
+      "audio_file": "mp3/beat-BHTF.mp3",
+      "render_duration_s": 14.208333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BHTF.mp4",
+        "filled_by": "remotion:ClaudeComposerAsk",
+        "at": "2026-10-17T16:35:52"
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Normal Maps Without New Geometry. At Nik Bear Brown.",
+      "estimated_duration_s": 3.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Normal Maps Without New Geometry",
+            "slug": "claude-liam-lecture-shader-normal-maps-without-new-geometry",
+            "lectureLayout": true,
+            "handle": "@NikBearBrown",
+            "durationSeconds": 4.946667
+          },
+          "rendered": {
+            "out": "media/BOUT.mp4",
+            "at": "2026-10-17T20:33:24.683649+00:00"
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "ClaudeTitleOutro is the channel-branded outro: title, handle, and pixel mascot centred on cream. Intentionally sparse by design."
+      },
+      "actual_duration_s": 4.946667,
+      "audio_file": "mp3/beat-BOUT-padded.wav",
+      "render_duration_s": 4.958333333333333,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BOUT.mp4",
+        "filled_by": "remotion:ClaudeTitleOutro",
+        "at": "2026-10-17T16:35:52"
+      }
+    }
+  ]
+}

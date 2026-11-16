@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Animation: principles and character animation | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Animation principles and character animation">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Animation: principles and character animation">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapters 10 and 11</p>
+      <h1 class="t-opening rise g2">Animation: principles and character animation</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">Terms for how values and bodies change over time, and the craft that makes motion read</p>
+      <div class="speaker-notes" hidden><p>Deck 8a of the topic order (first of three animation decks). 34 terms. Tags: in the book text means Chapter 10 or 11 uses and explains it; in the glossary means a glossary row only; editor or docs means the engine documentation the chapter links; outside source means the classic 12 principles of animation; video only means the Riot character animation video.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10 and 11; glossary, Animation and Animation foundations; Riot series ep 6 Character Animation.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Keys, in-betweens, clips and tweens">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What animation stores</p>
+      <h2 class="t-chart">Keys, in-betweens, clips and tweens</h2>
+      <div class="diagram build" data-build="keys" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Between keys” and “Tween or AnimationPlayer”; glossary, Animation.</p>
+      <div class="speaker-notes" hidden><p>Keyframe, interpolation, clip and tween: Chapter 10, "An animation is data bound to node paths", "Between keys" and "Tween or AnimationPlayer". Key values 20, 80, 50 are illustrative; every in-between is computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Linear, step and cubic">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Between the same keys</p>
+      <h2 class="t-chart">Linear, step and cubic</h2>
+      <div class="diagram build" data-build="interp" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Between keys: interpolation, easing, update mode”; glossary, Animation.</p>
+      <div class="speaker-notes" hidden><p>Linear and step (UPDATE_DISCRETE) are explained in Chapter 10 "Between keys". Cubic is only listed there, so it is tagged editor or docs, citing the Godot animation introduction page the chapter links. Cubic here is a Catmull-Rom spline computed in code; Godot may use a different cubic, and this is shown as the idea, not as Godot internals.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Easing from first principles">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The speed curve</p>
+      <h2 class="t-chart">Easing from first principles</h2>
+      <div class="diagram build" data-build="easing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Between keys”; glossary, Animation (Easing); Riot ep 6 (ease, spacing).</p>
+      <div class="speaker-notes" hidden><p>Formulas: ease-in p = t squared; ease-out p = 1 - (1-t) squared; ease-in-out p = 3t squared - 2t cubed. Speeds are the numerical derivative. Ease-in-out has no glossary row; it is a standard name (CSS and Godot ease curves). Chapter 10 explains the per-key transition value, where 1 is linear.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Timing, spacing, frame rate and speed scale">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">How a move plays</p>
+      <h2 class="t-chart">Timing, spacing, frame rate and speed scale</h2>
+      <div class="diagram build" data-build="timing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Running animation deterministically without a window”; Chapter 11, “The blend-tree nodes”; Riot series ep 6 Character Animation; glossary, Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Tag for "Timing and spacing" is video only: spacing and ease come from the Riot ball bounce; Chapter 10 uses "timing" for when keys fall (sword at 0.15 s) but does not teach spacing. Frame rate: Chapter 10 pins 120 fps. Playback speed scale: Chapter 11 TimeScale node and the glossary row.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Loop, loop seam and cycle">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Repeating motion</p>
+      <h2 class="t-chart">Loop, loop seam and cycle</h2>
+      <div class="diagram build" data-build="loop" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Frames, sprite sheets and cycles”; glossary, Animation foundations (Loop seam, Loop mode).</p>
+      <div class="speaker-notes" hidden><p>Loop seam and cycle: Chapter 10 "Frames, sprite sheets and cycles" (first and last frame must be the same; LOOP_LINEAR). The leg curves are cosines offset by half a cycle; the stride angle 32 degrees is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Pose, silhouette and weight">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Reading a pose</p>
+      <h2 class="t-chart">Pose, silhouette and weight</h2>
+      <div class="diagram build" data-build="pose" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot series ep 6 Character Animation; Chapter 11, “Generated motion” (silhouette, in passing).</p>
+      <div class="speaker-notes" hidden><p>All three are video only: the Riot video says animation is a series of poses, checks the centre of gravity over the feet, and mentions silhouette in motion reference. Chapter 11 mentions silhouette size only in passing. Joint angles are illustrative; positions, widths and the centre of gravity are computed.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Anticipation, squash and stretch, arcs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">A ball tells the story</p>
+      <h2 class="t-chart">Anticipation, squash and stretch, arcs</h2>
+      <div class="diagram build" data-build="ball" style="flex-basis:700px"></div>
+      <p class="source">Source: Riot series ep 6 Character Animation; The Illusion of Life, Thomas and Johnston: the 12 principles (arcs).</p>
+      <div class="speaker-notes" hidden><p>Ball bounce is Riot ep 6. Anticipation and squash and stretch are video only. Arcs is outside source (the 12 principles named in the video). Gravity and apex are computed from the stated 230 px apex and 1.2 s flight: launch speed 4H/T, gravity 8H/T squared.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Follow-through, overlap and secondary motion">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Parts that keep going</p>
+      <h2 class="t-chart">Follow-through, overlap and secondary motion</h2>
+      <div class="diagram build" data-build="follow" style="flex-basis:700px"></div>
+      <p class="source">Source: The Illusion of Life, Thomas and Johnston: the 12 principles; named in; Riot series ep 6 Character Animation.</p>
+      <div class="speaker-notes" hidden><p>Follow-through, overlap and secondary motion are from the 12 principles the Riot video names but does not teach; tagged outside source. Tail: a damped spring (omega 14, damping ratio 0.22) integrated at 60 fps; hair: follow-the-leader chain with fixed segment length. Both precomputed at load.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Rig, rest pose and skinning weights">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">A body for the mesh</p>
+      <h2 class="t-chart">Rig, rest pose and skinning weights</h2>
+      <div class="diagram build" data-build="rig" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Skeletons and IK”; glossary, Animation (Rig, Bone, Skinning weights).</p>
+      <div class="speaker-notes" hidden><p>Skeleton, bone, rest pose and weights: Chapter 10 "Skeletons and IK" (Skeleton2D, painted weights, rest pose). Rig is a glossary row. Linear blend skinning is computed per vertex: position = (1 - w) × upper-bone position + w × forearm-bone position, with w a smoothstep across 140 px at the elbow.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="FK, IK and retargeting">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Posing a limb</p>
+      <h2 class="t-chart">FK, IK and retargeting</h2>
+      <div class="diagram build" data-build="ik" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Skeletons and IK”; glossary, Animation (FK / IK) and Animation foundations (Retargeting).</p>
+      <div class="speaker-notes" hidden><p>IK is explained in Chapter 10 (Skeletons and IK; the Unity two-bone IK passage says the tip of a limb reaches a target). FK and retargeting are glossary only. Two-bone IK uses the law of cosines: cos(elbow) = (d squared - L1 squared - L2 squared) / (2 L1 L2). Retargeting here scales the target by the ratio of total reach.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Root motion, blend tree and state machine">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Driving a character</p>
+      <h2 class="t-chart">Root motion, blend tree and state machine</h2>
+      <div class="diagram build" data-build="blend" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “Root motion”, “BlendSpace”, “The state machine, as machinery”; glossary, Animation (Root motion, In-place, Blend tree, State machine, Transition, Parameter); Riot series ep 6 Character Animation.</p>
+      <div class="speaker-notes" hidden><p>Root motion: Chapter 11 "Root motion". Blend tree and state machine: Chapter 11 "The blend-tree nodes you will use" and "The state machine, as machinery". Transitions and parameters are shown inside the state machine step. Stride 120 px per cycle and code speed 150 px/s are illustrative; the foot slide is their difference. Walk, run amplitudes are illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: glossary, Animation and Animation foundations; Riot series ep 6 Character Animation.</p>
+      <div class="speaker-notes" hidden><p>Timing and spacing, ease-in and ease-out, FK and IK, blend tree and state machine.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10 and 11; glossary, Animation and Animation foundations.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions. The IK numbers use bones 130 and 110, cup at 200 px.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you ship an animation">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you ship an animation</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Frames, sprite sheets and cycles”; Chapter 11, “Root motion”; Riot series ep 6 Character Animation.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Animation: principles and character animation (Chapters 10 and 11, glossary, Riot ep 6) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = Chapter 10 or 11 uses and explains it; gloss = glossary row only; editor = engine docs named in the chapter;
+     web = outside source (12 principles of animation); video = Riot ep 6 only */
+  var T = {
+    keyframe: { n: "Keyframe", tag: "book", m: "A stored value at a specific time" },
+    interp: { n: "Interpolation", tag: "book", alias: "its results are the in-betweens", m: "Computing the in-between values" },
+    clip: { n: "Clip", tag: "book", m: "An authored animation: tracks of values over time" },
+    tween: { n: "Tween", tag: "book", m: "Code-driven interpolation of a property over a duration" },
+    linear: { n: "Linear", tag: "book", m: "Constant rate of change" },
+    step: { n: "Step (discrete)", tag: "book", m: "The value holds until the next key, then jumps" },
+    cubic: { n: "Cubic", tag: "editor", m: "A smooth curve through the keys, with no corner at a key" },
+    easing: { n: "Easing", tag: "book", alias: "ease-in-out is slow at both ends", m: "The speed curve of a change (ease-in slow start, ease-out slow end)" },
+    easein: { n: "Ease-in", tag: "gloss", m: "Slow start, then it speeds up" },
+    easeout: { n: "Ease-out", tag: "gloss", m: "Fast start, then it slows to a stop" },
+    tspace: { n: "Timing and spacing", tag: "video", m: "Timing is how long a move takes; spacing is how far it moves between frames" },
+    fps: { n: "Frame rate", tag: "book", m: "Frames shown per second" },
+    speed: { n: "Playback speed scale", tag: "book", m: "A multiplier on how fast a clip plays" },
+    loop: { n: "Loop", tag: "book", m: "A clip that starts again from its first frame when it ends" },
+    seam: { n: "Loop seam", tag: "book", m: "A visible jump where the last frame meets the first" },
+    cycle: { n: "Cycle (walk, run)", tag: "book", m: "One full stride that repeats; the first and last poses match" },
+    pose: { n: "Pose", tag: "video", m: "A single held body position; animation is a series of them" },
+    sil: { n: "Silhouette", tag: "video", m: "The solid outline of a pose; a clear action reads from the outline alone" },
+    weight: { n: "Weight and balance", tag: "video", m: "Where the balance falls; stable when it sits over the feet" },
+    antic: { n: "Anticipation", tag: "video", m: "A short wind-up that tells the player an action is coming" },
+    squash: { n: "Squash and stretch", tag: "video", m: "Compress on impact, elongate at speed; shows elasticity and inertia" },
+    arcs: { n: "Arcs", tag: "web", m: "Limbs and thrown things move along curves, not straight lines" },
+    follow: { n: "Follow-through, overlap", tag: "web", m: "Parts keep moving after the body stops, each settling at its own time" },
+    secondary: { n: "Secondary motion", tag: "web", m: "Extra movement the main action causes, such as a tail or hair, not keyed by hand" },
+    rig: { n: "Rig and skeleton", tag: "gloss", m: "The skeleton (a hierarchy of bones) plus the binding that makes the mesh follow it" },
+    rest: { n: "Rest pose (bind pose)", tag: "book", m: "The skeleton's default pose, the one the mesh is fitted to" },
+    skin: { n: "Skinning weights", tag: "book", alias: "also: bone weights, vertex weights", m: "How strongly each vertex follows each bone" },
+    fk: { n: "Forward kinematics (FK)", tag: "gloss", m: "Rotate joints parent-to-child to place the hand" },
+    ik: { n: "Inverse kinematics (IK)", tag: "book", m: "Give a target and the solver works out the joint angles" },
+    retarget: { n: "Retargeting", tag: "gloss", m: "Applying an animation made for one skeleton to a different one" },
+    root: { n: "Root motion", tag: "book", m: "The clip moves the character through the world" },
+    inplace: { n: "In-place", tag: "book", m: "The clip stays on the spot; code does the travel" },
+    blendtree: { n: "Blend tree", tag: "book", m: "Weighted mix of clips driven by parameters" },
+    sm: { n: "State machine", tag: "book", m: "One active state; transitions fire on conditions" }
+  };
+
+  /* ---------- helpers ---------- */
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function pathOf(pts) { return "M" + pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join("L"); }
+  function line(g, x1, y1, x2, y2, col, w, dash) { var p = g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2).attr("stroke", col || INK).attr("stroke-width", w || 2).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function poly(g, pts, col, w, dash) { var p = g.append("path").attr("d", pathOf(pts)).attr("stroke", col || INK).attr("stroke-width", w || 3).attr("fill", "none").attr("stroke-linejoin", "round"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function dot(g, x, y, r, fill, stroke) { return g.append("circle").attr("cx", x).attr("cy", y).attr("r", r).attr("fill", fill || RED).attr("stroke", stroke || "none").attr("stroke-width", stroke ? 2.5 : 0); }
+  function diamond(g, x, y, s, fill) { return g.append("path").attr("d", "M" + x + "," + (y - s) + "L" + (x + s) + "," + y + "L" + x + "," + (y + s) + "L" + (x - s) + "," + y + "Z").attr("fill", fill || INK); }
+  function frameBox(g, x, y, w, h) { return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2); }
+  function ease(name, t) { t = Math.max(0, Math.min(1, t)); if (name === "in") return t * t; if (name === "out") return 1 - (1 - t) * (1 - t); if (name === "inout") return 3 * t * t - 2 * t * t * t; return t; }
+  function lerpKeys(K, t) { if (t <= K[0][0]) return K[0][1]; for (var i = 0; i < K.length - 1; i++) { if (t <= K[i + 1][0]) { var u = (t - K[i][0]) / (K[i + 1][0] - K[i][0]); return K[i][1] + (K[i + 1][1] - K[i][1]) * u; } } return K[K.length - 1][1]; }
+  function sstep(a, b, x) { var u = Math.max(0, Math.min(1, (x - a) / (b - a))); return u * u * (3 - 2 * u); }
+  /* a chain of segments: [length, angle in degrees]; angles accumulate; 0 = straight down, + = toward +x, 180 = up */
+  function chainPts(x, y, segs) { var pts = [[x, y]], a = 0; segs.forEach(function (s) { a += s[1]; x += s[0] * Math.sin(a * DEG); y += s[0] * Math.cos(a * DEG); pts.push([x, y]); }); return pts; }
+  function limb(g, pts, w, col) { return g.append("path").attr("d", pathOf(pts)).attr("fill", "none").attr("stroke", col || INK).attr("stroke-width", w || 12).attr("stroke-linecap", "round").attr("stroke-linejoin", "round"); }
+  /* stick figure with the hip at (0,0); returns all the joint chains */
+  function figPts(P) {
+    var S = 0.8, tor = chainPts(0, 0, [[100 * S, 180 - P.lean]]), sh = tor[1], a = 180 - P.lean;
+    var head = [sh[0] + 30 * S * Math.sin(a * DEG), sh[1] + 30 * S * Math.cos(a * DEG)];
+    return { tor: tor, head: head, la: chainPts(sh[0], sh[1], [[75 * S, P.la[0]], [70 * S, P.la[1]]]), ra: chainPts(sh[0], sh[1], [[75 * S, P.ra[0]], [70 * S, P.ra[1]]]),
+      ll: chainPts(0, 0, [[100 * S, P.ll[0]], [100 * S, P.ll[1]]]), rl: chainPts(0, 0, [[100 * S, P.rl[0]], [100 * S, P.rl[1]]]) };
+  }
+  function figAll(F) { return [].concat(F.tor, [F.head], F.la, F.ra, F.ll, F.rl); }
+  function figFoot(F) { return Math.max(F.ll[2][1], F.rl[2][1]); }
+  function drawFig(g, F, dx, dy, w, col) {
+    var m = function (pts) { return pts.map(function (p) { return [p[0] + dx, p[1] + dy]; }); };
+    limb(g, m(F.ll), w, col); limb(g, m(F.rl), w, col); limb(g, m(F.tor), w + 4, col); limb(g, m(F.la), w - 2, col); limb(g, m(F.ra), w - 2, col);
+    g.append("circle").attr("cx", F.head[0] + dx).attr("cy", F.head[1] + dy).attr("r", 20).attr("fill", col || INK);
+  }
+  /* two-bone solver (law of cosines); bend sign picks the elbow side. Returns angles in radians and whether the target was in reach */
+  function arrow(g, x1, y1, x2, y2) { line(g, x1, y1, x2, y2, INK, 3); var a = Math.atan2(y2 - y1, x2 - x1); g.append("path").attr("d", "M" + x2 + "," + y2 + "L" + (x2 - 18 * Math.cos(a - 0.4)) + "," + (y2 - 18 * Math.sin(a - 0.4)) + "L" + (x2 - 18 * Math.cos(a + 0.4)) + "," + (y2 - 18 * Math.sin(a + 0.4)) + "Z").attr("fill", INK); }
+  function ik2(L1, L2, dx, dy, bend) {
+    var d = Math.hypot(dx, dy), reach = L1 + L2, ok = d <= reach - 0.001, dd = Math.min(Math.max(d, Math.abs(L1 - L2) + 0.001), reach - 0.001);
+    var c2 = (dd * dd - L1 * L1 - L2 * L2) / (2 * L1 * L2), a2 = bend * Math.acos(Math.max(-1, Math.min(1, c2)));
+    var a1 = Math.atan2(dy, dx) - Math.atan2(L2 * Math.sin(a2), L1 + L2 * Math.cos(a2));
+    return { a1: a1, a2: a2, d: d, ok: ok };
+  }
+  function fk2(x, y, L1, L2, a1, a2) { var ex = x + L1 * Math.cos(a1), ey = y + L1 * Math.sin(a1); return [[x, y], [ex, ey], [ex + L2 * Math.cos(a1 + a2), ey + L2 * Math.sin(a1 + a2)]]; }
+
+  /* ---------- map ---------- */
+  var MAPROWS = [
+    ["Keys and in-betweens", "keyframe, interpolation, clip, tween, linear, step, cubic", "What an animation stores, and how values between keys are filled in"],
+    ["Easing and time", "easing, ease-in, ease-out, timing and spacing, frame rate, playback speed scale, loop, loop seam, cycle", "How motion speeds up and slows down, and how it repeats"],
+    ["The craft", "pose, silhouette, weight and balance, anticipation, squash and stretch, arcs, follow-through, secondary motion", "What makes motion read as alive"],
+    ["Bodies and control", "rig and skeleton, rest pose, skinning weights, FK, IK, retargeting, root motion, in-place, blend tree, state machine", "How a body is built, posed and driven"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of animation terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from Chapters 10 and 11, the glossary and the Riot character animation video. Each one is about how a value or a body changes over time.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 126, row = g.append("g");
+      box(row, 0, y, 1400, 114, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 115).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 460, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. keyframe, interpolation, clip, tween ---------- */
+  var KEYS2 = [[0, 20], [1, 80], [2, 50]];
+  function renderKeys(el, k, anim) {
+    var svg = svgFor(el, W, H, "Keys are stored values; interpolation computes the values between them", "A plot of three keys. A playhead then sweeps across and the in-between values are computed. Then three tracks make a clip, and a tween moves one value with no keys.");
+    var ey = base(svg, [{ id: "keyframe", s: 1 }, { id: "interp", s: 2 }, { id: "clip", s: 3 }, { id: "tween", s: 4 }], k, anim, ["Keyframe", "a value you stored"], ["In-between", "a value computed from two keys"]);
+    var d = svg.append("g"), dyn = d.append("g");
+    if (k <= 2) {
+      var px = 70, py = 70, pw = 660, ph = 330, X = d3.scaleLinear([0, 2], [px, px + pw]), Y = d3.scaleLinear([0, 100], [py + ph, py]);
+      lab(d, 0, 30, "POSITION X (PX) AGAINST TIME"); frameBox(d, px, py, pw, ph);
+      [0, 1, 2].forEach(function (t) { cap(d, X(t), py + ph + 34, t + " s", { anchor: "middle" }); });
+      [0, 50, 100].forEach(function (v) { cap(d, px - 12, Y(v) + 8, v, { anchor: "end" }); });
+      if (k >= 1) {
+        poly(d, KEYS2.map(function (p) { return [X(p[0]), Y(p[1])]; }), FAMILIAR, 2, "6 6");
+        KEYS2.forEach(function (p, i) { var kg = d.append("g"); diamond(kg, X(p[0]), Y(p[1]), 14, INK); cap(kg, X(p[0]) + (i === 0 ? 24 : 0), Y(p[1]) - 26, String(p[1]), { anchor: i === 0 ? "start" : "middle", weight: 700 }); fade(kg, A(anim, k, 1), i * 250); });
+        cap(d, 0, py + ph + 86, k === 1 ? "Stored: 3 keys. Nothing is stored between them." : "Stored: 3 keys. Computed: every value in between.", { size: 24, fill: k === 1 ? INK : RED, weight: 700 });
+      }
+      if (k === 2) {
+        [0.25, 0.5, 0.75, 1.25, 1.5, 1.75].forEach(function (t) { dot(d, X(t), Y(lerpKeys(KEYS2, t)), 7, "#FFFFFF", INK); });
+        var rd = cap(d, 0, py + ph + 128, "", { size: 24 });
+        run(dyn, 4500, function (t) {
+          dyn.selectAll("*").remove(); var tt = 2 * t, v = lerpKeys(KEYS2, tt), i = tt <= 1 ? 0 : 1, a = KEYS2[i], b = KEYS2[i + 1], u = (tt - a[0]) / (b[0] - a[0]);
+          line(dyn, X(tt), py, X(tt), py + ph, RED, 2, "6 6"); dot(dyn, X(tt), Y(v), 12, RED);
+          rd.text("t = " + tt.toFixed(2) + " s: " + a[1] + " + (" + b[1] + " − " + a[1] + ") × " + u.toFixed(2) + " = " + v.toFixed(1));
+        }, A(anim, k, 2));
+      }
+    } else if (k === 3) {
+      lab(d, 0, 30, "THREE TRACKS MAKE ONE CLIP");
+      var TR = [["x", [[0, 20], [1, 80], [2, 50]], 0, 100, function (v) { return v.toFixed(1) + " px"; }], ["rotation", [[0, 0], [0.7, 30], [2, -10]], -20, 40, function (v) { return v.toFixed(1) + "°"; }], ["scale", [[0, 1], [1.2, 1.4], [2, 1]], 0.8, 1.6, function (v) { return v.toFixed(2); }]];
+      var X3 = d3.scaleLinear([0, 2], [150, 540]), rds = [];
+      TR.forEach(function (tr, i) {
+        var y0 = 60 + i * 165, Y3 = d3.scaleLinear([tr[2], tr[3]], [y0 + 120, y0]);
+        frameBox(d, 150, y0, 390, 120); cap(d, 0, y0 + 70, tr[0], { weight: 700 });
+        poly(d, tr[1].map(function (p) { return [X3(p[0]), Y3(p[1])]; }), FAMILIAR, 2, "6 6");
+        tr[1].forEach(function (p) { diamond(d, X3(p[0]), Y3(p[1]), 11, INK); });
+        rds.push(cap(d, 560, y0 + 70, "", { size: 24, weight: 700, fill: RED }));
+      });
+      cap(d, 150, 548, "0", { anchor: "middle", size: 24 }); cap(d, 540, 548, "2 s", { anchor: "middle", size: 24 });
+      run(dyn, 4500, function (t) {
+        dyn.selectAll("*").remove(); var tt = 2 * t;
+        TR.forEach(function (tr, i) { var y0 = 60 + i * 165, Y3 = d3.scaleLinear([tr[2], tr[3]], [y0 + 120, y0]), v = lerpKeys(tr[1], tt); line(dyn, X3(tt), y0, X3(tt), y0 + 120, RED, 2, "6 6"); dot(dyn, X3(tt), Y3(v), 10, RED); rds[i].text(tr[4](v)); });
+      }, A(anim, k, 3));
+    } else {
+      lab(d, 0, 30, "A TWEEN HAS NO KEYS");
+      box(d, 0, 60, 740, 72, { stroke: INK, sw: 2.5 }); mono(d, 20, 108, "tween x: 0 → 100 over 1.5 s", { size: 28, weight: 700 });
+      var X4 = d3.scaleLinear([0, 100], [60, 700]); line(d, 60, 250, 700, 250, FAMILIAR, 6); line(d, 60, 232, 60, 268, INK, 3); line(d, 700, 232, 700, 268, INK, 3);
+      cap(d, 60, 306, "0", { anchor: "middle", size: 24 }); cap(d, 700, 306, "100", { anchor: "middle", size: 24 });
+      var rd4 = cap(d, 0, 390, "", { size: 26, weight: 700, fill: RED });
+      run(dyn, 3000, function (t) { dyn.selectAll("*").remove(); var xv = 100 * t; dot(dyn, X4(xv), 250, 16, RED); rd4.text("t = " + (1.5 * t).toFixed(2) + " s: x = " + xv.toFixed(1)); }, A(anim, k, 4));
+      cap(d, 0, 470, "Keys stored by the clip above: 3 tracks × 3 keys = 9", { size: 24, fill: MUTED });
+      cap(d, 0, 510, "Keys stored by the tween: 0. Code gives the start, end and duration.", { size: 24, fill: INK, weight: 700 });
+    }
+    if (k > 0) note(svg, ey, ["", "A key is a stored value at a time. Here: 20 at 0 s, 80 at 1 s, 50 at 2 s.", "Interpolation fills the gaps. At 0.5 s it gives 20 + 60 × 0.5 = 50.", "A clip bundles tracks: x, rotation and scale each have their own keys.", "A tween is the same idea, driven by code: no stored keys, only an end value and a time."][k]);
+  }
+
+  /* ---------- 2. linear, step, cubic ---------- */
+  var K3 = [[0, 0], [1, 70], [2, 30], [3, 100]];
+  function cubicAt(K, t) { var n = K.length, i = Math.min(n - 2, Math.max(0, Math.floor(t))), p0 = K[Math.max(0, i - 1)][1], p1 = K[i][1], p2 = K[i + 1][1], p3 = K[Math.min(n - 1, i + 2)][1], u = t - i;
+    return 0.5 * ((2 * p1) + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (-p0 + 3 * p1 - 3 * p2 + p3) * u * u * u); }
+  function stepAt(K, t) { var v = K[0][1]; K.forEach(function (p) { if (t >= p[0] - 1e-9) v = p[1]; }); return v; }
+  function renderInterp(el, k, anim) {
+    var svg = svgFor(el, W, H, "Linear, step and cubic: three ways to fill the space between the same keys", "A plot of four keys. A straight-line curve, a staircase curve and a smooth curve are added one at a time, each with a dot travelling along it and the computed value underneath.");
+    var ey = base(svg, [{ id: "linear", s: 1 }, { id: "step", s: 2 }, { id: "cubic", s: 3 }], k, anim, ["Linear", "constant rate between keys"], ["Cubic", "smooth through keys, may overshoot"]);
+    var d = svg.append("g"), dyn = d.append("g"), px = 90, py = 50, pw = 650, ph = 300;
+    var X = d3.scaleLinear([0, 3], [px, px + pw]), Y = d3.scaleLinear([-20, 125], [py + ph, py]);
+    lab(d, 0, 30, "VALUE AGAINST TIME, SAME FOUR KEYS"); frameBox(d, px, py, pw, ph);
+    [0, 1, 2, 3].forEach(function (t) { cap(d, X(t), py + ph + 32, t + " s", { anchor: "middle", size: 24 }); });
+    [0, 50, 100].forEach(function (v) { cap(d, px - 12, Y(v) + 8, v, { anchor: "end", size: 24 }); });
+    var M = [["linear", "Linear", INK, function (t) { return lerpKeys(K3, t); }, null, 3], ["step", "Step", GREY, function (t) { return stepAt(K3, t); }, "10 7", 5], ["cubic", "Cubic", RED, function (t) { return cubicAt(K3, t); }, null, 4]];
+    var shown = Math.max(1, k), pts = d3.range(0, 3.0001, 0.02);
+    M.slice(0, shown).forEach(function (m) { var p = pts.map(function (t) { return [X(t), Y(m[3](t))]; }); if (m[0] === "step") { p = []; for (var i = 0; i < 4; i++) { p.push([X(i), Y(K3[i][1])]); if (i < 3) p.push([X(i + 1), Y(K3[i][1])]); } } poly(d, p, m[2], m[5], m[4]); });
+    K3.forEach(function (p) { diamond(d, X(p[0]), Y(p[1]), 14, "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+    var rds = M.map(function (m, i) { return cap(d, 0, 458 + i * 38, "", { size: 26, weight: 700, fill: m[2] === GREY ? MUTED : m[2] }); }), tr = cap(d, 0, 422, "", { size: 24, fill: MUTED });
+    function frame(t) {
+      dyn.selectAll("*").remove(); var tt = 3 * t;
+      line(dyn, X(tt), py, X(tt), py + ph, FAMILIAR, 2, "6 6"); tr.text("t = " + tt.toFixed(2) + " s");
+      M.forEach(function (m, i) { if (i >= shown) { rds[i].text(""); return; } var v = m[3](tt); dot(dyn, X(tt), Y(v), 11, m[2], "#FFFFFF"); rds[i].text(m[1] + (m[0] === "cubic" ? "  " : m[0] === "linear" ? "  " : "    ") + v.toFixed(1)); });
+    }
+    run(dyn, 5000, frame, anim && k > 0 && k <= 3 && (k === 1 || k === 2 || k === 3));
+    if (k > 0) note(svg, ey, ["", "Linear: a straight line from each key to the next.", "Step: hold the key's value, then jump at the next key.", "Cubic: a smooth curve; it bends past 70 and 100 here before turning back."][k]);
+  }
+
+  /* ---------- 3. easing from first principles ---------- */
+  function renderEasing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Easing is the speed curve: progress against time", "A curve of progress against time with a dot travelling along it. Beside it, two tracks show where an object is at ten equal time steps: evenly spaced for linear, bunched where the curve is flat for eased.");
+    var ey = base(svg, [{ id: "easing", s: 1 }, { id: "easein", s: 2 }, { id: "easeout", s: 3 }], k, anim, ["Ease-in", "slow start, speeds up"], ["Ease-out", "fast start, slows to a stop"]);
+    var d = svg.append("g"), dyn = d.append("g");
+    var kind = ["lin", "inout", "in", "out"][Math.max(1, k)], F = { inout: "p = 3t² − 2t³   (ease-in-out)", "in": "p = t²   (ease-in)", out: "p = 1 − (1 − t)²   (ease-out)" }[kind];
+    var px = 70, py = 60, pw = 330, ph = 330, X = d3.scaleLinear([0, 1], [px, px + pw]), Y = d3.scaleLinear([0, 1], [py + ph, py]), tx1 = 520, tx2 = 650;
+    lab(d, 0, 30, "PROGRESS P AGAINST TIME T"); lab(d, 470, 30, "POSITION");
+    frameBox(d, px, py, pw, ph); cap(d, px, py + ph + 34, "0", { anchor: "middle", size: 24 }); cap(d, px + pw, py + ph + 34, "1", { anchor: "middle", size: 24 }); cap(d, px - 12, py + 8, "1", { anchor: "end", size: 24 }); cap(d, px - 12, py + ph + 8, "0", { anchor: "end", size: 24 });
+    line(d, px, py + ph, px + pw, py, FAMILIAR, 3, "8 6");
+    var cv = d3.range(0, 1.0001, 0.01).map(function (t) { return [X(t), Y(ease(kind, t))]; }); poly(d, cv, RED, 5);
+    [tx1, tx2].forEach(function (x, i) { line(d, x, py, x, py + ph, FAMILIAR, 4); cap(d, x, py + ph + 34, i ? "eased" : "linear", { anchor: "middle", size: 24 });
+      d3.range(0, 11).forEach(function (j) { var p = i ? ease(kind, j / 10) : j / 10; dot(d, x, Y(p), 6, "#FFFFFF", i ? RED : INK); }); });
+    function sp(t) { var h = 0.001, a = Math.max(0, t - h), b = Math.min(1, t + h); return (ease(kind, b) - ease(kind, a)) / (b - a); }
+    cap(d, 0, 474, F, { size: 26, weight: 700, family: MONO }); cap(d, 0, 512, "speed at t = 0, 0.5, 1:  " + [0, 0.5, 1].map(function (t) { return sp(t).toFixed(2); }).join(", "), { size: 24, fill: RED, weight: 700 });
+    cap(d, 0, 548, "linear speed is 1.00 all the way", { size: 24, fill: MUTED });
+    if (k > 0) run(dyn, 4000, function (t) { dyn.selectAll("*").remove(); var p = ease(kind, t); line(dyn, X(t), Y(p), tx2, Y(p), FAMILIAR, 2, "4 6"); dot(dyn, X(t), Y(p), 13, RED); dot(dyn, tx1, Y(t), 13, INK); dot(dyn, tx2, Y(p), 13, RED); }, A(anim, k, k));
+    else dot(d, X(0), Y(0), 13, RED);
+    if (k > 0) note(svg, ey, ["", "Same trip, two speed curves. The eased dot starts and stops gently; the linear dot never slows.", "Ease-in: the curve starts flat, so the first steps are tiny and the last are big.", "Ease-out: the curve ends flat, so it brakes into the stop."][k]);
+  }
+
+  /* ---------- 4. timing, spacing, frame rate, playback speed ---------- */
+  function renderTiming(el, k, anim) {
+    var svg = svgFor(el, W, H, "Timing is how long a move takes; spacing is where the frames fall; frame rate and speed scale set how it plays", "Step 1: the same move over 0.5 s and 1.5 s. Step 2: the same 12 frames spaced evenly and eased. Step 3: the same motion sampled at 12, 30 and 60 frames per second. Step 4: a 2 second clip at speed 0.5, 1 and 2.");
+    var ey = base(svg, [{ id: "tspace", s: 1 }, { id: "fps", s: 3 }, { id: "speed", s: 4 }], k, anim, ["Timing", "how long the move takes"], ["Spacing", "how far it moves each frame"]);
+    var d = svg.append("g"), dyn = d.append("g"), x0 = 40, LW = 680;
+    function lane(y, label) { line(d, x0, y, x0 + LW, y, FAMILIAR, 4); line(d, x0, y - 14, x0, y + 14, INK, 3); line(d, x0 + LW, y - 14, x0 + LW, y + 14, INK, 3); cap(d, x0, y - 26, label, { size: 24, weight: 700 }); }
+    if (k === 0) { lab(d, 0, 30, "ONE MOVE, 680 PX"); lane(180, "a move from left to right"); dot(d, x0, 180, 13, RED); }
+    if (k === 1) {
+      lab(d, 0, 30, "TIMING: SAME MOVE, DIFFERENT DURATION (60 FPS)");
+      var DU = [0.5, 1.5], ys = [150, 330];
+      DU.forEach(function (du, i) { lane(ys[i], du + " s = " + Math.round(du * 60) + " frames"); cap(d, x0, ys[i] + 56, "speed " + Math.round(LW / du) + " px/s", { size: 24, fill: i ? MUTED : RED, weight: 700 }); });
+      run(dyn, 4500, function (t) { dyn.selectAll("*").remove(); var T = 1.5 * t; DU.forEach(function (du, i) { dot(dyn, x0 + LW * Math.min(1, T / du), ys[i], 14, i ? INK : RED); }); }, A(anim, k, 1));
+      cap(d, 0, 470, "Same two keys. Only the time between them changed.", { size: 24, fill: INK, weight: 700 });
+    }
+    if (k === 2) {
+      lab(d, 0, 30, "SPACING: SAME 12 FRAMES, DIFFERENT GAPS");
+      var ys2 = [150, 330], gaps = [];
+      ["lin", "inout"].forEach(function (kd, i) { lane(ys2[i], i ? "eased: gaps change" : "even: every gap the same"); var gp = []; for (var f = 1; f <= 12; f++) gp.push(LW * (ease(kd, f / 12) - ease(kd, (f - 1) / 12))); gaps.push(gp); });
+      cap(d, 0, 205, "gap: " + gaps[0][0].toFixed(1) + " px every frame", { size: 24, fill: MUTED }); cap(d, 0, 385, "first gap " + gaps[1][0].toFixed(1) + " px, middle gap " + gaps[1][5].toFixed(1) + " px", { size: 24, fill: RED, weight: 700 });
+      run(dyn, 4800, function (t) { dyn.selectAll("*").remove(); var nf = Math.floor(t * 12.999); ["lin", "inout"].forEach(function (kd, i) { for (var f = 0; f <= nf; f++) dot(dyn, x0 + LW * ease(kd, f / 12), ys2[i], f === nf ? 12 : 8, f === nf ? RED : INK); }); }, A(anim, k, 2));
+      cap(d, 0, 470, "Each dot is one frame. Close dots read as slow, far dots as fast.", { size: 24, fill: INK, weight: 700 });
+    }
+    if (k === 3) {
+      lab(d, 0, 30, "FRAME RATE: SAME 1 S OF MOTION, SAMPLED THREE WAYS");
+      var FR = [12, 30, 60], ys3 = [140, 270, 400];
+      FR.forEach(function (fr, i) { lane(ys3[i], fr + " frames per second"); for (var f = 0; f <= fr; f++) dot(d, x0 + LW * ease("out", f / fr), ys3[i], fr === 60 ? 4 : 7, "#FFFFFF", i === 0 ? RED : INK); cap(d, x0 + LW, ys3[i] - 26, "biggest jump " + (LW * (ease("out", 1 / fr) - ease("out", 0))).toFixed(0) + " px", { size: 24, anchor: "end", fill: i === 0 ? RED : MUTED, weight: 700 }); });
+      run(dyn, 4200, function (t) { dyn.selectAll("*").remove(); FR.forEach(function (fr, i) { var fi = Math.floor(t * fr); dot(dyn, x0 + LW * ease("out", fi / fr), ys3[i], 13, RED); }); }, A(anim, k, 3));
+      cap(d, 0, 480, "Fewer frames means bigger jumps between pictures.", { size: 24, fill: INK, weight: 700 });
+    }
+    if (k === 4) {
+      lab(d, 0, 30, "PLAYBACK SPEED SCALE ON A 2 S CLIP");
+      var SP = [0.5, 1, 2], ys4 = [140, 270, 400];
+      SP.forEach(function (sc, i) { lane(ys4[i], "speed " + sc + ": plays in " + (2 / sc).toFixed(1) + " s"); });
+      run(dyn, 4200, function (t) { dyn.selectAll("*").remove(); var R = 4 * t; SP.forEach(function (sc, i) { dot(dyn, x0 + LW * Math.min(1, R * sc / 2), ys4[i], 14, i === 1 ? INK : RED); }); }, A(anim, k, 4));
+      cap(d, 0, 480, "Duration = clip length ÷ speed scale. The keys do not change.", { size: 24, fill: INK, weight: 700 });
+    }
+    if (k > 0) note(svg, ey, ["", "Timing: the first move takes 30 frames, the second 90 at 60 fps.", "Spacing: even gaps look constant; gaps that grow then shrink look eased.", "At 12 fps the dot jumps 113 px at the start; at 60 fps it jumps 23 px.", "At scale 2 the clip ends in 1.0 s; at 0.5 it takes 4.0 s."][k]);
+  }
+
+  /* ---------- 5. loop, loop seam, cycle ---------- */
+  function renderLoop(el, k, anim) {
+    var svg = svgFor(el, W, H, "A loop repeats the clip; a seam is a jump where it wraps; a walk cycle is a loop of one stride", "Step 1: a clip played three times with the clip time wrapping. Step 2: a clip whose last value differs from its first jumps at each wrap, and one that matches does not. Step 3: two legs offset by half a cycle, with a phase line and the pose at that phase.");
+    var ey = base(svg, [{ id: "loop", s: 1 }, { id: "seam", s: 2 }, { id: "cycle", s: 3 }], k, anim, ["Loop seam", "a jump at the wrap point"], ["Cycle", "one stride that repeats"]);
+    var d = svg.append("g"), dyn = d.append("g");
+    if (k <= 1) {
+      var px = 70, py = 70, pw = 660, ph = 240, X = d3.scaleLinear([0, 3], [px, px + pw]), Y = d3.scaleLinear([-1, 1], [py + ph, py]), f = function (t) { return Math.cos(2 * Math.PI * t); };
+      lab(d, 0, 30, "HIP HEIGHT, A 1 S CLIP PLAYED 3 TIMES"); frameBox(d, px, py, pw, ph);
+      poly(d, d3.range(0, 3.0001, 0.02).map(function (t) { return [X(t), Y(f(t))]; }), k ? INK : FAMILIAR, 4);
+      [0, 1, 2, 3].forEach(function (t) { cap(d, X(t), py + ph + 32, t + " s", { anchor: "middle", size: 24 }); });
+      [1, 2].forEach(function (t) { line(d, X(t), py, X(t), py + ph, RED, 2, "8 6"); });
+      ["loop 1", "loop 2", "loop 3"].forEach(function (s, i) { cap(d, X(i + 0.5), py + ph + 76, s, { anchor: "middle", size: 24, fill: MUTED }); });
+      var rd = cap(d, 0, 480, "", { size: 24, weight: 700, fill: RED });
+      if (k) run(dyn, 6000, function (t) { dyn.selectAll("*").remove(); var tt = 3 * t, ct = tt % 1; dot(dyn, X(tt), Y(f(tt)), 12, RED); rd.text("time " + tt.toFixed(2) + " s → clip time " + ct.toFixed(2) + " s"); }, A(anim, k, 1));
+    } else if (k === 2) {
+      var X2 = d3.scaleLinear([0, 3], [70, 730]), rows = [["last key ≠ first key", function (t) { return 40 * (t % 1); }, RED], ["last key = first key", function (t) { return 20 * (1 - Math.cos(2 * Math.PI * t)); }, INK]];
+      lab(d, 0, 30, "SAME CLIP LENGTH, TWO ENDINGS");
+      rows.forEach(function (r, i) {
+        var y0 = 70 + i * 230, Y2 = d3.scaleLinear([0, 40], [y0 + 150, y0]); frameBox(d, 70, y0, 660, 150); cap(d, 76, y0 + 180, r[0], { size: 24, weight: 700, fill: r[2] });
+        for (var c = 0; c < 3; c++) { var seg = d3.range(0, 0.9999, 0.02).concat([0.9999]).map(function (u) { return [X2(c + u), Y2(r[1](u))]; }); poly(d, seg, r[2], 4); }
+        var jump = Math.abs(r[1](0.99999) - r[1](0)); [1, 2].forEach(function (c) { if (jump > 1) line(d, X2(c), Y2(40), X2(c), Y2(0), RED, 5); else dot(d, X2(c), Y2(0), 8, INK); });
+        cap(d, 730, y0 + 180, "jump at the seam: " + jump.toFixed(0) + " px", { anchor: "end", size: 24, weight: 700, fill: r[2] });
+      });
+    } else {
+      var A0 = 32, px3 = 70, py3 = 60, pw3 = 660, ph3 = 130, X3 = d3.scaleLinear([0, 1], [px3, px3 + pw3]), Y3 = d3.scaleLinear([-A0, A0], [py3 + ph3, py3]);
+      var legL = function (p) { return A0 * Math.cos(2 * Math.PI * p); }, legR = function (p) { return A0 * Math.cos(2 * Math.PI * (p + 0.5)); };
+      lab(d, 0, 30, "LEG SWING ANGLE (°) AGAINST CYCLE PHASE"); frameBox(d, px3, py3, pw3, ph3);
+      poly(d, d3.range(0, 1.0001, 0.01).map(function (p) { return [X3(p), Y3(legL(p))]; }), INK, 4); poly(d, d3.range(0, 1.0001, 0.01).map(function (p) { return [X3(p), Y3(legR(p))]; }), RED, 4);
+      [0, 0.5, 1].forEach(function (p) { cap(d, X3(p), py3 + ph3 + 32, p.toFixed(1), { anchor: "middle", size: 24 }); });
+      cap(d, 0, 268, "black: left leg", { size: 24, weight: 700 }); cap(d, 0, 300, "red: right leg", { size: 24, weight: 700, fill: RED });
+      var rd3 = cap(d, 0, 558, "", { size: 24, weight: 700 });
+      run(dyn, 6000, function (t) {
+        dyn.selectAll("*").remove(); var p = (2 * t) % 1, a = legL(p), b = legR(p);
+        line(dyn, X3(p), py3, X3(p), py3 + ph3, GREY, 2, "6 6"); dot(dyn, X3(p), Y3(a), 10, INK); dot(dyn, X3(p), Y3(b), 10, RED);
+        var hx = 380, hy = 400, lg = chainPts(hx, hy, [[100, -a]]), rg = chainPts(hx, hy, [[100, -b]]);
+        line(dyn, 150, 500, 610, 500, FAMILIAR, 3); limb(dyn, [[hx, hy], [hx, hy - 90]], 14, INK); dot(dyn, hx, hy - 116, 22, INK); limb(dyn, lg, 14, INK); limb(dyn, rg, 14, RED);
+        rd3.text("phase " + p.toFixed(2) + ": left " + a.toFixed(0) + "°, right " + b.toFixed(0) + "°; phase 1.00 = phase 0.00");
+      }, A(anim, k, 3));
+    }
+    if (k > 0) note(svg, ey, ["", "A loop wraps the clip time: at 1.40 s the clip is at 0.40 s of loop 2.", "If the last value is not the first, every wrap is a jump. Make them equal and the seam is 0.", "The right leg is the left leg shifted by half a cycle. Contact poses at phase 0 and 0.5."][k]);
+  }
+
+  /* ---------- 6. pose, silhouette, weight ---------- */
+  var POSES = { stand: { lean: 0, la: [8, 6], ra: [-8, -6], ll: [4, -2], rl: [-4, 2] }, crouch: { lean: 25, la: [40, -30], ra: [25, -20], ll: [40, -80], rl: [30, -70] }, reach: { lean: -5, la: [170, 5], ra: [160, 10], ll: [3, -1], rl: [-3, 1] },
+    clear: { lean: 10, la: [100, 0], ra: [-100, 0], ll: [25, 0], rl: [-25, 0] }, muddy: { lean: 10, la: [6, 4], ra: [-4, 4], ll: [3, 0], rl: [-3, 0] } };
+  function renderPose(el, k, anim) {
+    var svg = svgFor(el, W, H, "A pose is a held body position; its silhouette shows whether it reads; weight shows in balance", "Three key poses with feet on the ground. Then two versions of one action drawn as solid shapes with their widths. Then a figure leaning with a centre of gravity dot that stays inside or leaves the feet.");
+    var ey = base(svg, [{ id: "pose", s: 1 }, { id: "sil", s: 2 }, { id: "weight", s: 3 }], k, anim, ["Pose", "one held position"], ["Keyframe", "a stored value at a time"]);
+    var d = svg.append("g"), dyn = d.append("g"), GY = 440;
+    line(d, 20, GY, 740, GY, FAMILIAR, 4);
+    function place(P, x) { var F = figPts(P); return { F: F, x: x, dy: GY - figFoot(F) }; }
+    if (k <= 1) {
+      lab(d, 0, 30, "THREE KEY POSES, FEET ON THE GROUND");
+      [["stand", 130], ["crouch", 380], ["reach", 630]].forEach(function (p, i) { var pl = place(POSES[p[0]], p[1]), g = d.append("g"); drawFig(g, pl.F, pl.x, pl.dy, 14, INK); cap(g, pl.x, GY + 40, "pose " + (i + 1), { anchor: "middle", size: 24, weight: 700 }); fade(g, A(anim, k, 1), i * 450); });
+      var hh = [0, 1, 2].map(function (i) { var P = [POSES.stand, POSES.crouch, POSES.reach][i], F = figPts(P), pts = figAll(F); return GY - (GY - figFoot(F) + d3.min(pts, function (q) { return q[1]; })); });
+      cap(d, 0, 540, "Heights: " + hh.map(function (h) { return h.toFixed(0) + " px"; }).join(", ") + ". Each pose is a keyframe.", { size: 24, fill: INK, weight: 700 });
+    } else if (k === 2) {
+      lab(d, 0, 30, "SAME ACTION, TWO SILHOUETTES");
+      [["clear", 190, "arms out"], ["muddy", 570, "arms in front"]].forEach(function (p, i) {
+        var pl = place(POSES[p[0]], p[1]), g = d.append("g"), pts = figAll(pl.F), x0 = d3.min(pts, function (q) { return q[0]; }), x1 = d3.max(pts, function (q) { return q[0]; }), y0 = d3.min(pts, function (q) { return q[1]; }) + pl.dy - 24;
+        drawFig(g, pl.F, pl.x, pl.dy, 20, INK); line(g, pl.x + x0, GY + 22, pl.x + x1, GY + 22, i ? RED : INK, 4); line(g, pl.x + x0, GY + 12, pl.x + x0, GY + 32, i ? RED : INK, 4); line(g, pl.x + x1, GY + 12, pl.x + x1, GY + 32, i ? RED : INK, 4);
+        cap(g, pl.x, GY + 66, p[2] + ": " + (x1 - x0).toFixed(0) + " px wide", { anchor: "middle", size: 24, weight: 700, fill: i ? RED : INK }); fade(g, A(anim, k, 2), i * 500);
+      });
+      cap(d, 0, 556, "", { size: 24 });
+    } else {
+      lab(d, 0, 30, "CENTRE OF GRAVITY AGAINST THE FEET");
+      var rd = cap(d, 0, 558, "", { size: 24, weight: 700 });
+      run(dyn, 5000, function (t) {
+        dyn.selectAll("*").remove(); var lean = -10 + 70 * (0.5 - 0.5 * Math.cos(2 * Math.PI * t)), P = { lean: lean, la: [lean + 10, 0], ra: [lean - 10, 0], ll: [15, 0], rl: [-15, 0] }, F = figPts(P), dy = GY - figFoot(F), cx0 = 380;
+        var fl = F.ll[2][0] + cx0, fr = F.rl[2][0] + cx0, lo = Math.min(fl, fr) - 22, hi = Math.max(fl, fr) + 22;
+        function mid(a, b) { return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; }
+        var parts = [[mid(F.tor[0], F.tor[1]), 0.40], [F.head, 0.08], [mid(F.la[0], F.la[1]), 0.05], [mid(F.ra[0], F.ra[1]), 0.05], [mid(F.ll[0], F.ll[1]), 0.21], [mid(F.rl[0], F.rl[1]), 0.21]];
+        var gx = d3.sum(parts, function (p) { return p[0][0] * p[1]; }) + cx0, gy = d3.sum(parts, function (p) { return p[0][1] * p[1]; }) + dy, inside = gx >= lo && gx <= hi;
+        line(dyn, lo, GY + 14, hi, GY + 14, INK, 6); drawFig(dyn, F, cx0, dy, 14, GREY); line(dyn, gx, gy, gx, GY, inside ? INK : RED, 3, "6 6"); dot(dyn, gx, gy, 14, inside ? INK : RED, "#FFFFFF");
+        rd.text("centre of gravity x " + gx.toFixed(0) + "; feet cover " + lo.toFixed(0) + " to " + hi.toFixed(0) + ": " + (inside ? "balanced" : "falls over")).attr("fill", inside ? INK : RED);
+      }, A(anim, k, 3));
+      cap(d, 0, 524, "dot = average of body parts by mass; bar = where the feet are", { size: 24, fill: MUTED });
+    }
+    if (k > 0) note(svg, ey, ["", "Three poses are three keys. The engine or the animator fills in the rest.", "On the left the arms leave the body, so the outline says what is happening. On the right it does not.", "While the dot is over the feet the pose is stable. Past the feet it must fall or step."][k]);
+  }
+
+  /* ---------- 7. anticipation, squash and stretch, arcs (bouncing ball) ---------- */
+  var BALL = { gy: 500, r: 34, H: 230, T: 1.2, x0: 120, x1: 430, W: 0.35 };
+  function ballState(t, withWind) {
+    /* returns {x, h (height of the ball bottom above the ground), sy, sx, ph} for time t (seconds) */
+    var B = BALL, w = withWind ? B.W : 0, tt = t - w;
+    if (tt < 0) { var u = t / B.W; return { x: B.x0, h: 0, sy: 1 - 0.4 * ease("inout", Math.min(1, u * 1.6)) + 0 * u, sx: 0, ph: "wind-up" }; }
+    var T1 = B.T, H1 = B.H, H2 = B.H * 0.55, T2 = B.T * Math.sqrt(0.55);
+    var hop = tt < T1 ? 0 : 1, lt = hop ? tt - T1 : tt, Th = hop ? T2 : T1, Hh = hop ? H2 : H1, u2 = Math.min(1, lt / Th);
+    var h = 4 * Hh * u2 * (1 - u2), v = Math.abs(4 * Hh * (1 - 2 * u2) / Th), vmax = 4 * H1 / T1;
+    var imp = Math.max(0, 1 - Math.min(u2, 1 - u2) / 0.07), sy = (1 + 0.3 * Math.min(1, v / vmax)) * (1 - imp) + 0.62 * imp;
+    var xa = hop ? B.x1 : B.x0, xb = hop ? B.x1 + 270 : B.x1;
+    return { x: xa + (xb - xa) * u2, h: h, sy: sy, ph: hop ? "hop 2" : "hop 1", imp: imp, u: u2, hop: hop, Th: Th, Hh: Hh };
+  }
+  function drawBall(g, s, wind) {
+    var B = BALL, sy = s.sy, sx = 1 / sy, rx = B.r * sx, ry = B.r * sy;
+    g.append("ellipse").attr("cx", s.x).attr("cy", B.gy - s.h - ry).attr("rx", rx).attr("ry", ry).attr("fill", RED);
+    return [sx, sy];
+  }
+  function renderBall(el, k, anim) {
+    var svg = svgFor(el, W, H, "A ball shows anticipation, squash and stretch, and a curved arc", "A ball with a wind-up squash before it jumps. Then two hops where the ball stretches along its speed and squashes on impact, with the scale computed so the area stays the same. Then the path of one hop against the straight line it would take without gravity.");
+    var ey = base(svg, [{ id: "antic", s: 1 }, { id: "squash", s: 2 }, { id: "arcs", s: 3 }], k, anim, ["Squash and stretch", "shape shows speed and impact"], ["Anticipation", "a wind-up before the move"]);
+    var d = svg.append("g"), dyn = d.append("g"), B = BALL;
+    line(d, 20, B.gy, 740, B.gy, INK, 3);
+    var rd = cap(d, 0, 556, "", { size: 24, weight: 700 }), rd2 = cap(d, 0, 100, "", { size: 24, fill: MUTED });
+    if (k === 0) { lab(d, 0, 30, "A BALL ON THE GROUND"); drawBall(d, { x: 120, h: 0, sy: 1 }); }
+    if (k === 1) {
+      lab(d, 0, 30, "WIND-UP, THEN THE JUMP"); var tot = B.W + B.T;
+      run(dyn, 3600, function (t) { dyn.selectAll("*").remove(); var tm = t * tot, s = ballState(tm, true); if (tm < B.W) { s.sx = 1 / s.sy; } var sc = drawBall(dyn, s); rd.text((tm < B.W ? "wind-up" : "flight") + ": " + tm.toFixed(2) + " s, height scale " + sc[1].toFixed(2)); }, A(anim, k, 1));
+      cap(d, 0, 100, "wind-up " + B.W + " s (" + Math.round(B.W * 60) + " frames at 60 fps), then flight " + B.T + " s", { size: 24, fill: MUTED });
+    }
+    if (k === 2) {
+      lab(d, 0, 30, "TWO HOPS, SHAPE FOLLOWS SPEED"); var tot2 = B.T + B.T * Math.sqrt(0.55);
+      run(dyn, 4800, function (t) { dyn.selectAll("*").remove(); var s = ballState(t * tot2, false), sc = drawBall(dyn, s); rd.text("scale x " + sc[0].toFixed(2) + ", y " + sc[1].toFixed(2) + ", x × y = " + (sc[0] * sc[1]).toFixed(2)); }, A(anim, k, 2));
+      cap(d, 0, 100, "stretch up to 1.30 in flight; squash to 0.62 on impact", { size: 24, fill: MUTED });
+    }
+    if (k === 3) {
+      lab(d, 0, 30, "ONE HOP: THE PATH AND THE SAMPLES"); var vy0 = 4 * B.H / B.T, g = 8 * B.H / (B.T * B.T), vx = (B.x1 - B.x0) / B.T;
+      var Xp = function (tm) { return B.x0 + vx * tm; }, Yp = function (tm) { return B.gy - (vy0 * tm - 0.5 * g * tm * tm); };
+      var arc = d3.range(0, B.T + 1e-9, 0.02).map(function (tm) { return [Xp(tm), Yp(tm)]; }); poly(d, arc, RED, 4);
+      poly(d, [[Xp(0), Yp(0)], [Xp(B.T / 2), B.gy - vy0 * B.T / 2]], GREY, 3, "10 8"); cap(d, 330, 200, "no gravity: straight line", { size: 24, fill: MUTED });
+      d3.range(0, 13).forEach(function (j) { dot(d, Xp(j * B.T / 12), Yp(j * B.T / 12), 7, "#FFFFFF", INK); });
+      run(dyn, 3600, function (t) { dyn.selectAll("*").remove(); var tm = t * B.T; dot(dyn, Xp(tm), Yp(tm), 16, RED); rd.text("launch up " + vy0.toFixed(0) + " px/s, gravity " + g.toFixed(0) + " px/s², apex " + B.H + " px"); }, A(anim, k, 3));
+      cap(d, 370, 330, "12 frames: crowded at the top", { size: 24, fill: INK, weight: 700 });
+    }
+    if (k > 0) note(svg, ey, ["", "The ball dips for 0.35 s before it leaves the ground. The player sees the jump coming.", "Fast: stretch taller. Landing: squash flatter. Width × height stays 1.00, like a soft ball.", "With gravity the path bends. The dots are 12 equal-time frames, so they crowd at the apex."][k]);
+  }
+
+  /* ---------- 8. follow-through, overlap, secondary motion ---------- */
+  var SPR = (function () { var out = [], tip = 0, tv = 0, w = 9, z = 0.2, dt = 1 / 60;
+    for (var i = 0; i <= 240; i++) { var t = i * dt, body = 450 * Math.min(1, t / 0.5); out.push([body, tip]); var acc = w * w * (body - 70 - tip) - 2 * z * w * tv; tv += acc * dt; tip += tv * dt; }
+    return out; })();
+  var HAIR = (function () { var out = [], pts = d3.range(6).map(function (i) { return [380, 230 + i * 32]; }), dt = 1 / 60;
+    for (var f = 0; f <= 240; f++) { var t = f * dt, hx = 380 + 150 * Math.sin(2 * Math.PI * t / 2); pts[0] = [hx, 230]; for (var i = 1; i < 6; i++) { var tx = pts[i - 1][0], ty = pts[i - 1][1] + 32; pts[i] = [pts[i][0] + (tx - pts[i][0]) * 0.22, pts[i][1] + (ty - pts[i][1]) * 0.22]; var dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1], L = Math.hypot(dx, dy) || 1; pts[i] = [pts[i - 1][0] + dx / L * 32, pts[i - 1][1] + dy / L * 32]; } out.push(pts.map(function (p) { return p.slice(); })); }
+    return out; })();
+  function renderFollow(el, k, anim) {
+    var svg = svgFor(el, W, H, "Follow-through, overlap and secondary motion", "Step 1: a body stops while a trailing part overshoots and settles. Step 2: three parts with delayed starts. Step 3: a head moves between two keys while a hair chain moves by itself.");
+    var ey = base(svg, [{ id: "follow", s: 1 }, { id: "secondary", s: 3 }], k, anim, ["Follow-through", "keeps moving after the stop"], ["Overlap", "parts start and stop at different times"]);
+    var d = svg.append("g"), dyn = d.append("g");
+    if (k <= 1) {
+      lab(d, 0, 30, "BODY STOPS AT 450 PX; THE TAIL KEEPS GOING"); var X = d3.scaleLinear([0, 4], [70, 730]), Y = d3.scaleLinear([0, 520], [520, 300]), over = d3.max(SPR, function (s) { return s[1]; }) - 380;
+      frameBox(d, 70, 300, 660, 220); poly(d, SPR.map(function (s, i) { return [X(i / 60), Y(s[0])]; }), INK, 3); poly(d, SPR.map(function (s, i) { return [X(i / 60), Y(s[1])]; }), RED, 3);
+      line(d, 70, Y(380), 730, Y(380), GREY, 2, "8 6"); cap(d, 400, Y(380) + 30, "tail rest place: 380", { size: 24, fill: MUTED }); cap(d, 730, 548, "4 s", { size: 24, anchor: "end" }); cap(d, 70, 548, "0", { size: 24 });
+      cap(d, 0, 262, "tail swings " + over.toFixed(0) + " px past its rest place, then settles", { size: 24, fill: RED, weight: 700 });
+      line(d, 40, 190, 740, 190, FAMILIAR, 3);
+      if (k) run(dyn, 6000, function (t) { dyn.selectAll("*").remove(); var i = Math.min(240, Math.round(t * 240)), s = SPR[i], bx = 70 + s[0], tx = 70 + s[1]; line(dyn, bx, 150, tx, 150, GREY, 4); dyn.append("rect").attr("x", bx - 34).attr("y", 120).attr("width", 68).attr("height", 60).attr("fill", INK); dot(dyn, tx, 150, 16, RED); line(dyn, X(i / 60), 300, X(i / 60), 520, GREY, 2, "6 6"); }, A(anim, k, 1));
+      else { dyn.append("rect").attr("x", 36).attr("y", 120).attr("width", 68).attr("height", 60).attr("fill", INK); }
+    } else if (k === 2) {
+      lab(d, 0, 30, "SAME MOVE, THREE START TIMES"); var DL = [0, 0.12, 0.24], NM = ["shoulder", "elbow", "hand"], Dur = 0.8, x0 = 150, LW = 560;
+      NM.forEach(function (nm, i) { var y = 110 + i * 130; cap(d, 0, y + 8, nm, { size: 24, weight: 700 }); line(d, x0, y, x0 + LW, y, FAMILIAR, 4); line(d, x0, y + 40, x0 + LW, y + 40, FAMILIAR, 1); var bx = x0 + LW * DL[i] / 1.4, bw = LW * Dur / 1.4; d.append("rect").attr("x", bx).attr("y", y + 30).attr("width", bw).attr("height", 20).attr("fill", i === 2 ? RED : INK); cap(d, x0 + LW, y - 22, "starts " + DL[i].toFixed(2) + " s, stops " + (DL[i] + Dur).toFixed(2) + " s", { size: 24, anchor: "end", fill: i === 2 ? RED : MUTED }); });
+      run(dyn, 4200, function (t) { dyn.selectAll("*").remove(); var T = 1.4 * t; DL.forEach(function (dl, i) { dot(dyn, x0 + LW * ease("inout", (T - dl) / Dur), 110 + i * 130, 13, i === 2 ? RED : INK); }); line(dyn, x0 + LW * T / 1.4, 60, x0 + LW * T / 1.4, 440, GREY, 2, "6 6"); }, A(anim, k, 2));
+      cap(d, 0, 490, "Each part makes the same move, 0.12 s after the one before.", { size: 24, fill: INK, weight: 700 }); cap(d, 0, 530, "The last part stops 0.24 s after the first.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "THE HEAD IS KEYED; THE HAIR IS NOT");
+      var hk = [[0, 380], [0.5, 530], [1.5, 230], [2, 380]]; d3.range(0, 2.01, 0.5).forEach(function (t) { diamond(d, 380 + 150 * Math.sin(2 * Math.PI * t / 2), 200, 11, GREY); });
+      run(dyn, 4800, function (t) { dyn.selectAll("*").remove(); var f = Math.min(240, Math.round(t * 240)), P = HAIR[f]; limb(dyn, P, 10, RED); P.forEach(function (p, i) { if (i) dot(dyn, p[0], p[1], 8, RED); }); dot(dyn, P[0][0], 200, 34, INK); }, A(anim, k, 3));
+      cap(d, 0, 470, "Keyed by hand: the head, 5 keys (diamonds).", { size: 24, fill: INK, weight: 700 }); cap(d, 0, 510, "Computed: 6 hair points × 240 frames = " + (6 * 240) + " positions.", { size: 24, fill: RED, weight: 700 });
+    }
+    if (k > 0) note(svg, ey, ["", "The body stops, the tail does not. It swings past, comes back and settles in about 1 s.", "Overlap: the hand arrives after the shoulder. The delay stops the motion looking stiff.", "Nobody keyed the hair. It reacts to the head, which is why it feels attached."][k]);
+  }
+
+  /* ---------- 9. rig and skeleton, rest pose, skinning weights ---------- */
+  function renderRig(el, k, anim) {
+    var svg = svgFor(el, W, H, "A skeleton of bones, a rest pose the mesh is fitted to, and weights that blend the bones at the elbow", "Step 1: two bones and a joint bend as a chain. Step 2: a mesh bound rigidly to the bones, with a gap at the elbow when it bends. Step 3: the same mesh with smooth weights, shaded by how much each vertex follows the forearm.");
+    var ey = base(svg, [{ id: "rig", s: 1 }, { id: "rest", s: 2 }, { id: "skin", s: 3 }], k, anim, ["Rest pose", "where the mesh was fitted"], ["Skinning weights", "how much each bone pulls a vertex"]);
+    var d = svg.append("g"), dyn = d.append("g"), P0 = [80, 240], L1 = 230, L2 = 230, HW = 40;
+    lab(d, 0, 30, k <= 1 ? "TWO BONES, ONE JOINT" : k === 2 ? "RIGID: EACH VERTEX FOLLOWS ONE BONE" : "SMOOTH: WEIGHTS BLEND NEAR THE ELBOW");
+    var S = d3.range(0, 2 * L1 + 1, 20), wS = function (s) { return k === 2 ? (s > L1 ? 1 : 0) : sstep(L1 - 70, L1 + 70, s); };
+    function pose(a2) {
+      dyn.selectAll("*").remove(); var ang2 = a2 * DEG, E = [P0[0] + L1, P0[1]], cA = Math.cos(ang2), sA = Math.sin(ang2);
+      function vpos(s, o) { var w = wS(s), p1 = [P0[0] + s, P0[1] + o], rx = s - L1, p2 = [E[0] + rx * cA - o * sA, E[1] + rx * sA + o * cA]; return [p1[0] * (1 - w) + p2[0] * w, p1[1] * (1 - w) + p2[1] * w]; }
+      if (k >= 2) {
+        var top = S.map(function (s) { return vpos(s, -HW); }), bot = S.map(function (s) { return vpos(s, HW); }).reverse();
+        dyn.append("path").attr("d", pathOf(top.concat(bot)) + "Z").attr("fill", SUBTLE).attr("stroke", INK).attr("stroke-width", 3);
+        S.forEach(function (s) { [-HW, 0, HW].forEach(function (o) { var p = vpos(s, o); dot(dyn, p[0], p[1], 7, d3.interpolateRgb("#FFFFFF", RED)(wS(s)), INK); }); });
+      }
+      var tip = [E[0] + L2 * cA, E[1] + L2 * sA]; limb(dyn, [P0, E, tip], 8, k >= 2 ? INK : RED); [P0, E, tip].forEach(function (p, i) { dot(dyn, p[0], p[1], i === 1 ? 14 : 10, "#FFFFFF", RED); });
+      return tip;
+    }
+    var rd = cap(d, 0, 558, "", { size: 24, weight: 700 });
+    if (k === 0) { pose(0); }
+    else run(dyn, 4800, function (t) { var a2 = 80 * sstep(0, 0.6, t), tip = pose(a2); rd.text(k === 1 ? "elbow angle " + a2.toFixed(0) + "°: forearm follows the upper arm" : k === 2 ? "elbow angle " + a2.toFixed(0) + "°: weights are only 0 or 1, so the mesh tears" : "elbow angle " + a2.toFixed(0) + "°; elbow vertex: " + wS(L1).toFixed(2) + " upper, " + wS(L1).toFixed(2) + " forearm"); }, A(anim, k, k));
+    if (k <= 1) { cap(d, P0[0], P0[1] - 44, "upper arm", { size: 24, weight: 700 }); cap(d, P0[0] + L1 + 20, P0[1] - 44, "forearm", { size: 24, weight: 700 }); cap(d, P0[0] + L1 - 10, P0[1] + 66, "joint", { size: 24, anchor: "middle", fill: MUTED }); }
+    if (k === 2) { cap(d, 0, 100, "rest pose = all angles 0, the mesh is straight", { size: 24, fill: MUTED }); }
+    if (k === 3) { cap(d, 0, 100, "white = upper arm only, red = forearm only", { size: 24, fill: MUTED }); }
+    if (k > 0) note(svg, ey, ["", "Bones form a chain. Turn the upper arm and the forearm and hand follow.", "The mesh is built in the rest pose, straight. Move away from it and a rigid binding tears at the elbow.", "Weights blend the two bones near the elbow. The vertex at the elbow follows each by 0.50."][k]);
+  }
+
+  /* ---------- 10. FK, IK, retargeting ---------- */
+  function renderIK(el, k, anim) {
+    var svg = svgFor(el, W, H, "FK sets the angles and gets a hand; IK sets the hand and gets the angles; retargeting moves a clip to a new skeleton", "Step 1: a two-bone arm swings from the shoulder and the hand traces an arc. Step 2: a target moves and the arm solves its angles with the law of cosines, until the target is out of reach. Step 3: one clip on two skeletons, copied angles versus retargeted by IK.");
+    var ey = base(svg, [{ id: "fk", s: 1 }, { id: "ik", s: 2 }, { id: "retarget", s: 3 }], k, anim, ["FK", "angles in, hand out"], ["IK", "target in, angles out"]);
+    var d = svg.append("g"), dyn = d.append("g"), L1 = 200, L2 = 170, O = [120, 150], rd = cap(d, 0, 558, "", { size: 24, weight: 700 }), rd2 = cap(d, 0, 526, "", { size: 24 });
+    function arm(g, p, col, w) { limb(g, p, w || 12, col); p.forEach(function (q, i) { dot(g, q[0], q[1], i === 1 ? 13 : 10, "#FFFFFF", col); }); }
+    if (k <= 1) {
+      lab(d, 0, 30, "FK: SHOULDER ANGLE SWEEPS, ELBOW FIXED AT 40°");
+      var trace = d3.range(-20, 71, 2).map(function (a) { var p = fk2(O[0], O[1], L1, L2, a * DEG, 40 * DEG); return p[2]; }); poly(d, trace, FAMILIAR, 4, "8 8");
+      if (k) run(dyn, 4800, function (t) { dyn.selectAll("*").remove(); var a = -20 + 90 * (0.5 - 0.5 * Math.cos(2 * Math.PI * t)), p = fk2(O[0], O[1], L1, L2, a * DEG, 40 * DEG); arm(dyn, p, INK); dot(dyn, p[2][0], p[2][1], 14, RED); rd.text("shoulder " + a.toFixed(0) + "°, elbow 40° → hand at (" + p[2][0].toFixed(0) + ", " + p[2][1].toFixed(0) + ")"); rd2.text("the hand's path is an arc: radius " + Math.hypot(p[2][0] - O[0], p[2][1] - O[1]).toFixed(0) + " px at all times"); }, A(anim, k, 1));
+      else { var p0 = fk2(O[0], O[1], L1, L2, 0, 40 * DEG); arm(d, p0, INK); }
+    } else if (k === 2) {
+      lab(d, 0, 30, "IK: THE TARGET MOVES, THE SOLVER FINDS THE ANGLES");
+      line(d, 250, 330, 470, 330, FAMILIAR, 3, "8 8");
+      run(dyn, 5200, function (t) { dyn.selectAll("*").remove(); var tx = 250 + 220 * t, ty = 330, s = ik2(L1, L2, tx - O[0], ty - O[1], 1), p = fk2(O[0], O[1], L1, L2, s.a1, s.a2);
+        arm(dyn, p, s.ok ? INK : RED); dot(dyn, tx, ty, 14, "#FFFFFF", RED); dot(dyn, tx, ty, 6, RED); var err = Math.hypot(p[2][0] - tx, p[2][1] - ty);
+        rd.text("distance " + s.d.toFixed(0) + " px, reach limit " + (L1 + L2) + " px: " + (s.ok ? "hand error " + err.toFixed(1) + " px" : "out of reach by " + (s.d - L1 - L2).toFixed(0) + " px")).attr("fill", s.ok ? INK : RED);
+        rd2.text("elbow " + (s.a2 / DEG).toFixed(0) + "°, shoulder " + (s.a1 / DEG).toFixed(0) + "°  (law of cosines)"); }, A(anim, k, 2));
+    } else {
+      lab(d, 0, 30, "ONE CLIP, TWO SKELETONS"); var RA1 = 140, RA2 = 120, OA = [90, 180], OB = [90, 410], LB1 = 70, LB2 = 150, ra = RA1 + RA2, rb = LB1 + LB2;
+      cap(d, 0, 84, "A: the skeleton the clip was made for", { size: 24, weight: 700 }); cap(d, 0, 322, "B: grey = copied angles, red = retargeted", { size: 24, weight: 700 });
+      run(dyn, 5600, function (t) { dyn.selectAll("*").remove(); var rx = 170 + 50 * Math.sin(2 * Math.PI * t), ry = 20 + 30 * Math.cos(2 * Math.PI * t), s = ik2(RA1, RA2, rx, ry, 1), pa = fk2(OA[0], OA[1], RA1, RA2, s.a1, s.a2);
+        arm(dyn, pa, INK); dot(dyn, OA[0] + rx, OA[1] + ry, 8, RED);
+        var pc = fk2(OB[0], OB[1], LB1, LB2, s.a1, s.a2); arm(dyn, pc, GREY, 10);
+        var sc = rb / ra, tb = [rx * sc, ry * sc], sb = ik2(LB1, LB2, tb[0], tb[1], 1), pb = fk2(OB[0], OB[1], LB1, LB2, sb.a1, sb.a2); arm(dyn, pb, RED, 10); dot(dyn, OB[0] + tb[0], OB[1] + tb[1], 8, "#FFFFFF", RED);
+        var miss = Math.hypot(pc[2][0] - (OB[0] + tb[0]), pc[2][1] - (OB[1] + tb[1])), err = Math.hypot(pb[2][0] - (OB[0] + tb[0]), pb[2][1] - (OB[1] + tb[1]));
+        rd.text("copied angles miss the target by " + miss.toFixed(0) + " px; retargeted: " + err.toFixed(1) + " px"); rd2.text("target scaled by reach ratio " + rb + " ÷ " + ra + " = " + sc.toFixed(2)); }, A(anim, k, 3));
+    }
+    if (k > 0) note(svg, ey, ["", "FK: choose the shoulder and elbow angles and the hand lands where the maths says. It sweeps an arc.", "IK: choose where the hand goes. Past 370 px the arm is straight and misses.", "Same angles on different bone lengths put the hand in the wrong place. IK for the new skeleton puts it back."][k]);
+  }
+
+  /* ---------- 11. root motion, in-place, blend tree, state machine ---------- */
+  function walker(g, x, y, ph, amp, col) { var a = amp * Math.cos(2 * Math.PI * ph), b = amp * Math.cos(2 * Math.PI * (ph + 0.5)); limb(g, [[x, y - 150], [x, y - 75]], 12, col); dot(g, x, y - 171, 17, col); limb(g, chainPts(x, y - 75, [[75, -a]]), 12, col); limb(g, chainPts(x, y - 75, [[75, -b]]), 12, RED); }
+  var SMLOG = (function () { var st = "Idle", out = [], onf = true, jumped = false;
+    function spd(t) { return t < 1 ? 0 : t < 2 ? 0.8 * (t - 1) : t < 5 ? 0.8 : 0; }
+    for (var i = 0; i <= 700; i++) { var t = i / 100, sp = spd(t), jump = Math.abs(t - 3) < 0.005, ns = st;
+      if (st === "Idle" && sp > 0.1) ns = "Walk"; else if (st === "Walk" && sp <= 0.1) ns = "Idle"; if ((st === "Idle" || st === "Walk") && jump) ns = "Jump"; if (st === "Jump" && t >= 3.8) ns = sp > 0.1 ? "Walk" : "Idle";
+      if (ns !== st) { out.push({ t: t, from: st, to: ns, why: ns === "Jump" ? "jump pressed" : st === "Jump" ? "on_floor" : ns === "Walk" ? "speed > 0.1" : "speed ≤ 0.1" }); st = ns; } }
+    return { log: out, spd: spd, at: function (t) { var s = "Idle"; out.forEach(function (e) { if (e.t <= t + 1e-9) s = e.to; }); return s; } }; })();
+  function renderBlend(el, k, anim) {
+    var svg = svgFor(el, W, H, "Root motion and in-place decide who moves the body; a blend tree mixes clips; a state machine picks which one plays", "Step 1: a walker moved by the clip's root track. Step 2: the same clip in place with code moving it at a different speed. Step 3: a speed parameter sets weights on idle, walk and run clips. Step 4: states with transitions fired by conditions.");
+    var ey = base(svg, [{ id: "root", s: 1 }, { id: "inplace", s: 2 }, { id: "blendtree", s: 3 }, { id: "sm", s: 4 }], k, anim, ["Root motion", "the clip moves the body"], ["In-place", "code moves the body"]);
+    var d = svg.append("g"), dyn = d.append("g");
+    if (k === 0) { lab(d, 0, 30, "A WALK CLIP"); line(d, 20, 330, 740, 330, FAMILIAR, 4); walker(d, 380, 330, 0.1, 30, INK); }
+    if (k === 1 || k === 2) {
+      lab(d, 0, 30, k === 1 ? "ROOT MOTION: THE CLIP'S ROOT TRACK TRAVELS" : "SAME WALK CLIP, TWO WAYS TO TRAVEL"); var rows = k === 1 ? [[330, 120, "root track: 120 px per cycle"]] : [[230, 120, "root motion: clip moves it, 120 px/s"], [480, 150, "in-place: code moves it, 150 px/s"]];
+      rows.forEach(function (r) { line(d, 20, r[0], 740, r[0], FAMILIAR, 4); d3.range(0, 12).forEach(function (j) { line(d, 40 + j * 60, r[0], 40 + j * 60, r[0] + 14, FAMILIAR, 2); }); cap(d, 0, r[0] + 40, r[2], { size: 24, weight: 700, fill: r[1] === 150 ? RED : INK }); });
+      var rd = cap(d, 0, 558, "", { size: 24, weight: 700 });
+      run(dyn, 4500, function (t) { dyn.selectAll("*").remove(); var T = 4 * t; rows.forEach(function (r) { walker(dyn, 70 + r[1] * T, r[0], T % 1, 30, r[1] === 150 ? GREY : INK); }); rd.text(k === 1 ? "after " + T.toFixed(1) + " s the root is at x = " + (120 * T).toFixed(0) + " px" : "foot slide: " + (150 - 120) + " px/s, since one stride covers 120 px but code moves 150"); }, A(anim, k, k));
+    }
+    if (k === 3) {
+      lab(d, 0, 30, "PARAMETER: SPEED (0 TO 1)"); var sx0 = 60, sw = 640, SX = d3.scaleLinear([0, 1], [sx0, sx0 + sw]); line(d, sx0, 90, sx0 + sw, 90, FAMILIAR, 6);
+      [[0, "idle"], [0.5, "walk"], [1, "run"]].forEach(function (m) { diamond(d, SX(m[0]), 90, 13, INK); cap(d, SX(m[0]), 58, m[1], { size: 24, anchor: m[0] === 1 ? "end" : m[0] === 0 ? "start" : "middle", weight: 700 }); });
+      var NM = ["idle", "walk", "run"], rdw = cap(d, 0, 558, "", { size: 24, weight: 700 });
+      run(dyn, 6000, function (t) { dyn.selectAll("*").remove(); var sp = t < 0.5 ? t * 2 : 1 - (t - 0.5) * 1.2, w = [Math.max(0, 1 - sp * 2), 1 - Math.abs(sp * 2 - 1), Math.max(0, sp * 2 - 1)]; w[1] = Math.max(0, 1 - Math.abs(sp * 2 - 1));
+        dot(dyn, SX(sp), 90, 15, RED); w.forEach(function (v, i) { var y = 150 + i * 46; cap(dyn, 0, y + 24, NM[i], { size: 24 }); dyn.append("rect").attr("x", 90).attr("y", y).attr("width", 400 * v).attr("height", 32).attr("fill", i === 1 ? INK : i ? RED : GREY); cap(dyn, 500, y + 26, v.toFixed(2), { size: 24, weight: 700 }); });
+        var amp = w[1] * 25 + w[2] * 50, ph = (t * 7) % 1; line(dyn, 20, 520, 740, 520, FAMILIAR, 4); walker(dyn, 600, 520, ph, amp, INK); rdw.text("speed " + sp.toFixed(2) + ": leg swing = " + (w[1] * 25).toFixed(1) + " + " + (w[2] * 50).toFixed(1) + " = " + amp.toFixed(1) + "°"); }, A(anim, k, 3));
+    }
+    if (k === 4) {
+      lab(d, 0, 30, "STATES AND TRANSITIONS"); var BX = { Idle: [20, 70], Walk: [490, 70], Jump: [255, 270] }, BWD = 230, BHT = 70;
+      Object.keys(BX).forEach(function (n) { box(d, BX[n][0], BX[n][1], BWD, BHT, { stroke: INK, sw: 3 }); });
+      arrow(d, 250, 92, 490, 92); arrow(d, 490, 128, 250, 128); cap(d, 370, 64, "speed > 0.1", { size: 24, anchor: "middle", fill: MUTED }); cap(d, 370, 170, "speed ≤ 0.1", { size: 24, anchor: "middle", fill: MUTED });
+      arrow(d, 640, 140, 470, 270); cap(d, 585, 236, "jump pressed", { size: 24, fill: MUTED }); arrow(d, 400, 270, 540, 140); cap(d, 410, 236, "on_floor", { size: 24, anchor: "end", fill: MUTED });
+      var act = d.append("g"), lg = d.append("g"), rd4 = cap(d, 0, 558, "", { size: 24, weight: 700 });
+      run(dyn, 7000, function (t) { var tm = 7 * t, s = SMLOG.at(tm); act.selectAll("*").remove(); lg.selectAll("*").remove();
+        Object.keys(BX).forEach(function (n) { var on = n === s; if (on) act.append("rect").attr("x", BX[n][0]).attr("y", BX[n][1]).attr("width", BWD).attr("height", BHT).attr("fill", RED); cap(act, BX[n][0] + BWD / 2, BX[n][1] + 46, n, { size: 28, weight: 700, anchor: "middle", fill: on ? "#FFFFFF" : INK }); });
+        var shown = SMLOG.log.filter(function (e) { return e.t <= tm + 1e-9; }).slice(-4); shown.forEach(function (e, i) { cap(lg, 0, 400 + i * 34, e.t.toFixed(2) + " s  " + e.from + " → " + e.to + "  (" + e.why + ")", { size: 24, fill: i === shown.length - 1 ? RED : MUTED, weight: i === shown.length - 1 ? 700 : 400 }); });
+        rd4.text("parameters: speed " + SMLOG.spd(tm).toFixed(2) + ", on_floor " + !(tm >= 3 && tm < 3.8) + ", time " + tm.toFixed(1) + " s"); }, A(anim, k, 4));
+    }
+    if (k > 0) note(svg, ey, ["", "Root motion: the clip's own travel moves the character, so each foot stays put on the ground.", "In-place: the clip stays on the spot. If code's speed differs from the stride, the feet slide.", "Blend tree: one number picks the weights. At speed 0.25 it is half idle, half walk.", "State machine: one state is active. A transition fires when its condition becomes true."][k]);
+  }
+
+  /* ---------- look-alike pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from animation", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Timing", "How long the move takes"], ["Spacing", "Where the frames fall inside it"]],
+      [["Ease-in", "Slow start, then it speeds up"], ["Ease-out", "Fast start, then it slows to a stop"]],
+      [["FK", "Angles in, hand position out"], ["IK", "Hand target in, angles out"]],
+      [["Blend tree", "How much of each clip"], ["State machine", "Which clip, and when it switches"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT")); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(40,0)"), RG = R.append("g").attr("transform", "translate(40,0)");
+      if (i === 0) {
+        line(LG, 0, 200, 600, 200, FAMILIAR, 4); line(LG, 0, 340, 600, 340, FAMILIAR, 4); dot(LG, 600 * Math.min(1, t * 2), 200, 13, RED); dot(LG, 600 * t, 340, 13, INK);
+        cap(LG, 0, 176, "0.5 s", { size: 24 }); cap(LG, 0, 316, "1.0 s", { size: 24 });
+        line(RG, 0, 200, 600, 200, FAMILIAR, 4); d3.range(0, 11).forEach(function (j) { dot(RG, 600 * j / 10, 200, 7, "#FFFFFF", INK); }); d3.range(0, 11).forEach(function (j) { dot(RG, 600 * ease("inout", j / 10), 300, 7, "#FFFFFF", RED); });
+        line(RG, 0, 300, 600, 300, FAMILIAR, 4); cap(RG, 0, 176, "even gaps", { size: 24 }); cap(RG, 0, 276, "gaps grow then shrink", { size: 24 });
+      } else if (i === 1) {
+        [[LG, "in"], [RG, "out"]].forEach(function (q, c) { var g = q[0]; frameBox(g, 40, 100, 300, 300); poly(g, d3.range(0, 1.001, 0.02).map(function (u) { return [40 + 300 * u, 400 - 300 * ease(q[1], u)]; }), c ? RED : INK, 5); dot(g, 40 + 300 * t, 400 - 300 * ease(q[1], t), 13, c ? RED : INK); line(g, 440, 400, 440, 100, FAMILIAR, 4); dot(g, 440, 400 - 300 * ease(q[1], t), 14, c ? RED : INK); });
+        cap(LG, 40, 440, "slow start", { size: 24 }); cap(RG, 40, 440, "slow end", { size: 24 });
+      } else if (i === 2) {
+        var a = 20 + 50 * (0.5 - 0.5 * Math.cos(2 * Math.PI * t)), p = fk2(60, 150, 120, 105, a * DEG, 40 * DEG);
+        limb(LG, p, 10, INK); dot(LG, p[2][0], p[2][1], 12, RED); cap(LG, 0, 440, "shoulder " + a.toFixed(0) + "°, elbow 40°", { size: 24 });
+        var tx = 150 + 90 * t, ty = 250, s = ik2(120, 105, tx - 60, ty - 150, 1), q = fk2(60, 150, 120, 105, s.a1, s.a2); limb(RG, q, 10, INK); dot(RG, tx, ty, 12, "#FFFFFF", RED); cap(RG, 0, 440, "elbow " + (s.a2 / DEG).toFixed(0) + "° solved", { size: 24 });
+      } else {
+        var w1 = 1 - t; [["idle", w1, GREY], ["walk", t, INK]].forEach(function (q, j) { cap(LG, 0, 200 + j * 70, q[0], { size: 24 }); LG.append("rect").attr("x", 90).attr("y", 178 + j * 70).attr("width", 400 * q[1]).attr("height", 34).attr("fill", q[2]); cap(LG, 500, 204 + j * 70, q[1].toFixed(2), { size: 24, weight: 700 }); });
+        var st = t < 0.5 ? "Idle" : "Walk"; ["Idle", "Walk"].forEach(function (n, j) { var on = n === st; RG.append("rect").attr("x", j * 280).attr("y", 190).attr("width", 230).attr("height", 70).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(RG, j * 280 + 115, 236, n, { size: 28, weight: 700, anchor: "middle", fill: on ? "#FFFFFF" : INK }); });
+        cap(RG, 0, 330, "switch when speed > 0.1", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 560, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make it feel smoother", x: "Ease-in-out the 0.4 s move between keys: speed is 0 at both ends" },
+    { v: "make it snappier", x: "Cut the move from 12 frames to 6 at 60 fps and use ease-out" },
+    { v: "the walk jumps when it loops", x: "Set the last key equal to the first (0 px) and use loop mode LOOP_LINEAR" },
+    { v: "make the jump feel heavier", x: "Add 6 frames of anticipation and squash to height 0.75 on landing" },
+    { v: "the hand should reach the cup", x: "Use two-bone IK with the cup as target; bones 130 and 110, reach limit 240" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague animation requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(700,60)"), pw = 640, ph = 300, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED }); frameBox(p, 0, 0, pw, ph);
+    if (k === 1) {
+      var X = d3.scaleLinear([0, 1], [50, 600]), Y = d3.scaleLinear([0, 1.6], [ph - 40, 30]), sp = function (t) { return 6 * t * (1 - t); };
+      line(p, 50, Y(1), 600, Y(1), INK, 4); poly(p, d3.range(0, 1.001, 0.02).map(function (t) { return [X(t), Y(sp(t))]; }), RED, 5);
+      cap(p, 56, Y(1) - 10, "linear: 1.0", { size: 24 }); cap(p, 330, 130, "eased: peak " + sp(0.5).toFixed(1), { size: 24, fill: RED, weight: 700, anchor: "middle" }); cap(p, 50, ph - 8, "speed against time; 0 at both ends", { size: 24, fill: MUTED }); nt = "speed is 0.0 at the start and end, 1.5 at the middle";
+    } else if (k === 2) {
+      [["12 frames", 12], ["6 frames", 6]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0] + " = " + (r[1] / 60).toFixed(2) + " s", { size: 24 }); bar(p, 14, 84 + i * 110, 560 * r[1] / 12, 40, i ? RED : "#C4C4C4", anim, i * 400); }); nt = "half the frames, half the time: 0.20 s to 0.10 s";
+    } else if (k === 3) {
+      var jmp = function (a, b) { return Math.abs(a - b); }, before = jmp(40 * (1 % 1), 40 * 0.99999 + 0), after = jmp(20 * (1 - Math.cos(2 * Math.PI * 1)), 20 * (1 - Math.cos(0)));
+      [["before: seam jump " + before.toFixed(0) + " px", before, RED], ["after: seam jump " + after.toFixed(0) + " px", after, INK]].forEach(function (r, i) { cap(p, 14, 70 + i * 110, r[0], { size: 24 }); bar(p, 14, 84 + i * 110, Math.max(4, 560 * r[1] / 40), 40, r[2], anim, i * 400); }); nt = "the last key equals the first, so the seam is gone";
+    } else if (k === 4) {
+      var sy = 0.75, sx = 1 / sy; [["rest", 1, 1, 150], ["squash", sx, sy, 470]].forEach(function (r) { p.append("ellipse").attr("cx", r[3]).attr("cy", 140).attr("rx", 60 * r[1]).attr("ry", 60 * r[2]).attr("fill", r[0] === "rest" ? "#C4C4C4" : RED); cap(p, r[3], 250, r[0] + " " + r[1].toFixed(2) + " × " + r[2].toFixed(2), { size: 24, anchor: "middle" }); });
+      nt = "area stays 1.00: 1.33 × 0.75 = " + (sx * sy).toFixed(2);
+    } else {
+      var L1 = 130, L2 = 110, dd = 200, s = ik2(L1, L2, dd, 0, 1), pts = fk2(60, 150, L1, L2, s.a1, s.a2), cup = [60 + dd, 150];
+      limb(p, pts, 10, INK); pts.forEach(function (q, i) { dot(p, q[0], q[1], i === 1 ? 12 : 9, "#FFFFFF", RED); }); p.append("rect").attr("x", cup[0] - 14).attr("y", cup[1] - 18).attr("width", 28).attr("height", 36).attr("fill", RED);
+      cap(p, 20, 250, "cup at " + dd + " px: elbow " + (s.a2 / DEG).toFixed(0) + "°, shoulder " + (s.a1 / DEG).toFixed(0) + "°", { size: 24 }); nt = "in reach (200 of 240 px): the solver finds the angles";
+    }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Do the key poses tell the story, and does each read as a clear silhouette?",
+    "Which interpolation sits between the keys: linear, step or cubic?",
+    "Does the easing match the weight: gentle starts for heavy things, soft stops?",
+    "Do timing and spacing hold at the frame rate and speed scale you will play at?",
+    "Does the loop close, with the last key equal to the first and no seam?",
+    "Who moves the body, root motion or code, and do the weights bend the mesh cleanly?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks for an animation", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 30, c, 66, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it smoother”, but “ease-in-out over 0.4 s”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, keys: { steps: 4, render: renderKeys }, interp: { steps: 3, render: renderInterp }, easing: { steps: 3, render: renderEasing },
+    timing: { steps: 4, render: renderTiming }, loop: { steps: 3, render: renderLoop }, pose: { steps: 3, render: renderPose }, ball: { steps: 3, render: renderBall },
+    follow: { steps: 3, render: renderFollow }, rig: { steps: 3, render: renderRig }, ik: { steps: 3, render: renderIK }, blend: { steps: 4, render: renderBlend },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

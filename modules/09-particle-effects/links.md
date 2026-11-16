@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-This page collects the readings, documentation, Walker projects and tools behind Module 9, Particle effects. Open it when you start the death-burst exercise, when an agent's claim about a particle setting needs checking against the documentation, or when you begin Assignment 7.
+This page collects the readings, documentation, Walker projects and tools behind Module 9, Particle effects. Open it when you start the death-burst exercise, when an agent's claim about a particle setting needs checking against the documentation, or when you begin Assignment 6.
 
 ## Read first
 

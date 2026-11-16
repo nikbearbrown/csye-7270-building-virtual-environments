@@ -309,7 +309,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to turn t
 
 ## The next step
 
-Next is **Assignment 4, "Specify It, Then Build One 3D Interaction."** It opens in Module 5 and is due about Day 40, with a `godot-gdd` film; this lesson is the practice for it, and the assignment's own text sets its requirements. Module 6 then turns to shader foundations. The long reading is the companion chapter, [Chapter 5 — The GDD and Virtual Worlds](../../chapters/05-the-gdd-and-virtual-worlds.md).
+The related graded task is **Assignment 4, "Create a Game Design Document or GDD," worth 5 points and due October 19.** Its Canvas-derived brief sets the GDD requirements; this lesson’s implementation exercise is practice, not an extra graded interaction or film. Module 6 then turns to shader foundations. The long reading is the companion chapter, [Chapter 5 — The GDD and Virtual Worlds](../../chapters/05-the-gdd-and-virtual-worlds.md).
 
 ## If you know Unity or Unreal
 

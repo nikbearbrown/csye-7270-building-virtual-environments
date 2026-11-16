@@ -4,7 +4,7 @@ CSYE 7270 · Fall 2026 · Week 9
 
 ## Executive summary
 
-A particle effect is a small simulation: many short-lived points are born, move, change and die, and the engine draws each one. This module takes Godot 4.7.2's particle system apart (what each node owns, how the emission cycle is timed, where the cost lands) and has you build one effect and price another. You direct Claude Code to add a one-shot death burst to the Dodge the Creeps game and check it with a headless test, a test run with no window. Then you direct Codex to measure what particle simulation costs the CPU. The run recorded on 27 September 2026 ended at 9 of 9 headless checks, with CPU particles costing 0.035 ms per frame at 1,000 particles and 1.61 ms at 50,000, and it holds three agent mistakes and two documentation-level defects worth learning from. None of it proves the burst looks like anything, or what it costs a GPU: headless Godot draws nothing, so those judgments are yours. It prepares you for Assignment 7, two particle effects, tuned and priced.
+A particle effect is a small simulation: many short-lived points are born, move, change and die, and the engine draws each one. This module takes Godot 4.7.2's particle system apart (what each node owns, how the emission cycle is timed, where the cost lands) and has you build one effect and price another. You direct Claude Code to add a one-shot death burst to the Dodge the Creeps game and check it with a headless test, a test run with no window. Then you direct Codex to measure what particle simulation costs the CPU. The run recorded on 27 September 2026 ended at 9 of 9 headless checks, with CPU particles costing 0.035 ms per frame at 1,000 particles and 1.61 ms at 50,000, and it holds three agent mistakes and two documentation-level defects worth learning from. None of it proves the burst looks like anything, or what it costs a GPU: headless Godot draws nothing, so those judgments are yours. It prepares you for Assignment 6, two particle effects, tuned and priced.
 
 ## The question
 
@@ -194,7 +194,7 @@ Write down what you saw, with the date and your machine. That note is the only e
 - **Commit in three steps** so the history shows the work: the baseline; the burst with its test; the cost script with its real output.
 - **`FRICTIONAL.md`:** the prompts, what the agent claimed, what you ran, what failed, what you changed, and what you saw on screen, including anything the agent got wrong about the engine.
 - **`SOURCES.md`:** the burst's texture is a generated `GradientTexture2D`, so no third-party asset; state the human/AI split of the code.
-- **Film:** `godot-gamedev` fits this practice: the `DeathBurst` node and material, the two lines in `game_over()`, the test's PASS lines and the cost table, each followed by what it does. Assignment 7 requires a `godot-walkthrough` film, which must be captured in real play on a real screen; a headless log cannot stand in for it. The Brutalist skills come from a course-provided checkout; if yours lacks one, request the update.
+- **Film:** `godot-gamedev` fits this practice: the `DeathBurst` node and material, the two lines in `game_over()`, the test's PASS lines and the cost table, each followed by what it does. Assignment 6 requires a `godot-gamedev` film, which must be captured in real play on a real screen; a headless log cannot stand in for it. The Brutalist skills come from a course-provided checkout; if yours lacks one, request the update.
 
 ### 5. Verify
 
@@ -254,7 +254,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to implem
 
 ## The next step
 
-This module feeds **Assignment 7 - Two Particle Effects, Tuned and Priced**. It opens in Module 9 and is due about Day 70. The earlier version of this course also asked for two particle effects and a video showing how they work and how you made them; that survives. The new part is the price: you will tune each effect and put a measured cost beside it. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 9 — Particle Effects](../../chapters/09-particle-effects.md). Module 10 turns to animation.
+This module feeds **Assignment 6 - Creating Particle Effects with Godot and Claude**. It opens in Module 9 and is due November 3. The earlier version of this course also asked for two particle effects and a video showing how they work and how you made them; that survives. The new part is the price: you will tune each effect and put a measured cost beside it. The long reading, with the full Unity and Unreal comparisons, is the companion chapter, [Chapter 9 — Particle Effects](../../chapters/09-particle-effects.md). Module 10 turns to animation.
 
 ## If you know Unity or Unreal
 

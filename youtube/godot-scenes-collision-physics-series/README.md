@@ -1,0 +1,16 @@
+# Godot lecture films — prepared production packages
+
+Liam in for Bear · CSYE 7270 Building Virtual Environments · @NikBearBrown. Each film is independent and has four acts. These are complete stage-one scripts and production specifications; audio and final movies are not yet rendered.
+
+| Recommended order | Film and script | Estimated speech/edit time | Build handoff |
+|---|---|---|---|
+| 1 | [Scenes and Instances in Godot](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-scenes-and-instances-in-godot/NARRATION.md) | 5:27, unmeasured | [Build](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-scenes-and-instances-in-godot/BUILD-PROMPT.md) |
+| 2 | [Collision Shapes, Layers, and Masks in Godot](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-collision-shapes-layers-and-masks-in-godot/NARRATION.md) | 6:14, unmeasured | [Build](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-collision-shapes-layers-and-masks-in-godot/BUILD-PROMPT.md) |
+| 3 | [Triggers and Colliders in Godot](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-triggers-and-colliders-in-godot/NARRATION.md) | 6:14, unmeasured | [Build](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-triggers-and-colliders-in-godot/BUILD-PROMPT.md) |
+| 4 | [Character Motion and Rigid-Body Physics in Godot](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-character-motion-and-rigid-body-physics-in-godot/NARRATION.md) | 8:02, unmeasured | [Build](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-character-motion-and-rigid-body-physics-in-godot/BUILD-PROMPT.md) |
+
+[Teaching layout](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/godot-scenes-collision-physics-series/SERIES.md) · [Whole-source coverage](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/godot-scenes-collision-physics-series/SOURCE-COVERAGE.md) · [Build all four](/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/godot-scenes-collision-physics-series/BUILD-ALL.md)
+
+Preparation validation passed for all packages. The original 32-case evidence is retained with provenance. The new paired body/area and door experiment passed 21 checks. Native engine captures were inspected. Static checks are not a substitute for the later audio, frame and master reviews.
+
+Collider commonly means a solid collision boundary; a trigger detects overlap without solid blocking. Both use collision geometry. In Godot, a physics body or an Area owns the shape and gives it its role. The door demonstrates both: a solid panel and a larger approach sensor. See the [official physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html).

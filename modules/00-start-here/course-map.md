@@ -14,7 +14,7 @@ Every module is one Canvas module with the same four parts, modeled on the earli
 |---|---|
 | **Lecture** | One page that teaches the week's machinery, then walks you through a hands-on task with Claude Code on a real Walker project: Predict, Build It, Use It, Ship It, Verify. |
 | **Practice (ungraded)** | A short Canvas quiz. Take it as often as you like; read the feedback. It checks understanding and earns no points. |
-| **Assignment** | Appears in the first module it covers, so you can see the target while you learn. An assignment that covers two modules (Assignment 5, for example, covers Modules 6 and 7) is listed in both and is due after the second one. 100 points. |
+| **Assignment** | Appears in the first module it covers, so you can see the target while you learn. An assignment that covers two modules (Assignment 5, for example, covers Modules 6 and 7) is listed in both and is due after the second one. Points are stated in each assignment. |
 | **Links** | Official documentation, the Walker projects used, and further reading for that week. |
 
 Each module also maps one-to-one to a chapter of the companion book. The chapter is the long reading: the full record of what the coding agents did, including their mistakes, and a complete comparison with doing the same task in Unity and in Unreal Engine. You can do the course from the lecture pages alone; the chapters are where to go when you want the whole story.
@@ -33,45 +33,22 @@ Every module ends with pointers on doing the same work in Unity and Unreal: what
 
 ## The semester at a glance
 
-Module order is the teaching sequence, not a restriction on early access. Dates below are in 2026, at 11:59 pm America/New_York. Assignments 1–3 are confirmed in Canvas; dates for 4–10 are planned. The separate five-point GDD is due October 19. Release the final brief and its supporting readings by October 19; do not hold them until the last two weeks.
+Module order describes the learning sequence. The assignment sequence and its confirmed Canvas deadlines are below. The GDD is Assignment 4, the pitch is Assignment 8, and the final is 250 points.
 
-| Week | Module | You build (hands-on) | Assignment due |
-|---|---|---|---|
-| Before setup | Preface. Conducting AI Through Games and Virtual Worlds | Define an intended experience, a delegation boundary and an evidence-based human decision | — |
-| Before 1 | 0. Start Here: the toolchain | Set up Claude Code, Godot and the headless checks; add a score to `walker-pong` | — |
-| 1 | 1. Walker and Godot | Trace one input to its visible result; change one number and predict the tests | Assignment 1, September 24 |
-| 2 | 2. Prompting game art | Turn one generated image into a checked Godot asset; wire sound to real events | Assignment 2, October 7 |
-| 3 | 3. Blender MCP to Godot | Build a prop in Blender from the command line and verify it in a 3D game | Assignment 3, October 15 |
-| 4 | 4. Scenes, collision and physics | Add a shield pickup to a 2D game and test what it does to collisions | — (you use it in Assignment 4) |
-| 5 | 5. The GDD and virtual worlds | Recover a design document from code, then specify and build one 3D interaction | Assignment 4, October 25 |
-| 6 | 6. Shader foundations | Write the project context for Claude Code, then build a failure-flash effect | Assignment 5, November 3 (with Module 7) |
-| 7 | 7. Materials and textures | Audit a ship's materials, then add ambient occlusion to its hull | Assignment 5 |
-| 8 | 8. Shader verification | Review a plausible but incorrect shader change | Assignment 6, November 13 |
-| 9 | 9. Particle effects | Build a burst effect, then measure what it costs | Assignment 7, November 23 |
-| 10 | 10. Animation foundations | Pin down timing with checks before changing any animation | Assignment 8, December 3 (with Module 11) |
-| 11 | 11. Animation and interaction | Wire animation states to player actions and test the edges | Assignment 8 |
-| 12 | 12. Audio and triggers | Make a sound fire on a real event and prove it reaches the mix | Assignment 9, December 13 (with Module 13) |
-| 13 | 13. Profiling and optimization | Benchmark two ways of doing the same job, then decide | Assignment 9 |
-| 14 | 14. Game AI and systems | Direct a guard that patrols, chases and searches; labs in learning agents, generated levels and networking | Assignment 10, December 20 (with Module 15) |
-| 15 | 15. Final projects: from brief to export | Add a persistent best time, reproduce the build from a clean clone, and export it | Assignment 10 |
+| # | Assignment | Points | Due (America/New_York) | Modules | Required film |
+|---|---|---:|---|---|---|
+| 1 | [Assignment 1 - Extend Walker Jumpman](../assignments/01-extend-walker-jumpman.md) | 100 | 2026-09-24, 11:59 pm | 1 | godot-walkthrough |
+| 2 | [Assignment 2 - Generate Art, Sound, and Music for Your Game](../assignments/02-generate-art-sound-music-for-your-game.md) | 100 | 2026-10-07, 11:59 pm | 2 | godot-gamedev |
+| 3 | [Assignment 3 - Your First 3D Game Assets with Claude, the Blender MCP, and Blender](../assignments/03-first-3d-assets-with-blender-mcp.md) | 100 | 2026-10-15, 11:59 pm | 3 | godot-gamedev |
+| 4 | [Assignment 4 - Create a Game Design Document or GDD](../assignments/04-create-a-game-design-document.md) | 5 | 2026-10-19, 11:59 pm | 5 | No film specified |
+| 5 | [Assignment 5 - Shaders, Materials, and the Godot Shading Language](../assignments/05-shaders-materials-and-godot-shading-language.md) | 100 | 2026-10-29, 11:59 pm | 6, 7 | godot-gamedev |
+| 6 | [Assignment 6 - Creating Particle Effects with Godot and Claude](../assignments/06-creating-particle-effects.md) | 100 | 2026-11-03, 11:59 pm | 9 | godot-gamedev |
+| 7 | [Assignment 7 - Doing Animation with Claude and Godot](../assignments/07-doing-animation.md) | 100 | 2026-11-15, 11:59 pm | 10, 11 | godot-walkthrough |
+| 8 | [Assignment 8 - Final Project Pitch Film — Show What You Will Build](../assignments/08-final-project-pitch-film.md) | 50 | 2026-11-22, 11:59 pm | 5, 15 | Brutalist pitch film |
+| 9 | [Assignment 9 - Teach One Game-AI Technique: Explain, Show, Try](../assignments/09-teach-one-game-ai-technique.md) | 100 | 2026-12-12, 11:59 pm | 14 | godot-walkthrough (Explain → Show → Try) |
+| 10 | [Assignment 10 - Final Project: From Brief to Export](../assignments/10-final-project.md) | 250 | 2026-12-20, 11:59 pm | 15 | godot-walkthrough + godot-gdd |
 
-## Assignments and the GDD milestone
-
-| # | Assignment | Covers | Required film (Brutalist skill) |
-|---|---|---|---|
-| 1 | Extend Walker Jumpman | Module 1 | `godot-walkthrough` |
-| 2 | Generate Art, Sound, and Music for Your Game | Module 2 | `godot-gamedev` |
-| 3 | Your First 3D Game Assets with Claude, the Blender MCP, and Blender | Module 3 | `godot-gamedev` |
-| GDD | Create a Game Design Document or GDD — 5 points, October 19 | Design preparation | Existing Canvas brief |
-| 4 | Specify It, Then Build One 3D Interaction | Modules 4, 5 | `godot-gdd` |
-| 5 | A Shader and a Material That Say Something About Your Game | Modules 6, 7 | `godot-gamedev` |
-| 6 | Audit a Plausible but Incorrect Shader Change | Module 8 | `godot-gamedev` |
-| 7 | Two Particle Effects, Tuned and Priced | Module 9 | `godot-walkthrough` |
-| 8 | Animation Wired to Player Actions | Modules 10, 11 | `godot-walkthrough` |
-| 9 | Sound That Provably Plays, and a Frame You Can Afford | Modules 12, 13 | `godot-gamedev` |
-| 10 | Final Project: From Brief to Export | Modules 14, 15 and the whole course | `godot-walkthrough` and `godot-gdd` |
-
-The numbered local drafts use this 100-point framework; the standalone GDD follows its existing five-point Canvas brief, and the 250-point live legacy final needs reconciliation with the local draft before posting. The draft framework is: **60** points for the assignment-specific work and its explainer, **10** for your Frictional log, **10** for posting the same version to GitHub and Canvas, and **20** for Relative Quartile. Read [how assignments are graded](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/main/prerequisites/assessment-policy.md) and the AI policy page in this module before you start Assignment 1. Late work loses 10% per day.
+The seven 100-point assignments follow their stated 60/10/10/20 rubrics. Assignment 8 uses 30/5/5/10; the final uses 150/25/25/50. Assignment 4 follows its five-point GDD requirements. Read [the assessment policy](../../prerequisites/assessment-policy.md) and each brief. Late work loses 10% per day.
 
 ## One game all semester
 

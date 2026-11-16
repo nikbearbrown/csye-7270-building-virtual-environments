@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Animation and interaction: state machines and blending | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Animation and interaction, state machines and blending">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Animation and interaction">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapter 11</p>
+      <h1 class="t-opening rise g2">Animation and interaction</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">State machines and blending: connecting a character’s actions to its animation</p>
+      <div class="speaker-notes" hidden><p>Deck 8c of the topic order (animation, third of three). 34 terms. Tags: in the book text means a chapter (11, or 10 for tracks, tweens and hitbox timing) uses and explains it; in the glossary means a glossary row only. Chapter 11 does not use input buffering or coyote time, so they are left out.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10 and 11; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Clips, loops, one-shots and the tree">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Clips and blends</p>
+      <h2 class="t-chart">Clips, loops, one-shots and the tree</h2>
+      <div class="diagram build" data-build="clips" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “Ideas you need” and “The Walker example: walker-3d-platformer”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Clip lengths are from Chapter 11 (idle 1.233 s, walk 1.033 s, run 0.833 s, shooting 0.433 s). Step 3 computes the six leaf weights from five parameters as products down the tree; they sum to 1. The fire time 1.0 s is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Blend tree, blend space and parameters">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Clips and blends</p>
+      <h2 class="t-chart">Blend tree, blend space and parameters</h2>
+      <div class="diagram build" data-build="blend" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “BlendSpace: continuous input, continuous pose” and “How its animation is wired”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>MAX_SPEED = 6 is illustrative. The hop uses the trace slope (12.50 falling by about 0.183 per tick). The count of ticks where air_dir is between 0 and 1 comes out near the chapter’s 21.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="State, transition, condition and advance mode">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">State machines</p>
+      <h2 class="t-chart">State, transition, condition and advance mode</h2>
+      <div class="diagram build" data-build="machine" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “The state machine, as machinery” and “What we actually ran”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>The six transitions are a sketch: the chapter says five expression transitions plus the added fall to jump. The input rows are scripted, not logged.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Travel, priority, interrupt and exit-time">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">State machines</p>
+      <h2 class="t-chart">Travel, priority, interrupt and exit-time</h2>
+      <div class="diagram build" data-build="travel" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “The state machine, as machinery”; Unity table; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>The small machine in step 1 is illustrative. Step 3 and 4 use the run clip length 0.833 s and a request at 0.3 s (illustrative).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Cross-fade, transition time and the current node">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">State machines</p>
+      <h2 class="t-chart">Cross-fade, transition time and the current node</h2>
+      <div class="diagram build" data-build="xfade" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “The state machine, as machinery”, and the landing trace; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Weights are linear in this sketch; Godot also has an easing curve (xfade_curve). Frame counts are ceil(time × 60). The chapter’s trace: the machine reports the new current node as soon as the fade begins.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Property tracks, method tracks and tweens">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Keys, events and hit windows</p>
+      <h2 class="t-chart">Property tracks, method tracks and tweens</h2>
+      <div class="diagram build" data-build="keys" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “The AnimationPlayer and its tracks” and “Tween or AnimationPlayer”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Keys are from the sword’s attack_fast clip in Chapter 10: rotation −80, 85, 75 at 0, 0.15, 0.2 s; method keys at 0.1 and 0.25 s; the monitoring key times 0 and 0.15 s are the Chapter 10 pin. The kill time 0.07 s is illustrative.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Startup, active, recovery and the hit list">
+      <div class="rule"></div>
+      <span class="evidence">Illustrative data</span>
+      <p class="eyebrow">Keys, events and hit windows</p>
+      <h2 class="t-chart">Startup, active, recovery and the hit list</h2>
+      <div class="diagram build" data-build="hit" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, hitbox window; glossary, Animation and interaction (startup, active, recovery, hit list).</p>
+      <div class="speaker-notes" hidden><p>Frame counts 12, 18, 24 are illustrative; they add to the 54 frames of the chapter’s 0.45 s clip at 120 fps, and 0.1 s and 0.25 s match its method keys. Target overlap is invented.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Sampling and the intermittent fault">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Proving it</p>
+      <h2 class="t-chart">Sampling and the intermittent fault</h2>
+      <div class="diagram build" data-build="sampling" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “Where the timing gaps come from” and “The question”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Tick values follow the chapter’s trace (12.50, 12.32, 12.14). The two landing cases are the two tick offsets the chapter’s test pins. Machine states are computed with the five-transition machine, before the fix.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="What a probe shows, and a mutation check">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Proving it</p>
+      <h2 class="t-chart">What a probe shows, and a mutation check</h2>
+      <div class="diagram build" data-build="probe" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “What its checks establish”, “What remains unverified”, “Mutation check”.</p>
+      <div class="speaker-notes" hidden><p>The four assertions and the six unchecked items are quoted in substance from the chapter’s “What remains unverified”. Pass and fail cells in step 3 are computed from the sampling simulation. The chapter saw the pre-fix scene fail at both offsets over three hops.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Unity: controller, transition and blend tree">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Other engines</p>
+      <h2 class="t-chart">Unity: controller, transition and blend tree</h2>
+      <div class="diagram build" data-build="unity" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “Doing the same thing in Unity”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Thresholds 1.5 and 4 in step 3 are illustrative. Unity’s own words are in Chapter 11’s Unity section: transitions switch over time, blend trees mix by degree.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Unreal: blueprint, transition rule and conduit">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Other engines</p>
+      <h2 class="t-chart">Unreal: blueprint, transition rule and conduit</h2>
+      <div class="diagram build" data-build="unreal" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 11, “Doing the same thing in Unreal Engine”; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Overview only. Speed, the threshold 3 and the falling window are illustrative. Counts 12 and 7 are computed from 4 sources and 3 targets.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10 and 11; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Transition and blend tree, pull and push, property and method track, active and recovery.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10 and 11; glossary, Animation and interaction.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions. The 20 versus 18 frame gap is the chapter’s observed 20 against a nominal 18 at 120 fps.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you trust an animation change">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you trust an animation change</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 10 and 11.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Animation and interaction: state machines and blending (Chapter 11, with Chapter 10 for tracks and hitboxes) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  /* tag: book = a chapter uses AND explains it; gloss = glossary row only */
+  var T = {
+    aplayer: { n: "AnimationPlayer", tag: "book", m: "Godot node that plays clips" },
+    loop: { n: "Loop", tag: "book", m: "A clip that repeats" },
+    oneshot: { n: "OneShot", tag: "book", m: "A blend-tree node that plays a clip once over whatever is below it, then returns" },
+    animtree: { n: "Animation tree", tag: "book", m: "Godot's graph of blends and state machines" },
+    state: { n: "State", tag: "book", m: "One named mode of a state machine, such as idle or run" },
+    transition: { n: "Transition", tag: "book", m: "A connection from one state to another, with its own rule for when it fires and how long it blends" },
+    condition: { n: "Condition", tag: "book", m: "A test on a parameter that must hold for a transition" },
+    advmode: { n: "Advance mode", tag: "book", m: "Enabled: only travel() uses the transition. Auto: it fires by itself when its condition or expression is true" },
+    travel: { n: "Travel", tag: "book", m: "Ask the machine to go to a state by the shortest path of transitions; with no path it jumps there" },
+    priority: { n: "Priority", tag: "book", m: "Which transition wins when several are true at once; in Godot the lower number is preferred" },
+    interrupt: { n: "Interrupt", tag: "gloss", m: "A transition that cuts off the current state early" },
+    exittime: { n: "Exit-time transition", tag: "book", alias: "Godot: switch mode At End. Unity: Has Exit Time", m: "A transition that waits for the clip to reach a set point" },
+    crossfade: { n: "Cross-fade", tag: "book", alias: "also: transition time, xfade_time", m: "Blend smoothly from one clip to the next over a short time" },
+    curnode: { n: "get_current_node()", tag: "book", m: "The playback's reading of the current state. During a cross-fade it already names the new state" },
+    blendtree: { n: "Blend tree", tag: "book", m: "A graph of nodes that mix clips by numbers your code writes" },
+    blendspace: { n: "Blend space", tag: "book", alias: "BlendSpace1D, BlendSpace2D", m: "Clips placed on a line or a plane; a position between them mixes the nearest ones" },
+    param: { n: "Parameter", tag: "book", m: "A tunable number on the tree, addressed by a path; code drives the tree by writing it" },
+    proptrack: { n: "Property track", tag: "gloss", m: "A track that animates any property, not just bones" },
+    methodtrack: { n: "Method track", tag: "book", alias: "Unity: Animation Event. Unreal: Anim Notify", m: "A track that calls a function when the playhead reaches a key" },
+    tween: { n: "Tween", tag: "book", m: "Code-made animation of a value toward a target, then discarded; it can be killed halfway" },
+    startup: { n: "Startup", tag: "gloss", m: "The windup frames before an attack can hit" },
+    active: { n: "Active", tag: "gloss", m: "The frames in which an attack can hit" },
+    recovery: { n: "Recovery", tag: "gloss", m: "The frames after an attack before the character can act" },
+    hitlist: { n: "Hit list", tag: "gloss", m: "The record of targets already hit so one swing hits each once" },
+    sampling: { n: "Sampling", tag: "book", m: "Reading a value at one moment, so brief events between samples can be missed" },
+    intermittent: { n: "Intermittent fault", tag: "gloss", m: "A bug that appears only sometimes" },
+    inputprobe: { n: "Input probe", tag: "book", m: "A script that loads the real scene, presses only ordinary actions and records what happens" },
+    mutation: { n: "Mutation check", tag: "book", m: "Put the old broken version back and run the new test; it must fail" },
+    animctrl: { n: "Animator Controller", tag: "book", m: "Unity asset holding an animation state machine" },
+    utrans: { n: "Unity transition", tag: "book", m: "Moves from one state to another over a set time" },
+    ublend: { n: "Unity blend tree", tag: "book", m: "Mixes several clips by a parameter value" },
+    animbp: { n: "Animation Blueprint", tag: "book", m: "Unreal asset holding an animation state machine and logic" },
+    transrule: { n: "Transition rule", tag: "book", m: "A small graph that outputs true or false; true lets the state change" },
+    conduit: { n: "Conduit", tag: "book", m: "A hub that joins many states to many with one set of transitions" }
+  };
+  function note(svg, ey, text) { wrap(svg.append("g"), 800, ey + 36, text, 46, { size: 28, lh: 36, fill: INK }); }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function f2(v) { return v.toFixed(2); }
+  function line(g, x1, y1, x2, y2, col, sw, dash) { var p = g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + x2 + "," + y2).attr("stroke", col || INK).attr("stroke-width", sw || 2).attr("fill", "none"); if (dash) p.attr("stroke-dasharray", dash); return p; }
+  function arrow(g, x1, y1, x2, y2, col, sw, dash) {
+    var a = Math.atan2(y2 - y1, x2 - x1), h = 14;
+    var ln = g.append("path").attr("d", "M" + x1 + "," + y1 + "L" + (x2 - Math.cos(a) * h * 0.8) + "," + (y2 - Math.sin(a) * h * 0.8)).attr("stroke", col).attr("stroke-width", sw || 3).attr("fill", "none");
+    if (dash) ln.attr("stroke-dasharray", dash);
+    g.append("path").attr("d", "M" + x2 + "," + y2 + "L" + (x2 - h * Math.cos(a - 0.4)) + "," + (y2 - h * Math.sin(a - 0.4)) + "L" + (x2 - h * Math.cos(a + 0.4)) + "," + (y2 - h * Math.sin(a + 0.4)) + "Z").attr("fill", col);
+  }
+  function edgePt(c, o, hw, hh) { var dx = o[0] - c[0], dy = o[1] - c[1], t = Math.min(dx ? hw / Math.abs(dx) : 1e9, dy ? hh / Math.abs(dy) : 1e9); return [c[0] + dx * t, c[1] + dy * t]; }
+  /* state-machine diagram: edges in gE, nodes in gN; cur = current state, fired = index of the edge that just fired */
+  function drawMachine(gE, gN, N, E, cur, fired, o) {
+    o = o || {}; var hw = o.hw || 85, hh = o.hh || 32, off = o.off === undefined ? 12 : o.off;
+    E.forEach(function (e, i) {
+      var a = N[e[0]], b = N[e[1]], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), nx = -dy / L * off, ny = dx / L * off;
+      var A1 = [a[0] + nx, a[1] + ny], B1 = [b[0] + nx, b[1] + ny], p = edgePt(A1, B1, hw + 2, hh + 2), q = edgePt(B1, A1, hw + 8, hh + 8);
+      arrow(gE, p[0], p[1], q[0], q[1], i === fired ? RED : GREY, i === fired ? 5 : 2.5, o.dash);
+    });
+    Object.keys(N).forEach(function (kk) {
+      var c = N[kk], on = kk === cur;
+      box(gN, c[0] - hw, c[1] - hh, hw * 2, hh * 2, { stroke: on ? RED : INK, sw: on ? 4 : 2, fill: on ? TINT : "#FFFFFF" });
+      txt(gN, c[0], c[1] + 9, kk, { size: 26, weight: 700, anchor: "middle", fill: on ? RED : INK });
+    });
+  }
+  /* rows of cells, one cell per tick; cells after idx stay empty */
+  function strip(g, y0, rows, idx) {
+    rows.forEach(function (r, ri) {
+      var y = y0 + ri * 42; txt(g, 0, y + 28, r.l, { size: 24, weight: 700, fill: MUTED });
+      r.c.forEach(function (s, i) {
+        var x = 110 + i * 92, on = i <= idx; box(g, x, y, 90, 38, { stroke: i === idx ? RED : FAMILIAR, sw: i === idx ? 3 : 1.5 });
+        if (on) txt(g, x + 45, y + 28, s, { size: 24, anchor: "middle", fill: r.red && r.red(i) ? RED : INK, weight: r.red && r.red(i) ? 700 : 400 });
+      });
+    });
+  }
+  /* plot frame: returns scale functions */
+  function plotFrame(g, x0, y0, w, h, xmax, xt, xfmt, ymax) {
+    var X = function (v) { return x0 + v / xmax * w; }, Y = function (v) { return y0 + h - v / (ymax || 1) * h; };
+    line(g, x0, y0 + h, x0 + w, y0 + h, INK, 2.5); line(g, x0, y0, x0, y0 + h, INK, 2.5);
+    xt.forEach(function (v) { line(g, X(v), y0 + h, X(v), y0 + h + 8, INK, 2); txt(g, X(v), y0 + h + 34, xfmt(v), { size: 24, anchor: "middle" }); });
+    return { X: X, Y: Y };
+  }
+  function pathOf(fn, t0, t1, n, X, Y) { var p = ""; for (var i = 0; i <= n; i++) { var v = t0 + (t1 - t0) * i / n; p += (i ? "L" : "M") + X(v).toFixed(1) + "," + Y(fn(v)).toFixed(1); } return p; }
+
+  var MAPROWS = [
+    ["Clips and blends", "AnimationPlayer, loop, OneShot, animation tree, blend tree, blend space, parameter", "How clips are played and mixed by numbers your code writes"],
+    ["State machines", "state, transition, condition, advance mode, travel, priority, interrupt, exit-time transition, cross-fade, current node", "How the character commits to a mode and moves between modes"],
+    ["Keys, events and hit windows", "property track, method track, tween, startup, active, recovery, hit list", "How a gameplay fact such as the hitbox is live is tied to the clip"],
+    ["Proving it, in three engines", "sampling, intermittent fault, input probe, mutation check, Unity, Unreal", "What a headless test can see, and the same ideas elsewhere"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four groups of animation and interaction terms", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms from Chapter 11, Chapter 10 and the glossary. All are about connecting a character's actions to its animation, and testing the wiring.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 470, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. clips: AnimationPlayer, loop, OneShot, animation tree ---------- */
+  var MAXS = 6;
+  function leafWeights(p) {
+    var g = p.g, s = p.s, a = p.a, r = p.r, sp = p.sp, st = (1 - g) * (1 - s), ai = (1 - g) * s;
+    return [["idle", st * (1 - r)], ["walk", st * r * (1 - sp)], ["run", st * r * sp], ["jump", ai * (1 - a)], ["falling", ai * a], ["shooting", g]];
+  }
+  function renderClips(el, k, anim) {
+    var svg = svgFor(el, W, H, "Clips are played by an AnimationPlayer; a OneShot plays once over a loop; an animation tree mixes them", "Four clips with their lengths and a playhead that loops or stops. Then a one-shot shooting clip over a looping run. Then six clip weights computed from five tree parameters.");
+    var ey = base(svg, [{ id: "aplayer", s: 1 }, { id: "loop", s: 1 }, { id: "oneshot", s: 2 }, { id: "animtree", s: 3 }], k, anim, ["Loop", "repeats from its start"], ["OneShot", "plays once, then returns"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 28, "THE CLIPS IN THE ROBOT'S PLAYER");
+      var C = [["idle", 1.233, 1], ["walk", 1.033, 1], ["run", 0.833, 1], ["shooting", 0.433, 0]], sc = 400, hd = [], rd;
+      C.forEach(function (c, i) {
+        var y = 70 + i * 100; txt(d, 0, y + 20, c[0] + "  " + c[1].toFixed(3) + " s", { size: 24, weight: 700 });
+        box(d, 0, y + 32, c[1] * sc, 36, { stroke: INK, sw: 2.5 }); txt(d, c[1] * sc + 18, y + 60, c[2] ? "loops" : "plays once", { size: 24, fill: c[2] ? INK : RED, weight: 700 });
+        hd.push(d.append("rect").attr("y", y + 26).attr("width", 5).attr("height", 48).attr("fill", RED));
+      });
+      rd = cap(d, 0, 520, "", { size: 26, weight: 700 }); cap(d, 0, 560, "A loop wraps: clip time = T mod length.", { size: 24, fill: MUTED });
+      var upd = function (T0) { C.forEach(function (c, i) { var ph = c[2] ? T0 % c[1] : Math.min(T0, c[1]); hd[i].attr("x", ph * sc - 2); }); rd.text("T = " + T0.toFixed(2) + " s   run clip time = " + (T0 % 0.833).toFixed(3) + " s"); };
+      if (k === 0) upd(0); else run(d, 5000, function (t) { upd(t * 2.5); }, anim);
+    } else if (k === 2) {
+      lab(d, 0, 28, "A ONESHOT OVER A LOOP");
+      var x0 = 30, s2 = 280;
+      txt(d, x0, 96, "run (loops)", { size: 24, weight: 700 });
+      d3.range(3).forEach(function (j) { box(d, x0 + j * 0.833 * s2, 108, 0.833 * s2, 50, { stroke: INK, sw: 2.5 }); });
+      txt(d, x0, 236, "shooting (OneShot)", { size: 24, weight: 700, fill: RED });
+      var shot = box(d, x0 + 1.0 * s2, 248, 0.433 * s2, 50, { stroke: RED, sw: 3, fill: "#FFFFFF" });
+      line(d, x0 + s2, 300, x0 + s2, 330, RED, 3);
+      cap(d, x0 + s2 - 10, 360, "fire request at 1.000 s", { size: 24, fill: RED, weight: 700 });
+      cap(d, x0 + s2 - 10, 396, "ends at 1.000 + 0.433 = " + (1.0 + 0.433).toFixed(3) + " s", { size: 24 });
+      var ph2 = d.append("rect").attr("y", 92).attr("width", 5).attr("height", 220).attr("fill", INK), rd2 = cap(d, 0, 470, "", { size: 26, weight: 700 });
+      var upd2 = function (T0) { var on = T0 >= 1.0 && T0 < 1.433; ph2.attr("x", x0 + T0 * s2 - 2); shot.attr("fill", on ? TINT : "#FFFFFF"); rd2.text("T = " + T0.toFixed(2) + " s: output = " + (on ? "run + shooting" : "run only")); };
+      run(d, 5000, function (t) { upd2(t * 2.5); }, anim);
+      cap(d, 0, 520, "The loop keeps running underneath the whole time.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 28, "FIVE PARAMETERS → SIX CLIP WEIGHTS");
+      var P = function (t) { return { r: 0.75 * clamp(t / 0.35, 0, 1), sp: 0.5, s: t >= 0.45 ? 1 : 0, a: t < 0.45 ? 0.03 : clamp((t - 0.45) / 0.3, 0, 1), g: t > 0.75 ? 0.6 * (t - 0.75) / 0.25 : 0 }; };
+      var names = [["run", "r"], ["speed", "sp"], ["state", "s"], ["air_dir", "a"], ["gun", "g"]], pv = [], bv = [], vt = [];
+      names.forEach(function (n, i) { txt(d, 0, 72 + i * 34, n[0] + "/blend_amount", { size: 24, family: MONO }); pv.push(txt(d, 400, 72 + i * 34, "", { size: 24, weight: 700, family: MONO, anchor: "end" })); });
+      var LN = ["idle", "walk", "run", "jump", "falling", "shooting"];
+      LN.forEach(function (n, i) { var y = 268 + i * 44; txt(d, 0, y + 28, n, { size: 24 }); bv.push(d.append("rect").attr("x", 150).attr("y", y).attr("height", 34).attr("fill", i === 5 ? RED : INK)); vt.push(txt(d, 0, y + 28, "", { size: 24, weight: 700 })); });
+      var sm = cap(d, 0, 556, "", { size: 26, weight: 700, fill: RED });
+      var upd3 = function (t) { var p = P(t); names.forEach(function (n, i) { pv[i].text(f2(p[n[1]])); }); var lw = leafWeights(p), tot = 0;
+        lw.forEach(function (w, i) { tot += w[1]; bv[i].attr("width", Math.max(w[1] * 420, 0.1)); vt[i].attr("x", 150 + w[1] * 420 + 12).text(f2(w[1])); }); sm.text("weights add up to " + f2(tot)); };
+      run(d, 6000, upd3, A(anim, k, 3) || anim);
+    }
+    note(svg, ey, ["", "The player holds the clips and plays one at a time. Idle, walk and run loop; shooting plays once.", "A OneShot fires a clip once over whatever is below it. When it ends, the loop is all that is left.", "The tree runs the same clips through a graph. Code writes five numbers; the weights of the six clips follow and sum to 1."][k]);
+  }
+
+  /* ---------- 2. blend tree, blend space, parameter ---------- */
+  var POSE = { idle: [4, 0, -4, 0, 8, -10, -8, -10], run: [50, -60, -35, -70, -55, -60, 45, -50] };
+  function pt(o, len, ang) { return [o[0] + len * Math.sin(ang * DEG), o[1] + len * Math.cos(ang * DEG)]; }
+  function figure(g, cx, by, P, col, sw) {
+    var hip = [cx, by - 90], sh = [cx, by - 140], k1, f1, k2, f2_, e1, h1, e2, h2;
+    line(g, hip[0], hip[1], sh[0], sh[1], col, sw);
+    g.append("circle").attr("cx", cx).attr("cy", by - 160).attr("r", 15).attr("fill", "none").attr("stroke", col).attr("stroke-width", sw);
+    k1 = pt(hip, 45, P[0]); f1 = pt(k1, 45, P[0] + P[1]); k2 = pt(hip, 45, P[2]); f2_ = pt(k2, 45, P[2] + P[3]);
+    e1 = pt(sh, 30, P[4]); h1 = pt(e1, 30, P[4] + P[5]); e2 = pt(sh, 30, P[6]); h2 = pt(e2, 30, P[6] + P[7]);
+    [[hip, k1, f1], [hip, k2, f2_], [sh, e1, h1], [sh, e2, h2]].forEach(function (p) { g.append("path").attr("d", "M" + p[0] + "L" + p[1] + "L" + p[2]).attr("fill", "none").attr("stroke", col).attr("stroke-width", sw).attr("stroke-linejoin", "round"); });
+  }
+  function renderBlend(el, k, anim) {
+    var svg = svgFor(el, W, H, "A blend tree mixes clips by numbers; a blend space places clips on a line; parameters carry the numbers", "A stick figure mixed from idle and run by blend_amount. Then three clips on an axis with weights for a moving position. Then three parameter traces over one hop.");
+    var ey = base(svg, [{ id: "blendtree", s: 1 }, { id: "blendspace", s: 2 }, { id: "param", s: 3 }], k, anim, ["Blend tree", "mixes clips by a value"], ["State machine", "commits to one state at a time"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 28, "ONE BLEND NODE: IDLE MIXED WITH RUN");
+      var gm = d.append("g"), tx = [cap(d, 110, 300, "idle", { size: 24, anchor: "middle", weight: 700 }), cap(d, 380, 300, "mixed", { size: 24, anchor: "middle", weight: 700, fill: RED }), cap(d, 650, 300, "run", { size: 24, anchor: "middle", weight: 700 })];
+      figure(d, 110, 260, POSE.idle, GREY, 5); figure(d, 650, 260, POSE.run, GREY, 5);
+      var r1 = cap(d, 0, 380, "", { size: 26, weight: 700 }), r2 = cap(d, 0, 424, "", { size: 24 }), r3 = cap(d, 0, 468, "", { size: 24 });
+      cap(d, 0, 520, "MAX_SPEED = " + MAXS.toFixed(1) + " is illustrative.", { size: 24, fill: MUTED });
+      var upd = function (t) { var sp = MAXS * clamp(t, 0, 1), b = sp / MAXS, P = POSE.idle.map(function (v, i) { return lerp(v, POSE.run[i], b); }); gm.selectAll("*").remove(); figure(gm, 380, 260, P, RED, 6);
+        r1.text("blend_amount = " + sp.toFixed(1) + " / " + MAXS.toFixed(1) + " = " + f2(b)); r2.text("weights: idle " + f2(1 - b) + " + run " + f2(b) + " = " + f2(1 - b + b)); r3.text("speed " + sp.toFixed(1) + " of " + MAXS.toFixed(1) + " units a second"); };
+      if (k === 0) upd(0.5); else run(d, 5000, upd, anim);
+    } else if (k === 2) {
+      lab(d, 0, 28, "BLENDSPACE1D: IDLE 0, WALK 0.5, RUN 1");
+      var pl = plotFrame(d, 60, 70, 640, 200, 1, [0, 0.5, 1], function (v) { return v.toFixed(1); }, 1);
+      [["idle", function (p) { return p <= 0.5 ? 1 - 2 * p : 0; }, INK], ["walk", function (p) { return p <= 0.5 ? 2 * p : Math.max(0, 2 - 2 * p); }, GREY], ["run", function (p) { return p >= 0.5 ? 2 * p - 1 : 0; }, RED]].forEach(function (c) { d.append("path").attr("d", pathOf(c[1], 0, 1, 100, pl.X, pl.Y)).attr("fill", "none").attr("stroke", c[2]).attr("stroke-width", 4); });
+      var cur = line(d, 60, 60, 60, 270, RED, 3), dot = d.append("circle").attr("r", 12).attr("cy", 270).attr("fill", RED);
+      var r1 = cap(d, 0, 400, "", { size: 26, weight: 700 }), r2 = cap(d, 0, 444, "", { size: 24 }), r3 = cap(d, 0, 488, "", { size: 24 });
+      var upd2 = function (t) { var p = kf(t, [0, 1, 0.3]), wi = p <= 0.5 ? 1 - 2 * p : 0, ww = p <= 0.5 ? 2 * p : 2 - 2 * p, wr = p >= 0.5 ? 2 * p - 1 : 0, x = pl.X(p);
+        cur.attr("d", "M" + x + ",60L" + x + ",270"); dot.attr("cx", x); r1.text("blend_position = " + f2(p)); r2.text("idle " + f2(wi) + "   walk " + f2(ww) + "   run " + f2(wr)); r3.text("sum = " + f2(wi + ww + wr) + ": only the two nearest clips mix"); };
+      run(d, 6000, upd2, anim);
+    } else {
+      lab(d, 0, 24, "WRITTEN EVERY PHYSICS TICK (120 A SECOND)");
+      var G = 12.5 / 68, nT = 150, X = function (n) { return 40 + (n + 10) / (nT + 10) * 700; };
+      var vy = function (n) { return 12.5 - 0.18342 * n; }, airdir = function (n) { return clamp(-vy(n) / 4 + 0.5, 0, 1); }, gun = function (n) { return n < 20 ? 0 : Math.pow(0.97, n - 20); }, st = function (n) { return n >= 0 && vy(n) > -12.6 ? 1 : 0; };
+      var rows = [["state/blend_amount", st, 70], ["air_dir/blend_amount", airdir, 222], ["gun/blend_amount", gun, 374]], vt = [];
+      rows.forEach(function (r) { var y0 = r[2] + 12; line(d, 40, y0 + 70, 740, y0 + 70, INK, 2); line(d, 40, y0, 40, y0 + 70, INK, 2);
+        var pp = ""; for (var n = -10; n <= nT; n++) { var yv = y0 + 70 - r[1](n) * 70; pp += (n === -10 ? "M" : "L") + X(n).toFixed(1) + "," + yv.toFixed(1); }
+        d.append("path").attr("d", pp).attr("fill", "none").attr("stroke", r[0] === "state/blend_amount" ? INK : r[0] === "gun/blend_amount" ? GREY : RED).attr("stroke-width", 4);
+        txt(d, 0, r[2], r[0], { size: 24, weight: 700, family: MONO }); vt.push(txt(d, 740, r[2], "", { size: 24, weight: 700, anchor: "end" })); });
+      var cur3 = line(d, 40, 70, 40, 456, INK, 2, "6 6");
+      var between = 0; for (var n2 = 0; n2 < 140; n2++) { var av = airdir(n2); if (av > 0 && av < 1) between++; }
+      var below = 0; while (Math.pow(0.97, below) >= 0.1) below++;
+      cap(d, 0, 522, "air_dir is between 0 and 1 for " + between + " ticks around the apex.", { size: 24 }); cap(d, 0, 556, "gun falls below 0.1 after " + below + " ticks (× 0.97 each).", { size: 24 });
+      var upd3 = function (t) { var n = Math.round(-10 + t * (nT + 10)); cur3.attr("d", "M" + X(n) + ",70L" + X(n) + ",456"); vt[0].text(String(st(n))); vt[1].text(f2(airdir(n))); vt[2].text(f2(gun(n))); };
+      run(d, 6000, upd3, anim);
+    }
+    note(svg, ey, ["", "A blend node mixes two inputs by one number. Idle plus run by speed over MAX_SPEED gives every pose in between.", "A blend space puts clips on a line. A position picks the two nearest clips and mixes only those.", "Code writes the numbers every physics tick. state is 0 or 1 and flips in one tick, with no fade; air_dir and gun move smoothly."][k]);
+  }
+
+  /* ---------- 3. state machine: state, transition, condition, advance mode ---------- */
+  var TRS = [["ground", "jump", function (f, v) { return !f && v > 0; }, "not floor and vy > 0"], ["ground", "fall", function (f, v) { return !f && v <= 0; }, "not floor and vy <= 0"], ["jump", "fall", function (f, v) { return !f && v <= 0; }, "not floor and vy <= 0"], ["jump", "ground", function (f) { return f; }, "floor"], ["fall", "ground", function (f) { return f; }, "floor"], ["fall", "jump", function (f, v) { return !f && v > 0; }, "not floor and vy > 0"]];
+  function mstep(st, f, v, trs) { for (var i = 0; i < trs.length; i++) { var t = trs[i]; if (t[0] === st && t[2](f, v)) return [t[1], i]; } return [st, -1]; }
+  var INP = [[true, 0], [false, 12.5], [false, 3.1], [false, -4.2], [false, -9.0], [true, 0], [true, 0]];
+  function runMachine(trs, inp) { var st = "ground", S = [], F = []; inp.forEach(function (p) { var r = mstep(st, p[0], p[1], trs); st = r[0]; S.push(st); F.push(r[1]); }); return { S: S, F: F }; }
+  function renderMachine(el, k, anim) {
+    var svg = svgFor(el, W, H, "A state machine has states, transitions and conditions; advance mode decides whether a transition fires by itself", "Three states, then six transitions, then scripted floor and velocity inputs stepping the machine with the current state highlighted. Then the same input with advance mode Enabled, where nothing fires.");
+    var ey = base(svg, [{ id: "state", s: 1 }, { id: "transition", s: 2 }, { id: "condition", s: 3 }, { id: "advmode", s: 4 }], k, anim, ["State", "where the machine is now"], ["Transition", "how it moves to another state"]);
+    var d = svg.append("g"), N = { ground: [115, 182], jump: [605, 82], fall: [605, 282] }, E = TRS.map(function (t) { return [t[0], t[1]]; }), M = runMachine(TRS, INP);
+    var gE = d.append("g"), gN = d.append("g");
+    if (k <= 2) {
+      lab(d, 0, 28, k === 2 ? "SIX TRANSITIONS (A SKETCH OF CHAPTER 11'S MACHINE)" : "THREE STATES OF THE ROBOT");
+      drawMachine(gE, gN, N, k >= 2 ? E : [], "ground", -1);
+      if (k === 2) fade(gE, anim, 0);
+      if (k >= 1) cap(d, 0, 392, k === 1 ? "The machine is in exactly one state: ground." : "The five from the chapter, plus the fix: fall to jump.", { size: 24, weight: 700 });
+    } else {
+      lab(d, 0, 28, k === 3 ? "STEPPING THE MACHINE WITH SCRIPTED INPUT" : "SAME INPUT, TRANSITIONS SET TO ENABLED");
+      var dyn = d.append("g"), enabled = k === 4, fixedGround = INP.map(function () { return "ground"; });
+      var rowsFn = function (idx) {
+        var rows = [{ l: "floor", c: INP.map(function (p) { return p[0] ? "true" : "false"; }) }, { l: "vy", c: INP.map(function (p) { return (p[1] < 0 ? "−" : "") + Math.abs(p[1]).toFixed(1); }) }];
+        rows.push({ l: enabled ? "Auto" : "state", c: M.S, red: function (i) { return M.F[i] >= 0; } }); if (enabled) rows.push({ l: "Enabled", c: fixedGround }); return rows;
+      };
+      var upd = function (t) {
+        var idx = Math.min(6, Math.floor(t * 7 + 1e-6)); dyn.selectAll("*").remove(); var gE2 = dyn.append("g"), gN2 = dyn.append("g");
+        drawMachine(gE2, gN2, N, E, enabled ? "ground" : M.S[idx], enabled ? -1 : M.F[idx], enabled ? { dash: "7 6" } : {});
+        var fi = M.F[idx]; cap(dyn, 0, 352, enabled ? "Enabled: only travel() may use these transitions." : (fi >= 0 ? "tick " + (idx + 1) + ": " + TRS[fi][0] + " → " + TRS[fi][1] + " when " + TRS[fi][3] : "tick " + (idx + 1) + ": no condition true, stays in " + M.S[idx]), { size: 24, weight: 700, fill: enabled || fi >= 0 ? RED : INK });
+        strip(dyn, 372, rowsFn(idx), idx);
+      };
+      run(dyn, 4200, upd, anim);
+    }
+    note(svg, ey, ["", "A state is one named mode. The robot is in ground, jump or fall, never two at once.", "A transition links two states. Each one has its own rule for when it fires and how long it blends.", "A condition is the test. Here it reads floor and vertical speed; the first true one fires.", "Left at Enabled, a transition never fires by itself. Only Auto reacts to the condition."][k]);
+  }
+
+  /* ---------- 4. travel, priority, interrupt, exit-time ---------- */
+  var G4 = { idle: [80, 120], walk: [270, 120], run: [460, 120], jump: [650, 120], swim: [270, 330] }, E4 = [["idle", "walk"], ["walk", "idle"], ["walk", "run"], ["run", "walk"], ["run", "jump"], ["jump", "idle"]];
+  function bfs(from, to) { var q = [[from]], seen = { }; seen[from] = 1; while (q.length) { var p = q.shift(), l = p[p.length - 1]; if (l === to) return p; E4.forEach(function (e) { if (e[0] === l && !seen[e[1]]) { seen[e[1]] = 1; q.push(p.concat([e[1]])); } }); } return null; }
+  function renderTravel(el, k, anim) {
+    var svg = svgFor(el, W, H, "Travel follows the shortest path; priority picks among true transitions; interrupts cut a state short; exit-time waits", "A small state graph with a dot travelling along the shortest path. Then three transitions with priorities. Then a clip timeline cut off by an immediate transition, and the same clip waited out by an exit-time transition.");
+    var ey = base(svg, [{ id: "travel", s: 1 }, { id: "priority", s: 2 }, { id: "interrupt", s: 3 }, { id: "exittime", s: 4 }], k, anim, ["Interrupt", "cuts the current state short"], ["Exit-time transition", "waits for the clip to end"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 28, "TRAVEL() ON A SMALL ILLUSTRATIVE MACHINE");
+      var gE = d.append("g"), gN = d.append("g"), hw = 70, hh = 28;
+      var path = bfs("idle", "run"), hops = path.length - 1;
+      E4.forEach(function (e) { var a = G4[e[0]], b = G4[e[1]]; if (e[0] === "jump") { var p = d.append("path").attr("d", "M650,148 V210 H80 V152").attr("stroke", GREY).attr("stroke-width", 2.5).attr("fill", "none"); d.append("path").attr("d", "M80,152 l-8,16 h16Z").attr("fill", GREY); return; } var off = e[0] < e[1] ? -9 : 9; var A1 = [a[0], a[1] + off], B1 = [b[0], b[1] + off]; arrow(gE, A1[0] + hw, A1[1], B1[0] - hw - 6, B1[1], GREY, 2.5); if (e[0] > e[1] && false) return; });
+      Object.keys(G4).forEach(function (n) { var c = G4[n], on = path.indexOf(n) >= 0 && k >= 1; box(gN, c[0] - hw, c[1] - hh, hw * 2, hh * 2, { stroke: on ? RED : n === "swim" ? GREY : INK, sw: on ? 4 : 2.5, fill: on ? TINT : "#FFFFFF" }); txt(gN, c[0], c[1] + 9, n, { size: 26, weight: 700, anchor: "middle", fill: n === "swim" ? MUTED : on ? RED : INK }); });
+      if (k === 1) {
+        var dot = d.append("circle").attr("r", 12).attr("fill", RED), pts = path.map(function (n) { return G4[n]; });
+        run(d, 3000, function (t) { var s = t * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(s)), u = s - i; dot.attr("cx", lerp(pts[i][0], pts[i + 1][0], u)).attr("cy", lerp(pts[i][1], pts[i + 1][1], u)); }, anim);
+        cap(d, 0, 270, "travel(\"run\") from idle: " + path.join(" → ") + ", " + hops + " hops", { size: 24, weight: 700 });
+        var nb = bfs("idle", "swim"); var tl = d.append("g");
+        line(tl, 130, 150, 230, 296, RED, 3, "8 6"); arrow(tl, 215, 276, 232, 300, RED, 3); fade(tl, anim, 2400);
+        cap(d, 0, 450, "travel(\"swim\"): " + (nb ? nb.join(" → ") : "no path") + ", so the machine jumps there.", { size: 24, weight: 700, fill: RED });
+      } else cap(d, 0, 450, "Click to send the robot along the shortest path.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 28, "THREE TRANSITIONS OUT OF RUN, ALL CHECKED THIS TICK");
+      var TR = [["run → jump", 1, true], ["run → walk", 2, true], ["run → idle", 3, false]], win = null;
+      TR.forEach(function (r) { if (r[2] && (win === null || r[1] < win[1])) win = r; });
+      TR.forEach(function (r, i) { var y = 60 + i * 100, g = d.append("g"), w = r === win; box(g, 0, y, 740, 80, { stroke: w ? RED : INK, sw: w ? 4 : 2 }); txt(g, 20, y + 50, r[0], { size: 28, weight: 700, fill: w ? RED : INK }); txt(g, 330, y + 50, "priority " + r[1], { size: 24 }); txt(g, 720, y + 50, r[2] ? "true" : "false", { size: 24, weight: 700, anchor: "end", fill: r[2] ? INK : MUTED }); fade(g, A(anim, k, 2), i * 450); });
+      cap(d, 0, 420, "Two are true. The lower number wins: " + win[0] + ".", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 28, k === 3 ? "SWITCH MODE IMMEDIATE: THE STATE IS CUT OFF" : "IMMEDIATE VERSUS AT END, SAME REQUEST AT 0.3 S");
+      var x0 = 40, sc = 700, L = 0.833, rq = 0.3;
+      var rowT = function (y, mode, anm, delay) {
+        var g = d.append("g"), end = mode === "imm" ? rq : L, nextAt = end;
+        txt(g, x0, y - 10, mode === "imm" ? "Immediate" : "At End (exit-time)", { size: 24, weight: 700, fill: mode === "imm" ? RED : INK });
+        box(g, x0, y, L * sc, 44, { stroke: INK, sw: 2.5 }); var b = bar(g, x0, y, end * sc, 44, mode === "imm" ? RED : INK, anm, delay);
+        if (mode === "imm") { var h = g.append("rect").attr("x", x0 + rq * sc).attr("y", y).attr("width", (L - rq) * sc).attr("height", 44).attr("fill", "#E3E3E3"); fade(h, anm, delay + 600); }
+        line(g, x0 + rq * sc, y - 4, x0 + rq * sc, y + 54, INK, 3, "6 5");
+        cap(g, x0, y + 88, mode === "imm" ? "request at 0.3 s: new state starts now; " + (L - rq).toFixed(3) + " s of run never plays" : "request at 0.3 s: new state waits " + (L - rq).toFixed(3) + " s, starts at " + L.toFixed(3) + " s", { size: 24 });
+      };
+      rowT(110, "imm", A(anim, k, 3), 0); if (k === 4) rowT(330, "end", A(anim, k, 4), 0);
+      cap(d, x0, 64, "run clip, 0.833 s", { size: 24, fill: MUTED, anchor: "start" });
+    }
+    note(svg, ey, ["", "travel() finds the shortest path with A*. The dot walks it. If no path exists, the machine just jumps to the target.", "Several transitions can be true at once. Godot takes the one with the lowest priority number.", "An interrupt cuts the current state early. At 0.3 s the run clip loses its last 0.533 s.", "An exit-time transition waits for the clip to reach its point. Same request, 0.533 s later."][k]);
+  }
+
+  /* ---------- 5. cross-fade, transition time, current node ---------- */
+  function renderXfade(el, k, anim) {
+    var svg = svgFor(el, W, H, "A cross-fade moves weight from the old state to the new over the transition time; the current node switches at once", "Two weight lines over 0.1 seconds that always sum to one. Then transition times of 0, 0.05 and 0.1 seconds with frame counts at 60 frames a second. Then the reported current node against the real weights.");
+    var ey = base(svg, [{ id: "crossfade", s: 1 }, { id: "curnode", s: 3 }], k, anim, ["Cross-fade", "blend over a short time"], ["Cut", "switch in one tick, no blend"]);
+    var d = svg.append("g"), pl = plotFrame(d, 70, 60, 650, 290, 0.12, [0, 0.05, 0.1], function (v) { return v === 0 ? "0" : v.toFixed(2); }, 1), xf = 0.1;
+    txt(d, 56, 76, "1", { size: 24, anchor: "end" }); txt(d, 56, 356, "0", { size: 24, anchor: "end" });
+    var wt = function (t, x) { return x <= 0 ? (t > 0 ? 1 : 0) : clamp(t / x, 0, 1); };
+    if (k <= 1) {
+      lab(d, 0, 28, "WEIGHT OVER TIME (S), TRANSITION TIME 0.10 S");
+      var pOld = d.append("path").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4), pNew = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4), cur = line(d, 70, 60, 70, 350, GREY, 2, "6 6");
+      line(d, 20, 428, 56, 428, INK, 4); txt(d, 66, 436, "old state", { size: 24 }); line(d, 250, 428, 286, 428, RED, 4); txt(d, 296, 436, "new state", { size: 24 });
+      var r1 = cap(d, 0, 488, "", { size: 26, weight: 700 }); cap(d, 0, 532, "The two weights always add up to 1.", { size: 24, fill: MUTED });
+      var upd = function (t) { var tm = t * 0.1; pOld.attr("d", pathOf(function (v) { return 1 - wt(v, xf); }, 0, tm, 60, pl.X, pl.Y)); pNew.attr("d", pathOf(function (v) { return wt(v, xf); }, 0, tm, 60, pl.X, pl.Y)); cur.attr("d", "M" + pl.X(tm) + ",60L" + pl.X(tm) + ",350");
+        r1.text("t = " + f2(tm) + " s:  old " + f2(1 - wt(tm, xf)) + " + new " + f2(wt(tm, xf)) + " = " + f2(1 - wt(tm, xf) + wt(tm, xf))); };
+      if (k === 0) upd(0.5); else run(d, 4000, upd, anim);
+    } else if (k === 2) {
+      lab(d, 0, 28, "WEIGHT OF THE NEW STATE FOR THREE TRANSITION TIMES");
+      var C = [[0, INK], [0.05, GREY], [0.1, RED]];
+      C.forEach(function (c, i) { var pp = c[0] === 0 ? "M" + pl.X(0) + "," + pl.Y(0) + "L" + pl.X(0) + "," + pl.Y(1) + "L" + pl.X(0.12) + "," + pl.Y(1) : pathOf(function (v) { return wt(v, c[0]); }, 0, 0.12, 120, pl.X, pl.Y);
+        var p = d.append("path").attr("d", pp).attr("fill", "none").attr("stroke", c[1]).attr("stroke-width", 4); if (A(anim, k, 2)) drawIn(p, i * 500, 700);
+        var fr = Math.ceil(c[0] * 60 - 1e-9); cap(d, 0, 440 + i * 44, "xfade " + c[0].toFixed(2) + " s: " + (c[0] === 0 ? "a cut, one tick" : fr + " frames at 60 fps"), { size: 24, weight: 700, fill: c[1] === GREY ? MUTED : c[1] }); });
+    } else {
+      lab(d, 0, 28, "WHAT get_current_node() REPORTS DURING THE FADE");
+      var pNew2 = d.append("path").attr("d", pathOf(function (v) { return wt(v, xf); }, 0, 0.12, 120, pl.X, pl.Y)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4);
+      var cur2 = line(d, 70, 60, 70, 352, INK, 3, "6 6");
+      txt(d, 0, 416, "get_current_node()", { size: 24, weight: 700, family: MONO }); box(d, pl.X(0), 428, pl.X(0.12) - pl.X(0), 44, { stroke: RED, sw: 3, fill: TINT }); txt(d, pl.X(0.06), 458, "ground, from t = 0", { size: 24, anchor: "middle", fill: RED, weight: 700 });
+      txt(d, 0, 510, "get_fading_from_node()", { size: 24, weight: 700, family: MONO }); box(d, pl.X(0), 522, pl.X(0.1) - pl.X(0), 44, { stroke: INK, sw: 3 }); txt(d, pl.X(0.05), 552, "fall", { size: 24, anchor: "middle" });
+      cur2.attr("d", "M" + pl.X(0.05) + ",60L" + pl.X(0.05) + ",566");
+      if (A(anim, k, 3)) run(d, 3000, function (t) { var x = pl.X(0.12 * t); cur2.attr("d", "M" + x + ",60L" + x + ",352"); }, anim);
+      cap(d, 400, 316, "new weight at 0.05 s: " + f2(wt(0.05, xf)), { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "A cross-fade moves weight from the old state to the new over the transition time. The two weights add up to 1.", "xfade 0 is a cut. 0.05 s is 3 frames at 60 fps; 0.1 s is 6. Count frames before choosing seconds.", "At 0.05 s the new state has only half the weight, yet the playback already reports it as current. Read the fading-from node too."][k]);
+  }
+
+  /* ---------- 6. keys: property track, method track, tween ---------- */
+  var AL = 0.45, KR = [[0, -80], [0.15, 85], [0.2, 75]];
+  function ang(t) { if (t <= 0) return -80; if (t < 0.15) { var u = t / 0.15; return lerp(-80, 85, 1 - Math.pow(1 - u, 1 / 0.439427)); } if (t < 0.2) return lerp(85, 75, (t - 0.15) / 0.05); return 75; }
+  function renderKeys(el, k, anim) {
+    var svg = svgFor(el, W, H, "A property track sets values, a method track calls functions, and a tween can be killed before it finishes", "The sword's attack clip with rotation and monitoring keys and a playhead. Then method keys firing at 0.1 and 0.25 seconds. Then a tween that is killed at 0.07 seconds leaving the hitbox flag on, beside a clip key that turns it off at 0.15 seconds.");
+    var ey = base(svg, [{ id: "proptrack", s: 1 }, { id: "methodtrack", s: 2 }, { id: "tween", s: 3 }], k, anim, ["Property track", "sets a value"], ["Method track", "calls a function"]);
+    var d = svg.append("g"), x0 = 50, sc = 1400, X = function (t) { return x0 + t * sc; };
+    if (k <= 2) {
+      lab(d, 0, 28, k === 1 ? "ATTACK_FAST: VALUE TRACKS (0.45 S)" : "ATTACK_FAST: VALUE AND METHOD TRACKS");
+      var ph = line(d, x0, 70, x0, 310, INK, 3, "6 5"), halo = function (t) { return t.attr("stroke", "#FFFFFF").attr("stroke-width", 7).attr("paint-order", "stroke"); };
+      halo(txt(d, 0, 66, "rotation_degrees", { size: 24, weight: 700, family: MONO }));
+      line(d, x0, 190, X(AL), 190, FAMILIAR, 1.5); line(d, x0, 76, x0, 190, INK, 2); line(d, x0, 190, X(AL), 190, INK, 2);
+      d.append("path").attr("d", pathOf(function (t) { return (ang(t) + 90) / 180; }, 0, AL, 90, X, function (v) { return 190 - v * 114; })).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+      var rowM = 262; halo(txt(d, 0, 236, "monitoring", { size: 24, weight: 700, family: MONO }));
+      box(d, x0, rowM, X(AL) - x0, 40, { stroke: FAMILIAR }); box(d, x0, rowM, X(0.15) - x0, 40, { stroke: RED, sw: 3, fill: TINT }); txt(d, x0 + 10, rowM + 30, "true", { size: 24, weight: 700, fill: RED }); txt(d, X(0.3), rowM + 30, "false", { size: 24, fill: MUTED, anchor: "middle" });
+      var rd = cap(d, 300, 520, "", { size: 24, weight: 700 }), rd2 = cap(d, 300, 556, "", { size: 24 });
+      var bl = d.append("path").attr("stroke", INK).attr("stroke-width", 8).attr("stroke-linecap", "round"); d.append("circle").attr("cx", 120).attr("cy", 540).attr("r", 7).attr("fill", RED);
+      var mk = [], logs = [];
+      if (k === 2) {
+        halo(txt(d, 0, 336, "method track", { size: 24, weight: 700, family: MONO }));
+        [[0.1, "set_attack_input_listening"], [0.25, "set_ready_for_next_attack"]].forEach(function (m, i) { var c = d.append("path").attr("d", "M" + X(m[0]) + ",346 l-10,-12 h20 Z").attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); mk.push(c); line(d, X(m[0]), 346, X(m[0]), 360, INK, 3); logs.push(mono(d, 0, 400 + i * 38, "", { size: 24, weight: 700 })); });
+      }
+      var upd = function (t) { var tm = t * AL, a = ang(tm), on = tm < 0.15; ph.attr("d", "M" + X(tm) + ",70L" + X(tm) + ",310");
+        bl.attr("d", "M120,540 L" + (120 + 85 * Math.sin(a * DEG)) + "," + (540 - 85 * Math.cos(a * DEG))); rd.text("rotation " + (a < 0 ? "−" : "") + Math.abs(a).toFixed(1) + "°"); rd2.text("monitoring " + (on ? "true" : "false") + " at t = " + tm.toFixed(2) + " s");
+        mk.forEach(function (c, i) { var key = i ? 0.25 : 0.1, fired = tm >= key; c.attr("fill", fired ? RED : "#FFFFFF").attr("stroke", fired ? RED : INK); logs[i].text(fired ? key.toFixed(2) + " s  " + (i ? "set_ready_for_next_attack()" : "set_attack_input_listening()") : "").attr("fill", RED); }); };
+      run(d, 4500, upd, anim);
+    } else {
+      lab(d, 0, 28, "WHO TURNS THE HITBOX OFF? (TIME IN S)");
+      var kill = 0.07, ev = [[0, true], [0.15, false]], tweenFlag = function (t) { var f = false; ev.forEach(function (e) { if (e[0] <= t && e[0] <= kill) f = e[1]; }); return f; }, clipFlag = function (t) { return t < 0.15; };
+      var rows = [["Tween (killed at 0.07 s)", 70, tweenFlag], ["Clip key at 0.15 s", 250, clipFlag]], seg = [];
+      rows.forEach(function (r) { txt(d, 0, r[1], r[0], { size: 24, weight: 700 }); box(d, x0, r[1] + 14, X(AL) - x0, 44, { stroke: FAMILIAR }); seg.push(d.append("rect").attr("x", x0).attr("y", r[1] + 14).attr("height", 44).attr("fill", RED).attr("fill-opacity", 0.85)); });
+      var kx = X(kill); line(d, kx, 84, kx, 70 + 60, INK, 3); d.append("path").attr("d", "M" + (kx - 10) + ",132 l20,20 m0,-20 l-20,20").attr("stroke", INK).attr("stroke-width", 4); txt(d, kx + 22, 150, "killed", { size: 24, weight: 700 });
+      var rt = cap(d, 0, 420, "", { size: 26, weight: 700 }), rc = cap(d, 0, 460, "", { size: 26, weight: 700 }); cap(d, 0, 520, "The off call lived inside the dead tween, so it never runs.", { size: 24, fill: MUTED });
+      var ph3 = line(d, x0, 66, x0, 330, INK, 3, "6 5");
+      var upd3 = function (t) { var tm = t * AL; ph3.attr("d", "M" + X(tm) + ",66L" + X(tm) + ",330"); var a = tweenFlag(tm), b = clipFlag(tm);
+        var wA = a ? X(tm) - x0 : 0, wB = b ? X(tm) - x0 : X(0.15) - x0; seg[0].attr("width", wA); seg[1].attr("width", wB);
+        rt.text("tween flag at " + tm.toFixed(2) + " s: " + (a ? "true" : "false")); rc.text("clip flag at " + tm.toFixed(2) + " s: " + (b ? "true" : "false")).attr("fill", b ? RED : INK); rt.attr("fill", a ? RED : INK); };
+      run(d, 4500, upd3, anim);
+    }
+    note(svg, ey, ["", "A property track keys any property: the blade's rotation, or monitoring on the hitbox. Each key is a number in the clip.", "A method track calls a function when the playhead crosses a key. The editor does not fire it when you scrub.", "A tween is made in code. Kill it halfway and the end of its job never happens. Keep gameplay facts on the clip."][k]);
+  }
+
+  /* ---------- 7. hit window: startup, active, recovery, hit list ---------- */
+  var FPS = 120, SU = 12, AC = 18, RC = 24, FT = SU + AC + RC;
+  function renderHit(el, k, anim) {
+    var svg = svgFor(el, W, H, "An attack has startup, active and recovery frames; a hit list stops one swing hitting twice", "A bar of 54 frames split into startup, active and recovery with a playhead and a hitbox live flag. Then two targets overlapping the active frames, with hit counts with and without a hit list.");
+    var ey = base(svg, [{ id: "startup", s: 1 }, { id: "active", s: 2 }, { id: "recovery", s: 3 }, { id: "hitlist", s: 4 }], k, anim, ["Active", "a hit can land"], ["Recovery", "no hit; the swing winds down"]);
+    var d = svg.append("g"), x0 = 40, pf = 640 / FT, SEG = [["startup", 0, SU, GREY], ["active", SU, SU + AC, RED], ["recovery", SU + AC, FT, INK]];
+    lab(d, 0, 28, "ONE SWING AT 120 FRAMES A SECOND (ILLUSTRATIVE)");
+    SEG.forEach(function (s, i) {
+      if (i + 1 > Math.max(k, 1) && k > 0) { box(d, x0 + s[1] * pf, 80, (s[2] - s[1]) * pf, 54, { stroke: FAMILIAR }); return; }
+      box(d, x0 + s[1] * pf, 80, (s[2] - s[1]) * pf, 54, { stroke: s[3], sw: 3, fill: "#FFFFFF" });
+      txt(d, x0 + (s[1] + s[2]) / 2 * pf, 164, s[0], { size: 24, weight: 700, anchor: "middle", fill: s[3] === GREY ? MUTED : s[3] });
+      txt(d, x0 + (s[1] + s[2]) / 2 * pf, 198, (s[2] - s[1]) + " f", { size: 24, anchor: "middle" });
+    });
+    var fillb = d.append("rect").attr("x", x0).attr("y", 80).attr("height", 54).attr("fill", INK).attr("fill-opacity", 0.22), ph = d.append("rect").attr("y", 72).attr("width", 5).attr("height", 70).attr("fill", INK);
+    var rd = cap(d, 0, 270, "", { size: 26, weight: 700 }), rd2 = cap(d, 0, 312, "", { size: 24 });
+    var lastF = k === 1 ? SU : k === 2 ? SU + AC : FT, firstF = 0;
+    var upd = function (t) { var f = Math.round(t * lastF), live = f >= SU && f < SU + AC, ph_ = f < SU ? "startup" : f < SU + AC ? "active" : "recovery"; fillb.attr("width", f * pf); ph.attr("x", x0 + f * pf - 2); rd.text("frame " + f + " of " + FT + ": " + ph_); rd2.text("hitbox live: " + (live ? "yes" : "no")); rd2.attr("fill", live ? RED : INK); };
+    if (k === 0) { upd(0); cap(d, 0, 400, "12 + 18 + 24 = " + FT + " frames = " + (FT / FPS).toFixed(2) + " s", { size: 24, fill: MUTED }); }
+    else if (k <= 3) run(d, 3000, upd, A(anim, k, k) || (anim && false));
+    else { upd(1); fillb.attr("width", FT * pf);
+      lab(d, 0, 362, "TWO TARGETS INSIDE THE HITBOX");
+      var TG = [["target A", 12, 30], ["target B", 20, 30]], nl = 0, wl = 0;
+      TG.forEach(function (tg, i) { var y = 386 + i * 48; txt(d, 0, y + 28, tg[0], { size: 24 }); bar(d, x0 + tg[1] * pf, y + 4, (tg[2] - tg[1]) * pf, 30, RED, A(anim, k, 4), i * 300); nl += tg[2] - tg[1]; wl += 1; });
+      cap(d, 0, 510, "no hit list: " + (TG[0][2] - TG[0][1]) + " + " + (TG[1][2] - TG[1][1]) + " = " + nl + " hits, one per frame", { size: 24, weight: 700 });
+      cap(d, 0, 548, "with a hit list: 1 + 1 = " + wl + " hits", { size: 24, weight: 700, fill: RED });
+    }
+    note(svg, ey, ["", "Startup: the windup. The blade moves but the hitbox is still off. Here 12 frames, 0.10 s.", "Active: the hitbox is live for 18 frames. This is the window a test must pin on a frame number.", "Recovery: 24 frames where nothing can hit and the character cannot yet act.", "Every active frame would hit again. A hit list records who was hit, so one swing counts once per target."][k]);
+  }
+
+  /* ---------- 8. sampling and intermittent fault ---------- */
+  var REL = [[false, -6.0], [false, -3.0], [true, 0], [false, 12.5], [false, 12.32], [false, 12.14], [false, 11.96], [false, 11.78]];
+  function simCase(oddLand, fixed) {
+    /* landing is relative tick index 2. Frames hold 2 ticks. A: frames (0,1),(2,3),(4,5),(6,7); B: (0),(1,2),(3,4),(5,6),(7) */
+    var samples = oddLand ? [0, 2, 4, 6] : [1, 3, 5, 7], trs = fixed ? TRS : TRS.slice(0, 5), st = "fall", S = [];
+    samples.forEach(function (j) { var r = mstep(st, REL[j][0], REL[j][1], trs); st = r[0]; S.push([j, st]); });
+    return S;
+  }
+  function renderSampling(el, k, anim) {
+    var svg = svgFor(el, W, H, "The tree samples the physics once per frame, so a landing between samples can be missed", "Eight physics ticks around a landing, grouped two to a rendered frame, with the machine state the tree reaches at the end of each frame. Two landing cases: one where the landing is seen, one where it is missed.");
+    var ey = base(svg, [{ id: "sampling", s: 1 }, { id: "intermittent", s: 2 }], k, anim, ["Physics tick", "one step of the physics"], ["Rendered frame", "one update of the tree"]);
+    var d = svg.append("g"), cw = 83;
+    var drawCase = function (g, y0, odd, title, fixed, reveal) {
+      lab(g, 0, y0 + 24, title);
+      var base0 = odd ? 137 : 136, S = simCase(odd, fixed);
+      txt(g, 0, y0 + 66, "tick", { size: 24, weight: 700, fill: MUTED }); txt(g, 0, y0 + 104, "floor", { size: 24, weight: 700, fill: MUTED }); txt(g, 0, y0 + 142, "vy", { size: 24, weight: 700, fill: MUTED });
+      REL.forEach(function (r, j) { var x = 96 + j * cw, hot = j === 2; txt(g, x + cw / 2, y0 + 66, String(base0 - 2 + j), { size: 24, anchor: "middle" }); txt(g, x + cw / 2, y0 + 104, r[0] ? "true" : "false", { size: 24, anchor: "middle", fill: hot ? RED : INK, weight: hot ? 700 : 400 }); txt(g, x + cw / 2, y0 + 142, (r[1] < 0 ? "−" : "") + Math.abs(r[1]).toFixed(1), { size: 24, anchor: "middle" }); });
+      var fr = odd ? [[0, 0], [1, 2], [3, 4], [5, 6], [7, 7]] : [[0, 1], [2, 3], [4, 5], [6, 7]];
+      fr.forEach(function (f) { var xa = 96 + f[0] * cw + 3, xb = 96 + (f[1] + 1) * cw - 3, sv = null; S.forEach(function (s) { if (s[0] === f[1]) sv = s[1]; });
+        line(g, xa, y0 + 160, xb, y0 + 160, INK, 3); line(g, xb, y0 + 150, xb, y0 + 170, INK, 3);
+        if (sv) { var miss = sv === "fall" && f[1] >= 3; txt(g, (xa + xb) / 2, y0 + 202, sv, { size: 24, weight: 700, anchor: "middle", fill: miss ? RED : INK }); } });
+      txt(g, 0, y0 + 202, "tree", { size: 24, weight: 700, fill: MUTED });
+    };
+    var gA = d.append("g"), gB = d.append("g");
+    var upd = function (t) { gA.selectAll("*").remove(); gB.selectAll("*").remove(); var fx = k >= 3;
+      drawCase(gA, 0, false, "LANDING ON THE FIRST TICK OF A FRAME", false); if (k >= 2) drawCase(gB, 276, true, "LANDING ON THE SECOND TICK OF A FRAME", false);
+      var s0 = simCase(false, false), s1 = simCase(true, false), mis = s0[s0.length - 1][1] === "fall", mis1 = s1[s1.length - 1][1] === "fall";
+      cap(gA, 0, k >= 2 ? 508 : 270, k === 1 ? "120 ticks ÷ 60 frames = " + (120 / 60) + " ticks per frame; the tree sees one." : "Case 1: still " + s0[s0.length - 1][1] + " while rising. Case 2: " + s1[s1.length - 1][1] + ".", { size: 24, weight: 700, fill: k >= 2 && (mis || mis1) ? RED : INK });
+      if (k >= 2) cap(gA, 0, 542, "Same key held, two outcomes: it depends on tick timing.", { size: 24, fill: MUTED });
+      gA.attr("opacity", 1); };
+    upd(1); if (anim) { d.attr("opacity", 0).transition().duration(500).attr("opacity", 1); }
+    note(svg, ey, ["", "Physics runs 120 ticks a second; the tree updates 60 times. It only sees the state at the end of each frame.", "Land on the first tick and the next tick takes off: the tree never saw the floor and the robot rises in its falling pose."][k]);
+  }
+
+  /* ---------- 9. input probe and mutation check ---------- */
+  function renderProbe(el, k, anim) {
+    var svg = svgFor(el, W, H, "A headless probe shows the body moved but not that the animation followed; a mutation check proves a test can fail", "Four probe assertions passing with and without the animation tree. Then six things the probe never checked. Then a state test failing on the pre-fix scene for one landing case but passing on the fixed scene.");
+    var ey = base(svg, [{ id: "inputprobe", s: 1 }, { id: "mutation", s: 3 }], k, anim, ["Input probe", "did the body move?"], ["State test", "did the animation follow?"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 28, "THE PLATFORMER'S PROBE: FOUR ASSERTIONS");
+      var AS = [["player displaced", "position"], ["jump moves upward", "velocity"], ["Bullet node created", "scene nodes"], ["reset returns near start", "position"]];
+      txt(d, 470, 66, "with tree", { size: 24, weight: 700, anchor: "middle", fill: MUTED }); txt(d, 640, 66, "no tree", { size: 24, weight: 700, anchor: "middle", fill: MUTED });
+      var np = 0, np2 = 0;
+      AS.forEach(function (a, i) { var y = 80 + i * 72, g = d.append("g"), reads = a[1] !== "pose"; box(g, 0, y, 740, 58, { stroke: FAMILIAR }); txt(g, 14, y + 38, a[0], { size: 24 }); check(g, 470, y + 28, 12, RED); check(g, 640, y + 28, 12, RED); if (reads) np++; if (reads) np2++; fade(g, A(anim, k, 1), i * 450); });
+      cap(d, 0, 420, np + " of " + AS.length + " pass with the tree; " + np2 + " of " + AS.length + " pass with it deleted.", { size: 26, weight: 700, fill: RED }); cap(d, 0, 464, "Each assertion reads the body, never the pose.", { size: 24, fill: MUTED });
+    } else if (k === 2) {
+      lab(d, 0, 28, "THE PROBE'S OWN LIST OF WHAT IT DID NOT CHECK");
+      var U = ["coin pickup", "enemy impact", "camera image", "audio", "physical controls", "fun"];
+      U.forEach(function (u, i) { var y = 56 + i * 66, g = d.append("g"); box(g, 0, y, 740, 52, { stroke: GREY }); txt(g, 16, y + 36, u, { size: 26 }); txt(g, 724, y + 36, "not checked", { size: 24, anchor: "end", fill: RED, weight: 700 }); fade(g, A(anim, k, 2), i * 250); });
+      cap(d, 0, 500, "Animation is not on the list either: nothing checks it.", { size: 26, weight: 700, fill: RED });
+    } else {
+      lab(d, 0, 28, "STATE TEST ON TWO SCENES, BY LANDING TICK");
+      var CA = [[false, "1st tick"], [true, "2nd tick"]], SC = [["fixed scene", true], ["pre-fix scene", false]];
+      CA.forEach(function (c, i) { txt(d, 380 + i * 190, 80, c[1], { size: 24, weight: 700, anchor: "middle", fill: MUTED }); });
+      
+      SC.forEach(function (s, r) { var y = 100 + r * 110, g = d.append("g"); txt(g, 0, y + 50, s[0], { size: 26, weight: 700 });
+        var allp = true; CA.forEach(function (c, i) { var res = simCase(c[0], s[1]), pass = res[res.length - 1][1] !== "fall"; allp = allp && pass; var x = 380 + i * 190; box(g, x - 80, y, 160, 70, { stroke: pass ? INK : RED, sw: 3, fill: pass ? "#FFFFFF" : TINT }); txt(g, x, y + 46, pass ? "pass" : "FAIL", { size: 26, weight: 700, anchor: "middle", fill: pass ? INK : RED }); });
+        cap(g, 0, y + 94, "run at both landings: " + (allp ? "passes" : "fails"), { size: 24, fill: allp ? INK : RED, weight: 700 }); fade(g, A(anim, k, 3), r * 500); });
+      cap(d, 0, 380, "A test that fails on the old scene is a test that can see the bug.", { size: 24, weight: 700 }); cap(d, 0, 420, "Run at one landing only, it could pass by luck.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "The probe loads the real scene and presses only ordinary actions. It passes all four assertions with the animation tree deleted.", "It also did not check coins, enemies, the camera image, audio, real controls, or fun. Those need a person.", "Put the old scene back. The new test must fail there. At the lucky landing alone it passes anyway."][k]);
+  }
+
+  /* ---------- 10. Unity ---------- */
+  function renderUnity(el, k, anim) {
+    var svg = svgFor(el, W, H, "Unity: an Animator Controller holds the machine; a transition changes state over time; a blend tree mixes by a value", "A controller with three states stepped by speed and grounded inputs. Then a transition weight over time. Then a blend tree weight over speed next to it.");
+    var ey = base(svg, [{ id: "animctrl", s: 1 }, { id: "utrans", s: 2 }, { id: "ublend", s: 3 }], k, anim, ["Transition", "changes state over a time"], ["Blend tree", "mixes clips by a value"]);
+    var d = svg.append("g");
+    if (k <= 1) {
+      lab(d, 0, 28, "ONE ASSET: STATES, TRANSITIONS, PARAMETERS");
+      var UT = [["Idle", "Run", function (s) { return s[0] > 0.1; }], ["Run", "Idle", function (s) { return s[0] < 0.1; }], ["Run", "Jump", function (s) { return !s[1]; }], ["Jump", "Run", function (s) { return s[1]; }]];
+      var IN = [[0, true], [0.2, true], [3, true], [3, true], [3, false], [3, false], [0, true]], st = "Idle", S = [];
+      IN.forEach(function (p) { for (var i = 0; i < UT.length; i++) if (UT[i][0] === st && UT[i][2](p)) { st = UT[i][1]; break; } S.push(st); });
+      var N = { Idle: [100, 110], Run: [380, 110], Jump: [660, 110] }, E = UT.map(function (t) { return [t[0], t[1]]; });
+      var dyn = d.append("g");
+      var upd = function (t) { var idx = Math.min(6, Math.floor(t * 7 + 1e-6)); dyn.selectAll("*").remove(); var gE = dyn.append("g"), gN = dyn.append("g");
+        drawMachine(gE, gN, N, E, k === 0 ? "Idle" : S[idx], -1, { hw: 70, hh: 28, off: 11 });
+        strip(dyn, 250, [{ l: "speed", c: IN.map(function (p) { return p[0].toFixed(1); }) }, { l: "grounded", c: IN.map(function (p) { return p[1] ? "true" : "false"; }) }, { l: "state", c: S, red: function (i) { return i > 0 && S[i] !== S[i - 1]; } }], k === 0 ? 0 : idx);
+        cap(dyn, 0, 420, "Scripts set the parameters; conditions read them.", { size: 24, fill: MUTED }); };
+      if (k === 0) upd(0); else run(dyn, 4200, upd, anim);
+    } else {
+      lab(d, 0, 28, k === 2 ? "A TRANSITION: WEIGHT OVER TIME" : "TRANSITION BY TIME, BLEND TREE BY VALUE");
+      var wl = k === 2 ? 650 : 300, pl = plotFrame(d, k === 2 ? 70 : 50, 70, wl, 240, 0.25, [0, 0.25], function (v) { return v === 0 ? "0" : v.toFixed(2); }, 1);
+      var TDUR = 0.25; txt(d, k === 2 ? 70 + wl / 2 : 200, 360, "time (s)", { size: 24, anchor: "middle", fill: MUTED });
+      var pO = d.append("path").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4), pN = d.append("path").attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4), c1 = line(d, 70, 70, 70, 310, GREY, 2, "6 6");
+      var r1 = cap(d, 0, 450, "", { size: 24, weight: 700 }), r2 = cap(d, 0, 490, "", { size: 24, weight: 700, fill: RED });
+      var pl2, cvs = [], c2, bp = [["idle", 0], ["walk", 1.5], ["run", 4]], bw = function (n, s) { var i = bp.map(function (b) { return b[0]; }).indexOf(n), v = bp[i][1], lo = i > 0 ? bp[i - 1][1] : null, hi = i < 2 ? bp[i + 1][1] : null; if (s === v) return 1; if (lo !== null && s > lo && s < v) return (s - lo) / (v - lo); if (hi !== null && s > v && s < hi) return (hi - s) / (hi - v); return 0; };
+      if (k === 3) { pl2 = plotFrame(d, 440, 70, 300, 240, 4, [0, 4], function (v) { return String(v); }, 1); txt(d, 590, 360, "speed", { size: 24, anchor: "middle", fill: MUTED });
+        [["idle", INK], ["walk", GREY], ["run", RED]].forEach(function (b) { d.append("path").attr("d", pathOf(function (s) { return bw(b[0], s); }, 0, 4, 80, pl2.X, pl2.Y)).attr("fill", "none").attr("stroke", b[1]).attr("stroke-width", 3.5); });
+        c2 = line(d, 440, 70, 440, 310, RED, 3); cap(d, 0, 530, "walk at 1.5 and run at 4 are illustrative thresholds.", { size: 24, fill: MUTED }); }
+      var upd2 = function (t) { var tm = t * TDUR, wn = clamp(tm / TDUR, 0, 1);
+        pO.attr("d", pathOf(function (v) { return 1 - clamp(v / TDUR, 0, 1); }, 0, tm, 40, pl.X, pl.Y)); pN.attr("d", pathOf(function (v) { return clamp(v / TDUR, 0, 1); }, 0, tm, 40, pl.X, pl.Y)); c1.attr("d", "M" + pl.X(tm) + ",70L" + pl.X(tm) + ",310");
+        r1.text("transition, t = " + f2(tm) + " s: from " + f2(1 - wn) + ", to " + f2(wn));
+        if (k === 3) { var s = t * 4; c2.attr("d", "M" + pl2.X(s) + ",70L" + pl2.X(s) + ",310"); r2.text("blend tree, speed " + s.toFixed(1) + ": idle " + f2(bw("idle", s)) + " walk " + f2(bw("walk", s)) + " run " + f2(bw("run", s))); } };
+      run(d, 5000, upd2, anim);
+    }
+    note(svg, ey, ["", "The Animator Controller is one asset holding the states, transitions and parameters. A script sets the parameters; the conditions read them.", "A transition is time-driven: over its duration the weights slide from one state to the next.", "A blend tree is value-driven: a parameter picks the mix at every moment, with no time involved."][k]);
+  }
+
+  /* ---------- 11. Unreal ---------- */
+  function renderUnreal(el, k, anim) {
+    var svg = svgFor(el, W, H, "Unreal: an Animation Blueprint holds the machine; a transition rule outputs true or false; a conduit joins many states", "Two graphs inside a blueprint passing a speed variable. Then a speed trace against a rule threshold with the boolean output. Then twelve direct transitions replaced by seven through a conduit.");
+    var ey = base(svg, [{ id: "animbp", s: 1 }, { id: "transrule", s: 2 }, { id: "conduit", s: 3 }], k, anim, ["Transition rule", "true or false for one change"], ["Conduit", "one hub for many changes"]);
+    var d = svg.append("g"), spd = function (t) { return 6 * clamp(t * 1.4, 0, 1); }, fal = function (t) { return t > 0.75 && t < 0.92; }, rule = function (t) { return spd(t) > 3 && !fal(t); };
+    if (k === 1) {
+      lab(d, 0, 28, "ONE ASSET, TWO GRAPHS");
+      box(d, 0, 60, 300, 220, { stroke: INK, sw: 3 }); txt(d, 150, 100, "EventGraph", { size: 26, weight: 700, anchor: "middle" }); box(d, 440, 60, 300, 220, { stroke: RED, sw: 3 }); txt(d, 590, 100, "AnimGraph", { size: 26, weight: 700, anchor: "middle", fill: RED });
+      var a = txt(d, 20, 156, "", { size: 24, family: MONO }), b2 = txt(d, 20, 196, "", { size: 24, family: MONO }), c = txt(d, 590, 170, "", { size: 26, weight: 700, anchor: "middle" }), dot = d.append("circle").attr("r", 10).attr("fill", RED).attr("cy", 170);
+      arrow(d, 310, 170, 430, 170, GREY, 3); txt(d, 370, 140, "variables", { size: 24, anchor: "middle", fill: MUTED });
+      cap(d, 0, 340, "The event graph writes variables from gameplay.", { size: 24 }); cap(d, 0, 376, "The anim graph reads them to choose a state.", { size: 24 });
+      var upd = function (t) { var sp = spd(t), fl = fal(t), st = fl ? "Jump" : sp > 3 ? "Run" : sp > 0.1 ? "Walk" : "Idle"; a.text("Speed " + sp.toFixed(1)); b2.text("IsFalling " + fl); c.text("state: " + st).attr("fill", RED); dot.attr("cx", 310 + ((t * 4) % 1) * 120); };
+      run(d, 5000, upd, anim);
+    } else if (k === 2) {
+      lab(d, 0, 28, "RULE: SPEED > 3 AND NOT IS FALLING");
+      var pl = plotFrame(d, 60, 60, 650, 220, 1, [0, 1], function (v) { return v ? "time" : "0"; }, 6);
+      d.append("rect").attr("x", pl.X(0.75)).attr("y", 60).attr("width", pl.X(0.92) - pl.X(0.75)).attr("height", 220).attr("fill", "#E3E3E3"); txt(d, pl.X(0.835), 100, "falling", { size: 24, anchor: "middle", fill: MUTED });
+      d.append("path").attr("d", pathOf(spd, 0, 1, 100, pl.X, pl.Y)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4); line(d, 60, pl.Y(3), 710, pl.Y(3), RED, 3, "8 6"); txt(d, 700, pl.Y(3) - 10, "3", { size: 24, anchor: "end", fill: RED, weight: 700 });
+      txt(d, 0, 352, "rule output", { size: 24, weight: 700 }); box(d, 60, 364, 650, 40, { stroke: FAMILIAR });
+      var seg = d.append("g"), cur = line(d, 60, 60, 60, 410, INK, 3, "6 5"), rd = cap(d, 0, 470, "", { size: 26, weight: 700 });
+      var upd2 = function (t) { seg.selectAll("*").remove(); var n = 120; for (var i = 0; i < n; i++) { var ti = i / n; if (ti > t) break; if (rule(ti)) seg.append("rect").attr("x", pl.X(ti)).attr("y", 364).attr("width", 650 / n + 0.6).attr("height", 40).attr("fill", RED); } cur.attr("d", "M" + pl.X(t) + ",60L" + pl.X(t) + ",410"); rd.text("Speed " + spd(t).toFixed(1) + ", falling " + fal(t) + " → " + rule(t)); };
+      run(d, 5000, upd2, anim);
+    } else if (k === 3) {
+      lab(d, 0, 28, "MANY STATES TO MANY STATES");
+      var SRC = ["Idle", "Walk", "Run", "Land"], DST = ["Jump", "Fall", "Hit"], sy = function (i) { return 80 + i * 70; }, dy = function (i) { return 110 + i * 70; }, cx = 380, cy = 220;
+      SRC.forEach(function (s, i) { box(d, 0, sy(i) - 24, 140, 48, { stroke: INK, sw: 2.5 }); txt(d, 70, sy(i) + 9, s, { size: 26, weight: 700, anchor: "middle" }); });
+      DST.forEach(function (s, i) { box(d, 600, dy(i) - 24, 140, 48, { stroke: INK, sw: 2.5 }); txt(d, 670, dy(i) + 9, s, { size: 26, weight: 700, anchor: "middle" }); });
+      var gD = d.append("g"), gC = d.append("g"), nd = SRC.length * DST.length, nc = SRC.length + DST.length;
+      SRC.forEach(function (s, i) { DST.forEach(function (t2, j) { line(gD, 142, sy(i), 598, dy(j), GREY, 1.5); }); });
+      SRC.forEach(function (s, i) { line(gC, 142, sy(i), cx - 30, cy, RED, 2.5); }); DST.forEach(function (s, j) { line(gC, cx + 30, cy, 598, dy(j), RED, 2.5); });
+      gC.append("path").attr("d", "M" + (cx - 30) + "," + cy + " L" + cx + "," + (cy - 30) + " L" + (cx + 30) + "," + cy + " L" + cx + "," + (cy + 30) + "Z").attr("fill", "#FFFFFF").attr("stroke", RED).attr("stroke-width", 4);
+      var t1 = cap(d, 0, 420, "direct: " + SRC.length + " × " + DST.length + " = " + nd + " transitions", { size: 26, weight: 700, fill: MUTED }), t2 = cap(d, 0, 466, "with a conduit: " + SRC.length + " + " + DST.length + " = " + nc + " transitions", { size: 26, weight: 700, fill: RED });
+      if (anim) { gD.attr("opacity", 1).transition().delay(1800).duration(500).attr("opacity", 0.12); fade(gC, true, 1800); t2.attr("opacity", 0).transition().delay(1800).duration(500).attr("opacity", 1); } else gD.attr("opacity", 0.12);
+    }
+    if (k === 0) { lab(d, 0, 28, "ONE ASSET, TWO GRAPHS"); box(d, 0, 60, 300, 220, { stroke: INK, sw: 3 }); txt(d, 150, 100, "EventGraph", { size: 26, weight: 700, anchor: "middle" }); box(d, 440, 60, 300, 220, { stroke: RED, sw: 3 }); txt(d, 590, 100, "AnimGraph", { size: 26, weight: 700, anchor: "middle", fill: RED }); arrow(d, 310, 170, 430, 170, GREY, 3); }
+    note(svg, ey, ["", "An Animation Blueprint holds an event graph that writes variables and an anim graph that holds the state machine and blends.", "Each transition has a rule, a small graph that outputs true or false. True lets the state change.", "A conduit is a hub: 4 sources and 3 targets need 7 transitions through it, not 12 direct ones."][k]);
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs from animation and interaction", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Transition", "Moves between states over time"], ["Blend tree", "Mixes clips by a value"]],
+      [["Pull (Auto)", "The tree asks the game every update"], ["Push (travel)", "The game tells the tree once"]],
+      [["Property track", "Sets a value on a node"], ["Method track", "Calls a function at a key"]],
+      [["Active", "A hit can land"], ["Recovery", "No hit; the swing winds down"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(30,0)"), RG = R.append("g").attr("transform", "translate(30,0)");
+      if (i === 0) {
+        var wTime = clamp((t - 0.35) / 0.3, 0, 1);
+        [[LG, wTime, "driven by time"], [RG, t, "driven by a value"]].forEach(function (p) { var g = p[0];
+          [["idle", 1 - p[1], INK], ["run", p[1], RED]].forEach(function (b, r) { txt(g, 0, 180 + r * 90, b[0] + " " + f2(b[1]), { size: 24 }); g.append("rect").attr("x", 0).attr("y", 192 + r * 90).attr("width", Math.max(b[1] * 420, 1)).attr("height", 30).attr("fill", b[2]); });
+          cap(g, 0, 400, p[2], { size: 24, weight: 700, fill: MUTED }); });
+        txt(LG, 0, 130, "t = " + t.toFixed(2) + " s", { size: 24, fill: MUTED }); txt(RG, 0, 130, "speed = " + t.toFixed(2), { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var nA = Math.ceil(t * 6 - 1e-9), nT = t > 0.45 ? 1 : 0;
+        d3.range(6).forEach(function (j) { LG.append("circle").attr("cx", 30 + j * 80).attr("cy", 230).attr("r", 20).attr("fill", j < nA ? INK : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); RG.append("circle").attr("cx", 30 + j * 80).attr("cy", 230).attr("r", 20).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); });
+        if (nT) { RG.append("circle").attr("cx", 30 + 3 * 80).attr("cy", 230).attr("r", 20).attr("fill", RED); RG.append("path").attr("d", "M270,190 V150").attr("stroke", RED).attr("stroke-width", 4); }
+        cap(LG, 0, 320, "asked " + nA + " times", { size: 24, weight: 700 }); cap(RG, 0, 320, "told " + nT + (nT === 1 ? " time" : " times"), { size: 24, weight: 700, fill: RED }); cap(LG, 0, 120, "six updates", { size: 24, fill: MUTED }); cap(RG, 0, 120, "six updates", { size: 24, fill: MUTED }); if (nT) cap(RG, 150, 140, "travel()", { size: 24, weight: 700, fill: RED });
+      } else if (i === 2) {
+        var a = ang(t * 0.2);
+        cap(LG, 0, 200, "rotation_degrees", { size: 24, family: MONO }); cap(LG, 0, 260, (a < 0 ? "−" : "") + Math.abs(a).toFixed(1) + "°", { size: 32, weight: 700 }); LG.append("rect").attr("x", 0).attr("y", 290).attr("width", Math.max(1, (a + 90) / 180 * 420)).attr("height", 24).attr("fill", INK);
+        cap(RG, 0, 200, "calls", { size: 24, fill: MUTED }); if (t > 0.5) mono(RG, 0, 260, "set_ready_for_next_attack()", { size: 24, weight: 700, fill: RED }); else mono(RG, 0, 260, "…", { size: 24, fill: MUTED });
+      } else {
+        var af = Math.round(clamp(t, 0, 1) * AC), pf2 = 420 / RC;
+        box(LG, 0, 200, AC * pf2, 40, { stroke: RED, sw: 3 }); bar(LG, 0, 200, af * pf2, 40, RED); cap(LG, 0, 280, "hits can land on " + af + " of " + AC + " frames", { size: 24, weight: 700, fill: RED });
+        box(RG, 0, 200, RC * pf2, 40, { stroke: INK, sw: 3 }); bar(RG, 0, 200, Math.round(t * RC) * pf2, 40, "#C4C4C4"); cap(RG, 0, 280, "hits that can land: 0 of " + RC + " frames", { size: 24, weight: 700 });
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "make the landing smoother", x: "Set the fall to ground cross-fade to 0.1 s, which is 6 frames at 60 fps" },
+    { v: "make the animation follow speed", x: "Each physics tick write run/blend_amount = horizontal_speed / MAX_SPEED" },
+    { v: "do not let it miss a landing", x: "Add fall to jump, Auto, expression not is_on_floor() and velocity.y > 0.0" },
+    { v: "only hurt during the swing", x: "Key monitoring true at 0.0 s and false at 0.15 s; check it frame by frame" },
+    { v: "test the animation", x: "Press real inputs, read the current node each tick, run both landing cases" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague animation requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a chart of what the exact instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 46, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets what you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(720,50)"), pw = 640, ph = 310, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { var pl = plotFrame(p, 70, 30, 540, 200, 0.12, [0, 0.1], function (v) { return v ? "0.1 s" : "0"; }, 1); p.append("path").attr("d", pathOf(function (v) { return clamp(v / 0.1, 0, 1); }, 0, 0.12, 120, pl.X, pl.Y)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4); d3.range(0, 7).forEach(function (j) { var tt = j / 60; p.append("circle").attr("cx", pl.X(tt)).attr("cy", pl.Y(clamp(tt / 0.1, 0, 1))).attr("r", 6).attr("fill", INK); }); nt = "a frame at 60 fps every " + (1000 / 60).toFixed(1) + " ms: " + Math.ceil(0.1 * 60) + " frames of blend"; }
+    else if (k === 2) { var pl2 = plotFrame(p, 70, 30, 540, 200, MAXS, [0, 3, 6], function (v) { return String(v); }, 1); p.append("path").attr("d", pathOf(function (s) { return s / MAXS; }, 0, MAXS, 12, pl2.X, pl2.Y)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 4); p.append("circle").attr("cx", pl2.X(3)).attr("cy", pl2.Y(0.5)).attr("r", 9).attr("fill", INK); nt = "speed 3.0 of " + MAXS.toFixed(1) + " writes blend_amount " + f2(3 / MAXS) + " (illustrative max)"; }
+    else if (k === 3) { var cs = [[false, "1st tick"], [true, "2nd tick"]], sh = [["before", false], ["after", true]];
+      sh.forEach(function (s, r) { cap(p, 14, 70 + r * 100, s[0] + " the new transition", { size: 24, weight: 700 }); cs.forEach(function (c, i) { var res = simCase(c[0], s[1]), ok = res[res.length - 1][1] !== "fall", x = 330 + i * 150; box(p, x, 40 + r * 100, 130, 52, { stroke: ok ? INK : RED, sw: 3, fill: ok ? "#FFFFFF" : TINT }); txt(p, x + 65, 76 + r * 100, ok ? "jump" : "fall", { size: 24, weight: 700, anchor: "middle", fill: ok ? INK : RED }); }); }); cap(p, 330, 250, "1st tick", { size: 24, fill: MUTED }); cap(p, 480, 250, "2nd tick", { size: 24, fill: MUTED }); cap(p, 14, 250, "landing case:", { size: 24, fill: MUTED }); nt = "both landings end in jump after the fix"; }
+    else if (k === 4) { var nominal = Math.round(0.15 * FPS), obs = 20, sc = 8; cap(p, 14, 70, "nominal: 0.15 s × " + FPS + " = frame " + nominal, { size: 24 }); bar(p, 14, 90, nominal * sc, 36, "#C4C4C4", anim, 0); cap(p, 14, 190, "observed in the chapter: frame " + obs, { size: 24 }); bar(p, 14, 210, obs * sc, 36, RED, anim, 400); nt = "off by " + (obs - nominal) + " frames, " + ((obs - nominal) / FPS * 1000).toFixed(1) + " ms: pin the number you observe"; }
+    else { var probeN = 4, probeOf = 4, stN = simCase(false, false).concat(simCase(true, false)).filter(function (s, i) { return true; }), pass = [simCase(false, false), simCase(true, false)].filter(function (r) { return r[r.length - 1][1] !== "fall"; }).length;
+      cap(p, 14, 70, "input probe on the pre-fix scene: " + probeN + " of " + probeOf + " pass", { size: 24 }); bar(p, 14, 90, 560, 36, "#C4C4C4", anim, 0);
+      cap(p, 14, 190, "state test on the pre-fix scene: " + pass + " of 2 landings pass", { size: 24 }); bar(p, 14, 210, 560 * pass / 2, 36, RED, anim, 400); box(p, 14, 210, 560, 36, { stroke: INK, sw: 2 }).attr("fill", "none"); nt = "only the state test can see the missed landing"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Is the machine pulled by expressions or pushed by travel(), and how often does the tree look?",
+    "Can every transition fire: advance mode Auto, or a travel() that uses it?",
+    "Is each state reachable and able to exit, with one owner of the state?",
+    "Is each cross-fade written in seconds, and how many frames is that?",
+    "Does the hitbox window live on the clip, pinned by a frame-stepped check?",
+    "What did the test not see: feel, look, fun? Say what you checked."
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you trust an animation change", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 30, c, 78, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it smoother”, but “0.1 s cross-fade, tested at both landings”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, clips: { steps: 3, render: renderClips }, blend: { steps: 3, render: renderBlend },
+    machine: { steps: 4, render: renderMachine }, travel: { steps: 4, render: renderTravel }, xfade: { steps: 3, render: renderXfade },
+    keys: { steps: 3, render: renderKeys }, hit: { steps: 4, render: renderHit }, sampling: { steps: 2, render: renderSampling },
+    probe: { steps: 3, render: renderProbe }, unity: { steps: 3, render: renderUnity }, unreal: { steps: 3, render: renderUnreal },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

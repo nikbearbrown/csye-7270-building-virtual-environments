@@ -4,7 +4,7 @@ CSYE 7270 · Fall 2026 · Week 13
 
 ## Executive summary
 
-A number is only trustworthy if you know what the instrument measured. This module teaches Godot 4.7.2's performance tools as machinery: the frame budget, what `Performance.TIME_PROCESS` really reports, what a headless run can and cannot time, and which editor tools a person with a screen must use for the GPU (the graphics processor). You will direct Claude Code to build the benchmark for a claim that Godot's bullet demo makes and the Walker project refuses to repeat without proof: that moving 500 bullets through the physics server beats using nodes. On 27 September 2026 the instructor ran that benchmark ten times per setting on one Mac. At the demo's 500 bullets the median run cost 0.331 ms per simulated frame with nodes and 0.167 ms with servers, and at 5,000, 9.854 ms and 2.314 ms; these are processor numbers from a desktop, with the GPU excluded. They justify the optimization at thousands of bullets, not at 500, and say nothing about a phone or a headset. This module and Module 12 feed Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford."
+A number is only trustworthy if you know what the instrument measured. This module teaches Godot 4.7.2's performance tools as machinery: the frame budget, what `Performance.TIME_PROCESS` really reports, what a headless run can and cannot time, and which editor tools a person with a screen must use for the GPU (the graphics processor). You will direct Claude Code to build the benchmark for a claim that Godot's bullet demo makes and the Walker project refuses to repeat without proof: that moving 500 bullets through the physics server beats using nodes. On 27 September 2026 the instructor ran that benchmark ten times per setting on one Mac. At the demo's 500 bullets the median run cost 0.331 ms per simulated frame with nodes and 0.167 ms with servers, and at 5,000, 9.854 ms and 2.314 ms; these are processor numbers from a desktop, with the GPU excluded. They justify the optimization at thousands of bullets, not at 500, and say nothing about a phone or a headset. This module and Module 12 support the finished game and its verification; audio/profiling is not a separate numbered Assignment 9. Assignment 9 now teaches a game-AI technique.
 
 ## The question
 
@@ -209,7 +209,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to measur
 
 ## The next step
 
-This module, with Module 12, completes the material for Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford." That assignment opens in Module 12 and is due about Day 90 (Canvas dates govern); its own page sets the task and the required `godot-gamedev` film, and this lesson adds no graded deliverable. Carry the method into it: name the budget, benchmark with a parity test, repeat in fresh processes, state what the number excludes. Module 14, game AI and systems, comes next. The long reading is [Chapter 13 — Profiling and Optimization](../../chapters/13-profiling-and-optimization.md).
+This module and Module 12 provide practice and evidence for the integrated game; there is no separate numbered audio/performance assignment. Assignment 9 is the game-AI teaching task. Carry this method into the final: name the budget, benchmark with a parity check, repeat in fresh processes and state what the number excludes. Module 14, game AI and systems, comes next. The long reading is [Chapter 13 — Profiling and Optimization](../../chapters/13-profiling-and-optimization.md).
 
 ## If you know Unity or Unreal
 

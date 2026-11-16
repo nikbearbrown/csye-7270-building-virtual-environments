@@ -1,0 +1,273 @@
+1
+00:00:00,000 --> 00:00:08,550
+Light Shaders. Learn what the light
+function does and what Godot hands it,
+then use it to build a sweeping lighthouse
+
+2
+00:00:08,600 --> 00:00:19,880
+Hallo. This is Liam, in for Bear. Lighting
+in a two-D game feels built in: you place
+a light, and Godot does the rest. Most
+
+3
+00:00:19,930 --> 00:00:39,550
+Six terms. A shader is a small program the
+graphics card runs to decide how something
+is drawn. A pixel is one dot of the
+
+4
+00:00:39,600 --> 00:00:50,640
+In a two-D game, a light is a soft glow.
+Same scene, same light, and one function
+later, that glow is a beam sweeping the
+
+5
+00:00:50,690 --> 00:01:01,710
+Godot has two kinds of two-D light. A
+point light shines out from one spot, like
+a lamp. A directional light shines the
+
+6
+00:01:01,760 --> 00:01:14,340
+A light needs a dim scene to show against.
+A two-D scene starts fully lit, so a light
+can only brighten what is already bright.
+
+7
+00:01:14,390 --> 00:01:27,120
+A soft glow is a texture. Godot's docs
+give the recipe. Give the light a gradient
+texture, set its fill to radial, and run
+
+8
+00:01:27,170 --> 00:01:39,020
+A point light has a few settings. Its
+texture sets its shape. Its scale sets how
+far it reaches. Color tints it, and energy
+
+9
+00:01:39,070 --> 00:01:48,580
+Lights add. Two lamps overlapping make the
+overlap brighter, and three make it
+brighter still. Underneath, the dim
+
+10
+00:01:48,630 --> 00:02:00,480
+Godot's rule, measured. The pixel is the
+surface color times the total of the
+ambient and every light. A grey surface of
+
+11
+00:02:00,530 --> 00:02:12,790
+A two-D shader can have three functions.
+Vertex places corners, and fragment colors
+each pixel. The third, light, runs for
+
+12
+00:02:12,840 --> 00:02:25,180
+Add a function called light to a shader,
+and it replaces Godot's default lighting
+for that sprite. Even an empty one. The
+
+13
+00:02:25,230 --> 00:02:37,430
+The smallest light function returns one
+flat answer: point two grey. Add a lamp,
+and this card brightens by point two. Add
+
+14
+00:02:37,480 --> 00:02:51,210
+Inside light, Godot hands you built-ins,
+values written in capital letters. Color
+is this pixel's own color, and U V is its
+
+15
+00:02:51,260 --> 00:03:03,950
+Light runs last. Fragment runs first and
+sets the pixel's color, which arrives in
+light as the built-in color. Then light
+
+16
+00:03:04,000 --> 00:03:15,150
+Rebuild Godot's default. The color is the
+surface, times the lamp's color, times its
+energy. The fourth number, alpha, passes
+
+17
+00:03:15,200 --> 00:03:26,440
+That fourth number is the lamp's soft
+edge: the texture fades from one to zero.
+Force it to one, and every pixel the
+
+18
+00:03:26,490 --> 00:03:36,420
+Now reshape it. Round the fade down to
+quarters, and the glow becomes bands, like
+cel shading. Same lamp, same ground. Only
+
+19
+00:03:36,470 --> 00:03:46,620
+Or let time shape it. Multiply the light
+by the absolute value of a sine of time,
+and the lamp breathes. No animation player
+
+20
+00:03:46,670 --> 00:03:57,220
+One more switch. Put render mode unshaded
+at the top, and the sprite ignores every
+light, and the ambient tint too. That is
+
+21
+00:03:57,270 --> 00:04:11,900
+One caution. This copy matches the
+default, shadows included. But the default
+also reads normal maps, images that say
+
+22
+00:04:11,950 --> 00:04:23,380
+Now, direction. Light direction is a
+vector, an arrow from this pixel toward
+the lamp, always length one. A pixel left
+
+23
+00:04:23,430 --> 00:04:34,710
+To see a number, use it as brightness.
+Take the arrow's x number, from minus one
+to one, and squeeze it into zero to one.
+
+24
+00:04:34,760 --> 00:04:46,020
+Turn that number into a mask with step.
+Step gives zero below an edge, and one at
+or above it. Use an edge of zero, multiply
+
+25
+00:04:46,070 --> 00:04:56,600
+Take the absolute value, and both sides
+count. Raise the edge close to one, and
+only pixels where the arrow is nearly
+
+26
+00:04:56,650 --> 00:05:08,030
+A directional light is different. Its
+arrow is the same for every pixel on
+screen, and its position is always zero.
+
+27
+00:05:08,080 --> 00:05:16,220
+To aim a beam, you need an arrow of your
+own. Cosine and sine of an angle make one,
+always length one. Turn the angle, and the
+
+28
+00:05:16,270 --> 00:05:26,870
+Then compare two arrows with the dot
+product. It is one when they point the
+same way, zero at right angles, and minus
+
+29
+00:05:26,920 --> 00:05:37,960
+Let time turn the angle, and the wedge
+turns with it: a lighthouse. Two details.
+Our arrow points at the lamp, so flip its
+
+30
+00:05:38,010 --> 00:05:46,690
+Make the cutoff, the number inside step, a
+uniform: a dial your game sets from
+outside. Lower it, and the beam widens.
+
+31
+00:05:46,740 --> 00:05:55,290
+Swap step for smooth step, which ramps
+between two edges instead of cutting, and
+the edge of the beam goes soft. Same lamp,
+
+32
+00:05:55,340 --> 00:06:04,980
+Add a second lamp, and light runs again
+for it, with its own arrows. Two beams
+from one shader, each starting at its own
+
+33
+00:06:05,030 --> 00:06:13,960
+A beam exists only where a lamp reaches.
+Outside the lamp's texture, Godot never
+calls light at all. For a longer beam,
+
+34
+00:06:14,010 --> 00:06:24,840
+Two more numbers. Light position is where
+the lamp is, and light vertex is where
+this pixel is. Both are in screen space:
+
+35
+00:06:24,890 --> 00:06:35,080
+Subtract the lamp's position from the
+pixel's, and you get an arrow from the
+lamp to this pixel. Its length is the
+
+36
+00:06:35,130 --> 00:06:43,630
+Use that distance as brightness. Nothing
+at the lamp, a little more with every step
+away. Now every pixel knows exactly how
+
+37
+00:06:43,680 --> 00:06:54,450
+Step the distance against a radius, and
+the ground splits in two: inside and
+outside. Do it for two radii, subtract one
+
+38
+00:06:54,500 --> 00:07:05,290
+Put it together, and the lamp lights only
+a band of ground: the distance, two steps,
+one subtraction, multiplied into the
+
+39
+00:07:05,340 --> 00:07:17,450
+Now the game drives it. A tween moves a
+value smoothly over time. Set the radius
+to zero from code, then tween it out to
+
+40
+00:07:17,500 --> 00:07:28,440
+One warning. These are window pixels, so
+the ring does not follow your world. Zoom
+the camera in, and the ground doubles in
+
+41
+00:07:28,490 --> 00:07:40,470
+One more tool: mod. It counts up to a
+number, then starts over. Mod the pixel's
+x by one hundred twenty-eight, keep the
+
+42
+00:07:40,520 --> 00:07:50,010
+Do the same for y, and join the two with
+max. You get a grid of light: lines
+sixteen pixels wide, every one hundred
+
+43
+00:07:50,060 --> 00:08:01,960
+So when does a job belong in light? When
+it depends on a lamp: its direction, its
+distance, its color. A pattern on the
+
+44
+00:08:02,010 --> 00:08:23,060
+Let's recap with Claude. A pixel is its
+surface times the total of the ambient and
+every light. Writing light replaces the
+
+45
+00:08:23,110 --> 00:08:49,360
+Your turn. Paste this into Claude: Write a
+Godot canvas item shader with a light
+function, for a sprite. A narrow beam
+
+46
+00:08:49,410 --> 00:08:53,030
+Light Shaders. At Nik Bear Brown.

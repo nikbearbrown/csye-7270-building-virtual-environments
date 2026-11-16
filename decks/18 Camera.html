@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Terms: Camera | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Camera">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Camera terms">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology</p>
+      <h1 class="t-opening rise g2">Camera terms</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">What each word means, and how to say it exactly</p>
+      <div class="speaker-notes" hidden><p>Pilot terminology deck. Covers all 22 rows of the glossary's Camera table (20 distinct ideas). Arrow keys, space or a click step through each slide. Every term here is tagged "glossary only": the chapters do not define or explain it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Twenty ideas in five groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Twenty ideas in five groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Five groups, one per click.</p></div>
+    </section>
+
+    <section class="slide s-red s-section" aria-roledescription="slide" data-title="Turn and move">
+      <p class="eyebrow rise">Part one</p>
+      <h2 class="t-section rise g2">Turn and move</h2>
+      <p class="sub-section rise g3">Pan, tilt, roll, dolly, truck, pedestal, orbit</p>
+      <div class="speaker-notes" hidden><p>Seven terms for turning a camera or moving it.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Pan, tilt, roll">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Turning on the spot</p>
+      <h2 class="t-chart">Pan, tilt, roll</h2>
+      <div class="diagram build" data-build="ptr" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Each camera turns and its position never changes. Pan is left and right, tilt is up and down, roll tips the horizon. In-view posts turn red, so you see what the turn brings into frame.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Dolly, truck, pedestal">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Moving the camera</p>
+      <h2 class="t-chart">Dolly, truck, pedestal</h2>
+      <div class="diagram build" data-build="dts" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>The camera moves and keeps facing the same way. Dolly is forward and back along the view, truck is sideways, pedestal is straight up and down. Distances are in metres at 100 px per metre.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Orbit">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Moving around a subject</p>
+      <h2 class="t-chart">Orbit</h2>
+      <div class="diagram build" data-build="orbit" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Step one: the camera moves on a circle and stays aimed at the subject, so the distance stays 1.90 m. Step two: the same angle done as a pan on the spot loses the subject.</p></div>
+    </section>
+
+    <section class="slide s-red s-section" aria-roledescription="slide" data-title="The lens">
+      <p class="eyebrow rise">Part two</p>
+      <h2 class="t-section rise g2">The lens</h2>
+      <p class="sub-section rise g3">Zoom, focal length, field of view, dolly versus zoom, parallax, projection</p>
+      <div class="speaker-notes" hidden><p>Seven terms about what the lens does, and how it differs from moving.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Zoom, focal length, field of view">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">The lens</p>
+      <h2 class="t-chart">Zoom, focal length, field of view</h2>
+      <div class="diagram build" data-build="lens" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>The camera never moves. Angle = 2 atan(18 / mm) for a 36 mm wide sensor, an assumption stated on the slide.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Dolly versus zoom">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Look-alikes</p>
+      <h2 class="t-chart">Dolly versus zoom</h2>
+      <div class="diagram build" data-build="dvz" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Scene numbers: house 3 m away, tower 9 m away, 240 px focal scale. A 1.2 m dolly gives the house x1.67 and the tower x1.15. A x1.67 zoom gives both x1.67. The size ratio house to tower changes only in the dolly.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Parallax">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Near against far</p>
+      <h2 class="t-chart">Parallax</h2>
+      <div class="diagram build" data-build="par" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Shift in the picture = 220 px x 1 m / distance. Near 2 m: 110 px. Mid 4 m: 55 px. Far 8 m: 27.5 px.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Perspective and orthographic">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Projection</p>
+      <h2 class="t-chart">Perspective and orthographic</h2>
+      <div class="diagram build" data-build="proj" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Perspective box width = 260 px / distance: 87, 58, 40, 29, 20 px. Orthographic: 44 px every time.</p></div>
+    </section>
+
+    <section class="slide s-red s-section" aria-roledescription="slide" data-title="Following the action">
+      <p class="eyebrow rise">Part three</p>
+      <h2 class="t-section rise g2">Following the action</h2>
+      <p class="sub-section rise g3">Follow camera, smoothing, deadzone, look-ahead, screen shake, camera limits</p>
+      <div class="speaker-notes" hidden><p>Six terms about how the camera tracks a moving target.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Follow camera and smoothing">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Following</p>
+      <h2 class="t-chart">Follow camera and smoothing</h2>
+      <div class="diagram build" data-build="follow" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Exponential smoothing with a 0.25 s time constant, stepped at 60 frames per second. Peak lag is computed from the simulation.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Deadzone and look-ahead">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Framing</p>
+      <h2 class="t-chart">Deadzone and look-ahead</h2>
+      <div class="diagram build" data-build="dead" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Deadzone half-width 70 px. Look-ahead: lead 0.5 s at 200 px/s gives 100 px, eased in with a 0.25 s time constant.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Screen shake">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Impact</p>
+      <h2 class="t-chart">Screen shake</h2>
+      <div class="diagram build" data-build="shake" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Amplitude 18 px, decay constant 0.18 s, random direction each frame from a fixed seed so replays match. 5% is reached at ln(20) x 0.18 = 0.54 s.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Camera limits">
+      <div class="rule"></div>
+      <span class="evidence">Simulation</span>
+      <p class="eyebrow">Staying in the level</p>
+      <h2 class="t-chart">Camera limits</h2>
+      <div class="diagram build" data-build="limits" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Level 600 px wide, view 200 px wide, so the view centre is clamped between 120 and 520 px.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Four pairs students mix up: pan and truck, dolly and zoom, orbit and pan, smoothing and deadzone.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Five vague requests and the exact instruction for each. The graph shows the motion the instruction describes. Note "get closer" could mean dolly or zoom; the exact version picks one.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you give a camera instruction">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you give a camera instruction</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: CSYE 7270 midterm glossary, “Camera” section. Not explained in the chapters.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ================= terms-deck code (CSYE 7270, Camera) ================= */
+  var DEG = Math.PI / 180, uid = 0;
+  var GREY = "#909090";
+
+  /* Glossary wording, verbatim from the "Camera" table. book:false = glossary only (checked by grep of chapters/*.md). */
+  var T = {
+    pan: { n: "Pan", m: "Turn left or right on the spot; position unchanged" },
+    tilt: { n: "Tilt", m: "Turn up or down on the spot; position unchanged" },
+    roll: { n: "Roll", m: "Spin around the viewing direction; the horizon tips" },
+    dolly: { n: "Dolly", m: "Move the camera forward or backward along its view direction" },
+    dollyio: { n: "Dolly in / dolly out", alias: "also written: dolly in/out", m: "Move the camera toward / away from the subject. Dolly in moves toward the subject, dolly out moves away" },
+    truck: { n: "Truck", m: "Move the camera left or right, still facing the same way" },
+    pedestal: { n: "Pedestal", m: "Move the camera straight up or down, still facing the same way" },
+    zoom: { n: "Zoom", m: "Change the lens (field of view or focal length); the camera does not move" },
+    dvz: { n: "Dolly versus zoom", m: "A dolly changes parallax (near and far shift against each other); a zoom only magnifies" },
+    parallax: { n: "Parallax", m: "Nearer things shift more than farther things when the viewpoint moves" },
+    focal: { n: "Focal length", m: "Lens strength in millimetres; longer means narrower view and more magnification" },
+    orbit: { n: "Orbit", m: "Move around a subject on a curved path while keeping it framed" },
+    follow: { n: "Follow camera", m: "Tracks a moving target, usually with smoothing" },
+    smooth: { n: "Smoothing (damping)", alias: "also written: smoothing/damping", m: "Spreads the camera's catch-up over time so it trails slightly. Same idea under both names: the camera eases toward its target instead of snapping" },
+    deadzone: { n: "Deadzone", m: "Screen region where the target can move without the camera moving" },
+    lookahead: { n: "Look-ahead", m: "Shifts framing toward the direction of travel" },
+    shake: { n: "Screen shake", m: "Brief, fading random offset of the camera for impact" },
+    limits: { n: "Camera limits", m: "Clamps that keep the view inside the level" },
+    fov: { n: "Field of view (FOV)", m: "The lens angle; wider shows more" },
+    proj: { n: "Perspective / orthographic", m: "Distant things shrink / size does not depend on distance" }
+  };
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var tg = t.book ? "in the book text" : "glossary only", tw_ = t.book ? 212 : 176;
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", t.book ? INK : "none").attr("stroke", t.book ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: t.book ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+  /* ---------- 2. map ---------- */
+  var MAPROWS = [
+    ["Turn on the spot", "pan, tilt, roll", "The direction; the position stays"],
+    ["Move the camera", "dolly (in/out), truck, pedestal, orbit", "The position; the view direction stays"],
+    ["Change the lens", "zoom, focal length, field of view, perspective / orthographic", "The angle and the magnification"],
+    ["Tell look-alikes apart", "dolly versus zoom, parallax", "Whether near and far shift against each other"],
+    ["Follow the action", "follow camera, smoothing (damping), deadzone, look-ahead, screen shake, camera limits", "How the camera trails, waits, leads, jolts and stops"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Five groups of camera terms and what each group changes",
+      "A table with five rows. Each row gives a group name, the terms in it and what changes.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "Twenty camera ideas, 22 glossary rows. Every term answers one question: what changed, the camera's direction, its position, its lens, or how it follows.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010], cw = [360, 610, 390];
+    ["GROUP", "TERMS", "WHAT CHANGES"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 102, row = g.append("g");
+      box(row, 0, y, 1400, 90, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 91).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 36, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 36, r[1], 50, { size: 24, lh: 28, fill: INK });
+      wrap(row, cx[2] + 18, y + 36, r[2], 30, { size: 24, lh: 28 });
+      if (A(anim, k, i + 1)) { row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)"); }
+    });
+    if (k === 0) cap(g, 0, 400, "Click or press → to add the five groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 4. pan, tilt, roll ---------- */
+  function renderPtr(el, k, anim) {
+    var svg = svgFor(el, W, H, "Pan, tilt and roll: three ways to turn a camera that does not move",
+      "Three small diagrams. In each the camera turns while its position stays fixed.");
+    var d = svg.append("g");
+    var P = [0, 260, 520].map(function (x) { return d.append("g").attr("transform", "translate(" + x + ",0)"); });
+    var title = ["PAN", "TILT", "ROLL"], sub = ["seen from above", "seen from the side", "seen from behind"], amp = [25, 25, 25];
+    base(svg, [{ id: "pan", s: 1 }, { id: "tilt", s: 2 }, { id: "roll", s: 3 }], k, anim,
+      ["Pan", "turns on the spot; the camera stays where it is"], ["Truck", "slides sideways; the camera changes place"]);
+    function draw(i, m) {
+      var g = P[i]; g.selectAll("*").remove();
+      var on = k >= i + 1; g.attr("opacity", on ? 1 : 0.3);
+      lab(g, 0, 24, title[i], { fill: on ? RED : MUTED });
+      cap(g, 0, 56, sub[i], { size: 24, fill: MUTED });
+      var a = m * amp[i];
+      if (i === 0) {
+        var ox = 120, oy = 450, ang = -Math.PI / 2 + a * DEG;
+        ghost(g, ox, oy, -Math.PI / 2, 40, 170); cone(g, ox, oy, ang, 40, 170);
+        [-45, -22, 0, 22, 45].forEach(function (r) {
+          var q = (-90 + r) * DEG, px = ox + 140 * Math.cos(q), py = oy + 140 * Math.sin(q);
+          post(g, px, py, inView(px, py, ox, oy, ang, 40, 170));
+        });
+        camBody(g, ox, oy, ang);
+        if (on) { cap(g, 0, 508, "yaw " + sgn(a) + "°", { size: 24 }); cap(g, 0, 540, "position unchanged", { size: 24, fill: MUTED }); }
+      } else if (i === 1) {
+        var ox2 = 30, oy2 = 300, ang2 = -a * DEG;
+        ghost(g, ox2, oy2, 0, 40, 170); cone(g, ox2, oy2, ang2, 40, 170);
+        [-45, -22, 0, 22, 45].forEach(function (r) {
+          var q = -r * DEG, px = ox2 + 140 * Math.cos(q), py = oy2 + 140 * Math.sin(q);
+          post(g, px, py, inView(px, py, ox2, oy2, ang2, 40, 170));
+        });
+        camBody(g, ox2, oy2, ang2);
+        if (on) { cap(g, 0, 508, "pitch " + sgn(a) + "°", { size: 24 }); cap(g, 0, 540, "position unchanged", { size: 24, fill: MUTED }); }
+      } else {
+        var id = "clip" + (++uid);
+        g.append("clipPath").attr("id", id).append("rect").attr("x", 20).attr("y", 230).attr("width", 200).attr("height", 150);
+        var s = g.append("g").attr("clip-path", "url(#" + id + ")");
+        var r = s.append("g").attr("transform", "rotate(" + a + ",120,305)");
+        r.append("rect").attr("x", -200).attr("y", -200).attr("width", 640).attr("height", 505).attr("fill", SUBTLE);
+        r.append("rect").attr("x", -200).attr("y", 305).attr("width", 640).attr("height", 500).attr("fill", FAMILIAR);
+        r.append("path").attr("d", "M-200,305 H440").attr("stroke", INK).attr("stroke-width", 3);
+        r.append("circle").attr("cx", 62).attr("cy", 262).attr("r", 14).attr("fill", RED);
+        r.append("rect").attr("x", 150).attr("y", 255).attr("width", 12).attr("height", 50).attr("fill", INK);
+        s.append("path").attr("d", "M20,305 H220").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+        g.append("rect").attr("x", 20.5).attr("y", 230.5).attr("width", 200).attr("height", 150).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        cap(g, 0, 420, "what the camera sees", { size: 24, fill: MUTED });
+        if (on) { cap(g, 0, 508, "roll " + sgn(a) + "°", { size: 24 }); cap(g, 0, 540, "horizon tips", { size: 24, fill: MUTED }); }
+      }
+    }
+    [0, 1, 2].forEach(function (i) { draw(i, k > i + 1 ? 1 : 0); });
+    if (k >= 1 && k <= 3) run(d, 3000, function (t) { draw(k - 1, kf(t, [0, -1, 1])); }, anim);
+  }
+
+  /* ---------- 5. dolly, truck, pedestal ---------- */
+  var DP = [[170, 300], [230, 190], [160, 260], [300, 260], [390, 230]];   /* top-view posts */
+  function renderDts(el, k, anim) {
+    var svg = svgFor(el, W, H, "Dolly, truck and pedestal: three ways to move a camera that keeps facing the same way",
+      "A top view where the camera moves forward then back, then sideways, and a side view where it moves up and down. The view direction never changes.");
+    var d = svg.append("g");
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(500,0)");
+    base(svg, [{ id: "dolly", s: 1 }, { id: "dollyio", s: 1 }, { id: "truck", s: 2 }, { id: "pedestal", s: 3 }], k, anim,
+      ["Pedestal", "moves up or down, facing the same way"], ["Tilt", "turns up or down, position unchanged"]);
+    var CX = 230, CY = 470, UP = -Math.PI / 2, FOV = 46, LEN = 250;
+    function drawL(fwd, side, lbl) {
+      L.selectAll("*").remove();
+      lab(L, 0, 24, "TOP VIEW", { fill: k >= 1 && k <= 2 ? RED : MUTED });
+      var x = CX + side, y = CY - fwd;
+      if (k >= 1) L.append("path").attr("d", "M" + CX + "," + CY + " V" + (CY - 150)).attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      if (k >= 2) L.append("path").attr("d", "M" + (CX - 110) + "," + CY + " H" + (CX + 110)).attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      ghost(L, CX, CY, UP, FOV, LEN);
+      cone(L, x, y, UP, FOV, LEN);
+      ptsInView(L, DP, x, y, UP, FOV, LEN);
+      camBody(L, x, y, UP);
+      if (lbl) { cap(L, 0, 520, lbl, { size: 24 }); cap(L, 0, 552, "the camera faces the same way", { size: 24, fill: MUTED }); }
+    }
+    function drawR(h, lbl) {
+      R.selectAll("*").remove();
+      lab(R, 0, 24, "SIDE VIEW", { fill: k === 3 ? RED : MUTED });
+      var x = 30, y = 300 - h;
+      ghost(R, x, 300, 0, FOV, 220); cone(R, x, y, 0, FOV, 220);
+      var pts = [[170, 210], [170, 300], [170, 390], [215, 255], [215, 345]], n = 0;
+      pts.forEach(function (p) { var on = inView(p[0], p[1], x, y, 0, FOV, 220); post(R, p[0], p[1], on); });
+      camBody(R, x, y, 0);
+      if (k === 3 && lbl) { cap(R, 0, 520, lbl, { size: 24 }); cap(R, 0, 552, "same direction", { size: 24, fill: MUTED }); }
+    }
+    drawL(0, 0, ""); drawR(0, "");
+    if (k === 1) run(d, 3400, function (t) { var m = kf(t, [0, 1, 0]); drawL(150 * m, 0, t > 0.999 ? "dolly in 1.50 m, then out" : (t < 0.5 ? "dolly in " : "dolly out ") + (1.5 * m).toFixed(2) + " m"); }, anim);
+    else if (k === 2) run(d, 3600, function (t) { var m = kf(t, [0, 1, -1, 0]); drawL(0, 110 * m, t > 0.999 ? "truck right and left 1.10 m" : "truck " + (Math.abs(m) < 0.02 ? "" : (m > 0 ? "right " : "left ")) + (1.1 * Math.abs(m)).toFixed(2) + " m"); }, anim);
+    else if (k === 3) run(d, 3600, function (t) { var m = kf(t, [0, 1, -1, 0]); drawR(90 * m, t > 0.999 ? "pedestal up, down 0.90 m" : "pedestal " + (m >= 0 ? "up " : "down ") + (0.9 * Math.abs(m)).toFixed(2) + " m"); }, anim);
+  }
+
+  /* ---------- 6. orbit ---------- */
+  function renderOrbit(el, k, anim) {
+    var svg = svgFor(el, W, H, "Orbit: the camera circles a subject and keeps it framed. A pan on the spot does not.",
+      "A top view. Step one: the camera moves along a circle around the subject, always aimed at it. Step two: the camera turns on the spot and the subject leaves the view.");
+    var d = svg.append("g");
+    var entriesY = base(svg, [{ id: "orbit", s: 1 }], k, anim, ["Orbit", "moves around the subject, keeps it framed"], ["Pan", "turns on the spot, may lose the subject"]);
+    var cx = 380, cy = 235, R = 190, FOV = 40;
+    function sub(g) {
+      g.append("rect").attr("x", cx - 22).attr("y", cy - 22).attr("width", 44).attr("height", 44).attr("fill", INK);
+      g.append("path").attr("d", "M" + (cx - 10) + "," + (cy + 22) + " h20 l-10,14Z").attr("fill", RED);
+    }
+    function orbitAt(phi) {
+      d.selectAll("*").remove();
+      lab(d, 0, 24, k === 2 ? "PAN ON THE SPOT" : "ORBIT", { fill: RED });
+      d.append("circle").attr("cx", cx).attr("cy", cy).attr("r", R).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      var cam0 = [cx, cy + R], ph = 90 + phi;
+      if (k === 1) {
+        var a0 = Math.PI / 2, a1 = ph * DEG;
+        d.append("path").attr("d", "M" + cam0[0] + "," + cam0[1] + "A" + R + "," + R + " 0 " + (phi < -180 ? 1 : 0) + " 0 " + (cx + R * Math.cos(a1)) + "," + (cy + R * Math.sin(a1))).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        var px = cx + R * Math.cos(a1), py = cy + R * Math.sin(a1), ang = a1 + Math.PI;
+        cone(d, px, py, ang, FOV, R + 60); sub(d); camBody(d, px, py, ang);
+        cap(d, 0, 472, "swept " + Math.abs(phi).toFixed(0) + "°", { size: 24 });
+        cap(d, 0, 504, "distance to subject " + (Math.hypot(px - cx, py - cy) / 100).toFixed(2) + " m, constant", { size: 24, fill: MUTED });
+        cap(d, 0, 536, "camera at (" + ((px - cx) / 100).toFixed(2) + ", " + (-(py - cy) / 100).toFixed(2) + ") m from the subject", { size: 24, fill: MUTED });
+      } else {
+        var yaw = -phi * 0.5, ang2 = -Math.PI / 2 + yaw * DEG;
+        ghost(d, cam0[0], cam0[1], -Math.PI / 2, FOV, R + 60);
+        cone(d, cam0[0], cam0[1], ang2, FOV, R + 60); sub(d); camBody(d, cam0[0], cam0[1], ang2);
+        var ok = inView(cx, cy, cam0[0], cam0[1], ang2, FOV, R + 60);
+        cap(d, 0, 472, "turned " + Math.abs(yaw).toFixed(0) + "°, half the view is " + (FOV / 2) + "°", { size: 24 });
+        cap(d, 0, 504, "position fixed at (0.00, " + (-R / 100).toFixed(2) + ") m", { size: 24, fill: MUTED });
+        cap(d, 0, 536, ok ? "subject still in view" : "subject has left the view", { size: 24, weight: 700, fill: ok ? INK : RED });
+      }
+    }
+    var oy_ = entriesY;
+    if (k >= 1) wrap(svg.append("g"), 800, oy_ + 36, k === 1 ? "Orbit: the camera sweeps 140° on a circle " + (R / 100).toFixed(2) + " m from the subject and stays aimed at it. The subject stays in the frame." : "The same sweep done as a pan turns the camera on the spot. The subject slides out of the frame.", 46, { size: 28, lh: 36, fill: INK });
+    if (k <= 1) { orbitAt(k === 0 ? 0 : -140); if (k === 1) run(d, 3600, function (t) { orbitAt(-140 * kf(t, [0, 1])); }, anim); }
+    else { orbitAt(-140); run(d, 3000, function (t) { orbitAt(-140 * kf(t, [0, 1])); }, anim); }
+  }
+
+  /* ---------- 8. zoom, focal length, field of view ---------- */
+  var SENSOR = 36;   /* mm, stated assumption: full-frame sensor width */
+  function fovOf(f) { return 2 * Math.atan(SENSOR / (2 * f)) / DEG; }
+  var LADDER = [24, 35, 50, 85, 200];
+  function renderLens(el, k, anim) {
+    var svg = svgFor(el, W, H, "Zoom changes the lens, not the camera's place. Focal length and field of view describe the lens.",
+      "A camera fixed at the left. Its view cone narrows as focal length grows. A table lists focal lengths with the angle each gives. Then a wider angle takes in more of the nine posts.");
+    var d = svg.append("g");
+    var ey = base(svg, [{ id: "zoom", s: 1 }, { id: "focal", s: 2 }, { id: "fov", s: 3 }], k, anim,
+      ["Zoom", "changes the lens; the camera stays put"], ["Dolly", "moves the camera; the lens stays the same"]);
+    var ox = 30, oy = 300, R = 330, pts = [], RY = ey + 118;
+    for (var a = -48; a <= 48; a += 12) pts.push([ox + R * Math.cos(a * DEG), oy + R * Math.sin(a * DEG)]);
+    function frame_(fovDeg, f, sel) {
+      d.selectAll("*").remove();
+      lab(d, 0, 24, "TOP VIEW, CAMERA FIXED", { fill: RED });
+      cone(d, ox, oy, 0, fovDeg, R + 20);
+      var n = ptsInView(d, pts, ox, oy, 0, fovDeg, R + 20);
+      camBody(d, ox, oy, 0);
+      var y0 = RY;
+      if (k === 1) {
+        cap(d, 800, y0, "lens " + f.toFixed(0) + " mm, angle " + fovDeg.toFixed(1) + "°", { size: 24 });
+        cap(d, 800, y0 + 32, "camera position: (0, 0), unchanged", { size: 24, fill: MUTED });
+        cap(d, 800, y0 + 64, "magnification " + (f / 35).toFixed(2) + "× against 35 mm", { size: 24, fill: MUTED });
+      } else if (k === 2) {
+        lab(d, 500, 60, "MM"); lab(d, 590, 60, "ANGLE"); lab(d, 690, 60, "MAGN.");
+        LADDER.forEach(function (m, i) {
+          var yy = 110 + i * 56, on = sel === i;
+          if (on) d.append("rect").attr("x", 490).attr("y", yy - 32).attr("width", 270).attr("height", 46).attr("fill", TINT);
+          cap(d, 500, yy, m + "", { size: 26, weight: on ? 700 : 400, fill: on ? RED : INK });
+          cap(d, 590, yy, fovOf(m).toFixed(1) + "°", { size: 26, weight: on ? 700 : 400, fill: on ? RED : INK });
+          cap(d, 690, yy, (m / 35).toFixed(2) + "×", { size: 26, weight: on ? 700 : 400, fill: on ? RED : INK });
+        });
+        cap(d, 490, 410, "Angle = 2 · atan(18 / mm)", { size: 24, fill: MUTED });
+        cap(d, 490, 440, "for a 36 mm wide sensor", { size: 24, fill: MUTED });
+        cap(d, 490, 470, "(an assumption)", { size: 24, fill: MUTED });
+        cap(d, 800, y0, "lens " + f.toFixed(0) + " mm: angle " + fovDeg.toFixed(1) + "°", { size: 24 });
+        cap(d, 800, y0 + 32, "longer = narrower and more magnified", { size: 24, fill: MUTED });
+      } else if (k === 3) {
+        cap(d, 800, y0, "field of view " + fovDeg.toFixed(0) + "°: " + n + " of " + pts.length + " posts in view", { size: 24 });
+        cap(d, 800, y0 + 32, "wider shows more, narrower shows less", { size: 24, fill: MUTED });
+        cap(d, 800, y0 + 64, "that is a " + (SENSOR / 2 / Math.tan(fovDeg * DEG / 2)).toFixed(0) + " mm lens on the 36 mm sensor", { size: 24, fill: MUTED });
+      }
+    }
+    if (k === 0) frame_(fovOf(35), 35, -1);
+    else if (k === 1) run(d, 3200, function (t) { var f = Math.exp(kf(t, [Math.log(35), Math.log(135)])); frame_(fovOf(f), f, -1); }, anim);
+    else if (k === 2) run(d, 4200, function (t) {
+      var f = Math.exp(kf(t, [Math.log(35), Math.log(24), Math.log(50), Math.log(85), Math.log(200)]));
+      var i = 0, best = 1e9; LADDER.forEach(function (m, j) { var dd = Math.abs(Math.log(m) - Math.log(f)); if (dd < best) { best = dd; i = j; } });
+      frame_(fovOf(f), f, i);
+    }, anim);
+    else run(d, 3200, function (t) { var fv = kf(t, [40, 90]); frame_(fv, SENSOR / 2 / Math.tan(fv * DEG / 2), -1); }, anim);
+    if (k >= 1) {
+      var tx = [null, "Zoom: the cone narrows. The camera does not move.", "Longer focal length: narrower angle, more magnification.", "Field of view: the same lens as an angle. Wider takes in more."][k];
+      wrap(svg.append("g"), 800, ey + 36, tx, 46, { size: 28, lh: 36, fill: INK });
+    }
+  }
+
+  /* ---------- 9. dolly versus zoom ---------- */
+  var DZ = (function () {
+    var F = 240, hy = 170, hc = 0.8, d = 1.2;
+    var near = { X: -0.7, Z: 3, w: 0.9, h: 1.1 }, far = { X: 0.8, Z: 9, w: 1.0, h: 3.2 };
+    function rect(o, dz, zf) {
+      var Z = o.Z - dz, s = F * zf / Z, cx = 180 + F * zf * o.X / Z, base = hy + F * zf * hc / Z;
+      return { x: cx - o.w * s / 2, w: o.w * s, y: base - o.h * s, h: o.h * s };
+    }
+    var zf = near.Z / (near.Z - d);
+    var r0n = rect(near, 0, 1), r0f = rect(far, 0, 1), rdn = rect(near, d, 1), rdf = rect(far, d, 1), rzn = rect(near, 0, zf), rzf = rect(far, 0, zf);
+    return { F: F, hy: hy, d: d, near: near, far: far, rect: rect, zf: zf,
+      ratio0: r0n.w / r0f.w, ratioD: rdn.w / rdf.w, ratioZ: rzn.w / rzf.w,
+      nearGrow: rdn.w / r0n.w, farGrowD: rdf.w / r0f.w, farGrowZ: rzf.w / r0f.w };
+  })();
+  function renderDvz(el, k, anim) {
+    var svg = svgFor(el, W, H, "Dolly versus zoom: only the dolly changes how near and far objects sit against each other",
+      "Two views of the same scene, a near house and a far tower. In the dolly the camera moves 1.2 metres forward. In the zoom the lens magnifies by the same factor on the house.");
+    var d = svg.append("g");
+    var ey = base(svg, [{ id: "dvz", s: 1 }], k, anim, ["Dolly", "moves the camera; parallax changes"], ["Zoom", "changes the lens; only magnifies"]);
+    var VW = 360, VH = 280, VY = 40;
+    var panels = [d.append("g"), d.append("g").attr("transform", "translate(400,0)")];
+    function view(i, p) {   /* p 0..1 progress of that move */
+      var g = panels[i]; g.selectAll("*").remove();
+      var active = (k === 1 && i === 0) || (k === 2 && i === 1) || k === 3;
+      lab(g, 0, 28, i ? "ZOOM" : "DOLLY", { fill: active ? RED : MUTED });
+      var id = "clip" + (++uid);
+      g.append("clipPath").attr("id", id).append("rect").attr("x", 0).attr("y", VY).attr("width", VW).attr("height", VH);
+      var s = g.append("g").attr("clip-path", "url(#" + id + ")");
+      s.append("rect").attr("x", 0).attr("y", VY).attr("width", VW).attr("height", DZ.hy - VY).attr("fill", SUBTLE);
+      s.append("rect").attr("x", 0).attr("y", DZ.hy).attr("width", VW).attr("height", VY + VH - DZ.hy).attr("fill", "#EDEDED");
+      s.append("path").attr("d", "M0," + DZ.hy + " H" + VW).attr("stroke", GREY).attr("stroke-width", 2);
+      var dz = i === 0 ? DZ.d * p : 0, zf = i === 1 ? 1 + (DZ.zf - 1) * p : 1;
+      [[DZ.far, RED], [DZ.near, INK]].forEach(function (o) {
+        var b = DZ.rect(o[0], 0, 1), c = DZ.rect(o[0], dz, zf);
+        if (p > 0) s.append("rect").attr("x", b.x).attr("y", b.y).attr("width", b.w).attr("height", b.h).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "5 5");
+        s.append("rect").attr("x", c.x).attr("y", c.y).attr("width", c.w).attr("height", c.h).attr("fill", o[1]);
+      });
+      g.append("rect").attr("x", 0.5).attr("y", VY + 0.5).attr("width", VW).attr("height", VH).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      var cn = DZ.rect(DZ.near, dz, zf), cf = DZ.rect(DZ.far, dz, zf), n0 = DZ.rect(DZ.near, 0, 1), f0 = DZ.rect(DZ.far, 0, 1);
+      var y = VY + VH + 34;
+      cap(g, 0, y, "house ×" + (cn.w / n0.w).toFixed(2) + ", tower ×" + (cf.w / f0.w).toFixed(2), { size: 24 });
+      if (k >= 3) {
+        wrap(g, 0, y + 34, "house : tower width " + DZ.ratio0.toFixed(1) + " → " + (i ? DZ.ratioZ : DZ.ratioD).toFixed(1), 30, { size: 24, lh: 30, weight: 700, fill: i ? INK : RED });
+      }
+    }
+    view(0, k >= 1 ? 1 : 0); view(1, k >= 2 ? 1 : 0);
+    if (k === 1) run(d, 2600, function (t) { view(0, kf(t, [0, 1])); }, anim);
+    if (k === 2) run(d, 2600, function (t) { view(1, kf(t, [0, 1])); }, anim);
+    var tx = ["",
+      "Dolly: the camera moves " + DZ.d + " m forward. The near house grows ×" + DZ.nearGrow.toFixed(2) + ". The far tower grows only ×" + DZ.farGrowD.toFixed(2) + ".",
+      "Zoom: the lens magnifies ×" + DZ.zf.toFixed(2) + ", the camera stays put. The house grows the same as in the dolly, and the tower grows ×" + DZ.farGrowZ.toFixed(2) + ".",
+      "Same house, different tower. In the dolly the house-to-tower size ratio changes. In the zoom it does not."][k];
+    if (tx) wrap(svg.append("g"), 800, ey + 36, tx, 46, { size: 28, lh: 36, fill: INK });
+  }
+
+  /* ---------- 10. parallax ---------- */
+  function renderPar(el, k, anim) {
+    var svg = svgFor(el, W, H, "Parallax: when the camera slides sideways, near posts shift more in the picture than far posts",
+      "A top view of a camera moving one metre to the right past three posts in a line. Beside it, the picture: the near post moves furthest.");
+    var d = svg.append("g");
+    var ey = base(svg, [{ id: "parallax", s: 1 }], k, anim, ["Parallax", "the shift depends on distance"], ["Zoom", "scales everything by the same factor"]);
+    var L = d.append("g"), Rv = d.append("g").attr("transform", "translate(400,0)");
+    var S = 40, F = 220, Zs = [2, 4, 8], cols = [INK, GREY, RED], names = ["near 2 m", "mid 4 m", "far 8 m"];
+    var shift = Zs.map(function (z) { return F * 1 / z; });
+    function draw(m) {   /* m 0..1: truck right 1 m */
+      L.selectAll("*").remove(); Rv.selectAll("*").remove();
+      lab(L, 0, 24, "TOP VIEW", { fill: RED });
+      var cx = 170 + S * m, cy = 470;
+      L.append("path").attr("d", "M170," + cy + " H210").attr("stroke", GREY).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+      Zs.forEach(function (z, i) {
+        L.append("path").attr("d", "M" + cx + "," + cy + " L170," + (cy - S * z)).attr("stroke", cols[i]).attr("stroke-width", 2);
+      });
+      Zs.forEach(function (z, i) { L.append("circle").attr("cx", 170).attr("cy", cy - S * z).attr("r", 11).attr("fill", cols[i]); });
+      camBody(L, cx, cy, -Math.PI / 2);
+      cap(L, 0, 552, "camera truck right " + (m * 1).toFixed(2) + " m", { size: 24 });
+      lab(Rv, 0, 24, "THE PICTURE", { fill: RED });
+      Rv.append("rect").attr("x", 0.5).attr("y", 40.5).attr("width", 360).attr("height", 200).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+      Rv.append("path").attr("d", "M0.5,220 H360.5").attr("stroke", GREY).attr("stroke-width", 2);
+      Zs.slice().reverse().forEach(function (z) {
+        var i = Zs.indexOf(z), w = 0.3 * F / z, h = 0.8 * F / z * 1.4, x = 180 + F * (0 - m) / z;
+        Rv.append("rect").attr("x", x - w / 2).attr("y", 220 - h).attr("width", w).attr("height", h).attr("fill", cols[i]);
+      });
+      if (k >= 2) {
+        Zs.forEach(function (z, i) {
+          var y = 306 + i * 62, len = shift[i] * m * 1.4;
+          cap(Rv, 0, y + 6, names[i], { size: 24 });
+          Rv.append("rect").attr("x", 120).attr("y", y - 22).attr("width", Math.max(len, 1)).attr("height", 34).attr("fill", cols[i]);
+          cap(Rv, 120 + len + 10, y + 6, (shift[i] * m).toFixed(0) + " px", { size: 24, weight: 700 });
+        });
+        cap(Rv, 0, 530, "shift = 220 px × 1 m ÷ distance", { size: 24, fill: MUTED });
+      }
+    }
+    draw(k >= 1 ? 1 : 0);
+    if (k === 1) run(d, 2800, function (t) { draw(kf(t, [0, 1])); }, anim);
+    var tx = ["", "The camera slides 1 m right. The three posts were lined up. Now they fan out in the picture.", "Half the distance, twice the shift. The 2 m post moves " + shift[0].toFixed(0) + " px, the 8 m post " + shift[2].toFixed(0) + " px."][k];
+    if (tx) wrap(svg.append("g"), 800, ey + 36, tx, 46, { size: 28, lh: 36, fill: INK });
+    if (k === 2 && anim) Rv.selectAll("rect").filter(function () { return +d3.select(this).attr("height") === 34; })
+      .attr("width", 0).transition().delay(function (_, i) { return i * 250; }).duration(700).attr("width", function (_, i) { return Math.max(shift[i] * 1.4, 1); });
+  }
+
+  /* ---------- 11. perspective / orthographic ---------- */
+  function renderProj(el, k, anim) {
+    var svg = svgFor(el, W, H, "Perspective: distant boxes shrink. Orthographic: equal boxes stay equal.",
+      "Two rows of identical boxes at five distances. In perspective they shrink and the rows converge. In orthographic every box is the same size and the rows stay parallel.");
+    var d = svg.append("g");
+    var ey = base(svg, [{ id: "proj", s: 1 }], k, anim, ["Perspective", "distant things shrink"], ["Orthographic", "size does not depend on distance"]);
+    var Zs = [3, 4.5, 6.5, 9, 13], F = 260, hy = 150, hc = 1.1, cx = 380, S0 = 44;
+    function draw(p) {   /* 0 perspective .. 1 orthographic */
+      d.selectAll("*").remove();
+      lab(d, 0, 24, p < 0.5 ? "PERSPECTIVE" : "ORTHOGRAPHIC", { fill: RED });
+      d.append("path").attr("d", "M0," + hy + " H760").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      var widths = [];
+      [-1.4, 1.4].forEach(function (X) {
+        var line = [];
+        Zs.forEach(function (Z, i) {
+          var sp = F / Z, so = S0;
+          var s = sp + (so - sp) * p;
+          var xp = cx + F * X / Z, xo = cx + X * 80, x = xp + (xo - xp) * p;
+          var bp = hy + F * hc / Z, bo = 440 - Zs.indexOf(Z) * 62, b = bp + (bo - bp) * p;
+          line.push([x, b]);
+          if (X < 0) widths.push(s);
+        });
+        d.append("path").attr("d", "M" + line.map(function (q) { return q.join(","); }).join("L")).attr("stroke", GREY).attr("stroke-width", 2).attr("fill", "none").attr("stroke-dasharray", "6 6");
+      });
+      Zs.slice().reverse().forEach(function (Z) {
+        [-1.4, 1.4].forEach(function (X) {
+          var sp = F / Z, s = sp + (S0 - sp) * p;
+          var xp = cx + F * X / Z, xo = cx + X * 80, x = xp + (xo - xp) * p;
+          var bp = hy + F * hc / Z, bo = 440 - Zs.indexOf(Z) * 62, b = bp + (bo - bp) * p;
+          d.append("rect").attr("x", x - s / 2).attr("y", b - s).attr("width", s).attr("height", s).attr("fill", X < 0 ? INK : RED);
+        });
+      });
+      cap(d, 0, 520, "box widths: " + widths.map(function (w) { return w.toFixed(0); }).join(", ") + " px", { size: 24 });
+      cap(d, 0, 552, p < 0.5 ? "same boxes, same size in the world" : "the rows stay parallel", { size: 24, fill: MUTED });
+    }
+    draw(k >= 2 ? 1 : 0);
+    if (k === 2) run(d, 2800, function (t) { draw(kf(t, [0, 1])); }, anim);
+    var tx = ["", "Perspective: the same 1 m box looks 87 px wide at 3 m and 20 px wide at 13 m. The rows meet at the horizon.", "Orthographic: every box is 44 px wide whatever its distance. The rows never meet."][k];
+    if (tx) wrap(svg.append("g"), 800, ey + 36, tx, 46, { size: 28, lh: 36, fill: INK });
+  }
+
+  /* ---------- 13. follow camera and smoothing ---------- */
+  var FS = (function () {
+    var dt = 1 / 60, N = Math.round(4.2 / dt), tau = 0.25, x0 = 140, x1 = 560, tx = [], cx = [], c = x0, maxLag = 0;
+    for (var i = 0; i <= N; i++) {
+      var t = i * dt, u = Math.max(0, Math.min(1, (t - 0.3) / 2.2)), x = x0 + (x1 - x0) * d3.easeCubicInOut(u);
+      c += (x - c) * (1 - Math.exp(-dt / tau));
+      tx.push(x); cx.push(c); maxLag = Math.max(maxLag, x - c);
+    }
+    return { N: N, tx: tx, cx: cx, tau: tau, maxLag: maxLag, T: 4.2 };
+  })();
+  function renderFollow(el, k, anim) {
+    var svg = svgFor(el, W, H, "Follow camera with and without smoothing",
+      "Two lanes. In the first the view window is locked to a moving target. In the second the window trails the target and catches up after it stops.");
+    var d = svg.append("g");
+    base(svg, [{ id: "follow", s: 1 }, { id: "smooth", s: 2 }], k, anim, ["Smoothing", "eases toward the target over time"], ["Deadzone", "does not move until the target leaves a box"]);
+    var WH = 110, WW = 340, ys = [110, 340];
+    function lane(i, fr) {
+      var y = ys[i], g = d.append("g"), tx = FS.tx[fr], cxx = i ? FS.cx[fr] : tx;
+      lab(g, 0, y - 80, i ? "WITH SMOOTHING" : "LOCKED TO THE TARGET", { fill: RED });
+      g.append("path").attr("d", "M0," + y + " H760").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      for (var x = 20; x < 760; x += 40) g.append("path").attr("d", "M" + x + "," + (y - 8) + " V" + (y + 8)).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      g.append("rect").attr("x", cxx - WW / 2).attr("y", y - WH / 2).attr("width", WW).attr("height", WH).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      g.append("circle").attr("cx", tx).attr("cy", y).attr("r", 13).attr("fill", RED);
+      cap(g, 0, y + 100, i ? (fr === FS.N ? "settled: lag 0 px. Peak lag was " + FS.maxLag.toFixed(0) + " px" : "lag " + (tx - cxx).toFixed(0) + " px behind the target") : "camera x = target x, lag 0 px", { size: 24, fill: i ? INK : MUTED });
+    }
+    function draw(fr) { d.selectAll("*").remove(); lane(0, k === 1 ? fr : FS.N); if (k >= 2) lane(1, fr); }
+    draw(k === 0 ? 0 : FS.N);
+    if (k >= 1) run(d, FS.T * 1000, function (t) { draw(Math.min(FS.N, Math.round(t * FS.N))); }, anim);
+    if (k === 2) cap(svg.append("g"), 0, 566, "smoothing time constant " + FS.tau + " s; the window trails, then catches up", { size: 24, fill: MUTED });
+  }
+
+  /* ---------- 14. deadzone and look-ahead ---------- */
+  var DS = (function () {
+    var dt = 1 / 60, half = 70, a = [], c = 0;
+    for (var i = 0; i <= 210; i++) { var t = i * dt, tx = 340 * d3.easeCubicInOut(Math.min(1, t / 3)); c = Math.max(c, tx - half); a.push({ tx: tx, cx: c }); }
+    var v = 200, ahead = 0.5, tau = 0.25, L = 0, b = [];
+    for (var j = 0; j <= 144; j++) { var t2 = j * dt, x2 = v * t2; L += (v * ahead - L) * (1 - Math.exp(-dt / tau)); b.push({ tx: x2, L: L, cx: x2 + L }); }
+    return { half: half, a: a, b: b, v: v, ahead: ahead };
+  })();
+  function renderDead(el, k, anim) {
+    var svg = svgFor(el, W, H, "Deadzone: the camera waits until the target leaves a box. Look-ahead: the frame leans toward the direction of travel.",
+      "A screen frame with a dashed deadzone box. The target moves right. The camera stays still until the target reaches the edge of the box. Then the frame shifts ahead of a moving target.");
+    var d = svg.append("g");
+    base(svg, [{ id: "deadzone", s: 1 }, { id: "lookahead", s: 2 }], k, anim, ["Deadzone", "the camera waits inside a screen box"], ["Look-ahead", "the frame leans the way you travel"]);
+    var FX = 60, FY = 40, FW = 640, FH = 340, mx = FX + FW / 2, my = FY + FH / 2;
+    function draw(fr) {
+      d.selectAll("*").remove();
+      var id = "clip" + (++uid);
+      d.append("clipPath").attr("id", id).append("rect").attr("x", FX).attr("y", FY).attr("width", FW).attr("height", FH);
+      lab(d, FX, 24, k === 2 ? "LOOK-AHEAD" : "DEADZONE", { fill: RED });
+      var S = k === 2 ? DS.b[fr] : DS.a[fr], camx = S.cx, tx = S.tx, s = d.append("g").attr("clip-path", "url(#" + id + ")");
+      s.append("rect").attr("x", FX).attr("y", FY).attr("width", FW).attr("height", FH).attr("fill", SUBTLE);
+      for (var wx = -400; wx < 1200; wx += 80) { var sx = mx + wx - camx; s.append("path").attr("d", "M" + sx + "," + (FY + 250) + " V" + (FY + FH)).attr("stroke", FAMILIAR).attr("stroke-width", 4); }
+      s.append("path").attr("d", "M" + FX + "," + (FY + 250) + " H" + (FX + FW)).attr("stroke", GREY).attr("stroke-width", 2);
+      var sxT = mx + tx - camx;
+      s.append("circle").attr("cx", sxT).attr("cy", my + 30).attr("r", 14).attr("fill", RED);
+      d.append("rect").attr("x", FX + 0.5).attr("y", FY + 0.5).attr("width", FW).attr("height", FH).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      if (k !== 2) {
+        d.append("rect").attr("x", mx - DS.half).attr("y", my - 50).attr("width", DS.half * 2).attr("height", 100).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "10 6");
+        cap(d, mx - DS.half, my - 62, "deadzone", { size: 24, fill: RED });
+        cap(d, 0, 430, "camera moved " + camx.toFixed(0) + " px", { size: 24 });
+        cap(d, 0, 464, "target " + (tx - camx).toFixed(0) + " px from the centre; the box half-width is " + DS.half + " px", { size: 24, fill: MUTED });
+        cap(d, 0, 498, (tx - camx) < DS.half - 0.5 ? "inside the box: the camera does not move" : "at the edge of the box: the camera follows", { size: 24, weight: 700, fill: (tx - camx) < DS.half - 0.5 ? INK : RED });
+      } else {
+        d.append("path").attr("d", "M" + (mx - 14) + "," + my + " h28 M" + mx + "," + (my - 14) + " v28").attr("stroke", INK).attr("stroke-width", 3);
+        cap(d, 0, 430, "target speed " + DS.v + " px/s, lead " + DS.ahead + " s", { size: 24 });
+        cap(d, 0, 464, "frame shifted ahead by " + S.L.toFixed(0) + " px", { size: 24, fill: MUTED });
+        cap(d, 0, 498, "target sits " + S.L.toFixed(0) + " px behind the centre, so there is room ahead", { size: 24, weight: 700, fill: RED });
+      }
+    }
+    var last = k === 2 ? DS.b.length - 1 : DS.a.length - 1;
+    draw(k === 0 ? 0 : last);
+    if (k >= 1) run(d, (k === 2 ? 2400 : 3500), function (t) { draw(Math.min(last, Math.round(t * last))); }, anim);
+  }
+
+  /* ---------- 15. screen shake ---------- */
+  var SH = (function () {
+    var r = rng(7), A0 = 18, tau = 0.18, N = 36, a = [];
+    for (var i = 0; i <= N; i++) { var t = i / 60, e = A0 * Math.exp(-t / tau); a.push({ t: t, e: e, ox: e * (2 * r() - 1), oy: e * (2 * r() - 1) }); }
+    return { A: A0, tau: tau, N: N, a: a, t5: Math.log(20) * tau };
+  })();
+  function renderShake(el, k, anim) {
+    var svg = svgFor(el, W, H, "Screen shake: a short random offset that fades away",
+      "A view that shakes for 0.6 seconds. A graph of the sideways offset stays inside a falling envelope.");
+    var d = svg.append("g");
+    var ey = base(svg, [{ id: "shake", s: 1 }], k, anim, ["Screen shake", "a brief offset that fades out"], ["Smoothing", "removes jerk instead of adding it"]);
+    var VW = 440, VH = 330, VY = 40;
+    function draw(fr) {
+      d.selectAll("*").remove();
+      var S = SH.a[fr], id = "clip" + (++uid);
+      lab(d, 0, 24, "THE VIEW", { fill: RED });
+      d.append("clipPath").attr("id", id).append("rect").attr("x", 0).attr("y", VY).attr("width", VW).attr("height", VH);
+      var s = d.append("g").attr("clip-path", "url(#" + id + ")").append("g").attr("transform", "translate(" + S.ox + "," + S.oy + ")");
+      s.append("rect").attr("x", -40).attr("y", VY - 40).attr("width", VW + 80).attr("height", VH + 80).attr("fill", SUBTLE);
+      s.append("rect").attr("x", -40).attr("y", 280).attr("width", VW + 80).attr("height", 140).attr("fill", "#EDEDED");
+      s.append("rect").attr("x", 140).attr("y", 180).attr("width", 50).attr("height", 100).attr("fill", INK);
+      s.append("rect").attr("x", 330).attr("y", 190).attr("width", 12).attr("height", 90).attr("fill", INK);
+      s.append("circle").attr("cx", 336).attr("cy", 170).attr("r", 34).attr("fill", RED);
+      d.append("path").attr("d", "M" + (VW / 2 - 12) + "," + (VY + VH / 2) + " h24 M" + (VW / 2) + "," + (VY + VH / 2 - 12) + " v24").attr("stroke", GREY).attr("stroke-width", 2);
+      d.append("rect").attr("x", 0.5).attr("y", VY + 0.5).attr("width", VW).attr("height", VH).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+      cap(d, 0, 412, "offset now (" + sgn(S.ox, 1) + ", " + sgn(S.oy, 1) + ") px", { size: 24 });
+      cap(d, 0, 444, "envelope " + S.e.toFixed(1) + " px = " + SH.A + " · e^(−t / " + SH.tau + ")", { size: 24, fill: MUTED });
+      if (k >= 2) {
+        var px = 520, pw = 230, py = 40, ph = 330, cy = py + ph / 2, sc = (ph / 2) / SH.A;
+        lab(d, px, 24, "SIDEWAYS OFFSET", { fill: RED });
+        d.append("rect").attr("x", px + 0.5).attr("y", py + 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+        d.append("path").attr("d", "M" + px + "," + cy + " h" + pw).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+        [1, -1].forEach(function (sg) {
+          var pts = SH.a.map(function (q) { return [px + q.t / 0.6 * pw, cy - sg * q.e * sc]; });
+          d.append("path").attr("d", "M" + pts.map(function (q) { return q.join(","); }).join("L")).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 2).attr("stroke-dasharray", "6 5");
+        });
+        var pts2 = SH.a.slice(0, fr + 1).map(function (q) { return [px + q.t / 0.6 * pw, cy - q.ox * sc]; });
+        if (pts2.length > 1) d.append("path").attr("d", "M" + pts2.map(function (q) { return q.join(","); }).join("L")).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        cap(d, px, py + ph + 30, "0", { size: 24, fill: MUTED }); cap(d, px + pw, py + ph + 30, "0.6 s", { size: 24, fill: MUTED, anchor: "end" });
+      }
+    }
+    draw(k === 0 ? 0 : SH.N);
+    if (k >= 1) run(d, 1800, function (t) { draw(Math.min(SH.N, Math.round(t * SH.N))); }, anim);
+    var tx = ["", "A hit lands. The view jumps by up to " + SH.A + " px in a random direction, and the jump shrinks every frame.", "The offset stays inside a falling envelope. It drops to 5% (" + (SH.A * 0.05).toFixed(1) + " px) after " + SH.t5.toFixed(2) + " s. Then the shot is steady again."][k];
+    if (tx) wrap(svg.append("g"), 800, ey + 36, tx, 46, { size: 28, lh: 36, fill: INK });
+  }
+
+  /* ---------- 16. camera limits ---------- */
+  var LM = (function () {
+    var dt = 1 / 60, N = 180, a = [];
+    for (var i = 0; i <= N; i++) { var t = i * dt, u = Math.min(1, t / 3), x = 120 + (590 - 120) * d3.easeCubicInOut(u); a.push({ tx: x, free: x, lim: Math.max(120, Math.min(520, x)) }); }
+    return { N: N, a: a, left: 20, right: 620, w: 200 };
+  })();
+  function renderLimits(el, k, anim) {
+    var svg = svgFor(el, W, H, "Camera limits: without them the view runs off the edge of the level; with them it stops at the edge",
+      "A level strip with a hatched void beyond its right edge. In the first lane the view follows the target past the edge. In the second lane the view stops at the edge while the target walks on.");
+    var d = svg.append("g");
+    var id0 = "hatch" + (++uid);
+    var limY = base(svg, [{ id: "limits", s: 1 }], k, anim, ["Camera limits", "clamp the view inside the level"], ["Deadzone", "a screen box, not a level boundary"]);
+    var ys = [90, 360], WH = 120;
+    function lane(i, fr) {
+      var y = ys[i], g = d.append("g"), S = LM.a[fr], cx = i ? S.lim : S.free;
+      lab(g, 0, y - 36, i ? "WITH CAMERA LIMITS" : "NO LIMITS", { fill: RED });
+      g.append("rect").attr("x", LM.right).attr("y", y - 20).attr("width", 750 - LM.right).attr("height", WH + 40).attr("fill", "url(#" + id0 + ")").attr("stroke", RED).attr("stroke-width", 1.5);
+      g.append("rect").attr("x", LM.left + 0.5).attr("y", y - 20 + 0.5).attr("width", LM.right - LM.left).attr("height", WH + 40).attr("fill", SUBTLE).attr("stroke", INK).attr("stroke-width", 3);
+      for (var x = LM.left + 40; x < LM.right; x += 40) g.append("path").attr("d", "M" + x + "," + (y + WH + 4) + " v16").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+      g.append("rect").attr("x", cx - LM.w / 2).attr("y", y).attr("width", LM.w).attr("height", WH).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+      g.append("circle").attr("cx", S.tx).attr("cy", y + WH / 2).attr("r", 13).attr("fill", RED);
+      var out = Math.max(0, cx + LM.w / 2 - LM.right);
+      cap(g, 0, y + WH + 54, out > 0.5 ? "view runs " + out.toFixed(0) + " px past the level edge" : "view stays inside the level", { size: 24, weight: out > 0.5 ? 700 : 400, fill: out > 0.5 ? RED : INK });
+    }
+    function draw(fr) {
+      d.selectAll("*").remove();
+      var df = d.append("defs"), p = df.append("pattern").attr("id", id0).attr("width", 12).attr("height", 12).attr("patternUnits", "userSpaceOnUse").attr("patternTransform", "rotate(45)");
+      p.append("rect").attr("width", 12).attr("height", 12).attr("fill", "#FFFFFF"); p.append("rect").attr("width", 3).attr("height", 12).attr("fill", "#E8B4BD");
+      lane(0, k === 1 ? fr : LM.N); if (k >= 2) lane(1, fr);
+    }
+    draw(k === 0 ? 0 : LM.N);
+    if (k >= 1) run(d, 3200, function (t) { draw(Math.min(LM.N, Math.round(t * LM.N))); }, anim);
+    if (k >= 1) wrap(svg.append("g"), 800, limY + 36, k === 1 ? "The view follows the target. When the target reaches x = 590 the view's right edge is at 690, 70 px past the level's end at 620. The player sees the void." : "The view's centre is clamped between 120 and 520. The target still walks on to 590. The view stops at the edge.", 46, { size: 28, lh: 36, fill: INK });
+    if (k === 2) cap(svg.append("g"), 0, 566, "limits: x between " + (LM.left + LM.w / 2) + " and " + (LM.right - LM.w / 2) + " px, so half the " + LM.w + " px view stays inside", { size: 24, fill: MUTED });
+  }
+
+  /* ---------- 17. look-alike pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs: pan and truck, dolly and zoom, orbit and pan, smoothing and deadzone",
+      "Each step shows two camera moves side by side that students mix up, each with its glossary meaning.");
+    var d = svg.append("g");
+    var NAMES = [["Pan", "Truck"], ["Dolly", "Zoom"], ["Orbit", "Pan"], ["Smoothing (damping)", "Deadzone"]];
+    var MEAN = [
+      [T.pan.m, T.truck.m],
+      [T.dolly.m, T.zoom.m],
+      [T.orbit.m, T.pan.m],
+      ["Spreads the camera's catch-up over time so it trails slightly", T.deadzone.m]
+    ];
+    var L = d.append("g"), Rr = d.append("g").attr("transform", "translate(740,0)"), LG, RG;
+    function head(g, i, j) {
+      lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED });
+      txt(g, 0, 62, NAMES[i][j], { size: 32, weight: 700, fill: j ? RED : INK });
+      wrap(g, 0, 452, MEAN[i][j] + ".", 54, { size: 24, lh: 30, fill: BODY });
+    }
+    function simple(g, ang, x, y, fov, len, pts) { cone(g, x, y, ang, fov, len); ptsInView(g, pts, x, y, ang, fov, len); camBody(g, x, y, ang); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); Rr.selectAll("*").remove(); LG = L.append("g").attr("transform", "translate(150,0)"); RG = Rr.append("g").attr("transform", "translate(150,0)");
+      head(L, i, 0); head(Rr, i, 1);
+      var m = kf(t, [0, -1, 1]);
+      if (i === 0) {
+        var pts = [[100, 190], [180, 160], [260, 190], [180, 250]];
+        simple(LG, -Math.PI / 2 + m * 40 * DEG, 180, 400, 46, 240, pts);
+        cap(L, 0, 568, "turns: " + sgn(m * 40) + "°, same place", { size: 24, fill: MUTED });
+        simple(RG, -Math.PI / 2, 180 + m * 70, 400, 46, 240, pts);
+        cap(Rr, 0, 568, "slides: " + sgn(m * 0.7, 2) + " m, same way", { size: 24, fill: MUTED });
+      } else if (i === 1) {
+        var pts2 = [[180, 250], [180, 170], [120, 220], [240, 220]], u = kf(t, [0, 1]);
+        ghost(LG, 180, 420, -Math.PI / 2, 46, 230);
+        simple(LG, -Math.PI / 2, 180, 420 - u * 120, 46, 230, pts2);
+        cap(L, 0, 568, "moves " + (u * 1.2).toFixed(1) + " m, angle 46°", { size: 24, fill: MUTED });
+        var fv = 46 + (22 - 46) * u;
+        ghost(RG, 180, 420, -Math.PI / 2, 46, 230);
+        simple(RG, -Math.PI / 2, 180, 420, fv, 230, pts2);
+        cap(Rr, 0, 568, "stays put, angle " + fv.toFixed(0) + "°", { size: 24, fill: MUTED });
+      } else if (i === 2) {
+        var R = 120, sx = 180, sy = 190, ph = (90 - 100 * kf(t, [0, 1])) * DEG;
+        LG.append("circle").attr("cx", sx).attr("cy", sy).attr("r", R).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+        var px = sx + R * Math.cos(ph), py = sy + R * Math.sin(ph);
+        cone(LG, px, py, ph + Math.PI, 40, R + 50); LG.append("rect").attr("x", sx - 14).attr("y", sy - 14).attr("width", 28).attr("height", 28).attr("fill", INK); camBody(L, px, py, ph + Math.PI);
+        cap(L, 0, 568, "subject stays framed", { size: 24, fill: MUTED });
+        var yaw = -50 * kf(t, [0, 1]) * DEG, a2 = -Math.PI / 2 + yaw, ok = inView(sx, sy, sx, sy + R, a2, 40, R + 50);
+        cone(RG, sx, sy + R, a2, 40, R + 50);
+        RG.append("rect").attr("x", sx - 14).attr("y", sy - 14).attr("width", 28).attr("height", 28).attr("fill", ok ? INK : RED); camBody(Rr, sx, sy + R, a2);
+        cap(Rr, 0, 568, ok ? "subject still in view" : "subject lost", { size: 24, fill: ok ? MUTED : RED, weight: ok ? 400 : 700 });
+      } else {
+        var gx = 20, gw = 320, gy = 100, gh = 300, n = Math.round(kf(t, [0, 1]) * FS.N * 0.8 / 0.8);
+        var seg = Math.round(t * 200), tgt = [], sm = [], dz = [], c = 0, c2 = 0, tauP = 0.25, dtp = 1 / 60;
+        for (var q = 0; q <= 200; q++) {
+          var tt = q * dtp, uu = Math.max(0, Math.min(1, (tt - 0.3) / 2.2)), x = 300 * d3.easeCubicInOut(uu);
+          c += (x - c) * (1 - Math.exp(-dtp / tauP)); c2 = Math.max(c2, x - 60); tgt.push(x); sm.push(c); dz.push(c2);
+        }
+        [[LG, sm], [RG, dz]].forEach(function (pr) {
+          var g = pr[0], arr = pr[1];
+          g.append("rect").attr("x", gx + 0.5).attr("y", gy + 0.5).attr("width", gw).attr("height", gh).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+          function P(a) { return "M" + a.slice(0, seg + 1).map(function (v, ii) { return [gx + ii / 200 * gw, gy + gh - v / 300 * gh].join(","); }).join("L"); }
+          g.append("path").attr("d", P(tgt)).attr("fill", "none").attr("stroke", RED).attr("stroke-width", 3);
+          g.append("path").attr("d", P(arr)).attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+        });
+        cap(L, 0, 568, "red = target, black = camera", { size: 24, fill: MUTED });
+        cap(Rr, 0, 568, "camera waits, then follows", { size: 24, fill: MUTED });
+      }
+    }
+    var i = Math.max(0, k - 1);
+    if (k === 0) { draw(0, 0.25); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(i, 0.25);
+    run(d, 3400, function (t) { draw(i, t); }, anim);
+  }
+
+  /* ---------- 18. say it exactly ---------- */
+  var SAY = [
+    { v: "swoop in", x: "Dolly in 2 m, 1.5 seconds, ease-out" },
+    { v: "look around a bit", x: "Pan right 40°, 2 seconds, ease-in-out" },
+    { v: "get closer", x: "Zoom from 35 mm to 85 mm, 1 second, ease-in-out. Camera stays put" },
+    { v: "make the hit feel heavier", x: "Screen shake, 0.3 seconds, 12 px, fading to zero" },
+    { v: "follow the player nicely", x: "Follow with smoothing, 0.25 s time constant; deadzone 140 × 100 px" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague camera requests turned into precise instructions",
+      "Five rows. Each pairs a vague request with an exact instruction. On the right a graph shows what the exact instruction does over time.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 8 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 112).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 68, "→ " + r.x, 40, { size: 26, lh: 32, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one gets the shot you meant.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var px = 700, py = 60, pw = 640, ph = 320, p = g.append("g").attr("transform", "translate(" + px + "," + py + ")");
+    var curve, ylab, ymax, tmax, fmt, note, ease;
+    if (k === 1) { tmax = 1.5; ymax = 2; ylab = "forward distance (m)"; ease = d3.easeCubicOut; curve = function (t) { return 2 * ease(t / tmax); }; note = "starts at " + (2 * 3 / 1.5).toFixed(1) + " m/s and slows to 0 as it arrives"; }
+    else if (k === 2) { tmax = 2; ymax = 40; ylab = "yaw (°)"; ease = d3.easeCubicInOut; curve = function (t) { return 40 * ease(t / tmax); };
+      var pk = 0; for (var q = 0; q < 200; q++) pk = Math.max(pk, Math.abs(curve((q + 1) / 200 * tmax) - curve(q / 200 * tmax)) / (tmax / 200)); note = "slow, fast, slow; top speed " + pk.toFixed(0) + "°/s"; }
+    else if (k === 3) { tmax = 1; ymax = 85; ylab = "focal length (mm)"; ease = d3.easeCubicInOut; curve = function (t) { return 35 + 50 * ease(t / tmax); }; note = "angle " + fovOf(35).toFixed(1) + "° → " + fovOf(85).toFixed(1) + "°; position unchanged"; }
+    else if (k === 4) { tmax = 0.3; ymax = 12; ylab = "offset envelope (px)"; curve = function (t) { return 12 * Math.exp(-t / (0.3 / Math.log(20))) ; }; note = "5% left at 0.3 s (decay constant " + (0.3 / Math.log(20)).toFixed(3) + " s)"; }
+    else { tmax = 1.0; ymax = 1; ylab = "share of the gap closed"; curve = function (t) { return 1 - Math.exp(-t / 0.25); }; note = "95% closed after " + (3 * 0.25).toFixed(2) + " s (three time constants)"; }
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    cap(p, 0, ph + 32, "0", { size: 24, fill: MUTED }); cap(p, pw, ph + 32, tmax + " s", { size: 24, fill: MUTED, anchor: "end" });
+    cap(p, pw / 2, ph + 32, "time", { size: 24, fill: MUTED, anchor: "middle" });
+    cap(p, 0, ph + 70, ylab + ": 0 to " + (k === 3 ? "85 (starts at 35)" : ymax), { size: 24, fill: MUTED });
+    cap(p, 0, ph + 106, note, { size: 24, weight: 700, fill: INK });
+    var lo = k === 3 ? 35 : 0, hi = ymax;
+    function pt(t) { return [t / tmax * pw, ph - (curve(t) - lo) / (hi - lo) * ph]; }
+    var path = p.append("path").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 4);
+    var dot = p.append("circle").attr("r", 10).attr("fill", RED);
+    function drawT(t) {
+      var pts = []; for (var q = 0; q * tmax / 60 <= t * tmax + 1e-9; q++) pts.push(pt(Math.min(tmax, q * tmax / 60)));
+      pts.push(pt(t * tmax));
+      path.attr("d", "M" + pts.map(function (v) { return v.join(","); }).join("L"));
+      var c = pt(t * tmax); dot.attr("cx", c[0]).attr("cy", c[1]);
+    }
+    run(g, 2400, function (t) { drawT(t); }, anim, d3.easeLinear);
+  }
+
+  /* ---------- 19. closing checklist ---------- */
+  var CHECKS = [
+    "Is the camera moving (dolly, truck, pedestal, orbit) or turning (pan, tilt, roll)?",
+    "Is it the legs or the lens: a dolly moves the camera, a zoom changes the lens?",
+    "Did I name the axis, the direction, how far or how many degrees, how long, and the easing?",
+    "For a follower: smoothing amount, deadzone size, look-ahead, and camera limits?",
+    "For a hit: shake size, how long, and that it fades to zero?",
+    "Lens and projection: focal length or field of view, perspective or orthographic?"
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you give a camera instruction", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 28, c, 78, { size: 30, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: “dolly in 2 m, 1.5 seconds, ease-out”, not “swoop in”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 5, render: renderMap },
+    ptr: { steps: 3, render: renderPtr },
+    dts: { steps: 3, render: renderDts },
+    orbit: { steps: 2, render: renderOrbit },
+    lens: { steps: 3, render: renderLens },
+    dvz: { steps: 3, render: renderDvz },
+    par: { steps: 2, render: renderPar },
+    proj: { steps: 2, render: renderProj },
+    follow: { steps: 2, render: renderFollow },
+    dead: { steps: 2, render: renderDead },
+    shake: { steps: 2, render: renderShake },
+    limits: { steps: 2, render: renderLimits },
+    pairs: { steps: 4, render: renderPairs },
+    say: { steps: 5, render: renderSay },
+    closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

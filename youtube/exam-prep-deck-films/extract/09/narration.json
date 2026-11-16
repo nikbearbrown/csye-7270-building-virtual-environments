@@ -1,0 +1,334 @@
+{
+ "deck": "09",
+ "opening_summary": "Thirty terms for getting a model out of Blender and into a Godot game, then proving it arrived at the right size, the right way up, and with collision that works.",
+ "opening_description": "30 terms for moving a model from Blender to Godot.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers see a prop standing at the right height in Godot and assume all is well. But a model can look right and still be a two-metre cube wearing a scale, and anything built from that mesh inherits it. Looking right is only a claim. This film goes through the terms, each one shown, so you know what to measure.",
+  "text": "A prop that looks the right size\nhas the right scale.",
+  "triggerWords": "has the right scale",
+  "replacementWords": "may still carry a scale"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty terms in four groups, all about getting a model from Blender into Godot and proving it arrived intact. First, driving Blender. MCP, the Model Context Protocol, MCP tool, MCP server and add-on, bpy, headless Blender, and the python exit code flag.",
+   "figures": ["30"]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is units, axes and transforms. Unit, unit scale, up axis, axis conversion, apply transforms, node scale, and origin and pivot. These terms explain why a model arrives lying down, or the wrong size.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is export, import and collision. glTF, GLB, material through export, import file, name suffix, collision shape, and convex and concave. These terms say how a model and its collider reach Godot.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is measuring and budget. Dimensions, bounding box, claim versus measurement, triangle count, high-poly and low-poly, texture baking, LOD, which means level of detail, script as source, version control and naming conventions. How you prove the result, keep it cheap and repeat it.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "Three boxes, a coding agent, an MCP server, and Blender with an add-on. MCP is a standard way for an AI app to call tools inside another program. The agent sends a request, and Blender runs it and sends back a result. Both sides follow one agreed set of message rules. Unlike the script route, MCP works on a live Blender window. For example, an agent asks a running Blender for the size of a crate you just modelled, and gets the numbers back.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "An MCP tool is one named action the agent is allowed to call, with typed arguments. The list shows four tools this server offers. Get scene info, get object info, execute blender code in red, which runs Python inside Blender, and export scene, which writes a model file. For example, to check a barrel prop, the agent calls get object info with the barrel's name as its argument, and reads back the barrel's size and position.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "The MCP server and add-on are the two halves of the connection. The server is a small relay program that the agent starts. The add-on runs inside Blender and receives the calls over a local socket. That socket has no login and no encryption, so keep the port on localhost. For example, before an agent shapes rocks for your level in Blender, you enable the add-on inside Blender, start it, and register the server with your coding agent.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "A short script, with an export line at the bottom. bpy is Blender's Python module, the set of commands that control Blender. A script calls it directly, and the MCP tools call the same module underneath. Here the script adds a cube, scales it into a column and exports it. For example, an agent can write a bpy script that builds a low-poly coin, gives it a named gold material and exports it, so the coin can be rebuilt any time.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "Headless Blender means running Blender with no window, from the command line. It is also called background mode. The b flag runs it in the background, the factory startup flag skips your own startup file, and the python flag runs the script. Nobody has to watch a screen. For example, after you change one measurement in your build script, an agent runs Blender headless to rebuild every fence prop in the level, then reads the printed sizes.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "The same broken script, run two ways. The python exit code flag, typed with two dashes in front, makes a script error end Blender with exit code one, which means failure. Without it, in the top box, the error is printed and the run still exits zero, which looks like success. For example, if the build script for a tree prop has a typo, the flag makes your automated check stop and report it, instead of carrying on as if the tree was built.",
+   "figures": ["exit code 0", "exit code 1"]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "A ruler in metres, with the robot capsule and the post beside it. A unit is the length one coordinate step stands for, usually a metre. Blender, glTF and Godot all treat one unit as one metre. The robot capsule is two point one metres tall, and the post is one point eight. For example, when you model a ledge in Blender, its height in units is its height in metres in Godot, so you can tell whether the robot can climb onto it.",
+   "figures": ["2.1 m", "1.8 m"]
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "Unit scale is the factor that turns Blender units into metres. A mesh one point eight units tall is one point eight metres at unit scale one point zero, but one point eight centimetres at zero point zero one. A unit is the length of a step, and unit scale is the multiplier on it. For example, a sword built in a scene with the wrong unit scale arrives in the player's hand far too small to see.",
+   "figures": ["1.0", "1.8 m", "1.8 cm", "unit scale 0.01"]
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "Two sets of axes, Blender on the left and Godot on the right. The up axis is the axis that points up. Blender is Z-up, and glTF and Godot are Y-up. Godot's forward direction is minus Z. Both systems are right-handed. For example, in Godot a script that lifts a moving platform toward the ceiling raises the platform's Y position, not its Z, because Y is the up axis there.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 4,
+   "narration": "Axis conversion is the step that turns one up axis into the other. The exporter's plus Y Up option rotates the model a quarter turn about X, the matrix shown, so Blender's Z extent becomes Godot's Y. The column's box was zero point two, zero point two, one point eight in Blender, and in Godot the one point eight sits on Y. For example, a lamp post exported with that option switched off arrives in the level lying on its side.",
+   "figures": ["(0.20, 0.20, 1.80)", "1.80"]
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "A column, with its numbers. Apply transforms means baking position, rotation and scale into the mesh, then resetting them to neutral. The column began as a two metre cube wearing a scale. After apply, the mesh data is zero point two by one point eight by zero point two, and the object scale is one. The drawn size never changed. For example, after squashing a box into a flat platform, you apply scale so its collider is built at its real size.",
+   "figures": ["2 m cube", "0.20 × 1.80 × 0.20", "1.00 × 1.00 × 1.00"]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "Node scale is a scale left on the node, instead of baked into the mesh. Here a ball is squashed by a node scale of one by zero point four, but its sphere collider has only one radius, so it sticks out zero point six metres above and below. A scale left on the node reaches everything built from the mesh. For example, a boulder flattened in Blender without applying scale keeps that scale on its node, so a sphere collider leaves the player bumping into air above it.",
+   "figures": ["node scale (1.0, 0.4)", "0.6 m"]
+  },
+  {
+   "slide": 5,
+   "step": 3,
+   "narration": "Two posts on a floor line, each with a red dot. The origin is the point an object's position and rotation are measured from. The pivot is the point it rotates and scales around. The left post stands, because its origin is at the base. The right post has its origin at the centre, so it sinks zero point nine metres into the floor. For example, a door's pivot belongs on its hinge edge, so it swings open instead of spinning around its middle.",
+   "figures": ["0.9 m"]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "Code on the left, and two bars. Dimensions are an object's size in metres on each axis, as Blender reports it. Here a script sets the scale and prints the dimensions at once, and gets two, two, two, which is stale. After the scene refreshes, it prints zero point two, zero point two, one point eight, which is fresh. For example, if an agent reports a crate's dimensions straight after scaling it, those numbers may be the old size, so ask again after the update.",
+   "figures": ["(2.0, 2.0, 2.0) stale", "(0.2, 0.2, 1.8) fresh"]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "A dashed box grows around the post's corner points. A bounding box is the smallest axis-aligned box that holds an object. It is the minimum and maximum of the vertices, nothing else. Here twelve points give a box zero point seven eight wide, because of the pennant, and one point eight tall. Its half-sizes are called the extents. For example, to check that a new treasure chest fits through a doorway in your level, a test can compare the chest's bounding box with the gap.",
+   "figures": ["12 vertices", "0.78", "1.80"]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "Three builds of the same column, each claimed to be zero point two by one point eight by zero point two metres. A claim is what a name or a script says. A measurement is what a test reads from the file. Only the good build passes. No Y up lies on its side, and no apply carries a scale. For example, a model file named small rock is only a claim, and a test that reads its size from the file is the measurement.",
+   "figures": ["0.2 × 1.8 × 0.2"]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "A list of the files one export writes. glTF is an open 3D format, and the preferred way to move models into game engines. Its text form writes a readable scene file with nodes, meshes and materials, a separate binary file of vertex data, and loose texture images, three kinds of file to keep together. For example, export a treasure chest as text glTF when you want Git to show what changed in its scene each time you edit it.",
+   "figures": []
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "Now the same pieces packed into one file. GLB is glTF packed into a single binary file, with the scene, the vertex data and the images together. glTF keeps the scene as text with separate data beside it, and GLB puts everything inside one file. For example, a small prop such as a key the player picks up is easiest to ship as one GLB file, with no loose textures to lose.",
+   "figures": []
+  },
+  {
+   "slide": 7,
+   "step": 3,
+   "narration": "Three columns, Blender, glTF and Godot. Material through export means a named Blender material arrives in Godot under the same name. PostMetal and FlagCloth each cross and become a StandardMaterial3D, and the resource name is still PostMetal, so a test can check it. A Blender-only node does not cross. For example, name your lava material in Blender, and a Godot test can confirm the lava floor still carries that exact material name after import.",
+   "figures": []
+  },
+  {
+   "slide": 7,
+   "step": 4,
+   "narration": "Settings lines from a real file. The import file, the one ending in dot import, is the text file Godot keeps beside each imported model, and its settings decide what Godot builds. The red line, use node type suffixes, is false in the Walker platformer demo's models, while a fresh import sets it true. Copy the demo's file and Godot ignores your name hints. For example, if a new enemy model arrives without its collider, open its import file and check that line first.",
+   "figures": []
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "A table of endings for mesh names. A name suffix is a tail on a mesh's name that tells Godot what to build. Dash col adds concave collision, dash conv col adds convex collision, and dash conv col only removes the mesh and makes a convex body. With the suffix setting on, you get a StaticBody3D. With it off, a visible box and no collision. For example, name a box around a fence dash conv col only, and Godot makes it the fence's invisible collider.",
+   "figures": []
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "The box collider becomes a tapered hull. A collision shape is the simple shape physics uses, not the detailed mesh you see. The pennant should stay outside it. In this drawing's count, fifty-two of one thousand sixty-six pennant points are still inside the hull, and the goal is zero. A physics sampling of the real post found five hundred seventy-two for the box and fifty-five for the hull. For example, a tree gets a simple trunk-shaped collider, so the player walks under its leaves.",
+   "figures": ["52 of 1,066", "572", "55", "0"]
+  },
+  {
+   "slide": 8,
+   "step": 3,
+   "narration": "Two shapes, each with a line between two inside points. Convex means no dents, so a line between any two inside points stays inside. Concave means the shape has a hollow, so a line can leave it. Here sixty percent of the line leaves the concave shape, and none leaves the convex one. Convex is cheap for physics, and concave is exact but costly. For example, a bowl the player can stand inside needs a concave collider, while a crate is convex.",
+   "figures": ["60% of the line is outside", "0% of the line is outside"]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "Four bars for one box, the post's base. Triangle count is the number of triangles in a mesh, and it is what engines budget by. Blender shows faces, and the GPU, the graphics processor, splits vertices. In this example the box has eight vertices, six faces, twelve triangles and twenty-four GPU vertices, and the whole post is forty-two triangles. For example, when a phone game allows each prop a fixed budget, you compare its triangle count with that budget, not the face count Blender displays.",
+   "figures": ["8", "6", "12", "24", "42 triangles"]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "Two bars on a log scale. High-poly is a very detailed sculpt, and low-poly is the cheap copy of it that the engine runs. In this made-up example the sculpt has two million triangles, a round number, and the low-poly post has forty-two, about forty-seven thousand six hundred nineteen times fewer. For example, an artist sculpts a dragon's head with every scale in detail, then builds a low-poly version of that head for the game to draw.",
+   "figures": ["2,000,000", "42", "47,619"]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "A wavy line becomes a flat one, plus a strip of greys. Texture baking moves the fine detail of the sculpt into an image that the low-poly mesh wears. In this drawing the high-poly surface has eighty points, the low-poly one has two, and the baked image keeps the bumps as twenty values. The cheap mesh wears the expensive surface. For example, the carved runes on a stone door can be baked into its texture, so a flat low-poly door still shows them.",
+   "figures": ["80 points", "2 points", "20 values"]
+  },
+  {
+   "slide": 9,
+   "step": 4,
+   "narration": "A step chart as the post moves away. LOD, level of detail, means cheaper versions of a model swapped in at a distance. In these illustrative levels, the post uses forty-two triangles up close, twenty-one past ten metres, and eleven past twenty-five. At forty metres it is drawn with eleven. Where a level switches, the mesh can visibly jump, which is called popping. For example, trees far down a road in an open level can use their cheapest version, since nobody sees the missing branches.",
+   "figures": ["LOD 0: 42", "LOD 1: 21", "LOD 2: 11", "10 m", "25 m", "40 m"]
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "A script goes into headless Blender, and a model comes out. Script as source means the script that built the asset is what you commit, review and rerun, and the GLB is only its output. The script is the source, and the GLB is the build product. Rerunning the final script gave the same bytes, and Git showed no change. For example, if a playtester finds a ramp too steep, you change one number in the ramp's build script and rebuild, not the exported file.",
+   "figures": []
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "The same edit in two kinds of file. Version control is software that records every version of a file and who changed it, and warns when two people's changes clash. On the left, the binary Blender file only says the files differ. On the right, the script's diff shows the top of the pole moving from one point seven to one point eight. For example, when two students edit the same level, version control shows who moved the goal flag, and warns of the clash.",
+   "figures": ["top = 1.7", "top = 1.8"]
+  },
+  {
+   "slide": 10,
+   "step": 3,
+   "narration": "Four file names checked against one rule, the word prop, an underscore, then lowercase words. Naming conventions are agreed rules for how files and objects are named. Two names pass. Post final new two, and Cube point zero zero three, must be renamed. Godot's dash conv col only suffix is a naming convention too, because the importer reads it. For example, a team that starts every enemy file name with the same prefix lets a script find and load all of them.",
+   "figures": ["(2)", "Cube.003"]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "These are look-alike pairs. Scale is a multiplier on the object, here a two metre mesh times zero point nine. Size is the real dimension in metres, one point eight, measured. The same picture, two different numbers.",
+   "figures": ["mesh 2.0 m", "× 0.9", "1.8 m"]
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "The MCP route leaves a transcript of tool calls, get scene info, execute blender code, export scene, and no file records how. The script route is a file you can diff and rerun, and a rerun gives the same GLB.",
+   "figures": []
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "The visual mesh is the detailed shape you see, forty-two triangles. The collision shape is the simple shape physics uses, twelve triangles, the dashed box around the post.",
+   "figures": ["42 triangles", "12 triangles"]
+  },
+  {
+   "slide": 11,
+   "step": 4,
+   "narration": "Concave has a hollow, so a line can leave it, and sixty percent of this line is outside. Convex has no dents, so a line stays inside, with zero percent outside.",
+   "figures": ["60% of the line is outside", "0% of the line is outside"]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "Vague requests, rewritten as exact instructions. Make the prop the right size becomes keep unit scale at one point zero, apply scale, and require zero point two by one point eight by zero point two metres, within one centimetre. Only one of three builds matches.",
+   "figures": ["1.0", "0.2 × 1.8 × 0.2 m", "1 cm", "only one of three"]
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "It's lying on its side becomes export with plus Y Up on, then check that Blender's Z extent shows up as Godot's Y. In the chart, the one point eight moves from the z group to the y group.",
+   "figures": ["the 1.8 moves"]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Make the collision work becomes name a simple mesh Collision dash conv col only, and turn use node type suffixes on. With the setting true, one collider, a StaticBody3D. With it false, a visible box and no collision.",
+   "figures": ["1 collider"]
+  },
+  {
+   "slide": 12,
+   "step": 4,
+   "narration": "Keep it cheap becomes keep the post under one hundred triangles. The visual mesh is forty-two and the collider twelve, so the post sits inside this illustrative budget.",
+   "figures": ["100 triangles", "42", "12"]
+  },
+  {
+   "slide": 12,
+   "step": 5,
+   "narration": "Keep the flag out of the collider becomes sample the pennant on a one centimetre grid and require zero points inside. The box had five hundred seventy-two of one thousand sixty-six inside, the hull fifty-two by this drawing's model rather than a physics test, and the goal is zero.",
+   "figures": ["1 cm grid", "572 of 1,066", "52 of 1,066", "0 of 1,066"]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "This is a checklist of six questions to ask before you trust an imported model. First, is unit scale one point zero, so one unit is one metre?",
+   "figures": ["Six checks", "1.0"]
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "Second, did you apply rotation and scale, so every node's scale is one? A scale left on a node reaches everything built from the mesh.",
+   "figures": ["scale is 1"]
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "Third, is the model Y-up in Godot, with Blender's Z on Godot's Y? If it is not, the model lies on its side.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Fourth, do the measured dimensions match the claim, within one centimetre? Read the numbers from the file, not from the name.",
+   "figures": ["1 cm"]
+  },
+  {
+   "slide": 13,
+   "step": 5,
+   "narration": "Fifth, is the collider a simple, separate mesh, and did its suffix take effect? Look for a StaticBody3D, not a visible box.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 6,
+   "narration": "Sixth, is the script committed, and does a script error end the run non-zero? Then say it exactly. Not make it the right size, but zero point two by one point eight by zero point two metres, scale one.",
+   "figures": ["0.2 × 1.8 × 0.2 m, scale 1"]
+  }
+ ],
+ "recap_lines": [
+  "MCP drives a live Blender, and a bpy script runs it headless.",
+  "Add the python exit code flag, or a broken script exits zero.",
+  "Blender is Z-up, and the plus Y Up option puts its Z on Godot's Y.",
+  "Apply transforms, so the scale lives in the mesh and not on the node.",
+  "A name suffix builds collision only when the import setting is on.",
+  "A name is a claim, and only a number read from the file is evidence."
+ ],
+ "your_turn": {
+  "segment": "Name The Term, Measure The Prop",
+  "command": "Quiz me on moving a model from Blender into Godot, with short game-making cases, one at a time. Use the terms unit scale, up axis, apply transforms, node scale, GLB, name suffix, collision shape, convex, triangle count and claim versus measurement. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is a game-making situation, and the answer waits for you.",
+   "Check: you named the exact term and said why its look-alike does not fit."
+  ]
+ },
+ "say_as": [
+  {"term": "LOD", "say": "L O D"}
+ ],
+ "deck_problems": [
+  "Slide 6 step 3: the no_apply row prints MEASURED SIZE (2.0, 2.0, 2.0) in red as a failure, while the caption below says 'no_apply is drawn at the right size, so only the scale check catches it.' (2.0, 2.0, 2.0) is the mesh AABB; Chapter 3 gives no_apply's in-scene AABB as (0.2, 1.8, 0.2). The column mixes the two, so the size column and the caption contradict each other. Slide 12 step 1 repeats it ('no_apply 2.0 fail' for height in Godot's Y). The narration avoids saying which check catches no_apply.",
+  "Slide 1 says '30 terms from Chapter 3 and the glossary', but four of the 30 (high-poly and low-poly, texture baking, version control, naming conventions) are tagged 'video only' and come from the Riot series, as the slide's own source line says.",
+  "Slide 12 step 5 sets the box's 572 (Chapter 3's physics sampling) beside the hull's 52 (the deck's own 1 cm grid model; the chapter's sampling found 55, as slide 8 step 2 notes) under a 'Computed' badge, with no note that the two numbers come from different methods.",
+  "Slide 3 step 2 shows the headless command 'Blender -b --factory-startup --python build_post.py' without --python-exit-code 1, the flag the next step of the same slide says to always add.",
+  "Group names on the map do not match the slide eyebrows: the map's 'Export, import and collision' is 'Export and import' on slides 7 and 8, and the map's 'Measuring and budget' is split across 'Proving it', 'Budget' and 'Keeping it repeatable'.",
+  "Slide 11 step 3 draws the collision shape as a plain box around base and pole, while slide 8 step 2 shows that box replaced by a tapered hull; the 12-triangle label fits either, but the picture is the superseded collider."
+ ]
+}

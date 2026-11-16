@@ -1,0 +1,66 @@
+{
+  "id": 15,
+  "slug": "the-uber-shader-reading-the-whole",
+  "title": "The Uber Shader: Reading the Whole",
+  "objective": "Trace the combined material without assuming earlier texture contracts still apply.",
+  "wrong": "combining shaders preserves every convention",
+  "right": "every combined input needs its contract checked",
+  "terms": {
+    "Hemisphere": "An orientation-based ambient approximation",
+    "Wrap lighting": "An artistic broadening of the lit region",
+    "Packed map": "A texture holding multiple independent controls"
+  },
+  "exercise": "Audit the combined shader's normal-map convention and specular channels. Then vary subsurface spread. Explain the terminator change without describing it as simulated light transport through the material.",
+  "checks": [
+    "Red masks highlights and blue masks reflections.",
+    "The green flip matches the supplied DirectX-style map."
+  ],
+  "recap": [
+    "The normal-map convention is explicit.",
+    "Packed channels differ from the earlier specular map.",
+    "Ambient and diffuse use new approximations.",
+    "The final color is a sum of identifiable contributions."
+  ],
+  "beats": [
+    [
+      "Start With The Normal",
+      "flip_green ?",
+      "This combined shader first decodes its normal map. The green flip defaults to true because the demo supplies the DirectX-style map. Reusing a different normal map requires checking that convention."
+    ],
+    [
+      "Recheck Packed Channels",
+      "specular_map.r",
+      "Red now masks the highlight, and blue masks the environment reflection. The earlier red-rim, green-highlight packing does not apply. A texture can load successfully while controlling the wrong contribution."
+    ],
+    [
+      "Ambient By Orientation",
+      "vec3 ambient =",
+      "Ambient blends from bottom color toward top color using the upward normal component clamped at zero. Downward and horizontal normals receive bottom color. This is not a symmetric full-sphere interpolation."
+    ],
+    [
+      "Broaden The Light",
+      "vec3 lambert =",
+      "Subsurface spread modifies the light-normal dot product before clamping. Subsurface color adds a channel-dependent bias. These are artistic controls that soften and tint the transition around the terminator."
+    ],
+    [
+      "Watch The Terminator",
+      "subsurface_spread",
+      "Watch spread increase from zero toward one half. More of the surface receives a positive lighting contribution. No thickness, internal scattering path, or transmitted-light calculation appears in the shader."
+    ],
+    [
+      "Keep Reflections Separate",
+      "reflection_intensity * specular_map.b",
+      "The environment contribution has its own contrast, intensity, and blue-channel mask. Unlike the earlier rim-weighted cubemap shader, this reflection is not multiplied by that Fresnel term."
+    ],
+    [
+      "Read Every Addition",
+      "vec3 total_spec",
+      "The rim is multiplied by diffuse lighting and light color. The specular lobe uses its red mask. The environment is added separately. Naming each term makes an otherwise crowded expression understandable."
+    ],
+    [
+      "A Combined Model Has Limits",
+      "ALBEDO =",
+      "The textured base receives ambient plus direct light, then the extra contributions are added. It is a useful teaching combination, not a complete physical material. Its tangent-frame scaling limitation also remains."
+    ]
+  ]
+}

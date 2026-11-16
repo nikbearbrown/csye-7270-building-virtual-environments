@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-This page collects the readings, documentation, Walker projects and tools behind Module 10, Animation foundations. Open it when you start the sword-timing exercise, when an agent makes a claim about animation timing that needs checking against the documentation, or when you begin Assignment 8.
+This page collects the readings, documentation, Walker projects and tools behind Module 10, Animation foundations. Open it when you start the sword-timing exercise, when an agent makes a claim about animation timing that needs checking against the documentation, or when you begin Assignment 7.
 
 ## Read first
 

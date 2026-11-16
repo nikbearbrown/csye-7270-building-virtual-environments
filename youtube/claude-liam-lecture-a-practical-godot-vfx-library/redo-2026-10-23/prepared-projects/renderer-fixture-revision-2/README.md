@@ -1,0 +1,1 @@
+Overlay tests/price.gd onto either prepared library project. This revision measures fresh instances of the actual saved hashed effect scenes rather than embedded copies. Also include check-library.gd in tests for the native starter. The source parses; it has not run a renderer measurement while locked. Current production projects already include these changes.

@@ -34,7 +34,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 REPO = "https://github.com/nikbearbrown/csye-7270-building-virtual-environments"
 COURSE_TITLE = "CSYE 7270 Virtual Environments and Real-Time 3D - Fall 2026 (Godot, Walker, Claude Code)"
 COURSE_CODE = "CSYE7270.FALL2026.GODOT"
-BUILD_DATE = "2026-10-12"
+BUILD_DATE = "2026-10-14"
 SYLLABUS_DOCX = "CSYE_7270_Virtual_Environments_and_Real-Time_3D.docx"
 OUT_PASTE = os.path.join(ROOT, "canvas", "paste")
 OUT_PKG = os.path.join(ROOT, "canvas", "package")
@@ -81,22 +81,9 @@ START_HERE_PAGES = [
 
 # assignment number -> (source file, module number whose "Assignment" header carries it).
 # Rule: an assignment appears in the FIRST module it covers, so students see the target while they learn.
-ASSIGNMENTS = {
-    1: ("assignments/01-extend-walker-jumpman.md", 1),
-    2: ("assignments/02-generate-art-sound-music-for-your-game.md", 2),
-    3: ("assignments/03-first-3d-assets-with-blender-mcp.md", 3),
-    4: ("assignments/04-specify-and-build-a-3d-interaction.md", 4),
-    5: ("assignments/05-shader-and-material.md", 6),
-    6: ("assignments/06-audit-a-shader-change.md", 8),
-    7: ("assignments/07-particle-effects.md", 9),
-    8: ("assignments/08-animation-and-state.md", 10),
-    9: ("assignments/09-audio-and-a-performance-budget.md", 12),
-    10: ("assignments/10-final-project.md", 14),
-}
-
-# An assignment that covers two modules is listed again in the second one, so a student sees it
-# in every module whose material it uses. (Canvas allows one assignment in several modules.)
-ALSO_LISTED_IN = {4: 5, 5: 7, 8: 11, 9: 13, 10: 15}
+ASSIGNMENT_METADATA = {r['number']: r for r in json.loads(open(os.path.join(ROOT, 'assignments', 'canvas-authority.json'), encoding='utf-8').read())['assignments']}
+ASSIGNMENTS = {n: (r['source'], r['modules'][0]) for n, r in ASSIGNMENT_METADATA.items()}
+ALSO_LISTED_IN = {n: r['modules'][1:] for n, r in ASSIGNMENT_METADATA.items() if len(r['modules']) > 1}
 
 # --------------------------------------------------------------------------------------
 
@@ -372,13 +359,14 @@ def wiki_html(title, ident, body):
 """
 
 
-def assignment_xml(ident, title, group_id, position, points=100.0):
+def assignment_xml(ident, title, group_id, position, points=100.0, due_at=None, submission_types="online_upload,online_text_entry", all_day="false", all_day_date=None):
     wf = "published" if STATE == "published" else "unpublished"
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <assignment identifier="{ident}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
   <title>{escape(title)}</title>
   <time_zone_edited>Eastern Time (US &amp; Canada)</time_zone_edited>
-  <due_at/>
+  <due_at>{escape(due_at or "")}</due_at>
+  <all_day_date>{escape(all_day_date or "")}</all_day_date>
   <lock_at/>
   <unlock_at/>
   <module_locked>false</module_locked>
@@ -390,8 +378,8 @@ def assignment_xml(ident, title, group_id, position, points=100.0):
   <has_group_category>false</has_group_category>
   <points_possible>{points:.1f}</points_possible>
   <grading_type>points</grading_type>
-  <all_day>false</all_day>
-  <submission_types>online_upload,online_text_entry</submission_types>
+  <all_day>{escape(all_day)}</all_day>
+  <submission_types>{escape(submission_types)}</submission_types>
   <position>{position}</position>
   <turnitin_enabled>false</turnitin_enabled>
   <vericite_enabled>false</vericite_enabled>
@@ -572,7 +560,8 @@ class Builder:
         self.files[html_href] = (
             '<html>\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n'
             f"<title>Assignment: {escape(title)}</title>\n</head>\n<body>\n{body}</body>\n</html>\n")
-        self.files[set_href] = assignment_xml(ident, title, self.assign_group, num)
+        record = ASSIGNMENT_METADATA[num]
+        self.files[set_href] = assignment_xml(ident, title, self.assign_group, num, points=record['points'], due_at=record['due_at_utc'], submission_types=record['submission_types'], all_day=record.get('all_day') or 'false', all_day_date=record.get('all_day_date'))
         self.resources.append(
             f'    <resource identifier="{ident}" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="{html_href}">\n'
             f'      <file href="{html_href}"/>\n      <file href="{set_href}"/>\n    </resource>')
@@ -631,8 +620,8 @@ class Builder:
                     if a:
                         items.append(("ContextModuleSubHeader", "Assignment", None))
                         items.append(a)
-            for anum, amod in sorted(ALSO_LISTED_IN.items()):
-                if amod == num:
+            for anum, amods in sorted(ALSO_LISTED_IN.items()):
+                if num in amods:
                     a = self.assignment(anum, ASSIGNMENTS[anum][0])
                     if a:
                         items.append(("ContextModuleSubHeader", f"Assignment (opened in Module {ASSIGNMENTS[anum][1]})", None))
@@ -793,8 +782,14 @@ def integrity_check(path):
     for n in names:
         if n.endswith("assignment_settings.xml"):
             a = ET.fromstring(z.read(n))
-            if a.findtext("c:points_possible", namespaces=cn) != "100.0":
-                problems.append(f"{n}: points_possible is not 100.0")
+            title = a.findtext('c:title', namespaces=cn)
+            expected = next((r for r in ASSIGNMENT_METADATA.values() if r['title'] == title), None)
+            if expected is None:
+                problems.append(f'{n}: unexpected assignment title {title}')
+            else:
+                for key, value in [('points_possible', f"{expected['points']:.1f}"), ('due_at', expected['due_at_utc']), ('submission_types', expected['submission_types'])]:
+                    if a.findtext('c:'+key, namespaces=cn) != value:
+                        problems.append(f'{n}: {key} differs from authoritative metadata')
     return problems
 
 

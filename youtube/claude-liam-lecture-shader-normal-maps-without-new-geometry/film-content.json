@@ -1,0 +1,66 @@
+{
+  "id": 8,
+  "slug": "normal-maps-without-new-geometry",
+  "title": "Normal Maps Without New Geometry",
+  "objective": "Explain tangent-space normal decoding and its unchanged silhouette.",
+  "wrong": "normal maps move vertices",
+  "right": "normal maps change lighting directions",
+  "terms": {
+    "Tangent": "A direction along the surface",
+    "Binormal": "The second direction along the surface",
+    "Tangent space": "Coordinates relative to the local surface frame"
+  },
+  "exercise": "Compare a flat normal map with the dome map. Inspect the outline, then invert green. Explain why the lighting changes while the mesh silhouette remains the same.",
+  "checks": [
+    "The silhouette stays unchanged.",
+    "The green convention matches the expected map."
+  ],
+  "recap": [
+    "Decode the texture into signed components.",
+    "Use the tangent frame to obtain a world normal.",
+    "Lighting uses the perturbed direction.",
+    "The mesh silhouette remains unchanged."
+  ],
+  "beats": [
+    [
+      "A Direction In A Texture",
+      "texture(normal_map, UV)",
+      "The normal map stores direction components in RGB. Multiplying by two and subtracting one converts the stored zero-to-one range into signed components between minus one and one."
+    ],
+    [
+      "Build The Surface Frame",
+      "world_tangent =",
+      "Tangent, binormal, and normal form the surface frame. The vertex stage carries these directions into world space so the sampled direction can be expressed where the light and eye vectors live."
+    ],
+    [
+      "Combine The Components",
+      "tn.x * world_tangent",
+      "The sampled red component weights the tangent, green weights the binormal, and blue weights the normal. Add the weighted directions and normalize the result. That becomes the lighting normal."
+    ],
+    [
+      "Reuse The New Normal",
+      "vec3 r =",
+      "The perturbed normal drives diffuse, rim, and specular calculations. The shader does not merely paint shadows onto the texture. It changes the direction used by the lighting formulas."
+    ],
+    [
+      "Reveal The Domes",
+      "vec3 tn =",
+      "Compare a flat map with the dome map. The surface appears bumpy because the directions vary across each cell. Look at the outside edge: the actual sphere has not grown those domes."
+    ],
+    [
+      "Green Has A Convention",
+      "tn.y * world_binormal",
+      "This version expects the supplied OpenGL-style map. A DirectX-style green channel has the opposite sign. Flipping that channel without adapting the shader reverses the vertical lighting detail."
+    ],
+    [
+      "A Scale Limitation",
+      "MODEL_NORMAL_MATRIX * TANGENT",
+      "This teaching port transforms tangents with the normal matrix too. That agrees for uniform scale, but it is not a general tangent-frame solution for nonuniform scaling. Keep this demonstration uniformly scaled."
+    ],
+    [
+      "No Displacement",
+      "void fragment",
+      "All the apparent bumps happen in the fragment lighting. There is no vertex displacement here. If the outline must change, a normal map alone cannot provide that geometry."
+    ]
+  ]
+}

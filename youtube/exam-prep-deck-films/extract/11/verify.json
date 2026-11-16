@@ -1,0 +1,48 @@
+{
+ "deck": "11",
+ "beats_checked": 53,
+ "corrections": [
+  {
+   "slide": 3,
+   "step": 4,
+   "was": "The pipeline is drawn again, now with three fragment shaders under one vertex shader. The vertex shader places the geometry, and then a scene can use many fragment shaders, one for each material, plus extra passes that work on the image already drawn. For example, each sprite in a level can carry its own fragment shader, and one more pass can then turn the whole finished frame grey.",
+   "now": "The pipeline is drawn again, now with fragment shaders A, B and C. A scene can use many fragment shaders, one for each material, plus extra passes that work on the 2D image already drawn. For example, each sprite in a level can carry its own fragment shader, and one more pass can then turn the whole finished frame grey.",
+   "why": "The old wording stated as fact that one vertex shader places the geometry and then feeds many fragment shaders; each material's shader has its own vertex stage, and a pass over the finished image works on a 2D picture, so the beat now keeps only the course's point that there can be several fragment shaders and later ones work on the 2D image already drawn (slide 3 'you write it; can be several', 'Each extra one works on the 2D image already drawn')."
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "was": "A small made-up sprite, with a slider under it. A Uniform, also called a shader parameter, is a value set from code that stays the same for every pixel of one draw. It is how a script steers a shader. Here the script sets the amount to zero point five, and the body and the eyes both move halfway toward dark ink. For example, the Walker flash uses a uniform named flash amount, which the player script sets on every frame.",
+   "now": "A small made-up sprite, with a slider under it. A Uniform, also called a shader parameter, is a value set from code that stays the same for every pixel of one draw. It is how a script steers a shader. Here the script sets flash amount to zero point five, and the body and the eyes both move halfway toward dark ink. For example, the Walker flash uses a uniform named flash amount, which the player script sets on every frame.",
+   "why": "'the amount' echoed the note's 'amount = 0.5', a different name from the declared uniform; the slide declares flash_amount and Chapter 6 names the uniform flash_amount, so the beat now uses that name, as it must on a deck that teaches a mismatched uniform name silently does nothing."
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "was": "Five pairs of bars, an sRGB value above its linear value. Source color is a hint that marks a uniform as a colour in sRGB, the encoding of colours people pick by eye, so Godot decodes it to linear before the maths. An sRGB zero point five is only zero point two one four in linear. For example, a tint colour you pick in the Inspector for a lava floor in a 3D level should be marked source color.",
+   "now": "Five pairs of bars, an sRGB value above its linear value. Source color is a hint that marks a uniform as a colour in sRGB, the encoding of colours people pick by eye, so Godot can decode it to linear before the maths. In 2D, not always. An sRGB zero point five is only zero point two one four in linear. For example, a tint colour you pick in the Inspector for a lava floor in a 3D level should be marked source color.",
+   "why": "The decode was stated as unconditional; Chapter 6 (Use It, step 5) says the Compatibility renderer's canvas uniform upload does no sRGB-to-linear conversion and Forward+ and Mobile convert a source_color uniform in 2D only when the viewport renders in HDR."
+  },
+  {
+   "slide": 14,
+   "step": 5,
+   "was": "The colours look washed out becomes, mark colour uniforms source color, so sRGB values are decoded to linear before the maths. An sRGB value of zero point five is zero point two one four of the light. Used as if it were linear, it is far too bright.",
+   "now": "The colours look washed out becomes, mark colour uniforms source color, so sRGB values can be decoded to linear before the maths. In 2D, not always. An sRGB value of zero point five is zero point two one four of the light. Used as linear, it is far too bright.",
+   "why": "Same unconditional decode as slide 9 step 3, which Chapter 6 contradicts for 2D (Compatibility does no conversion of canvas uniforms; Forward+ and Mobile only with an HDR 2D viewport); the last sentence was shortened only to keep the beat within its 50-word length."
+  },
+  {
+   "slide": 15,
+   "step": 5,
+   "was": "Fifth, are colours marked source color, with the maths done in linear? A colour picked by eye is sRGB, and it has to be decoded before it is mixed or lit.",
+   "now": "Fifth, are colours marked source color, with the maths done in linear? A colour picked by eye is sRGB. Source color asks Godot to decode it before the maths. In 2D, that does not always happen.",
+   "why": "'it has to be decoded before it is mixed' implied the decode is required and happens; Chapter 6 says Walker's Compatibility renderer mixes canvas uniforms without conversion (its predicted flash colours assume exactly that), and Forward+ and Mobile decode in 2D only in HDR."
+  }
+ ],
+ "bookend_corrections": [],
+ "unresolved": [
+  "slide 3 step 4: the drawing chains one vertex shader into fragment shaders A, B and C with the captions 'places the geometry once' and 'One vertex shader, then as many fragment shaders as you like', and the note says 'The vertex shader placed the geometry once'; per-material shaders each have their own vertex stage and do not run one after another, and a pass over the finished image works on a 2D picture; the narration no longer repeats the claim but the picture on screen still shows it, so the slide needs redrawing.",
+  "slides 9 step 3, 14 step 5 and 15 step 5: the slide text itself ('decoded to linear for the maths', 'so sRGB values decode to linear before the maths') still presents the source_color decode as unconditional, which Chapter 6 contradicts for 2D; the narration now hedges but the on-screen words do not.",
+  "slide 9 step 1: the slide declares 'uniform float flash_amount' while its 'GDScript sets it' label reads 'amount = 0.5'; the narration follows the chapter's name flash_amount, but the label on screen still shows the other name.",
+  "slide 3 step 2: the narration adds that on older graphics hardware 'every step worked like this'; the glossary says only 'Old hardware steps that could be configured but not programmed', so this is historically plausible but not stated in the reference files; left as written."
+ ]
+}

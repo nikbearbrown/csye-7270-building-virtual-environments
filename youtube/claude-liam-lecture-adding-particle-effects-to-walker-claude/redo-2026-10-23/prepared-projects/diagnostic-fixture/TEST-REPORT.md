@@ -1,0 +1,7 @@
+# Actual checks and remaining visual work
+
+The baseline inherited gameplay suite passed 32 checks. The selected tuned copy passed the same 32 checks and 17 additional particle-contract checks. The additional suite used InputEventKey events through the ordinary input path to open the gate twice and reach the finish, recording three events at at least two positions. Pause/resume, hidden emission, reset, finish, root ownership, and intentional single-emitter replacement passed. The earlier fixed-60-Hz runs remain deterministic diagnostics. The selected 32- and 17-check suites were rerun in real time, capped at 60 FPS, and passed. Neither mode is a human playtest.
+
+The headless CPU instrument completed 60 warm-up / 300 timed frames, 3 repetitions, and 3 fresh processes for empty, looping-burst upper bound, motes, and both. Actual results and commands are preserved in the film5-checks CPU logs and JSON. The empty fixture excludes particles. The looping burst deliberately bounds its normal short event. Values are CPU wall time per simulated frame, not GPU time or interactive FPS.
+
+Still required: native editor construction/change/result footage; three visible bursts at two positions; both appearance revisions at game scale; visible pause/resume and age-out; independent real-renderer measurements with instrument availability and conditions; complete narrated-film QC. Screen capture is blocked while macOS is locked. No visual pass or human approval is claimed.

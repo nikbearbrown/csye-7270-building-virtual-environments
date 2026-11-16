@@ -1,0 +1,273 @@
+1
+00:00:00,000 --> 00:00:08,820
+Vertex Shaders. Learn how a shader moves
+the corner points of a shape, and how to
+give a shape enough corners to bend. By
+
+2
+00:00:08,870 --> 00:00:22,050
+Hallo. This is Liam, in for Bear. A waving
+flag looks as if thousands of pixels are
+moving. They are not. A vertex shader does
+
+3
+00:00:22,100 --> 00:00:38,750
+Five terms. A shader is a small program
+the graphics card runs to decide how
+something is drawn. A pixel is one dot of
+
+4
+00:00:38,800 --> 00:00:50,530
+This flag is waving, and not one pixel in
+it was told to move. One line of code
+moves its corner points, and the graphics
+
+5
+00:00:50,580 --> 00:00:59,170
+A shape is built from corner points, its
+vertices. The engine calls vertex once for
+each one, and asks a single question:
+
+6
+00:00:59,220 --> 00:01:09,260
+The engine hands you the corner's position
+in a built-in, a value it gives your
+function. Its name is vertex too, in
+
+7
+00:01:09,310 --> 00:01:20,950
+It counts in pixels, from the middle of
+the sprite. A sprite one hundred twenty-
+eight pixels wide has corners at minus
+
+8
+00:01:21,000 --> 00:01:31,660
+Change the number, and the corner moves.
+Add forty to x, and every corner moves
+forty pixels to the right. The whole
+
+9
+00:01:31,710 --> 00:01:42,580
+The forty is in the node's own pixels,
+counted before the node is scaled. Here
+the right-hand square is scaled to twice
+
+10
+00:01:42,630 --> 00:01:52,800
+Multiply, and the corners move toward or
+away from the middle. Here, one and a half
+times wider and half as tall: the square
+
+11
+00:01:52,850 --> 00:02:04,410
+To treat corners differently, tell them
+apart. The engine gives each corner an
+address too, called U V: zero to one
+
+12
+00:02:04,460 --> 00:02:14,880
+Now scale a move by the address. Add fifty
+times the vertical address to x. The top
+corners add nothing, because their address
+
+13
+00:02:14,930 --> 00:02:26,910
+Only four corners moved. In between, the
+card fills the shape in even steps. We
+measured the left edge: fifty pixels over
+
+14
+00:02:26,960 --> 00:02:35,930
+A slide, a squash, a lean: four corners
+are enough when the whole shape moves as
+one. A bend is different. Watch what a
+
+15
+00:02:35,980 --> 00:02:44,570
+A ripple is the sine of the address
+across, scaled and added to y. On this
+flag, nothing ripples. The right end
+
+16
+00:02:44,620 --> 00:02:54,750
+Why? Vertex can only move the vertices
+that exist. Between two corners, the card
+draws a straight line. A curve needs
+
+17
+00:02:54,800 --> 00:03:05,570
+So give the shape more vertices. Here are
+two ways in Godot. A polygon node, where
+you place the points yourself. Or a mesh
+
+18
+00:03:05,620 --> 00:03:17,000
+A mesh instance two D node draws a mesh.
+Give it a quad mesh, a flat rectangle you
+can cut into a grid. Subdivide width and
+
+19
+00:03:17,050 --> 00:03:29,630
+Count them. Cut a quad mesh three by
+three, and each side gets five corner
+points: twenty-five vertices. Always two
+
+20
+00:03:29,680 --> 00:03:40,020
+Same ripple. Same picture. On the left,
+four vertices: a tilt. On the right, two
+hundred ninety-seven: a ripple. Nothing in
+
+21
+00:03:40,070 --> 00:03:52,520
+More vertices, a smoother wave. Four
+pieces show every joint. Ten soften them.
+Thirty-two hide them. A rule of thumb:
+
+22
+00:03:52,570 --> 00:04:05,060
+Cut only where it bends. This ripple runs
+along the flag, never up and down, so rows
+of vertices add nothing. Thirty-one cuts
+
+23
+00:04:05,110 --> 00:04:17,070
+A polygon node gives you one vertex per
+point you place. With points only around
+the edge, Godot fills the inside with long
+
+24
+00:04:17,120 --> 00:04:26,050
+Now let it travel. Time is seconds on one
+clock shared by the whole game. Subtract
+it inside the sine, and the ripple slides
+
+25
+00:04:26,100 --> 00:04:35,860
+But a flag is held at one end. Multiply
+the ripple by the address across. At the
+left edge the address is zero, so nothing
+
+26
+00:04:35,910 --> 00:04:47,790
+Three numbers shape the wave: how tall,
+how many waves fit, how fast. Make each a
+uniform: a value your game sets from
+
+27
+00:04:47,840 --> 00:04:57,860
+Raise amplitude, and the waves get taller.
+Raise frequency, and more waves fit
+across. Raise speed, and they travel
+
+28
+00:04:57,910 --> 00:05:07,970
+Your game can turn the dials while it
+runs. When the wind picks up, call set
+shader parameter on the node's material,
+
+29
+00:05:08,020 --> 00:05:19,190
+Read it as one. Three dials at the top. In
+vertex, the wave: the address across,
+minus time, through a sine, scaled by the
+
+30
+00:05:19,240 --> 00:05:31,070
+The flag moves, but it looks like a flat
+sheet. Nothing shades the folds. Shading
+is a job for fragment, the function that
+
+31
+00:05:31,120 --> 00:05:41,030
+The way across is a varying. In vertex,
+you set a value at each corner. In
+fragment, you read it. The graphics card
+
+32
+00:05:41,080 --> 00:05:52,830
+Four colors, one per corner, set in
+vertex. Fragment only reads them. The
+result is a smooth blend, and an exact
+
+33
+00:05:52,880 --> 00:06:05,200
+Switch the blending off with flat, and
+each triangle keeps one corner's value. A
+mesh cut into a grid shows it: the smooth
+
+34
+00:06:05,250 --> 00:06:16,120
+The engine does this for you, too. U V is
+set at the corners and blended, which is
+why it is a smooth ramp. The color from
+
+35
+00:06:16,170 --> 00:06:25,910
+So light the folds. In vertex, work out
+how the cloth slopes and pass it as a
+varying. In fragment, darken the cloth
+
+36
+00:06:25,960 --> 00:06:38,520
+There is a shorter way. The color already
+travels from vertex to fragment,
+multiplied by the picture. Darken it in
+
+37
+00:06:38,570 --> 00:06:51,230
+One limit. A varying is only as detailed
+as your corners. Six stripes computed in
+vertex vanish on four corners, because
+
+38
+00:06:51,280 --> 00:07:01,410
+Some mistakes compile and still look
+wrong. First: in two D, a quad mesh draws
+upside down. Give its size a negative y,
+
+39
+00:07:01,460 --> 00:07:12,350
+Second: the word vertex changes meaning.
+In vertex, it is the corner's position in
+the node's own pixels. In fragment, it is
+
+40
+00:07:12,400 --> 00:07:23,270
+Move the node and you see it. Colored from
+the corner position, the gradient travels
+with the sprite. Colored from the pixel's
+
+41
+00:07:23,320 --> 00:07:34,620
+Third: a polygon node only has U V when it
+has a texture. A texture is an image a
+shader can read. Without one, the address
+
+42
+00:07:34,670 --> 00:07:45,820
+Fourth: a vertex shader changes the
+drawing, not the node. This one draws the
+sprite two hundred pixels away. The node's
+
+43
+00:07:45,870 --> 00:07:57,660
+Last: when nothing waves, count the
+vertices. Ask a mesh for its vertex array
+and print the size: here, two hundred
+
+44
+00:07:57,710 --> 00:08:17,910
+Let's recap with Claude. Vertex runs once
+for each corner and decides where it goes.
+A shape can only bend where it has
+
+45
+00:08:17,960 --> 00:08:43,810
+Your turn. Paste this into Claude: Write a
+Godot canvas item shader for a waving
+banner. Draw it with a MeshInstance two D
+
+46
+00:08:43,860 --> 00:08:47,650
+Vertex Shaders. At Nik Bear Brown.

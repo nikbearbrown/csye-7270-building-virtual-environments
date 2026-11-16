@@ -1,0 +1,3063 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-a-practical-godot-vfx-library-redo",
+    "title": "A Practical Godot VFX Library",
+    "channel": "claude-liam",
+    "channel_title": "@NikBearBrown",
+    "engine": "kokoro",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "register": "Teardown",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "aspect_ratio": "16:9",
+    "fps": 30,
+    "series_title": "Particle Systems and VFX in Godot",
+    "lecture_opening_description": "Build reusable effects with clear visual jobs",
+    "recorded_renderer": "Forward+ Metal on Apple M4 Pro"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Particle Systems and VFX in Godot. A Practical Godot VFX Library. Assemble, compare, and test layered effects in real Godot scenes.",
+      "shot": {
+        "type": "CARD",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "media_path": "media/BOPEN.mp4"
+      },
+      "audio_file": "mp3/beat-BOPEN.mp3",
+      "actual_duration_s": 9.62,
+      "media_path": "media/BOPEN.mp4"
+    },
+    {
+      "beat_id": "BIDEA",
+      "narration_text": "Hallo. This is Liam, in for Bear. Can a library of particle presets tell us why an effect works? We will build the layers, expose their timing, and test what survives reuse.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "A VFX library is\na folder of presets",
+            "triggerWords": "folder of presets",
+            "replacementWords": "set of tested contracts",
+            "fontSize": 72,
+            "charMs": 26,
+            "hesitateBetween": 7,
+            "hesitateWithin": 1,
+            "mistakeRate": 5,
+            "jitter": 20,
+            "seed": "claude-liam-lecture-a-practical-godot-vfx-library",
+            "durationSeconds": 11.146667
+          },
+          "rendered": {
+            "out": "media/BIDEA.mp4",
+            "at": "2026-10-23T23:16:34.674143+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The required hesitant writer corrects one misconception; deliberate sparse bookend."
+      },
+      "audio_file": "mp3/beat-BIDEA.mp3",
+      "actual_duration_s": 11.146667,
+      "speech_duration_s": 10.35,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "BDEFS",
+      "narration_text": "Layer. One visual job within a larger effect. Alpha. A value controlling transparency. Overdraw. Repeated drawing over the same pixels. Sub-emitter. An emitter receiving births from particles.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Layer",
+                "meaning": "One visual job within a larger effect"
+              },
+              {
+                "term": "Alpha",
+                "meaning": "A value controlling transparency"
+              },
+              {
+                "term": "Overdraw",
+                "meaning": "Repeated drawing over the same pixels"
+              },
+              {
+                "term": "Sub-emitter",
+                "meaning": "An emitter receiving births from particles"
+              }
+            ],
+            "durationSeconds": 12.01
+          },
+          "rendered": {
+            "out": "media/BDEFS.mp4",
+            "at": "2026-10-23T23:16:59.626513+00:00"
+          }
+        }
+      },
+      "audio_file": "mp3/beat-BDEFS.mp3",
+      "actual_duration_s": 12.01
+    },
+    {
+      "beat_id": "B01",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Start with the empty three-dimensional stage, using Forward Plus on Metal for the later contact-driven sub-emitter. We will build an explosion from separate visual jobs: a flash, a hot expansion, sparks, a smoke tail, and a ring. The editor preview repeats each event so we can inspect its complete life.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "open",
+          "path": "res://arena.tscn"
+        },
+        {
+          "at": 0.5,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "op": "add",
+          "class_name": "Node3D",
+          "name": "Explosion",
+          "at": 1.0
+        },
+        {
+          "at": 1.35,
+          "op": "set",
+          "property": "script",
+          "value": {
+            "resource": "res://effect.gd"
+          },
+          "node": "Explosion"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B01.mp3",
+      "actual_duration_s": 18.416,
+      "speech_duration_s": 17.22,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B02",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add one short-lived flash particle with a large soft quad. Its additive material makes a bright onset. This layer lasts less than a fifth of a second; it should announce the event without pretending to describe the whole explosion.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Explosion",
+          "class_name": "GPUParticles3D",
+          "name": "Flash",
+          "properties": {
+            "amount": 1,
+            "lifetime": 0.18,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 0,
+                "initial_velocity_max": 0,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 0,
+                "color_ramp": {
+                  "resource": "res://assets/flash-fade.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    2,
+                    2
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 1,
+                    "albedo_texture": {
+                      "resource": "res://assets/soft-dot.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.4,
+          "op": "set",
+          "property": "solo_layer",
+          "value": "Flash",
+          "node": "Explosion"
+        },
+        {
+          "at": 0.8,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B02.mp3",
+      "actual_duration_s": 14.810667,
+      "speech_duration_s": 13.61,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B03",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add the hot expansion. Twelve small quads move outward while a growth curve enlarges them. Solo this layer. Its short, changing silhouette carries the peak; the flash only made that peak easier to notice.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Explosion",
+          "class_name": "GPUParticles3D",
+          "name": "Hot",
+          "properties": {
+            "amount": 12,
+            "lifetime": 0.7,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 1,
+                "initial_velocity_max": 2,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 180,
+                "color_ramp": {
+                  "resource": "res://assets/hot-fade.tres"
+                },
+                "scale_min": 0.7,
+                "scale_max": 1.4,
+                "scale_curve": {
+                  "resource": "res://assets/grow.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    0.7,
+                    0.7
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 1,
+                    "albedo_texture": {
+                      "resource": "res://assets/soft-dot.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "solo_layer",
+          "value": "Hot",
+          "node": "Explosion"
+        },
+        {
+          "at": 0.9,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B03.mp3",
+      "actual_duration_s": 13.338667,
+      "speech_duration_s": 12.14,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B04",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add mesh sparks with faster launch and downward gravity. These particles give the eye a direction to follow after the flash. A few readable trajectories are more useful here than a dense cloud of identical points.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Explosion",
+          "class_name": "GPUParticles3D",
+          "name": "Sparks",
+          "properties": {
+            "amount": 32,
+            "lifetime": 1.2,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 4,
+                "initial_velocity_max": 7,
+                "gravity": {
+                  "v3": [
+                    0,
+                    -6,
+                    0
+                  ]
+                },
+                "spread": 90,
+                "color_ramp": {
+                  "resource": "res://assets/hot-fade.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "SphereMesh",
+              "props": {
+                "radius": 0.035,
+                "height": 0.07,
+                "radial_segments": 8,
+                "rings": 4,
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "solo_layer",
+          "value": "Sparks",
+          "node": "Explosion"
+        },
+        {
+          "at": 0.9,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B04.mp3",
+      "actual_duration_s": 13.637333,
+      "speech_duration_s": 12.44,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B05",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Build the slower smoke tail with alpha-blended quads. It rises, expands, and fades over more than two seconds. Soloing it makes its timing clear: smoke explains the aftermath, not the impact itself.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Explosion",
+          "class_name": "GPUParticles3D",
+          "name": "Smoke",
+          "properties": {
+            "amount": 18,
+            "lifetime": 2.4,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 0.5,
+                "initial_velocity_max": 1,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 20,
+                "color_ramp": {
+                  "resource": "res://assets/smoke-fade.tres"
+                },
+                "scale_min": 1,
+                "scale_max": 2,
+                "scale_curve": {
+                  "resource": "res://assets/grow.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    1,
+                    1
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 0,
+                    "albedo_texture": {
+                      "resource": "res://assets/soft-dot.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "solo_layer",
+          "value": "Smoke",
+          "node": "Explosion"
+        },
+        {
+          "at": 0.9,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B05.mp3",
+      "actual_duration_s": 13.509333,
+      "speech_duration_s": 12.31,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B06",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add an expanding ring, then show every layer together. The ring is another soft textured particle, with a different silhouette. Its scale curve creates expansion; its lifetime and alpha ramp end the image.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Explosion",
+          "class_name": "GPUParticles3D",
+          "name": "Ring",
+          "properties": {
+            "amount": 1,
+            "lifetime": 0.65,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 0,
+                "initial_velocity_max": 0,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 0,
+                "color_ramp": {
+                  "resource": "res://assets/flash-fade.tres"
+                },
+                "scale_min": 4,
+                "scale_max": 4,
+                "scale_curve": {
+                  "resource": "res://assets/grow.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    1,
+                    1
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 1,
+                    "albedo_texture": {
+                      "resource": "res://assets/ring.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "solo_layer",
+          "value": "Ring",
+          "node": "Explosion"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "solo_layer",
+          "value": "",
+          "node": "Explosion"
+        },
+        {
+          "at": 4.4,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B06.mp3",
+      "actual_duration_s": 13.04,
+      "speech_duration_s": 11.84,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B07",
+      "act": "Build An Explosion",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Remove the smoke tail for one comparison, then restore it. Next reduce the spark count from thirty-two to sixteen. Keep the version whose onset, peak, and decay still read. More particles are a cost, not an explanation.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build An Explosion"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "smoke_enabled",
+          "value": false,
+          "node": "Explosion"
+        },
+        {
+          "at": 0.3,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "smoke_enabled",
+          "value": true,
+          "node": "Explosion"
+        },
+        {
+          "at": 4.4,
+          "op": "set",
+          "property": "amount",
+          "value": 16,
+          "node": "Explosion/Sparks"
+        },
+        {
+          "at": 4.8,
+          "op": "call",
+          "node": "Explosion",
+          "method": "play"
+        },
+        {
+          "at": 10,
+          "op": "save_branch",
+          "node": "Explosion",
+          "path": "res://effects/explosion.tscn"
+        },
+        {
+          "at": 10.5,
+          "op": "save"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B07.mp3",
+      "actual_duration_s": 14.064,
+      "speech_duration_s": 12.86,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B08",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Start a campfire scene with a continuous smoke plume. Continuous means new particles are born throughout the cycle. The plume has a slow upward motion and a broadening alpha silhouette, so it reads as smoke before we add a flame.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Explosion"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "heading",
+          "value": "Build Smoke And Fire",
+          "node": "."
+        },
+        {
+          "op": "add",
+          "class_name": "Node3D",
+          "name": "Campfire",
+          "at": 0.6
+        },
+        {
+          "at": 0.95,
+          "op": "set",
+          "property": "script",
+          "value": {
+            "resource": "res://effect.gd"
+          },
+          "node": "Campfire"
+        },
+        {
+          "at": 1.5,
+          "op": "add",
+          "node": "Campfire",
+          "class_name": "GPUParticles3D",
+          "name": "Smoke",
+          "properties": {
+            "amount": 40,
+            "lifetime": 3,
+            "one_shot": false,
+            "explosiveness": 0,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 0.5,
+                "initial_velocity_max": 0.9,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 12,
+                "color_ramp": {
+                  "resource": "res://assets/smoke-fade.tres"
+                },
+                "scale_min": 1,
+                "scale_max": 2,
+                "scale_curve": {
+                  "resource": "res://assets/grow.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    0.8,
+                    0.8
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 0,
+                    "albedo_texture": {
+                      "resource": "res://assets/soft-dot.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 2,
+          "op": "set",
+          "property": "preview_interval",
+          "value": 6.5,
+          "node": "Campfire"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B08.mp3",
+      "actual_duration_s": 14.298667,
+      "speech_duration_s": 13.1,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B09",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add a faster, shorter flame layer, then a few small embers. The alpha smoke darkens and softens the scene; additive flame adds light to the image. Those different visual jobs justify different material choices.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Campfire",
+          "class_name": "GPUParticles3D",
+          "name": "Flame",
+          "properties": {
+            "amount": 32,
+            "lifetime": 0.8,
+            "one_shot": false,
+            "explosiveness": 0,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 1,
+                "initial_velocity_max": 2,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 12,
+                "color_ramp": {
+                  "resource": "res://assets/hot-fade.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    0.5,
+                    0.5
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 1,
+                    "albedo_texture": {
+                      "resource": "res://assets/soft-dot.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "add",
+          "node": "Campfire",
+          "class_name": "GPUParticles3D",
+          "name": "Embers",
+          "properties": {
+            "amount": 16,
+            "lifetime": 1.5,
+            "one_shot": false,
+            "explosiveness": 0,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 1,
+                "initial_velocity_max": 3,
+                "gravity": {
+                  "v3": [
+                    0,
+                    -1.5,
+                    0
+                  ]
+                },
+                "spread": 25,
+                "color_ramp": {
+                  "resource": "res://assets/hot-fade.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "SphereMesh",
+              "props": {
+                "radius": 0.025,
+                "height": 0.05,
+                "radial_segments": 8,
+                "rings": 4,
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 1,
+          "op": "call",
+          "node": "Campfire",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B09.mp3",
+      "actual_duration_s": 13.722667,
+      "speech_duration_s": 12.52,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B10",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Change the environment from dark to light, then restore it. Inspect both flame and smoke against each background. Additive blending can disappear into a bright scene, while alpha smoke depends on contrast and overlap.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "background_color",
+          "value": {
+            "color": "dbe2df"
+          },
+          "node": "WorldEnvironment",
+          "resource_property": "environment"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "background_color",
+          "value": {
+            "color": "09101a"
+          },
+          "node": "WorldEnvironment",
+          "resource_property": "environment"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B10.mp3",
+      "actual_duration_s": 14.042667,
+      "speech_duration_s": 12.84,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B11",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Here is an intentionally crowded plume. Increase the smoke count and size, then reduce both. Overlapping transparent cards add drawing work and may introduce ordering artifacts. Keep the shape, but remove layers that do not improve its message.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "amount",
+          "value": 240,
+          "node": "Campfire/Smoke"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "scale_max",
+          "value": 4,
+          "node": "Campfire/Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale max"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "amount",
+          "value": 40,
+          "node": "Campfire/Smoke"
+        },
+        {
+          "at": 5.3,
+          "op": "set",
+          "property": "scale_max",
+          "value": 2,
+          "node": "Campfire/Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "scale max"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B11.mp3",
+      "actual_duration_s": 15.002667,
+      "speech_duration_s": 13.8,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B12",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Assign this original four-cell smoke texture. The grid is visible in the actual material preview. Set four horizontal frames, one vertical frame, and a single animation cycle. The process animation speed advances through that grid over each particle\u2019s life.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "albedo_texture",
+          "value": {
+            "resource": "res://assets/smoke-flipbook.png"
+          },
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "albedo texture"
+        },
+        {
+          "at": 0.4,
+          "op": "resource",
+          "node": "Campfire/Smoke",
+          "property": "draw_pass_1",
+          "resource_chain": [
+            "material",
+            "albedo_texture"
+          ]
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "particles_anim_h_frames",
+          "value": 4,
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "particles anim h frames"
+        },
+        {
+          "at": 4.3,
+          "op": "set",
+          "property": "particles_anim_v_frames",
+          "value": 1,
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "particles anim v frames"
+        },
+        {
+          "at": 4.6,
+          "op": "set",
+          "property": "particles_anim_loop",
+          "value": false,
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "particles anim loop"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "anim_speed_min",
+          "value": 1,
+          "node": "Campfire/Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "anim speed min"
+        },
+        {
+          "at": 5.3,
+          "op": "set",
+          "property": "anim_speed_max",
+          "value": 1,
+          "node": "Campfire/Smoke",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "anim speed max"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B12.mp3",
+      "actual_duration_s": 16.688,
+      "speech_duration_s": 15.49,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B13",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Duplicate the smoke and change its shared surface tint. Both copies change. Make only the mesh and surface material independent, then restore one tint. The texture remains shared because a color edit does not require another copy of its pixels.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "duplicate",
+          "node": "Campfire/Smoke",
+          "name": "SmokeCopy",
+          "properties": {
+            "position": {
+              "v3": [
+                2,
+                0,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "albedo_color",
+          "value": {
+            "color": "b275df"
+          },
+          "node": "Campfire/SmokeCopy",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "albedo color"
+        },
+        {
+          "at": 5,
+          "op": "unique_surface",
+          "node": "Campfire/SmokeCopy"
+        },
+        {
+          "at": 5.4,
+          "op": "set",
+          "property": "albedo_color",
+          "value": {
+            "color": "ffffff"
+          },
+          "node": "Campfire/SmokeCopy",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "albedo color"
+        },
+        {
+          "at": 9,
+          "op": "set",
+          "property": "metadata/disabled",
+          "value": true,
+          "node": "Campfire/SmokeCopy"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B13.mp3",
+      "actual_duration_s": 15.792,
+      "speech_duration_s": 14.59,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B14",
+      "act": "Build Smoke And Fire",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Restore a neutral smoke tint and save the campfire. Keep the individual smoke scene too. The flipbook is an optional appearance layer; the slow rise, growth, and fade still need to work when we return to a single soft texture.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Smoke And Fire"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "albedo_color",
+          "value": {
+            "color": "ffffff"
+          },
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "albedo color"
+        },
+        {
+          "at": 0.5,
+          "op": "save_branch",
+          "node": "Campfire",
+          "path": "res://effects/campfire.tscn"
+        },
+        {
+          "at": 1,
+          "op": "save_branch",
+          "node": "Campfire/Smoke",
+          "path": "res://effects/smoke.tscn"
+        },
+        {
+          "at": 2,
+          "op": "set",
+          "property": "albedo_texture",
+          "value": {
+            "resource": "res://assets/soft-dot.tres"
+          },
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "albedo texture"
+        },
+        {
+          "at": 2.3,
+          "op": "set",
+          "property": "particles_anim_h_frames",
+          "value": 1,
+          "node": "Campfire/Smoke",
+          "resource_property": "draw_pass_1",
+          "resource_chain": [
+            "material"
+          ],
+          "filter": "particles anim h frames"
+        },
+        {
+          "at": 6,
+          "op": "save"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B14.mp3",
+      "actual_duration_s": 14.426667,
+      "speech_duration_s": 13.23,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B15",
+      "act": "Build Rain And Contact",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Build rain over an area rather than at one point. A box-shaped emission region covers the stage. Long narrow meshes move downward quickly, so the first visible drops already communicate falling rain.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Rain And Contact"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Campfire"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "heading",
+          "value": "Build Rain And Contact",
+          "node": "."
+        },
+        {
+          "op": "add",
+          "class_name": "Node3D",
+          "name": "Rain",
+          "at": 0.6
+        },
+        {
+          "at": 0.95,
+          "op": "set",
+          "property": "script",
+          "value": {
+            "resource": "res://effect.gd"
+          },
+          "node": "Rain"
+        },
+        {
+          "at": 1.5,
+          "op": "add",
+          "node": "Rain",
+          "class_name": "GPUParticles3D",
+          "name": "Drops",
+          "properties": {
+            "amount": 96,
+            "lifetime": 1.1,
+            "one_shot": false,
+            "explosiveness": 0,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    -1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 8,
+                "initial_velocity_max": 10,
+                "gravity": {
+                  "v3": [
+                    0,
+                    -2,
+                    0
+                  ]
+                },
+                "spread": 2,
+                "color_ramp": {
+                  "resource": "res://assets/magic-fade.tres"
+                },
+                "emission_shape": 3,
+                "emission_box_extents": {
+                  "v3": [
+                    4,
+                    0.05,
+                    3
+                  ]
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "BoxMesh",
+              "props": {
+                "size": {
+                  "v3": [
+                    0.025,
+                    0.5,
+                    0.025
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            },
+            "position": {
+              "v3": [
+                0,
+                5,
+                0
+              ]
+            }
+          }
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B15.mp3",
+      "actual_duration_s": 13.146667,
+      "speech_duration_s": 11.95,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B16",
+      "act": "Build Rain And Contact",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add a particle collision box at the ground and a separate splash pool. A floor mesh alone does not create particle contact. The splash emitter begins inactive and uses rigid contact to emerge above the surface. It receives individual particle births from the parent effect.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Rain And Contact"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Rain",
+          "class_name": "GPUParticlesCollisionBox3D",
+          "name": "Ground",
+          "properties": {
+            "position": {
+              "v3": [
+                0,
+                -1,
+                0
+              ]
+            },
+            "size": {
+              "v3": [
+                10,
+                2,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "add",
+          "node": "Rain",
+          "class_name": "GPUParticles3D",
+          "name": "Splash",
+          "properties": {
+            "amount": 64,
+            "lifetime": 0.35,
+            "one_shot": false,
+            "explosiveness": 0,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 2.5,
+                "initial_velocity_max": 3.5,
+                "gravity": {
+                  "v3": [
+                    0,
+                    -6,
+                    0
+                  ]
+                },
+                "spread": 60,
+                "color_ramp": {
+                  "resource": "res://assets/flash-fade.tres"
+                },
+                "collision_mode": 1,
+                "collision_bounce": 0.35
+              }
+            },
+            "draw_pass_1": {
+              "new": "SphereMesh",
+              "props": {
+                "radius": 0.035,
+                "height": 0.07,
+                "radial_segments": 8,
+                "rings": 4,
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            }
+          }
+        },
+        {
+          "at": 1,
+          "op": "set",
+          "property": "metadata/sub_emitter_only",
+          "value": true,
+          "node": "Rain/Splash"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B16.mp3",
+      "actual_duration_s": 17.456,
+      "speech_duration_s": 16.26,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B17",
+      "act": "Build Rain And Contact",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Connect Drops to the Splash child as its sub-emitter. Use contact-driven emission and one splash particle per contact. The visible test must show births at impact positions; a decorative ground emitter would be a different mechanism.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Rain And Contact"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "sub_emitter",
+          "value": "../Splash",
+          "node": "Rain/Drops"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "collision_mode",
+          "value": 2,
+          "node": "Rain/Drops",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "collision mode"
+        },
+        {
+          "at": 0.6,
+          "op": "set",
+          "property": "sub_emitter_mode",
+          "value": 3,
+          "node": "Rain/Drops",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "sub emitter mode"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "sub_emitter_amount_at_collision",
+          "value": 1,
+          "node": "Rain/Drops",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "sub emitter amount at collision"
+        },
+        {
+          "at": 1.3,
+          "op": "call",
+          "node": "Rain",
+          "method": "play"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B17.mp3",
+      "actual_duration_s": 14.789333,
+      "speech_duration_s": 13.59,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B18",
+      "act": "Build Rain And Contact",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Disable the contact mechanism, then restore it. Watch the ground rather than the top of the frame. This comparison separates falling streaks from contact splashes and checks that the child pool is doing the job we claimed.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Rain And Contact"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "sub_emitter_mode",
+          "value": 0,
+          "node": "Rain/Drops",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "sub emitter mode"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "sub_emitter_mode",
+          "value": 3,
+          "node": "Rain/Drops",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "sub emitter mode"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B18.mp3",
+      "actual_duration_s": 14.277333,
+      "speech_duration_s": 13.08,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B19",
+      "act": "Build Rain And Contact",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Orbit across the rain volume and inspect its visibility bounds. The emitter must cover the playable view, and the bounds must cover the moving particles. A large box does not repair missing coverage or create a collision surface.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Rain And Contact"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 45,
+          "orbit": true
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "visibility_aabb",
+          "value": {
+            "aabb": [
+              -5,
+              -7,
+              -4,
+              10,
+              9,
+              8
+            ]
+          },
+          "node": "Rain/Drops"
+        },
+        {
+          "at": 8,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B19.mp3",
+      "actual_duration_s": 14.469333,
+      "speech_duration_s": 13.27,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B20",
+      "act": "Build Rain And Contact",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Keep the splash capacity explicit: sixty-four slots and a short lifetime. Stop new rain, wait for the existing drops and splashes to finish, then replay. Save the effect with the renderer and contact-test evidence that actually passed.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Rain And Contact"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "preview_loop",
+          "value": false,
+          "node": "Rain"
+        },
+        {
+          "at": 0.3,
+          "op": "call",
+          "node": "Rain",
+          "method": "stop"
+        },
+        {
+          "at": 4,
+          "op": "call",
+          "node": "Rain",
+          "method": "play"
+        },
+        {
+          "at": 9,
+          "op": "save_branch",
+          "node": "Rain",
+          "path": "res://effects/rain.tscn"
+        },
+        {
+          "at": 9.5,
+          "op": "save"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B20.mp3",
+      "actual_duration_s": 15.28,
+      "speech_duration_s": 14.08,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B21",
+      "act": "Build Dust And Trails",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Move to the two-dimensional ground test. Add a one-shot dust emitter at the contact line. Upward launch and downward gravity make a short puff that returns toward the ground instead of floating like smoke.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Dust And Trails"
+      },
+      "capture_actions": [
+        {
+          "op": "open",
+          "path": "res://arena2d.tscn"
+        },
+        {
+          "at": 0.5,
+          "op": "select",
+          "node": "FrameGuide"
+        },
+        {
+          "at": 0.9,
+          "op": "zoom",
+          "node": "FrameGuide"
+        },
+        {
+          "at": 1.3,
+          "op": "add",
+          "class_name": "GPUParticles2D",
+          "name": "Dust",
+          "properties": {
+            "position": {
+              "v2": [
+                0,
+                100
+              ]
+            },
+            "amount": 24,
+            "lifetime": 0.65,
+            "one_shot": true,
+            "explosiveness": 1,
+            "texture": {
+              "resource": "res://assets/soft-dot.tres"
+            },
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "particle_flag_disable_z": true,
+                "direction": {
+                  "v3": [
+                    0,
+                    -1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 70,
+                "initial_velocity_max": 140,
+                "gravity": {
+                  "v3": [
+                    0,
+                    180,
+                    0
+                  ]
+                },
+                "spread": 70,
+                "scale_min": 0.1,
+                "scale_max": 0.25,
+                "color": {
+                  "color": "bd9e78"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B21.mp3",
+      "actual_duration_s": 13.317333,
+      "speech_duration_s": 12.12,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B22",
+      "act": "Build Dust And Trails",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Reduce the spread, then restore a wider ground puff. Keep the contact line fixed while comparing the silhouettes. The effect should tell us where the contact happened; moving the emitter to hide a weak shape would change the question.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Dust And Trails"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "spread",
+          "value": 20,
+          "node": "Dust",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "spread",
+          "value": 70,
+          "node": "Dust",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "spread"
+        },
+        {
+          "at": 4.4,
+          "op": "call",
+          "node": "Dust",
+          "method": "restart"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B22.mp3",
+      "actual_duration_s": 13.872,
+      "speech_duration_s": 12.67,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B23",
+      "act": "Build Dust And Trails",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Duplicate the emitter as a trail and make its process resource unique. Turn one-shot off and spread births through time. Its lower speed and shorter lifetime make a persistent movement cue rather than another impact.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Dust And Trails"
+      },
+      "capture_actions": [
+        {
+          "op": "duplicate",
+          "node": "Dust",
+          "name": "Trail"
+        },
+        {
+          "at": 0.4,
+          "op": "unique",
+          "node": "Trail",
+          "property": "process_material"
+        },
+        {
+          "at": 0.8,
+          "op": "set",
+          "property": "one_shot",
+          "value": false,
+          "node": "Trail"
+        },
+        {
+          "at": 1.1,
+          "op": "set",
+          "property": "explosiveness",
+          "value": 0,
+          "node": "Trail"
+        },
+        {
+          "at": 1.4,
+          "op": "set",
+          "property": "lifetime",
+          "value": 0.5,
+          "node": "Trail"
+        },
+        {
+          "at": 1.7,
+          "op": "set",
+          "property": "initial_velocity_min",
+          "value": 15,
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity min"
+        },
+        {
+          "at": 2,
+          "op": "set",
+          "property": "initial_velocity_max",
+          "value": 30,
+          "node": "Trail",
+          "resource_property": "process_material",
+          "restart": true,
+          "filter": "initial velocity max"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B23.mp3",
+      "actual_duration_s": 13.786667,
+      "speech_duration_s": 12.59,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B24",
+      "act": "Build Dust And Trails",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Move the emitter with local coordinates off. The trail records positions left behind the source. Turn local coordinates on for comparison, then restore world space. That single choice changes a trail into an attached cloud.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Dust And Trails"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "moving",
+          "value": true,
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Trail"
+        },
+        {
+          "at": 4,
+          "op": "set",
+          "property": "local_coords",
+          "value": true,
+          "node": "Trail"
+        },
+        {
+          "at": 8,
+          "op": "set",
+          "property": "local_coords",
+          "value": false,
+          "node": "Trail"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B24.mp3",
+      "actual_duration_s": 14.341333,
+      "speech_duration_s": 13.14,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B25",
+      "act": "Build Dust And Trails",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Turn the trail condition off and let existing dust finish. Turn it on again while the source moves. A continuous effect has both an on-state and an off-state; the off-state is part of the design, not cleanup to consider later.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Dust And Trails"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "repeat_preview",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "stream_enabled",
+          "value": false,
+          "node": "."
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "stream_enabled",
+          "value": true,
+          "node": "."
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B25.mp3",
+      "actual_duration_s": 14.192,
+      "speech_duration_s": 12.99,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B26",
+      "act": "Build Dust And Trails",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Save separate dust and trail scenes with their independent process resources. Their texture can remain shared. The ground puff communicates a contact event, while the trail communicates movement over time.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Build Dust And Trails"
+      },
+      "capture_actions": [
+        {
+          "op": "save_branch",
+          "node": "Dust",
+          "path": "res://effects/dust_2d.tscn"
+        },
+        {
+          "at": 0.4,
+          "op": "save_branch",
+          "node": "Trail",
+          "path": "res://effects/trail_2d.tscn"
+        },
+        {
+          "at": 0.8,
+          "op": "save"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B26.mp3",
+      "actual_duration_s": 13.274667,
+      "speech_duration_s": 12.07,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B27",
+      "act": "Coordinate Magic And Timing",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Return to the three-dimensional stage and build a magic effect. Its controller will coordinate a charge, a release, and an aftermath. Timing makes the action readable before we increase detail or particle count.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Coordinate Magic And Timing"
+      },
+      "capture_actions": [
+        {
+          "op": "open",
+          "path": "res://arena.tscn"
+        },
+        {
+          "at": 0.5,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Rain",
+          "at": 1.0
+        },
+        {
+          "at": 1.35,
+          "op": "set",
+          "property": "heading",
+          "value": "Coordinate Magic And Timing",
+          "node": "."
+        },
+        {
+          "op": "add",
+          "class_name": "Node3D",
+          "name": "Magic",
+          "at": 1.7
+        },
+        {
+          "at": 2.05,
+          "op": "set",
+          "property": "script",
+          "value": {
+            "resource": "res://effect.gd"
+          },
+          "node": "Magic"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B27.mp3",
+      "actual_duration_s": 13.573333,
+      "speech_duration_s": 12.37,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B28",
+      "act": "Coordinate Magic And Timing",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add a compact blue charge cloud that emits for one and a half seconds. Its small volume announces preparation. The controller owns that time window, so the particle scene does not have to decide when a gameplay action is allowed.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Coordinate Magic And Timing"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Magic",
+          "class_name": "GPUParticles3D",
+          "name": "Charge",
+          "properties": {
+            "amount": 32,
+            "lifetime": 1,
+            "one_shot": false,
+            "explosiveness": 0,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 0.05,
+                "initial_velocity_max": 0.2,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 180,
+                "color_ramp": {
+                  "resource": "res://assets/magic-fade.tres"
+                },
+                "emission_shape": 1,
+                "emission_sphere_radius": 0.35
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    0.18,
+                    0.18
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 1,
+                    "albedo_texture": {
+                      "resource": "res://assets/soft-dot.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            },
+            "metadata/emit_until": 1.5
+          }
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B28.mp3",
+      "actual_duration_s": 14.469333,
+      "speech_duration_s": 13.27,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B29",
+      "act": "Coordinate Magic And Timing",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add a fast release burst with a delayed start, followed by a slower ring. These are familiar layers with different timing and color. The release begins after the charge; adding everything at time zero would erase that distinction.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Coordinate Magic And Timing"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Magic",
+          "class_name": "GPUParticles3D",
+          "name": "Release",
+          "properties": {
+            "amount": 28,
+            "lifetime": 0.9,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 2,
+                "initial_velocity_max": 4,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 180,
+                "color_ramp": {
+                  "resource": "res://assets/magic-fade.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "SphereMesh",
+              "props": {
+                "radius": 0.05,
+                "height": 0.1,
+                "radial_segments": 8,
+                "rings": 4,
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            },
+            "metadata/delay": 1.5
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "add",
+          "node": "Magic",
+          "class_name": "GPUParticles3D",
+          "name": "Ring",
+          "properties": {
+            "amount": 1,
+            "lifetime": 0.8,
+            "one_shot": true,
+            "explosiveness": 1,
+            "emitting": false,
+            "process_material": {
+              "new": "ParticleProcessMaterial",
+              "props": {
+                "direction": {
+                  "v3": [
+                    0,
+                    1,
+                    0
+                  ]
+                },
+                "initial_velocity_min": 0,
+                "initial_velocity_max": 0,
+                "gravity": {
+                  "v3": [
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "spread": 0,
+                "color_ramp": {
+                  "resource": "res://assets/magic-fade.tres"
+                },
+                "scale_min": 4,
+                "scale_max": 4,
+                "scale_curve": {
+                  "resource": "res://assets/grow.tres"
+                }
+              }
+            },
+            "draw_pass_1": {
+              "new": "QuadMesh",
+              "props": {
+                "size": {
+                  "v2": [
+                    1,
+                    1
+                  ]
+                },
+                "material": {
+                  "new": "StandardMaterial3D",
+                  "props": {
+                    "shading_mode": 0,
+                    "transparency": 1,
+                    "vertex_color_use_as_albedo": true,
+                    "billboard_mode": 3,
+                    "billboard_keep_scale": true,
+                    "blend_mode": 1,
+                    "albedo_texture": {
+                      "resource": "res://assets/ring.tres"
+                    }
+                  }
+                }
+              }
+            },
+            "use_fixed_seed": true,
+            "seed": 7270,
+            "visibility_aabb": {
+              "aabb": [
+                -8,
+                -3,
+                -8,
+                16,
+                14,
+                16
+              ]
+            },
+            "metadata/delay": 1.6
+          }
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B29.mp3",
+      "actual_duration_s": 14.32,
+      "speech_duration_s": 13.12,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B30",
+      "act": "Coordinate Magic And Timing",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Add a brief light pulse at release, then compare with the light disabled. The pulse affects nearby surfaces; the bright particle material affects the image. Keep both only if their combined timing helps the action read.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Coordinate Magic And Timing"
+      },
+      "capture_actions": [
+        {
+          "op": "add",
+          "node": "Magic",
+          "class_name": "OmniLight3D",
+          "name": "Pulse",
+          "properties": {
+            "position": {
+              "v3": [
+                0,
+                1,
+                0
+              ]
+            },
+            "light_color": {
+              "color": "469cff"
+            },
+            "omni_range": 4,
+            "light_energy": 0
+          }
+        },
+        {
+          "at": 0.5,
+          "op": "call",
+          "node": "Magic",
+          "method": "play"
+        },
+        {
+          "at": 5,
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Magic/Pulse"
+        },
+        {
+          "at": 5.3,
+          "op": "call",
+          "node": "Magic",
+          "method": "play"
+        },
+        {
+          "at": 10,
+          "op": "set",
+          "property": "visible",
+          "value": true,
+          "node": "Magic/Pulse"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B30.mp3",
+      "actual_duration_s": 14.064,
+      "speech_duration_s": 12.86,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B31",
+      "act": "Coordinate Magic And Timing",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Open the actual controller. It tracks elapsed time, starts each layer at its delay, and stops continuous births at their stated end. It also computes when the last particle can finish before freeing a spawned instance.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Coordinate Magic And Timing"
+      },
+      "capture_actions": [
+        {
+          "op": "script",
+          "path": "res://effect.gd",
+          "line": 26
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B31.mp3",
+      "actual_duration_s": 13.936,
+      "speech_duration_s": 12.74,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B32",
+      "act": "Coordinate Magic And Timing",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Replay the complete charge and release from a second angle. The sequence should remain readable at game scale without relying on the editor selection outline. Save it as a reusable scene with the timing controls intact.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Coordinate Magic And Timing"
+      },
+      "capture_actions": [
+        {
+          "op": "view3d",
+          "angle": 100,
+          "orbit": false
+        },
+        {
+          "at": 0.5,
+          "op": "call",
+          "node": "Magic",
+          "method": "play"
+        },
+        {
+          "at": 7,
+          "op": "save_branch",
+          "node": "Magic",
+          "path": "res://effects/magic.tscn"
+        },
+        {
+          "at": 8,
+          "op": "save"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B32.mp3",
+      "actual_duration_s": 14.256,
+      "speech_duration_s": 13.06,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B33",
+      "act": "Package And Price",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "The library now has explosion, smoke, campfire, rain, dust, trail, and magic resources. Each scene has a visual job and explicit replay or emission behavior. Reuse the scene contract; do not copy unexplained parameter piles into the game.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Package And Price"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "heading",
+          "value": "Package And Price",
+          "node": "."
+        },
+        {
+          "at": 0.4,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "at": 0.8,
+          "op": "select",
+          "node": "Magic"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B33.mp3",
+      "actual_duration_s": 16.688,
+      "speech_duration_s": 15.49,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B34",
+      "act": "Package And Price",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Open the spawn path in the stage script. Space loads a saved scene, marks it for bounded disposal, and calls play. The scene\u2019s tree-exited signal updates the cleanup count, so repeated use has observable state.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Package And Price"
+      },
+      "capture_actions": [
+        {
+          "op": "script",
+          "path": "res://stage.gd",
+          "line": 23
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B34.mp3",
+      "actual_duration_s": 14.0,
+      "speech_duration_s": 12.8,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B35",
+      "act": "Package And Price",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Run the stage and trigger the saved explosion three times. Watch the active-instance counter rise and return to zero after the smoke tail finishes. This checks the whole layered scene, not only the first bright frame.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Package And Price"
+      },
+      "capture_actions": [
+        {
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Magic"
+        },
+        {
+          "at": 0.3,
+          "op": "set",
+          "property": "selected_effect",
+          "value": "Explosion",
+          "node": "."
+        },
+        {
+          "at": 0.6,
+          "op": "save"
+        },
+        {
+          "at": 1,
+          "op": "play_custom",
+          "path": "res://arena.tscn"
+        },
+        {
+          "at": 2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 2.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 5.5,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 5.7,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        },
+        {
+          "at": 9,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": true
+        },
+        {
+          "at": 9.2,
+          "op": "game_input",
+          "key": "Space",
+          "pressed": false
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B35.mp3",
+      "actual_duration_s": 14.106667,
+      "speech_duration_s": 12.91,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B36",
+      "act": "Package And Price",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Compare the same stage with layers off and on using the recorded measurement fixture. Its report names the renderer, resolution, warm-up, sample count, and instrument. A smooth recording alone tells us none of those costs.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Package And Price"
+      },
+      "capture_actions": [
+        {
+          "op": "stop"
+        },
+        {
+          "at": 0.5,
+          "op": "script",
+          "path": "res://tests/price.gd",
+          "line": 1
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B36.mp3",
+      "actual_duration_s": 14.341333,
+      "speech_duration_s": 13.14,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B37",
+      "act": "Package And Price",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Read the actual cost report beside those conditions. Zero or unavailable GPU timing is not free rendering. Look for the difference from the empty stage, and preserve both the useful shape and a budget for the rest of the frame.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Package And Price"
+      },
+      "capture_actions": [
+        {
+          "op": "play_custom",
+          "path": "res://price_report.tscn"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B37.mp3",
+      "actual_duration_s": 14.853333,
+      "speech_duration_s": 13.65,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "B38",
+      "act": "Package And Price",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "lead_silence_s": 1.2,
+      "narration_text": "Return to the saved library and its source. Keep the procedural texture generator, tests, renderer notes, and complete-effect recordings with the scenes. A reusable effect is something the next person can trigger, inspect, change, and finish safely.",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Genuine native editor actions and particles at original speed",
+        "visual_intent": "Package And Price"
+      },
+      "capture_actions": [
+        {
+          "op": "stop"
+        },
+        {
+          "at": 0.5,
+          "op": "set",
+          "property": "visible",
+          "value": true,
+          "node": "Explosion"
+        },
+        {
+          "at": 0.9,
+          "op": "set",
+          "property": "visible",
+          "value": false,
+          "node": "Magic"
+        },
+        {
+          "at": 1.3,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": true
+        },
+        {
+          "at": 8,
+          "op": "view3d",
+          "angle": 45,
+          "orbit": false
+        },
+        {
+          "at": 9,
+          "op": "save"
+        }
+      ],
+      "capture_focus": "viewport",
+      "audio_file": "mp3/beat-B38.mp3",
+      "actual_duration_s": 15.493333,
+      "speech_duration_s": 14.29,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "BVDT",
+      "narration_text": "Let's recap with Claude. An effect reads through onset, peak, and decay. Smoke, flame, and sparks have different visual jobs. Contact splashes need a verified birth mechanism. A trail needs a coordinate space and an off-state. A controller coordinates timing and complete cleanup. A reusable library includes evidence and measured limits.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "What The Editor Demonstrated",
+            "artifactHeading": "The Useful Part",
+            "artifactLines": [
+              "An effect reads through onset, peak, and decay.",
+              "Smoke, flame, and sparks have different visual jobs.",
+              "Contact splashes need a verified birth mechanism.",
+              "A trail needs a coordinate space and an off-state.",
+              "A controller coordinates timing and complete cleanup.",
+              "A reusable library includes evidence and measured limits."
+            ],
+            "lectureLayout": true,
+            "brandLabel": "@NikBearBrown",
+            "durationSeconds": 19.7
+          },
+          "rendered": {
+            "out": "media/BVDT.mp4",
+            "at": "2026-10-23T23:17:34.324030+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "audio_file": "mp3/beat-BVDT.mp3",
+      "actual_duration_s": 19.7,
+      "speech_duration_s": 19.2,
+      "padding_applied": true
+    },
+    {
+      "beat_id": "BHTF",
+      "narration_text": "Choose one effect and make two variants for different game situations using its existing layers. Explain each changed setting and test the result at gameplay scale.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "YOUR TURN \u00b7 PARTICLE LAB",
+            "segment": "Build, Change, Check",
+            "command": "Choose one effect and make two variants for different game situations using its existing layers. Explain each changed setting and test the result at gameplay scale.",
+            "output": [
+              "Check: the variants communicate different intentions.",
+              "Check: repeated playback remains bounded and clean."
+            ],
+            "runningText": "Your next experiment",
+            "largeText": true,
+            "animateTyping": false,
+            "modelLabel": "Your local project",
+            "effortLabel": "One change",
+            "durationSeconds": 9.92
+          },
+          "rendered": {
+            "out": "media/BHTF.mp4",
+            "at": "2026-10-23T23:17:54.991612+00:00"
+          }
+        }
+      },
+      "audio_file": "mp3/beat-BHTF.mp3",
+      "actual_duration_s": 9.92
+    },
+    {
+      "beat_id": "BSIGN",
+      "narration_text": "This is Liam, in for Bear. Keep the version that survives the test.",
+      "lane": "capture",
+      "proof_gate": "SHOW",
+      "shot": {
+        "type": "CAPTURE",
+        "source": "capture",
+        "motion": "Original-speed complete library effect under Liam signoff"
+      },
+      "audio_file": "mp3/beat-BSIGN.mp3",
+      "actual_duration_s": 4.5
+    },
+    {
+      "beat_id": "BOUT",
+      "narration_text": "A Practical Godot VFX Library. At Nik Bear Brown.",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "motion": "component animation",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "A Practical Godot VFX Library",
+            "slug": "claude-liam-lecture-a-practical-godot-vfx-library-redo",
+            "lectureLayout": true,
+            "handle": "@NikBearBrown",
+            "durationSeconds": 5.437333
+          },
+          "rendered": {
+            "out": "media/BOUT.mp4",
+            "at": "2026-10-23T23:18:07.264165+00:00"
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "Locked channel outro contains the exact title, handle and mascot; deliberate identity card."
+      },
+      "audio_file": "mp3/beat-BOUT.mp3",
+      "actual_duration_s": 5.437333,
+      "speech_duration_s": 4.44,
+      "padding_applied": true
+    }
+  ]
+}

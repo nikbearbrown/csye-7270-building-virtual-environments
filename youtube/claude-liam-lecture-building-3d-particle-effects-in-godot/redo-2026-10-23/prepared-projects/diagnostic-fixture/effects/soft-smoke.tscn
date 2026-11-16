@@ -1,0 +1,42 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/smoke-fade.tres" id="1_jvhk1"]
+[ext_resource type="Texture2D" path="res://assets/grow.tres" id="2_552u6"]
+[ext_resource type="Texture2D" path="res://assets/soft-dot.tres" id="3_73f8g"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_paakc"]
+emission_shape = 3
+emission_box_extents = Vector3(0.8, 0.1, 0.8)
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 0.5
+initial_velocity_max = 3.0
+gravity = Vector3(0, 0, 0)
+scale_min = 1.5
+scale_max = 2.2
+scale_curve = ExtResource("2_552u6")
+color_ramp = ExtResource("1_jvhk1")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m0cty"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("3_73f8g")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_rct8h"]
+material = SubResource("StandardMaterial3D_m0cty")
+size = Vector2(0.7, 0.7)
+
+[node name="Smoke" type="GPUParticles3D" unique_id=1679077758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.3, 0)
+amount = 64
+lifetime = 2.0
+use_fixed_seed = true
+seed = 7270
+process_material = SubResource("ParticleProcessMaterial_paakc")
+draw_pass_1 = SubResource("QuadMesh_rct8h")

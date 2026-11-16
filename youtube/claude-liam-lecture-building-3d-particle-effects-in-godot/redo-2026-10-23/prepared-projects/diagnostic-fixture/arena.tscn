@@ -1,0 +1,164 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://stage.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/hot-fade.tres" id="2_fu4bq"]
+[ext_resource type="Texture2D" path="res://assets/smoke-fade.tres" id="3_sbb53"]
+[ext_resource type="Texture2D" path="res://assets/grow.tres" id="4_pbtuc"]
+[ext_resource type="Texture2D" path="res://assets/soft-dot.tres" id="5_yokb4"]
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.15, 0.19, 0.23, 1)
+
+[sub_resource type="PlaneMesh" id="Floor"]
+material = SubResource("FloorMat")
+size = Vector2(12, 12)
+
+[sub_resource type="StandardMaterial3D" id="ScaleMat"]
+albedo_color = Color(0.85, 0.37, 0.25, 1)
+
+[sub_resource type="BoxMesh" id="ScaleMesh"]
+material = SubResource("ScaleMat")
+size = Vector3(0.15, 1, 0.15)
+
+[sub_resource type="Environment" id="World"]
+background_mode = 1
+background_color = Color(0.035, 0.045, 0.065, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.7, 0.8, 1, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_uy2ge"]
+emission_shape = 3
+emission_box_extents = Vector3(0.8, 0.1, 0.8)
+direction = Vector3(0, -1, 0)
+spread = 25.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+gravity = Vector3(0, -6, 0)
+scale_min = 0.4
+color_ramp = ExtResource("2_fu4bq")
+collision_mode = 1
+collision_friction = 0.0
+collision_bounce = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bbh6c"]
+transparency = 1
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_04e0m"]
+material = SubResource("StandardMaterial3D_bbh6c")
+radius = 0.12
+height = 0.24
+radial_segments = 12
+rings = 6
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_paakc"]
+emission_shape = 3
+emission_box_extents = Vector3(0.8, 0.1, 0.8)
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 0.5
+initial_velocity_max = 3.0
+gravity = Vector3(0, 0, 0)
+scale_min = 1.5
+scale_max = 2.2
+scale_curve = ExtResource("4_pbtuc")
+color_ramp = ExtResource("3_sbb53")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m0cty"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("5_yokb4")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_rct8h"]
+material = SubResource("StandardMaterial3D_m0cty")
+size = Vector2(0.7, 0.7)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_35c7g"]
+emission_shape = 3
+emission_box_extents = Vector3(0.8, 0.1, 0.8)
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 0.5
+initial_velocity_max = 0.7
+gravity = Vector3(0, 0, 0)
+scale_min = 1.5
+scale_max = 2.2
+scale_curve = ExtResource("4_pbtuc")
+color_ramp = ExtResource("3_sbb53")
+
+[node name="ParticleStage" type="Node3D" unique_id=878010326]
+script = ExtResource("1")
+heading = "Make The Effect Survive The Scene"
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=629345675]
+mesh = SubResource("Floor")
+
+[node name="ScaleReference" type="MeshInstance3D" parent="." unique_id=554562680]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.5, 0)
+mesh = SubResource("ScaleMesh")
+
+[node name="ScaleLabel" type="Label3D" parent="." unique_id=529005231]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.4, 0)
+billboard = 1
+text = "1 m"
+font_size = 48
+
+[node name="Title" type="Label3D" parent="." unique_id=42347333]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+pixel_size = 0.006
+billboard = 1
+text = "Add Depth And A Draw Pass"
+font_size = 48
+
+[node name="Light" type="DirectionalLight3D" parent="." unique_id=1857868976]
+transform = Transform3D(0.90630776, 0.34618863, -0.24240388, 0, 0.57357645, 0.81915206, 0.42261827, -0.74240386, 0.5198368, 0, 0, 0)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1865893830]
+environment = SubResource("World")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=2058097792]
+transform = Transform3D(0.7525767, -0.2319124, 0.61631566, 0, 0.93593216, 0.3521804, -0.6585046, -0.26504275, 0.7043607, 7, 5, 8)
+current = true
+fov = 55.0
+
+[node name="Particles" type="GPUParticles3D" parent="." unique_id=860441280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+amount = 64
+lifetime = 2.5
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-5, -5, -5, 10, 10, 10)
+process_material = SubResource("ParticleProcessMaterial_uy2ge")
+draw_pass_1 = SubResource("SphereMesh_04e0m")
+
+[node name="Smoke" type="GPUParticles3D" parent="." unique_id=1679077758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.3, 0)
+amount = 64
+lifetime = 2.0
+use_fixed_seed = true
+seed = 7270
+process_material = SubResource("ParticleProcessMaterial_paakc")
+draw_pass_1 = SubResource("QuadMesh_rct8h")
+
+[node name="SharedSmoke" type="GPUParticles3D" parent="." unique_id=1311592209]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.3, -2)
+visible = false
+amount = 64
+lifetime = 2.0
+use_fixed_seed = true
+seed = 7270
+process_material = SubResource("ParticleProcessMaterial_35c7g")
+draw_pass_1 = SubResource("QuadMesh_rct8h")
+
+[node name="ParticleFloor" type="GPUParticlesCollisionBox3D" parent="." unique_id=1527925680]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+size = Vector3(10, 0.4, 10)

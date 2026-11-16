@@ -1,0 +1,1300 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-cube-maps-a-stored-world",
+    "title": "Cube Maps: A Stored World",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Explain direction-based lookup and rim weighting.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Cube Maps: A Stored World. Explain direction-based environment lookup and rim weighting.",
+      "estimated_duration_s": 6.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      },
+      "actual_duration_s": 7.104,
+      "audio_file": "mp3/beat-BOPEN.mp3"
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Salaam. This is Liam, in for Bear. The key correction is that the reflection samples a stored world. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nthe reflection traces the scene.",
+            "triggerWords": "the reflection traces the scene",
+            "replacementWords": "the reflection samples a stored world",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-cube-maps-a-stored-world",
+            "banner": "",
+            "durationSeconds": 11.210667
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      },
+      "actual_duration_s": 11.210667,
+      "audio_file": "mp3/beat-BIDEA-padded.wav"
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Cubemap: Six images addressed by a direction. Reflection vector: The direction used to look into the environment. Rim weight: A view-dependent multiplier near the silhouette.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Rim weight",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Cubemap"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Reflection vector"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Rim weight"
+          }
+        ],
+        "motion_claim": "Reveal Rim weight",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Cubemap",
+                "meaning": "Six images addressed by a direction"
+              },
+              {
+                "term": "Reflection vector",
+                "meaning": "The direction used to look into the environment"
+              },
+              {
+                "term": "Rim weight",
+                "meaning": "A view-dependent multiplier near the silhouette"
+              }
+            ],
+            "durationSeconds": 10.453333
+          }
+        }
+      },
+      "actual_duration_s": 10.453333,
+      "audio_file": "mp3/beat-BDEFS.mp3"
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "A cubemap stores surroundings on six faces. The shader addresses it with a three-dimensional direction, not the mesh's two-dimensional UV coordinates. The runtime assembles the six generated test images.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: uniform samplerCube",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Six Images One Lookup"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: uniform samplerCube"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: uniform samplerCube",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "uniform vec3 specular_color : source_color = vec3(1.0);\nuniform samplerCube reflection_map : source_color, filter_linear;\nvarying vec3 world_normal;",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 12.629333
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 25,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 12.629333,
+      "audio_file": "mp3/beat-B01.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.3991,
+              0.8365,
+              0.6843
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3161,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Normalize the eye vector and normal, then mirror the eye direction with the correct sign. This produces the direction into the stored environment that should appear at this surface point.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: -reflect(e, n)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Find The Mirror Direction"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: -reflect(e, n)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: -reflect(e, n)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Find The Mirror Direction",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 e = normalize(eye_vector);\n\tvec3 r = -reflect(e, n);\n\tvec3 cube_map = texture(reflection_map, r).rgb;",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 9.984
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 41,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.984,
+      "audio_file": "mp3/beat-B02.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4776,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3898,
+              0.4448,
+              0.6565
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6565,
+              0.4417,
+              0.6935
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.4776,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.6565,
+              0.4417,
+              0.6935
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The texture call reads the cubemap along that reflection direction. It does not trace through the current scene. The returned color is whatever the stored environment contains there.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: texture(reflection_map, r)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Read The Environment"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: texture(reflection_map, r)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: texture(reflection_map, r)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Read The Environment",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 r = -reflect(e, n);\n\tvec3 cube_map = texture(reflection_map, r).rgb;\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 9.834667
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 43,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.834667,
+      "audio_file": "mp3/beat-B03.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.4472,
+              0.8365,
+              0.6361
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6361,
+              0.8333,
+              0.6731
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6361,
+              0.8333,
+              0.6731
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The environment sample is multiplied by the rim term before being added. That term depends on both the viewing angle and the diffuse-plus-ambient lighting factor in this implementation.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: fresnel * cube_map",
+        "show": [
+          {
+            "at": 0,
+            "event": "Weight The Reflection"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: fresnel * cube_map"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: fresnel * cube_map",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Weight The Reflection",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tvec3 total_spec = (fresnel * cube_map) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 10.602667
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 48,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.602667,
+      "audio_file": "mp3/beat-B04.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.413,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3009,
+              0.4448,
+              0.7454
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.413,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the camera move while the environment stays fixed. The eye vectors change, so the lookup directions change. The reflected pattern can move without replacing any cubemap image.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Move The Camera"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/09_cube_mapped.mp4",
+            "durationSeconds": 16.0
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 34,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0,
+      "actual_duration_s": 16.0,
+      "audio_file": "mp3/beat-B05-padded.wav",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.1376,
+              0.087,
+              0.9251,
+              0.1648
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.1376,
+              0.9019,
+              0.8624,
+              0.9519
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3,
+              0.125
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.1376,
+              0.087,
+              0.9251,
+              0.1648
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.1376,
+              0.9019,
+              0.8624,
+              0.9519
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "At a point facing directly toward the camera, the rim's geometric weight is zero. Its cubemap contribution disappears there. That missing reflection is a consequence of the formula, not a failed texture.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 fresnel",
+        "show": [
+          {
+            "at": 0,
+            "event": "The Missing Center"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 fresnel"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 fresnel",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "The Missing Center",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 specular = pow(clamp(dot(r, l), 0.0, 1.0), specular_power) * specular_color;\n\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tvec3 total_spec = (fresnel * cube_map) + specular;",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 11.776
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 47,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.776,
+      "audio_file": "mp3/beat-B06.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3646,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.375,
+              0.8365,
+              0.7083
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.7083,
+              0.8333,
+              0.7454
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3646,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.7083,
+              0.8333,
+              0.7454
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The Phong highlight remains a separate addition. A bright center does not prove the cubemap is contributing at that point. Separate the highlight and environment terms when debugging.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 total_spec",
+        "show": [
+          {
+            "at": 0,
+            "event": "A Separate Highlight"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 total_spec"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 total_spec",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "A Separate Highlight",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * (lambert + ambient_color);\n\tvec3 total_spec = (fresnel * cube_map) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 10.133333
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 48,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.133333,
+      "audio_file": "mp3/beat-B07.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.0552,
+              0.3009,
+              0.4448,
+              0.7454
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3969,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.0583,
+              0.7454,
+              0.4417,
+              0.7824
+            ]
+          },
+          {
+            "label": "video label",
+            "box": [
+              0.4573,
+              0.2456,
+              0.9469,
+              0.3234
+            ]
+          },
+          {
+            "label": "caption",
+            "box": [
+              0.4573,
+              0.7581,
+              0.9469,
+              0.8081
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Adding a moving object beside this sphere will not put that object into the stored cubemap. For dynamic local reflections, you need additional rendering machinery. This shader teaches the lookup and its weighting.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Static Means Static"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Static Means Static",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 total_spec = (fresnel * cube_map) + specular;\n\tALBEDO = (lambert + ambient_color) * shader_color + total_spec;\n}",
+            "codeFile": "09_cube_mapped.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/09_cube_mapped.jpg",
+            "durationSeconds": 11.818667
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/09_cube_mapped.gdshader",
+        "sha256": "4d14c9f68b7c461610a3dfceb4ca4f6a339e41d077726c2c1951900d1ad5e258",
+        "line": 50,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.818667,
+      "audio_file": "mp3/beat-B08.mp3",
+      "qc": {
+        "typography_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3807,
+              0.125
+            ]
+          },
+          {
+            "label": "code card",
+            "box": [
+              0.1635,
+              0.3991,
+              0.8365,
+              0.6843
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_regions": [
+          {
+            "label": "title",
+            "box": [
+              0.0521,
+              0.037,
+              0.3807,
+              0.125
+            ]
+          },
+          {
+            "label": "code file",
+            "box": [
+              0.1667,
+              0.6843,
+              0.8333,
+              0.7213
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab capture beat: Gate V averages ink over the whole frame, which measures the Godot picture (grey stage, pale or dusk floor), not text. The always-visible authored text outside the code card (title, file name, video label, caption) is measured in its own regions; the code card is INK #3D3929 on #FFFEFB (11.5:1) and on its #E6D3C2 highlight (8.0:1), and its highlight band would be averaged in as ink.",
+        "typography_reason": "ShaderLab capture beat: the Godot picture in the framed window is image content (its mid-tone floor and glow read as text blobs); every authored text region (title, code card, tags, labels, caption, readouts) is listed and checked at native resolution."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. A direction selects a cubemap sample. The reflection vector depends on the viewer. The rim weights the reflection in this shader. The cubemap is not a live scene reflection. Liam, in for Bear.",
+      "estimated_duration_s": 15.42,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Cube Maps: A Stored World",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "A direction selects a cubemap sample.",
+              "The reflection vector depends on the viewer.",
+              "The rim weights the reflection in this shader.",
+              "The cubemap is not a live scene reflection."
+            ],
+            "lectureLayout": true,
+            "durationSeconds": 12.382667
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "actual_duration_s": 12.382667,
+      "audio_file": "mp3/beat-BVDT-padded.wav"
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Move the camera while keeping the cubemap fixed. Then add an unrelated object to the scene. Explain which change affects the lookup and why the new object does not appear automatically. Check two things: The reflection direction changes with the camera. A static cubemap does not capture new scene objects.",
+      "estimated_duration_s": 20.83,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Move the camera while keeping the cubemap fixed. Then add an unrelated object to the scene. Explain which change affects the lookup and why the new object does not appear automatically. Check two things: The reflection direction changes with the camera. A static cubemap does not capture new scene objects.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "The reflection direction changes with the camera.",
+              "A static cubemap does not capture new scene objects."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "durationSeconds": 16.426667
+          }
+        }
+      },
+      "actual_duration_s": 16.426667,
+      "audio_file": "mp3/beat-BHTF.mp3"
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Cube Maps: A Stored World. At Nik Bear Brown.",
+      "estimated_duration_s": 3.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Cube Maps: A Stored World",
+            "slug": "claude-liam-lecture-shader-cube-maps-a-stored-world",
+            "lectureLayout": true,
+            "durationSeconds": 4.498667,
+            "handle": "@NikBearBrown",
+            "subline": ""
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "actual_duration_s": 4.498667,
+      "audio_file": "mp3/beat-BOUT-padded.wav",
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "ClaudeTitleOutro outro card: dark full-frame background with small centered title and mascot by design; only underfill/clustered are waived."
+      }
+    }
+  ]
+}

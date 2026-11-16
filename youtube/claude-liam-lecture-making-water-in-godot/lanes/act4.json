@@ -1,0 +1,404 @@
+{
+ "B34": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "durationSeconds": "__AUDIO__",
+   "title": "Real Waves",
+   "video": "making-water/cuts-compare.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · low camera · same shader",
+   "videoAspect": 2.0,
+   "readouts": [
+    {
+     "at": 0.35,
+     "text": "4 vertices",
+     "x": 0.25,
+     "y": 0.08
+    },
+    {
+     "at": 0.6,
+     "text": "16,641 vertices",
+     "x": 0.75,
+     "y": 0.08
+    }
+   ],
+   "rings": [],
+   "caption": "PlaneMesh: vertices = (cuts + 2) × (cuts + 2)"
+  },
+  "capture_spec": "C25: scene water_scene.gd, W_BARE low camera, shader 05-vertex-waves (TIME): left an UNCUT plane, right cut 127 x 127; both 1080 x 1080 joined. Vertex counts are read from the mesh (facts1_classdb.gd: 4, 25, 4225, 16,641).",
+  "visual_intent": "Act title 'Real Waves'; two framed views of the same wave shader from just above the waterline: the uncut plane only tilts (straight edges), the cut plane rolls with real waves; pills '4 vertices' and '16,641 vertices'.",
+  "motion_claim": "The left plane tilts like a board; the right plane rolls like water.",
+  "show": [
+   {
+    "at": 0.35,
+    "event": "pill 4 vertices"
+   },
+   {
+    "at": 0.6,
+    "event": "pill 16,641 vertices"
+   }
+  ],
+  "runner_up": "manim: a dot grid counting up",
+  "why": "Two real planes with the same shader are the lesson; the count pills carry the numbers.",
+  "sparse": false
+ },
+ "B35": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "\tfloat p1 = k1 * (dot(d1, p) - wave_speed * t);\n\tfloat p2 = k2 * (dot(d2, p) - 0.8 * wave_speed * t);\n\tfloat h = wave_height * (sin(p1) + 0.6 * sin(p2));\n\tvec2 s = wave_height * (k1 * cos(p1) * d1 + 0.6 * k2 * cos(p2) * d2);\n\treturn vec3(h, s);\n}",
+   "codeFile": "lab-shaders/05-vertex-waves.gdshader · lines 55 to 60",
+   "cues": [
+    {
+     "at": 0.2,
+     "lines": [
+      1
+     ],
+     "label": "phase: position minus speed times time"
+    },
+    {
+     "at": 0.65,
+     "lines": [
+      3
+     ],
+     "label": "sine: a smooth wave between -1 and 1"
+    },
+    {
+     "at": 0.85,
+     "lines": [
+      5
+     ],
+     "label": "x: height · y, z: slope along x and z"
+    }
+   ],
+   "video": "making-water/waves-low.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · low camera · live clock",
+   "readouts": [],
+   "rings": [],
+   "caption": "two waves, two directions, two lengths, added"
+  },
+  "capture_spec": "C26: scene water_scene.gd, W_BARE low camera, shader 05-vertex-waves cut 127, TIME from the capture start.",
+  "visual_intent": "Code card with the last six lines of wave() (the phase line, the sine line and the return line lit in turn); the real low view of the plane with a lumpy rolling surface.",
+  "motion_claim": "Two waves of different lengths roll through each other.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "phase line"
+   },
+   {
+    "at": 0.65,
+    "event": "sine line"
+   },
+   {
+    "at": 0.85,
+    "event": "return line"
+   }
+  ],
+  "runner_up": "manim: two sines adding",
+  "why": "The real rolling surface is the sum; the code beside it is the recipe.",
+  "sparse": false
+ },
+ "B36": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "void vertex() {\n\tvec3 w = wave(VERTEX.xz, TIME);\n\tVERTEX.y += w.x;\n\tNORMAL = normalize(vec3(-w.y, 1.0, -w.z));\n}",
+   "codeFile": "lab-shaders/05-vertex-waves.gdshader · lines 62 to 66",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      2
+     ],
+     "label": "TIME: seconds on one clock shared by the whole game"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      3
+     ],
+     "label": "vertex(): runs once for each vertex; places the corners"
+    }
+   ],
+   "video": "making-water/waves-iso.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+   "readouts": [],
+   "rings": [],
+   "caption": "one line moves 16,641 vertices; the card fills in between"
+  },
+  "capture_spec": "C27: scene water_scene.gd, shader 05-vertex-waves cut 127, iso camera, TIME from the capture start; floaters not following (still).",
+  "visual_intent": "Code card (the vertex function; the wave call then the add-to-y line lit); the real cove with rolling waves: the shoreline against the beach wobbles, the floaters stay at y 0.",
+  "motion_claim": "The water surface rolls and the shoreline wobbles.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "wave call line"
+   },
+   {
+    "at": 0.62,
+    "event": "VERTEX.y line"
+   }
+  ],
+  "runner_up": "manim: vertices rising and falling",
+  "why": "The real rolling shoreline is the effect of the one line.",
+  "sparse": false
+ },
+ "B37": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "void vertex() {\n\tvec3 w = wave(VERTEX.xz, wave_clock);\n\tVERTEX.y += w.x;\n\tNORMAL = normalize(vec3(-w.y, 1.0, -w.z));\n}",
+   "codeFile": "lab-shaders/05b-synced-clock.gdshader · lines 63 to 67",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      4
+     ],
+     "label": "normal: a direction at right angles to a surface"
+    }
+   ],
+   "video": "making-water/normal-swap.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · normal line added at 55 %",
+   "readouts": [
+    {
+     "at": 0.2,
+     "text": "old normal",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.72,
+     "text": "new normal",
+     "x": 0.5,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "the glare: one flat oval, then glints on the crests"
+  },
+  "capture_spec": "C28: scene water_scene.gd, W_FOLLOW, shader 05c-no-normal-update (NORMAL line removed) swapped at 55 % for 05b-synced-clock; ripples and foam turned down (ripple_strength 0, edge_width 0.01) so the glare is the only light effect.",
+  "visual_intent": "Code card (the vertex function, NORMAL line lit); the real cove with rolling waves: first the sun's glare is one flat oval whatever the waves do, then after 55 % it breaks into glints along the crests; pills 'old normal' and 'new normal'.",
+  "motion_claim": "The one flat glare shatters into crest glints when the normal line arrives.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "pill old normal, one oval"
+   },
+   {
+    "at": 0.3,
+    "event": "NORMAL line"
+   },
+   {
+    "at": 0.55,
+    "event": "swap: glints on crests"
+   },
+   {
+    "at": 0.72,
+    "event": "pill new normal"
+   }
+  ],
+  "runner_up": "manim: normals drawn on a wave",
+  "why": "A real before and after of the same waves shows the light not knowing; a drawing of normals would explain the maths only.",
+  "sparse": false
+ },
+ "B38": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "durationSeconds": "__AUDIO__",
+   "video": "making-water/low-waves.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · low camera · script clock",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "up to 95",
+     "x": 0.5,
+     "y": 0.74
+    }
+   ],
+   "rings": [],
+   "caption": "near edge, lowest to highest row: up to 95 rows (flat plane: 0)"
+  },
+  "capture_spec": "C29: scene water_scene.gd, W_BARE low camera, shader 05b-synced-clock cut 127, wave_clock from the script (W_FOLLOW); the 95-row figure is the maximum over the recorded clip (40 to 96 rows, mean 78, logs/edge-spread.txt) and the still (95).",
+  "visual_intent": "The framed window shows the plane from just above the waterline: the near edge is a rolling line; the pill 'up to 95' sits below it.",
+  "motion_claim": "The near edge of the water rolls up and down.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "rolling near edge"
+   },
+   {
+    "at": 0.62,
+    "event": "pill up to 95"
+   }
+  ],
+  "runner_up": "manim: a straight line and a wavy line",
+  "why": "The same camera as the flat plane two beats ago, now with an edge that bends: the contrast is real and measured.",
+  "sparse": false
+ },
+ "B39": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "static func height(p: Vector2, t: float, wave_height: float, wave_length: float, wave_speed: float) -> float:\n\tvar d1 := Vector2(1.0, 0.3).normalized()\n\tvar d2 := Vector2(-0.4,\n\t    1.0).normalized()\n\tvar k1 := TAU / wave_length\n\tvar k2 := TAU / (0.6 * wave_length)\n\tvar p1 := k1 * (d1.dot(p) - wave_speed * t)\n\tvar p2 := k2 * (d2.dot(p) - 0.8 * wave_speed * t)\n\treturn wave_height * (sin(p1) + 0.6 * sin(p2))",
+   "codeFile": "water-project/scripts/wave_math.gd · lines 4 to 11 (long lines re-broken)",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      1
+     ],
+     "label": "the same two waves as the shader, in GDScript"
+    }
+   ],
+   "video": "making-water/floaters.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · script clock",
+   "readouts": [],
+   "rings": [],
+   "caption": "a script sets each floater's height from the same function"
+  },
+  "capture_spec": "C30: scene water_scene.gd, W_FOLLOW: water_driver.gd drives wave_clock and sets the buoy and the crate to WaveMath.height each frame; shader 05b, iso camera.",
+  "visual_intent": "Code card with the eight GDScript lines of the height function (first line lit); the real cove: the teal buoy and the cream crate rise and fall exactly with the waves.",
+  "motion_claim": "The buoy and the crate ride the crests and troughs.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "height function lit"
+   },
+   {
+    "at": 0.6,
+    "event": "buoy on a crest"
+   }
+  ],
+  "runner_up": "manim: a node and the invisible surface",
+  "why": "Floaters riding the real waves are the point; the code is the other half.",
+  "sparse": false
+ },
+ "B40": {
+  "lane": "manim",
+  "class": "B40_OneClock",
+  "visual_intent": "Two horizontal time lines labelled 'shader time' and 'script clock' with tick marks; the script's line starts later: a bracket between the two starts is labelled with the three measured gaps '0.32 s', '0.28 s', '0.31 s' (three of the six logged real-time runs, which ranged 0.28 to 0.32 s); then a box labelled 'wave_clock' (a uniform) receives an arrow from the script line, and the shader line is redrawn lined up with it; the final state shows both lines aligned with 'one number' between them.",
+  "motion_claim": "The script line slides to the right to show the gap, three gap labels appear one per run, then an arrow into the uniform box pulls the two lines into alignment.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "two time lines"
+   },
+   {
+    "at": 0.5,
+    "event": "gap bracket and three values"
+   },
+   {
+    "at": 0.8,
+    "event": "uniform box and alignment"
+   }
+  ],
+  "runner_up": "ShaderLab with GDScript code",
+  "why": "Two clocks and a gap between them is a timeline diagram; the three measured offsets make it real.",
+  "sparse": true
+ },
+ "B41": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "func set_clock(t: float) -> void:\n\tclock = t\n\tvar mat := water.material_override as ShaderMaterial\n\tmat.set_shader_parameter(\"wave_clock\", t)\n\tmat.set_shader_parameter(\"wave_height\", wave_height)\n\tmat.set_shader_parameter(\"wave_length\", wave_length)\n\tmat.set_shader_parameter(\"wave_speed\", wave_speed)\n\tfor f in floaters:\n\t    var p := Vector2(f.position.x, f.position.z)\n\t    f.position.y = WaveMath.height(p, t, wave_height, wave_length, wave_speed)",
+   "codeFile": "water-project/scripts/water_driver.gd · lines 16 to 25",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      1
+     ]
+    },
+    {
+     "at": 0.56,
+     "lines": [
+      5
+     ],
+     "label": "wave_height: how tall"
+    },
+    {
+     "at": 0.7,
+     "lines": [
+      6
+     ],
+     "label": "wave_length: how long"
+    },
+    {
+     "at": 0.86,
+     "lines": [
+      7
+     ],
+     "label": "wave_speed: how fast"
+    }
+   ],
+   "video": "making-water/wave-dials.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · script clock · scripted sweeps",
+   "readouts": [
+    {
+     "at": 0.25,
+     "text": "within 3 mm",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.58,
+     "text": "height",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.72,
+     "text": "length",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.88,
+     "text": "speed",
+     "x": 0.5,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "GPU and script heights agree to 3 mm on waves 192 mm tall"
+  },
+  "capture_spec": "C31: scene water_scene.gd, W_FOLLOW, shader 05b: the driver's wave_height, wave_length and wave_speed are swept one after another between 56 % and 95 % of the beat; the 3 mm agreement is E9 (evidence/planning-checks).",
+  "visual_intent": "Code card (the driver's set_clock lines; the three uniform writes lit one by one); the real cove: the waves grow taller, then longer, then faster, with the floaters still riding them; pills 'within 3 mm', 'height', 'length', 'speed'.",
+  "motion_claim": "Height, length and speed are swept in turn and the buoy keeps riding.",
+  "show": [
+   {
+    "at": 0.25,
+    "event": "pill within 3 mm"
+   },
+   {
+    "at": 0.56,
+    "event": "height sweep"
+   },
+   {
+    "at": 0.7,
+    "event": "length sweep"
+   },
+   {
+    "at": 0.86,
+    "event": "speed sweep"
+   }
+  ],
+  "runner_up": "ShaderLab ramp per dial",
+  "why": "Three sweeps on the real water show what each dial changes.",
+  "sparse": false
+ }
+}

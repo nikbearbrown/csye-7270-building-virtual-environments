@@ -1,0 +1,353 @@
+{
+  "slug": "claude-liam-lecture-character-motion-and-rigid-body-physics-in-godot",
+  "title": "Character Motion and Rigid-Body Physics in Godot",
+  "acts": [
+    "Who Owns the Motion?",
+    "Design a Character Jump",
+    "Let the Solver Work",
+    "Time, Presentation, and Evidence"
+  ],
+  "summary": "Design motion, let the solver work, and measure the result.",
+  "description": "Design motion and test its limits",
+  "title_lines": [
+    "Character Motion and",
+    "Rigid-Body Physics",
+    "in Godot"
+  ],
+  "framing": "The physics engine controls everything",
+  "trigger": "controls everything",
+  "replacement": "shares responsibility with code",
+  "intro": "Hallo. This is Liam, in for Bear. A character jump is a movement policy you design. A falling crate asks the solver to handle motion. Mixing those responsibilities makes both harder to tune. We will choose an owner for every motion.",
+  "terms": [
+    [
+      "Velocity",
+      "Movement rate and direction."
+    ],
+    [
+      "Acceleration",
+      "Change in velocity over time."
+    ],
+    [
+      "Tick",
+      "One physics update step."
+    ],
+    [
+      "Impulse",
+      "A one-time momentum change."
+    ]
+  ],
+  "recap": [
+    "Choose whether code or the solver owns the motion.",
+    "A character jump starts with design values and measured behavior.",
+    "Rigid simulation needs deliberate forces and contact reporting.",
+    "Fixed ticks, presentation, and numerical evidence answer different questions."
+  ],
+  "prompt": "Help me build a Godot four physics test room with a character jump, a falling rigid crate, and an animatable platform. Choose a jump height and apex time, derive the upward acceleration, then measure the resulting height within a declared tolerance. Use physics callbacks correctly, compare an impulse with a sustained force, and list platform, interpolation, and device checks still requiring a playtest.",
+  "checks": [
+    "Check: the measured jump is compared with a declared target and tolerance.",
+    "Check: code and solver ownership are explicit; untested behavior is named."
+  ],
+  "body": [
+    {
+      "id": "B01",
+      "act": 0,
+      "topic": "Three responsibilities",
+      "lane": "manim",
+      "asset": "Responsibilities",
+      "narration": "A scene organizes an object. Collision defines its boundary and filtering. A movement policy decides what happens over time. Keep those responsibilities separate, and a missing pickup becomes a testable question instead of a mysterious physics bug.",
+      "motion": "Build a scene hierarchy, add the boundary, then move the same actor through a sensor.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B19",
+      "act": 0,
+      "topic": "Velocity or displacement",
+      "lane": "code",
+      "asset": "methods",
+      "narration": "Move and slide consumes the velocity property and applies the timestep internally. Move and collide takes a displacement, often velocity times delta. Mixing these contracts is a common source of tiny movement or wildly incorrect speed.",
+      "motion": "Compare the two executed method forms side by side with their units.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B10",
+      "act": 0,
+      "topic": "Static and animatable",
+      "lane": "manim",
+      "asset": "Platforms",
+      "narration": "A static body resists impacts. It can represent a wall or provide conveyor velocity without moving its geometry. A platform following a path belongs on an animatable body, with its movement synchronized to physics.",
+      "motion": "Keep a conveyor outline fixed while the surface arrow moves; move the whole platform in the paired panel.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B12",
+      "act": 0,
+      "topic": "Controlled bodies",
+      "lane": "code",
+      "asset": "minimal",
+      "narration": "A character body gives your code collision and sliding helpers. It does not supply your game's gravity or friction policy. Set velocity in pixels per second, then call move and slide once in the physics callback.",
+      "motion": "Reveal the velocity update before the movement call.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B20",
+      "act": 1,
+      "topic": "Design a jump",
+      "lane": "manim",
+      "asset": "JumpMath",
+      "narration": "Choose jump height and time to the apex. Under constant upward-phase acceleration, gravity is twice the height divided by time squared. Initial upward speed is gravity times apex time. Godot's downward-positive axis makes jump velocity negative.",
+      "motion": "Derive the two equations, substitute seventy-two pixels and zero point three eight seconds, and draw the rising arc.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B21",
+      "act": 1,
+      "topic": "Apply acceleration",
+      "lane": "code",
+      "asset": "gravity",
+      "narration": "The reference controller computes rise gravity from those design values. It increases gravity while falling and clamps fall speed. That creates a deliberate game feel. These parameters describe a policy, not an attempt at a universal realistic jump.",
+      "motion": "Highlight rise gravity, falling multiplier, and terminal-speed clamp in spoken order.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B22",
+      "act": 1,
+      "topic": "Horizontal response",
+      "lane": "code",
+      "asset": "horizontal",
+      "narration": "Horizontal speed approaches a target rather than jumping instantly. Ground acceleration, braking, and air acceleration are separate choices. Multiply acceleration by delta when updating velocity; keep the final movement call responsible for displacement.",
+      "motion": "Highlight the rate selection, then move_toward with rate times delta.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B23",
+      "act": 1,
+      "topic": "Grace windows",
+      "lane": "manim",
+      "asset": "Timers",
+      "narration": "Coyote time permits a jump shortly after leaving a ledge. Jump buffering remembers a recent press before landing. They are different timer windows. Consume both when a jump starts so a held permission cannot launch another jump.",
+      "motion": "Move a press marker across the two timing windows; clear both tokens on launch.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B24",
+      "act": 1,
+      "topic": "Cut and bounce",
+      "lane": "code",
+      "asset": "cut",
+      "narration": "Releasing jump early reduces upward speed for a shorter hop. A stomp bounce sets a new upward velocity. If you author gravity yourself, area gravity overrides do not automatically replace that policy; decide how local gravity should contribute.",
+      "motion": "Highlight release cut, then bounce; retain their signs and fractional multipliers.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B25",
+      "act": 1,
+      "topic": "Classify surfaces",
+      "lane": "capture",
+      "asset": "docs-character",
+      "narration": "Up direction and the maximum floor angle classify surfaces. Floor snap helps follow downward slopes; grounded and floating modes serve different movement styles. Read floor state after movement for the current result, or deliberately use the previous result for coyote time.",
+      "motion": "Focus actual floor-angle and snap properties, then movement-mode entries.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B27",
+      "act": 1,
+      "topic": "Measure the jump",
+      "lane": "manim",
+      "asset": "JumpMeasured",
+      "narration": "The continuous formula is a design target. A fixed-step controller samples it. Here the measured apex is slightly above seventy-two pixels, within the declared ten-percent tolerance. Plot the measured samples before changing parameters to chase a feeling.",
+      "motion": "Reveal the actual engine trajectory against the target line and tolerance band.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B11",
+      "act": 2,
+      "topic": "Simulated bodies",
+      "lane": "code",
+      "asset": "impulse",
+      "narration": "A rigid body asks the solver to calculate motion. Forces sustain a push; an impulse produces a one-time change. For this isolated example, mass two and impulse one hundred twenty predict a velocity change of sixty.",
+      "motion": "Reveal mass, then the impulse call; keep the recorded measured result beside the code.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "BP01",
+      "topic": "Force and impulse have different clocks",
+      "lane": "manim",
+      "asset": "ForceImpulse",
+      "narration": "A force acts over time. An impulse represents a one-time momentum change. With the same impulse, doubling mass halves the ideal velocity change. Do not repeatedly apply a jump impulse every rendered frame; that changes the intended event into repeated pushes.",
+      "motion": "Draw force over an interval and one impulse marker, then compare velocity arrows for two masses",
+      "why": "A labeled ideal model separates the continuous push from a discrete event",
+      "runner_up": "A numerical trace without controlled damping would obscure the distinction",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 2
+    },
+    {
+      "id": "BP02",
+      "topic": "Contact reporting is opt-in",
+      "lane": "code",
+      "asset": "contact-monitor",
+      "narration": "A rigid body can collide even when your script receives no contact signal. For body entered reporting, enable contact monitoring and allow enough reported contacts. Our crate fixture sets both and observes a floor contact. Reporting and physical response are separate concerns.",
+      "motion": "Reveal contact_monitor and max_contacts_reported before the connected callback",
+      "why": "The executed fixture explains a silent callback without pretending collision failed",
+      "runner_up": "A conceptual warning card would not show the required settings",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 2
+    },
+    {
+      "id": "B26",
+      "act": 2,
+      "topic": "Moving platforms and pushes",
+      "lane": "code",
+      "asset": "platform",
+      "narration": "Move an animatable platform on physics ticks and test inherited velocity when the character leaves. Characters can affect other bodies, but a deliberate crate-pushing policy may use impulses. That policy only runs when the character actually collides with the crate.",
+      "motion": "Highlight platform physics movement; then show the explicit impulse branch and mask prerequisite.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B49",
+      "act": 2,
+      "topic": "Add real simulation",
+      "lane": "code",
+      "asset": "debris",
+      "narration": "To teach simulation alongside character kinematics, add debris or a crate. Spawn a rigid body, apply one impulse, let it sleep when settled, and remove it when no longer needed. Keep its layer policy separate from the player's.",
+      "motion": "Reveal deferred spawn and one impulse; then the cleanup connection.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B51",
+      "act": 2,
+      "topic": "The first test room",
+      "lane": "capture",
+      "asset": "crate",
+      "narration": "Build a test room with a player, floor, falling crate, moving platform, and collectible. Verify landing, contact, platform carrying, and a nonblocking pickup. Then remove the pickup mask and predict the failure. Our captured crate is one tested piece of that exercise.",
+      "motion": "Focus the actual settled crate and floor; distinguish this tested piece from the complete learner exercise.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B37",
+      "act": 3,
+      "topic": "Two clocks",
+      "lane": "manim",
+      "asset": "Ticks",
+      "narration": "Physics ticks and rendered frames are different clocks. The default physics rate is sixty ticks per second. Run collision-based motion in physics callbacks and use delta. Correctly scaled render-frame motion still does not give the same collision scheduling.",
+      "motion": "Draw uniform physics ticks and denser render samples on separate aligned timelines.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B38",
+      "act": 3,
+      "topic": "Distance is a diagnostic",
+      "lane": "capture",
+      "asset": "sweep",
+      "narration": "Speed divided by tick rate estimates travel per tick. It is not a collision theorem. Our character's swept movement detected a four-pixel floor across a requested three-hundred-pixel displacement. Method, shape, direction, and backend all matter.",
+      "motion": "Focus the actual thin floor and collision result after showing the requested displacement.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B39",
+      "act": 3,
+      "topic": "Continuous detection",
+      "lane": "capture",
+      "asset": "docs-rigid",
+      "narration": "For fast rigid bodies, continuous collision detection can reduce tunneling. Two D provides ray and shape modes; three D exposes its own settings. Also consider thicker collision geometry and a higher physics rate. None is a universal prevention guarantee.",
+      "motion": "Focus the actual rigid-body continuous-detection property and available modes.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B40",
+      "act": 3,
+      "topic": "Render between ticks",
+      "lane": "manim",
+      "asset": "Interpolation",
+      "narration": "Interpolation draws intermediate poses between physics states. It smooths presentation without simulating extra contacts. Temporarily testing at ten ticks per second makes mistakes obvious. Restore the intended rate and test pixel snapping and camera behavior together.",
+      "motion": "Hold two physics positions and move the displayed pose between them; keep the physics markers fixed.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B41",
+      "act": 3,
+      "topic": "Teleport deliberately",
+      "lane": "code",
+      "asset": "respawn",
+      "narration": "A respawn is a discontinuity. Set the new position, clear unwanted velocity, then reset physics interpolation. For a rigid body, change the simulated state through its integration callback. Frequent transform writes can fight the solver.",
+      "motion": "Reveal position, velocity reset, and interpolation reset in sequence.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B42",
+      "act": 3,
+      "topic": "Fixed is not deterministic",
+      "lane": "capture",
+      "asset": "docs-physics",
+      "narration": "A fixed timestep improves consistency, but it is not a promise of identical physics across runs, devices, or backends. Grade documented structure and behavior within tolerances. Exact replay requirements need a separate determinism design and validation plan.",
+      "motion": "Focus the official physics discussion while distinguishing tick rate from replay guarantees.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B44",
+      "act": 3,
+      "topic": "What the run proves",
+      "lane": "shell",
+      "asset": "results",
+      "narration": "The lab ran real physics checks and captured real engine output. Those records cover specific setups. They do not prove good controls, all corner contacts, cross-device stability, or moving-platform behavior. Read diagnostics as well as the process exit code.",
+      "motion": "Reveal the actual check count and then the explicitly recorded test limits.",
+      "runner_up": "BrowserCapture of terminal output",
+      "why": "Verbatim recorded output establishes the observation and keeps its evidence limits visible."
+    },
+    {
+      "id": "B45",
+      "act": 3,
+      "topic": "Grade a tolerance",
+      "lane": "manim",
+      "asset": "Tolerance",
+      "narration": "For this jump, ten percent means a band around the design height. A point inside the band passes this measurement; it does not validate every movement rule. Keep structural checks, numerical checks, and a human playtest as separate evidence.",
+      "motion": "Build a seventy-two-pixel target and ten-percent band, then place the measured apex inside it.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B46",
+      "act": 3,
+      "topic": "Choose the backend",
+      "lane": "capture",
+      "asset": "docs-jolt",
+      "narration": "Godot's two D and three D physics are separate systems. Jolt is now built into Godot and is the default for new projects in the checked documentation. Existing projects keep their selected backend; inspect the setting before interpreting behavior.",
+      "motion": "Focus the actual Jolt introduction and built-in/default statement.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B46A",
+      "act": 3,
+      "topic": "Backend migration details",
+      "lane": "code",
+      "asset": "migration_excerpt",
+      "narration": "The four point seven migration notes change Jolt world-boundary distance signs, soft-body mass and stiffness behavior, and area overlap reporting for soft bodies. These are backend-specific migration checks; they do not rewrite the two D platformer.",
+      "motion": "Highlight four short quoted fragments from the already retrieved official migration record.",
+      "runner_up": "Live BrowserCapture focused on the migration paragraphs",
+      "why": "A later focus recapture received HTTP 429. Use the successfully retrieved official text as a clearly labeled excerpt; do not show an unrelated page section as if it contained these claims."
+    }
+  ],
+  "source_parent": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-scenes-collision-physics",
+  "preparation": "stage one; no rendered film"
+}

@@ -1,3 +1,5 @@
+> **Current assignment authority — October 14, 2026:** The Fall Canvas export and instructor’s pasted 250-point final supersede the older assignment plan below. Assignments 1–9, the final, indexes and builder settings have been synchronized. See [assignments/README.md](assignments/README.md) and the [sync report](pantry/reports/canvas-assignment-sync-2026-10-14.md). Historical checks and entries below remain dated records.
+
 # CSYE 7270 — Build and review status
 
 Updated: October 12, 2026.

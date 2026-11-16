@@ -1,0 +1,712 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-the-uber-shader-reading-the-whole",
+    "title": "The Uber Shader: Reading the Whole",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Trace the combined material without assuming earlier texture contracts still apply.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. The Uber Shader: Reading the Whole. Trace the combined material without assuming earlier texture contracts still apply.",
+      "estimated_duration_s": 8.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Selam. This is Liam, in for Bear. The key correction is that every combined input needs its contract checked. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 14.17,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\ncombining shaders preserves every convention.",
+            "triggerWords": "combining shaders preserves every convention",
+            "replacementWords": "every combined input needs its contract checked",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-the-uber-shader-reading-the-whole",
+            "banner": ""
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Hemisphere: An orientation-based ambient approximation. Wrap lighting: An artistic broadening of the lit region. Packed map: A texture holding multiple independent controls.",
+      "estimated_duration_s": 10.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Packed map",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Hemisphere"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Wrap lighting"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Packed map"
+          }
+        ],
+        "motion_claim": "Reveal Packed map",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Hemisphere",
+                "meaning": "An orientation-based ambient approximation"
+              },
+              {
+                "term": "Wrap lighting",
+                "meaning": "An artistic broadening of the lit region"
+              },
+              {
+                "term": "Packed map",
+                "meaning": "A texture holding multiple independent controls"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This combined shader first decodes its normal map. The green flip defaults to true because the demo supplies the DirectX-style map. Reusing a different normal map requires checking that convention.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: flip_green ?",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Start With The Normal"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: flip_green ?"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: flip_green ?",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 tn = texture(normal_map, UV).rgb * 2.0 - 1.0;\n\tvec3 binormal = flip_green ? -world_binormal : world_binormal;\n\tvec3 n = normalize(tn.x * world_tangent + tn.y * binormal + tn.z * world_normal);",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 59,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Red now masks the highlight, and blue masks the environment reflection. The earlier red-rim, green-highlight packing does not apply. A texture can load successfully while controlling the wrong contribution.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: specular_map.r",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recheck Packed Channels"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: specular_map.r"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: specular_map.r",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Recheck Packed Channels",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 lambert = clamp((dot(l, n) * (1.0 - subsurface_spread) + subsurface_spread) + subsurface_color, 0.0, 1.0);\n\tvec3 specular = pow(clamp(dot(r, l), 0.0, 1.0), specular_power) * specular_color * specular_map.r;\n\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * lambert * light_color;",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 74,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Ambient blends from bottom color toward top color using the upward normal component clamped at zero. Downward and horizontal normals receive bottom color. This is not a symmetric full-sphere interpolation.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 ambient =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Ambient By Orientation"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 ambient ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 ambient =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Ambient By Orientation",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec4 specular_map = texture(spec_map, UV);\n\tvec3 ambient = mix(bottom_color, top_color, clamp(dot(vec3(0.0, 1.0, 0.0), n), 0.0, 1.0));\n\tvec3 lambert = clamp((dot(l, n) * (1.0 - subsurface_spread) + subsurface_spread) + subsurface_color, 0.0, 1.0);",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 70,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Subsurface spread modifies the light-normal dot product before clamping. Subsurface color adds a channel-dependent bias. These are artistic controls that soften and tint the transition around the terminator.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 lambert =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Broaden The Light"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 lambert ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 lambert =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Broaden The Light",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 ambient = mix(bottom_color, top_color, clamp(dot(vec3(0.0, 1.0, 0.0), n), 0.0, 1.0));\n\tvec3 lambert = clamp((dot(l, n) * (1.0 - subsurface_spread) + subsurface_spread) + subsurface_color, 0.0, 1.0);\n\tvec3 specular = pow(clamp(dot(r, l), 0.0, 1.0), specular_power) * specular_color * specular_map.r;",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 72,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch spread increase from zero toward one half. More of the surface receives a positive lighting contribution. No thickness, internal scattering path, or transmitted-light calculation appears in the shader.",
+      "estimated_duration_s": 12.08,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Watch The Terminator"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/15_uber.mp4"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 34,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The environment contribution has its own contrast, intensity, and blue-channel mask. Unlike the earlier rim-weighted cubemap shader, this reflection is not multiplied by that Fresnel term.",
+      "estimated_duration_s": 10.83,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: reflection_intensity * specular_map.b",
+        "show": [
+          {
+            "at": 0,
+            "event": "Keep Reflections Separate"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: reflection_intensity * specular_map.b"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: reflection_intensity * specular_map.b",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Keep Reflections Separate",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * lambert * light_color;\n\tvec3 total_spec = (fresnel + specular) + (pow(cube_map, vec3(reflection_contrast)) * reflection_intensity * specular_map.b);\n\tALBEDO = (ambient + light_color * lambert) * (shader_color * color_map.rgb) + total_spec;",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 78,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The rim is multiplied by diffuse lighting and light color. The specular lobe uses its red mask. The environment is added separately. Naming each term makes an otherwise crowded expression understandable.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 total_spec",
+        "show": [
+          {
+            "at": 0,
+            "event": "Read Every Addition"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 total_spec"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 total_spec",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Read Every Addition",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 fresnel = pow(1.0 - clamp(dot(e, n), 0.0, 1.0), fresnel_power) * lambert * light_color;\n\tvec3 total_spec = (fresnel + specular) + (pow(cube_map, vec3(reflection_contrast)) * reflection_intensity * specular_map.b);\n\tALBEDO = (ambient + light_color * lambert) * (shader_color * color_map.rgb) + total_spec;",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 78,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The textured base receives ambient plus direct light, then the extra contributions are added. It is a useful teaching combination, not a complete physical material. Its tangent-frame scaling limitation also remains.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "A Combined Model Has Limits"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "A Combined Model Has Limits",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 total_spec = (fresnel + specular) + (pow(cube_map, vec3(reflection_contrast)) * reflection_intensity * specular_map.b);\n\tALBEDO = (ambient + light_color * lambert) * (shader_color * color_map.rgb) + total_spec;\n}",
+            "codeFile": "15_uber.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/15_uber.jpg"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/15_uber.gdshader",
+        "sha256": "fa2ff03e12772eda34258f190f192110bc52fb21f5cf3ad2c4a2b4c33f0e4e12",
+        "line": 80,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. The normal-map convention is explicit. Packed channels differ from the earlier specular map. Ambient and diffuse use new approximations. The final color is a sum of identifiable contributions. Liam, in for Bear.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "The Uber Shader: Reading the Whole",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "The normal-map convention is explicit.",
+              "Packed channels differ from the earlier specular map.",
+              "Ambient and diffuse use new approximations.",
+              "The final color is a sum of identifiable contributions."
+            ],
+            "lectureLayout": true
+          }
+        }
+      },
+      "lead_silence_s": 0.5
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Audit the combined shader's normal-map convention and specular channels. Then vary subsurface spread. Explain the terminator change without describing it as simulated light transport through the material. Check two things: Red masks highlights and blue masks reflections. The green flip matches the supplied DirectX-style map.",
+      "estimated_duration_s": 18.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Audit the combined shader's normal-map convention and specular channels. Then vary subsurface spread. Explain the terminator change without describing it as simulated light transport through the material. Check two things: Red masks highlights and blue masks reflections. The green flip matches the supplied DirectX-style map.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "Red masks highlights and blue masks reflections.",
+              "The green flip matches the supplied DirectX-style map."
+            ],
+            "folderLabel": "@NikBearBrown"
+          }
+        }
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "The Uber Shader: Reading the Whole. At Nik Bear Brown.",
+      "estimated_duration_s": 4.17,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "The Uber Shader: Reading the Whole",
+            "slug": "claude-liam-lecture-shader-the-uber-shader-reading-the-whole",
+            "lectureLayout": true
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0
+    }
+  ]
+}

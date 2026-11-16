@@ -1,0 +1,495 @@
+{
+ "deck": "20",
+ "opening_summary": "Thirty-three terms for the systems that make a game act on its own, from state machines and behavior trees to seeded levels, learning from reward and networking. The exact term lets you tell an AI coding agent what to build.",
+ "opening_description": "33 terms for game AI decisions and systems.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers often think one distance is enough to make a guard start and stop chasing. It is not. With one threshold, a player at the edge makes the guard flicker. Two thresholds, one to start and a larger one to stop, give hysteresis. Game AI is full of pairs like that. This film goes through the terms group by group, each one shown.",
+  "text": "Use one threshold\nto keep a guard steady.",
+  "triggerWords": "one threshold",
+  "replacementWords": "two thresholds"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Thirty-three terms about game AI, the code that makes characters decide, in four groups. The first group is deciding with states. Finite state machine, transition table, flicker and hysteresis. A character is in one mode at a time, and something must stop it flipping.",
+   "figures": [
+    "33"
+   ]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is trees, scores and plans. Behavior tree, tick, results, blackboard, condition and action, selector, sequence, utility AI, weighted sum, GOAP, which is goal-oriented action planning, and precondition and effect. These are three ways to decide what to do next.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is generating and checking. Seed, coherent noise, octave, determinism, heightmap, compute shader, validator, generate-and-test, constructive and safety margin. These terms cover making levels from a seed, and proving they work.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is learning and networks. Reinforcement learning, reward, discount factor, Q-learning, epsilon-greedy, authority, RPC, which is a remote procedure call, and replication. These cover behaviour learned from reward, and state shared by two computers.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "A guard drawn as three boxes, Patrol, Chase and Search, with arrows between them. A Finite state machine is a set of states with rules for leaving each one, and exactly one state is active at a time. In this scripted example, a row of distances carries the guard from Patrol to Chase, to Search, and back to Patrol. For example, the Walker guard is a finite state machine, and a label above it shows which state is current.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "The same four arrows, now as rows. A Transition table lists every state, the condition that moves it on, and the state it moves to, one row per transition. The last column counts how often each row fired, and Search back to Chase never fired. For example, the agent that built the Walker guard was asked to write its transition table, from, to and condition, into the handoff file, so a reviewer can check every exit in one place.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "Now a seeded, noisy distance over ninety ticks, with one threshold at two hundred forty. Flicker is rapid back-and-forth switching between states. Each time the noise crosses the line, the guard switches, and the red band below marks Chase. Thirty-seven switches so far. For example, a player standing right at the edge of a guard's sight, with only one radius, would see the guard's label flip between Chase and Search over and over.",
+   "figures": [
+    "90 ticks",
+    "240",
+    "switches so far: 37"
+   ]
+  },
+  {
+   "slide": 2,
+   "step": 4,
+   "narration": "Hysteresis means using two thresholds, one for switching on and another for switching off, so a small wobble cannot flip the state. Here the guard starts chasing under two hundred twenty and stops only over two hundred sixty. On the same noisy signal, thirty-seven switches become three. For example, the Walker guard's lose radius is set larger than its sight radius, so a player hovering at the edge does not make it flicker.",
+   "figures": [
+    "220",
+    "260",
+    "37",
+    "give 3"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "A tree with a Selector at the top, two Sequences and a patrol action. A Behavior tree is a tree of nodes that decides what a character does, and it is run again on every update. On this first tick the player is visible, so the can see check succeeds, chase runs, and the Selector stops there. For example, the Walker guard's second brain is a behavior tree, chase if you can see the player, else search, else patrol.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "A Tick is one update step, in which the tree is evaluated again from the root. The facts change between ticks, so the choice can change. Here tick one chooses Chase, tick two Search, and tick three Patrol, each time starting at the top. For example, the Walker guard's tree gets one tick from its root on every physics frame, the same clock that moves the guard.",
+   "figures": [
+    "tick 1",
+    "tick 2",
+    "tick 3"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "Success, failure and running are the three results a node can return. Running means not finished, tick me again. On tick two the player is out of sight, so can see fails, and its Sequence fails. The second Sequence finds a last position, and search keeps running. Six of eight nodes were ticked, and patrol never was. For example, a guard's walk to the last spot it saw the player returns running every tick until it arrives, then success.",
+   "figures": [
+    "TICK 2",
+    "6 of 8"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 4,
+   "narration": "A Blackboard is a shared memory of facts that the tree's nodes read and write. The box shows two facts on tick two. Player visible is false, which the can see check reads, and a last position, which the last position check reads. For example, the Walker guard's tree keeps its blackboard in a Dictionary, and the last known player position stored there is what sends the guard searching.",
+   "figures": [
+    "TICK 2"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "Two rows of leaf results across six ticks. Condition and action are the two kinds of leaf. A condition asks a question and answers at once, success or failure. An action does the work and may keep returning running. Here chase returns running for three ticks and success on tick four, when it arrives. For example, is the player in sight is a condition, and walking to the spot where the player was last seen is an action.",
+   "figures": [
+    "tick 4"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "A Selector, also called a fallback, tries its children in order and stops at the first one that does not fail. It is or, with priority. In the top row the first child fails, the second succeeds, and the third is skipped. If every child fails, the Selector fails, and if one is running, so is the Selector. For example, a guard's root Selector says chase if you can, else search, else patrol.",
+   "figures": []
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "A Sequence runs its children in order and stops at the first one that does not succeed. It is and, with order. When all three succeed, the Sequence succeeds. A failure in the middle stops it, and so does a child that is still running. A Selector means or, and a Sequence means and. For example, a guard's chase branch is a Sequence, first can I see the player, then chase, so it never chases what it cannot see.",
+   "figures": []
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "Three bars and three score curves, in this made-up example. Utility AI scores every option it has right now and picks the highest. As the player comes closer the scores change, and at one hundred pixels with health zero point eight, chase wins with zero point six three. It makes one choice, now, not a plan. For example, an enemy that every moment scores attack, take cover and reload, then does whichever scores highest, is utility AI.",
+   "figures": [
+    "100 PX",
+    "HEALTH 0.8",
+    "0.63"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "A Weighted sum adds several inputs, each multiplied by a weight that says how much it matters. Here each score adds a closeness part and a second weighted part. At one hundred fifty pixels and health zero point three, flee wins with zero point six six. Raise health to zero point eight and chase wins with zero point five one. For example, a boss could score calling for help as missing health times a big weight, plus nearby players times a small one.",
+   "figures": [
+    "150 PX",
+    "HEALTH 0.3",
+    "0.66",
+    "health 0.8",
+    "0.51"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "A goal, an open door, and four actions a search found to reach it. GOAP, goal-oriented action planning, searches through possible actions for a sequence that makes the goal true. Under each action are the facts true after it. The search tried six world states. For example, a goblin told to get inside a locked hut could plan to fetch the key and open the door, with no one scripting that order.",
+   "figures": [
+    "6 world states"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "Precondition and effect describe each action for the planner. The precondition is what must be true before the action can run, and the effect is what it changes. Open door needs has key and at door. After step two of the plan only at key and has key are true, so open door is still blocked. For example, pulling a lever might need the character standing beside it as its precondition, and have a lowered bridge as its effect.",
+   "figures": [
+    "plan step 2"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "An agent, an environment, and a corridor of six cells. Reinforcement learning means learning behaviour by trial and reward. The agent acts, the environment answers with a new cell and a reward, and over many tries the agent learns what pays. Here, on step five, it moves right into the goal and the episode ends. For example, the Walker reinforcement-learning lab trains an agent on a small grid to reach a goal and avoid two pits, with no path written by hand.",
+   "figures": [
+    "step 5"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "A Reward is the number the environment gives after each step, telling the agent how well it did. Here the first four steps each cost minus zero point zero one, and reaching the goal gives plus one. Added up, they make the return, plus zero point nine six. Reward is one step, and return is the total. For example, in the Walker grid lab every ordinary step costs a little, a pit is punished and ends the episode, and the goal pays the most.",
+   "figures": [
+    "−0.01",
+    "+1.00",
+    "+0.96"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 3,
+   "narration": "The Discount factor, written gamma, sets how much a future reward is worth compared with one now. Each reward is multiplied by gamma once for every step it waits. With gamma zero point nine five, the goal reward still counts zero point eight one five, and the discounted return is zero point seven eight. With zero point five, only zero point zero six three. For example, a low discount factor makes an agent grab a nearby coin instead of walking to a bigger prize.",
+   "figures": [
+    "γ = 0.95",
+    "0.815",
+    "0.78",
+    "γ = 0.5",
+    "0.063"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "A grid with two pits and a goal, in this simulated run. Q-learning learns a value for each action in each state, a table of how good it is to go up, down, left or right from every cell. The arrows show the best action after five hundred episodes. From the red start they reach the goal in eight steps and miss both pits. For example, the Walker grid lab prints an arrow grid like this from its Q-table, written in plain GDScript.",
+   "figures": [
+    "500",
+    "8 steps"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "Epsilon-greedy is the rule for choosing moves while learning. With probability epsilon, take a random action, otherwise take the best one known. The black line is epsilon, falling from one to zero point zero five, so early moves are mostly random. The red line is success over the last twenty-five episodes, which first reaches eighty percent by the three hundred thirteenth episode. For example, an enemy learning to dodge sometimes tries a random direction, and that is how it finds a better one.",
+   "figures": [
+    "1.00",
+    "0.05",
+    "last 25 episodes",
+    "80%",
+    "313"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "Three strips of smooth noise, in this simulated run. A Seed is the number that fixes a random sequence. The values look random but are computed from the seed, which is why they are called pseudo-random. Seed forty-two, run twice, gives the same strip, with a largest difference of zero. Seed seven gives a different one. For example, the Walker level generator takes a seed, so seed seven builds the same level every time on the same engine version.",
+   "figures": [
+    "seed 42",
+    "0.000000",
+    "seed 7"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "Coherent noise is random, but it changes smoothly, so each value stays close to its neighbours. Perlin and simplex noise are two kinds. The white noise on top jumps about. On average, neighbours differ by zero point six one in white noise and only zero point zero six in coherent noise. For example, the Walker heightmap build starts from simplex noise, which gives its island smooth slopes instead of random speckles.",
+   "figures": [
+    "0.61",
+    "0.06"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "An Octave is one layer of noise at a set scale, added to other layers. Octave one is broad and strong. Octaves two and three are finer, at half and a quarter of the strength. Their sum keeps the large shape and adds detail on top. For example, a mountain range in a heightmap gets its big peaks from the first octave and its rocky bumps from the finer ones.",
+   "figures": [
+    "octave 1",
+    "octave 2",
+    "octave 3",
+    "strength 0.5",
+    "strength 0.25"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 4,
+   "narration": "Determinism means the same inputs and the same seed give the same output on every run. Here each run's sixty-four numbers are boiled down to a fingerprint. Seed forty-two twice gives the same fingerprint. Seed seven differs, and so does seed forty-two once the generator itself changes. For example, the Walker heightmap build gives byte-identical output for the same seed twice, but a level that must survive an engine upgrade should be saved as data.",
+   "figures": [
+    "64",
+    "seed 42",
+    "seed 7"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "A pixelled island made from seed forty-two. A Heightmap is a grid with one height value at each position. Here noise is multiplied by a fade from the centre outward, and every value under zero point two becomes zero, which is sea. Six hundred sixty-eight of the one thousand five hundred thirty-six cells are land. For example, the hills of an open-world level can be stored as a grey image, where each pixel's brightness is the ground height at that spot.",
+   "figures": [
+    "42",
+    "0.2",
+    "668 of 1536"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "A Compute shader is one program run on the GPU, the graphics processor, over many cells at once, separate from drawing. A loop fills three hundred eighty-four cells one after another, while the shader runs one copy of the formula per cell. None differ. Here both run on the CPU, the main processor, and in the course build the GPU result is still unchecked. For example, the Walker heightmap build writes its island formula twice, as a GDScript loop and as a compute shader.",
+   "figures": [
+    "384",
+    "0 of 384"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "Two side views of a level, checked by flood fill from the left. A Validator is a check that tests generated content against rules. Here the rules are a climb of at most two and a jump of at most six columns. The top level is rejected at column fifteen, where the gap is too wide. The lower level is accepted, all nineteen solid columns reached. For example, the Walker level validator reports the first column a player cannot reach, and why.",
+   "figures": [
+    "STEP ≤ 2",
+    "JUMP ≤ 6",
+    "15",
+    "19 of 19"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "Generate-and-test means making content at random, then checking each piece and throwing away whatever fails. Sixty seeds, one square each, and only twelve pass, twenty percent. With a policy of reject and re-roll, five accepted levels took twenty seeds, so fifteen were thrown away. For example, a dungeon generator that keeps rolling new room layouts until the validator finds a path from the entrance to the exit is generate-and-test.",
+   "figures": [
+    "60",
+    "12 of 60",
+    "20%",
+    "20 seeds",
+    "15 levels"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "Constructive generation builds content by rules that make a bad result impossible. All sixty seeds pass, so nothing is re-rolled. The validator still runs, as the check that the rules worked. Generate-and-test rejects the bad, and constructive generation never makes it. For example, a platformer generator that places each new platform within the player's jump range of the last one is constructive.",
+   "figures": [
+    "60 of 60"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 4,
+   "narration": "A Safety margin is extra room left, so generated content never only just passes. With the jump limit at six columns, forty-four of two hundred levels pass. With a margin of one, the limit is five, and thirty-two pass. The twelve in between need the full jump, so a slightly short jump fails them. The margin of one is illustrative. For example, the Walker validator's limits come from the player's measured jump, minus a margin the agent had to state.",
+   "figures": [
+    "limit 6",
+    "44",
+    "200",
+    "limit 5",
+    "margin of 1",
+    "32",
+    "12 levels"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "Two peers, a host and a client, each showing the same paddle. Authority is the part of the system allowed to change a value. Player1 belongs to the host, peer one. The client asks the host to move it to an absurd height, and the call is refused, so the host's value stays one hundred eighty-eight point six. For example, in the Walker Pong lab each paddle's owner reads its own keys, and only that owner may send the paddle's position.",
+   "figures": [
+    "id 1",
+    "188.6"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "An RPC, a remote procedure call, is a function one computer asks another computer to run. Its mode says who may call it. The score function is open to any peer, and all three client calls are accepted, so the score goes from zero to three. The position function keeps the default mode, authority, and all three calls are refused. For example, in a two-player card game the client could ask the host, by RPC, to play a card, and the host decides.",
+   "figures": [
+    "3 of 3",
+    "0 → 3",
+    "0 of 3"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Replication means copying a value from the peer that owns it to the other peers. The black line is the host's paddle height over sixty ticks, and the red steps are the client's copy. In this simulated run, values arrive three ticks late and one packet in five is lost, so the copy lags by up to thirteen pixels, then catches up. For example, the Walker bomber build replicates each player's position to the other peers with a MultiplayerSynchronizer node.",
+   "figures": [
+    "60 TICKS",
+    "3 ticks late",
+    "1 packet",
+    "in 5 lost",
+    "13.0 px"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "Each pair sets two look-alikes side by side. A Selector tries children until one succeeds, so here it returns success and skips the rest. A Sequence runs children until one fails, so here it returns failure. Selector is or, and Sequence is and.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "A Finite state machine stores its exits on each state, so adding flee when hurt means a new state and three new exit edges. A Behavior tree keeps priority in the order of the tree, so the same change is one new branch at the left.",
+   "figures": [
+    "3 new exit edges",
+    "1 new branch"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "Generate-and-test makes levels at random and rejects the bad ones. For seeds one to twelve, only two pass. Constructive generation builds each level so it cannot be bad, and all twelve pass.",
+   "figures": [
+    "seeds 1 to 12",
+    "2 accepted",
+    "12 accepted"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Utility AI scores every option and picks the top one, a single choice made now. GOAP searches for a plan toward a goal, here four actions in order, from going to the key to opening the door.",
+   "figures": [
+    "4 actions"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 1,
+   "narration": "A vague request sits above the exact instruction that replaces it. Stop the guard jittering becomes, start chasing under two hundred twenty pixels, and stop only over two hundred sixty, two thresholds. On the same noisy signal, thirty-seven switches become three.",
+   "figures": [
+    "220 px",
+    "260",
+    "37 switches become 3"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 2,
+   "narration": "Make the levels random but fair becomes, generate from a seed, run the validator, and reject any level that fails. In this run, forty-four of two hundred seeds pass, and one hundred fifty-six are rejected.",
+   "figures": [
+    "44 of 200",
+    "156 of 200"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 3,
+   "narration": "Make the AI choose sensibly becomes, score every option from zero to one using distance and health, and take the highest. In this made-up example, at one hundred fifty pixels and health zero point eight, chase wins with zero point five one.",
+   "figures": [
+    "0 to 1",
+    "150 px",
+    "health 0.8",
+    "chase 0.51"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 4,
+   "narration": "Make it repeatable becomes, set seed forty-two, run twice, and compare the output byte for byte. Both runs give the same fingerprint, and seed seven gives a different one. Same seed, same fingerprint.",
+   "figures": [
+    "seed 42",
+    "seed 7"
+   ]
+  },
+  {
+   "slide": 14,
+   "step": 5,
+   "narration": "Don't let a client cheat becomes, leave the RPC on authority mode, so the host checks who is calling. A score RPC open to any peer accepted all three client calls. On authority mode, it accepted none.",
+   "figures": [
+    "3 of 3",
+    "0 of 3"
+   ]
+  },
+  {
+   "slide": 15,
+   "step": 1,
+   "narration": "This is a checklist of six questions to ask before you trust a change to game AI. First, can the validator reject an impossible output, and what happens to that output then?",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 2,
+   "narration": "Second, does the same seed give identical output twice, on a pinned engine version? A seed reproduces a level only on the same generator.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 3,
+   "narration": "Third, are the on and off thresholds different, so the state cannot flicker? That is hysteresis, one distance to start chasing and a larger one to stop.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 4,
+   "narration": "Fourth, which node returned running on the last tick, and does its composite remember it? A composite with memory resumes that child and skips the checks to its left.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 5,
+   "narration": "Fifth, who has authority over this value, and does the receiver check the caller? A function open to any peer trusts whoever calls it.",
+   "figures": []
+  },
+  {
+   "slide": 15,
+   "step": 6,
+   "narration": "Sixth, does the test read only what can be observed, such as the guard's mode and position, never the machine's internals? Then say it exactly. Not make it fair, but validate every seed and reject failures.",
+   "figures": []
+  }
+ ],
+ "recap_lines": [
+  "Two thresholds, on and off, give hysteresis and stop a state flickering.",
+  "A selector is or with priority, and a sequence is and with order.",
+  "Utility AI scores every option now, while GOAP searches for a plan.",
+  "A reward is one step's number, and the return adds them up over time.",
+  "The same seed gives the same output, and a validator rejects levels that fail.",
+  "Authority says who may change a value, and replication copies it to others."
+ ],
+ "your_turn": {
+  "segment": "Name The Game AI Term",
+  "command": "Quiz me on game AI terms with short game-making cases, one at a time. Use hysteresis, flicker, selector, sequence, utility AI, GOAP, reward, generate-and-test, constructive generation and authority. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is a small game situation, and the answer waits for you.",
+   "Check: you named the exact term and said why its look-alike does not fit."
+  ]
+ },
+ "say_as": [],
+ "deck_problems": [
+  "Slide 4 (Conditions, actions, selectors and sequences), step 1: the two leaf rows contradict the slide's own tree. can_see returns FAILURE on tick 1 while chase returns RUNNING on tick 1, but in Sequence[can_see, chase] chase is not ticked when can_see fails. The rows read as if both leaves were ticked independently.",
+  "Slide 7 step 3: the header says 'EACH REWARD × γ TO THE POWER OF ITS STEP', and the steps are numbered 1 to 5, but the last reward counts 0.815 = 0.95^4 and 0.063 = 0.5^4. The power is the step number minus one. The discounted returns 0.78 and 0.04 are right for that rule.",
+  "Slide 11 step 1: 'gap too wide: 8 columns, limit 6'. In the drawing, the last reached column is 7 and the first unreached is 15, so the gap is seven empty columns; 8 is the jump distance, not the gap width.",
+  "Slide 11 step 4 and slide 14 step 2: 44 of 200 accepted and '81 of the 200 levels the last column is a gap' come from the page's own generator, while the notes cite Lab B's limits. Lab B's run in Chapter 14 gave 43 of 200 and 16 levels ending in a gap. Nothing on screen says these levels are the page's own, so a viewer can take 44 and 81 as the course's results.",
+  "Slide 14 step 2: the caption 'only 44 of 200 raw levels can be crossed' overclaims. Chapter 14 says a validator pass 'does not establish that an accepted level can be crossed'. 'pass the validator' would be accurate. The narration says 'pass'.",
+  "Slide 14 is badged Computed, but step 3 shows the utility scores (chase 0.51, flee 0.41, patrol 0.42) whose weights slide 5 badges Illustrative data. The narration says 'made-up example' there.",
+  "Slide 12 notes say '188.6, 113.0 and the 3 of 3 forged points are from the chapter's Lab C logs', but 113.0 appears on no step. Step 3 shows a simulated '13.0 px' instead, so the note looks stale or confused.",
+  "Slide 2 step 1: the guard returns from Search to Patrol after 'wait 2 ticks', under the title 'A GUARD WITH THREE STATES' and a source naming Task 2, where the guard waits 1.0 s at the last known position. The notes call the run an illustrative script, but the picture does not say so.",
+  "Slide 6 step 2: in the open_door row, the NEEDS text 'has_key, at_door' runs into the GIVES text '+door_open' with no space between them."
+ ]
+}

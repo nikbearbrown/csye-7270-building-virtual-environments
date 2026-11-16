@@ -1,0 +1,1030 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-passing-normals-to-pixels",
+    "title": "Passing Normals to Pixels",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Trace a surface normal from mesh to fragment.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending",
+    "build": {
+      "at": "2026-10-17T00:16:52",
+      "cut": "review",
+      "filled": 14,
+      "of": 14,
+      "slates": [],
+      "skin_warnings": [
+        "BOPEN: palette=claude but the cold open is 'un-annotated' — COLD OPEN LAW wants ClaudeComposerAsk"
+      ]
+    }
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Passing Normals to Pixels. Trace a surface normal from the mesh through a varying into fragment lighting.",
+      "estimated_duration_s": 8.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      },
+      "actual_duration_s": 7.573333,
+      "audio_file": "mp3/beat-BOPEN.mp3",
+      "render_duration_s": 7.583333333333333,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BOPEN.mp4",
+        "filled_by": "media",
+        "at": "2026-10-17T00:16:52"
+      }
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Olá. This is Liam, in for Bear. The key correction is that the normal needs a space conversion. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nthe normal is already in world space.",
+            "triggerWords": "the normal is already in world space",
+            "replacementWords": "the normal needs a space conversion",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-passing-normals-to-pixels",
+            "banner": "",
+            "durationSeconds": 11.018667
+          },
+          "rendered": {
+            "out": "media/BIDEA.mp4",
+            "at": "2026-10-17T03:47:32.919049+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      },
+      "actual_duration_s": 11.018667,
+      "audio_file": "mp3/beat-BIDEA-padded.wav",
+      "render_duration_s": 11.041666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BIDEA.mp4",
+        "filled_by": "remotion:BrutalistHesitantWriter",
+        "at": "2026-10-17T00:16:52"
+      }
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Normal: A direction perpendicular to the surface. World space: Coordinates shared by objects and lights. Varying: A value passed and interpolated between shader stages.",
+      "estimated_duration_s": 10.83,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Varying",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Normal"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal World space"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Varying"
+          }
+        ],
+        "motion_claim": "Reveal Varying",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Normal",
+                "meaning": "A direction perpendicular to the surface"
+              },
+              {
+                "term": "World space",
+                "meaning": "Coordinates shared by objects and lights"
+              },
+              {
+                "term": "Varying",
+                "meaning": "A value passed and interpolated between shader stages"
+              }
+            ],
+            "durationSeconds": 10.794667
+          },
+          "rendered": {
+            "out": "media/BDEFS.mp4",
+            "at": "2026-10-17T03:47:57.702463+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 10.794667,
+      "audio_file": "mp3/beat-BDEFS.mp3",
+      "render_duration_s": 10.833333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BDEFS.mp4",
+        "filled_by": "remotion:ClaudeDefinitions",
+        "at": "2026-10-17T00:16:52"
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The input normal belongs to the mesh's local coordinates. Our light direction is defined in world coordinates. Comparing them directly would compare directions expressed in different reference frames.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: varying vec3",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Follow The Normal"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: varying vec3"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: varying vec3",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "uniform vec3 light_direction = vec3(0.5, -0.8, -0.6);\nvarying vec3 world_normal;\nvoid vertex() {",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 11.349333
+          },
+          "rendered": {
+            "out": "media/B01.mp4",
+            "at": "2026-10-17T03:48:19.549214+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 26,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.349333,
+      "audio_file": "mp3/beat-B01.mp3",
+      "render_duration_s": 11.375,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B01.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The vertex function multiplies the normal by the model normal matrix. This is a direction transformation, not a position transformation. Translation must not move a normal.",
+      "estimated_duration_s": 10.83,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: MODEL_NORMAL_MATRIX",
+        "show": [
+          {
+            "at": 0,
+            "event": "Transform At Vertices"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: MODEL_NORMAL_MATRIX"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: MODEL_NORMAL_MATRIX",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Transform At Vertices",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "void vertex() {\n\tworld_normal = MODEL_NORMAL_MATRIX * NORMAL;\n}",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 10.709333
+          },
+          "rendered": {
+            "out": "media/B02.mp4",
+            "at": "2026-10-17T03:48:41.930251+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 29,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.709333,
+      "audio_file": "mp3/beat-B02.mp3",
+      "render_duration_s": 10.75,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B02.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The varying carries transformed normals toward the fragment stage. Rasterization interpolates their components across each triangle. It does not run the vertex function again for every fragment.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: world_normal =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Carry The Value"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: world_normal ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: world_normal =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Carry The Value",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "void vertex() {\n\tworld_normal = MODEL_NORMAL_MATRIX * NORMAL;\n}",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 11.477333
+          },
+          "rendered": {
+            "out": "media/B03.mp4",
+            "at": "2026-10-17T03:49:01.543581+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 29,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.477333,
+      "audio_file": "mp3/beat-B03.mp3",
+      "render_duration_s": 11.5,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B03.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Interpolation can change a vector's length. Normalize the interpolated normal before using it in a dot product. Otherwise its length would accidentally change the brightness.",
+      "estimated_duration_s": 10.42,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: normalize(world_normal)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Normalize Again"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: normalize(world_normal)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: normalize(world_normal)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Normalize Again",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "void fragment() {\n\tvec3 n = normalize(world_normal);\n\tvec3 l = normalize(-light_direction);",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 10.282667
+          },
+          "rendered": {
+            "out": "media/B04.mp4",
+            "at": "2026-10-17T03:49:24.094933+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 33,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.282667,
+      "audio_file": "mp3/beat-B04.mp3",
+      "render_duration_s": 10.291666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B04.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the torus rotate while the light remains fixed in world space. Different surface directions face the light. The normal transformation is what keeps those directions consistent with the scene.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Rotate The Object"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/01_base.mp4",
+            "durationSeconds": 16.0
+          },
+          "rendered": {
+            "out": "media/B05.mp4",
+            "at": "2026-10-17T03:50:16.077099+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 29,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0,
+      "actual_duration_s": 16.0,
+      "audio_file": "mp3/beat-B05-padded.wav",
+      "render_duration_s": 16.0,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B05.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "This uniform stores the direction light travels. Lighting needs the direction toward the light. The minus sign converts between those conventions; removing it illuminates the opposite side.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: normalize(-light_direction)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Reverse The Light"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: normalize(-light_direction)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: normalize(-light_direction)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Reverse The Light",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 n = normalize(world_normal);\n\tvec3 l = normalize(-light_direction);\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 10.965333
+          },
+          "rendered": {
+            "out": "media/B06.mp4",
+            "at": "2026-10-17T03:50:38.741119+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 34,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.965333,
+      "audio_file": "mp3/beat-B06.mp3",
+      "render_duration_s": 11.0,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B06.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The normalized directions meet in a clamped dot product. A surface facing the light gets a positive weight. A surface facing away gets zero. That weight multiplies the surface color.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: clamp(dot(l, n)",
+        "show": [
+          {
+            "at": 0,
+            "event": "One Lighting Result"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: clamp(dot(l, n)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: clamp(dot(l, n)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "One Lighting Result",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 l = normalize(-light_direction);\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));\n\tALBEDO = lambert * shader_color;",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 10.965333
+          },
+          "rendered": {
+            "out": "media/B07.mp4",
+            "at": "2026-10-17T03:51:01.311730+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 35,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.965333,
+      "audio_file": "mp3/beat-B07.mp3",
+      "render_duration_s": 11.0,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B07.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Despite its name, the base shader already implements Lambert lighting. Its executable code matches the separate Lambert file. This lesson is about the data path, not a new lighting model.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Read Behavior"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Read Behavior",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));\n\tALBEDO = lambert * shader_color;\n}",
+            "codeFile": "01_base.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/01_base.jpg",
+            "durationSeconds": 10.858667
+          },
+          "rendered": {
+            "out": "media/B08.mp4",
+            "at": "2026-10-17T03:51:20.083030+00:00"
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/01_base.gdshader",
+        "sha256": "b81c1d2bd7cbf4d3769788e5674bfbe7c6481120c8c5476b6cc9f3e0a86a00e3",
+        "line": 36,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.858667,
+      "audio_file": "mp3/beat-B08.mp3",
+      "render_duration_s": 10.875,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/B08.mp4",
+        "filled_by": "remotion:ShaderLab",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "contrast_regions": [
+          {
+            "label": "beat title",
+            "box": [
+              0.06,
+              0.04,
+              0.85,
+              0.12
+            ]
+          }
+        ],
+        "contrast_reason": "ShaderLab renders Godot 3D captures alongside highlighted code; the highlighted row tan background (HILITE #E6D3C2) and capture mid-tones dilute the whole-frame luminance average below threshold. Regional check verifies the beat-title heading, which is dark serif (#3D3929) on cream stage (#F2F0E9) — separation ~0.72 at design coordinates. Code text contrast confirmed by visual inspection of preflight stills."
+      }
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. Mesh normals start in local space. The normal matrix carries them to world space. Varyings interpolate across triangles. Normalize before comparing directions. Liam, in for Bear.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Passing Normals to Pixels",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "Mesh normals start in local space.",
+              "The normal matrix carries them to world space.",
+              "Varyings interpolate across triangles.",
+              "Normalize before comparing directions."
+            ],
+            "lectureLayout": true,
+            "durationSeconds": 12.745333
+          },
+          "rendered": {
+            "out": "media/BVDT.mp4",
+            "at": "2026-10-17T03:51:45.519692+00:00"
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "actual_duration_s": 12.745333,
+      "audio_file": "mp3/beat-BVDT-padded.wav",
+      "render_duration_s": 12.75,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BVDT.mp4",
+        "filled_by": "remotion:ClaudeVerdictArtifact",
+        "at": "2026-10-17T00:16:52"
+      }
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Rotate a Godot mesh using this shader. Trace its normal through the vertex function, varying, and fragment function. Explain why the light direction and normal must use the same coordinate space. Check two things: The normal is transformed before the dot product. The interpolated normal is normalized again.",
+      "estimated_duration_s": 20.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Rotate a Godot mesh using this shader. Trace its normal through the vertex function, varying, and fragment function. Explain why the light direction and normal must use the same coordinate space. Check two things: The normal is transformed before the dot product. The interpolated normal is normalized again.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "The normal is transformed before the dot product.",
+              "The interpolated normal is normalized again."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "durationSeconds": 16.853333
+          },
+          "rendered": {
+            "out": "media/BHTF.mp4",
+            "at": "2026-10-17T03:52:19.895567+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 16.853333,
+      "audio_file": "mp3/beat-BHTF.mp3",
+      "render_duration_s": 16.875,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BHTF.mp4",
+        "filled_by": "remotion:ClaudeComposerAsk",
+        "at": "2026-10-17T00:16:52"
+      }
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Passing Normals to Pixels. At Nik Bear Brown.",
+      "estimated_duration_s": 3.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Passing Normals to Pixels",
+            "slug": "claude-liam-lecture-shader-passing-normals-to-pixels",
+            "lectureLayout": true,
+            "durationSeconds": 4.477333,
+            "handle": "@NikBearBrown"
+          },
+          "rendered": {
+            "out": "media/BOUT.mp4",
+            "at": "2026-10-17T03:52:33.579083+00:00"
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "actual_duration_s": 4.477333,
+      "audio_file": "mp3/beat-BOUT-padded.wav",
+      "render_duration_s": 4.5,
+      "build": {
+        "status": "VIDEO",
+        "src": "media/BOUT.mp4",
+        "filled_by": "remotion:ClaudeTitleOutro",
+        "at": "2026-10-17T00:16:52"
+      },
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "ClaudeTitleOutro uses intentional centered layout per OUTRO-LOCK.md: exact film title, @NikBearBrown handle and slug-seeded mascot centered on cream. 17% fill is by design; the sparse layout IS the locked outro specification."
+      }
+    }
+  ]
+}

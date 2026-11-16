@@ -1,0 +1,410 @@
+{
+ "B25": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "title": "Ripples",
+   "code": "void fragment() {\n\tALBEDO = water_color;\n\tROUGHNESS = roughness;\n\tALPHA = opacity;\n\tNORMAL_MAP = texture(normal_a, UV * ripple_scale).rgb;\n\tNORMAL_MAP_DEPTH = ripple_strength;\n}",
+   "codeFile": "lab-shaders/04a-normal-map.gdshader · lines 15 to 21",
+   "cues": [
+    {
+     "at": 0.4,
+     "lines": [
+      5
+     ],
+     "label": "normal map: an image of which way each pixel faces"
+    }
+   ],
+   "video": "making-water/normal-strength.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "strength 0",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.9,
+     "text": "strength 1.5",
+     "x": 0.5,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "ripple_strength 0 to 1.5 on one still normal map"
+  },
+  "capture_spec": "C17: scene water_scene.gd, shader 04a-normal-map, ripple_strength swept 0 to 1.5 across the beat (one static normal map: a NoiseTexture2D, As Normal Map, Seamless).",
+  "visual_intent": "Act title 'Ripples'; code card (the 04a fragment, NORMAL_MAP lit); the real cove: first one big flat sun glare, then as the strength rises the glare breaks into thousands of small glints.",
+  "motion_claim": "One big glare breaks into glints as the strength rises.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "strength 0, one glare"
+   },
+   {
+    "at": 0.4,
+    "event": "NORMAL_MAP line"
+   },
+   {
+    "at": 0.9,
+    "event": "strength 1.5, glints"
+   }
+  ],
+  "runner_up": "manim: light on a flat and a bumpy line",
+  "why": "The real glare breaking up is the claim; the drawing would only model it.",
+  "sparse": false
+ },
+ "B26": {
+  "lane": "manim",
+  "class": "B26_ColorIsDirection",
+  "visual_intent": "Left: the real normal map (captures/normal_a.png, 512 by 512, through lab_window) with two grey-backed rings on two pixels. Right: two swatches in the pixels' real colours: 'flat' (127, 127, 254) with an arrow pointing straight up, and 'leans' (124, 133, 254) with a slightly tilted arrow; a legend with three arrow shapes in the channel colours: 'left or right' (red), 'up or down' (green), 'upright' (blue); a number '13°' for the steepest pixel.",
+  "motion_claim": "The two arrows draw from the swatches (one upright, one tilted) as the voice says flat and leans; the legend arrows draw with red, green, blue.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "the real image"
+   },
+   {
+    "at": 0.5,
+    "event": "flat swatch and arrow"
+   },
+   {
+    "at": 0.7,
+    "event": "leaning swatch and arrow, legend"
+   },
+   {
+    "at": 0.9,
+    "event": "13 degrees"
+   }
+  ],
+  "runner_up": "ShaderLab still of the texture",
+  "why": "Colour-to-direction is a coding scheme; swatches next to arrows decode it, and the real texture proves the numbers.",
+  "sparse": true
+ },
+ "B27": {
+  "lane": "manim",
+  "class": "B27_Seamless",
+  "visual_intent": "Two real 2 by 2 tilings of the normal map side by side (captures/tiles-not-seamless.png labelled 'Seamless off', captures/tiles-seamless.png labelled 'Seamless on'), each with the tile-crossing lines marked by two thin grey lines; a ring on the visible jump in the left one. Under them the measured edge jump: '53 times a normal step' for off and 'about 1 time' for on; at the top the two switch names 'As Normal Map' and 'Seamless' as outlined chips.",
+  "motion_claim": "The two chips light; the ring appears on the left tiling's seam; the numbers land under each picture.",
+  "show": [
+   {
+    "at": 0.2,
+    "event": "chips As Normal Map and Seamless"
+   },
+   {
+    "at": 0.55,
+    "event": "ring on the seam"
+   },
+   {
+    "at": 0.8,
+    "event": "numbers under each tiling"
+   }
+  ],
+  "runner_up": "ShaderLab with a tiling video",
+  "why": "The seam is a picture of an edge mismatch; two real tilings next to each other show it without a word of explanation.",
+  "sparse": true
+ },
+ "B28": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "group_uniforms Ripples;\nuniform sampler2D normal_a : hint_normal, filter_linear_mipmap, repeat_enable;",
+   "codeFile": "lab-shaders/04b-scrolling-normals.gdshader · lines 9 to 10",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      2
+     ],
+     "label": "hint_normal: the image holds directions, not colors"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      2
+     ],
+     "label": "repeat_enable: the address may wrap past 1"
+    }
+   ],
+   "video": "making-water/repeat-switch.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · repeat enabled at 55 %",
+   "readouts": [],
+   "rings": [],
+   "caption": "repeat_disable smears the edge pixels; repeat_enable wraps the picture"
+  },
+  "capture_spec": "C19: scene water_scene.gd, shader 04e-no-repeat (repeat_disable) swapped at 55 % of the beat for 04b-scrolling-normals (repeat_enable), iso camera.",
+  "visual_intent": "Code card (the group and the sampler line lit twice); the real cove: first long smeared streaks of glare across most of the water, then at 55 % the streaks resolve into fine ripples.",
+  "motion_claim": "Long smeared streaks turn into fine ripples the instant repeat is enabled.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "hint_normal label"
+   },
+   {
+    "at": 0.55,
+    "event": "swap: streaks resolve"
+   },
+   {
+    "at": 0.62,
+    "event": "repeat_enable label"
+   }
+  ],
+  "runner_up": "manim: a tile with clamped edges",
+  "why": "The smear is a visible bug; the real before and after proves what the hint does.",
+  "sparse": false
+ },
+ "B29": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "void fragment() {\n\tALBEDO = water_color;\n\tROUGHNESS = roughness;\n\tALPHA = opacity;\n\tvec2 uv = UV * ripple_scale + vec2(1.0, 0.4) * TIME * ripple_speed;\n\tNORMAL_MAP = texture(normal_a, uv).rgb;\n\tNORMAL_MAP_DEPTH = ripple_strength;\n}",
+   "codeFile": "lab-shaders/04b-scrolling-normals.gdshader · lines 16 to 23",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      5
+     ],
+     "label": "TIME: seconds on one clock shared by the whole game"
+    },
+    {
+     "at": 0.75,
+     "lines": [
+      5
+     ]
+    }
+   ],
+   "video": "making-water/scroll.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · live clock",
+   "readouts": [],
+   "rings": [],
+   "caption": "ripple_speed: how far the address moves each second"
+  },
+  "capture_spec": "C20: scene water_scene.gd, shader 04b-scrolling-normals, iso camera, TIME runs from the capture start.",
+  "visual_intent": "Code card (the 04b fragment, the scrolled address line lit); the real cove: the glints drift steadily across the water in one direction.",
+  "motion_claim": "The whole glitter pattern drifts one way across the water.",
+  "show": [
+   {
+    "at": 0.3,
+    "event": "the address line with TIME"
+   },
+   {
+    "at": 0.75,
+    "event": "scale and speed"
+   }
+  ],
+  "runner_up": "manim: a window sliding over a tile",
+  "why": "The drifting glints are the result; a sliding window drawing would show the mechanism.",
+  "sparse": false
+ },
+ "B30": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "void fragment() {\n\tALBEDO = water_color;\n\tROUGHNESS = roughness;\n\tALPHA = opacity;\n\tvec2 uv_a = UV * ripple_scale + vec2(1.0, 0.4) * TIME * ripple_speed;\n\tvec2 uv_b = UV * ripple_scale * 0.7 - vec2(0.3, 1.0) * TIME * ripple_speed * 1.3;\n\tNORMAL_MAP = mix(texture(normal_a, uv_a).rgb, texture(normal_b, uv_b).rgb, 0.5);\n\tNORMAL_MAP_DEPTH = ripple_strength;\n}",
+   "codeFile": "lab-shaders/04c-two-layers.gdshader · lines 17 to 25",
+   "cues": [
+    {
+     "at": 0.25,
+     "lines": [
+      5
+     ]
+    },
+    {
+     "at": 0.4,
+     "lines": [
+      6
+     ],
+     "label": "the second layer: scaled 0.7, moving the other way"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      7
+     ],
+     "label": "mix: blends from a to b; t of 0 gives a, 1 gives b"
+    }
+   ],
+   "video": "making-water/two-layers.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · second layer at 50 %",
+   "readouts": [],
+   "rings": [],
+   "caption": "two normal maps, averaged: the repeat disappears"
+  },
+  "capture_spec": "C21: scene water_scene.gd, shader 04b-scrolling-normals swapped at 50 % of the beat for 04c-two-layers, iso camera.",
+  "visual_intent": "Code card (the 04c fragment; the two address lines then the mix line lit); the real cove: one steadily drifting glint pattern, then after the swap the glints cross and shimmer with no single direction.",
+  "motion_claim": "A steady drift turns into crossing shimmer when the second layer arrives.",
+  "show": [
+   {
+    "at": 0.25,
+    "event": "layer one address"
+   },
+   {
+    "at": 0.4,
+    "event": "layer two address"
+   },
+   {
+    "at": 0.5,
+    "event": "swap: crossing ripples"
+   },
+   {
+    "at": 0.62,
+    "event": "mix line"
+   }
+  ],
+  "runner_up": "manim: two sliding windows",
+  "why": "The change from drift to shimmer is the claim and a real swap shows it; the drawing of two windows cannot.",
+  "sparse": false
+ },
+ "B31": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "durationSeconds": "__AUDIO__",
+   "video": "making-water/low-flat.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · low camera",
+   "readouts": [
+    {
+     "at": 0.62,
+     "text": "same row",
+     "x": 0.5,
+     "y": 0.676
+    }
+   ],
+   "rings": [],
+   "caption": "the near edge is the same pixel row in every column (row 487 of 720)"
+  },
+  "capture_spec": "C22: scene water_scene.gd, W_BARE low camera (1.1 m above the water, fov 30), shader 04d-warped-foam, plane NOT cut; the near edge was measured at row 487 of a 1280 x 720 frame in every column (evidence/planning-checks).",
+  "visual_intent": "The framed window shows a flat plane seen from just above the waterline: the glints and the foam net move across it, and the near and far edges stay ruler straight; a pill 'same row' sits on the near edge.",
+  "motion_claim": "Everything on the plane moves; its edge never does.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "glints moving on a flat plane"
+   },
+   {
+    "at": 0.62,
+    "event": "pill same row on the near edge"
+   }
+  ],
+  "runner_up": "manim: a straight line over a bumpy normal",
+  "why": "A real photograph-like render with a straight edge, measured to the pixel row, is the claim itself.",
+  "sparse": false
+ },
+ "B32": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "side",
+   "durationSeconds": "__AUDIO__",
+   "code": "\tvec3 n = mix(texture(normal_a, uv_a).rgb, texture(normal_b, uv_b).rgb, 0.5);\n\tvec2 warp = (n.xy - 0.5) * warp_strength;\n\tvec2 c = cells((UV + warp) * cell_density, TIME * cell_speed);\n\tfloat foam = 1.0 - smoothstep(0.0, edge_width, c.y - c.x);",
+   "codeFile": "lab-shaders/04d-warped-foam.gdshader · lines 48 to 51",
+   "cues": [
+    {
+     "at": 0.3,
+     "lines": [
+      2
+     ],
+     "label": "warp: the foam's address, pushed along the lean"
+    },
+    {
+     "at": 0.62,
+     "lines": [
+      3
+     ]
+    }
+   ],
+   "video": "making-water/warp.mp4",
+   "videoLabel": "Godot 4.7.2 · Forward+ · scripted sweep",
+   "readouts": [
+    {
+     "at": 0.1,
+     "text": "warp 0",
+     "x": 0.5,
+     "y": 0.1
+    },
+    {
+     "at": 0.9,
+     "text": "warp 0.4",
+     "x": 0.5,
+     "y": 0.1
+    }
+   ],
+   "rings": [],
+   "caption": "warp_strength 0 to 0.4: the foam net bends with the ripples"
+  },
+  "capture_spec": "C23: scene water_scene.gd, shader 04d-warped-foam, warp_strength swept 0 to 0.4 across the beat, iso camera.",
+  "visual_intent": "Code card (the warp lines lit); the real cove: a straight-edged foam net that bends and sloshes with the ripples as the warp rises.",
+  "motion_claim": "The foam lines bend and slosh as the warp rises.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "warp 0: straight lines"
+   },
+   {
+    "at": 0.3,
+    "event": "warp line"
+   },
+   {
+    "at": 0.9,
+    "event": "warp 0.4: bent net"
+   }
+  ],
+  "runner_up": "manim: a grid bent by arrows",
+  "why": "The foam net bending on the real water is the result.",
+  "sparse": false
+ },
+ "B33": {
+  "lane": "capture",
+  "pattern": "ShaderLab",
+  "props": {
+   "layout": "video",
+   "durationSeconds": "__AUDIO__",
+   "video": "making-water/renderers-ripples.mp4",
+   "videoLabel": "left Forward+ · right Compatibility",
+   "videoAspect": 2.0,
+   "readouts": [
+    {
+     "at": 0.3,
+     "text": "red 132",
+     "x": 0.25,
+     "y": 0.08
+    },
+    {
+     "at": 0.3,
+     "text": "red 100",
+     "x": 0.75,
+     "y": 0.08
+    }
+   ],
+   "rings": [],
+   "caption": "median red of the water, same shader, same clock: 132 against 100"
+  },
+  "capture_spec": "C24: scene water_scene.gd, shader 04d-warped-foam, iso camera, recorded twice (Forward+ and Compatibility) at 1080 x 1080 and joined side by side. The medians (132, 163, 204 against 100, 158, 205) are E15, measured on a top view of the bare plane at the same clock (evidence/planning-checks/logs/e15-renderers-ripples.txt).",
+  "visual_intent": "Wide window: two identical scenes side by side, both moving on the same clock: left Forward+ (a lighter, greyer blue), right Compatibility (a deeper, more saturated blue); pills 'red 132' and 'red 100'.",
+  "motion_claim": "Both scenes ripple in step; the right one is a deeper blue.",
+  "show": [
+   {
+    "at": 0.1,
+    "event": "both renders"
+   },
+   {
+    "at": 0.7,
+    "event": "the warmer glints on the right"
+   }
+  ],
+  "runner_up": "manim: two swatches",
+  "why": "The side by side is the claim; no drawing is as convincing as the two real renders.",
+  "sparse": false
+ }
+}

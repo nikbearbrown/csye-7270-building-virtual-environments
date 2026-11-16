@@ -1,0 +1,274 @@
+{
+  "slug": "claude-liam-lecture-collision-shapes-layers-and-masks-in-godot",
+  "title": "Collision Shapes, Layers, and Masks in Godot",
+  "acts": [
+    "Geometry and Body Roles",
+    "Who Can Interact?",
+    "Tiles and One-Way Surfaces",
+    "Diagnose the Boundary"
+  ],
+  "summary": "Choose boundaries and filtering that match the intended interaction.",
+  "description": "Define who can collide with whom",
+  "title_lines": [
+    "Collision Shapes, Layers,",
+    "and Masks in Godot"
+  ],
+  "framing": "The sprite is the collision",
+  "trigger": "the collision",
+  "replacement": "only the appearance",
+  "intro": "Hallo. This is Liam, in for Bear. A visible wall can have the wrong boundary, and a correctly drawn pickup can scan the wrong category. We will separate geometry, body roles, and filtering so each failure has a test.",
+  "terms": [
+    [
+      "Shape",
+      "Geometry used for contact."
+    ],
+    [
+      "Body",
+      "A collision object with a role."
+    ],
+    [
+      "Layer",
+      "A membership category."
+    ],
+    [
+      "Mask",
+      "Categories the object scans."
+    ]
+  ],
+  "recap": [
+    "Choose geometry and body roles independently of artwork.",
+    "Named layers and masks express an interaction policy.",
+    "Tiles and one-way surfaces need deliberate contact rules.",
+    "Diagnose a failed boundary with a controlled test."
+  ],
+  "prompt": "Help me build a Godot four collision test room. Include a character, a solid floor, a one-way platform, a pickup area, and rigid debris. Give every object named layers and masks in an interaction matrix. Predict the result of clearing the pickup mask and test it. Explain how you would identify a struck tile cell and verify drop-through clearance.",
+  "checks": [
+    "Check: the matrix explains at least one deliberate exclusion.",
+    "Check: the mask experiment matches the prediction; untested cases are listed."
+  ],
+  "body": [
+    {
+      "id": "B14",
+      "act": 0,
+      "topic": "Choose the boundary",
+      "lane": "manim",
+      "asset": "Shapes",
+      "narration": "Artwork is not collision geometry. A rectangle gives crisp platformer edges; a capsule gives smoother rounded contacts. Resize the shape resource instead of scaling the physics node. Keep collision shapes as direct children of their body.",
+      "motion": "Hold one silhouette while swapping rectangle and capsule boundaries; then expand shape dimensions without scaling the body.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B10",
+      "act": 0,
+      "topic": "Static and animatable",
+      "lane": "manim",
+      "asset": "Platforms",
+      "narration": "A static body resists impacts. It can represent a wall or provide conveyor velocity without moving its geometry. A platform following a path belongs on an animatable body, with its movement synchronized to physics.",
+      "motion": "Keep a conveyor outline fixed while the surface arrow moves; move the whole platform in the paired panel.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B11",
+      "act": 0,
+      "topic": "Simulated bodies",
+      "lane": "code",
+      "asset": "impulse",
+      "narration": "A rigid body asks the solver to calculate motion. Forces sustain a push; an impulse produces a one-time change. For this isolated example, mass two and impulse one hundred twenty predict a velocity change of sixty.",
+      "motion": "Reveal mass, then the impulse call; keep the recorded measured result beside the code.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B12",
+      "act": 0,
+      "topic": "Controlled bodies",
+      "lane": "code",
+      "asset": "minimal",
+      "narration": "A character body gives your code collision and sliding helpers. It does not supply your game's gravity or friction policy. Set velocity in pixels per second, then call move and slide once in the physics callback.",
+      "motion": "Reveal the velocity update before the movement call.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B15",
+      "act": 1,
+      "topic": "An interaction matrix",
+      "lane": "manim",
+      "asset": "Matrix",
+      "narration": "Name categories before assigning bits: world, one-way platforms, player, enemy, pickup, hazard, and debris. The player scans world and platforms. The coin scans player. Debris scans world. This table makes deliberate exclusions visible.",
+      "motion": "Build the seven-category matrix, highlighting each scan row on its spoken cue.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B16",
+      "act": 1,
+      "topic": "Layer numbers and bits",
+      "lane": "code",
+      "asset": "bits",
+      "narration": "The layer-value methods take one-based layer numbers. Layer three corresponds to bit value four. A raw mask combines bits; the Inspector displays named categories. Keep one constants file synchronized with the project layer names.",
+      "motion": "Reveal the bit conversion, then the checked value four.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B17",
+      "act": 1,
+      "topic": "Test the missing pickup",
+      "lane": "shell",
+      "asset": "masks",
+      "narration": "Our coin detected the player even though the player did not scan pickups. Removing the area's mask prevented detection. That is a directed area query. Do not turn it into a universal rule that every body pair needs reciprocal masks.",
+      "motion": "Show the two actual mask-test records in sequence and hold the contrast.",
+      "runner_up": "BrowserCapture of terminal output",
+      "why": "Verbatim recorded output establishes the observation and keeps its evidence limits visible."
+    },
+    {
+      "id": "B18",
+      "act": 1,
+      "topic": "Shared shape resources",
+      "lane": "code",
+      "asset": "unique",
+      "narration": "Two nodes can share the same Shape resource. Resize that shared resource and both boundaries change. Duplicate the resource when you need one independent boundary. This is resource ownership, separate from whether the nodes were instanced separately.",
+      "motion": "Highlight the shared shape assignment, then the duplicate before resize.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "BT11",
+      "topic": "A door needs both roles",
+      "lane": "capture",
+      "asset": "door-closed",
+      "narration": "This door has a narrow solid panel inside a larger approach sensor. The sensor can notice the player before the player reaches the panel. Detection requests an interaction; it does not automatically authorize opening. The locked setting remains a separate gameplay rule.",
+      "motion": "Focus on the outer approach region, then the narrow blocking panel",
+      "why": "Actual engine capture shows both regions in one reusable scene",
+      "runner_up": "A conceptual door illustration would lose the tested geometry",
+      "source": "New authored teaching beat; exact code and evidence sources in excerpt-map and FACTCHECK.",
+      "act": 1
+    },
+    {
+      "id": "B32",
+      "act": 2,
+      "topic": "Author tile collision",
+      "lane": "code",
+      "asset": "tiles",
+      "narration": "A TileSet owns tile collision polygons and their physics categories. TileMapLayer places cells and builds the bodies. A stateful block is often easier as its own scene; repeated terrain suits tiles. Keep their responsibilities distinct.",
+      "motion": "Reveal the TileSet physics layer and polygon before the cell placement call.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B33",
+      "act": 2,
+      "topic": "The quadrant trap",
+      "lane": "capture",
+      "asset": "tiles",
+      "narration": "This collision touched cell three, zero. The body's resource identifier mapped to quadrant zero, zero. Physics chunking groups compatible tile geometry, so the body identifier does not uniquely identify the struck cell. Disabling chunking changes that tradeoff.",
+      "motion": "Focus the real touched tile and the two recorded coordinate results.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B34",
+      "act": 2,
+      "topic": "Recover the intended cell",
+      "lane": "code",
+      "asset": "contact",
+      "narration": "Probe slightly into the hit surface, against its outward normal. Convert that world point into the tile layer's local coordinates, then map it to a cell. The probe distance is example-specific; test transformed layers and contacts near cell boundaries.",
+      "motion": "Highlight point minus normal, coordinate conversion, and the resulting cell lookup.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B35",
+      "act": 2,
+      "topic": "One-way surfaces",
+      "lane": "capture",
+      "asset": "docs-oneway",
+      "narration": "The checked four point seven shape reference exposes a one-way direction. The default points down in two D coordinates. This is a body collision feature, not an area's overlap policy. Test tilted platforms rather than assuming older tutorial behavior.",
+      "motion": "Focus the actual direction property and its Area2D exclusion.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B36",
+      "act": 2,
+      "topic": "Dropping through",
+      "lane": "code",
+      "asset": "drop",
+      "narration": "Separate one-way surfaces onto their own layer, then temporarily stop scanning it. A short physics timer is a simple drop-through policy. Before restoring collision in a real game, ensure the character has cleared the platform and handle overlapping requests.",
+      "motion": "Highlight the mask toggle, physics timer, and restoration limitation.",
+      "runner_up": "GodotDevWorkbench source-backed editor view",
+      "why": "Exact runnable source is the teaching target; a full editor layout would reduce usable code size."
+    },
+    {
+      "id": "B38",
+      "act": 3,
+      "topic": "Distance is a diagnostic",
+      "lane": "capture",
+      "asset": "sweep",
+      "narration": "Speed divided by tick rate estimates travel per tick. It is not a collision theorem. Our character's swept movement detected a four-pixel floor across a requested three-hundred-pixel displacement. Method, shape, direction, and backend all matter.",
+      "motion": "Focus the actual thin floor and collision result after showing the requested displacement.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B39",
+      "act": 3,
+      "topic": "Continuous detection",
+      "lane": "capture",
+      "asset": "docs-rigid",
+      "narration": "For fast rigid bodies, continuous collision detection can reduce tunneling. Two D provides ray and shape modes; three D exposes its own settings. Also consider thicker collision geometry and a higher physics rate. None is a universal prevention guarantee.",
+      "motion": "Focus the actual rigid-body continuous-detection property and available modes.",
+      "runner_up": "Manim conceptual reconstruction",
+      "why": "A real captured artifact exists and directly supports the claim; reconstructed output would add no evidence."
+    },
+    {
+      "id": "B43",
+      "act": 3,
+      "topic": "Diagnose the symptom",
+      "lane": "manim",
+      "asset": "Diagnostics",
+      "narration": "A missed coin suggests filtering. An offset boundary suggests scale or a shared resource. A wrong tile suggests contact lookup. A slope flicker suggests movement order or snap. Treat each as a hypothesis, then change one variable and rerun.",
+      "motion": "Reveal four symptom-to-test pairs; move one test token to the matching mechanism.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B47",
+      "act": 3,
+      "topic": "Three D shapes",
+      "lane": "manim",
+      "asset": "Geometry",
+      "narration": "The same responsibilities transfer to three D nodes. Start with boxes, spheres, or capsules. Convex shapes suit movable objects; a few convex pieces can approximate a complex outline. Concave triangle collision is generally for static environments and costs more.",
+      "motion": "Compare a concave outline, its convex hull, and a compound approximation while one moving object attempts to enter the recess.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B48",
+      "act": 3,
+      "topic": "Version errors in code",
+      "lane": "manim",
+      "asset": "Migration",
+      "narration": "Review generated code against the chosen release. Godot three's kinematic body, instance method, and movement signature differ from Godot four. Check annotation, await, signal connection, scene-change, and one-based collision APIs too. Confident syntax is not evidence.",
+      "motion": "Replace old API entries with corresponding Godot four forms in a two-column comparison.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    },
+    {
+      "id": "B50",
+      "act": 3,
+      "topic": "Submit the collision matrix",
+      "lane": "manim",
+      "asset": "MatrixReview",
+      "narration": "Make the interaction matrix a deliverable. Add the new object, name the categories it scans, and explain one interaction you excluded. If crates should block the player, update both the design and the relevant filtering; our debris deliberately does not.",
+      "motion": "Add the debris row to the established matrix and highlight the excluded player interaction.",
+      "runner_up": "Show Tell isometric arrangement",
+      "why": "The spatial or temporal transformation is the claim; a physical-object metaphor would obscure its exact geometry."
+    }
+  ],
+  "source_parent": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/claude-liam-lecture-scenes-collision-physics",
+  "preparation": "stage one; no rendered film"
+}

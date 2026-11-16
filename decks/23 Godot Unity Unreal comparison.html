@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Godot, Unity and Unreal: the differences | CSYE 7270 terminology deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+:root{
+  --nu-red:#C8102E; --nu-black:#000000; --nu-white:#FFFFFF; --nu-gold:#A4804A;
+  --nu-red-hover:#A50C25; --nu-red-press:#870A1F; --nu-red-tint:#FBE7EA;
+  --nu-neutral-1:#E3E3E3; --nu-neutral-2:#C4C4C4; --nu-neutral-3:#909090; --nu-neutral-4:#787878;
+  --nu-neutral-5:#545454; --nu-neutral-6:#404040; --nu-neutral-7:#2D2926; --nu-neutral-8:#1A1A1A;
+  --diagram-ink:#2A1A0E; --panel-subtle:#F6F6F6;
+  --font:"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --mono:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  --ease:cubic-bezier(0.4, 0, 0.2, 1);
+  /* viewer chrome (theme-aware; slides themselves keep fixed brand colors) */
+  --stage-bg:#E9E9E9; --chrome-bg:rgba(255,255,255,0.94); --chrome-fg:#1A1A1A;
+  --chrome-line:#C4C4C4; --chrome-muted:#545454; --chrome-hover:rgba(0,0,0,0.07);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+    --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#141414; --chrome-bg:rgba(26,26,26,0.94); --chrome-fg:#F2F2F2;
+  --chrome-line:#404040; --chrome-muted:#909090; --chrome-hover:rgba(255,255,255,0.09);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{
+  height:100%; margin:0; overflow:hidden; display:flex; flex-direction:column;
+  background:var(--stage-bg); color:var(--chrome-fg); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+:fullscreen body, body:fullscreen{background:#000}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* ---------- stage & scaling ---------- */
+#stage{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; touch-action:pan-y}
+#deck{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0}
+
+/* ---------- slide base ---------- */
+.slide{
+  position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;
+  background:var(--nu-white); color:var(--nu-black); font-family:var(--font);
+  padding-left:120px; padding-right:120px;
+}
+.slide.is-active{display:flex}
+:where(.slide) :where(h1,h2,p,ul){margin:0}
+.s-dark{background:var(--nu-black); color:var(--nu-white)}
+.s-red{background:var(--nu-red); color:var(--nu-white)}
+.rule{position:absolute; top:0; left:0; right:0; height:8px; background:var(--nu-red)}
+.rule.r10{height:10px}
+
+.s-opening,.s-closing{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-intro{padding-top:120px; padding-bottom:120px; justify-content:center}
+.s-section{padding-top:110px; padding-bottom:110px; justify-content:center}
+.s-text{padding-top:96px; padding-bottom:96px}
+.s-diagram{padding-top:72px; padding-bottom:56px}
+.s-chart{padding-top:64px; padding-bottom:56px}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-size:22px; font-weight:700; line-height:1.2; text-transform:uppercase;
+  letter-spacing:0.16em; color:var(--nu-red); margin-bottom:28px;
+}
+.s-intro .eyebrow{font-size:24px; letter-spacing:0.18em; margin-bottom:40px}
+.s-section .eyebrow{font-size:26px; letter-spacing:0.20em; color:rgba(255,255,255,0.78); margin-bottom:36px}
+.s-chart .eyebrow,.s-diagram .eyebrow{margin-bottom:18px}
+
+.t-opening{font-size:104px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-section{font-size:108px; font-weight:400; line-height:1.0; letter-spacing:-0.02em; max-width:1560px}
+.t-closing{font-size:84px; font-weight:400; line-height:1.04; letter-spacing:-0.02em; max-width:1560px}
+.t-intro{font-size:72px; font-weight:400; line-height:1.1; letter-spacing:-0.01em; max-width:1500px}
+.t-text{font-size:66px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1500px}
+.t-chart{font-size:50px; font-weight:400; line-height:1.04; letter-spacing:-0.01em; max-width:1560px}
+.s-chart .t-chart{margin-bottom:30px}
+.s-diagram .t-chart{margin-bottom:40px}
+
+.sub-opening{font-size:38px; font-weight:400; line-height:1.3; color:var(--nu-neutral-2); max-width:1300px}
+.sub-section{font-size:34px; font-weight:400; line-height:1.3; color:rgba(255,255,255,0.92); margin-top:40px; max-width:1300px}
+.para{font-size:30px; line-height:1.4; color:var(--nu-neutral-7); max-width:1300px}
+.caption{font-size:24px; line-height:1.36; color:var(--nu-neutral-5); max-width:1400px; margin-top:22px}
+.t-opening,.t-section,.t-closing,.t-intro,.t-text,.t-chart,.sub-opening,.sub-section,.caption{text-wrap:pretty}
+.source{font-size:19px; line-height:1.4; color:var(--nu-neutral-5); margin-top:12px}
+
+.bar-120{width:120px; height:8px; background:var(--nu-red); margin:52px 0 44px}
+.bar-88{width:88px; height:6px; background:var(--nu-red); margin:40px 0 60px}
+
+.bullets{list-style:none; padding:0; max-width:1480px; display:flex; flex-direction:column; gap:26px}
+.bullets li{
+  display:grid; grid-template-columns:14px 1fr; column-gap:22px;
+  font-size:31px; line-height:1.42; color:var(--nu-neutral-7);
+}
+.bullets li::before{
+  content:""; width:14px; height:14px; background:var(--nu-red);
+  margin-top:calc((31px * 1.42 - 14px) / 2);
+}
+.bullets strong{font-weight:700; color:var(--nu-black)}
+
+/* ---------- charts ---------- */
+.chart{width:1480px; height:600px; flex:none}
+.chart svg{display:block; width:1480px; height:600px; overflow:visible}
+.chart-fallback{
+  width:100%; height:100%; display:grid; place-items:center; border:1px solid var(--nu-neutral-1);
+  font-size:24px; color:var(--nu-neutral-5); background:var(--panel-subtle)
+}
+
+/* ---------- diagram ---------- */
+.diagram{flex:0 1 auto; min-height:0; width:100%; max-width:1400px; max-height:720px}
+.diagram svg{display:block}
+
+/* ---------- evidence status: conceptual vs. illustrative vs. observed ---------- */
+.evidence{
+  position:absolute; right:120px; font-size:18px; font-weight:700; line-height:1;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--nu-neutral-5);
+  border:1px solid var(--nu-neutral-2); padding:9px 12px 8px;
+}
+.s-chart .evidence{top:58px}
+.s-diagram .evidence{top:66px}
+
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)}}
+.slide.is-active .rise{animation:rise 550ms var(--ease) both}
+.slide.is-active .g2{animation-delay:120ms}
+.slide.is-active .g3{animation-delay:240ms}
+@media (prefers-reduced-motion: reduce){
+  .slide.is-active .rise{animation:none}
+}
+
+/* ---------- viewer chrome ---------- */
+#controls{
+  position:absolute; right:14px; bottom:14px; z-index:10;
+  display:flex; align-items:center; gap:2px; padding:4px;
+  background:var(--chrome-bg); border:1px solid var(--chrome-line); color:var(--chrome-fg);
+  opacity:0.38; transition:opacity 200ms var(--ease);
+}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button,#thumbs .close{
+  appearance:none; border:0; background:transparent; color:inherit; cursor:pointer;
+  width:34px; height:34px; display:grid; place-items:center; padding:0;
+}
+#controls button:hover,#thumbs .close:hover{background:var(--chrome-hover)}
+#controls button[disabled]{opacity:0.35; cursor:default}
+#controls button[aria-pressed="true"]{background:var(--chrome-hover)}
+#controls svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:square}
+#counter{
+  min-width:66px; text-align:center; font-family:var(--mono); font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--chrome-fg)
+}
+#pips{display:flex; gap:4px; padding:0 6px 0 2px}
+#pips:empty{display:none}
+.pip{width:6px; height:6px; background:var(--chrome-line)}
+.pip.on{background:var(--nu-red)}
+.sep{width:1px; height:20px; background:var(--chrome-line); margin:0 4px}
+button:focus-visible,.thumb:focus-visible{outline:3px solid var(--nu-red); outline-offset:2px}
+
+#notes{
+  display:none; flex:none; height:min(30vh, 260px); overflow:auto;
+  padding:18px 28px 20px; background:var(--chrome-bg); border-top:1px solid var(--chrome-line);
+  color:var(--chrome-fg); font-size:17px; line-height:1.55;
+}
+body.notes-open #notes{display:block}
+#notes h2{margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--chrome-muted)}
+#notes p{margin:0 0 10px; max-width:78ch}
+
+#thumbs{position:absolute; inset:0; z-index:20; display:none; overflow:auto; background:var(--stage-bg); padding:24px}
+#thumbs.open{display:block}
+#thumbs .bar{display:flex; align-items:center; justify-content:space-between; max-width:1400px; margin:0 auto 18px}
+#thumbs .bar h2{margin:0; font-size:15px; font-weight:700; color:var(--chrome-fg)}
+#thumbs .close svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75}
+#thumbs .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:18px; max-width:1400px; margin:0 auto}
+.thumb{
+  appearance:none; padding:0; margin:0; border:1px solid var(--chrome-line); background:#fff;
+  cursor:pointer; position:relative; overflow:hidden; aspect-ratio:16 / 9; width:100%; display:block
+}
+.thumb.current{outline:3px solid var(--nu-red); outline-offset:2px}
+.thumb-inner{position:absolute; left:0; top:0; width:1920px; height:1080px; transform-origin:0 0; pointer-events:none; text-align:left; font:400 16px/1.2 var(--font); white-space:normal}
+.thumb-inner .slide{display:flex}
+.thumb-num{
+  position:absolute; left:0; bottom:0; padding:3px 7px; background:rgba(0,0,0,0.72); color:#fff;
+  font-family:var(--mono); font-size:12px; line-height:1.2
+}
+
+/* ---------- print: every slide, final state ---------- */
+@media print{
+  @page{size:1920px 1080px; margin:0}
+  :root{padding:0}
+  html,body{height:auto; overflow:visible; display:block; background:#fff}
+  #stage{overflow:visible; height:auto}
+  #deck{position:static; transform:none !important; width:1920px; height:auto}
+  .slide{position:relative; display:flex !important; width:1920px; height:1080px; break-after:page; page-break-after:always}
+  .slide .rise{animation:none !important; opacity:1 !important; transform:none !important}
+  #controls,#notes,#thumbs{display:none !important}
+  *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+
+/* ---------- review-deck additions (small; typography classes above are untouched) ---------- */
+.slide .source{font-size:24px; margin-top:10px}
+.evidence{font-size:24px; letter-spacing:0.1em}
+.diagram svg text{font-kerning:normal}
+.diagram{cursor:pointer}
+</style>
+</head>
+<body>
+
+<main id="stage" aria-roledescription="slide deck" aria-label="CSYE 7270 terminology: Godot, Unity and Unreal, the differences">
+  <div id="deck">
+
+    <section class="slide s-dark s-opening" aria-roledescription="slide" data-title="Godot, Unity and Unreal: the differences">
+      <div class="rule r10"></div>
+      <p class="eyebrow rise">CSYE 7270 · Terminology · Chapters 0 to 15</p>
+      <h1 class="t-opening rise g2">Godot, Unity and Unreal: the differences</h1>
+      <div class="bar-120 rise g2"></div>
+      <p class="sub-opening rise g3">One idea, three names: a cross-engine mapping</p>
+      <div class="speaker-notes" hidden><p>Deck 12 of the topic order. 34 terms, each shown as a three-column mapping. Tags: in the book text means a chapter, including its Doing the same thing in Unity and Unreal Engine sections, uses and explains it. Every one of those sections says the engine was not run for the chapter; the comparisons come from official documentation checked on 27 September 2026. The Godot editor tour is a separate deck.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Thirty-four terms in four groups">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Map</p>
+      <h2 class="t-chart">Thirty-four terms in four groups</h2>
+      <div class="diagram build" data-build="map" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 to 15, “Doing the same thing in Unity” and “in Unreal Engine”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Four groups, one per click. Group sizes: 7, 11, 6 and 10 terms, 34 in all.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Scene, node and component">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">What things are called</p>
+      <h2 class="t-chart">Scene, node and component</h2>
+      <div class="diagram build" data-build="blocks" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1 and Chapter 4, “Doing the same thing in Unity” and “in Unreal Engine” tables; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>The table fills one concept row per click. Step 4 draws the same player as squares: Godot 1 root + 2 children = 3 nodes; Unity 1 GameObject + 3 components; Unreal 1 Actor + 3 components. Pawn is not used by the chapters, so it is left out.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Template, instance, override and data asset">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">What things are called</p>
+      <h2 class="t-chart">Template, instance, override and data asset</h2>
+      <div class="diagram build" data-build="templ" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Saved, reusable pieces”; Chapter 1, “Differences” (ScriptableObject); glossary, Engine vocabulary; Unity workflows.</p>
+      <div class="speaker-notes" hidden><p>Computed: template speed 160 becomes 192. Five copies, one with an override of 200: 4 update, 1 keeps its value. The data asset has 3 readers, all 3 update. Unity Apply and Revert are glossary rows (Agent workflow terms: Unity workflows).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Signals, events and what survives a scene">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">How code runs and talks</p>
+      <h2 class="t-chart">Signals, events and what survives a scene</h2>
+      <div class="diagram build" data-build="events" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Signals versus events”, “Objects that outlive a scene”, Event Dispatchers; glossary, Engine vocabulary; Unreal workflows (Duplicate binding).</p>
+      <div class="speaker-notes" hidden><p>Calls are counted from the listener lists: Godot 2, Unity 3, Unreal 3 (Sound is bound twice). Six objects, two persistent: 2 remain after the load.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Four ways to write the script">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">How code runs and talks</p>
+      <h2 class="t-chart">Four ways to write the script</h2>
+      <div class="diagram build" data-build="langs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 0, “Differences”; Chapter 1; Chapter 4, “Blueprints are binary”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Stage counts come from the chapters: GDScript takes effect the next time Godot runs; C# and C++ are compiled; Blueprints are binary assets.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="The clocks: frame, fixed step and tick">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">How code runs and talks</p>
+      <h2 class="t-chart">The clocks: frame, fixed step and tick</h2>
+      <div class="diagram build" data-build="loops" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, “Similarities”; Chapter 4, “Two clocks”, tick groups; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Tick counts are computed over one second at 144 frames a second: 144 per frame; 60 fixed steps (16.7 ms) for Godot; 50 (20 ms) for Unity. Hand check: 1000 / 60 = 16.67, 1000 / 50 = 20.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Input action, character body and trigger">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">How things move and touch</p>
+      <h2 class="t-chart">Input action, character body and trigger</h2>
+      <div class="diagram build" data-build="input" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 1, tables for Unity and Unreal; Chapter 4, “Triggers that fire on entry”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Step 1: 3 of 4 presses are bound. Step 2: 60 x 2.67 = 50 x 3.2 = 144 x 1.11 = 160 px. Step 3: the zone is 160 px wide at 160 px a second, so 1.00 s inside: 50 Unity stay calls, 60 Godot polls.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Layer and mask, matrix, object type">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">How things move and touch</p>
+      <h2 class="t-chart">Layer and mask, matrix, object type</h2>
+      <div class="diagram build" data-build="layers" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 4, “Layers work differently” and “Collision is a response table”; glossary, Engine vocabulary; Game movement and collision.</p>
+      <div class="speaker-notes" hidden><p>Grid computed from each engine’s rule: Godot 2 of 6 directed pairs, Unity 4 of 6, Unreal 2 of 6. The Player-to-Mob cell in Unreal is the silent failure the chapter describes.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Up axis, handedness and units">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Space, looks and shipping</p>
+      <h2 class="t-chart">Up axis, handedness and units</h2>
+      <div class="diagram build" data-build="space" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 3, “Handedness” and “Units and axes”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Unity (0, 1.8, 3) m becomes Unreal (300, 0, 180) cm. The forward and right axes of Unreal (X forward, Y right) follow Epic’s coordinate-system page, which the chapter cites; the chapter itself states only Z-up, left-handed, 1 unit = 1 cm.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Animation: clip, event key, state machine">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Space, looks and shipping</p>
+      <h2 class="t-chart">Animation: clip, event key, state machine</h2>
+      <div class="diagram build" data-build="anim" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 10, “Doing the same thing in Unity” and “in Unreal Engine”; Chapter 11; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Keys at 0.10 s and 0.25 s are from Chapter 10. Hitbox window 0.15 s: 9 steps at 60 Hz (steps 6 to 14), 8 at 50 Hz (steps 5 to 12).</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Shaders, parameters and particles">
+      <div class="rule"></div>
+      <span class="evidence">Simulation (seeded)</span>
+      <p class="eyebrow">Space, looks and shipping</p>
+      <h2 class="t-chart">Shaders, parameters and particles</h2>
+      <div class="diagram build" data-build="look" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 6; Chapter 9, “Doing the same thing in Unity” and “in Unreal Engine”; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Seeded burst of 32 particles, lifetime 0.6 s, seed 12. The flash value runs 1 to 0 over the animation. The call names are from Chapters 6 and 9.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Building and licensing">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Space, looks and shipping</p>
+      <h2 class="t-chart">Building and licensing</h2>
+      <div class="diagram build" data-build="build" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapter 15, “Headless build and test”; Chapter 0, “Language and licence”; Chapter 4; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Illustrative revenue US$1,500,000. Unreal: 5% x (1,500,000 - 1,000,000) = US$25,000. Terms are as quoted in the chapters, checked 27 September 2026, and can change.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Look-alike pairs">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Tell them apart</p>
+      <h2 class="t-chart">Look-alike pairs</h2>
+      <div class="diagram build" data-build="pairs" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 1, 3 and 4; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Template edit versus instance edit; Y-up versus Z-up; Update versus FixedUpdate; one-sided mask versus two-sided response.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Say it exactly">
+      <div class="rule"></div>
+      <span class="evidence">Computed</span>
+      <p class="eyebrow">Vague request, exact instruction</p>
+      <h2 class="t-chart">Say it exactly</h2>
+      <div class="diagram build" data-build="say" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 3 and 4; glossary, Engine vocabulary.</p>
+      <div class="speaker-notes" hidden><p>Five requests and exact versions, each with a computed chart.</p></div>
+    </section>
+
+    <section class="slide s-diagram" aria-roledescription="slide" data-title="Before you port an idea between engines">
+      <div class="rule"></div>
+      <span class="evidence">Conceptual illustration</span>
+      <p class="eyebrow">Checklist</p>
+      <h2 class="t-chart">Before you port an idea between engines</h2>
+      <div class="diagram build" data-build="closing" style="flex-basis:700px"></div>
+      <p class="source">Source: Chapters 0 to 15, “Doing the same thing” sections.</p>
+      <div class="speaker-notes" hidden><p>Six checks.</p></div>
+    </section>
+
+  </div>
+
+  <nav id="controls" aria-label="Slide controls">
+    <button type="button" id="btn-prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span id="counter" aria-hidden="true">1 / 1</span>
+    <span id="pips" aria-hidden="true"></span>
+    <button type="button" id="btn-next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" id="btn-thumbs" aria-label="Show all slides (G)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="5"/><rect x="13" y="5" width="7" height="5"/><rect x="4" y="14" width="7" height="5"/><rect x="13" y="14" width="7" height="5"/></svg></button>
+    <button type="button" id="btn-notes" aria-label="Speaker notes (N)" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 11h14M5 16h9"/></svg></button>
+    <button type="button" id="btn-fs" aria-label="Fullscreen (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+  </nav>
+
+  <div id="thumbs" role="dialog" aria-modal="true" aria-label="All slides">
+    <div class="bar">
+      <h2>All slides</h2>
+      <button type="button" class="close" aria-label="Close slide overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="grid"></div>
+  </div>
+
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<aside id="notes" aria-label="Speaker notes">
+  <h2 id="notes-head">Speaker notes</h2>
+  <div id="notes-body"></div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  var stage = document.getElementById("stage");
+  var deck = document.getElementById("deck");
+  var slides = Array.prototype.slice.call(deck.querySelectorAll(".slide"));
+  var total = slides.length;
+  var counter = document.getElementById("counter");
+  var pips = document.getElementById("pips");
+  var live = document.getElementById("live");
+  var notesHead = document.getElementById("notes-head");
+  var notesBody = document.getElementById("notes-body");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnNotes = document.getElementById("btn-notes");
+  var btnThumbs = document.getElementById("btn-thumbs");
+  var btnFs = document.getElementById("btn-fs");
+  var thumbs = document.getElementById("thumbs");
+  var thumbGrid = thumbs.querySelector(".grid");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var hasD3 = typeof window.d3 !== "undefined";
+  var current = -1, step = 0, lastFocus = null;
+
+  /* Recurring visual vocabulary
+     ink   = confidence / belief        red  = failure, consequence, causal break
+     gray  = familiar data, same source tint = what an inspection or failure exposes */
+  var INK = "#2A1A0E", RED = "#C8102E", TINT = "#FBE7EA", GRID = "#E3E3E3", MUTED = "#545454",
+      BASE = "#909090", FAMILIAR = "#C4C4C4", SUBTLE = "#F6F6F6", BODY = "#2D2926";
+  var MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
+  var SANS = '"Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
+
+  /* ---------------- scaling ---------------- */
+  function fit() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = "translate(" + (w - 1920 * s) / 2 + "px," + (h - 1080 * s) / 2 + "px) scale(" + s + ")";
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(stage);
+  window.addEventListener("resize", fit);
+
+  /* ---------------- drawing helpers ---------------- */
+  function svgFor(el, w, h, label, desc, fixed) {
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + w + " " + h)
+      .attr("role", "img").attr("aria-label", label);
+    if (fixed) svg.attr("width", w).attr("height", h).style("overflow", "visible");
+    else svg.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMinYMin meet");
+    svg.append("title").text(label);
+    svg.append("desc").text(desc);
+    return svg;
+  }
+  function txt(g, x, y, s, o) {
+    o = o || {};
+    var t = g.append("text").attr("x", x).attr("y", y)
+      .attr("font-family", o.family || SANS).attr("font-size", o.size || 22)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || INK);
+    if (o.anchor) t.attr("text-anchor", o.anchor);
+    if (o.ls) t.attr("letter-spacing", o.ls);
+    if (o.dy) t.attr("dy", o.dy);
+    return t.text(s);
+  }
+  function fadeIn(sel, delay, dur) {
+    sel.attr("opacity", 0).transition().delay(delay || 0).duration(dur || 400).ease(d3.easeCubicOut).attr("opacity", 1);
+    return sel;
+  }
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  }
+
+  /* ================= review-deck helpers ================= */
+  var W = 1400, H = 700;
+  function A(anim, k, n) { return anim && k === n; }
+  function shuffle(a, r) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function drawIn(path, delay, dur) {
+    var L = path.node().getTotalLength();
+    if (!(L > 0)) return path;
+    path.attr("stroke-dasharray", L + " " + L).attr("stroke-dashoffset", L)
+      .transition().delay(delay || 0).duration(dur || 500).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0)
+      .on("end", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+    return path;
+  }
+  function tweenNum(sel, from, to, fmt, delay, dur) {
+    sel.text(fmt(from)).transition().delay(delay || 0).duration(dur || 1000).ease(d3.easeCubicOut)
+      .tween("text", function () { var it = d3.interpolate(from, to), node = this; return function (t) { node.textContent = fmt(it(t)); }; });
+  }
+  var pct1 = function (v) { return v.toFixed(1) + "%"; };
+  function lab(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: 700, fill: o.fill || MUTED, ls: 1.2, anchor: o.anchor }); }
+  /* wrap a string into tspans; n = characters per line (estimate) */
+  function wrap(g, x, y, s, n, o) {
+    o = o || {};
+    var size = o.size || 26, lh = o.lh || Math.round(size * 1.34), words = s.split(" "), lines = [], cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > n && cur) { lines.push(cur); cur = w; } else cur = t; });
+    if (cur) lines.push(cur);
+    var t = g.append("text").attr("x", x).attr("y", y).attr("font-family", SANS).attr("font-size", size)
+      .attr("font-weight", o.weight || 400).attr("fill", o.fill || BODY);
+    lines.forEach(function (l, i) { t.append("tspan").attr("x", x).attr("dy", i ? lh : 0).text(l); });
+    t.node().__h = lines.length * lh;
+    return t;
+  }
+  function box(g, x, y, w, h, o) {
+    o = o || {};
+    return g.append("rect").attr("x", x + 0.5).attr("y", y + 0.5).attr("width", w).attr("height", h)
+      .attr("fill", o.fill || "#FFFFFF").attr("stroke", o.stroke || FAMILIAR).attr("stroke-width", o.sw || 1.5);
+  }
+  function ppvOf(p, sens, spec) { return p * sens / (p * sens + (1 - p) * (1 - spec)); }
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function logit(c) { return Math.log(c / (1 - c)); }
+  function fmtInt(v) { return d3.format(",")(Math.round(v)); }
+  function check(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + y + " L" + (x - s / 3) + "," + (y + s * 0.7) + " L" + (x + s) + "," + (y - s * 0.8)).attr("fill", "none").attr("stroke", color || INK).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+  function cross(g, x, y, s, color) { return g.append("path").attr("d", "M" + (x - s) + "," + (y - s) + " L" + (x + s) + "," + (y + s) + " M" + (x + s) + "," + (y - s) + " L" + (x - s) + "," + (y + s)).attr("stroke", color || RED).attr("stroke-width", 5).attr("stroke-linecap", "square"); }
+
+  /* ---------- small drawing helpers ---------- */
+  function run(g, dur, fn, anim, ease) {
+    if (!anim) { fn(1); return; }
+    fn(0);
+    d3.select(g.node()).transition().duration(dur).ease(ease || d3.easeLinear)
+      .tween("run", function () { return function (t) { fn(t); }; });
+  }
+  /* keyframes through the values in a, smooth between them, t in 0..1 */
+  function kf(t, a) {
+    var n = a.length - 1, s = Math.min(n - 1e-9, Math.max(0, t) * n), i = Math.floor(s);
+    return a[i] + (a[i + 1] - a[i]) * d3.easeCubicInOut(s - i);
+  }
+  function hint(svg) { wrap(svg.append("g"), 800, 44, "Click or press → to start the animation. Each click adds one idea.", 46, { size: 28, fill: MUTED }); }
+  function cap(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 26, weight: o.weight || 400, fill: o.fill || BODY, anchor: o.anchor, family: o.family }); }
+  function sgn(v, d) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d || 0); }
+
+  /* right-hand column: one glossary entry per step, with its tag; returns the y below the last entry */
+  function entries(svg, list, k, anim) {
+    var g = svg.append("g"), y = 4;
+    list.forEach(function (it) {
+      if (it.s > k) return;
+      var t = T[it.id], cur = it.s === k, e = g.append("g");
+      txt(e, 800, y + 26, t.n, { size: 26, weight: 700, fill: cur ? RED : INK });
+      var TG = { book: ["in the book text", 212], gloss: ["in the glossary", 200], video: ["video only", 150], editor: ["editor or docs", 190], web: ["outside source", 200] }[t.tag || "video"], tg = TG[0], tw_ = TG[1], fill_ = t.tag === "book";
+      e.append("rect").attr("x", 1400 - tw_ + 0.5).attr("y", y + 3.5).attr("width", tw_ - 1).attr("height", 34)
+        .attr("fill", fill_ ? INK : "none").attr("stroke", fill_ ? INK : GREY).attr("stroke-width", 1.5);
+      txt(e, 1400 - tw_ / 2, y + 28, tg, { size: 24, anchor: "middle", fill: fill_ ? "#FFFFFF" : MUTED });
+      var yy = y + 58;
+      if (t.alias) { txt(e, 800, yy, t.alias, { size: 24, fill: MUTED }); yy += 30; }
+      var w = wrap(e, 800, yy, t.m + ".", 50, { size: 24, lh: 30, fill: BODY });
+      y = yy + w.node().__h + 6;
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    return y;
+  }
+  function pairStrip(svg, a, b) {
+    var g = svg.append("g");
+    lab(g, 0, 598, "TELL THESE APART");
+    [[0, a], [740, b]].forEach(function (p, i) {
+      box(g, p[0], 612, 660, 88, { stroke: i ? RED : INK, sw: 2 });
+      txt(g, p[0] + 20, 646, p[1][0], { size: 26, weight: 700, fill: i ? RED : INK });
+      txt(g, p[0] + 20, 682, p[1][1], { size: 24, fill: BODY });
+    });
+    txt(g, 700, 664, "≠", { size: 44, weight: 700, anchor: "middle", fill: RED });
+  }
+  function base(svg, list, k, anim, a, b) { var y = entries(svg, list, k, anim); pairStrip(svg, a, b); if (k === 0) hint(svg); return y; }
+
+  /* top-down / side-view camera pieces. ang: radians, 0 = +x, y grows downward */
+  function conePath(x, y, ang, fov, len) {
+    var h = fov * DEG / 2;
+    return "M" + x + "," + y + "L" + (x + len * Math.cos(ang - h)) + "," + (y + len * Math.sin(ang - h)) +
+      "A" + len + "," + len + " 0 0 1 " + (x + len * Math.cos(ang + h)) + "," + (y + len * Math.sin(ang + h)) + "Z";
+  }
+  function cone(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", TINT).attr("fill-opacity", 0.9).attr("stroke", RED).attr("stroke-width", 2);
+  }
+  function ghost(g, x, y, ang, fov, len) {
+    g.append("path").attr("d", conePath(x, y, ang, fov, len)).attr("fill", "none").attr("stroke", GREY).attr("stroke-width", 1.5).attr("stroke-dasharray", "6 6");
+  }
+  function camBody(g, x, y, ang) {
+    var c = g.append("g").attr("transform", "translate(" + x + "," + y + ") rotate(" + (ang / DEG) + ")");
+    c.append("rect").attr("x", -16).attr("y", -11).attr("width", 24).attr("height", 22).attr("fill", INK);
+    c.append("path").attr("d", "M8,-7 L22,-14 L22,14 L8,7Z").attr("fill", INK);
+  }
+  function inView(px, py, x, y, ang, fov, len) {
+    var dx = px - x, dy = py - y;
+    if (Math.hypot(dx, dy) > len) return false;
+    var da = Math.atan2(dy, dx) - ang; da = Math.atan2(Math.sin(da), Math.cos(da));
+    return Math.abs(da) <= fov * DEG / 2;
+  }
+  function post(g, x, y, on, r) {
+    g.append("circle").attr("cx", x).attr("cy", y).attr("r", r || 11).attr("fill", on ? RED : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 2.5);
+  }
+  function ptsInView(g, pts, cx, cy, ang, fov, len) {
+    var n = 0;
+    pts.forEach(function (p) { var on = inView(p[0], p[1], cx, cy, ang, fov, len); if (on) n++; post(g, p[0], p[1], on); });
+    return n;
+  }
+
+
+  /* ================= Godot, Unity and Unreal: the differences (all chapters' "Doing the same thing" sections) ================= */
+  var DEG = Math.PI / 180, uid = 0, GREY = "#909090";
+  var ENG = ["Godot", "Unity", "Unreal"];
+  /* tag: book = a chapter's text (engine comparison sections included) uses and explains it; gloss = glossary row only */
+  var T = {
+    scene: { n: "Scene, Level, Map", tag: "book", alias: "Godot scene · Unity Scene · Unreal Level", m: "A saved, reusable tree of objects. Unreal's word for the level file is Map" },
+    node: { n: "Node, GameObject, Actor", tag: "book", alias: "Godot · Unity · Unreal", m: "One object in the scene. A GameObject does nothing until components are added" },
+    comp: { n: "Component", tag: "book", alias: "Godot picks a node type instead", m: "A piece of behaviour or data attached to a GameObject or an Actor" },
+    template: { n: "Template", tag: "book", m: "The master that copies come from: a Godot scene, a Unity Prefab, an Unreal Blueprint class" },
+    instance: { n: "Instance", tag: "book", m: "One live copy made from a template" },
+    override: { n: "Override", tag: "book", m: "A change on one instance. In Unity, Apply pushes it into the Prefab and Revert drops it" },
+    dataasset: { n: "Data asset", tag: "book", m: "Shared data kept as a file: Godot Resource, Unity ScriptableObject, Unreal Data Asset" },
+    signal: { n: "Signal", tag: "book", m: "Godot's named event. Other nodes connect to it and run when it fires" },
+    uevent: { n: "UnityEvent, C# event", tag: "book", m: "Unity's events. A UnityEvent is wired in the Inspector, so reading code alone can miss it" },
+    disp: { n: "Event Dispatcher", tag: "book", m: "Unreal's Blueprint form of a signal. One Call fires every bound event; C++ uses a delegate" },
+    autoload: { n: "Autoload, Game Instance", tag: "book", m: "Things that outlive a scene: Godot autoload, Unity DontDestroyOnLoad, Unreal Game Instance" },
+    gd: { n: "GDScript", tag: "book", m: "Godot's own scripting language. Scripts are plain text files" },
+    cs: { n: "C# and MonoBehaviour", tag: "book", m: "Unity's language. A MonoBehaviour is a component script, also plain text" },
+    bp: { n: "Blueprint graph", tag: "book", m: "Unreal's visual scripting. The graph is a binary asset an agent cannot diff as text" },
+    cpp: { n: "C++ in Unreal", tag: "book", m: "Unreal's code route. Plain text, but it must be compiled before a change takes effect" },
+    gclock: { n: "_process, _physics_process", tag: "book", alias: "Godot", m: "Once per frame, and at a fixed 60 times a second by default" },
+    uclock: { n: "Update, FixedUpdate", tag: "book", alias: "Unity", m: "Once per frame, and at fixed 0.02 s steps, which is 50 a second by default" },
+    tick: { n: "Tick", tag: "book", alias: "Unreal", m: "Each Actor ticks every frame. Tick groups such as pre-physics order the work" },
+    input: { n: "Input action", tag: "book", alias: "InputMap · Input System · Enhanced Input", m: "A named intent such as jump, bound to keys or buttons and kept apart from them" },
+    body: { n: "Character body", tag: "book", alias: "CharacterBody2D · Rigidbody2D · Character", m: "The body you move on purpose: your script, or Unreal's movement component" },
+    trigger: { n: "Trigger", tag: "book", alias: "Area2D · Is Trigger · Trigger volume", m: "A zone that reports overlaps instead of blocking, such as a pickup or a checkpoint" },
+    layer: { n: "Layer and mask", tag: "book", alias: "Godot", m: "Each object has a layer and a mask. A notices B if B's layer is in A's mask: one way" },
+    matrix: { n: "Layer Collision Matrix", tag: "book", alias: "Unity", m: "One layer per GameObject. A project-wide grid says which pairs of layers collide" },
+    objtype: { n: "Object Type, response", tag: "book", alias: "Unreal", m: "Block, Overlap or Ignore for every type. Both sides must agree before contact happens" },
+    up: { n: "Up axis, handedness", tag: "book", m: "Godot and Unity are Y-up, Unreal is Z-up. Unity and Unreal are left-handed, Godot is right-handed" },
+    units: { n: "Units", tag: "book", m: "In Godot and Unity 1 unit is 1 metre. In Unreal 1 unit is 1 centimetre" },
+    clip: { n: "Clip and player", tag: "book", alias: "AnimationPlayer · Animator · Sequence", m: "Keyed data played over time. Unity wraps even one clip in an Animator Controller" },
+    ekey: { n: "Event key", tag: "book", alias: "Method track · Event · Notify", m: "A call placed on the timeline. An Anim Notify State has a begin and an end" },
+    sm: { n: "State machine", tag: "book", alias: "AnimationTree · Controller · Anim Blueprint", m: "States joined by transitions with rules. The current state picks the clip" },
+    shader: { n: "Shader and material", tag: "book", alias: "Shader code · Shader Graph · Material Editor", m: "Godot and Unity write shaders as code or graph. Unreal builds materials as node graphs" },
+    param: { n: "Material parameter", tag: "book", alias: "uniform · Material property · parameter", m: "A named value that your code sets and the shader reads" },
+    particles: { n: "Particle system", tag: "book", alias: "GPUParticles · VFX Graph · Niagara", m: "Many small sprites simulated together. A one-shot burst spawns them all at once" },
+    exp: { n: "Build and export", tag: "book", m: "Godot saves export presets, Unity 6 saves a build profile, Unreal packages and cooks the project" },
+    lic: { n: "Licence", tag: "book", m: "Godot is MIT. Unity is proprietary. Unreal is source-available, not open source" }
+  };
+  function note(svg, ey, text) {
+    if (!text) return;
+    var words = text.split(" "), n = 0, cur = "";
+    words.forEach(function (w) { var t = (cur ? cur + " " : "") + w; if (t.length > 42 && cur) { n++; cur = w; } else cur = t; }); if (cur) n++;
+    if (ey + 8 + n * 36 <= 590) wrap(svg.append("g"), 800, ey + 36, text, 42, { size: 28, lh: 36, fill: INK });
+  }
+  function fade(sel, anim, delay) { if (anim) sel.attr("opacity", 0).transition().delay(delay || 0).duration(450).attr("opacity", 1); return sel; }
+  function bar(g, x, y, w, h, fill, anim, delay) { var b = g.append("rect").attr("x", x).attr("y", y).attr("width", w).attr("height", h).attr("fill", fill); if (anim) b.attr("width", 0).transition().delay(delay || 0).duration(700).attr("width", w); return b; }
+  function mono(g, x, y, s, o) { o = o || {}; return txt(g, x, y, s, { size: o.size || 24, weight: o.weight || 400, fill: o.fill || INK, family: MONO, anchor: o.anchor }); }
+  function arrow(g, x1, y1, x2, y2, col, sw) {
+    col = col || INK; sw = sw || 4; var a = Math.atan2(y2 - y1, x2 - x1), h = 16;
+    g.append("path").attr("d", "M" + x1 + "," + y1 + " L" + x2 + "," + y2).attr("stroke", col).attr("stroke-width", sw).attr("fill", "none");
+    g.append("path").attr("d", "M" + x2 + "," + y2 + " L" + (x2 - h * Math.cos(a - 0.45)) + "," + (y2 - h * Math.sin(a - 0.45)) + " L" + (x2 - h * Math.cos(a + 0.45)) + "," + (y2 - h * Math.sin(a + 0.45)) + "Z").attr("fill", col);
+  }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  /* ---------- map ---------- */
+  var MAPROWS = [
+    ["What things are called", "Scene, Node, Component, Template, Instance, Override, Data asset", "The building blocks and how copies relate"],
+    ["How code runs and talks", "Signal, UnityEvent, Event Dispatcher, Autoload, GDScript, C#, Blueprint, C++, the clocks", "Languages, loops and messages"],
+    ["How things move and touch", "Input action, Character body, Trigger, Layer and mask, Collision Matrix, Object Type", "Input, bodies and who notices whom"],
+    ["Space, looks and shipping", "Up axis, Units, Clip, Event key, State machine, Shader, Parameter, Particles, Export, Licence", "Axes, animation, materials and the build"]
+  ];
+  function renderMap(el, k, anim) {
+    var svg = svgFor(el, W, H, "Thirty-four terms mapped across three engines", "A table with four rows: group, terms, what the group is about.");
+    var g = svg.append("g");
+    wrap(g, 0, 36, "34 terms. Each is one idea with three engine names: Godot, Unity and Unreal. The Godot editor tour is in another deck.", 96, { size: 28, lh: 38, fill: INK });
+    var cx = [0, 380, 1010];
+    ["GROUP", "TERMS", "WHAT IT IS ABOUT"].forEach(function (h, i) { lab(g, cx[i] + 18, 152, h); });
+    g.append("path").attr("d", "M0,168 H1400").attr("stroke", INK).attr("stroke-width", 2);
+    MAPROWS.forEach(function (r, i) {
+      if (i + 1 > k) return;
+      var y = 184 + i * 118, row = g.append("g");
+      box(row, 0, y, 1400, 106, { stroke: FAMILIAR });
+      row.append("rect").attr("x", 0).attr("y", y).attr("width", 10).attr("height", 107).attr("fill", RED);
+      wrap(row, cx[0] + 28, y + 44, r[0], 22, { size: 26, lh: 30, weight: 700, fill: RED });
+      wrap(row, cx[1] + 18, y + 34, r[1], 50, { size: 24, lh: 30, fill: INK });
+      wrap(row, cx[2] + 18, y + 34, r[2], 30, { size: 24, lh: 30 });
+      if (A(anim, k, i + 1)) row.attr("opacity", 0).attr("transform", "translate(0,18)").transition().duration(450).ease(d3.easeCubicOut).attr("opacity", 1).attr("transform", "translate(0,0)");
+    });
+    if (k === 0) cap(g, 0, 430, "Click or press → to add the four groups, one at a time.", { fill: MUTED });
+  }
+
+  /* ---------- 1. scene, node, component: three-column table, one row per click ---------- */
+  var ROWS3 = [["Scene", "Scene (.tscn)", "Scene (.unity)", "Level (.umap)"], ["Node", "Node", "GameObject", "Actor"], ["Component", "node type and child nodes", "Component", "Component"]];
+  var PLAYER = { Godot: { root: "CharacterBody2D", kids: 2, what: "3 nodes" }, Unity: { root: "GameObject", kids: 3, what: "1 GameObject, 3 components" }, Unreal: { root: "Actor", kids: 3, what: "1 Actor, 3 components" } };
+  function renderBlocks(el, k, anim) {
+    var svg = svgFor(el, W, H, "Scene, node and component in Godot, Unity and Unreal", "A three-column table fills one concept row at a time. The fourth step draws the same player as squares in each engine.");
+    var ey = base(svg, [{ id: "scene", s: 1 }, { id: "node", s: 2 }, { id: "comp", s: 3 }], k, anim, ["Scene", "a saved tree of objects"], ["Level", "one playable space"]);
+    if (k === 0) return;
+    var d = svg.append("g"), cx = [0, 150, 355, 560];
+    ENG.forEach(function (e, i) { lab(d, cx[i + 1] + 10, 30, e.toUpperCase()); });
+    d.append("path").attr("d", "M0,44 H760").attr("stroke", INK).attr("stroke-width", 2);
+    ROWS3.forEach(function (r, i) {
+      if (i + 1 > Math.min(k, 3)) return;
+      var y = 56 + i * 92, g = d.append("g");
+      box(g, 0, y, 760, 84, { stroke: i + 1 === k ? RED : FAMILIAR, sw: i + 1 === k ? 3 : 1.5 });
+      cap(g, 14, y + 50, r[0], { weight: 700, fill: RED });
+      for (var c = 1; c < 4; c++) wrap(g, cx[c] + 10, y + 34, r[c], 15, { size: 24, lh: 28, fill: INK });
+      fade(g, A(anim, k, i + 1), 0);
+    });
+    if (k >= 4) {
+      var g = d.append("g");
+      lab(g, 0, 356, "THE SAME PLAYER, THREE SHAPES");
+      ENG.forEach(function (e, i) {
+        var P = PLAYER[e], x = cx[i + 1] + 10, c = g.append("g");
+        c.append("rect").attr("x", x).attr("y", 368).attr("width", 44).attr("height", 44).attr("fill", RED);
+        for (var j = 0; j < P.kids; j++) c.append("rect").attr("x", x + 54 * j).attr("y", 424).attr("width", 44).attr("height", 44).attr("fill", e === "Godot" ? INK : "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3);
+        wrap(c, x, 496, P.what, 15, { size: 24, lh: 28, weight: 700, fill: INK });
+        fade(c, anim && k === 4, i * 300);
+      });
+      cap(g, 0, 556, "Red = the object. Filled = child node. Outlined = component.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "A Godot scene, a Unity Scene and an Unreal Level are each a saved tree of objects.", "A node is Godot's object. Unity's GameObject and Unreal's Actor gain behaviour from components.", "Godot picks a node type instead of adding components.", ""][k]);
+  }
+
+  /* ---------- 2. template, instance, override, data asset ---------- */
+  var OV = [null, null, 200, null, null];
+  function renderTemplates(el, k, anim) {
+    var svg = svgFor(el, W, H, "A template, its instances, an override and a shared data asset", "A template box with five instance boxes below. Editing the template updates four instances; the one with an override keeps its value. Then a data asset read by three objects updates all three.");
+    var ey = base(svg, [{ id: "template", s: 1 }, { id: "instance", s: 2 }, { id: "override", s: 3 }, { id: "dataasset", s: 4 }], k, anim, ["Template", "edit it: copies follow"], ["Instance", "edit it: only it changes"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      if (k <= 3) {
+        var edit = k >= 3, tv = edit ? Math.round(160 + 32 * clamp(t * 2, 0, 1)) : 160, done = edit && t >= 0.55;
+        lab(dyn, 0, 30, "TEMPLATE AND ITS COPIES");
+        box(dyn, 230, 44, 300, 76, { stroke: RED, sw: 3 }); cap(dyn, 380, 92, "speed = " + tv, { anchor: "middle", weight: 700, size: 28 });
+        cap(dyn, 380, 156, "scene · Prefab · Blueprint class", { anchor: "middle", fill: MUTED });
+        if (k >= 2) {
+          var updated = 0, kept = 0;
+          OV.forEach(function (o, i) {
+            var x = i * 152, ov = edit && o !== null, v = ov ? o : (done ? 192 : 160);
+            if (ov) kept++; else if (done) updated++;
+            dyn.append("path").attr("d", "M380,170 V204 H" + (x + 70) + " V240").attr("fill", "none").attr("stroke", ov ? RED : FAMILIAR).attr("stroke-width", ov ? 3 : 2);
+            box(dyn, x, 240, 140, 110, { stroke: ov ? RED : INK, sw: ov ? 4 : 2 });
+            cap(dyn, x + 70, 280, "copy " + (i + 1), { anchor: "middle", fill: MUTED });
+            cap(dyn, x + 70, 330, String(v), { anchor: "middle", weight: 700, size: 30, fill: ov ? RED : INK });
+          });
+          if (edit) {
+            cap(dyn, 0, 410, done ? "Template edit: " + updated + " of 5 copies updated, " + kept + " kept its override" : "Editing the template…", { weight: 700, fill: RED, size: 26 });
+            wrap(dyn, 0, 460, "Unity: Apply pushes the override into the Prefab. Revert drops it.", 52, { size: 24, lh: 30, fill: MUTED });
+          } else cap(dyn, 0, 410, "Five instances, each made from the one template.", { weight: 700, size: 26 });
+        } else cap(dyn, 0, 260, "One master definition. Copies are made from it.", { weight: 700, size: 26 });
+      } else {
+        var tv2 = Math.round(160 + 32 * clamp(t * 2, 0, 1)), done2 = t >= 0.55;
+        lab(dyn, 0, 30, "ONE ASSET, MANY READERS");
+        box(dyn, 230, 44, 300, 76, { stroke: RED, sw: 3 }); cap(dyn, 380, 92, "speed = " + tv2, { anchor: "middle", weight: 700, size: 28 });
+        cap(dyn, 380, 156, "Resource · ScriptableObject · Data Asset", { anchor: "middle", fill: MUTED, size: 24 });
+        ["Player", "Bot", "Menu"].forEach(function (n, i) {
+          var x = i * 260;
+          dyn.append("path").attr("d", "M380,170 V204 H" + (x + 110) + " V240").attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+          box(dyn, x, 240, 220, 110, { stroke: INK, sw: 2 });
+          cap(dyn, x + 110, 280, n + " reads", { anchor: "middle", fill: MUTED });
+          cap(dyn, x + 110, 330, String(done2 ? 192 : 160), { anchor: "middle", weight: 700, size: 30 });
+        });
+        cap(dyn, 0, 410, done2 ? "Asset edit: 3 of 3 readers updated" : "Editing the asset…", { weight: 700, fill: RED, size: 26 });
+        wrap(dyn, 0, 460, "The asset lives in the project, not in a scene. An override would change one copy only.", 52, { size: 24, lh: 30, fill: MUTED });
+      }
+    }
+    run(dyn, 2600, draw, A(anim, k, 3) || A(anim, k, 4));
+    note(svg, ey, ["", "", "", "", ""][k]);
+  }
+
+  /* ---------- 3. signals, events, dispatchers, and what survives a scene change ---------- */
+  var LST = [
+    { h: "GODOT SIGNAL: ball_exited", L: ["Score", "Sound"] },
+    { h: "UNITYEVENT: ONE WIRED IN THE INSPECTOR", L: ["Score", "Sound", "UI (Inspector)"] },
+    { h: "UNREAL EVENT DISPATCHER: CALL", L: ["Score", "Sound", "Sound (bound twice)"] }
+  ];
+  var OBJS = [["Player", 0], ["Mob", 0], ["Coin", 0], ["HUD", 0], ["Score keeper", 1], ["Music", 1]];
+  function renderEvents(el, k, anim) {
+    var svg = svgFor(el, W, H, "Signals, events, dispatchers, and objects that survive a scene change", "An emitter fires and packets reach each bound listener, with a count of calls. The last step shows which of six objects survive a scene load.");
+    var ey = base(svg, [{ id: "signal", s: 1 }, { id: "uevent", s: 2 }, { id: "disp", s: 3 }, { id: "autoload", s: 4 }], k, anim, ["Signal", "an announcement others hear"], ["Autoload", "kept across scene changes"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      if (k <= 3) {
+        var S = LST[k - 1], n = S.L.length;
+        lab(dyn, 0, 30, S.h);
+        box(dyn, 0, 140, 200, 110, { stroke: RED, sw: 3 }); cap(dyn, 100, 188, "ball exits", { anchor: "middle", weight: 700 }); cap(dyn, 100, 224, "fires once", { anchor: "middle", fill: MUTED });
+        var got = 0;
+        S.L.forEach(function (l, i) {
+          var ly = 60 + i * 110, p = clamp((t - i * 0.12) / 0.5, 0, 1);
+          dyn.append("path").attr("d", "M200,195 L470," + (ly + 35)).attr("stroke", FAMILIAR).attr("stroke-width", 2);
+          box(dyn, 470, ly, 290, 70, { stroke: p >= 1 ? RED : INK, sw: p >= 1 ? 4 : 2 }); cap(dyn, 485, ly + 44, l, { size: 24 });
+          if (p > 0 && p < 1) dyn.append("circle").attr("cx", 200 + 270 * p).attr("cy", 195 + (ly + 35 - 195) * p).attr("r", 11).attr("fill", RED);
+          if (p >= 1) got++;
+        });
+        cap(dyn, 0, 400, "Calls received: " + got + " of " + n, { weight: 700, size: 28, fill: RED });
+        cap(dyn, 0, 450, ["Godot connects listeners to the signal.", "A UnityEvent listener is stored in the scene file.", "Duplicate bindings make the handler run twice."][k - 1], { size: 24, fill: MUTED });
+      } else {
+        lab(dyn, 0, 30, "A NEW SCENE LOADS");
+        var alive = 0;
+        OBJS.forEach(function (o, i) {
+          var x = (i % 3) * 255, y = 60 + Math.floor(i / 3) * 110, gone = !o[1] && t > 0.5;
+          if (!gone) alive++;
+          var g = dyn.append("g").attr("opacity", gone ? 0.25 : 1);
+          box(g, x, y, 235, 90, { stroke: o[1] ? RED : INK, sw: o[1] ? 4 : 2 }); cap(g, x + 117, y + 40, o[0], { anchor: "middle", weight: 700 }); cap(g, x + 117, y + 72, o[1] ? "kept" : gone ? "freed" : "in the scene", { anchor: "middle", size: 24, fill: o[1] ? RED : MUTED });
+        });
+        cap(dyn, 0, 330, "After the load: " + alive + " of " + OBJS.length + " objects remain", { weight: 700, size: 28, fill: RED });
+        wrap(dyn, 0, 390, "Godot: autoload. Unity: DontDestroyOnLoad on a root object. Unreal: Game Instance, or a subsystem that shares its lifetime.", 52, { size: 24, lh: 30, fill: MUTED });
+      }
+    }
+    run(dyn, 2600, draw, anim);
+    note(svg, ey, "");
+  }
+
+  /* ---------- 4. script languages ---------- */
+  var LANGS = [
+    { n: "GDScript", f: ".gd", st: ["edit", "run"], text: true },
+    { n: "C# script", f: ".cs", st: ["edit", "compile", "run"], text: true },
+    { n: "Blueprint", f: ".uasset", st: ["edit", "compile", "run"], text: false },
+    { n: "C++", f: ".cpp", st: ["edit", "compile", "run"], text: true }
+  ];
+  function renderLangs(el, k, anim) {
+    var svg = svgFor(el, W, H, "GDScript, C#, Blueprints and C++: the loop and whether an agent can diff the file", "Four lanes added one per click. Each lane shows the stages from edit to run and whether the file is text or binary.");
+    var ey = base(svg, [{ id: "gd", s: 1 }, { id: "cs", s: 2 }, { id: "bp", s: 3 }, { id: "cpp", s: 4 }], k, anim, ["Compile", "turn code into a runnable form"], ["Diff", "the lines that changed"]);
+    if (k === 0) return;
+    var d = svg.append("g");
+    lab(d, 0, 30, "FROM EDIT TO RUN");
+    LANGS.forEach(function (L, i) {
+      if (i + 1 > k) return;
+      var y = 56 + i * 124, g = d.append("g"), x = 220, cur = i + 1 === k;
+      box(g, 0, y, 760, 108, { stroke: cur ? RED : FAMILIAR, sw: cur ? 3 : 1.5 });
+      cap(g, 14, y + 44, L.n, { weight: 700, fill: cur ? RED : INK }); mono(g, 14, y + 82, L.f, { fill: MUTED });
+      L.st.forEach(function (s, j) {
+        var w = s === "compile" ? 130 : s === "edit" ? 90 : 80;
+        box(g, x, y + 26, w, 56, { stroke: INK, sw: 2, fill: s === "compile" ? TINT : "#FFFFFF" }); cap(g, x + w / 2, y + 62, s, { anchor: "middle", size: 24, weight: 700 });
+        x += w; if (j < L.st.length - 1) { arrow(g, x + 2, y + 54, x + 22, y + 54, INK, 3); x += 24; }
+      });
+      cap(g, 610, y + 54, L.text ? "text diff" : "binary", { weight: 700, fill: L.text ? INK : RED });
+      cap(g, 610, y + 88, L.st.length + " stages", { size: 24, fill: MUTED });
+      fade(g, A(anim, k, i + 1), 0);
+    });
+    note(svg, ey, "");
+  }
+
+  /* ---------- 5. update loops: variable and fixed step, ticks per second ---------- */
+  var FPS = 144;
+  function tickTimes(hz, off) { var a = []; for (var i = 0; i < hz; i++) a.push((i + (off || 0)) / hz); return a; }
+  function renderLoops(el, k, anim) {
+    var svg = svgFor(el, W, H, "Ticks in one second: per frame versus fixed step", "Strips of tick marks over one second at 144 frames a second: frame ticks, a 60 a second fixed step for Godot, a 50 a second fixed step for Unity, and Unreal's two tick groups.");
+    var ey = base(svg, [{ id: "gclock", s: 1 }, { id: "uclock", s: 2 }, { id: "tick", s: 3 }], k, anim, ["Update", "once per frame, any length"], ["FixedUpdate", "constant 0.02 s"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    var ROWS = [
+      { s: 1, l: "Godot _process", ts: tickTimes(FPS), c: GREY }, { s: 1, l: "Godot _physics_process", ts: tickTimes(60), c: RED },
+      { s: 2, l: "Unity Update", ts: tickTimes(FPS), c: GREY }, { s: 2, l: "Unity FixedUpdate", ts: tickTimes(50), c: RED },
+      { s: 3, l: "Unreal Tick, pre-physics", ts: tickTimes(FPS, 0.25), c: GREY }, { s: 3, l: "Unreal Tick, post-physics", ts: tickTimes(FPS, 0.75), c: INK }
+    ].filter(function (r) { return r.s <= k; });
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      lab(dyn, 0, 30, "ONE SECOND, SCREEN AT " + FPS + " FRAMES A SECOND");
+      ROWS.forEach(function (r, i) {
+        var y = 74 + i * 76, n = r.ts.length;
+        cap(dyn, 0, y, r.l + ": " + n + " a second (" + (1000 / n).toFixed(1) + " ms)", { size: 24, weight: 700 });
+        r.ts.forEach(function (tt) { dyn.append("rect").attr("x", tt * 740).attr("y", y + 10).attr("width", 2).attr("height", 28).attr("fill", tt <= t ? r.c : "#E3E3E3"); });
+      });
+      dyn.append("path").attr("d", "M" + (t * 740) + ",50 V" + (74 + ROWS.length * 76)).attr("stroke", RED).attr("stroke-width", 2);
+      cap(dyn, 0, 552, "0 s", { size: 24, fill: MUTED }); cap(dyn, 740, 552, "1 s", { size: 24, fill: MUTED, anchor: "end" });
+    }
+    run(dyn, 3200, draw, anim);
+    note(svg, ey, ["", "Godot defaults to 60 physics steps a second.", "Unity's FixedUpdate defaults to 50: 0.02 s each.", "Unreal ticks every frame; groups order the work around physics."][k]);
+  }
+
+  /* ---------- 6. input action, character body, trigger ---------- */
+  var PRESS = ["Space", "Pad A", "Enter", "Space"], BOUND = ["Space", "Pad A"];
+  function renderInput(el, k, anim) {
+    var svg = svgFor(el, W, H, "Input action, character body and trigger in three engines", "Step 1: four key presses fire a jump action in each engine. Step 2: a body moves 160 pixels in one second at 60, 50 and 144 steps. Step 3: a body crosses a trigger zone and the event counts are computed.");
+    var ey = base(svg, [{ id: "input", s: 1 }, { id: "body", s: 2 }, { id: "trigger", s: 3 }], k, anim, ["Trigger", "reports overlap, does not block"], ["Collider", "blocks movement"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      if (k === 1) {
+        lab(dyn, 0, 30, "ONE ACTION, FOUR PRESSES");
+        var TT = ["Godot: InputMap action jump", "Unity: InputAction Jump (.inputactions)", "Unreal: Input Action + Mapping Context"];
+        TT.forEach(function (tt, i) {
+          var y = 76 + i * 150, fired = 0, shown = Math.floor(t * 4.001);
+          cap(dyn, 0, y, tt, { weight: 700, size: 24 });
+          PRESS.forEach(function (p, j) {
+            var ok = BOUND.indexOf(p) >= 0, on = j < shown || t >= 1; if (ok) fired++;
+            box(dyn, j * 188, y + 14, 170, 48, { stroke: on && ok ? RED : INK, sw: on && ok ? 4 : 2, fill: on && ok ? TINT : "#FFFFFF" });
+            cap(dyn, j * 188 + 85, y + 46, p, { anchor: "middle", size: 24, fill: on ? INK : MUTED });
+          });
+          cap(dyn, 0, y + 104, "jump fires on " + fired + " of " + PRESS.length + " presses (Enter is not bound)", { size: 24, fill: RED, weight: 700 });
+        });
+      } else if (k === 2) {
+        lab(dyn, 0, 30, "SAME SPEED, 160 PX A SECOND, DIFFERENT STEP");
+        [["Godot: move_and_slide, 60 steps", 60], ["Unity: Rigidbody2D, FixedUpdate, 50 steps", 50], ["Unreal: movement component, 144 ticks", FPS]].forEach(function (r, i) {
+          var y = 80 + i * 150, hz = r[1], steps = Math.floor(t * hz + 1e-9), pos = steps * (160 / hz);
+          cap(dyn, 0, y, r[0], { weight: 700, size: 24 });
+          dyn.append("path").attr("d", "M0," + (y + 50) + " H" + (160 * 4)).attr("stroke", FAMILIAR).attr("stroke-width", 3);
+          dyn.append("path").attr("d", "M" + (160 * 4) + "," + (y + 30) + " V" + (y + 70)).attr("stroke", INK).attr("stroke-width", 3);
+          dyn.append("circle").attr("cx", pos * 4).attr("cy", y + 50).attr("r", 14).attr("fill", RED);
+          cap(dyn, 0, y + 104, "step " + steps + " of " + hz + ": " + pos.toFixed(1) + " px (" + (160 / hz).toFixed(2) + " px a step)", { size: 24, fill: MUTED });
+        });
+      } else {
+        lab(dyn, 0, 30, "A BODY CROSSES A TRIGGER ZONE AT 160 PX A SECOND");
+        var T3 = t * 3, x = 100 + 160 * T3, zl = 300, zr = 460;
+        dyn.append("rect").attr("x", zl).attr("y", 90).attr("width", zr - zl).attr("height", 110).attr("fill", TINT).attr("stroke", RED).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
+        cap(dyn, 380, 80, "zone", { anchor: "middle", fill: RED, weight: 700 });
+        dyn.append("path").attr("d", "M0,145 H760").attr("stroke", FAMILIAR).attr("stroke-width", 3);
+        dyn.append("circle").attr("cx", x).attr("cy", 145).attr("r", 18).attr("fill", INK);
+        var tin = (zl - 100) / 160, tout = (zr - 100) / 160, inside = Math.max(0, Math.min(T3, tout) - tin);
+        var uStay = Math.floor(inside * 50 + 1e-9), gPoll = Math.floor(inside * 60 + 1e-9), enter = T3 >= tin ? 1 : 0;
+        [["Godot: area_entered " + enter + " · overlap polls " + gPoll, 270], ["Unity: OnTriggerEnter2D " + enter + " · OnTriggerStay2D " + uStay, 320], ["Unreal: OnComponentBeginOverlap " + enter, 370]].forEach(function (r) { cap(dyn, 0, r[1], r[0], { size: 24, weight: 700 }); });
+        wrap(dyn, 0, 430, "Time inside: " + (tout - tin).toFixed(2) + " s. Unity needs a Rigidbody2D on one object. Unreal needs Generate Overlap Events on both.", 56, { size: 24, lh: 30, fill: MUTED });
+      }
+    }
+    run(dyn, 3000, draw, anim);
+    note(svg, ey, "");
+  }
+
+  /* ---------- 7. layers, matrix, object types: who notices whom ---------- */
+  var OBJ3 = ["Player", "Mob", "Coin"];
+  var RULES = [
+    { // Godot: mask is one way
+      f: function (a, b) { return { Player: ["Mob", "Coin"], Mob: [], Coin: [] }[a].indexOf(b) >= 0; },
+      t: "Player mask = Mob + Coin. Mob and Coin mask nothing." },
+    { // Unity: matrix pairs are both ways
+      f: function (a, b) { var P = [["Player", "Mob"], ["Player", "Coin"]]; return P.some(function (p) { return (p[0] === a && p[1] === b) || (p[0] === b && p[1] === a); }); },
+      t: "The matrix ticks Player-Mob and Player-Coin. Pairs work both ways." },
+    { // Unreal: both respond Overlap and both generate overlap events
+      f: function (a, b) {
+        var R = { Player: { Mob: "Overlap", Coin: "Overlap" }, Mob: { Player: "Ignore", Coin: "Ignore" }, Coin: { Player: "Overlap", Mob: "Ignore" } }, G = { Player: true, Mob: false, Coin: true };
+        return R[a][b] === "Overlap" && R[b][a] === "Overlap" && G[a] && G[b];
+      }, t: "Mob answers Ignore and does not generate overlap events." }
+  ];
+  function renderLayers(el, k, anim) {
+    var svg = svgFor(el, W, H, "Who notices whom under a layer and mask, a collision matrix, and object type responses", "A three by three grid of Player, Mob and Coin. A tick means the row object notices the column object. Godot's mask is one way, Unity's matrix works both ways, and in Unreal both sides must agree.");
+    var ey = base(svg, [{ id: "layer", s: 1 }, { id: "matrix", s: 2 }, { id: "objtype", s: 3 }], k, anim, ["Mask", "one side's filter"], ["Response", "both sides must agree"]);
+    if (k === 0) return;
+    var d = svg.append("g"), R = RULES[Math.max(k, 1) - 1];
+    lab(d, 0, 30, "ROW NOTICES COLUMN");
+    var gx = 190, gy = 80, cw = 190, ch = 84, n = 0;
+    OBJ3.forEach(function (c, j) { cap(d, gx + j * cw + cw / 2, gy - 12, c, { anchor: "middle", weight: 700, size: 24 }); });
+    OBJ3.forEach(function (a, i) {
+      cap(d, 0, gy + i * ch + ch / 2 + 8, a, { weight: 700, size: 24 });
+      OBJ3.forEach(function (b, j) {
+        var c = d.append("g"), x = gx + j * cw, y = gy + i * ch;
+        box(c, x, y, cw - 8, ch - 8, { stroke: INK, sw: 2 });
+        if (a === b) { cap(c, x + (cw - 8) / 2, y + 52, "–", { anchor: "middle", fill: GREY }); return; }
+        var ok = R.f(a, b); if (ok) n++;
+        var miss = k === 3 && a === "Player" && b === "Mob";
+        if (ok) check(c, x + (cw - 8) / 2, y + 38, 18, INK); else cross(c, x + (cw - 8) / 2, y + 38, 14, miss ? RED : GREY);
+        fade(c, A(anim, k, k), (i * 3 + j) * 60);
+      });
+    });
+    cap(d, 0, 400, "Directed pairs that notice: " + n + " of 6", { weight: 700, size: 28, fill: RED });
+    wrap(d, 0, 450, R.t, 54, { size: 24, lh: 30, fill: INK });
+    if (k === 3) wrap(d, 0, 520, "Player meets Mob: no event, and no error.", 54, { size: 24, lh: 30, fill: RED, weight: 700 });
+    note(svg, ey, ["", "Godot lets one side watch another without being watched.", "Unity keeps one grid for the whole project.", "Unreal's contact needs both Actors to agree."][k]);
+  }
+
+  /* ---------- 8. up axis, handedness, units: computed conversion ---------- */
+  function unityToUnreal(p) { return [p[2] * 100, p[0] * 100, p[1] * 100]; }
+  function renderSpace(el, k, anim) {
+    var svg = svgFor(el, W, H, "Up axis, handedness and units across the three engines", "Step 1: three axis gizmos with the up axis marked. Step 2: a point 3 metres ahead and 1.8 metres up converted from Unity to Unreal numbers. Step 3: two rulers, metres and centimetres.");
+    var ey = base(svg, [{ id: "up", s: 1 }, { id: "units", s: 3 }], k, anim, ["Y-up", "height is the y value"], ["Z-up", "height is the z value"]);
+    if (k === 0) return;
+    var d = svg.append("g");
+    if (k === 1) {
+      lab(d, 0, 30, "WHICH AXIS POINTS UP");
+      [["Godot", "Y", "right-handed"], ["Unity", "Y", "left-handed"], ["Unreal", "Z", "left-handed"]].forEach(function (r, i) {
+        var x = 125 + i * 255, g = d.append("g");
+        cap(g, x, 76, r[0].toUpperCase(), { anchor: "middle", weight: 700, fill: MUTED });
+        arrow(g, x, 360, x, 140, RED, 6); arrow(g, x, 360, x + 100, 360, INK, 4);
+        cap(g, x + 12, 176, "up = " + r[1], { weight: 700, fill: RED });
+        cap(g, x, 420, r[2], { anchor: "middle", weight: 700 });
+        fade(g, anim, i * 300);
+      });
+      cap(d, 0, 500, "Same idea, different letter: the height of a point is Y, Y, Z.", { fill: INK });
+    } else if (k === 2) {
+      var p = [0, 1.8, 3], q = unityToUnreal(p), dyn = d.append("g");
+      lab(d, 0, 30, "SAME POST, 3 M AHEAD AND 1.8 M UP");
+      var sx = 330 / 4, sy = 220 / 2.5;
+      [[0, "Unity", "forward z (m)", "up y", p[2], p[1], "(z, y) = (" + p[2] + ", " + p[1] + ") m"], [400, "Unreal", "forward X (cm)", "up Z", q[0] / 100, q[2] / 100, "(X, Z) = (" + q[0] + ", " + q[2] + ") cm"]].forEach(function (r, i) {
+        var g = dyn.append("g").attr("transform", "translate(" + r[0] + ",90)");
+        cap(g, 0, -16, r[1], { weight: 700, fill: i ? RED : INK });
+        g.append("path").attr("d", "M0,0 V220 H330").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3);
+        g.append("path").attr("d", "M" + (r[4] * sx) + "," + (220 - r[5] * sy) + " V220 M" + (r[4] * sx) + "," + (220 - r[5] * sy) + " H0").attr("stroke", FAMILIAR).attr("stroke-width", 2).attr("stroke-dasharray", "6 6");
+        var dot = g.append("circle").attr("cx", r[4] * sx).attr("cy", 220 - r[5] * sy).attr("r", 12).attr("fill", RED);
+        cap(g, 165, 262, r[2], { anchor: "middle", size: 24, fill: MUTED }); cap(g, 8, 20, r[3], { size: 24, fill: MUTED });
+        cap(g, 0, 304, r[6], { size: 24, weight: 700 });
+        if (anim && i) dot.attr("opacity", 0).transition().delay(900).duration(500).attr("opacity", 1);
+      });
+      mono(d, 0, 470, "Unity (x, y, z)  = (" + p.join(", ") + ") m", { size: 24 });
+      mono(d, 0, 510, "Unreal (X, Y, Z) = (" + q.join(", ") + ") cm", { size: 24, fill: RED, weight: 700 });
+      cap(d, 0, 556, "Map used: X = z, Y = x, Z = y, then multiply by 100.", { size: 24, fill: MUTED });
+    } else {
+      lab(d, 0, 30, "THE SAME 1.8 M POST ON TWO RULERS");
+      var m = 1.8, ticks = [0, 0.5, 1, 1.5, 2], sc = 640 / 2;
+      [["metres (Godot, Unity)", 1, " m"], ["Unreal units (centimetres)", 100, ""]].forEach(function (r, i) {
+        var y = 130 + i * 150, g = d.append("g");
+        cap(g, 0, y - 56, r[0], { weight: 700, size: 24 });
+        g.append("path").attr("d", "M0," + y + " H" + (2 * sc)).attr("stroke", INK).attr("stroke-width", 4);
+        ticks.forEach(function (t) { g.append("path").attr("d", "M" + (t * sc) + "," + y + " v16").attr("stroke", INK).attr("stroke-width", 3); cap(g, t * sc, y + 46, String(t * r[1]), { anchor: t === 0 ? "start" : t === 2 ? "end" : "middle", size: 24 }); });
+        var px = m * sc;
+        bar(g, 0, y - 22, px, 14, RED, anim, i * 400);
+        cap(g, 740, y - 56, "post = " + (m * r[1]) + r[2], { anchor: "end", weight: 700, fill: RED, size: 24 });
+      });
+      cap(d, 0, 440, "A test that expects 1.8 now expects " + (1.8 * 100) + ". A 0.05 m tolerance becomes " + (0.05 * 100) + ".", { size: 24, weight: 700, fill: INK });
+      cap(d, 0, 480, "The importer converts. Your expected numbers must change too.", { size: 24, fill: MUTED });
+    }
+    note(svg, ey, ["", "", ""][k > 2 ? 2 : k]);
+  }
+
+  /* ---------- 9. animation: clip, event key, state machine ---------- */
+  function renderAnim(el, k, anim) {
+    var svg = svgFor(el, W, H, "Animation clips, event keys and state machines in three engines", "Step 1: a clip plays on a timeline. Step 2: two keys open and close a hitbox between 0.1 and 0.25 seconds, counted in physics steps. Step 3: a state machine moves between Idle, Walk and Attack.");
+    var ey = base(svg, [{ id: "clip", s: 1 }, { id: "ekey", s: 2 }, { id: "sm", s: 3 }], k, anim, ["Notify", "fires at one time"], ["Notify State", "has a begin and an end"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    var TL = 0.5, SX = 700 / TL;
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      var tm = t * TL;
+      if (k <= 2) {
+        lab(dyn, 0, 30, k === 1 ? "A CLIP PLAYS (0.5 S LONG)" : "KEYS ON THE TIMELINE: 0.10 S AND 0.25 S");
+        [["Godot: AnimationPlayer, Animation", "method track"], ["Unity: Animator, Animation Clip", "Animation Events"], ["Unreal: Animation Sequence", "Anim Notify State"]].forEach(function (r, i) {
+          var y = 70 + i * 120;
+          cap(dyn, 0, y, r[0], { size: 24, weight: 700 });
+          dyn.append("rect").attr("x", 0).attr("y", y + 14).attr("width", 700).attr("height", 32).attr("fill", "#F6F6F6").attr("stroke", FAMILIAR);
+          dyn.append("rect").attr("x", 0).attr("y", y + 14).attr("width", tm * SX).attr("height", 32).attr("fill", "#C4C4C4");
+          if (k === 2) {
+            if (i < 2) [0.1, 0.25].forEach(function (kt) { dyn.append("path").attr("d", "M" + (kt * SX) + "," + (y + 6) + " v48").attr("stroke", RED).attr("stroke-width", 5); });
+            else dyn.append("rect").attr("x", 0.1 * SX).attr("y", y + 14).attr("width", 0.15 * SX).attr("height", 32).attr("fill", tm >= 0.1 && tm < 0.25 ? RED : TINT).attr("stroke", RED).attr("stroke-width", 2);
+            cap(dyn, 0, y + 84, r[1] + (tm >= 0.1 && tm < 0.25 ? ": hitbox on" : ""), { size: 24, fill: tm >= 0.1 && tm < 0.25 ? RED : MUTED, weight: tm >= 0.1 && tm < 0.25 ? 700 : 400 });
+          } else cap(dyn, 0, y + 84, "time " + tm.toFixed(2) + " s", { size: 24, fill: MUTED });
+        });
+        [0, 1, 2].forEach(function (i) { var y = 70 + i * 120; dyn.append("path").attr("d", "M" + (tm * SX) + "," + (y + 8) + " v52").attr("stroke", RED).attr("stroke-width", 3); });
+        if (k === 2) {
+          var w = 0.25 - 0.1, n60 = 0, n50 = 0; for (var i = 0; i < 40; i++) { if (i / 60 >= 0.1 - 1e-9 && i / 60 < 0.25 - 1e-9) n60++; if (i / 50 >= 0.1 - 1e-9 && i / 50 < 0.25 - 1e-9) n50++; }
+          cap(dyn, 0, 466, "Hitbox on for " + w.toFixed(2) + " s = " + n60 + " steps at 60 Hz, " + n50 + " at 50 Hz", { size: 24, weight: 700, fill: RED });
+          cap(dyn, 0, 506, "Moving a key by one step changes the window by one tick.", { size: 24, fill: MUTED });
+        } else cap(dyn, 0, 466, "Same keyed data in all three: a value changes over time.", { size: 24, fill: INK });
+      } else {
+        lab(dyn, 0, 30, "STATE MACHINE: RULES DECIDE THE NEXT STATE");
+        var sp = t < 0.2 ? 0 : 0.8, atk = t >= 0.5 && t < 0.75, st = t < 0.2 ? "Idle" : (t < 0.5 ? "Walk" : (t < 0.75 ? "Attack" : "Idle"));
+        var S = { Idle: [0, 120], Walk: [300, 120], Attack: [600, 120] };
+        ["Idle", "Walk", "Attack"].forEach(function (s) { var on = s === st; box(dyn, S[s][0], S[s][1], 160, 70, { stroke: on ? RED : INK, sw: on ? 5 : 2, fill: on ? TINT : "#FFFFFF" }); cap(dyn, S[s][0] + 80, S[s][1] + 44, s, { anchor: "middle", weight: 700 }); });
+        arrow(dyn, 164, 155, 296, 155, INK, 3); cap(dyn, 230, 110, "speed > 0.1", { anchor: "middle", size: 24 });
+        arrow(dyn, 464, 155, 596, 155, INK, 3); cap(dyn, 530, 110, "attack", { anchor: "middle", size: 24 });
+        dyn.append("path").attr("d", "M680,194 V250 H80 V196").attr("fill", "none").attr("stroke", INK).attr("stroke-width", 3); cap(dyn, 380, 288, "attack finished", { anchor: "middle", size: 24 });
+        cap(dyn, 0, 360, "speed = " + sp.toFixed(1) + "   attack = " + (atk ? "on" : "off") + "   state = " + st, { size: 26, weight: 700, fill: RED });
+        wrap(dyn, 0, 410, "Godot: advance_condition or expression. Unity: Conditions on Animator parameters. Unreal: a transition rule graph that outputs true or false.", 56, { size: 24, lh: 30, fill: INK });
+      }
+    }
+    run(dyn, 3600, draw, anim);
+    note(svg, ey, "");
+  }
+
+  /* ---------- 10. shaders, parameters, particles ---------- */
+  var BURST = (function () { var r = rng(12), a = []; for (var i = 0; i < 32; i++) a.push({ ang: r() * 2 * Math.PI, sp: 160 + r() * 200 }); return a; })();
+  function renderLook(el, k, anim) {
+    var svg = svgFor(el, W, H, "Shaders, material parameters and particle bursts in three engines", "Step 1: where each engine's shader or material lives. Step 2: one flash value set through each engine's call fades a swatch. Step 3: a seeded burst of 32 particles with a 0.6 second lifetime.");
+    var ey = base(svg, [{ id: "shader", s: 1 }, { id: "param", s: 2 }, { id: "particles", s: 3 }], k, anim, ["Shader", "code that draws"], ["Material", "the settings it reads"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      if (k === 1) {
+        lab(dyn, 0, 30, "WHERE THE LOOK IS DEFINED");
+        [["GODOT", "text: .gdshader", "graph: VisualShader"], ["UNITY", "code: ShaderLab + HLSL", "graph: Shader Graph"], ["UNREAL", "graph: Material Editor", "code node: Custom (HLSL)"]].forEach(function (r, i) {
+          var y = 70 + i * 140, g = dyn.append("g");
+          cap(g, 0, y, r[0], { weight: 700, fill: MUTED, size: 24 });
+          box(g, 0, y + 14, 360, 60, { stroke: INK, sw: 2 }); cap(g, 14, y + 52, r[1], { size: 24 });
+          box(g, 390, y + 14, 360, 60, { stroke: i === 2 ? RED : INK, sw: 2 }); cap(g, 404, y + 52, r[2], { size: 24 });
+          fade(g, anim, i * 300);
+        });
+        cap(dyn, 0, 520, "Unreal's material is a binary asset; the other two can be plain text.", { size: 24, fill: MUTED });
+      } else if (k === 2) {
+        var v = 1 - t, col = d3.interpolateRgb("#C4C4C4", RED)(v);
+        lab(dyn, 0, 30, "SET ONE FLASH VALUE FROM CODE: v = " + v.toFixed(2));
+        [["Godot", "set_shader_parameter(\"flash\", v)", "on a ShaderMaterial"], ["Unity", "material.SetFloat(\"_Flash\", v)", "or a MaterialPropertyBlock per object"], ["Unreal", "Set Scalar Parameter Value", "on a Dynamic Material Instance"]].forEach(function (r, i) {
+          var y = 76 + i * 140;
+          cap(dyn, 0, y, r[0], { weight: 700, fill: MUTED });
+          mono(dyn, 0, y + 38, r[1], { size: 24 }); cap(dyn, 0, y + 72, r[2], { size: 24, fill: MUTED });
+          dyn.append("rect").attr("x", 580).attr("y", y - 6).attr("width", 170).attr("height", 76).attr("fill", col).attr("stroke", INK).attr("stroke-width", 2);
+        });
+      } else {
+        var T6 = t * 0.55, alive = 0, cx0 = 380, cy0 = 150;
+        lab(dyn, 0, 30, "SEEDED BURST: 32 PARTICLES, LIFETIME 0.6 S");
+        BURST.forEach(function (p) { if (T6 < 0.6) { alive++; var rr = p.sp * T6; dyn.append("circle").attr("cx", cx0 + rr * Math.cos(p.ang) * 0.9).attr("cy", cy0 + rr * Math.sin(p.ang) * 0.5).attr("r", 7).attr("fill", RED).attr("opacity", 1 - T6 / 0.6 * 0.6); } });
+        dyn.append("circle").attr("cx", cx0).attr("cy", cy0).attr("r", 5).attr("fill", INK);
+        cap(dyn, 0, 70, "t = " + T6.toFixed(2) + " s", { size: 24, weight: 700 }); cap(dyn, 0, 106, "alive: " + alive + " of 32", { size: 24, weight: 700, fill: RED });
+        var after = BURST.filter(function (p) { return 0.6 < 0.6 - 1e-9; }).length;
+        [["Godot: one_shot, amount 32, explosiveness 1", 330], ["Unity: Looping off, Burst of 32 at time 0", 372], ["Unreal: Loop Behavior Once, Spawn Burst 32", 414]].forEach(function (r) { cap(dyn, 0, r[1], r[0], { size: 24 }); });
+        cap(dyn, 0, 468, "At 0.6 s: " + after + " alive. All 32 end together: one shared lifetime.", { size: 24, fill: MUTED });
+      }
+    }
+    run(dyn, k === 3 ? 3200 : 2600, draw, A(anim, k, k));
+    note(svg, ey, "");
+  }
+
+  /* ---------- 11. build, export, licence ---------- */
+  var CMD = ["godot --export-release …", "Unity -batchmode -executeMethod … -quit", "RunUAT.sh BuildCookRun -project=…"];
+  function renderShip(el, k, anim) {
+    var svg = svgFor(el, W, H, "Building a game and what each engine's licence costs", "Step 1: the command that builds in each engine, typed out. Step 2: royalty owed on 1.5 million dollars of lifetime gross revenue under each licence.");
+    var ey = base(svg, [{ id: "exp", s: 1 }, { id: "lic", s: 2 }], k, anim, ["Export", "package for a platform"], ["Cook", "convert assets for the target"]);
+    if (k === 0) return;
+    var d = svg.append("g"), dyn = d.append("g");
+    function draw(t) {
+      dyn.selectAll("*").remove();
+      if (k === 1) {
+        lab(dyn, 0, 30, "HEADLESS BUILD COMMAND");
+        var SUB = ["one flag on the editor binary", "your script calls BuildPipeline.BuildPlayer", "UAT run that includes a cook of every asset"];
+        CMD.forEach(function (c, i) {
+          var y = 86 + i * 140, n = Math.round(c.length * clamp(t * 1.3, 0, 1));
+          cap(dyn, 0, y, ENG[i].toUpperCase(), { weight: 700, fill: MUTED });
+          dyn.append("rect").attr("x", 0.5).attr("y", y + 12).attr("width", 760).attr("height", 52).attr("fill", INK);
+          dyn.append("text").attr("x", 14).attr("y", y + 48).attr("font-family", MONO).attr("font-size", 24).attr("fill", "#FFFFFF").text(c.slice(0, n));
+          cap(dyn, 0, y + 96, SUB[i], { size: 24, fill: MUTED });
+        });
+        wrap(dyn, 0, 524, "Settings files: export_presets.cfg · build profile asset · project packaging settings.", 60, { size: 24, lh: 30, fill: INK });
+      } else {
+        var rev = 1500000, roy = Math.max(0, rev - 1000000) * 0.05, f = d3.format(",");
+        lab(dyn, 0, 30, "EXAMPLE: US$1,500,000 LIFETIME GROSS (ILLUSTRATIVE)");
+        [["Godot", "MIT licence. No royalty.", "royalty: US$0"], ["Unity", "Proprietary. Personal plan only while 12-month finances stay at or under US$200,000.", "Personal plan: not available"], ["Unreal", "Source-available under the EULA. 5% royalty above the first US$1 million per product.", "royalty: US$" + f(roy * clamp(t * 1.4, 0, 1))]].forEach(function (r, i) {
+          var y = 70 + i * 160, g = dyn.append("g");
+          box(g, 0, y - 30, 760, 140, { stroke: i === 2 ? RED : FAMILIAR, sw: i === 2 ? 3 : 1.5 });
+          cap(g, 14, y + 4, r[0], { weight: 700, fill: MUTED }); wrap(g, 14, y + 38, r[1], 62, { size: 24, lh: 28, fill: INK }); cap(g, 14, y + 102, r[2], { size: 26, weight: 700, fill: RED });
+        });
+      }
+    }
+    run(dyn, 2600, draw, A(anim, k, k));
+    note(svg, ey, "");
+  }
+
+  /* ---------- pairs ---------- */
+  function renderPairs(el, k, anim) {
+    var svg = svgFor(el, W, H, "Four look-alike pairs across the engines", "Each step shows two ideas people mix up, side by side with a small animation.");
+    var d = svg.append("g");
+    var PAIRS = [
+      [["Edit the template", "Every copy that has no override changes"], ["Edit an instance", "Only that copy changes"]],
+      [["Y-up", "Height is y, in metres in Godot and Unity"], ["Z-up", "Height is z, in centimetres in Unreal"]],
+      [["Update", "Once per frame, so the gap between ticks varies"], ["FixedUpdate", "Every 0.02 s in Unity, however many frames pass"]],
+      [["Godot mask", "A notices B if B's layer is in A's mask"], ["Unreal response", "Both sides must answer Overlap or Block"]]
+    ];
+    var L = d.append("g"), R = d.append("g").attr("transform", "translate(740,0)");
+    function head(g, i, j) { lab(g, 0, 24, "PAIR " + Math.max(1, k) + " · " + (j ? "RIGHT" : "LEFT"), { fill: MUTED }); txt(g, 0, 66, PAIRS[i][j][0], { size: 32, weight: 700, fill: j ? RED : INK }); wrap(g, 0, 470, PAIRS[i][j][1] + ".", 44, { size: 26, lh: 32, fill: BODY }); }
+    function draw(i, t) {
+      L.selectAll("*").remove(); R.selectAll("*").remove(); head(L, i, 0); head(R, i, 1);
+      var LG = L.append("g").attr("transform", "translate(20,0)"), RG = R.append("g").attr("transform", "translate(20,0)");
+      if (i === 0) {
+        [LG, RG].forEach(function (G, j) {
+          for (var c = 0; c < 3; c++) {
+            var changed = j === 0 ? t > 0.3 : (c === 1 && t > 0.3);
+            G.append("rect").attr("x", 30 + c * 190).attr("y", 190).attr("width", 150).attr("height", 90).attr("fill", changed ? TINT : "#FFFFFF").attr("stroke", changed ? RED : INK).attr("stroke-width", 3);
+            cap(G, 105 + c * 190, 248, changed ? "192" : "160", { anchor: "middle", weight: 700, size: 30, fill: changed ? RED : INK });
+          }
+        });
+        cap(LG, 30, 340, "3 of 3 copies changed", { size: 24, fill: MUTED, weight: 700 }); cap(RG, 30, 340, "1 of 3 copies changed", { size: 24, fill: MUTED, weight: 700 });
+      } else if (i === 1) {
+        var hv = 1.8 * t;
+        [[LG, hv, "y = " + hv.toFixed(2) + " m", INK], [RG, hv * 100, "z = " + Math.round(hv * 100) + " cm", RED]].forEach(function (r) {
+          r[0].append("path").attr("d", "M60,60 V400 H400").attr("stroke", INK).attr("stroke-width", 3).attr("fill", "none");
+          r[0].append("circle").attr("cx", 230).attr("cy", 400 - hv / 1.8 * 280).attr("r", 14).attr("fill", RED);
+          cap(r[0], 260, 400 - hv / 1.8 * 280 + 8, r[2], { size: 24, weight: 700, fill: r[3] });
+        });
+      } else if (i === 2) {
+        var rr = rng(21), tt = 0, fr = []; while (tt < 0.25) { fr.push(tt); tt += (1 / 144) * (0.5 + rr()); }
+        var fx = []; for (var q = 0; q * 0.02 < 0.25 - 1e-9; q++) fx.push(q * 0.02);
+        [[LG, fr, INK, "frames"], [RG, fx, RED, "steps"]].forEach(function (r) {
+          r[0].append("path").attr("d", "M0,260 H640").attr("stroke", FAMILIAR).attr("stroke-width", 3);
+          r[1].forEach(function (x) { r[0].append("rect").attr("x", x / 0.25 * 620).attr("y", 220).attr("width", 3).attr("height", 80).attr("fill", x / 0.25 <= t ? r[2] : "#E3E3E3"); });
+          cap(r[0], 0, 360, r[1].length + " " + r[3] + " in 0.25 s", { size: 24, weight: 700, fill: MUTED });
+        });
+      } else {
+        LG.append("circle").attr("cx", 80).attr("cy", 240).attr("r", 40).attr("fill", INK); cap(LG, 80, 247, "A", { anchor: "middle", fill: "#FFFFFF", weight: 700 });
+        LG.append("circle").attr("cx", 440).attr("cy", 240).attr("r", 40).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(LG, 440, 247, "B", { anchor: "middle", weight: 700 });
+        arrow(LG, 130, 240, 130 + 260 * t, 240, RED, 5); if (t > 0.9) check(LG, 270, 320, 18, RED);
+        RG.append("circle").attr("cx", 80).attr("cy", 240).attr("r", 40).attr("fill", INK); cap(RG, 80, 247, "A", { anchor: "middle", fill: "#FFFFFF", weight: 700 });
+        RG.append("circle").attr("cx", 440).attr("cy", 240).attr("r", 40).attr("fill", "#FFFFFF").attr("stroke", INK).attr("stroke-width", 3); cap(RG, 440, 247, "B", { anchor: "middle", weight: 700 });
+        arrow(RG, 130, 240, 130 + 130 * clamp(t * 2, 0, 1), 240, RED, 5); if (t > 0.7) { cross(RG, 290, 240, 18, RED); cap(RG, 270, 320, "B says Ignore", { size: 24, anchor: "middle", fill: RED, weight: 700 }); }
+      }
+    }
+    if (k === 0) { draw(0, 0.5); cap(svg.append("g"), 0, 612, "Click or press → to see four pairs, one at a time.", { size: 24, fill: MUTED }); return; }
+    draw(k - 1, 0.99); run(d, 3000, function (t) { draw(k - 1, t); }, anim);
+  }
+
+  /* ---------- say it exactly ---------- */
+  var SAY = [
+    { v: "convert it for Unreal", x: "Map Unity (0, 1.8, 3) m to Unreal X = z, Y = x, Z = y, times 100: (300, 0, 180)" },
+    { v: "run it at the right rate", x: "Godot runs physics 60 times a second, Unity's FixedUpdate 50 (0.02 s): count steps" },
+    { v: "make the pickup fire", x: "In Unity, tick Is Trigger and give one of the two objects a Rigidbody2D" },
+    { v: "make the mob see the player", x: "In Unreal both Actors must answer Overlap and turn on Generate Overlap Events" },
+    { v: "update every enemy", x: "Edit the template: 4 of 5 copies change, and the one with an override keeps its value" }
+  ];
+  function renderSay(el, k, anim) {
+    var svg = svgFor(el, W, H, "Say it exactly: five vague cross-engine requests turned into precise ones", "Five rows with a vague request and an exact instruction. On the right, a computed chart of what the instruction does.");
+    var g = svg.append("g");
+    SAY.forEach(function (r, i) {
+      if (i + 1 > k) return; var y = 6 + i * 128, cur = i + 1 === k, e = g.append("g");
+      e.append("rect").attr("x", 0).attr("y", y).attr("width", 8).attr("height", 114).attr("fill", cur ? RED : FAMILIAR);
+      txt(e, 24, y + 30, "“" + r.v + "”", { size: 26, fill: RED, weight: 700 });
+      wrap(e, 24, y + 64, "→ " + r.x, 50, { size: 24, lh: 30, fill: INK, weight: 700 });
+      if (anim && cur) e.attr("opacity", 0).transition().duration(450).attr("opacity", 1);
+    });
+    if (k === 0) { cap(g, 0, 60, "A vague request gets a guess. An exact one names the engine's rule.", { fill: INK }); cap(g, 0, 110, "Click or press → to turn five requests into instructions.", { fill: MUTED }); return; }
+    var p = g.append("g").attr("transform", "translate(900,60)"), pw = 480, ph = 330, nt = "";
+    lab(p, 0, -14, "WHAT THE INSTRUCTION DOES", { fill: RED });
+    p.append("rect").attr("x", 0.5).attr("y", 0.5).attr("width", pw).attr("height", ph).attr("fill", "none").attr("stroke", FAMILIAR).attr("stroke-width", 2);
+    if (k === 1) { var q = unityToUnreal([0, 1.8, 3]), mx = 300; ["X", "Y", "Z"].forEach(function (a, i) { cap(p, 14, 60 + i * 90, a + " = " + q[i] + " cm", { size: 24 }); bar(p, 14, 74 + i * 90, Math.max(q[i] / mx * 440, 3), 30, i === 1 ? "#C4C4C4" : RED, anim, i * 300); }); nt = "Y is 0: the post is straight ahead"; }
+    else if (k === 2) { [["Godot", 60], ["Unity", 50]].forEach(function (r, i) { cap(p, 14, 60 + i * 120, r[0] + ": " + r[1] + " steps, " + (1000 / r[1]).toFixed(1) + " ms each", { size: 24 }); bar(p, 14, 76 + i * 120, r[1] / 60 * 440, 40, i ? RED : "#C4C4C4", anim, i * 400); }); nt = "10 fewer steps a second in Unity"; }
+    else if (k === 3) { [[true, true], [true, false], [false, true], [false, false]].forEach(function (c, i) { var fire = c[0] && c[1], y = 40 + i * 66; cap(p, 14, y + 30, "Is Trigger " + (c[0] ? "on" : "off") + ", Rigidbody2D " + (c[1] ? "yes" : "no"), { size: 24 }); if (fire) check(p, 440, y + 22, 14, RED); else cross(p, 440, y + 22, 11, GREY); }); nt = "1 of 4 settings fires"; }
+    else if (k === 4) { var n = 0; [[true, true], [true, false], [false, true], [false, false]].forEach(function (c, i) { var fire = c[0] && c[1], y = 40 + i * 66; if (fire) n++; cap(p, 14, y + 30, "Overlap " + (c[0] ? "yes" : "no") + ", events on " + (c[1] ? "yes" : "no"), { size: 24 }); if (fire) check(p, 440, y + 22, 14, RED); else cross(p, 440, y + 22, 11, GREY); }); nt = n + " of 4 settings fires"; }
+    else { OV.forEach(function (o, i) { var ov = o !== null; p.append("rect").attr("x", 14 + i * 90).attr("y", 90).attr("width", 80).attr("height", 80).attr("fill", ov ? "#FFFFFF" : TINT).attr("stroke", ov ? RED : INK).attr("stroke-width", ov ? 4 : 2); cap(p, 54 + i * 90, 140, String(ov ? o : 192), { anchor: "middle", size: 24, weight: 700, fill: ov ? RED : INK }); }); cap(p, 14, 230, "4 updated, 1 override kept", { size: 24, weight: 700, fill: RED }); nt = "an override beats the template"; }
+    cap(p, 0, ph + 40, nt, { size: 24, weight: 700 });
+  }
+
+  var CHECKS = [
+    "Am I using this engine's word: node, GameObject or Actor?",
+    "Which clock: per frame, or fixed (60 a second in Godot, 50 in Unity)?",
+    "Which way is up, and are the units metres or centimetres?",
+    "Does contact work from one side, or do both sides have to agree?",
+    "Is the asset text I can diff, or binary I must open the editor for?",
+    "Was it run, or only read from docs? The chapters ran neither Unity nor Unreal."
+  ];
+  function renderClosing(el, k, anim) {
+    var svg = svgFor(el, W, H, "Six checks before you port an idea between engines", "A checklist of six items drawn one at a time.");
+    var g = svg.append("g");
+    CHECKS.forEach(function (c, i) {
+      var y = 20 + i * 100, on = i + 1 <= k, row = g.append("g");
+      row.append("rect").attr("x", 0.5).attr("y", y + 0.5).attr("width", 64).attr("height", 64).attr("fill", on ? "#FFFFFF" : "none").attr("stroke", on ? INK : FAMILIAR).attr("stroke-width", 3);
+      wrap(row, 100, y + 42, c, 70, { size: 32, lh: 36, fill: on ? INK : MUTED });
+      if (on) { var ck = check(row, 32, y + 36, 20, RED); if (A(anim, k, i + 1)) drawIn(ck, 0, 450); }
+    });
+    cap(g, 0, 660, "Then say it exactly: not “make it work in Unity”, but “tick Is Trigger and add a Rigidbody2D”.", { size: 28, weight: 700 });
+  }
+
+  var BUILDS = {
+    map: { steps: 4, render: renderMap }, blocks: { steps: 4, render: renderBlocks }, templ: { steps: 4, render: renderTemplates },
+    events: { steps: 4, render: renderEvents }, langs: { steps: 4, render: renderLangs }, loops: { steps: 3, render: renderLoops },
+    input: { steps: 3, render: renderInput }, layers: { steps: 3, render: renderLayers }, space: { steps: 3, render: renderSpace },
+    anim: { steps: 3, render: renderAnim }, look: { steps: 3, render: renderLook }, build: { steps: 2, render: renderShip },
+    pairs: { steps: 4, render: renderPairs }, say: { steps: 5, render: renderSay }, closing: { steps: 6, render: renderClosing }
+  };
+
+
+  /* click on the stage advances one fragment (the original deck had keys and buttons only) */
+  stage.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#controls, #thumbs")) return;
+    nextSlide();
+  });
+  function buildEl(slide) { return slide ? slide.querySelector("[data-build]") : null; }
+  function buildOf(slide) { var el = buildEl(slide); return el ? BUILDS[el.getAttribute("data-build")] : null; }
+  function stopBuild(el) { if (hasD3 && el) d3.select(el).selectAll("*").interrupt(); }
+  function renderBuild(el, k, animate) {
+    var b = BUILDS[el.getAttribute("data-build")];
+    if (!b) return;
+    if (!hasD3) {
+      el.innerHTML = '<div class="chart-fallback">This graphic needs D3, which did not load. Check the network connection and reload.</div>';
+      return;
+    }
+    stopBuild(el);
+    b.render(el, Math.max(0, Math.min(b.steps, k)), animate && !reduceMQ.matches);
+  }
+
+  /* ---------------- navigation ---------------- */
+  function go(i, atEnd, animate) {
+    i = Math.max(0, Math.min(total - 1, i));
+    var prev = slides[current];
+    if (prev && i !== current) { stopBuild(buildEl(prev)); prev.classList.remove("is-active"); }
+    current = i;
+    var s = slides[i], b = buildOf(s);
+    step = b && atEnd ? b.steps : 0;
+    s.classList.add("is-active");
+    var el = buildEl(s);
+    if (el) renderBuild(el, step, animate);
+    updateUI(true);
+  }
+  function setStep(k, animate) {
+    step = k;
+    renderBuild(buildEl(slides[current]), step, animate);
+    updateUI(false);
+  }
+  function nextSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step < b.steps) setStep(step + 1, true);
+    else if (current < total - 1) go(current + 1, false, true);
+  }
+  function prevSlide() {
+    var b = buildOf(slides[current]);
+    if (b && step > 0) setStep(step - 1, false);
+    else if (current > 0) go(current - 1, true, false);
+  }
+  function updateUI(newSlide) {
+    var s = slides[current], b = buildOf(s);
+    var title = s.getAttribute("data-title") || "";
+    counter.textContent = (current + 1) + " / " + total;
+    pips.innerHTML = "";
+    if (b) {
+      for (var j = 1; j <= b.steps; j++) {
+        var p = document.createElement("span");
+        p.className = "pip" + (j <= step ? " on" : "");
+        pips.appendChild(p);
+      }
+    }
+    btnPrev.disabled = current === 0 && step === 0;
+    btnNext.disabled = current === total - 1 && (!b || step === b.steps);
+    var stepTxt = b ? ", step " + step + " of " + b.steps : "";
+    live.textContent = newSlide ? "Slide " + (current + 1) + " of " + total + ": " + title + stepTxt : "Step " + step + " of " + (b ? b.steps : 0);
+    if (newSlide) {
+      var n = s.querySelector(".speaker-notes");
+      notesHead.textContent = "Speaker notes, slide " + (current + 1);
+      notesBody.innerHTML = n ? n.innerHTML : "<p>No notes for this slide.</p>";
+      try { history.replaceState(null, "", "#" + (current + 1)); } catch (e) { /* ignore */ }
+    }
+  }
+  btnPrev.addEventListener("click", prevSlide);
+  btnNext.addEventListener("click", nextSlide);
+
+  /* ---------------- notes ---------------- */
+  function toggleNotes() {
+    var on = !document.body.classList.contains("notes-open");
+    document.body.classList.toggle("notes-open", on);
+    btnNotes.setAttribute("aria-pressed", on ? "true" : "false");
+    fit();
+  }
+  btnNotes.addEventListener("click", toggleNotes);
+
+  /* ---------------- fullscreen ---------------- */
+  var root = document.documentElement;
+  var fsEnabled = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!fsEnabled) btnFs.hidden = true;
+  function toggleFullscreen() {
+    if (!fsEnabled) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (fsEl) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else {
+        var pr = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+        if (pr && pr.catch) pr.catch(function () {});
+      }
+    } catch (e) { /* refused */ }
+  }
+  btnFs.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", fit);
+  document.addEventListener("webkitfullscreenchange", fit);
+
+  /* ---------------- thumbnails (always final state) ---------------- */
+  function buildThumbs() {
+    thumbGrid.innerHTML = "";
+    slides.forEach(function (s, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb" + (i === current ? " current" : "");
+      btn.setAttribute("aria-label", "Go to slide " + (i + 1) + ": " + (s.getAttribute("data-title") || ""));
+      if (i === current) btn.setAttribute("aria-current", "true");
+      var inner = document.createElement("div");
+      inner.className = "thumb-inner";
+      inner.setAttribute("aria-hidden", "true");
+      var clone = s.cloneNode(true);
+      clone.classList.remove("is-active");
+      Array.prototype.forEach.call(clone.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+      var sn = clone.querySelector(".speaker-notes");
+      if (sn) sn.remove();
+      inner.appendChild(clone);
+      var num = document.createElement("span");
+      num.className = "thumb-num";
+      num.textContent = String(i + 1);
+      btn.appendChild(inner);
+      btn.appendChild(num);
+      btn.addEventListener("click", function () { closeThumbs(true); go(i, false, true); });
+      thumbGrid.appendChild(btn);
+      var cb = clone.querySelector("[data-build]");
+      if (cb) renderBuild(cb, 99, false);
+    });
+    scaleThumbs();
+  }
+  function scaleThumbs() {
+    Array.prototype.forEach.call(thumbGrid.querySelectorAll(".thumb"), function (b) {
+      b.querySelector(".thumb-inner").style.transform = "scale(" + (b.clientWidth / 1920) + ")";
+    });
+  }
+  function openThumbs() {
+    lastFocus = document.activeElement;
+    thumbs.classList.add("open");
+    buildThumbs();
+    var cur = thumbGrid.querySelector(".thumb.current");
+    if (cur) { cur.focus(); cur.scrollIntoView({ block: "nearest" }); }
+  }
+  function closeThumbs(navigating) {
+    thumbs.classList.remove("open");
+    thumbGrid.innerHTML = "";
+    if (!navigating && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  btnThumbs.addEventListener("click", openThumbs);
+  thumbs.querySelector(".close").addEventListener("click", function () { closeThumbs(false); });
+  window.addEventListener("resize", function () { if (thumbs.classList.contains("open")) scaleThumbs(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (thumbs.classList.contains("open")) {
+      if (e.key === "Escape" || e.key === "g" || e.key === "G") { e.preventDefault(); closeThumbs(false); }
+      return;
+    }
+    var onButton = e.target && e.target.closest && e.target.closest("button");
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": e.preventDefault(); nextSlide(); break;
+      case " ": if (onButton) return; e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, false, true); break;
+      case "End": e.preventDefault(); go(total - 1, true, false); break;
+      case "f": case "F": e.preventDefault(); toggleFullscreen(); break;
+      case "n": case "N": e.preventDefault(); toggleNotes(); break;
+      case "g": case "G": e.preventDefault(); openThumbs(); break;
+    }
+  });
+
+  /* ---------------- touch swipe ---------------- */
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null || thumbs.classList.contains("open")) { tx = null; return; }
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) { if (dx < 0) nextSlide(); else prevSlide(); }
+    tx = null;
+  }, { passive: true });
+
+  /* ---------------- quiet controls ---------------- */
+  var idle = null;
+  document.addEventListener("mousemove", function () {
+    document.body.classList.add("show-controls");
+    clearTimeout(idle);
+    idle = setTimeout(function () { document.body.classList.remove("show-controls"); }, 2200);
+  });
+
+  /* ---------------- print: every slide in its final state ---------------- */
+  window.addEventListener("beforeprint", function () {
+    slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  });
+  window.addEventListener("afterprint", function () {
+    slides.forEach(function (s, i) { var el = buildEl(s); if (el && i !== current) renderBuild(el, 99, false); });
+    var el = buildEl(slides[current]);
+    if (el) renderBuild(el, step, false);
+  });
+
+  /* ---------------- start ---------------- */
+  slides.forEach(function (s) { var el = buildEl(s); if (el) renderBuild(el, 99, false); });
+  fit();
+  var hm = /^#(\d+)$/.exec(location.hash);
+  go(hm ? parseInt(hm[1], 10) - 1 : 0, false, true);
+  window.addEventListener("hashchange", function () {
+    var m = /^#(\d+)$/.exec(location.hash);
+    if (m && parseInt(m[1], 10) - 1 !== current) go(parseInt(m[1], 10) - 1, false, true);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

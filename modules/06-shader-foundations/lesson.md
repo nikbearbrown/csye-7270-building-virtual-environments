@@ -315,7 +315,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to implem
 
 ## The next step
 
-This module feeds Assignment 5, "A Shader and a Material That Say Something About Your Game". It covers Modules 6 and 7, opens in Module 6 and is due about Day 50, and nothing in this lesson is graded by itself. Module 7 moves from a 2D shader you write to the textures and materials a 3D model arrives with. Read the companion chapter, [Chapter 6 — Shader Foundations](../../chapters/06-shader-foundations.md), for the full run, the agent's transcripts and the Unity and Unreal comparison in detail.
+This module feeds Assignment 5, "Shaders, Materials, and the Godot Shading Language". It covers Modules 6 and 7, opens in Module 6 and is due October 29, and nothing in this lesson is graded by itself. Module 7 moves from a 2D shader you write to the textures and materials a 3D model arrives with. Read the companion chapter, [Chapter 6 — Shader Foundations](../../chapters/06-shader-foundations.md), for the full run, the agent's transcripts and the Unity and Unreal comparison in detail.
 
 ## If you know Unity or Unreal
 

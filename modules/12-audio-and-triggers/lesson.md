@@ -234,7 +234,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test t
 
 ## The next step
 
-This module opens Assignment 9, "Sound That Provably Plays, and a Frame You Can Afford." It finishes with Module 13, profiling and optimization, and is due about Day 90 (Canvas dates govern); its page sets the exact task and the required `godot-gamedev` film. This lesson adds no graded deliverable. The long reading is the companion chapter, [Chapter 12 — Audio and Triggers](../../chapters/12-audio-and-triggers.md).
+This module provides practice and evidence for the integrated game. There is no separate graded audio/performance assignment in the current Canvas sequence; Assignment 9 is the game-AI teaching assignment. Use the current final brief for the required checks and films. The long reading is the companion chapter, [Chapter 12 — Audio and Triggers](../../chapters/12-audio-and-triggers.md).
 
 ## If you know Unity or Unreal
 

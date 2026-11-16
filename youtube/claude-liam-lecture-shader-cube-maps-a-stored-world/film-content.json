@@ -1,0 +1,66 @@
+{
+  "id": 9,
+  "slug": "cube-maps-a-stored-world",
+  "title": "Cube Maps: A Stored World",
+  "objective": "Explain direction-based environment lookup and rim weighting.",
+  "wrong": "the reflection traces the scene",
+  "right": "the reflection samples a stored world",
+  "terms": {
+    "Cubemap": "Six images addressed by a direction",
+    "Reflection vector": "The direction used to look into the environment",
+    "Rim weight": "A view-dependent multiplier near the silhouette"
+  },
+  "exercise": "Move the camera while keeping the cubemap fixed. Then add an unrelated object to the scene. Explain which change affects the lookup and why the new object does not appear automatically.",
+  "checks": [
+    "The reflection direction changes with the camera.",
+    "A static cubemap does not capture new scene objects."
+  ],
+  "recap": [
+    "A direction selects a cubemap sample.",
+    "The reflection vector depends on the viewer.",
+    "The rim weights the reflection in this shader.",
+    "The cubemap is not a live scene reflection."
+  ],
+  "beats": [
+    [
+      "Six Images One Lookup",
+      "uniform samplerCube",
+      "A cubemap stores surroundings on six faces. The shader addresses it with a three-dimensional direction, not the mesh's two-dimensional UV coordinates. The runtime assembles the six generated test images."
+    ],
+    [
+      "Find The Mirror Direction",
+      "-reflect(e, n)",
+      "Normalize the eye vector and normal, then mirror the eye direction with the correct sign. This produces the direction into the stored environment that should appear at this surface point."
+    ],
+    [
+      "Read The Environment",
+      "texture(reflection_map, r)",
+      "The texture call reads the cubemap along that reflection direction. It does not trace through the current scene. The returned color is whatever the stored environment contains there."
+    ],
+    [
+      "Weight The Reflection",
+      "fresnel * cube_map",
+      "The environment sample is multiplied by the rim term before being added. That term depends on both the viewing angle and the diffuse-plus-ambient lighting factor in this implementation."
+    ],
+    [
+      "Move The Camera",
+      "eye_vector =",
+      "Watch the camera move while the environment stays fixed. The eye vectors change, so the lookup directions change. The reflected pattern can move without replacing any cubemap image."
+    ],
+    [
+      "The Missing Center",
+      "vec3 fresnel",
+      "At a point facing directly toward the camera, the rim's geometric weight is zero. Its cubemap contribution disappears there. That missing reflection is a consequence of the formula, not a failed texture."
+    ],
+    [
+      "A Separate Highlight",
+      "vec3 total_spec",
+      "The Phong highlight remains a separate addition. A bright center does not prove the cubemap is contributing at that point. Separate the highlight and environment terms when debugging."
+    ],
+    [
+      "Static Means Static",
+      "ALBEDO =",
+      "Adding a moving object beside this sphere will not put that object into the stored cubemap. For dynamic local reflections, you need additional rendering machinery. This shader teaches the lookup and its weighting."
+    ]
+  ]
+}

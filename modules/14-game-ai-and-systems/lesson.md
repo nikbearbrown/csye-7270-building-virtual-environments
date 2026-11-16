@@ -4,7 +4,7 @@ CSYE 7270 · Fall 2026 · Week 14
 
 ## Executive summary
 
-This module is about the systems that make a game act on its own: a non-player character that moves through the world and chooses what to do without anyone watching every frame. You will build one in Godot 4.7.2, a guard that patrols, chases the player and searches where it last saw them, in three handed-off tasks run from the command line (navigation, then a finite state machine, then the same behavior as a behavior tree), separated by a handoff file and your own checks. On 27 September 2026, Claude Code did the first two tasks, hit its usage limit on the third, and Codex finished it from the same handoff; several of the agents' tests passed while checking the wrong thing. The build proves state transitions, reachability and equivalence between two brains on what the tests observe. It does not prove the guard is fun to evade, fair or readable: those are human checks. Three labs on the [labs page](labs.md) cover learning agents, generated levels and networking, and this module feeds Assignment 10, the final project.
+This module is about the systems that make a game act on its own: a non-player character that moves through the world and chooses what to do without anyone watching every frame. You will build one in Godot 4.7.2, a guard that patrols, chases the player and searches where it last saw them, in three handed-off tasks run from the command line (navigation, then a finite state machine, then the same behavior as a behavior tree), separated by a handoff file and your own checks. On 27 September 2026, Claude Code did the first two tasks, hit its usage limit on the third, and Codex finished it from the same handoff; several of the agents' tests passed while checking the wrong thing. The build proves state transitions, reachability and equivalence between two brains on what the tests observe. It does not prove the guard is fun to evade, fair or readable: those are human checks. Three labs on the [labs page](labs.md) cover learning agents, generated levels and networking, and this module feeds Assignment 9, "Teach One Game-AI Technique: Explain, Show, Try," and its integration in the final project.
 
 ## The question
 
@@ -288,7 +288,7 @@ Apply the [preface](../preface-conducting-ai/lesson.md): delegate work to test d
 
 ## The next step
 
-Do the three labs on the [labs page](labs.md): reinforcement learning, a generated level with a validator, and networking in two processes. This module, with Module 15, feeds Assignment 10, the final project. That assignment opens in Module 14 and is due about Day 100 (Canvas dates govern); its own page sets the task and the required films, and this lesson adds no graded deliverable. Module 15, from brief to export, comes next. The long reading is [Chapter 14 — Game AI and Systems](../../chapters/14-game-ai-and-systems.md).
+Do the three labs on the [labs page](labs.md): reinforcement learning, a generated level with a validator, and networking in two processes. Assignment 9, "Teach One Game-AI Technique: Explain, Show, Try," is due December 12 and supplies the technique and teach/ projects that Assignment 10 integrates. The current briefs set the required deliverables and films; this lesson adds no separate graded task. Module 15, from brief to export, comes next. The long reading is [Chapter 14 — Game AI and Systems](../../chapters/14-game-ai-and-systems.md).
 
 ## If you know Unity or Unreal
 

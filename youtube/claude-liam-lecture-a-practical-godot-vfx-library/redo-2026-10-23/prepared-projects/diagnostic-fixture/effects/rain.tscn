@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://effect.gd" id="1_6ust0"]
+[ext_resource type="Texture2D" path="res://assets/magic-fade.tres" id="2_i0xyo"]
+[ext_resource type="Texture2D" path="res://assets/flash-fade.tres" id="3_8rxlx"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xt8q7"]
+emission_shape = 3
+emission_box_extents = Vector3(4, 0.05, 3)
+direction = Vector3(0, -1, 0)
+spread = 2.0
+initial_velocity_min = 8.0
+initial_velocity_max = 10.0
+gravity = Vector3(0, -2, 0)
+color_ramp = ExtResource("2_i0xyo")
+collision_mode = 2
+sub_emitter_mode = 3
+sub_emitter_amount_at_collision = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i65hq"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_xa7ko"]
+material = SubResource("StandardMaterial3D_i65hq")
+size = Vector3(0.025, 0.5, 0.025)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_v7l06"]
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 2.5
+initial_velocity_max = 3.5
+gravity = Vector3(0, -6, 0)
+collision_mode = 1
+collision_bounce = 0.35
+color_ramp = ExtResource("3_8rxlx")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_84uvy"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_a368r"]
+material = SubResource("StandardMaterial3D_84uvy")
+radius = 0.035
+height = 0.07
+radial_segments = 8
+rings = 4
+
+[node name="Rain" type="Node3D" unique_id=1234443579]
+script = ExtResource("1_6ust0")
+preview_loop = false
+
+[node name="Drops" type="GPUParticles3D" parent="." unique_id=1080621866]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+emitting = false
+amount = 96
+sub_emitter = NodePath("../Splash")
+lifetime = 1.1
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-5, -7, -4, 10, 9, 8)
+process_material = SubResource("ParticleProcessMaterial_xt8q7")
+draw_pass_1 = SubResource("BoxMesh_xa7ko")
+
+[node name="Ground" type="GPUParticlesCollisionBox3D" parent="." unique_id=2030200078]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+size = Vector3(10, 2, 10)
+
+[node name="Splash" type="GPUParticles3D" parent="." unique_id=1665792063]
+emitting = false
+amount = 64
+lifetime = 0.35
+use_fixed_seed = true
+seed = 7270
+visibility_aabb = AABB(-8, -3, -8, 16, 14, 16)
+process_material = SubResource("ParticleProcessMaterial_v7l06")
+draw_pass_1 = SubResource("SphereMesh_a368r")
+metadata/sub_emitter_only = true

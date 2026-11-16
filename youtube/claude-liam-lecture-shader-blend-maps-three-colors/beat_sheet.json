@@ -1,0 +1,753 @@
+{
+  "metadata": {
+    "slug": "claude-liam-lecture-shader-blend-maps-three-colors",
+    "title": "Blend Maps: Three Colors",
+    "playlist": "Godot Shader Techniques",
+    "series_title": "Godot Shader Techniques",
+    "lecture_opening_description": "Read blend maps without assuming RGB naming order.",
+    "skill": "lecture",
+    "style_preset": "lecture",
+    "channel": "claude-liam",
+    "persona": "Liam (in for Bear)",
+    "voice_kokoro": "am_onyx",
+    "voice": "am_onyx",
+    "engine": "kokoro",
+    "palette": "claude",
+    "register": "Teardown",
+    "clock": "narration",
+    "fps": 24,
+    "aspect_ratio": "16:9",
+    "width": 3840,
+    "height": 2160,
+    "source_doc": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+    "caption_policy": "none",
+    "tags": [
+      "Godot",
+      "shaders",
+      "game development"
+    ],
+    "status": "authored; audio and film rendering pending"
+  },
+  "beats": [
+    {
+      "beat_id": "BOPEN",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "CARD",
+      "narration_text": "Godot Shader Techniques. Blend Maps: Three Colors. Read channel-weighted color mixing without assuming RGB naming order.",
+      "estimated_duration_s": 6.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "own",
+        "template": "lecture-title-slide-16x9",
+        "narration_contract": "playlist-title-summary-v1",
+        "motion": "hold",
+        "visual_intent": "Professor Bear portrait, title, narrator credit and learning payoff",
+        "show": [
+          {
+            "at": 0,
+            "event": "Complete portrait and title card visible immediately"
+          }
+        ]
+      },
+      "actual_duration_s": 7.829333,
+      "audio_file": "mp3/beat-BOPEN.mp3"
+    },
+    {
+      "beat_id": "BIDEA",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Aloha. This is Liam, in for Bear. The key correction is that the code defines the channel mapping. We will trace the code, inspect its output, and test where the model stops working.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Correct the misconception to the actual shader behavior",
+        "show": [
+          {
+            "at": 0,
+            "event": "Type the initial misconception"
+          },
+          {
+            "at": 0.55,
+            "event": "Correct the misconception to the actual shader behavior"
+          }
+        ],
+        "motion_claim": "Correct the misconception to the actual shader behavior",
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "For this shader,\nthe channels follow the color names.",
+            "triggerWords": "the channels follow the color names",
+            "replacementWords": "the code defines the channel mapping",
+            "fontSize": 64,
+            "charMs": 22,
+            "seed": "claude-liam-lecture-shader-blend-maps-three-colors",
+            "banner": "",
+            "durationSeconds": 11.082667
+          }
+        }
+      },
+      "lead_silence_s": 0.8,
+      "qc": {
+        "sparse_by_design": true,
+        "sparse_reason": "The correction is the opening visual mechanism."
+      },
+      "actual_duration_s": 11.082667,
+      "audio_file": "mp3/beat-BIDEA-padded.wav"
+    },
+    {
+      "beat_id": "BDEFS",
+      "act": "Opening",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Three terms. Weight: A multiplier applied to a contribution. Channel: A separately readable texture component. Blend map: A texture whose components choose mixture weights.",
+      "estimated_duration_s": 10.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal Blend map",
+        "show": [
+          {
+            "at": 0.0,
+            "event": "Reveal Weight"
+          },
+          {
+            "at": 0.3333333333333333,
+            "event": "Reveal Channel"
+          },
+          {
+            "at": 0.6666666666666666,
+            "event": "Reveal Blend map"
+          }
+        ],
+        "motion_claim": "Reveal Blend map",
+        "remotion": {
+          "pattern": "ClaudeDefinitions",
+          "props": {
+            "title": "Terms In This Lecture",
+            "terms": [
+              {
+                "term": "Weight",
+                "meaning": "A multiplier applied to a contribution"
+              },
+              {
+                "term": "Channel",
+                "meaning": "A separately readable texture component"
+              },
+              {
+                "term": "Blend map",
+                "meaning": "A texture whose components choose mixture weights"
+              }
+            ],
+            "durationSeconds": 10.112
+          }
+        }
+      },
+      "actual_duration_s": 10.112,
+      "audio_file": "mp3/beat-BDEFS.mp3"
+    },
+    {
+      "beat_id": "B01",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The blend texture stores weights. Its channels do not have to be the final visible colors. The material supplies three separate colors that those weights will combine.",
+      "estimated_duration_s": 11.25,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: texture(blend_map, UV)",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Trace The Model. Read Weights"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: texture(blend_map, UV)"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: texture(blend_map, UV)",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Trace The Model",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 r = -reflect(e, n);\n\tvec3 blend = texture(blend_map, UV).rgb;\n\tvec3 final_color = shader_color * blend.r + blended_color * blend.b + third_color * blend.g;",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 9.450667
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 44,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.450667,
+      "audio_file": "mp3/beat-B01.mp3"
+    },
+    {
+      "beat_id": "B02",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Read the expression carefully. Red weights shader color. Blue weights blended color. Green weights third color. The second and third names do not follow the usual red, green, blue reading order.",
+      "estimated_duration_s": 12.92,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 final_color",
+        "show": [
+          {
+            "at": 0,
+            "event": "Map Channels Explicitly"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 final_color"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 final_color",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Map Channels Explicitly",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 blend = texture(blend_map, UV).rgb;\n\tvec3 final_color = shader_color * blend.r + blended_color * blend.b + third_color * blend.g;\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 11.008
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 45,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.008,
+      "audio_file": "mp3/beat-B02.mp3"
+    },
+    {
+      "beat_id": "B03",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "A pure red texel has a red weight of one and the other weights zero. Only the first color survives. Pure blue selects the second; pure green selects the third.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: shader_color * blend.r",
+        "show": [
+          {
+            "at": 0,
+            "event": "Use Pure Regions"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: shader_color * blend.r"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: shader_color * blend.r",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Use Pure Regions",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 blend = texture(blend_map, UV).rgb;\n\tvec3 final_color = shader_color * blend.r + blended_color * blend.b + third_color * blend.g;\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 9.152
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 45,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 9.152,
+      "audio_file": "mp3/beat-B03.mp3"
+    },
+    {
+      "beat_id": "B04",
+      "act": "Trace The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Intermediate channel values create mixtures. This expression simply adds weighted colors. It does not divide by the sum of weights, so arbitrary maps can make the mixture brighter or darker.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 final_color",
+        "show": [
+          {
+            "at": 0,
+            "event": "Mix The Boundaries"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 final_color"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 final_color",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Mix The Boundaries",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "\tvec3 blend = texture(blend_map, UV).rgb;\n\tvec3 final_color = shader_color * blend.r + blended_color * blend.b + third_color * blend.g;\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 10.773333
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 45,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 10.773333,
+      "audio_file": "mp3/beat-B04.mp3"
+    },
+    {
+      "beat_id": "B05",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "Watch the first material color change from red toward yellow. Only regions controlled by the blend map's red channel respond directly. The blue and green selections retain their own colors.",
+      "estimated_duration_s": 12.5,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Play the controlled parameter demonstration",
+        "show": [
+          {
+            "at": 0,
+            "event": "Act: Test The Model. Change One Paint"
+          },
+          {
+            "at": 0.18,
+            "event": "Play the controlled parameter demonstration"
+          }
+        ],
+        "motion_claim": "Play the controlled parameter demonstration",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Test The Model",
+            "videoAspect": 1.7777777777777777,
+            "layout": "video",
+            "code": "",
+            "codeFile": "",
+            "cues": [],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Controlled Godot demo",
+            "video": "shader-lesson-captures/13_blended.mp4",
+            "durationSeconds": 16.0
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 18,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "minimum_duration_s": 16.0,
+      "capture_duration_s": 16.0,
+      "actual_duration_s": 16.0,
+      "audio_file": "mp3/beat-B05-padded.wav"
+    },
+    {
+      "beat_id": "B06",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The combined base color is multiplied by diffuse plus ambient lighting. Rim and highlight are added separately. Color selection and surface illumination remain distinguishable parts of the calculation.",
+      "estimated_duration_s": 11.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: ALBEDO =",
+        "show": [
+          {
+            "at": 0,
+            "event": "Light After Mixing"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: ALBEDO ="
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: ALBEDO =",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Light After Mixing",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 total_spec = fresnel + specular;\n\tALBEDO = (lambert + ambient_color) * final_color + total_spec;\n}",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 11.904
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 52,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.904,
+      "audio_file": "mp3/beat-B06.mp3"
+    },
+    {
+      "beat_id": "B07",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "The blend sampler is not marked source color because its channels are weights. Treating those intermediate numbers as display colors would change the mixture. The three actual paint uniforms are marked as colors.",
+      "estimated_duration_s": 13.75,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: uniform sampler2D blend_map",
+        "show": [
+          {
+            "at": 0,
+            "event": "Avoid Color Conversion"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: uniform sampler2D blend_map"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: uniform sampler2D blend_map",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Avoid Color Conversion",
+            "videoAspect": 2.064516129032258,
+            "layout": "side",
+            "code": "uniform vec3 specular_color : source_color = vec3(1.0);\nuniform sampler2D blend_map : hint_default_white, filter_linear_mipmap, repeat_enable;\nvarying vec3 world_normal;",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 11.648
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 26,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 11.648,
+      "audio_file": "mp3/beat-B07.mp3"
+    },
+    {
+      "beat_id": "B08",
+      "act": "Test The Model",
+      "lane": "remotion",
+      "proof_gate": "SHOW",
+      "narration_text": "When a region changes the wrong paint, inspect the channel mapping before repainting the texture. The shader is authoritative: texture names and familiar RGB ordering cannot tell you the mapping by themselves.",
+      "estimated_duration_s": 13.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Highlight the exact source expression: vec3 final_color",
+        "show": [
+          {
+            "at": 0,
+            "event": "Check The Contract"
+          },
+          {
+            "at": 0.18,
+            "event": "Highlight the exact source expression: vec3 final_color"
+          }
+        ],
+        "motion_claim": "Highlight the exact source expression: vec3 final_color",
+        "remotion": {
+          "pattern": "ShaderLab",
+          "props": {
+            "title": "Check The Contract",
+            "videoAspect": 2.064516129032258,
+            "layout": "code",
+            "code": "\tvec3 blend = texture(blend_map, UV).rgb;\n\tvec3 final_color = shader_color * blend.r + blended_color * blend.b + third_color * blend.g;\n\tvec3 lambert = vec3(clamp(dot(l, n), 0.0, 1.0));",
+            "codeFile": "13_blended.gdshader (excerpt)",
+            "cues": [
+              {
+                "at": 0,
+                "lines": []
+              },
+              {
+                "at": 0.18,
+                "lines": [
+                  2
+                ]
+              }
+            ],
+            "caption": "Godot · recorded evidence",
+            "videoLabel": "Godot output",
+            "video": "shader-lesson-captures/13_blended.jpg",
+            "durationSeconds": 12.224
+          }
+        }
+      },
+      "evidence": {
+        "shader": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/project-snapshot/shaders/13_blended.gdshader",
+        "sha256": "3ddac8ccf8bbab7e0bd5a3e752fe4ca6859e41142097792d671f09d9e835ced8",
+        "line": 45,
+        "numeric_review": "/Users/bear/Documents/CoWork/bear-textbooks/books/csye-7270-building-virtual-environments/youtube/_shader-review-2026-10-16/REVIEW.md"
+      },
+      "actual_duration_s": 12.224,
+      "audio_file": "mp3/beat-B08.mp3"
+    },
+    {
+      "beat_id": "BVDT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Let’s recap with Claude. Texture channels supply mixture weights. The order here is red, blue, then green. Weights are not normalized by this shader. Lighting is applied after choosing the base color. Liam, in for Bear.",
+      "estimated_duration_s": 15.0,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Show remaining recap conclusions",
+        "show": [
+          {
+            "at": 0,
+            "event": "Recap the source-backed mechanism"
+          },
+          {
+            "at": 0.5,
+            "event": "Show remaining recap conclusions"
+          }
+        ],
+        "motion_claim": "Show remaining recap conclusions",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Blend Maps: Three Colors",
+            "artifactHeading": "What We Established",
+            "artifactLines": [
+              "Texture channels supply mixture weights.",
+              "The order here is red, blue, then green.",
+              "Weights are not normalized by this shader.",
+              "Lighting is applied after choosing the base color."
+            ],
+            "lectureLayout": true,
+            "durationSeconds": 12.553333
+          }
+        }
+      },
+      "lead_silence_s": 0.5,
+      "actual_duration_s": 12.553333,
+      "audio_file": "mp3/beat-BVDT-padded.wav"
+    },
+    {
+      "beat_id": "BHTF",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Set the first color to yellow, the second to cyan, and the third to magenta. Predict the output in pure red, blue, and green regions of the blend map. Then inspect the shader's channel order. Check two things: Red selects the first color; blue selects the second. Green selects the third color.",
+      "estimated_duration_s": 21.67,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Reveal the two checks",
+        "show": [
+          {
+            "at": 0,
+            "event": "The complete exercise prompt types"
+          },
+          {
+            "at": 0.8,
+            "event": "Reveal the two checks"
+          }
+        ],
+        "motion_claim": "Reveal the two checks",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "largeText": true,
+            "topic": "GODOT · YOUR TURN",
+            "segment": "Predict Then Test",
+            "command": "Set the first color to yellow, the second to cyan, and the third to magenta. Predict the output in pure red, blue, and green regions of the blend map. Then inspect the shader's channel order. Check two things: Red selects the first color; blue selects the second. Green selects the third color.",
+            "runningText": "Try this in Godot",
+            "output": [
+              "Red selects the first color; blue selects the second.",
+              "Green selects the third color."
+            ],
+            "folderLabel": "@NikBearBrown",
+            "durationSeconds": 15.808
+          }
+        }
+      },
+      "actual_duration_s": 15.808,
+      "audio_file": "mp3/beat-BHTF.mp3"
+    },
+    {
+      "beat_id": "BOUT",
+      "act": "Closing",
+      "lane": "bookend",
+      "proof_gate": "SHOW",
+      "narration_text": "Blend Maps: Three Colors. At Nik Bear Brown.",
+      "estimated_duration_s": 3.33,
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "shot": {
+        "type": "REMOTION",
+        "source": "own",
+        "visual_intent": "Exact title, @NikBearBrown and seeded mascot",
+        "show": [
+          {
+            "at": 0,
+            "event": "Exact title, @NikBearBrown and seeded mascot"
+          }
+        ],
+        "motion_claim": "Exact title, @NikBearBrown and seeded mascot",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Blend Maps: Three Colors",
+            "slug": "claude-liam-lecture-shader-blend-maps-three-colors",
+            "lectureLayout": true,
+            "durationSeconds": 4.349333
+          }
+        }
+      },
+      "kind": "outro_voice",
+      "tail_silence_s": 1.0,
+      "actual_duration_s": 4.349333,
+      "audio_file": "mp3/beat-BOUT-padded.wav"
+    }
+  ]
+}

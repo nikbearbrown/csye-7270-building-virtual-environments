@@ -1,0 +1,413 @@
+{
+ "deck": "04",
+ "opening_summary": "Twenty-six terms for getting an AI coding agent to change a Godot game, and for proving that it did. With the exact term, you can ask for a change that a check can decide.",
+ "opening_description": "26 terms for agents, headless runs and evidence.",
+ "idea": {
+  "narration": "Hallo. This is Liam, in for Bear. Newcomers often think that when the agent says done, the change works. That does not follow. Done is a claim. Evidence is a check you run yourself, like a headless test that ends with exit code zero. This film goes through the terms for instructing and checking an agent, each one shown, so you can name the exact one.",
+  "text": "The agent said done,\nso the change works.",
+  "triggerWords": "so the change works",
+  "replacementWords": "so I have a claim to check"
+ },
+ "beats": [
+  {
+   "slide": 1,
+   "step": 1,
+   "narration": "This table is the map. Twenty-six terms in four groups, every one about getting an agent to change a Godot game and checking that it did. The first group is the four tools. Walker, repository, commit and diff. Who does what, and how changes are remembered.",
+   "figures": [
+    "26",
+    "four groups"
+   ]
+  },
+  {
+   "slide": 1,
+   "step": 2,
+   "narration": "The second group is running without a window. CLI and shell, flag, headless, exit code, timeout, hang, import and cache. These terms say how a script runs the game and judges it.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 3,
+   "narration": "The third group is telling the agent. Instruction file, spec, checkable instruction, permission prompt, allow rule and sandbox. These terms say what the agent knows, and what it may touch.",
+   "figures": []
+  },
+  {
+   "slide": 1,
+   "step": 4,
+   "narration": "The fourth group is proving it. Claim versus evidence, regression test, deterministic, flaky, game time, fixed frame rate, pinned time step, and text versus binary scene. These terms say how you know a change is real.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 1,
+   "narration": "This is the Walker loop, six stages in a ring, with a red dot travelling round. Walker is the course's working method and its files, not a program you run. Every change goes round the same loop. Game brief, build, playtest, inspect, revise, export. For example, to add a coin to a platformer, you put the coin in the brief, have the agent build it, play it, inspect what changed, revise, and only then export.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 2,
+   "narration": "The ring gives way to a line of three commits. A repository is a project folder together with its full version history. A commit is one saved snapshot in that history. For example, your platformer's folder, with its scenes, scripts and art and every saved version, is the repository. Saving it right after the finish flag first works, with a message that says so, is one commit.",
+   "figures": []
+  },
+  {
+   "slide": 2,
+   "step": 3,
+   "narration": "Each commit now shows how many lines it changed. In this made-up example, thirty-three lines across three commits. A diff is the exact lines that changed between two versions. A commit is a snapshot, and a diff is the difference between two of them. It proves what changed, not that the change works. For example, after the agent raises the player's run speed in the tuning script, the diff shows one line, the old speed taken out and the new speed put in.",
+   "figures": [
+    "33 lines changed across 3 commits"
+   ]
+  },
+  {
+   "slide": 3,
+   "step": 1,
+   "narration": "This is one typed command in a terminal. The program is Godot, followed by its options. CLI and shell. A CLI, a command-line interface, is a program you drive by typing commands. The shell, such as zsh or bash, is the program that takes the line you type and starts it. For example, instead of pressing play in the editor, you type one line that runs your platformer's test script, and the shell hands that line to Godot.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 2,
+   "narration": "Two flags are now picked out in red. A flag is an option on one command that changes how that command runs. The headless flag turns the window off, and the quit flag stops Godot when it is done. The path flag carries a value, the project folder. For example, adding the import flag to a command tells Godot to convert every asset of your freshly cloned platformer, wait until it is done, and then quit.",
+   "figures": []
+  },
+  {
+   "slide": 3,
+   "step": 3,
+   "narration": "On the left, a game in a window. On the right, the same run headless, printing lines instead, down to twenty-five checks, zero failures. Headless means running with no window or display at all. Physics and scripts still run, but nothing is drawn. The headless flag is one flag, and headless is the state it gives you. For example, the agent runs your platformer's mechanics test headless and checks the printed results, without one frame shown.",
+   "figures": [
+    "25 checks, 0 failures"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 1,
+   "narration": "This is a time chart of runs against a thirty second timeout. In this made-up example, the run lengths are illustrative. An exit code is the number a program hands back when it finishes. Zero means success, and anything else means something went wrong. Run A finishes early with exit code zero. For example, your platformer's test script quits with zero when every check passes and with another number when any check fails, so a script knows the verdict.",
+   "figures": [
+    "30 S TIMEOUT",
+    "exit code 0"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 2,
+   "narration": "Two more runs appear. Run B finishes with exit code one, a failure. Run C keeps going past the dotted line, with no exit code. A hang is a run that never finishes on its own, so it never returns a number, and a script waiting for one waits for ever. A failure finishes and tells you it went wrong. For example, a test script hits an error before it reaches its quit line, and headless Godot just sits there, with no window to shut.",
+   "figures": [
+    "exit code 1"
+   ]
+  },
+  {
+   "slide": 4,
+   "step": 3,
+   "narration": "The dotted line is now labelled, timeout thirty seconds, and run C is stopped there. A timeout is a limit after which a run is stopped. A stopped run counts as a failure, never as a success. For example, you wrap your platformer's headless test in a time limit, so if a broken enemy script keeps the test from ever quitting, the limit ends the run and you get a failure instead of an endless wait.",
+   "figures": [
+    "timeout 30 s",
+    "stopped at 30 s"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 1,
+   "narration": "Here a source picture, a file named hero dot p n g, becomes an imported copy. Import means converting a source file into the form the engine actually uses. The copy is made from version one of the source, so the two match. For example, when you save a model exported from Blender into your project, Godot imports it, and the game runs on that imported copy, not on the file you exported.",
+   "figures": [
+    "source v1",
+    "made from v1"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 2,
+   "narration": "Now the source is edited to version two, but the copy is still made from version one, and the red label says stale. A cache is a stored result, reused to save time, and it can go stale. Import converts a file, and the cache is where that result is kept. For example, you repaint the coin sprite, and until it is imported again, the copy the engine holds still shows the old coin.",
+   "figures": [
+    "source v2",
+    "made from v1"
+   ]
+  },
+  {
+   "slide": 5,
+   "step": 3,
+   "narration": "The copy is imported again, now made from version two, and the label reads fresh again. Re-importing brings the cache back in line with the source. In a headless run, import first, or the engine uses whatever the cache holds. For example, after you clone your platformer onto a new laptop, you run Godot once with the import flag before any test, so the cache is built from the files you actually have.",
+   "figures": [
+    "made from v2"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 1,
+   "narration": "This list shows six actions an agent tries, and in this made-up example, every one asks you first. A permission prompt is a question asking you to approve one action before it happens. Six prompts out of six is safe, but you click six times, and tired people click yes. For example, the agent wants to edit the player script in your platformer, and a prompt asks whether to allow that one edit.",
+   "figures": [
+    "6 of 6"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 2,
+   "narration": "With an allow rule for the test, three rows now run without asking, and the prompts drop to three of six. An allow rule is a saved permission that lets a command you trust run unasked. It is pre-approved, and it covers only what it names. For example, you add an allow rule for the command that runs your platformer's headless test, so the agent can rerun it after every change, while edits to the level still ask.",
+   "figures": [
+    "3 of 6"
+   ]
+  },
+  {
+   "slide": 6,
+   "step": 3,
+   "narration": "Now a sandbox surrounds the project. Deleting the Documents folder and writing outside the project are blocked outright, and one prompt is left. A sandbox is a restricted space, with walls the agent cannot cross, so a mistake cannot reach the rest of the machine. An allow rule approves a command, and a sandbox sets the walls. For example, an agent in a sandbox can write your game's scene files inside the project folder, but not Godot's settings folder outside it.",
+   "figures": [
+    "1 of 6"
+   ]
+  },
+  {
+   "slide": 7,
+   "step": 1,
+   "narration": "This box holds the project rules the agent takes in first. An instruction file is a standing file of rules, such as CLAUDE dot m d or AGENTS dot m d, so you do not repeat them every session. These rules say run headless, pin the time step, ask before changing the tuning script, and report every exit code. For example, one line in your platformer's instruction file saying how to run the tests stops the agent running them the wrong way.",
+   "figures": []
+  },
+  {
+   "slide": 7,
+   "step": 2,
+   "narration": "Two ways to ask for one change. A spec is a written description of what must be built. A checkable instruction is written so a check can pass or fail. Make the ball faster is vague, and no check can decide it. Change speed from one hundred sixty to one hundred ninety-two, then run the mechanics test, is checkable, and the run shows two of twenty-five checks fail. For example, a spec for your level lists two gaps, a row of spikes and a finish flag.",
+   "figures": [
+    "160.0",
+    "192.0",
+    "2 of 25"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 1,
+   "narration": "Two balls at a speed of one hundred pixels per second, one drawn at thirty frames a second, one at one hundred forty-four. Both cover one hundred pixels in a second, because the code uses delta, the time since the last frame. Game time is the simulation's own clock, not the wall clock. A frame is one image drawn, and a second is game time. For example, a pinned test can play your whole level in game time while barely a moment passes on the wall clock.",
+   "figures": [
+    "100 PX/S",
+    "30 frames a second",
+    "144 frames a second",
+    "100 px"
+   ]
+  },
+  {
+   "slide": 8,
+   "step": 2,
+   "narration": "The same twenty-five check test, timed two ways. Real time, twenty-two point four seconds. With the fixed f p s flag at sixty, zero point three four seconds, about sixty-six times faster, with identical results. A fixed frame rate makes every frame count as the same amount of game time, without waiting for the wall clock. A pinned time step forces every simulation step to one length. For example, the agent runs your platformer's test at a fixed frame rate, so each step is the same length on any machine.",
+   "figures": [
+    "25-CHECK",
+    "22.4 s",
+    "--fixed-fps 60",
+    "0.34 s",
+    "66 times faster"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 1,
+   "narration": "This is the evidence ladder, built one rung at a time from the bottom. A claim says what happened, and evidence is proof that it did. Rung one is the agent saying done. That proves only that a message exists, and nothing about the game. For example, the agent reports that the coin now plays a sound when the player touches it. Until a check or a playtest shows it, that report is a claim.",
+   "figures": [
+    "Rung 1"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 2,
+   "narration": "Rung two is a git diff. It proves exactly which lines changed, but not that the change works. That is a step up from a claim, and still short of proof. For example, the diff shows the agent added a jump sound to the player script, and you still do not know whether the sound plays when you jump.",
+   "figures": [
+    "Rung 2"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 3,
+   "narration": "Rung three is a clean import and a check-only parse. The project loads and its scripts parse, so nothing is broken in the writing of the code. It still may do the wrong thing. For example, an enemy patrol script that parses cleanly can still walk the enemy straight off the edge of its platform.",
+   "figures": [
+    "Rung 3"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 4,
+   "narration": "Rung four, a headless test passes with the step pinned. Three terms join. Deterministic means the same inputs always give the same result. Flaky means a test passes sometimes and fails sometimes with no change. A regression test guards a behaviour that worked before. For example, the Pong test that the ball reaches the ceiling is a regression test. With the step pinned it gave the same numbers every run, deterministic. In real time it sometimes failed with nothing changed, flaky.",
+   "figures": [
+    "Rung 4"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 5,
+   "narration": "Rung five, you played it. That proves what one person feels, on one machine, and nothing about other people or other machines. For example, you play your level and the jump over the second gap feels right to you, while a friend on a slower laptop may still find it too hard.",
+   "figures": [
+    "Rung 5"
+   ]
+  },
+  {
+   "slide": 9,
+   "step": 6,
+   "narration": "Rung six, the exported build runs on the target machine. It proves the game survives packaging, the last proof on the ladder, though not that anyone wants to play it. For example, you export your platformer, and it starts and plays on a classmate's computer that has never had Godot installed.",
+   "figures": [
+    "Rung 6"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 1,
+   "narration": "Two diffs of one change, run speed from one hundred sixty to one hundred ninety-two. On the left, a text scene file, where the diff shows the old line and the new one. On the right, a binary file, where the diff only says the files differ. Text versus binary scene. A readable scene diffs cleanly, and an opaque one does not. For example, Godot saves your level as a text scene, so when the agent moves a platform, you see the one changed position line.",
+   "figures": [
+    "160",
+    "192"
+   ]
+  },
+  {
+   "slide": 10,
+   "step": 2,
+   "narration": "A red line adds the regression test. A regression test guards a behaviour that worked before, so after every change you run it again. If the faster run speed breaks something that used to work, a check fails. For example, in the course's Walker platformer, raising the run speed made the check that the player comes to rest when you let go of the keys fail, a behaviour nobody meant to change.",
+   "figures": []
+  },
+  {
+   "slide": 11,
+   "step": 1,
+   "narration": "Four look-alike pairs, one at a time. Claim and evidence. A claim is someone saying it works, like the word done. Evidence is a check that shows it works, like exit code zero with twenty-five of twenty-five checks passing.",
+   "figures": [
+    "exit 0, 25/25"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 2,
+   "narration": "Commit and push. A commit saves a snapshot on your machine, and it stays there. A push sends your commits to a remote repository, so they reach it too. For example, you commit the new level, then push it so your teammate's copy can get it.",
+   "figures": []
+  },
+  {
+   "slide": 11,
+   "step": 3,
+   "narration": "Hang and failure. A hang never finishes, and here it is still running at sixty seconds. A failure finishes with a bad exit code, here exit one. It ended, and it told you.",
+   "figures": [
+    "60 s",
+    "exit 1"
+   ]
+  },
+  {
+   "slide": 11,
+   "step": 4,
+   "narration": "Deterministic and flaky. Deterministic means same inputs, same result, eight of eight runs alike. Flaky means the same inputs give results that vary, so some runs fail with no change at all.",
+   "figures": [
+    "8 of 8"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 1,
+   "narration": "Each vague request becomes an exact instruction, beside a chart. Check it works becomes, run the headless test with the fixed f p s flag at sixty, and accept only exit code zero. Done, against exit code zero, twenty-five of twenty-five. Only the second can be checked.",
+   "figures": [
+    "--fixed-fps 60",
+    "exit code 0",
+    "25 of 25"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 2,
+   "narration": "Make sure it does not hang becomes, stop the run after thirty seconds, and a timeout counts as a failure. A run that ends at twenty-two seconds passes. A hang is stopped at thirty seconds and fails. The timeout turns waiting into an answer.",
+   "figures": [
+    "30 seconds",
+    "22 s",
+    "30 s"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 3,
+   "narration": "Keep the agent away from my files becomes, allow only the test command, and block writes outside the project. In the chart, read, edit and run test are allowed, while delete and writing outside are blocked. Three allowed, two blocked.",
+   "figures": [
+    "3 allowed, 2 blocked"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 4,
+   "narration": "The test is too slow becomes, pin the time step. Twenty-two point four seconds in real time becomes zero point three four seconds, about sixty-six times faster.",
+   "figures": [
+    "22.4 s",
+    "0.34 s",
+    "66 times faster"
+   ]
+  },
+  {
+   "slide": 12,
+   "step": 5,
+   "narration": "Make the player faster becomes, change run speed from one hundred sixty to one hundred ninety-two, then run the mechanics test, twenty-five checks. Two of the twenty-five fail after the change. A one-number change can break two checks.",
+   "figures": [
+    "160.0",
+    "192.0",
+    "25 checks",
+    "2 of 25"
+   ]
+  },
+  {
+   "slide": 13,
+   "step": 1,
+   "narration": "This is a checklist of six questions to ask before you trust an agent's change. First, did the run end with an exit code, or did a timeout stop it? A stopped run is a failure, not a pass.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 2,
+   "narration": "Second, was it headless, with the time step pinned? A run with real-time steps may not repeat the same way twice.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 3,
+   "narration": "Third, did you import first, so the cache is not stale? Otherwise the engine may be running an old copy of your art or your models.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 4,
+   "narration": "Fourth, is the command allowed, and is everything else blocked? That means an allow rule for the test, and a sandbox around the project.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 5,
+   "narration": "Fifth, is the instruction checkable, with a number and a test? If no check can decide it, it is still a vague request.",
+   "figures": []
+  },
+  {
+   "slide": 13,
+   "step": 6,
+   "narration": "Sixth, which rung of the evidence ladder are you standing on? Then say it exactly. Not check it works, but exit code zero with the fixed f p s flag at sixty.",
+   "figures": [
+    "exit code 0",
+    "--fixed-fps 60"
+   ]
+  }
+ ],
+ "recap_lines": [
+  "Walker is a loop, and git keeps each lap as a commit.",
+  "A diff shows what changed, but not that the change works.",
+  "A headless run has no window, so a script judges the result.",
+  "A hang never ends, so a timeout stops it and counts a failure.",
+  "An allow rule pre-approves a command, and a sandbox sets the walls.",
+  "A claim says it works, and evidence is a check you can run."
+ ],
+ "your_turn": {
+  "segment": "Name The Term, Prove It",
+  "command": "Quiz me on terms for working with a coding agent on a Godot game. Give me short game-making cases, one at a time. Use the terms commit, diff, flag, headless, hang, timeout, allow rule, sandbox, flaky and deterministic. For each case I must name the exact term and say why its look-alike is wrong. Hold back the answer until I reply, then tell me if I was right.",
+  "checks": [
+   "Check: each case is a game-making situation, and the answer waits for you.",
+   "Check: you named the exact term and why its look-alike does not fit."
+  ]
+ },
+ "say_as": [
+  {
+   "term": "CLI",
+   "say": "C L I"
+  }
+ ],
+ "deck_problems": [
+  "Slide 2 step 3: the middle commit is labelled '1 lines changed'; it should read '1 line changed'.",
+  "Slide 4 carries the badge Computed, but its own note says the run lengths are illustrative and the 30 s limit is an example. The badge should be Illustrative data. The narration calls the run lengths made-up.",
+  "Slide 6 step 2 is headed 'WITH AN ALLOW RULE FOR THE TEST' and the caption says the allow rule lets 'the one command you trust run unasked', but 'read a script' also flips from 'asks you' to 'runs' (renderPerm marks rows 0, 2 and 4 as ok). The drop from 6 to 3 prompts depends on that unexplained change. The six actions also list 'run the headless test' twice.",
+  "Slide 12 step 3: the instruction says 'Allow only the test command', but the chart shows read, edit and run test all allowed ('3 allowed, 2 blocked'). On slide 6, even inside the sandbox, the edit still 'asks you'.",
+  "Slide 7 step 2 pairs the vague 'make the ball faster' (the Pong ball) with the Chapter 1 change 'change speed 160.0 to 192.0', which is the walker-jumpman player's run speed in tuning.gd, not a ball. Slide 12 step 5 says 'make the player faster' correctly. The checkable version also says 'and pass the mechanics test' while its own result is 2 fails, and Chapter 1's prompt told the agent not to try to make a failing check pass; slide 12's wording 'then run the mechanics test' is the accurate one.",
+  "Slide 10 step 1 shows the run-speed change as a line 'speed = 160.0' inside a .tscn scene beside position and visible. In walker-jumpman the speed lives in tuning.gd, a resource created in code, not in a scene file. As a conceptual picture it may mislead.",
+  "Slide 10 step 2: the caption 'A regression test then protects the behaviour you changed' conflicts with the definition on the same slide, 'guards a behaviour that worked before'. Regression test is also introduced twice with the same definition, on slide 9 step 4 and slide 10 step 2.",
+  "Slide 8 step 2 and slide 12 step 4 use the walker-jumpman timings (22.4 s real-time, 0.34 s pinned), and slide 8's caption says that with the step pinned the test 'then runs the same way every time'. Chapter 1 says walker-jumpman is immune to the time trap and gave identical results with and without the flag, so the pin bought speed, not repeatability, for this test. The Pong test in Chapter 0 is the case where pinning fixed flakiness.",
+  "Slide 3 step 3: the headless output mixes Pong lines ('ball hits wall', 'score = 1') with '25 checks, 0 failures', the walker-jumpman mechanics-test count; Chapter 0's Pong test has ten checks.",
+  "Slide 8: 'Fixed frame rate' is defined as 'Rendering locked to a set number of frames a second', but Chapter 0 says --fixed-fps forces each frame to be exactly 1/fps of game time and disables real-time sync; in a headless run nothing is rendered. The definition matches the course glossary, so the glossary row may want the same fix.",
+  "Slide 12 step 4: the line '22.4 s real-time becomes 0.34 s' wraps so the unit 's' sits alone on its own line.",
+  "Title slide speaker note says 'Deck 2 of the topic order' while the file and film are deck 04."
+ ]
+}

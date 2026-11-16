@@ -1,0 +1,66 @@
+{
+  "id": 14,
+  "slug": "car-paint-tuning-reflections",
+  "title": "Car Paint: Tuning Reflections",
+  "objective": "Separate reflection controls from the two specular highlight lobes.",
+  "wrong": "car paint is one shine control",
+  "right": "several contributions shape the finish",
+  "terms": {
+    "Reflection floor": "An added baseline in the rim weight",
+    "Contrast power": "An exponent applied to cubemap color",
+    "Lobe": "A concentrated reflection contribution"
+  },
+  "exercise": "Raise Fresnel offset while keeping intensity fixed, then compare the two specular powers. Explain which change adds front-facing reflection and which changes highlight width.",
+  "checks": [
+    "Offset allows a nonzero front-facing reflection weight.",
+    "The two powers shape separate highlight contributions."
+  ],
+  "recap": [
+    "Intensity scales the angle-based reflection term.",
+    "Offset adds a reflection baseline before lighting.",
+    "A power reshapes the cubemap color.",
+    "Two specular lobes contribute separate highlights."
+  ],
+  "beats": [
+    [
+      "Separate The Controls",
+      "fresnel_intensity",
+      "This shader extends a rim-weighted environment lookup. Intensity scales the angular part, while offset adds a baseline. The two controls are not interchangeable even when both make some regions brighter."
+    ],
+    [
+      "Give The Center Reflection",
+      "fresnel_offset",
+      "With zero offset, a point facing the camera has zero geometric rim weight. A positive offset lets an environment contribution survive there, still multiplied by the diffuse-plus-ambient lighting factor."
+    ],
+    [
+      "Reshape The Environment",
+      "pow(cube_map, vec3(reflection_contrast))",
+      "The contrast control raises each cubemap color component to a power. For components between zero and one, a power above one darkens intermediate values. This is an artistic operation, not a new reflection ray."
+    ],
+    [
+      "Two Highlight Lobes",
+      "specular_power2",
+      "Two powers operate on the same reflection-light alignment. Their independently colored contributions add together. A smaller exponent gives a broader lobe; a larger exponent gives a tighter one."
+    ],
+    [
+      "Raise The Offset",
+      "fresnel_offset",
+      "Watch the offset increase from zero to one half on the red demo material. Reflection appears more strongly on front-facing regions. The stored environment and the mesh remain the same."
+    ],
+    [
+      "Read The Sum",
+      "vec3 total_spec",
+      "The reflection contribution and both highlights are added to the diffuse base. This makes the controls easy to inspect, but the sum is not an energy-conserving model of layered automotive paint."
+    ],
+    [
+      "Types Matter",
+      "vec3(reflection_contrast)",
+      "Godot's vector power call uses a vector exponent here. The scalar contrast is explicitly expanded into three components. That is a language-porting detail, not an extra physical effect."
+    ],
+    [
+      "Tune With A Purpose",
+      "ALBEDO =",
+      "Tune each term against a visible goal: reflection at the center, environment contrast, a broad sheen, or a tight highlight. Calling everything shininess hides which calculation you actually changed."
+    ]
+  ]
+}

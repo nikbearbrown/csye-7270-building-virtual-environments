@@ -1,0 +1,13 @@
+HEADER godot 4.7.2-stable (official) | renderer forward_plus | adapter Apple M4 Pro (Apple9) | window (1280, 720)
+NOTE transfer curve measured (ALBEDO k/255 -> screen byte): 16:71 32:99 64:137 128:188 188:223 255:255 | monotone true | grey (r=g=b) true
+NOTE test textures carry WITH mip chains (the CPU reference reads level 0 only; --mips 1 turns them on)
+CHECK L08 08_normal_mapped | forward_plus | dome centre (flat: normal map says straight out) (uv 0.063, 0.438) px(371,303) N.L=0.45 N.E=0.95 | linear value (65,5,3) | expected screen (138,37,30), got (138,37,31), diff 1 byte(s) | PASS
+CHECK L08 08_normal_mapped | forward_plus | dome right side (+20 px: normal leans +tangent) (uv 0.103, 0.438) px(437,305) N.L=0.29 N.E=0.86 | linear value (22,19,19) | expected screen (83,78,78), got (83,78,78), diff 0 byte(s) | PASS
+CHECK L08 08_normal_mapped | forward_plus | dome left side (-20 px: leans -tangent) (uv 0.024, 0.438) px(298,303) N.L=0.59 N.E=0.97 | linear value (126,12,9) | expected screen (186,61,53), got (186,61,53), diff 0 byte(s) | PASS
+CHECK L08 08_normal_mapped | forward_plus | dome upper side (-20 rows: leans toward image-up = +binormal) (uv 0.063, 0.399) px(369,269) N.L=0.53 N.E=0.91 | linear value (135,22,19) | expected screen (192,83,77), got (193,83,77), diff 1 byte(s) | PASS
+CHECK L08 08_normal_mapped | forward_plus | dome lower side (+20 rows: leans down) (uv 0.063, 0.478) px(372,339) N.L=0.37 N.E=0.98 | linear value (4,1,1) | expected screen (32,11,11), got (32,11,11), diff 0 byte(s) | PASS
+CHECK L08 08_normal_mapped | forward_plus | full image: 17224 pixels (every 3-th in x and y; textured lesson: polar cap (|y| > 0.75) and a 2-texel band along checker-cell edges skipped (2428 px), where a sub-texel difference between the analytic and the mesh uv flips a pixel), 99.92% within 3 bytes, mean diff 0.52, worst 5 at (506, 220) | PASS
+CHECK L08 08_normal_mapped | forward_plus | perturbation of the normal (expected: right +tangent, left -tangent, up +binormal, down -binormal; GL map, green = up) | right: along tangent +0.66, along binormal -0.02 ; left: along tangent -0.68, along binormal -0.03 ; up: along tangent +0.02, along binormal +0.68 ; down: along tangent +0.02, along binormal -0.66
+CHECK L08 08_normal_mapped | forward_plus | DirectX-style map (green inverted) at the dome's upper side: GL map reads (193,83,77), DX map reads (29,3,3), reference for the DX map (29,3,3) | PASS
+SUMMARY L08 08_normal_mapped | forward_plus | checks passed 7, failed 0
+SUMMARY TOTAL | forward_plus | passed 7, failed 0

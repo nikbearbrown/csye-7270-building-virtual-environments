@@ -1,0 +1,274 @@
+1
+00:00:00,000 --> 00:00:08,760
+Trigonometry for Shaders. Learn what sine
+and cosine really do, then use them to
+send a moon around a planet and reveal a
+
+2
+00:00:08,810 --> 00:00:18,960
+Hallo. This is Liam, in for Bear. Most of
+us met trigonometry as triangles on paper,
+and forgot it. In a shader it does one
+
+3
+00:00:19,010 --> 00:00:34,600
+Five terms. An angle is an amount of turn.
+A radian is an angle measured so that a
+full turn is about six point two eight.
+
+4
+00:00:34,650 --> 00:00:46,080
+A moon circles a planet, and a meteor
+circles the moon. Nobody animated it by
+hand. In the shader, an angle goes in, and
+
+5
+00:00:46,130 --> 00:00:58,300
+Start with a triangle that has a right
+angle in one corner. Its longest side is
+the hypotenuse. Now pick another corner.
+
+6
+00:00:58,350 --> 00:01:10,550
+Here is the useful part. Fix the angle,
+and the ratio of any two sides stays
+fixed, whatever the size. At thirty
+
+7
+00:01:10,600 --> 00:01:23,140
+Those ratios have names. Opposite over
+hypotenuse is the sine. Adjacent over
+hypotenuse is the cosine. Opposite over
+
+8
+00:01:23,190 --> 00:01:35,040
+So sine and cosine are lookups. Hand one
+an angle, and it hands back a ratio. Sine
+of thirty degrees is one half. Cosine of
+
+9
+00:01:35,090 --> 00:01:45,510
+Now put that triangle inside a circle.
+Walk out from the middle at your angle
+until you reach the circle. The triangle's
+
+10
+00:01:45,560 --> 00:01:59,080
+Make the radius one and you have the unit
+circle. The hypotenuse is one, so dividing
+by one changes nothing. The opposite side
+
+11
+00:01:59,130 --> 00:02:11,220
+Godot's own manual says the same. Vector
+two has a function, from angle, that
+builds a point from an angle. The manual
+
+12
+00:02:11,270 --> 00:02:21,610
+Want a bigger circle? Multiply by the
+radius. Want it somewhere else? Add the
+center. So center plus radius times cosine
+
+13
+00:02:21,660 --> 00:02:34,410
+Try one by hand. Radius point six, angle
+thirty degrees. The first number is point
+six times cosine, about point five two.
+
+14
+00:02:34,460 --> 00:02:46,760
+One catch. Shaders measure angles in
+radians, not degrees. Lay one radius along
+the edge of the circle, and the angle it
+
+15
+00:02:46,810 --> 00:02:57,490
+Godot names the big ones. Pi is half a
+turn. Tau is a full turn, which is two pi.
+And the function radians converts degrees,
+
+16
+00:02:57,540 --> 00:03:09,970
+Skip the conversion and the shader still
+compiles. That is the trap. Thirty radians
+is almost five full turns, so sine of
+
+17
+00:03:10,020 --> 00:03:20,190
+Why is sine a wave? Plot the point's
+height against its angle as it goes round.
+The height climbs to one, falls through
+
+18
+00:03:20,240 --> 00:03:30,300
+Cosine is the across distance, and it
+draws the same wave, a quarter turn
+earlier. When one is at its peak, the
+
+19
+00:03:30,350 --> 00:03:41,370
+Now a shader. It runs once for each pixel,
+and U V says where that pixel is. Double
+it and subtract one, and the range becomes
+
+20
+00:03:41,420 --> 00:03:51,800
+The planet is a distance test. Length of p
+is how far a pixel sits from the middle.
+Under the radius, paint planet color. A
+
+21
+00:03:51,850 --> 00:04:03,810
+The moon is the same test around another
+center. That center is point six times
+cosine and sine of an angle. Distance
+
+22
+00:04:03,860 --> 00:04:12,920
+Run it at thirty degrees. Across, point
+five two, as calculated. But the second
+number, point three, put the moon below
+
+23
+00:04:12,970 --> 00:04:24,250
+On paper, up is positive. On a screen, y
+counts downward. The formulas stay the
+same and the picture flips: down is a
+
+24
+00:04:24,300 --> 00:04:34,600
+Now let the angle be time, the game's
+clock in seconds. As time counts up, the
+angle grows, and the moon goes round,
+
+25
+00:04:34,650 --> 00:04:43,070
+Scale the time and you scale the speed.
+Time times two, and the moon goes round
+twice as fast. The speed of an orbit is
+
+26
+00:04:43,120 --> 00:04:53,740
+An angle names a spot on the circle, so
+you can add to it. Add a third of a turn,
+tau over three, and a moon sits a third of
+
+27
+00:04:53,790 --> 00:05:05,350
+One limit: the shape has been a square. On
+a wide one, U V still runs zero to one
+both ways, so circles come out oval. Scale
+
+28
+00:05:05,400 --> 00:05:16,250
+That is the whole recipe: a center, a
+radius, and an angle that grows. The
+radius sets the size. The center sets the
+
+29
+00:05:16,300 --> 00:05:27,240
+Now a meteor around the moon. The moon
+moves, so the meteor's center moves with
+it. Take the moon's position and add the
+
+30
+00:05:27,290 --> 00:05:38,030
+In code, that is one more line. The meteor
+is the moon plus a small radius times
+cosine and sine of its own angle. Give
+
+31
+00:05:38,080 --> 00:05:46,520
+Watch it run. The meteor laps the moon
+three times for every lap the moon makes
+around the planet. Two ordinary circles,
+
+32
+00:05:46,570 --> 00:05:55,270
+Negate the meteor's angle, and it circles
+the other way while the moon keeps its
+direction. The minus sign mirrors the
+
+33
+00:05:55,320 --> 00:06:05,130
+Any depth works. Each level is a center
+plus a radius times cosine and sine of an
+angle. Chain two, and you have an arm with
+
+34
+00:06:05,180 --> 00:06:13,360
+So far an angle went in and a position
+came out. Now run it backwards. A pixel
+knows where it is. What angle does it sit
+
+35
+00:06:13,410 --> 00:06:24,240
+Tangent was opposite over adjacent. Arc
+tangent undoes it: give it the two sides,
+and it hands back the angle. For a pixel,
+
+36
+00:06:24,290 --> 00:06:35,850
+In a shader, arc tangent takes two
+numbers: y first, then x. Their signs pick
+the quarter of the circle, so the answer
+
+37
+00:06:35,900 --> 00:06:48,270
+Zero is straight right. Straight down is
+half pi, a quarter turn clockwise.
+Straight left is where it wraps: nearly
+
+38
+00:06:48,320 --> 00:06:59,040
+See it as a picture. Divide by tau and add
+one half, and minus pi to pi becomes zero
+to one. Then mix from teal at zero to
+
+39
+00:06:59,090 --> 00:07:10,370
+A common slip is passing one number, y
+divided by x. Dividing throws away the
+signs, so opposite directions get the same
+
+40
+00:07:10,420 --> 00:07:23,040
+Work one pixel. Up and to the left, at
+minus point three, minus point three. Arc
+tangent says minus three quarters of pi.
+
+41
+00:07:23,090 --> 00:07:34,560
+Now compare. A uniform is a number your
+game sets from outside, and this one is
+called sweep. If a pixel's number is below
+
+42
+00:07:34,610 --> 00:07:44,520
+That hand starts at nine o'clock, where
+the seam is. To start at twelve, move the
+seam: add a quarter turn, point two five,
+
+43
+00:07:44,570 --> 00:07:56,170
+The angle is a number, so feed it to
+cosine again. Multiply it by eight, and
+the edge of a circle swells and shrinks
+
+44
+00:07:56,220 --> 00:08:17,870
+Let's recap with Claude. An angle fixes
+the ratios of a right triangle: sine,
+cosine and tangent. On the unit circle,
+
+45
+00:08:17,920 --> 00:08:39,290
+Your turn. Paste this into Claude: Write a
+Godot canvas item shader for a square
+Color Rect: a teal planet in the middle
+
+46
+00:08:39,340 --> 00:08:43,660
+Trigonometry for Shaders. At Nik Bear
+Brown.

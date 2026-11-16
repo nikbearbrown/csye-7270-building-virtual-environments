@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://dgvkgpn0ox57s"]
+
+[ext_resource type="Script" uid="uid://dw3jswb83d02o" path="res://arena.gd" id="1_ep7q4"]
+[ext_resource type="Script" uid="uid://bo02w8kiwxas3" path="res://marker.gd" id="2_y0sxq"]
+[ext_resource type="Texture2D" uid="uid://dm6vr14kyjbej" path="res://assets/soft-dot.tres" id="3_kfvnl"]
+[ext_resource type="Texture2D" uid="uid://cnyibsm1sbqun" path="res://assets/color-over-life.tres" id="4_75hul"]
+[ext_resource type="Texture2D" uid="uid://b6ixrsa3r76vm" path="res://assets/size-over-life.tres" id="5_itxs4"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3ee8p"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 220.0
+gravity = Vector3(0, 140, 0)
+scale_min = 0.4
+scale_max = 0.8
+scale_curve = ExtResource("5_itxs4")
+color_ramp = ExtResource("4_75hul")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_jt1qd"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 15.0
+initial_velocity_min = 45.0
+initial_velocity_max = 85.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.4
+scale_max = 0.8
+scale_curve = ExtResource("5_itxs4")
+color_ramp = ExtResource("4_75hul")
+
+[sub_resource type="Curve" id="Curve_qkpt1"]
+_data = [Vector2(0, 0.2), 0.0, 0.0, 0, 0, Vector2(0.12, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.02), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_5a3rq"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(1, 0.9529412, 0.6745098, 1, 1, 0.5568628, 0.22352941, 1, 0.95, 0.3, 0.1, 0)
+
+[node name="ParticleArena" type="Node2D" unique_id=1026212067]
+script = ExtResource("1_ep7q4")
+heading = "Turn A Burst Into A Stream"
+
+[node name="Marker" type="Node2D" parent="." unique_id=1174331825]
+position = Vector2(193.4714, 100)
+script = ExtResource("2_y0sxq")
+
+[node name="FrameGuide" type="Control" parent="." unique_id=437668412]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -540.0
+offset_top = -360.0
+offset_right = 540.0
+offset_bottom = 360.0
+mouse_filter = 2
+
+[node name="Burst" type="GPUParticles2D" parent="." unique_id=1875134426]
+visible = false
+position = Vector2(0, 100)
+emitting = false
+amount = 48
+texture = ExtResource("3_kfvnl")
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+use_fixed_seed = true
+seed = 7270
+visibility_rect = Rect2(-400, -400, 800, 800)
+process_material = SubResource("ParticleProcessMaterial_3ee8p")
+
+[node name="Trail" type="GPUParticles2D" parent="." unique_id=2040636903]
+position = Vector2(193.4714, 100)
+amount = 48
+texture = ExtResource("3_kfvnl")
+lifetime = 2.0
+use_fixed_seed = true
+seed = 7270
+visibility_rect = Rect2(-450, -400, 900, 800)
+process_material = SubResource("ParticleProcessMaterial_jt1qd")
+
+[node name="CpuComparison" type="CPUParticles2D" parent="." unique_id=150275099]
+visible = false
+position = Vector2(193.4714, 100)
+amount = 48
+texture = ExtResource("3_kfvnl")
+lifetime = 2.0
+fixed_fps = 30
+draw_order = 1
+direction = Vector2(0, -1)
+spread = 15.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 45.0
+initial_velocity_max = 85.0
+scale_amount_min = 0.4
+scale_amount_max = 0.8
+scale_amount_curve = SubResource("Curve_qkpt1")
+color_ramp = SubResource("Gradient_5a3rq")

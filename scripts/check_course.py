@@ -289,6 +289,16 @@ def table_points(section_text, header_hint):
 
 
 def check_assignment(path):
+    authority = os.path.join(ROOT, 'assignments', 'canvas-authority.json')
+    if os.path.exists(authority):
+        records = json.load(open(authority, encoding='utf-8'))['assignments']
+        record = next((r for r in records if os.path.normpath(os.path.join(ROOT, r['source'])) == os.path.normpath(path)), None)
+        if record:
+            import hashlib
+            data = open(path, 'rb').read()
+            if hashlib.sha256(data).hexdigest() != record['imported_markdown_sha256']:
+                fail(path, 'differs from the authoritative Canvas/pasted import; run check_canvas_sync.py')
+            return len(data.decode().split())
     text = open(path, encoding="utf-8").read()
     prose = common_checks(path, text)
     check_exec_summary_first(path, text)
