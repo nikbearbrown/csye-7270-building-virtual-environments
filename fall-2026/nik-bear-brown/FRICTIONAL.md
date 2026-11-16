@@ -254,6 +254,21 @@ Everything I say in a session is recorded here or in the matching assignment's l
 
 ---
 
+### 2026-11-16 — Normals on the exam: the definition only; short commands for the practice coach
+
+- **Date and what I was working on:** 2026-11-16. Settling the open readings in the exam cheat sheet, and the practice coach.
+- **I tried / expected:** Going through the cheat sheet's "For Bear" readings, I said: "So what a normal is." I also asked for one-word short commands in all three courses' practice-exam prompts: "All three classes need shortcut commands. Add this to the end of the shortcuts to the end of all three exams and push again."
+- **What happened:**
+  - Topic 6 (Normals) in `glossary/EXAM-CHEAT-SHEET-FULL.md` now asks only what a normal is: the direction a surface faces. Flipped normals and normal maps are no longer listed. The coach's knowledge file was rebuilt from the sheet.
+  - This exam has no case questions, so the coach's commands are question, exam, drill, topics, cheatsheet, hint, another and key; "case" says so and gives a multiple-answer question instead.
+  - The other "For Bear" readings in the cheat sheet are still open (PBR was settled on 2026-11-15).
+- **What I did:** Gave the normals call and asked for the commands and the push. I have not read the changed files.
+- **What Claude or another person contributed:** Claude Code edited the cheat sheet, rebuilt the coach's knowledge file, wrote the commands into `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md` and `GPT-INSTRUCTIONS.md`, pushed, and wrote this entry.
+- **What I understand now / still do not understand:** Not yet stated by me.
+- **Evidence and next step:** `glossary/EXAM-CHEAT-SHEET-FULL.md` topic 6, `glossary/exam-coach/`. Next: the remaining "For Bear" readings, then the picture questions for the exam forms.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -275,3 +290,5 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-06 | Log my request to publish the Assignment 3 film to both playlists |
 | 2026-10-06 | Log the real MCP run, the Claude mascot and its film |
 | 2026-10-09 | Log my request for the three Start Here films and what they found |
+| 2026-11-16 | Exam practice prompt: add one-word short commands (help, question, exam, drill, topics, hint, another) |
+| 2026-11-16 | docs(exam): normals asked as the definition only; log the 2026-11-16 calls |

@@ -36,8 +36,8 @@
 **Go to:** Deck 08 Blender interface and modeling, slide 3, "The Blender window: viewport, outliner, properties" · Deck 08 Blender interface and modeling, slide 4, "Workspaces and the timeline" · Deck 08 Blender interface and modeling, slide 5, "Object Mode, Edit Mode and collections"
 
 ### 6. Normals
-**Know:** A normal is the direction a surface faces, straight out from it. If normals are flipped, the surface faces the wrong way and can light wrongly or vanish from one side.
-**Go to:** Deck 08 Blender interface and modeling, slide 8, "Normals and flipped normals" · Deck 12 Materials and textures, slide 6, "Normal map, tangent space, green channel" (first part only: a normal map stores surface directions in an image)
+**Know:** Only what a normal is: the direction a surface faces, straight out from it.
+**Go to:** Deck 08 Blender interface and modeling, slide 8, "Normals and flipped normals" (the definition only)
 
 ### 7. Game design documents and their sixteen sections
 **Know:** A GDD says what the game is and how it plays, in enough detail to build and test it. The sixteen sections, in order: Metadata, Vision summary, Pillars, Core loop, PX goals, Mechanics, Systems, Progression, World, Narrative, Characters, Feature list, Out of scope, Technical requirements, Risks, Open questions.
