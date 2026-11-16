@@ -1,0 +1,14 @@
+# RIFF — gameplay observations (capture/run-02)
+
+Riffs are on what the capture shows, inspected frame by frame (and against the frame and input logs) before writing. Scripted input, not a human playtest; how the clips read in play was judged by the author in the running game (TUNING.md, TEST-REPORT.md "Human checks"). Frames 0–1622 are the same three segments as run-01 (identical frame log).
+
+| Artifact + frames | Visible observation | Interpretation and source | Narration (beat) | Next experiment |
+|---|---|---|---|---|
+| run-02 0–20 | the mage idles at x 60; both cave walls glow orange and the glow breathes; embers drift up | the flicker clip on two PointLight2D nodes (`cave_lights.tscn`, process clock), embers (`embers.tscn`) | B03 | — |
+| run-02 20–117 | the run: four cells (contact, down, passing, up) at 6, 6, 6, 7 ticks, then 5, 6, 6, 7 per loop | a discrete frame track at 0.1 s keys, `step = 0.1`; the clip wraps on the tick it reaches 0.4 s (`player.tscn` 65–67, 99–102) | B03, B11 | in-betweens for the planted foot (FRICTIONAL.md:26) |
+| run-02 301–346 | Space: RISE 301, FALL 323; the landing tick 346 shows RUN, cell 0 | `_set_state()` plays the clip from 0 on a state change (edges check "run → jump → land → run") | B03, B13 | — |
+| run-02 880–969 | the wolf switches to the rig on the tick it sees the mage (880), crouches, stretches and dashes left (911), settles (933), one tick of PATROL (969) | the lunge clip from frame 0 on GROWL entry; clip frames 0, 31, 53 at the boundaries, then patrol | B04, B16 | — |
+| run-02 970–1022 | the wolf turns to face the mage on its right; the rig mirrors; it lunges right and hits her at 1009 (HURT, HP 4) | `_face_target()` each GROWL tick; Facing.scale.x mirrors the whole rig (Facing and Rig are separate nodes) | B04 | — |
+| run-02 1528–1549 | the click at 1530: the fireball leaves on growl tick 2 and hits on tick 21; the wolf flashes and stands; the chip shows RECOVER, clip frame 53, on the hit tick; no dash | the growl cancel (`wolf.gd` 158–162); `wolf_hit` with `prev_state` GROWL | B05 | a later click, around growl tick 12, to see the window's edge in play |
+| run-02 2059–2112 | the mage steps back; the click on growl tick 16; the fireball meets the wolf four ticks into its dash (2094, clip frame 35, hitbox on); the wolf flashes white mid-stretch and keeps going for all 22 ticks; recovery at clip 53 | a committed lunge: `take_damage()` changes only HP outside GROWL; `wolf_hit` with `prev_state` LUNGE | B06 | — |
+| run-02 2648–2706 | the click during the dash (2659); the fireball lands on recovery tick 5 (2675, clip frame 58); the wolf flashes, HP 1, and stands all 36 recovery ticks; PATROL at 2706, then a new growl at 2707 because the mage is still in sight | HP only in RECOVER; `wolf_hit` with `prev_state` RECOVER | B07 | — |

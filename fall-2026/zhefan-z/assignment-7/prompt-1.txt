@@ -1,0 +1,53 @@
+You are working in my game repository (Godot 4.7.2, GDScript, project in
+walker-magic-zhefan/). Treat fall-2026/zhefan-z/assignment-7/ as the
+repository root; do not read or change anything outside it, except that
+you may read git show 7672d5a:fall-2026/zhefan-z/assignment-6/CLAUDE.md.
+Never edit or commit anything under walker-magic-zhefan/shaders/. Never
+push. Commit only what I ask; every message says who wrote the content,
+e.g. "(agent, unedited)", and has no Co-Authored-By trailer.
+
+Part 1 — CLAUDE.md.
+1. Write the A6 CLAUDE.md unchanged to CLAUDE.md and commit it:
+   "CLAUDE.md copied from Assignment 6 (7672d5a), unchanged".
+2. Read CHANGE-BRIEF.md, project.godot, scripts/run-test.sh,
+   features/player/player.gd, player.tscn, features/wolf/wolf.gd,
+   wolf.tscn, game/main.gd, game/main.tscn and the tests in tests/.
+3. Revise CLAUDE.md, under 120 lines: Project context for this change
+   (exact Godot version and renderer, the two clips and their routes, the
+   scripts and states that drive them, the scenes, the exact test commands
+   through scripts/run-test.sh, every fact with a file reference);
+   "Current change" followed by exactly @CHANGE-BRIEF.md; Ownership (keep
+   the shaders/ rule; clip keys live in scene or .tres files, not code;
+   one AnimationPlayer per sprite); Godot 4 names (loop_mode not loop,
+   speed_scale not playback_speed, sprite_frames and play() not frames
+   and playing; if unsure a property exists, check with ClassDB); Input
+   (Input.parse_input_event by default; action_press never reaches
+   _input); Two clocks (each AnimationPlayer's callback_mode_process and
+   the tick gameplay reads); Commits (the rule above); Resuming (after an
+   interrupted session, run git status and the last test first);
+   Out of scope; Unconfirmed. Keep the Headless facts block from A6.
+4. Commit: "CLAUDE.md draft for A7 (agent, unedited)".
+
+Part 2 — the pin, before any game change. Do not touch any file under
+features/, game/ or assets/ in this part.
+1. Write walker-magic-zhefan/tests/test_pin_behaviour.gd. It loads
+   game/main.tscn and drives real input with Input.parse_input_event
+   (keys and mouse, as test_fireball_impact.gd does) through the real
+   game loop, never by calling player or wolf functions. Scenarios:
+   walk right and stop; jump; cast; let the wolf lunge into the player;
+   hit the wolf with a fireball during GROWL, during LUNGE and during
+   RECOVER; kill the wolf. For every physics tick it records: player
+   state, position, velocity; wolf state, position, hp and
+   LungeHitbox.monitoring.
+2. Record mode writes the trace per scenario to
+   logs/pin/<scenario>.json; check mode compares a run with those files
+   tick by tick and prints the first differing tick and field. Positions
+   compare to 0.01 px.
+3. Run record mode, then check mode at 30, 60 and 144 fps through
+   ./scripts/run-test.sh and show the real output.
+4. Report the measured tick count of GROWL, LUNGE and RECOVER (the brief
+   assumes 30, 21 and 36), and what today's game does on a hit in each
+   wolf phase.
+5. Commit the test and logs/pin/ as "Pin: today's player and wolf
+   behaviour, before any A7 change (agent, unedited)". Show git log
+   --oneline -5 and stop.

@@ -1,0 +1,43 @@
+Read CLAUDE.md first. Never edit anything under shaders/ or any game
+script or scene. Never push until step 4. Commit messages say what was
+checked and who wrote the content; no Co-Authored-By.
+
+1. Add walker-magic-zhefan/tests/test_state_transitions.gd. Drive the
+   real main scene through the real game loop with real input
+   (Input.parse_input_event, as the pin does); never call _set_state(),
+   _enter(), take_damage() or any transition function directly. Assert
+   that every transition in CHANGE-BRIEF.md's state-machine table
+   (revision 2026-11-13) occurs at least once, with the clip the table
+   names playing on the tick after (current_animation, or
+   assigned_animation for a one-shot that has ended): mage IDLE<->RUN,
+   RUN->RISE, RISE->FALL, FALL->IDLE or RUN, ->CAST, ->HURT, ->FAIL or
+   fail_pit, ->WIN; wolf PATROL->GROWL, GROWL->LUNGE, LUNGE->RECOVER,
+   RECOVER->PATROL, GROWL->RECOVER on a growl hit, ->DEAD. Report any
+   transition the game cannot reach with real input instead of faking
+   it. Run it at 30, 60 and 144 through ./scripts/run-test.sh, then the
+   pin at 60. Commit the test and its logs as "State-machine
+   transitions from real input (agent)".
+2. I saved updated CHANGE-BRIEF.md (revision 2026-11-14), TUNING.md
+   (my lunge-strip reading; r2 verdict citing both strips), FRICTIONAL.md,
+   TEST-REPORT.md, README.md, SUBMISSION.md, SOURCES.md and
+   prompt-12.txt. Check every SHA, path, test name and number in them
+   against git, the tree and the logs; report mismatches without changing
+   my wording, and stop if test_state_transitions.gd is named but its
+   result differs from what TEST-REPORT says. Then commit them as
+   "Audit fixes: brief timing note, presentation rule, frame-strip
+   section, lunge-strip reading, transitions test cited (claude.ai drafted
+   from my answers; reviewed by me; committed by Claude Code at my
+   request)" and show the SHA.
+3. git diff --stat ad7935f HEAD -- walker-magic-zhefan
+   ':(exclude)walker-magic-zhefan/youtube' ':(exclude)*.md'
+   ':(exclude)walker-magic-zhefan/tests' must print nothing (no game
+   script or scene changed); shaders/ unchanged since 2276069.
+4. Push zhefan-z/assignment-7 (no force). On a network or TLS error,
+   stop and give me split push commands.
+5. Fresh clone into E:/7270/verify-a7b (depth 1), HEAD must equal step
+   2's commit, --import once (retry once if it crashes after importing),
+   then every suite as in prompt-10 plus test_state_transitions at 30,
+   60, 144. Report the table.
+6. Rebuild the ZIP at C:/Users/lenovo/Desktop/csye7270-a7-zhefan-z.zip
+   from HEAD (git archive, prefix assignment-7/), no .mp4/.mp3/.godot.
+   Report the final SHA, push result, table, ZIP size, and stop.

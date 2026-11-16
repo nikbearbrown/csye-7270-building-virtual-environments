@@ -1,0 +1,18 @@
+# COMPONENTS — what the film explains, and where
+
+Scope: what Assignment 7 added to `walker-magic-zhefan` (files changed between `027a0ab`, the copy of the Assignment 6 project, and `ad7935f`). The machine-readable version, with every file's hash and every exclusion, is `gamedev-evidence.json`.
+
+| Component | Files | Beats | Code → result |
+|---|---|---|---|
+| **Clip 1, the run** | `features/player/player.gd` (`_set_state()`, `_play()`), `features/player/player.tscn` (nine state clips; `run`, `step = 0.1`), `assets/sprites/mage/mage_run_cycle_sheet.png` (r2) and `mage_run_sheet.png` (r0) with their imports, `assets/sprites/mage/ATTRIBUTION.md`, `tools/clean_run_cycle.py`, `tools/pack_run_sheet.gd`, `tools/make_contact_far_legs.gd` (a rejected attempt), `design/a7/` Gemini inputs and outputs, `design/IMAGE-PROMPTS-from-chat.md`, `previews/run_preview.*` | B02, B03, B08–B13, B23 | B10 `player.tscn` 92–103 → B11 the run cell by cell (scripted input) |
+| **Clip 2, the lunge rig** | `features/wolf/wolf.gd` (`_play()`, `take_damage()` growl cancel), `features/wolf/wolf.tscn` (rig under Facing; `patrol`, `lunge`, `dead`; `step` 1/60), `features/wolf/lunge_afterimage.gd`, `previews/lunge_preview.*` | B02, B04–B07, B14–B18 | B15 `wolf.tscn` 101–112 → B16 each boundary in a fixture strip and in play; B18 `wolf.gd` 152–163 → B19 the pin timeline |
+| **Torches and embers** (beyond the requirements) | `effects/cave_lights.tscn` (flicker clip, process clock), `effects/embers.tscn`, `game/main.tscn` | B03, B17, B22 | — (visible behind the gameplay; the flicker read-back on B22; its clock on B17) |
+| **Pin and tests** | `tests/test_pin_behaviour.gd`, `test_anim_edges.gd`, `test_clip_run.gd`, `test_clip_lunge.gd`, `test_clip_flicker.gd`, `test_anim_structure.gd`, `test_afterimage.gd`, `anim_checks.gd`, `probe_growl_cancel.gd`, `probe_two_clocks.gd`, the capture harnesses `capture_look.gd`, `capture_lunge.gd`, `capture_run_game.gd`, `capture_run_seam.gd`, `tools/make_figures.py`, `tools/measure_run_seam.py` | B08, B11–B13, B16, B17, B19–B22 | — (recorded results and figures, labelled) |
+
+The four ideas (CHANGE-BRIEF.md:197), each with the lines it points at: a clip — B08 (`player.tscn:95–99`, `anim_checks.gd:32–33`); one authority — B12 (`player.gd:143–154`, `test_anim_structure.gd:236`); feel in frames — B14 (`CHANGE-BRIEF.md:163–169`, `wolf.tscn:64, 108`); two clocks — B17 (`wolf.tscn:251–252`, `wolf.gd:89, 121`).
+
+Input → state → output, traced end to end three times in play (B05–B07): a left click (input) makes `Player.cast()` spawn a fireball; when it reaches the wolf, `take_damage()` lowers HP and, only if the wolf ended the previous tick in GROWL, enters RECOVER and seeks the `lunge` clip to frame 52 (state); on screen the GROWL hit shows RECOVER with clip frame 53 on the hit tick and no lunge (frame 1549), the LUNGE hit leaves the dash running all 22 ticks (frame 2094), the RECOVER hit changes only HP (frame 2675).
+
+Two clocks, shown: both AnimationPlayers on the physics callback (`callback_mode_process = 0`, `process_physics_priority = -1`), the hitbox read one tick after the clip's active section (1/60 s), the torch flicker and the removal timer on the process clock (B17).
+
+Not explained here (excluded, unchanged in Assignment 7): the 2D game's movement, the fireball and both A6 effects, the hurt tint, the level, audio, HUD, the A3 prop room, the A5 shaders and materials, earlier tests, the Muybridge reference plates (shown in the f860fed cut), this film's own records, and the earlier films' records — see the earlier films in `docs/a2`, `docs/a3`, `docs/a5` and `docs/a6`.

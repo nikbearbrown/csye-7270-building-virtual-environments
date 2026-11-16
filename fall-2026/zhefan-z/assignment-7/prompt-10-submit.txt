@@ -1,0 +1,51 @@
+Read CLAUDE.md first. This is the final submission step for Assignment 7.
+Work only in fall-2026/zhefan-z/assignment-7/ and only on the branch
+zhefan-z/assignment-7. Do not edit any file. Stop and report if any check
+fails; do not fix anything on your own.
+
+1. Check the film: ffprobe and sha256sum the MP4 in the reel's
+   exports/landscape/. README.md and SUBMISSION.md must say 7:04,
+   100,811,931 bytes and bdc0517771ce55dbc753eb4e608d333ce290f34edbb2e77b126bf4c7301ee016,
+   game source ad7935f, and the link
+   https://drive.google.com/file/d/1ZD-VaK9MqkZEuoNGwoeR9ahmcZ6mAe_c/view?usp=sharing
+   Stop if the SHA differs. Confirm human_review_approved is true.
+2. Stage exactly: CHANGE-BRIEF.md, FRICTIONAL.md, README.md, SOURCES.md,
+   SUBMISSION.md, TEST-REPORT.md, prompt-10-submit.txt, and the re-run
+   logs under logs/. Check that no .mp4 or .mp3 is staged and nothing
+   outside this folder. Commit (no Co-Authored-By): "Final A7 documents:
+   film link and SHA-256, interrupted session recorded, re-run logs
+   (claude.ai drafted from my answers; reviewed by me; committed by
+   Claude Code at my request)". Show the SHA.
+3. Game source unchanged since ad7935f:
+   git diff --stat ad7935f HEAD -- walker-magic-zhefan
+   ':(exclude)walker-magic-zhefan/youtube' ':(exclude)*.md'
+   must print nothing. git diff --stat on walker-magic-zhefan/shaders/
+   since 2276069 must print nothing.
+4. Push: git push -u origin zhefan-z/assignment-7 (this branch only, no
+   force). If it fails with a network or TLS error, do not change git
+   config; stop and give me commands to push the unpushed commits in
+   three or four parts, one at a time, ending with
+   git push -u origin zhefan-z/assignment-7.
+5. Fresh-clone verification (only after the push succeeded): clone branch
+   zhefan-z/assignment-7 (depth 1, single branch) into E:/7270/verify-a7,
+   check its HEAD equals step 2's commit, run godot --headless --path
+   walker-magic-zhefan --import once, then through ./scripts/run-test.sh
+   from the clone's assignment-7 folder run every suite CLAUDE.md lists:
+   the 13 earlier suites at their usual rates; test_pin_behaviour,
+   test_anim_edges, test_afterimage and probe_two_clocks at 30, 60 and
+   144; test_clip_run, test_clip_lunge, test_clip_flicker and
+   test_anim_structure at 60. For each show exit code, checks / failures
+   and the error-line count. Expected: earlier suites at their baseline
+   counts; pin 16, edges 25, afterimage 6, two-clocks probe 2 at each
+   rate; clip_run 17, clip_lunge 18, clip_flicker 12, anim_structure 11;
+   all 0 failures and 0 error lines. If the clone fails on the network,
+   retry once, then stop and tell me.
+6. Source ZIP of the same revision, from the course repo root:
+   git archive --format=zip --prefix=assignment-7/
+   -o C:/Users/lenovo/Desktop/csye7270-a7-zhefan-z.zip
+   HEAD:fall-2026/zhefan-z/assignment-7
+   Show its size and confirm no .mp4, .mp3 or .godot folder is in it.
+7. Print the PR link
+   https://github.com/nikbearbrown/csye-7270-building-virtual-environments/compare/main...zhefan-z/assignment-7
+   and stop with: the final SHA, the push result, the verification
+   table, and the ZIP path and size.

@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" uid="uid://b7acwswegheaj" path="res://assets/models/rock.glb" id="1_rock"]
+[ext_resource type="PackedScene" uid="uid://cx47cimelj6f1" path="res://assets/models/crystal.glb" id="2_crystal"]
+[ext_resource type="PackedScene" uid="uid://bh3uou2bouqjp" path="res://assets/models/chest.glb" id="3_chest"]
+[ext_resource type="Texture2D" uid="uid://qbx1002vx8on" path="res://assets/sprites/mage/mage_idle.png" id="4_mage"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.101961, 0.109804, 0.145098, 1)
+roughness = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+material = SubResource("StandardMaterial3D_floor")
+size = Vector2(2000, 2000)
+
+[sub_resource type="Environment" id="Environment_cave"]
+background_mode = 1
+background_color = Color(0.0588235, 0.0666667, 0.0980392, 1)
+
+[node name="PropRoom" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_floor")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cave")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0.353553, -0.353553, 0, 0.707107, 0.707107, 0.5, -0.612372, 0.612372, 0, 3, 0)
+shadow_enabled = true
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.982872, 0.184314, 0, -0.184314, 0.982872, -0.65, 1.2, 4)
+current = true
+fov = 45.0
+
+[node name="Mage" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.7363, 0)
+pixel_size = 0.0226563
+billboard = 2
+shaded = false
+alpha_cut = 1
+texture_filter = 0
+texture = ExtResource("4_mage")
+
+[node name="Rock" parent="." instance=ExtResource("1_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 0)
+
+[node name="Crystal" parent="." instance=ExtResource("2_crystal")]
+
+[node name="Chest" parent="." instance=ExtResource("3_chest")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 0)

@@ -1,0 +1,65 @@
+Read CLAUDE.md first. CHANGE-BRIEF.md is the contract, including the
+revision of 2026-11-10 (phase table 31 / 22 / 36). Never edit anything
+under shaders/. Never push. Commit messages name the author, no
+Co-Authored-By.
+
+Part 0 — commit my notes: CHANGE-BRIEF.md (revision 2026-11-10),
+prompt-1.txt and prompt-2.txt, as "Brief revision: measured phase table,
+second clock (mine, committed by Claude Code at my request)".
+
+Make the clips. Do not wire them: player.gd and wolf.gd stay unchanged,
+nothing calls play() yet, and the new nodes must not change behaviour.
+
+Part 1 — clip 1, the run cycle (route: Sprite2D + AnimationPlayer frame
+track).
+- tools/pack_run_sheet.gd (extends SceneTree, run once headless) writes
+  assets/sprites/mage/mage_run_sheet.png from mage_run_contact.png and
+  mage_run_passing.png side by side (124x69). Set its import settings
+  explicitly like the other mage PNGs. Leave both originals unchanged.
+- Add an AnimationPlayer to features/player/player.tscn with the clips the
+  brief lists (idle, run, rise, fall, cast, hurt, fail, fail_pit, win).
+  Each keys Sprite2D texture, hframes and frame; run keys frame 0 at 0.0
+  and frame 1 at 0.125, length 0.25, LOOP_LINEAR, discrete updates, on
+  mage_run_sheet.png with hframes 2. callback_mode_process physics,
+  autoplay empty.
+- tests/test_clip_run.gd: the read-back the brief lists, using the
+  assignment's track_problems() check (branching on track type), key
+  times, length, loop_mode, update mode, every frame key below
+  hframes * vframes, and every clip name present.
+
+Part 2 — clip 2, the wolf lunge (route: cutout rig keyed as resource
+text).
+- Measure from wolf_lunge.png (alpha) where to split Rear and Front (with
+  a few pixels of overlap) and where the hip and shoulder are; list the
+  numbers.
+- Add to features/wolf/wolf.tscn: Facing (Node2D) > Rig (Node2D at the
+  feet) > RearPivot and FrontPivot (Node2D) > Rear and Front Sprite2Ds
+  using region_rect on wolf_lunge.png, drawn exactly where the whole
+  sprite draws today at rest. Facing hidden for now.
+- Add an AnimationPlayer with clips patrol, lunge and dead. lunge keys
+  Rig position and scale and both pivots' rotation at the revised table's
+  frames / 60 with the poses and transitions in the brief, length 89/60,
+  LOOP_NONE; patrol and dead key which node is visible. List each key
+  time beside its source frame. callback_mode_process physics, autoplay
+  empty.
+- tests/test_clip_lunge.gd: the read-back the brief lists (every track
+  resolves to a real node and property; key times equal frame / 60 to
+  1e-6; length; loop_mode).
+
+Part 3 — previews (fixtures), over the real cave background at in-game
+scale:
+- previews/run_preview.tscn: the mage sprite playing run from frame 10.
+- previews/lunge_preview.tscn: the rig playing lunge from frame 10,
+  facing right, and a second wolf facing left; with a small on-screen
+  label of the clip frame (debug only, preview scene only).
+Give me the Movie Maker commands, absolute output paths under
+captures/run/r0/ and captures/lunge/r0/, using --fixed-fps 60 for the
+lunge so strip frame n is tick n, and the windowed commands to look
+first at 1280x720.
+
+Part 4 — run through ./scripts/run-test.sh: both read-backs at 60, the
+pin check at 30, 60 and 144 (it must still pass unchanged), and every
+earlier suite as CLAUDE.md lists. Show the real summary lines. If all
+pass, commit everything you made with the logs as "Clips: run cycle and
+wolf lunge rig, read-backs, previews; not wired (agent, unedited)",
+with the key-time table in the body. Then stop.

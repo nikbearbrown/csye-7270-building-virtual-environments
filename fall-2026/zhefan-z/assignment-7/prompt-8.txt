@@ -1,0 +1,67 @@
+Read CLAUDE.md first. The assignment text has been published in full;
+this prompt brings the submission in line with it. Never edit anything
+under shaders/. Never push. Do not change any gameplay behaviour: the pin
+must pass 8/8 at 30, 60 and 144 at the end. Commit messages say what was
+checked, name the author, and carry no Co-Authored-By.
+
+1. Clip step and read-backs.
+   - Set Animation.step to one frame period on every clip at its brief
+     frame rate: run 0.1 (10 fps), lunge 1/60 (60 fps), the player's
+     single-frame clips 0.1, the wolf's patrol and dead clips 1/60, the
+     flicker clip at the rate its keys are written on (say which).
+   - Replace track_problems() in tests/anim_checks.gd with the published
+     version, verbatim (it adds a root_node null check):
+     var root := player.get_node_or_null(player.root_node)
+     if root == null: problems.append("root_node %s resolves to nothing"
+     % player.root_node); return problems
+     ...the rest exactly as before.
+   - In every read-back: compare key times with a tolerance of half a
+     frame period (0.5 / fps), never ==; check is_equal_approx(clip.step,
+     1.0 / fps); call value_track_get_update_mode only on TYPE_VALUE
+     tracks; read the current clip through current_animation.
+   Run all four read-backs and the structure test; commit as "Clips:
+   step = one frame period; read-backs use the published
+   track_problems() and half-frame tolerance (agent)".
+
+2. Edges at every phase boundary of the lunge, before, on and after. In
+   tests/test_anim_edges.gd add, for each boundary (GROWL start at 0,
+   GROWL->LUNGE at 31, LUNGE->RECOVER at 53, RECOVER->PATROL at 89), a
+   fireball hit arriving one tick before, on, and one tick after the
+   boundary, each asserting what the brief says that interrupt does
+   (cancel in GROWL, no cancel in LUNGE, HP only in RECOVER and PATROL).
+   Keep the existing cases. Run at 30, 60 and 144. Commit as "Edges:
+   interrupt one tick before, on and after every phase boundary (agent)".
+
+3. The four published mutations, each in a git worktree
+   (git worktree add ../a7-mutate HEAD), each removed afterwards:
+   M1 rename the property one lunge track names, in the clip only
+       (track_problems must report it);
+   M2 set the run clip's loop_mode to Animation.LOOP_NONE;
+   M3 set one run frame key to hframes * vframes (4);
+   M4 delete walker-magic-zhefan/.godot, run --import, run every
+       read-back (both clips are keyed in scene text, not imported, so
+       say what this proves).
+   Confirm M1-M3 exit 1 and report M4's result. Save logs as
+   logs/mutation-a7-M<n>-<name>_60fps.log. Keep the earlier a7-1 to a7-5
+   logs as additional mutations. Commit as "The four published
+   mutations, each from a worktree (agent)".
+
+4. Fresh cache: in a clean clone of HEAD (outside this folder), run
+   --import once and both clip read-backs; report the result.
+
+5. Cycle seam and registration strip (fixture): a windowed Movie Maker
+   capture of the mage running for at least five run-cycle wraps in the
+   real game, --fixed-fps 30, --debug-collisions; keep one frame per
+   cycle frame for two wraps in captures/run/game-r2-seam/, plus the
+   tick log; report whether any frame repeats at the wrap and whether
+   the character drifts within its cell (feet anchor, torso). Give me
+   the command to watch five wraps myself at normal speed.
+
+6. Two clocks, measured: report the largest disagreement in seconds
+   between the tick each clip advances on and the tick gameplay reads
+   the lunge's active window (hitbox) on.
+
+7. git diff --stat walker-magic-zhefan/shaders/ must print nothing;
+   report it. Run every test through ./scripts/run-test.sh (pin, edges,
+   afterimage at 30, 60, 144; all read-backs and the structure test;
+   every earlier suite), commit any remaining logs, report and stop.
