@@ -269,6 +269,22 @@ Everything I say in a session is recorded here or in the matching assignment's l
 
 ---
 
+### 2026-11-17 — Midterm coach v2.1: works without guessing when the sheet is missing, and the command clashes fixed
+
+- **Date and what I was working on:** 2026-11-17. The CSYE 7270 midterm coach (a claude.ai Project).
+- **I tried / expected:** I tried the coach and it answered that the exam sheet wasn't attached, so it couldn't list topics. I said *"apparently the midterm prep prompt that you gave me does not have topics on it. Obviously, it needs topics."* Then I pasted a full spec for v2.1: find or build EXAM-CHEAT-SHEET.md and check every slide citation; add a missing-sheet rule; fix the clashes between "quiz", "help", "topics", "hint", "drill", "another" and "key"; one way to draw pictures that prints; check every input. Then: *"Yes, push."*
+- **What happened:**
+  - The sheet existed but had never been uploaded to the Project. All 62 slide citations match the decks; none needed correcting.
+  - The "Not on this exam" list now names Unity and Unreal, node class names and built-in names explicitly.
+  - v2.0 called shaders a critical topic; the sheet marks only topic 17 and camera pan, tilt and roll as critical, so the instructions now match the sheet.
+  - Beyond the spec, five more clashes were fixed, including one-word answers like "B" being read as unknown commands, and no path for grading a full practice exam.
+- **What I did:** Found the failure, wrote the spec, said push. I have not tried v2.1 in a Project yet.
+- **What Claude or another person contributed:** Claude Code checked the citations and the sheet, wrote v2.1, the change log and the README update, walked every command through v2.1, pushed, and wrote this entry.
+- **What I understand now / still do not understand:** Not yet stated by me.
+- **Evidence and next step:** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md`, `glossary/exam-coach/EXAM-CHEAT-SHEET.md`, `glossary/exam-coach/CHANGELOG-v2.1.md`. Next: upload the sheet and paste v2.1 into the Project, then try it; the custom-GPT instructions are still v2.0.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -292,3 +308,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-10-09 | Log my request for the three Start Here films and what they found |
 | 2026-11-16 | Exam practice prompt: add one-word short commands (help, question, exam, drill, topics, hint, another) |
 | 2026-11-16 | docs(exam): normals asked as the definition only; log the 2026-11-16 calls |
+| 2026-11-17 | docs(exam): midterm coach v2.1, the final exam sheet and the change log; README points at v2.1 |

@@ -1,4 +1,6 @@
-# CSYE 7270 Midterm Coach (v2.0): Claude Project and custom GPT
+# CSYE 7270 Midterm Coach (v2.1): Claude Project and custom GPT
+
+**v2.1 (2026-11-17).** For the Claude Project, use `CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md` and upload `EXAM-CHEAT-SHEET.md` (both in this folder). v2.0 failed when the sheet wasn't uploaded; v2.1 says so plainly instead, and fixes the command clashes. What changed: `CHANGELOG-v2.1.md`. The custom-GPT instructions are still v2.0.
 
 **Executive summary.** This is a midterm study tool, in two versions that behave the same way: a Claude Project and a custom GPT. Students can do three things with it:
 1. **Help:** ask what's on the exam, get a topic explained, or have it make them a printable cheat sheet.
@@ -13,14 +15,17 @@ Everything it knows about the exam comes from one file, `knowledge/EXAM-CHEAT-SH
 
 | File | What it is | Where it goes |
 |---|---|---|
-| `CLAUDE-PROJECT-INSTRUCTIONS.md` | The full instructions for the Claude Project | Project → custom instructions (paste the whole file) |
+| `CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md` | **Current.** The full instructions for the Claude Project | Project → custom instructions (paste the whole file) |
+| `EXAM-CHEAT-SHEET.md` | **Current.** The exam sheet the coach reads: 24 topics, slides, and the "Not on this exam" list | Upload to the Project files (and to the GPT's Knowledge) |
+| `CHANGELOG-v2.1.md` | What changed from v2.0, and the check of every command | Reading only |
+| `CLAUDE-PROJECT-INSTRUCTIONS.md` | v2.0, superseded by v2.1 | Project → custom instructions (paste the whole file) |
 | `GPT-INSTRUCTIONS.md` | The same rules, shortened to fit a GPT (under the 8,000-character instruction limit) | GPT → Configure → Instructions (paste the whole file) |
 | `knowledge/EXAM-CHEAT-SHEET.md` | The 24 exam topics, each with what to know and the deck, slide number and slide title, plus the "Not on this exam" list. This is the student version: no "For Bear" box, and plain slide titles instead of links. | Upload to both, as Project knowledge and GPT Knowledge |
 
 ## Set up the Claude Project
 1. claude.ai → Projects → Create project. Name: "CSYE 7270 Midterm Coach". Description: "Practice for the CSYE 7270 midterm: what's on it, one question at a time, or a full printable practice exam."
-2. Set custom instructions: paste all of `CLAUDE-PROJECT-INSTRUCTIONS.md`.
-3. Add knowledge: upload `knowledge/EXAM-CHEAT-SHEET.md`.
+2. Set custom instructions: paste all of `CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md`.
+3. Add knowledge: upload `EXAM-CHEAT-SHEET.md` (this folder). Without it the coach can't work, and v2.1 says so.
 4. Share it with the class (Team or Enterprise plan), or have students build their own from these three files.
 5. Test it: start a chat and type "help", then "quiz me on rigs", then "make me a full exam".
 
@@ -28,7 +33,7 @@ Everything it knows about the exam comes from one file, `knowledge/EXAM-CHEAT-SH
 1. ChatGPT → Explore GPTs → Create → Configure.
 2. Name: "CSYE 7270 Midterm Coach". Description: as above.
 3. Instructions: paste all of `GPT-INSTRUCTIONS.md`.
-4. Knowledge: upload `knowledge/EXAM-CHEAT-SHEET.md`.
+4. Knowledge: upload `EXAM-CHEAT-SHEET.md` (this folder).
 5. Capabilities: turn on **Code Interpreter** (it draws the picture questions). Image generation and web browsing can stay off.
 6. Conversation starters: "What's on the midterm?" · "Quiz me on animation" · "Make me a cheat sheet" · "Give me a full practice exam".
 7. Share as "Anyone with the link".
