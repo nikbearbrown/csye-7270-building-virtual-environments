@@ -1,6 +1,6 @@
 # CSYE 7270 Midterm Coach: change log, v2.0 → v2.1 (2026-11-17)
 
-**Summary.** The coach failed because the cheat sheet wasn't in the Project. The sheet already existed. All 62 of its slide citations match the decks, so none needed correcting. Its "Not on this exam" list gained the items the instructions already treat as off the exam. v2.1 adds a missing-sheet rule, resolves the nine command clashes listed in the spec, and fixes five more clashes found while checking. To use it: upload `knowledge/EXAM-CHEAT-SHEET.md` to the Project files and paste `CLAUDE-PROJECT-INSTRUCTIONS.md` into the Project instructions. Both files were corrected in place, at the same paths as before; there are no separate version files.
+**Summary.** The coach failed because the cheat sheet wasn't in the Project. The sheet already existed. All 62 of its slide citations match the decks, so none needed correcting. Its "Not on this exam" list gained the items the instructions already treat as off the exam. v2.1 adds a missing-sheet rule, resolves the nine command clashes listed in the spec, and fixes five more clashes found while checking. To use it: paste `CLAUDE-PROJECT-INSTRUCTIONS.md` into the Project instructions. Nothing has to be uploaded. Both files were corrected in place, at the same paths as before; there are no separate version files.
 
 ## Files
 - **Instructions:** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md`, now v2.1, replacing v2.0 at the same path.
@@ -83,3 +83,11 @@ Rewritten to match, within the GPT's 8,000-character limit. It now has the missi
 
 ## Not changed
 - No practice questions were written. No slides were changed.
+
+## Later the same day: the sheet is built into the instructions
+Bear tried the coach and it refused, because the sheet wasn't uploaded. Bear: "If you're creating something for a Claude project, you have to give it the information where to find that stuff ... it makes more sense just to list the effing topics in the project."
+- The whole exam sheet (all 24 topics with their "Know" lines and slides, and the "Not on this exam" list) is now the last section of `CLAUDE-PROJECT-INSTRUCTIONS.md`, under "THE EXAM CHEAT SHEET".
+- The MISSING-SHEET RULE (change 1 above) is removed: the sheet can't be missing.
+- `knowledge/EXAM-CHEAT-SHEET.md` stays, at the link in the announcement, for reading and for the GPT version. Uploading it to the Claude Project is optional.
+- If the sheet changes, update `knowledge/EXAM-CHEAT-SHEET.md` and copy it into the last section of the instructions (headings one level down).
+

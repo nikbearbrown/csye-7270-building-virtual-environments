@@ -285,6 +285,18 @@ Everything I say in a session is recorded here or in the matching assignment's l
 
 ---
 
+### 2026-11-17 — Midterm coach: the exam topics are now inside the instructions
+
+- **Date and what I was working on:** 2026-11-17. The CSYE 7270 midterm coach, a Claude Project.
+- **I tried / expected:** I tried the corrected coach and it still refused: the sheet wasn't loaded. I said: *"If you're creating something for a Claude project, you have to give it the information where to find that stuff. That means if the Claude project has to go to a public repo and download it, fine. But it makes more sense just to list the effing topics in the project. Why is this so difficult?"* I expected the coach to work from the instructions alone.
+- **What happened:** The whole exam sheet (24 topics, what to know, slides, and the "Not on this exam" list) is now the last section of `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md`, at the same path as the announcement's link. The rule that refused without an uploaded file is gone. `knowledge/EXAM-CHEAT-SHEET.md` stays for reading and for the GPT version; uploading it is now optional.
+- **What I did:** Tried the coach, found it still refused, said list the topics in the project.
+- **What Claude or another person contributed:** Claude Code had started building the sheet into the instructions the first time, then followed my later spec for a separate upload instead. It built the sheet in, removed the upload rule, updated the README and the change log, pushed, and wrote this entry.
+- **What I understand now / still do not understand:** Not yet stated by me.
+- **Evidence and next step:** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md` (section "THE EXAM CHEAT SHEET"), `glossary/exam-coach/CHANGELOG.md`. Next: paste the instructions into the Project again and try "topics".
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -310,3 +322,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-11-16 | docs(exam): normals asked as the definition only; log the 2026-11-16 calls |
 | 2026-11-17 | docs(exam): midterm coach v2.1, the final exam sheet and the change log; README points at v2.1 |
 | 2026-11-17 | fix(exam): midterm coach corrected in place at the announced paths; no separate version files; GPT instructions and the full sheet corrected to match |
+| 2026-11-17 | fix(exam): the midterm coach carries the exam sheet inside its instructions; no upload needed |

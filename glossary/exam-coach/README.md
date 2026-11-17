@@ -1,6 +1,6 @@
 # CSYE 7270 Midterm Coach (v2.1): Claude Project and custom GPT
 
-**v2.1 (2026-11-17).** The instructions and the sheet were corrected in place, at the same paths. The coach now says plainly when the sheet hasn't been uploaded, and the command clashes are fixed, in both the Claude Project and the GPT versions. What changed: `CHANGELOG.md`.
+**v2.1 (2026-11-17).** For the Claude Project, paste `CLAUDE-PROJECT-INSTRUCTIONS.md` into the Project instructions and that's all: the full exam sheet (24 topics, slides, "Not on this exam") is built into the instructions, so nothing has to be uploaded. The command clashes are fixed in both versions. What changed: `CHANGELOG.md`.
 
 **Executive summary.** This is a midterm study tool, in two versions that behave the same way: a Claude Project and a custom GPT. Students can do three things with it:
 1. **Help:** ask what's on the exam, get a topic explained, or have it make them a printable cheat sheet.
@@ -16,14 +16,14 @@ Everything it knows about the exam comes from one file, `knowledge/EXAM-CHEAT-SH
 | File | What it is | Where it goes |
 |---|---|---|
 | `CHANGELOG.md` | What changed in v2.1, and the check of every command | Reading only |
-| `CLAUDE-PROJECT-INSTRUCTIONS.md` | The full instructions for the Claude Project | Project → custom instructions (paste the whole file) |
+| `CLAUDE-PROJECT-INSTRUCTIONS.md` | The full instructions for the Claude Project, with the exam sheet built in | Project → custom instructions (paste the whole file) |
 | `GPT-INSTRUCTIONS.md` | The same rules, shortened to fit a GPT (under the 8,000-character instruction limit) | GPT → Configure → Instructions (paste the whole file) |
 | `knowledge/EXAM-CHEAT-SHEET.md` | The 24 exam topics, each with what to know and the deck, slide number and slide title, plus the "Not on this exam" list. This is the student version: no "For Bear" box, and plain slide titles instead of links. | Upload to both, as Project knowledge and GPT Knowledge |
 
 ## Set up the Claude Project
 1. claude.ai → Projects → Create project. Name: "CSYE 7270 Midterm Coach". Description: "Practice for the CSYE 7270 midterm: what's on it, one question at a time, or a full printable practice exam."
 2. Set custom instructions: paste all of `CLAUDE-PROJECT-INSTRUCTIONS.md`.
-3. Add knowledge: upload `knowledge/EXAM-CHEAT-SHEET.md`. Without it the coach can't work, and it says so.
+3. No upload needed: the exam sheet is already inside the instructions. (Uploading `knowledge/EXAM-CHEAT-SHEET.md` too does no harm; it's the same sheet.)
 4. Share it with the class (Team or Enterprise plan), or have students build their own from these three files.
 5. Test it: start a chat and type "help", then "quiz me on rigs", then "make me a full exam".
 
