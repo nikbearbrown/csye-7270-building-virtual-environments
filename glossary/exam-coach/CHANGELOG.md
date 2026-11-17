@@ -1,14 +1,11 @@
 # CSYE 7270 Midterm Coach: change log, v2.0 → v2.1 (2026-11-17)
 
-**Summary.** The coach failed because the cheat sheet wasn't in the Project. The sheet already existed. All 62 of its slide citations match the decks, so none needed correcting. Its "Not on this exam" list gained the items the instructions already treat as off the exam. v2.1 adds a missing-sheet rule, resolves the nine command clashes listed in the spec, and fixes five more clashes found while checking. To use it: upload `EXAM-CHEAT-SHEET.md` to the Project files and paste `CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md` into the Project instructions.
+**Summary.** The coach failed because the cheat sheet wasn't in the Project. The sheet already existed. All 62 of its slide citations match the decks, so none needed correcting. Its "Not on this exam" list gained the items the instructions already treat as off the exam. v2.1 adds a missing-sheet rule, resolves the nine command clashes listed in the spec, and fixes five more clashes found while checking. To use it: upload `knowledge/EXAM-CHEAT-SHEET.md` to the Project files and paste `CLAUDE-PROJECT-INSTRUCTIONS.md` into the Project instructions. Both files were corrected in place, at the same paths as before; there are no separate version files.
 
 ## Files
-- **Instructions in use (v2.0):** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md`. Left as it is.
-- **Sheet found at:** `glossary/exam-coach/knowledge/EXAM-CHEAT-SHEET.md`. It was never uploaded to the Project.
-- **Deliverables, next to the instructions:**
-  - `EXAM-CHEAT-SHEET.md`: final, ready to upload.
-  - `CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md`: ready to paste.
-  - this change log.
+- **Instructions:** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md`, now v2.1, replacing v2.0 at the same path.
+- **Sheet:** `glossary/exam-coach/knowledge/EXAM-CHEAT-SHEET.md`, corrected at the same path. It was never uploaded to the Project, which is why the coach failed.
+- **Custom-GPT instructions:** `glossary/exam-coach/GPT-INSTRUCTIONS.md`, corrected the same way (see the end of this log).
 
 ## Sheet: slide citations
 All 62 citations were checked against `glossary/decks/*.html` for deck number, deck name, slide number and slide title (the slide's heading). **62 of 62 match; none corrected.**
@@ -78,8 +75,11 @@ All 62 citations were checked against `glossary/decks/*.html` for deck number, d
 | "explain shaders" | Mode 1 explain | topic 13 Know line and slides | OK |
 | any request, sheet missing | MISSING-SHEET RULE | nothing | OK; help still works, with the missing-sheet line added |
 
-## Not changed (outside this task's scope)
-- `knowledge/EXAM-CHEAT-SHEET.md` and `../EXAM-CHEAT-SHEET-FULL.md` still have the older "Not on this exam" wording. The new `EXAM-CHEAT-SHEET.md` supersedes the `knowledge/` copy. The full sheet is the source both copies were built from, so copy the three list changes into it if you want them to stay.
-- `GPT-INSTRUCTIONS.md` (the custom-GPT version) is still v2.0, so the same clashes are in it.
-- Pushed to the course repo on 2026-11-17, with the README pointed at v2.1. v2.0 is kept beside it.
-- No practice questions were written. No slides or other course files were changed.
+## Custom-GPT instructions (`GPT-INSTRUCTIONS.md`)
+Rewritten to match, within the GPT's 8,000-character limit. It now has the missing-sheet rule, the merged help, a bare "quiz" as one question, "topics" vs "what's on the exam", the bounded hint, the drill answer format, "another"/"next" by question type, "key" in order, letters as answers, text-diagram pictures, and critical topics as on the sheet.
+
+## Also corrected
+- `glossary/EXAM-CHEAT-SHEET-FULL.md`, the source the knowledge sheet is built from: its "Not on this exam" list now matches the corrected sheet.
+
+## Not changed
+- No practice questions were written. No slides were changed.

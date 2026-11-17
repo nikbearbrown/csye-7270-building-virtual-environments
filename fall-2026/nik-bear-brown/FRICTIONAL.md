@@ -281,7 +281,7 @@ Everything I say in a session is recorded here or in the matching assignment's l
 - **What I did:** Found the failure, wrote the spec, said push. I have not tried v2.1 in a Project yet.
 - **What Claude or another person contributed:** Claude Code checked the citations and the sheet, wrote v2.1, the change log and the README update, walked every command through v2.1, pushed, and wrote this entry.
 - **What I understand now / still do not understand:** Not yet stated by me.
-- **Evidence and next step:** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS-v2.1.md`, `glossary/exam-coach/EXAM-CHEAT-SHEET.md`, `glossary/exam-coach/CHANGELOG-v2.1.md`. Next: upload the sheet and paste v2.1 into the Project, then try it; the custom-GPT instructions are still v2.0.
+- **Evidence and next step:** `glossary/exam-coach/CLAUDE-PROJECT-INSTRUCTIONS.md` and `glossary/exam-coach/knowledge/EXAM-CHEAT-SHEET.md` (both corrected in place, at the paths in my announcement), `glossary/exam-coach/CHANGELOG.md`. I said: *"We want things in the old path. We want to update that file. We don't want to create another file, version 2.1, version 2.2, version 2.3, etc. The reason why we're changing it is the file has some errors in it. We do not want files with errors on the GitHub."* So the separate v2.1 files were removed, and the GPT instructions were corrected the same way. Next: paste the instructions into the Project, upload the sheet, and try it.
 
 ---
 
@@ -309,3 +309,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-11-16 | Exam practice prompt: add one-word short commands (help, question, exam, drill, topics, hint, another) |
 | 2026-11-16 | docs(exam): normals asked as the definition only; log the 2026-11-16 calls |
 | 2026-11-17 | docs(exam): midterm coach v2.1, the final exam sheet and the change log; README points at v2.1 |
+| 2026-11-17 | fix(exam): midterm coach corrected in place at the announced paths; no separate version files; GPT instructions and the full sheet corrected to match |

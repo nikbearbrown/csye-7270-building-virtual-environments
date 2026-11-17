@@ -136,12 +136,13 @@
 ---
 
 ## Not on this exam (watch the films; they still matter)
-- The Godot shading language, GDScript, or any code
+- Unity and Unreal: the course and the exam are Godot only
+- Any code: GDScript, the Godot shading language, node class names, and built-in names (such as `COLOR` or `SCREEN_UV`)
 - PBR details, including roughness and metallic maps, technical parameters and implementation workflows; the PBR-based No-Bake system. Only the general definition and importance of PBR in topic 14 are in scope.
 - Particle trails, paths, sub-emitters and the other particle settings
 - Deck 16 Animation foundations and deck 17 Animation and interaction (blend trees, tweens, tracks and so on)
 - The rest of the camera deck: dolly, truck, pedestal, orbit, zoom and lens, parallax, follow cameras, screen shake, limits
-- Game AI (decks 19 and 20), not yet covered in lecture
+- Game AI (decks 19 and 20, perception, pathfinding and decisions), not yet covered in lecture
 - Decks 21 to 25: walkthrough film, game trailer, and Unity and Unreal
 
 ---
