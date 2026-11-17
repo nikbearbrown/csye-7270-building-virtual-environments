@@ -1,6 +1,6 @@
-# CSYE 7270 Midterm Coach (v2.1): Claude Project and custom GPT
+# CSYE 7270 Midterm Coach: Claude Project and custom GPT
 
-**v2.1 (2026-11-17).** For the Claude Project, paste `CLAUDE-PROJECT-INSTRUCTIONS.md` into the Project instructions and that's all: the full exam sheet (24 topics, slides, "Not on this exam") is built into the instructions, so nothing has to be uploaded. The command clashes are fixed in both versions. What changed: `CHANGELOG.md`.
+**Updated 2026-11-17.** For the Claude Project, paste `CLAUDE-PROJECT-INSTRUCTIONS.md` into the Project instructions and that's all: the full exam sheet (24 topics, slides, "Not on this exam") is built into the instructions, so nothing has to be uploaded. The command clashes are fixed in both versions. What changed: `CHANGELOG.md`.
 
 **Executive summary.** This is a midterm study tool, in two versions that behave the same way: a Claude Project and a custom GPT. Students can do three things with it:
 1. **Help:** ask what's on the exam, get a topic explained, or have it make them a printable cheat sheet.
