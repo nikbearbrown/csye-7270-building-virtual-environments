@@ -314,6 +314,26 @@ Everything I say in a session is recorded here or in the matching assignment's l
 
 ---
 
+### 2026-11-20 — Assignment 8 rebuilt around the GDD, with the seven questions kept
+
+- **Date and what I was working on:** 2026-11-20, later the same day. Assignment 8, the pitch film, after reading the outline in the entry above.
+- **I tried / expected:** Asked whether the outline should replace Assignment 8's seven questions, I clicked "Replace the seven". Then I pasted Assignment 8's seven questions (all seven, word for word) and said: "also add this".
+- **What happened:**
+  - Read together: the outline goes into Assignment 8, and the seven questions stay. The film's order is now: Part 1, the game in brief (what it is, the goal, one picture); Part 2, the GDD (sixteen beats: Zelda's fourteen sections after metadata and vision, plus art direction and sound and music); Part 3, the seven questions, unchanged; Appendix, is this realistic (what exists, what is started, can one person finish by the final, where each asset comes from, with a licence check).
+  - Part 3 opens with one line saying where the questions overlap earlier parts (1 with the game in brief, 5 with the feature list and out of scope, 6 with risks): answer each once.
+  - The 2–4 minute length was removed ("no fixed length; one picture and a sentence or two per beat"), because about twenty-five beats do not fit in four minutes. My call to confirm.
+  - The pitch's 30 points were re-split by Claude to cover the new parts: game in brief 3, GDD 7, what and who 4, unique value 3, what it proves 3, why this project 2, scope and risk 2, appendix 4, shown not asserted 2. My call to confirm. The 50-point total and the other components are unchanged.
+  - Days 1–2 of the five-day shape now start from the GDD. The `pitch/` folder adds `GDD.md` (or a link to the GDD at the tagged commit), and `PROJECT-BRIEF.md` now holds the game in brief, the seven answers and the appendix, still ending with the exists today / will exist lists that Assignment 10 uses.
+  - A stray "bash" line above the Brutalist clone command was removed.
+  - The separate outline file, `assignments/pitch-video-gdd-outline.md`, was an uncommitted draft; its text is now in Assignment 8 and the file was removed.
+  - The due date was not changed: the file says "five days from release; Canvas shows the date", and Canvas and the schedule still say 2026-11-22. I had said "next Tuesday".
+- **What I did:** Chose "Replace the seven", then pasted the seven questions and said "also add this".
+- **What Claude or another person contributed:** Claude Code (Opus 5.5) rewrote Assignment 8, re-split the rubric, removed the draft, and wrote this entry. Not yet checked by me.
+- **What I understand now / still do not understand:** Not yet stated by me.
+- **Evidence and next step:** `assignments/08-final-project-pitch-film.md` (changed locally; not committed, not pushed, not on Canvas). Next: I read it; confirm the length and the point split; say whether the due date moves to Tuesday; then push it and update Canvas.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -341,3 +361,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-11-17 | fix(exam): midterm coach corrected in place at the announced paths; no separate version files; GPT instructions and the full sheet corrected to match |
 | 2026-11-17 | fix(exam): the midterm coach carries the exam sheet inside its instructions; no upload needed |
 | 2026-11-20 | Log my request for the pitch video outline: the game in brief, every GDD section, an appendix |
+| 2026-11-20 | Log Assignment 8 rebuilt around the GDD, with the seven questions kept |
