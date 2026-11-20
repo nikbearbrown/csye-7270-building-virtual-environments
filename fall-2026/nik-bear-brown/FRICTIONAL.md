@@ -297,6 +297,23 @@ Everything I say in a session is recorded here or in the matching assignment's l
 
 ---
 
+### 2026-11-20 — What goes in next Tuesday's pitch video: the game in brief, every GDD section, and an appendix on what is real
+
+- **Date and what I was working on:** 2026-11-20. The pitch video for the game class next Tuesday, read as November 24.
+- **I tried / expected:** My words. The message opened "Tune in for next Tuesday's video", read here as "For next Tuesday's video"; "criterion" in the fifth sentence may be a dictation error for "version", and is left as said.
+  > "For next Tuesday's video for the game class. Clearly, what is the game? Sort of what is the idea of the game? Should be there. So the first is, what is the game? So an executive summary on the game. The second thing is, look in the game design document. In fact, you can create a game design document and use this as the basis of a video. What is the artwork? What is the mechanic? What is all that? So look in the current criterion of the game design document, what it does. So everything in the game design document should be there. So what is your mechanic? What is your art? Whatever. And then sort of, is this realistic? Have you started any of this stuff? Do you have any things built? Can you build the art? Where are you getting the art? Where are you getting the animation? That all goes in the appendix. So basically, clear executive summary. What is the game? What is the goal of the game? Then look in the current game design document tool and see what are the components of it. Each one of those should be there. So list them now. And then just a final appendix of, oh, I'm going to use Mixamo for my models. I'm going to use, you know, Midjourney for art. Wherever people, I'm going to use the Unreal store. I'm going to use the Unity store, where I'm getting the stuff."
+- **What happened:**
+  - The current GDD tool is Zelda: Walker's `/gdd` skill, and the public prompt `prompts/zelda-gdd.md` in Walker. Its full GDD has sixteen sections: metadata; vision; pillars; core loop; player-experience goals; mechanics; systems; progression; world; narrative; characters; features; out of scope; technical; risks; open questions.
+  - The tool has no section for art and none for sound or music. Because I asked "What is the artwork?", the outline adds both, taken from Assignment 4's list ("Graphics and Styling", "Music and Sound Effects").
+  - The outline is `assignments/pitch-video-gdd-outline.md`. Part 1 is the game in brief: what it is, the goal, one picture. Part 2 is sixteen beats: the fourteen GDD sections left after metadata (the title card) and vision (Part 1), plus art and sound. The appendix asks what exists, what is started, whether one person can build it by December 20, and where each asset comes from (Mixamo, Midjourney, the Unity Asset Store, the Unreal store, which is now called Fab, and others), with a licence check for each.
+  - Assignment 8 (the pitch film, due 2026-11-22 on Canvas, 2–4 minutes, seven questions) was not changed. The outline overlaps it but is not the same, and sixteen GDD beats will be hard to fit in 2–4 minutes.
+- **What I did:** Gave the instructions above.
+- **What Claude or another person contributed:** Claude Code (Opus 5.5) found the GDD tool's section list, noticed that art and sound are missing from it, wrote the outline, and wrote this entry. Not yet checked by me.
+- **What I understand now / still do not understand:** Not yet stated by me.
+- **Evidence and next step:** `assignments/pitch-video-gdd-outline.md` (new; not committed, not pushed). Next: I read it and decide whether it replaces Assignment 8's seven questions or sits beside them, and whether it goes to Canvas and GitHub.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -323,3 +340,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-11-17 | docs(exam): midterm coach v2.1, the final exam sheet and the change log; README points at v2.1 |
 | 2026-11-17 | fix(exam): midterm coach corrected in place at the announced paths; no separate version files; GPT instructions and the full sheet corrected to match |
 | 2026-11-17 | fix(exam): the midterm coach carries the exam sheet inside its instructions; no upload needed |
+| 2026-11-20 | Log my request for the pitch video outline: the game in brief, every GDD section, an appendix |
