@@ -334,6 +334,18 @@ Everything I say in a session is recorded here or in the matching assignment's l
 
 ---
 
+### 2026-11-20 — Push the new Assignment 8
+
+- **Date and what I was working on:** 2026-11-20, later the same day. The rebuilt Assignment 8 (the entry above).
+- **I tried / expected:** Asked whether to push the new Assignment 8 to GitHub, I said: "Push it."
+- **What happened:** `assignments/08-final-project-pitch-film.md` was pushed in the same commit as this entry, exactly as described above: the game in brief, the sixteen GDD beats, the seven questions, the appendix, no fixed length, and the re-split pitch points. It is not on Canvas yet, and the due date was not changed (the file says Canvas shows the date; Canvas says 2026-11-22).
+- **What I did:** Said "Push it."
+- **What Claude or another person contributed:** Claude Code (Opus 5.5) checked that the GitHub copy had not changed since, pushed, and wrote this entry.
+- **What I understand now / still do not understand:** Not yet stated by me.
+- **Evidence and next step:** `assignments/08-final-project-pitch-film.md` on GitHub. Next: update the Canvas page; say whether the due date moves to Tuesday; when the GDD tool's art and sound sections are published, fix Assignment 8's line that says the tool has none.
+
+---
+
 ## GitHub pushes
 
 | Date | Commit note |
@@ -362,3 +374,4 @@ Everything I say in a session is recorded here or in the matching assignment's l
 | 2026-11-17 | fix(exam): the midterm coach carries the exam sheet inside its instructions; no upload needed |
 | 2026-11-20 | Log my request for the pitch video outline: the game in brief, every GDD section, an appendix |
 | 2026-11-20 | Log Assignment 8 rebuilt around the GDD, with the seven questions kept |
+| 2026-11-20 | Assignment 8: build the pitch film from the GDD, keep the seven questions, add the appendix |

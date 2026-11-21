@@ -14,13 +14,59 @@ Your final project is a portfolio piece: something a studio recruiter, lead or h
 
 Most final projects grow from the game you have been building since Assignment 2. That might be the game taken to a finished vertical slice, or a tool or system built on it. Either way, it lives in your `walker-` repository.
 
-In five days, make a short film with Brutalist that says clearly what you think that project will be.
+In five days, make a film with Brutalist that says clearly what you think that project will be. Build it from your game design document (GDD): write or update the GDD first, then make the film from it, one section at a time.
 
 This is a pitch, not a build. Part of your game already exists; most of the final project may not. The film must be honest about which is which. You are not locked in: you may change direction later and log the change in `FRICTIONAL.md`.
 
-**Length:** 2–4 minutes. Shorter is fine if the pitch is finished.
+**Length:** no fixed length. Keep each beat to one picture and a sentence or two.
 
-## The seven questions the film must answer
+## What the film contains, in order
+
+1. **The game in brief:** what the game is and what the player is trying to do.
+2. **The game design document:** every section of the course's GDD tool, plus art and sound.
+3. **The seven questions:** why anyone would care, who opens it, what it proves about you, scope, risk, and why you chose it.
+4. **Appendix: is this realistic?** What exists, what you have started, and where every model, animation, picture and sound will come from.
+
+## Part 1: The game in brief
+
+Answer these first, in plain sentences. A stranger should understand them before anything else.
+
+- **What is the game?** Its name, and one sentence about what the player *does*: the action, not the story or the setting.
+- **What is the goal?** What the player is trying to do, how they win, and what ends a run.
+- **One picture of it.** A capture from your game if it runs. If it does not run yet, concept art or a mock-up, labelled as such.
+
+If you are stuck, fill in the GDD tool's own sentence: "This game is [what] for [who], that delivers [core experience] through [primary mechanic]."
+
+## Part 2: The game design document
+
+The course's GDD tool is Zelda: Walker's `/gdd` skill, or the public prompt [`prompts/zelda-gdd.md`](https://github.com/nikbearbrown/walker/blob/main/prompts/zelda-gdd.md) in Walker. Its full GDD has sixteen sections. The first, metadata, goes on your title card (the GDD's version and date). The second, the vision, is Part 1 above. Each of the other fourteen gets its own beat in the film.
+
+The tool has no section for art or for sound, so those two are added from the Assignment 4 list. That makes sixteen beats, in this order:
+
+| # | Section | What to show or say |
+|---:|---|---|
+| 1 | Design pillars | The three or four promises to the player that every feature has to serve. |
+| 2 | Core gameplay loop | What the player does over and over: moment to moment, in one sitting, and what brings them back. What are they deciding at each scale? |
+| 3 | Player experience goals | What the player should feel, and when: "The player should feel [feeling] when [situation]." |
+| 4 | Core mechanics | Every action the player takes (move, jump, shoot, build…): the input, what it does, and what happens at the edges. Include losing and restarting. |
+| 5 | Systems | How the parts work together: enemies, scoring, resources, physics, AI. |
+| 6 | Progression | How things change as the player goes on: levels, unlocks, abilities, power-ups, difficulty. |
+| 7 | World and environment | Where the game takes place, the rules of that world, and the levels. |
+| 8 | Narrative | The story. If there is none, say so and say why. |
+| 9 | Characters | The main character, the enemies, anyone else the player meets. |
+| 10 | **Art direction** *(added)* | What the game looks like: the style, the palette, the references, and the art itself. Show it. |
+| 11 | **Sound and music** *(added)* | The sound effects and the music, and what each does for the player. |
+| 12 | Feature list | Every feature tagged must, should or could, and the smallest version that is playable. |
+| 13 | Out of scope | What the game will deliberately not do: no multiplayer, no save system, one level only. |
+| 14 | Technical requirements | Godot version, renderer, export target (web or desktop), the frame rate you are aiming for, and how assets go from greybox to finished. |
+| 15 | Risks | What could sink the project, and what you would do about it. |
+| 16 | Open questions | What you do not know yet, and how you will find out. |
+
+If a section does not apply to your game, say so and why. Never invent material just to fill a section.
+
+## Part 3: The seven questions the film must answer
+
+Some of these overlap earlier parts: question 1 with the game in brief, question 5 with the feature list and out of scope, question 6 with risks. Answer each once, where it fits best, and do not repeat yourself.
 
 1.  **What is it?** One sentence. Then say what exists when it is done: the artifact and its form. That might be a playable build (web or desktop export), a vertical slice, an editor tool or plugin, a shader and effects pack, or a gameplay system with a demo scene.
 2.  **Why would anyone care — what makes it special?** This is your unique value proposition.
@@ -43,6 +89,37 @@ This is a pitch, not a build. Part of your game already exists; most of the fina
 7.  **Why this project?** Why did you pick it? Is it something new you are learning, something you already know how to do and want to show off, or a mix? Say which skills are new to you and which you already have. For the ones you already have, say what you can point to as evidence: a tagged assignment, a test report, a capture. There is no wrong answer; learning and showing off are both good reasons. But be honest about which it is.
 
 "I don't know yet, and here is how I will find out" is a complete, respectable answer. A confident answer you cannot defend is not.
+
+## Appendix: Is this realistic?
+
+The film ends here. Answer honestly.
+
+- **What exists today?** Show it: real captured play from your game, with the tag or commit it came from. Use the past tense only for things you can show.
+- **What have you started but not finished?** Say how far along it is.
+- **What have you not started?** Say "will," not "does."
+- **Can one person build this by the final?** If not, say what you will cut.
+- **Where does each asset come from?** Fill in a table like this one:
+
+| Asset | Where it will come from | Made, generated, free or bought | Licence |
+|---|---|---|---|
+| Player character model | e.g. my own Blender model | made | mine |
+| Player animations | e.g. Mixamo | free | Mixamo terms |
+| Background art | e.g. Midjourney | generated | Midjourney terms |
+| Music | … | … | … |
+
+Places people get things, as examples:
+
+- **3D characters, rigging and animation:** your own Blender work (Assignment 3); Mixamo, Adobe's free auto-rigger and animation library; your own animation states (Assignment 7).
+- **2D art, concept art and textures:** your own drawings; Midjourney or another image generator; free libraries such as Kenney or Poly Haven.
+- **Asset stores:** the Unity Asset Store, the Unreal store (now called Fab), the Godot Asset Library, itch.io.
+- **Sound and music:** what you generated in Assignment 2; Freesound; your own recordings.
+- **Shaders and particle effects:** your own, from Assignments 5 and 6.
+
+Before you count on anything you did not make, check three things:
+
+1. **The licence lets you use it in a Godot game.** Store assets are often licensed for one engine or one kind of use. Read the terms.
+2. **You can put it in your public `walker-` repository.** Most store licences do not let you republish the raw files. If yours does not, say how you will handle it.
+3. **It is written down.** List it in `SOURCES.md` with its source and licence. Generated art and sound follow Assignment 2's rules and are labelled as generated.
 
 ## The honesty rule
 
@@ -78,8 +155,6 @@ A pitch that fabricates progress to sound ready has failed the assignment, howev
 
 ## Using Brutalist
 
-bash
-
 ``` bash
 git clone https://github.com/nikbearbrown/brutalist.art
 ```
@@ -98,8 +173,8 @@ If Brutalist won't run on your machine, that is a legitimate `FRICTIONAL.md` ent
 
 | Day | Do |
 |----|----|
-| 1 | Choose the project. Write the seven answers in `PROJECT-BRIEF.md`, in plain sentences. |
-| 2 | Turn the seven answers into a beat sheet: one picture, one idea per beat. Capture real play of anything that exists. |
+| 1 | Choose the project. Write or update your GDD with Zelda. Write the game in brief, the seven answers and the appendix in `PROJECT-BRIEF.md`, in plain sentences. |
+| 2 | Turn the GDD and `PROJECT-BRIEF.md` into a beat sheet, in the film's order: one picture, one idea per beat. Capture real play of anything that exists. |
 | 3 | Build the film. |
 | 4 | Run the gates. Check every claim against the honesty rule. Re-render what failed. |
 | 5 | Write Frictional, assemble the folder, tag `a8`, and submit to Canvas and GitHub. |
@@ -111,7 +186,8 @@ If Brutalist won't run on your machine, that is a legitimate `FRICTIONAL.md` ent
 **GitHub folder:** `pitch/` in your `walker-` repository, with the submitted commit tagged `a8`. It contains:
 
 - `README.md`: your name, the project's working title, the target role, the runtime, the film link with its filename and SHA-256 checksum, and how to rebuild the film;
-- `PROJECT-BRIEF.md`: one page answering the seven questions in text, ending with two lists, **exists today** (with the tag or commit where each thing can be seen) and **will exist**;
+- `GDD.md`: the game design document the film is built from, including art and sound. If your GDD lives elsewhere in the repository (for example `design/GDD.md`), link to it at the tagged commit instead;
+- `PROJECT-BRIEF.md`: the game in brief, the seven answers and the appendix (with its asset table) in text, ending with two lists, **exists today** (with the tag or commit where each thing can be seen) and **will exist**;
 - `beat_sheet.json`: your narration and visual plan;
 - `BUILD-PROMPT.md`: the prompts and commands that rebuild the film;
 - `SOURCES.md`: what you used, what you made, what Claude contributed, and any third-party asset with its licence;
@@ -142,12 +218,15 @@ Don't post another person's private information, restricted course material, or 
 
 | Criterion | Points |
 |----|----|
-| What and who: one clear sentence, a named artifact and its form, target role and reader, the first sixty seconds | 7 |
-| Unique value: why anyone would care, at least one real comparable game or tool named, a specific difference, no invented market or competitor claims | 5 |
-| What it proves: course skills named, evidence planned (tests, captures, measurements), no overclaiming | 5 |
-| Why this project: honest about new learning versus existing skill on show, new and existing skills separated, existing ones backed by something real | 4 |
-| Scope and honest risk: in, out and first separated; the first playable piece and how anyone would know it ran; a concrete risk; exists versus will-exist explicit | 5 |
-| Shown, not asserted: real captured play for what exists, constructed material labelled, nothing presented as done that is not, the film passes its own quality checks | 4 |
+| The game in brief: what the game is and what the player is trying to do, clear to a stranger before anything else, with one picture | 3 |
+| The game design document: all sixteen beats present and specific to this game, art and sound shown, sections that do not apply say why | 7 |
+| What and who: one clear sentence, a named artifact and its form, target role and reader, the first sixty seconds | 4 |
+| Unique value: why anyone would care, at least one real comparable game or tool named, a specific difference, no invented market or competitor claims | 3 |
+| What it proves: course skills named, evidence planned (tests, captures, measurements), no overclaiming | 3 |
+| Why this project: honest about new learning versus existing skill on show, new and existing skills separated, existing ones backed by something real | 2 |
+| Scope and honest risk: in, out and first separated; the first playable piece and how anyone would know it ran; a concrete risk | 2 |
+| Appendix: exists, started and will-exist kept apart; whether one person can finish it by the final; every asset's source and licence named | 4 |
+| Shown, not asserted: real captured play for what exists, constructed and generated material labelled, nothing presented as done that is not, the film passes its own quality checks | 2 |
 
 **Relative Quartile (10)** compares specificity, substantive improvement, demonstrated understanding, evidence, honesty about verification, usability, and professional communication across the whole comparison group. Meeting the stated requirements earns the 40 criterion-based points; it does not guarantee these 10. The instructor and TAs review the full group before assigning it.
 
