@@ -18,6 +18,14 @@ extends SceneTree
 ##  G  The gameplay fact the committing action is read against: the tick the
 ##     wave spawns and the charge clears, relative to the release swing, and
 ##     what a dodge right after a release click leaves (BRIEF-CHANGES).
+##
+## Re-pinned 2026-11-22 (A7 Step 5, plan step 6), only where CHANGE-BRIEF.md
+## predicts it: S1 (r3 (1): the sprite plays no "wave" action; the release
+## tick is wave_state STARTUP, the rig plays it), G1 (change 1: the release
+## locks 20/30 s at rate 1), G3/G4 (change 1, r3 (3), r5 (b): the wave
+## spawns and the charge clears 16 ticks after the release swing on this
+## landed release = 12 unfrozen + 4 hitstop ticks), G5 (change 1: a dodge in
+## startup spawns no wave and keeps the charge). Every other pin is unchanged.
 
 var rig: Node
 var game: GameManager
@@ -149,17 +157,26 @@ func run() -> void:
 	var charge_before := p.sword_charge
 	var waves_before := waves()
 	var last_cooldown := p._attack_cooldown
+	# Re-pin (r3 (1), r5 (b)): the release tick's wave_state, and the ticks
+	# between the release swing and the wave that were not frozen by hitstop.
+	var release_state := ""
+	var unfrozen_to_wave := 0
+	var last_hitstop := p.hitstop_remaining
 	await mouse(enemy.global_position, true)
 	for i in range(200):
 		hover(enemy.global_position)
 		await step()
 		var name := p._sprite.action_name
 		if name != "" and (actions.is_empty() or actions[-1] != name): actions.append(name)
+		if release_tick >= 0 and wave_tick < 0 and last_hitstop <= 0.0: unfrozen_to_wave += 1
+		last_hitstop = p.hitstop_remaining
 		if p._attack_cooldown > last_cooldown + 0.0001:
 			swing_ticks.append(i)
 			swing_actions.append(name)
 			swing_locks.append(p.swing_remaining)
-			if charge_before >= p.wave_hits_needed() and release_tick < 0: release_tick = i
+			if charge_before >= p.wave_hits_needed() and release_tick < 0:
+				release_tick = i
+				release_state = str(Player.WaveState.keys()[p.wave_state])
 		last_cooldown = p._attack_cooldown
 		if wave_tick < 0 and waves() > waves_before: wave_tick = i
 		if release_tick >= 0 and charge_zero_tick < 0 and p.sword_charge == 0: charge_zero_tick = i
@@ -170,18 +187,23 @@ func run() -> void:
 	for i in range(1, swing_ticks.size()): intervals.append(swing_ticks[i] - swing_ticks[i - 1])
 	print("S actions ", actions, " swings ", swing_actions, " at ", swing_ticks, " intervals ", intervals, " locks ", swing_locks)
 	print("G release tick ", release_tick, " wave tick ", wave_tick, " charge-zero tick ", charge_zero_tick, " cooldown ", p.current_cooldown(), " rate ", p.animation_rate())
-	check("S1 states in order: attack_1, attack_2, attack_3, wave, attack_1",
-		actions.size() >= 5 and actions.slice(0, 5) == ["attack_1", "attack_2", "attack_3", "wave", "attack_1"])
+	# Re-pinned (r3 (1)): the release is played by the rig, not the sprite.
+	print("S release tick wave_state ", release_state, "; unfrozen ticks release -> wave ", unfrozen_to_wave)
+	check("S1 [RE-PINNED r3] states in order: attack_1, attack_2, attack_3, (release: wave_state STARTUP, no sprite action), attack_1",
+		actions.size() >= 4 and actions.slice(0, 4) == ["attack_1", "attack_2", "attack_3", "attack_1"] and release_state == "STARTUP"
+		and swing_actions.size() >= 4 and swing_actions[3] == "")
 	check("T1 swings %s ticks apart while held (current_cooldown %.3f s)" % [str(intervals), p.current_cooldown()],
 		intervals.size() >= 4 and intervals.all(func(d): return d == roundi(p.current_cooldown() * 60.0) or d == roundi(p.current_cooldown() * 60.0) + 1))
 	check("T2 a normal swing locks movement for 0.25 s at rate 1 (swing_remaining %.4f)" % (swing_locks[0] if not swing_locks.is_empty() else -1.0),
 		not swing_locks.is_empty() and absf(swing_locks[0] - 3.0 / 12.0) < 0.02)
 	# BRIEF-CHANGES (change 1): the release locks 20/30 s, and the sprite plays no "wave".
 	var release_lock: float = swing_locks[swing_ticks.find(release_tick)] if release_tick in swing_ticks else -1.0
-	check("G1 [BRIEF-CHANGES] the release locks movement 0.25 s (swing_remaining %.4f)" % release_lock, absf(release_lock - 3.0 / 12.0) < 0.02)
+	check("G1 [RE-PINNED change 1] the release locks movement 20/30 s at rate 1 (swing_remaining %.4f)" % release_lock, absf(release_lock - 20.0 / 30.0) < 0.02)
 	check("G2 [BRIEF-CHANGES] the release is the 4th swing", release_tick >= 0 and swing_ticks.find(release_tick) == 3)
-	check("G3 [BRIEF-CHANGES] the wave spawns on the release swing's tick (offset %d)" % (wave_tick - release_tick), release_tick >= 0 and wave_tick == release_tick)
-	check("G4 [BRIEF-CHANGES] the charge clears on the release swing's tick (offset %d)" % (charge_zero_tick - release_tick), release_tick >= 0 and charge_zero_tick == release_tick)
+	check("G3 [RE-PINNED change 1, r3, r5] the wave spawns 16 ticks after the release swing, 12 of them unfrozen (offset %d, unfrozen %d)" % [wave_tick - release_tick, unfrozen_to_wave],
+		release_tick >= 0 and wave_tick - release_tick == 16 and unfrozen_to_wave == 12)
+	check("G4 [RE-PINNED change 1, r3, r5] the charge clears 16 ticks after the release swing, with the wave (offset %d)" % (charge_zero_tick - release_tick),
+		release_tick >= 0 and charge_zero_tick - release_tick == 16 and charge_zero_tick == wave_tick)
 
 	# ---- G: a dodge two ticks after a release click ----------------------
 	await step(90)
@@ -199,7 +221,7 @@ func run() -> void:
 	dash_key(false)
 	await step(30)
 	print("G dodge-after-release: waves ", waves(), " charge ", p.sword_charge)
-	check("G5 [BRIEF-CHANGES] dodge 2 ticks after a release click: the wave is out (1) and the charge is spent (0)", waves() == 1 and p.sword_charge == 0)
+	check("G5 [RE-PINNED change 1] dodge 2 ticks after a release click (in startup): no wave (0), charge kept (%d)" % p.wave_hits_needed(), waves() == 0 and p.sword_charge == p.wave_hits_needed())
 
 	# ---- T: the dodge's invulnerable window ------------------------------
 	await step(120)
