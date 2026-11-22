@@ -1,0 +1,25 @@
+Read CLAUDE.md first. The sprite sheets are art/characters/npc/npc_closure_idle.png,
+npc_cannot_idle.png and npc_squad_{melee,sniper,logistics}_idle.png (all
+the same 256x64 layout). Their source, license, cell size, grid and frame
+order are in CHANGE-BRIEF.md, with the frame count, frame rate and loop
+rule for npc_idle.
+
+Set up npc_idle on NpcIdle (a Sprite3D, with its AnimationPlayer) in a new
+scene res://animations/npc_idle.tscn as the Sprite3D-with-an-AnimationPlayer
+frame-track route, using Godot 4 properties for the version in CLAUDE.md.
+Give the scene npc_closure_idle.png as its default texture and the same
+sprite settings FieldArt.npc_idle() uses today (art/field_art.gd:162-182).
+Slice the sheet from the brief, not by guessing from the image. Set
+Animation.step to one frame period at the brief's frame rate.
+
+Add a read-back test, tests/test_npc_idle_readback.gd. For a frame track,
+assert every track resolves to a real node and property (the
+track_problems check, branched on track type), every frame key is inside
+the sheet, the track uses discrete updates, and key times, step and loop
+mode match the brief; compare key times with a tolerance of half a frame
+period, never with ==. Also assert the seam rule for a frame track from
+the brief.
+
+Run it through ./scripts/run-test.sh and show the real output. Do not
+wire the clip into the state machine yet: do not change
+art/field_art.gd, world/ or any other existing script. Do not commit.
