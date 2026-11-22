@@ -28,7 +28,7 @@ game. Every moving sprite is an `AnimatedSprite3D` whose `SpriteFrames` are
   frame = `action_time * 12 * action_rate` (`_action_frame()`, `:381`).
 - NPCs: `FieldArt.npc_idle(kind)` (`art/field_art.gd:162-182`) builds a
   4-frame, 3 fps looping `SpriteFrames` and calls `play("default")`. Callers:
-  可露希尔 behind the base store counter (`world/base_map.gd:762`) and the
+  Closure behind the base store counter (`world/base_map.gd:762`) and the
   field set pieces (squad, trader, camp) in
   `world/continuous_world_map.gd:2713-2724`, which also writes a random
   `figure.frame` so they do not breathe in step (`:2716`).
@@ -47,7 +47,7 @@ and the charge cleared on the same physics tick as the click (`:849`,
 ### Clip 1 — `npc_idle` (the cycle)
 
 - **What it communicates:** "this person is alive and waiting for you." The
-  NPCs (可露希尔 at the base store; the squad, the trader 坎诺特 and 可露希尔 at
+  NPCs (Closure at the base store; the squad, the trader Cannot and Closure at
   camps in the field) are where the player trades or talks. A frozen figure
   reads as scenery; a slow breathing loop reads as someone to walk up to.
 - **Object:** every NPC figure (`FieldArt.npc_idle` callers above), a second
@@ -111,9 +111,9 @@ and the charge cleared on the same physics tick as the click (`:849`,
 ## The sheets
 
 Provenance, as the user stated it (2026-11-22): the art is **fan art of
-Arknights characters generated with OpenAI's GPT "sol" image model** ("gpt
-sol模型生成的同人图"). The user's position: "正常同人二创，无违规" (ordinary fan
-derivative work, no violation). Recorded, not judged here. **Not yet
+Arknights characters generated with the image model the user calls "gpt
+sol"** (the user's words, translated: "fan art generated with the gpt sol
+model"). The user's position: "ordinary fan derivative work, no violation". Recorded, not judged here. **Not yet
 recorded, to be supplied by the user:** the exact model name and version, the
 terms of use and the date checked, and where the prompts are logged. Until
 then the credits file (`animations/ATTRIBUTION.md`) says "pending" for each.
@@ -124,7 +124,7 @@ it anyway.
 
 | | Clip 1 `npc_idle` | Clip 2 `wave_release` (rig parts) |
 |---|---|---|
-| Original as delivered (committed) | `art/portraits/batch_P1_v3/source_paintings/portrait_closure_chibi.png` (可露希尔); `art/field/batch_F1C_v1/source_paintings/squad_field_lineup.png` (squad, trader) | Lappland's combat sheet as delivered in Sol's batch (path recorded by the Step 4 session from `godot_assets/`'s provenance; pending) |
+| Original as delivered (committed) | `art/portraits/batch_P1_v3/source_paintings/portrait_closure_chibi.png` (Closure); `art/field/batch_F1C_v1/source_paintings/squad_field_lineup.png` (squad, trader) | Lappland's combat sheet as delivered in Sol's batch (path recorded by the Step 4 session from `godot_assets/`'s provenance; pending) |
 | Sheet as used | `art/characters/npc/npc_*_idle.png`, written by code (`art/characters/npc/prepare_npc.py:195-249`), committed with the code | `godot_assets/lappland_combat_64.png` |
 | Cell size | 64×64 px | 64×64 px |
 | Grid | `hframes = 4`, `vframes = 1` (256×64) | 16 columns × 5 rows (`COMBAT_ROWS`) |
@@ -277,7 +277,7 @@ frame.
 | 29 | 19 (last recovery) | nearly at rest |
 | 30 | 20 (end) | rig hidden, operator sprite back, same foot position |
 
-Cycle strip: `res://previews/npc_idle_preview.tscn`, 可露希尔 at the base
+Cycle strip: `res://previews/npc_idle_preview.tscn`, Closure at the base
 store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
 10 capture frames, a breath 40. Read frames 0, 10, 20, 30 (cells 0–3), 40
 (the wrap, cell 0 again) and 80 (second wrap) — for registration and the seam.
@@ -385,7 +385,7 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   hitstop**: `wave_frame` stops while `hitstop_remaining > 0`, as the clock
   rule says, so a landed release spawns 12 + (frozen ticks) after the click;
   the re-pin records the measured number. (4) Bonuses: damage, crit and
-  `attack_multiplier()` (incl. 赏善郎) are still taken on the click (that
+  `attack_multiplier()` (incl. the "Reward the Good" one-shot bonus) are still taken on the click (that
   swing's melee hit lands then); the gear signature bonus
   (`gear_fx.spend_signature_bonus()`) is spent at frame 6 with the wave, so a
   dodge in `STARTUP` keeps it, like the charge. (5) Leaving the floor or the
@@ -438,3 +438,16 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   the last RECOVERY and first READY frames (f19/f20). A smoke run (agent,
   not a fixture capture) read STARTUP 29, ACTIVE 37, RECOVERY 41, READY 50.
   The enemy stands to her west (screen left, the rig's own facing).
+- **2026-11-22 r7 (user, provenance).** The image model for the Sol art is
+  **gpt sol 6.1**. The user asked to record only that ("mark just this,
+  nothing else needed"), so the brief's other "pending" items — terms of use,
+  the date checked and the prompt log — are recorded as **not supplied by the
+  user**, not filled in by the agent.
+- **2026-11-22 r8 (agent, at the user's request: "write the documents, all in
+  English or translated into English").** Translation, plus one correction: the Chinese user
+  quotes in "The sheets" and the Chinese character and item names elsewhere
+  in this file were replaced by English (Closure, Cannot, Rhodes Island squad,
+  the "Reward the Good" bonus), and "OpenAI's GPT 'sol' image model" became
+  "the image model the user calls 'gpt sol'", because the maker was the
+  agent's inference, not the user's statement (r7 names the model). The originals are in the
+  history at `1d6ec52f`.

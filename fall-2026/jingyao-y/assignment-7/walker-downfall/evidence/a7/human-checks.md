@@ -8,7 +8,7 @@ kept apart. TEST-REPORT.md cites this file.
 
 - **What was shown:** `res://previews/npc_idle_side_by_side.tscn`, run
   windowed at the project's window size: the base store with today's
-  可露希尔 (AnimatedSprite3D from `FieldArt.npc_idle`) on the left and the new
+  Closure (AnimatedSprite3D from `FieldArt.npc_idle`) on the left and the new
   `animations/npc_idle.tscn` clip on the right, started one cell ahead. This
   is a fixture; the clip is not wired into the game yet.
 - **Asked:** whether the two breathe at the same rate, whether the right one
@@ -27,8 +27,8 @@ kept apart. TEST-REPORT.md cites this file.
 - **What was shown:** `res://previews/npc_idle_in_game.tscn`, windowed at the
   project's window size: the real game with `FieldArt.npc_idle` now
   instancing `animations/npc_idle.tscn`. About 12 s at the base store
-  (可露希尔, dark metal floor), then the seed-1729 Chernobog mine floor next to
-  the 罗德岛小队 set piece (three figures, dark rock ground).
+  (Closure, dark metal floor), then the seed-1729 Chernobog mine floor next to
+  the Rhodes Island squad set piece (three figures, dark rock ground).
 - **Asked:** same breathing as before (rate, feet, scale, crispness); no
   stutter, repeated frame or jump at the wrap over 5+ wraps; the three squad
   figures out of step; no drift in the cell; readable on both grounds.
@@ -55,3 +55,16 @@ kept apart. TEST-REPORT.md cites this file.
   dodged in, the mirror on each side, the swap artefacts. The rubric's
   "action in play, interrupt in each phase" human check stays open until the
   user confirms those, after the edge tests.
+
+## 2026-11-22 — remaining human checks (the user's report, translated)
+
+The user wrote these in Chinese; the agent translated them into English at
+the user's request (all documents in English). Observer: the user.
+
+- **Against the background (both clips over the darkest and lightest ground
+  they appear on):** "The light/dark contrast is clear; pass."
+- **The action in play, an interrupt in each phase:** "I tried interrupting
+  it during all combat states, during item searching, and while standing
+  still; pass."
+- **Provenance:** the image model is "gpt sol 6.1"; the user asked to record
+  only that ("mark just this, nothing else needed").

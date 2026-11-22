@@ -1,97 +1,104 @@
-# FRICTIONAL.md — Assignment 6
+# FRICTIONAL.md — Assignment 7: two animations
 
-Written by the agent (Claude Code, Claude Opus 5.5) from the session record,
-commits, logs and the user's recorded replies, 2026-11-07. The user's own words
-are quoted in English translation. Nothing here claims
-a human experience the user did not report. The A5 log is at tag `a5`.
+The A6 log is at tag `a6`. This file replaces it. Written by the agent
+(Claude Code) on 2026-11-22 from the commits, logs, transcripts and the
+user's own words; agent actions are attributed to the agent, human decisions
+and observations to the user. Tuning detail is in TUNING.md, results in
+TEST-REPORT.md; this file points to them rather than copying them.
 
-## Who did what
+## How the work ran
 
-| | Agent (Claude Code + six delegated agent sessions) | User |
-|---|---|---|
-| Choices | proposed the two effects after auditing the game's particles | chose them; chose the upload location; asked for "only what the course requires" and that it "can be opened and checked"; asked for English write-ups |
-| Writing | CHANGE-BRIEF.md and its revisions, every prediction and strip reading, reviews, TUNING/TEST-REPORT/README/SOURCES/this file, all commits | — |
-| Code | sessions 2/3/4/5/7 (`prompts/`, `sessions/`): effect scenes, config/state tests, previews, wiring, cost script; main session: probes, fixtures (`play_check`, `gpu_price`, scratch scene), `--loop`/`--snow`/`--pit`/`seed_rng` fixes | — |
-| Runtime checks | prepared each window and checklist | every runtime verdict, both tuning decisions, the Step 6 editor conversion, the Visual Profiler readings |
+| Who | Did |
+|---|---|
+| User | Chose where the work lives (a new course-repo folder, as A6), the art source (the game's Sol art), the rig route (2D cutout on a 3D billboard), the attack-speed rule (r4), and accepted or declined every proposal; watched every preview and gave every verdict; ran the Movie Maker capture; kept r0. |
+| Agent (main session) | Wrote CHANGE-BRIEF.md and revisions r1–r7, the pins, the probe, the review of every session, the previews, the mutation runner, TUNING/TEST-REPORT/this file, and every commit. |
+| Delegated agent sessions | Step 1 CLAUDE.md draft (`sessions/session-1.excerpt.jsonl`); Step 3 `npc_idle` (`session-3.jsonl`); Step 4 rig (`session-4.excerpt.jsonl`); Step 5 plan and six implementation invocations (`session-5-plan.excerpt.jsonl`, `session-5.excerpt.jsonl`). Prompts in `prompts/`. |
 
-The course runs agent steps as `claude -p` sessions. The `claude` CLI is not
-installed on this machine, so, as in A5, each step ran as a delegated agent
-session given the prompt verbatim plus written tool rules in place of
-`--allowedTools`; the transcripts are in `sessions/` (labelled excerpts where
-over ~1 MB). This is a deviation from the course command, not a hidden one.
+The course runs agent steps as `claude -p`. The `claude` CLI is not installed
+here, so, as in A5 and A6, each step ran as a delegated agent session given
+the prompt verbatim plus written tool rules in place of `--allowedTools`
+(the session prompts say which commands were allowed). Step 4 had one extra
+allowed command, approved by the user: `python -I tools/a7_cut_rig_parts.py`.
 
 ## What was tried and what happened
 
-1. **Upload scope changed twice.** The first plan copied the whole 3.8 GB game.
-   The user asked for only what A6 requires, then for something a reviewer can
-   open. The agent undid the unpushed snapshot commits and tracked the export
-   whitelist plus tests (648 MB, 3961 files; commit `6b39df56`). Checked by a
-   fresh clone at the end (TEST-REPORT).
-2. **Headless one-shot emitters lie.** The probe (`tests/a6_probe_headless.gd`)
-   showed a one-shot `GPUParticles3D` reads `emitting == false` from frame 1 and
-   never emits `finished` headlessly. Expected: `finished` would free the
-   burst. Response: HitSpark frees itself on its own 0.55 s timer; the state
-   test counts nodes (brief r1, `97c7abd1`).
-3. **First strip vs the user's eyes (TUNING Effect A r0).** The agent read r0 as
-   "sparks too small to read outward". The user, watching it move: "I can see
-   it splashing outward". Still frames lost the motion; the
-   user's verdict stood and nothing was changed on the agent's reading.
-4. **Effect A's only proposal was declined** (TUNING Effect A r1): the Puff
-   barely showed on snow ("Barely see a little"); the agent proposed
-   a larger quad; the user first said "Don't change", then later asked
-   for it ("Change effect A's puff"). Applied with the
-   prediction written before the decline; the predicted darkening of the snow
-   did not happen (only the body darkened); the user kept it
-   (`bac2d460`, `ca1b6142`).
-5. **Wrong diagnosis on the fire pit** (TUNING Effect B r1). User: "Blocked by
-   the stones, can't see it". The agent blamed the emitter
-   height and wrote a prediction; the user's screenshot showed level boulders.
-   Two fixture faults explained it: `fixed_map_seed` alone did not make the
-   floor repeatable (3 or 4 pits, moving), and pit 0 had the player on it. The
-   agent withdrew the proposal, seeded every RNG stream and chose an open pit
-   (`1c0a4e78`). The underlying level bug was parked for after A6 at the user's
-   request ("Do A6 first, fix it after").
-6. **The kept revision** (TUNING Effect B r2): "Looks smothered in the wood; the
-   fire should be bigger" → Flames quad 0.30 → 0.55,
-   approved, predicted ≥ 2× warm pixels and ≥ 5 px higher; measured
-   2.2–2.8× but only 2–3 px higher (miss recorded), kept by the user
-   (`ccb4097c`, `c6429399`, `73c0d1c9`).
-7. **Mutations.** The Godot 3 float spelling `initial_velocity = 3.0` failed the
-   config test and silently ran in game; the Vector2 spelling passed because
-   4.7.2 keeps `initial_velocity` as a compatibility alias (`df0c2f39`).
-8. **Real input headless.** The Step 3 session found that
-   `Input.parse_input_event` never reaches `GameManager._input` headless (why
-   the old `test_lappland_input` fails); its test also pushes the event into the
-   root window. The Step 5 session found E/Esc needed `Input.flush_buffered_events()`.
-9. **The process shader** could not be dumped by script (no shader RID from
-   GDScript). The user converted it in the editor; the first conversion was a
-   stale default shader (point emission, no ramp/curve). After the user toggled
-   the emission shape, the second was complete (`1add28db`, TEST-REPORT).
-10. **Pricing.** The cost script's empty scene (3 µs) proved it was not timing
-    itself; both effects were indistinguishable from the control headless. The
-    GPU fixture first used F7/F8, which the user found stop the running scene
-   ; keys moved to U/I/O. The user's Visual Profiler frames gave the
-    process step: A 0.14 ms, B 0.09 ms (`70bad4ea`).
+1. **The art source.** The agent warned that A2's rule for generated sprites
+   asks for no copyrighted character; the user answered "ordinary fan
+   derivative work, no violation" (translated) and kept the Sol art; later
+   gave the model as "gpt sol 6.1" and asked to record only that (brief r7,
+   `animations/ATTRIBUTION.md`). Terms and prompts are not recorded because
+   the user did not supply them.
+2. **The Step 1 draft found two real conflicts** in the agent's brief: a
+   second writer to the operator sprite's `visible`, and three existing test
+   expectations change 1 would break. The user accepted both fixes (r1,
+   `99c9a4a1`).
+3. **Headless input.** The pin harness's clicks never reached
+   `GameManager._input` under `--headless` (diagnosed with a probe: the press
+   registered, the pointer did not). The A6 suite already had the fix
+   (`root.push_input`); the pins reuse it (`573e244b`). This is also why
+   `test_lappland_input` has always failed headless.
+4. **A wrong guess in a pin.** The first draft predicted a 3-unit click walk
+   in 31–36 ticks; the game measured 26 ticks and 2.38 units in two identical
+   runs, and the pin records the measured value (`tests/test_a7_pins.gd` T5).
+5. **The brief was wrong about the sheet.** It said 16 columns; the Step 4
+   session measured 14 (896×320) (r2, `9333f4bd`).
+6. **A pin the agent should have marked.** Pin S1 expected the sprite's
+   "wave" pose, which change 1 removes; the agent had not marked it as one the
+   brief changes. The Step 5 plan session stopped on it, with five more test
+   expectations r1 had missed (r3, `a38513fb`), and r5 added five more found
+   by running (`0b5dda83`).
+7. **Transcripts.** The first committed Step 1 transcript was a truncated
+   copy of the task output stream (12 records); the full log is 1.2 MB. The
+   agent replaced it with a labelled excerpt and the full log's SHA-256
+   (`b53bfb70`). The full logs live in the subagent folder, not in the task
+   output file.
+8. **The mutation runner's first run did nothing.** Git Bash rewrote the
+   sparse-checkout pattern `/fall-2026/...` into a Windows path, so every
+   worktree was empty and no mutation ran; four empty worktrees were left
+   behind. The agent removed them, fixed the pattern (cone mode, no leading
+   slash), tested it in one worktree, and reran (`5cc51a16`, `1dc09f6a`).
+9. **The strip preview's click missed.** In the window the event's pointer
+   landed off the enemy; pushing the same events into the root window fixed
+   it, verified by a per-frame log (`e51a4563`). The brief's "trigger at
+   capture frame 10" was impossible (loading takes ~17 frames), so the
+   frames to read come from the log (r6).
+10. **A lost log.** The user's two windowed looks after the capture
+    overwrote the r0 per-frame log; the r0 frames still match the agent's
+    smoke run exactly (29/37/41/50). The preview now writes one log per run
+    (`5ebdda9b`).
+11. **Things that worked first time,** and how that was checked: the NPC
+    seek-based phases (a probe measured three squad figures at 0.88/1.22/0.22
+    s); the plan step 2 attach (nine suites unchanged); the four mutations
+    after the runner fix (each failure line read, not only the exit code).
 
-## Agent mistakes caught
+## What was checked, changed or learned in response
 
-- Wrong occlusion diagnosis (5), caught by the user's screenshot.
-- Non-deterministic fixture (5), found while chasing it.
-- F7/F8 keys (10), caught by the user.
-- Step 2 session deleted a `.wav` beyond the `rm` scope it was given; harmless,
-  noted. Step 3 session used `cp` outside its allowed Bash list for a log copy.
-- Godot's `--import` rewrote 1549 `.import` files to LF; committed separately
-  so it would not hide real diffs (`3290679b`).
+- Every session's diff and tests were reread and rerun by the main session
+  before commit; three test files were audited for direct calls to the
+  transition functions (none).
+- The user added the attack-speed rule mid-stream (r4): buffs speed the
+  release like every swing, debuffs only lengthen the cooldown.
+- The rig's SubViewport rendered every frame while hidden; the agent's
+  review added `UPDATE_DISABLED` at rest (`f965840e`).
+- RESET was not playing at start; adding it tripped the structure test's S6,
+  and the user chose to allow `_build_wave_rig` as a caller (`6648c007`).
+- **Unresolved:** death, loss of control, operator swap and leaving the floor
+  mid-release are untested; edges at r > 1 are untested; Claude's two strip
+  observations (an early hit flash, facing) were not taken up.
 
-## Accepted, modified, rejected
+## Accepted, modified, rejected (the user)
 
-The agent accepted the sessions' code after reading every diff; it modified
-the previews (loop/snow/seed/pit fixes) and rejected nothing outright. The
-user declined one tuning proposal and later approved it, approved and kept
-both revisions, and redirected one diagnosis.
+- **Accepted:** the brief; r1; all five Step 5 stop-item recommendations
+  (r3); every plan step; the re-pin; the S6 allowance.
+- **Chose:** location, art source, rig route, "scale like today" for attack
+  speed, "Keep r0, no revision".
+- **Rejected / declined:** using a CC0 or code-made sheet instead of the Sol
+  art; a tuning revision after Claude's strip reading.
 
-## Still uncertain
+## Traceability
 
-Effect A's draw-step GPU cost; embers' visibility at default zoom; whether the
-boss-arena fire behaves on screen as the headless test says; the vsync-off FPS
-comparison (not done).
+Commits in the order the work happened: `git log -- .` in this folder (brief
+`1d6ec52f` → pins `573e244b` → setups `3c6605eb`, `1722fbbd` → wiring
+`b0e69214`, `1f148a98`, `f965840e` → tests `42a78312`, `45cf5845` → re-pins
+`e3a9f825`…`4d76441f` → mutations `1dc09f6a` → strip `5ebdda9b`). Human
+checks: `evidence/a7/human-checks.md`. Tuning: TUNING.md.

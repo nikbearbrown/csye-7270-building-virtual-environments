@@ -1,302 +1,178 @@
-# TEST-REPORT.md — Assignment 6
+# TEST-REPORT.md — Assignment 7: two animations
 
-Machine: Windows 11, Godot 4.7.2-stable (official) console build, Forward+ / D3D12.
-Every run goes through `scripts/run-test.sh`; the mode is given with each result.
+The A6 report is at tag `a6`. This file replaces it. Written by the agent
+(Claude Code) from executed checks (logs cited) and the user's own reported
+observations (`evidence/a7/human-checks.md`, `TUNING.md`). Anything not
+performed is marked **pending**.
 
-## Headless facts probe
+- **Source revision:** game source as of `5ebdda9b` (the last game-code
+  change is `45cf5845`; later commits change tests, docs and evidence only).
+- **Engine:** Godot 4.7.2-stable (official), Forward+, D3D12, NVIDIA GeForce
+  RTX 4060 Laptop GPU (`logs/a7_renderer_windowed.log`), Windows 11.
+- **Mode:** every suite through `./scripts/run-test.sh <suite> <mode>`; all
+  A7 suites at `60` (`--fixed-fps 60`); none waits on audio, so realtime mode
+  was not needed.
 
-`./scripts/run-test.sh a6_probe_headless.gd 60` → `logs/a6_probe_headless_60fps.log`
-(agent, 2026-11-07). Headless reports `forward_plus` / `d3d12` with an empty
-adapter name (dummy renderer). Every class, property and enum CHANGE-BRIEF.md
-names exists in 4.7.2. `CPUParticles3D` has no `amount_ratio`;
-`ParticlesMaterial` and `scale_random` do not exist; `initial_velocity` and
-`scale` exist as Vector2 compatibility properties that set the min/max pair.
-A one-shot `GPUParticles3D` reads `emitting == false` from frame 1 and never
-emits `finished` headlessly.
+## Summary
 
-## Baseline (before any A6 code)
-
-All 89 `tests/test_*.gd` at fixed 60 fps through `scripts/run-baseline.sh`
-(10 in parallel, each via `run-test.sh <file> 60 <300|1200>`):
-**78 of 89 pass** (`logs/baseline-before/summary.txt`). The 11 failures were
-rerun one at a time (`run-test.sh <file> 60 600`,
-`logs/baseline-before-serial/summary.txt`): `test_audio` and `test_market`
-pass alone (load-sensitive); amiya_input, base_crew, hotbar_input, loot_input
-time out (124) and builds, combat, item_icons, lappland_input fail (1) alone as
-well; `test_ui_v1` was not rerun alone (the serial run was stopped before it).
-The Step 3 session measured why the real-input suites fail headless:
-`Input.parse_input_event` never reaches `GameManager._input`, so their mouse
-pointer stays at (0,0). None of these are touched by A6.
-
-## Effect A state test (Step 3 session, 2026-11-07)
-
-`./scripts/run-test.sh test_hit_spark_state.gd 60 600` — fixed 60 fps,
-headless, real `main.tscn`, real game loop, real left-mouse events
-(`Input.parse_input_event`, plus `root.push_input` when headless so the event
-takes the game's own Window → SubViewport → `GameManager._input` path). The test
-never calls `_hit_spark`, `CombatVfx.spawn`, `attack()` or `attack_direction()`.
-Result: **22 PASS, 0 FAIL, exit 0** (`logs/test_hit_spark_state_60fps.log`).
-
-| Rule | What was asserted |
-|---|---|
-| A1 | none on load (game, base, field, +30 frames); Lappland held attack: 4 landed hits → 4 HitSparks at the struck enemy's position (max offset 0.0), each a child of GameManager; cross cut adds one on the second enemy; frame-by-frame match of sparks to landed melee hits; sword-wave projectile hit → none; ground click → walk, no swing, none; enemy hits her → none |
-| A2 | Amiya's double cut: sparks added 0.117 s apart, two distinct nodes alive together, first not restarted (its own clock never went back) |
-| A3 | all 13 freed; each lived 32 frames = 0.533 s (between 0.45 s and 0.55 s + 1 frame) |
-| A4 | a 1-HP enemy killed by a real hit left the tree on frame 407, its spark on frame 439 |
-
-Parent mutation (burst parented to the enemy): 3 checks fail (GameManager
-parent, A4, A3 lower bound), `logs/test_hit_spark_state_60fps_mutation_parent.log`;
-code restored, diff re-checked by the main session.
-
-Not provable headlessly: that the bursts emit or look right, "both emitting"
-on screen, A4's full play on screen, legibility, screen-edge clipping. Not
-drivable by real input: a swing that misses (a ground click walks since
-2026-10-20; `attack()` only swings at a target in reach and sight).
-
-After the change, all suites in parallel (`logs/baseline-after-step3/summary.txt`):
-**80 of 91** (the two new A6 suites pass). Differences from before:
-`test_audio` FAIL→PASS (load-sensitive, passes alone before too);
-`test_elevation` PASS→FAIL in parallel, passes alone
-(`run-test.sh test_elevation.gd 60 1200`, exit 0). The other ten failures are
-the same as before.
-
-## Effect A configuration test and mutations (agent, 2026-11-07)
-
-`./scripts/run-test.sh test_hit_spark_config.gd 60` (fixed 60 fps):
-165 checks, 0 failed, exit 0 (`logs/test_hit_spark_config_60fps.log`).
-Each mutation was made in `effects/hit_spark.tscn`, run, and the file restored
-byte-for-byte from a copy; the clean rerun is again 165/0.
-
-| Mutation | Edit (Sparks process material) | Config test | Evidence |
-|---|---|---|---|
-| M1 Godot 3 name | `initial_velocity_min = 3.0` → `initial_velocity = 3.0` | **exit 1**: `FAIL Sparks initial_velocity_min/max [3.0, 6.0] (got 0.0, 6.0)` | `evidence/a6/mutations/m1_godot3_name.log` |
-| M1, game | same mutation, preview run windowed | the effect still fires at frames 10 and 16, no load warning or error; sparks start at speed 0–6 instead of 3–6 | `m1_godot3_name_preview.log`, `m1_godot3_name_frame12_fixture.png` (fixture) |
-| M1b compat form | `initial_velocity = Vector2(3, 6)` (min/max lines removed) | **exit 0**, 165/0: 4.7.2 still has `initial_velocity` as a Vector2 compatibility property that sets min and max, so this spelling is translated, not dropped | `m1b_compat_vector2.log` |
-| M2 drift | `damping_max = 10.0` → `4.0`, brief unchanged | **exit 1**: `FAIL Sparks damping_min/max [6.0, 10.0] (got 4.0, 4.0)`; Godot also pulled `damping_min` down to the new max | `m2_value_drift.log` |
-
-So the Godot 3 *float* spelling fails silently in the game and is caught only
-by the read-back test; the Vector2 spelling works because the old name survives
-as a compatibility alias in this version.
-
-## The process shader (Step 6)
-
-**Who did what.** Godot 4.7.2 does not expose a material's shader RID to
-scripts (`get_shader_rid` and `_get_shader_rid` both fail from GDScript:
-`logs/a6_dump_process_shader_windowed.log`), so the agent could not dump the
-code itself. The agent wrote `tests/a6_make_scratch_process_scene.gd`, which
-saves `previews/scratch_process_shader.tscn`: one `GPUParticles3D` with a
-unique deep copy of `effects/hit_spark.tscn` Sparks' `ParticleProcessMaterial`.
-**The user** opened it in the editor and used the Inspector's Process Material
-menu → Convert to ShaderMaterial → Shader → Save As. The agent moved the saved
-file into `shaders/` (the dialog put it under `previews/shaders/` the first
-time and the project root the second).
-
-**Attempt 1 was not the material's shader.** Converted straight after opening,
-the code had a POINT emission shape and no `color_ramp` / `scale_curve`
-sampling (line 157 held only `// Compile-time add textures.`), though the copy
-has a radius-0.1 sphere, a ramp and a curve. Kept as
-`evidence/a6/step6/attempt1_particles_generated.gdshader.txt`. For attempt 2
-the user first changed Spawn → Position → Emission Shape to Point and back to
-Sphere, forcing the material to regenerate, then converted. Attempt 2 has the
-sphere, the ramp and the curve: it is `shaders/particles_generated.gdshader`
-(371 lines; nothing in the game uses it). Conclusion: the converter copies
-whatever shader the material last generated; on a freshly loaded material
-that was a default one.
-
-| What | Line(s) in `shaders/particles_generated.gdshader` |
-|---|---|
-| `shader_type particles;` | 3 |
-| `start()` / `process()` | 224 / 274 |
-| initial velocity from its min and max | 140: `params.initial_velocity_multiplier = mix(initial_linear_velocity_min, initial_linear_velocity_max, rand_from_seed(alt_seed));` (uniforms 10–11); used as the start velocity at 263 |
-| gravity changes velocity | 307 `force = gravity;` then 320 `USERDATA1.xyz += force * DELTA;` (accumulated velocity), 338 `VELOCITY = final_velocity;`, 339 position step |
-| colour over life sampled | 162 `parameters.color *= texture(color_ramp, vec2(lifetime));` inside `process_display_param` (159), called from `process()` at 341 with `lifetime_percent`, written at 346 `COLOR = params.color;` |
-| scale over life applied | 161 `parameters.scale *= texture(scale_curve, vec2(lifetime)).rgb;`, applied to the transform at 361–363 |
-| tie to the brief | 140 ↔ Sparks `initial_velocity_min–max` **3.0–6.0** (CHANGE-BRIEF Effect A settings); also 132 damping ↔ **6.0–10.0** |
-| `amount_ratio` | 236 `if (rand_from_seed(alt_seed) > AMOUNT_RATIO) { ACTIVE = false; }`: a particle is skipped at spawn, the buffer is not reallocated (why Effect B drives `amount_ratio`, not `amount`) |
-
-**Which brief settings live here, which in the draw step.** In this process
-shader: emission shape and radius, direction and spread, initial velocity,
-gravity, damping, scale min/max and scale curve, colour ramp, hue variation,
-angle, lifetime randomness, and the per-particle `AMOUNT_RATIO` test. Not here:
-`amount`, `lifetime`, `one_shot`, `explosiveness`, `preprocess`,
-`local_coords`, `visibility_aabb` (node settings the engine feeds in as
-built-ins such as `LIFETIME`, `EMISSION_TRANSFORM`, `RESTART_*`), and the whole
-draw step: the `QuadMesh` size and its `StandardMaterial3D` (unshaded,
-`BILLBOARD_PARTICLES`, `vertex_color_use_as_albedo`, transparency, blend mode,
-fog) and the gradient texture. The colour this shader writes to `COLOR` only
-shows because the draw material uses vertex colour as albedo.
-
-## Effect B wiring and state test (Step 5 session, 2026-11-07)
-
-`entities/fire_pit.gd`: the two code-made `CPUParticles3D` are replaced by one
-`effects/fire_pit_flames.tscn` instance; `_show_fuel()` reads `burn_left` and
-sets only `emitting` and `amount_ratio = 0.3 + 0.7·clamp(burn_left/120, 0, 1)`
-on both emitters (a fire lit from cold is `restart()`ed so preprocess applies);
-`_ready` ends with `_set_lit(lit())` so a pit fuelled before it enters the tree
-starts lit. `burn_left`, `feed()`/`burn()` arithmetic, warmth, the model and
-the Glow halo are unchanged; reviewed by the main session.
-
-`./scripts/run-test.sh test_fire_pit_flames_state.gd 60 600` — fixed 60 fps,
-headless; real `main.tscn`, seed 2026 + `seed_rng`, Sami floor, pit 1.
-Feeding only by a real E key event and a real click on the fuel picker row;
-burning only through the physics loop. Result: **0 failures**
-(`logs/test_fire_pit_flames_state_60fps.log`). A per-frame monitor checked
-11 846 samples (352 distinct ratios): `emitting == (burn_left > 0)`,
-`amount_ratio == mapping` (±1e-4), `amount` 24/10 every frame.
-
-| Rule | Asserted |
-|---|---|
-| B1 | on the sample where `burn_left` first goes 0→>0 (E + plank, ~60) both emitters emit; same for a relight (solid fuel, ~120) |
-| B2 | on the sample where it reaches 0 in the loop both stop; still stopped 2.3 s later, ratio 0.3 |
-| B3 | ratio = mapping after feeding (0.65), burning (0.59), refuelling (≈1.0), clamped at 180 (1.0); `amount` never changes |
-| B4 | tree paused: `burn_left` frozen, state unchanged, emitters `can_process() == false`, still frozen 30 frames on; Esc pause menu: `simulation_active()` false, tree not paused, fuel frozen, GPU nodes keep processing |
-| B5 | pit hidden, and effect root hidden: state keeps following `burn_left`; shown again at the current ratio |
-| B6 | rest-stop campfire (fed 300 at load): first sampled frame both emitting, ratio 1.0 (route column set to "rest" as a fixture, then the real `advance(0)`) |
-
-Headless `emitting` on these continuous emitters reads back correctly (true
-while lit, false after); only one-shot emitters misreport (r1 b).
-Not driven: the boss hammer's `burn()` and the arena's first fire (same code
-paths). Not provable headlessly: preprocess on the first drawn frame, the die-out
-on screen, freezing on screen, nothing drawn while hidden.
-
-After wiring, the fixture strip `captures/fire_pit_flames/r1-wired/` is
-pixel-identical in warm-pixel counts to r1 (12:170 40:164 54:162 70:108 99:33
-105:27, 10/130/175: 0): the in-game pit draws exactly what the fixture did.
-
-All suites in parallel after the change (`logs/baseline-after-step5/summary.txt`):
-**82 of 93** (both new B suites pass). Versus after-step3: `test_elevation`
-FAIL→PASS (load-sensitive); `test_arenas` PASS→FAIL on three blood-debt values, passes
-alone (85/0). The other ten failures are the known pre-existing ones. No
-existing test reads the old `_flames`/`_embers`.
-
-## Headless CPU price (Step 7 session, 2026-11-07)
-
-`./scripts/run-test.sh cost_effects.gd 60 300` (fixed 60 fps, headless;
-`tests/cost_effects.gd`, adapted from Example 09's `particle_cost.gd`;
-log `logs/cost_effects_60fps.log`). Metric: wall-clock time between consecutive
-frames; 60 warm-up + 300 timed frames, 5 rounds, the four game cases
-interleaved with rotating order and each compared with the same round's
-effects-off control. Sami floor 1, seed 2026 (+ `seed_rng`), 3 pits, 89 enemies.
-
-| Case | Mean ms/frame | sd over rounds | vs effects off (paired) |
-|---|---|---|---|
-| empty scene (control) | 0.0032 | 0.0001 | — |
-| game, both effects off | 7.6759 | 0.0498 | — |
-| A, 8 HitSparks alive (7–8 at any time, 73 added per window) | 7.7008 | 0.0606 | +0.025 ± 0.029 |
-| B, one pit at ratio 1.0 | 7.6627 | 0.0446 | −0.013 ± 0.078 |
-| B, all 3 pits at ratio 1.0 | 7.7380 | 0.1336 | +0.062 ± 0.114 |
-
-Instrument check: empty and game differ 2400×, and the empty frame (3 µs) is far
-below the 6.9 ms low-processor sleep that made the chapter's script report one
-number for every case, so the script measures the scene, not itself. The
-effect cases are **not distinguishable** from the effects-off control (each
-within two standard errors of zero) even though the sparks and fires were
-really alive (+36 nodes for A). Headless runs a dummy renderer: no particle
-process, no draw; only node bookkeeping (HitSpark's age counter and spawn/free,
-the pit's `amount_ratio` writes and glow flicker) reaches the CPU, which is
-microseconds against a 7.7 ms game frame. Consistent with the brief's
-predictions (A +0.02, B +0.005/+0.02 ms) but not resolvable; it says nothing
-about the GPU budgets, which are judged on Visual Profiler GPU time.
-`Performance.TIME_PROCESS`/`TIME_PHYSICS_PROCESS` were tried and rejected (they
-summed to more than the frame headless). The floor has 3 pits, not the 4 the
-brief priced.
-
-## GPU price (human check, windowed, 2026-11-07)
-
-**Executor: the user**, in the Godot 4.7.2 editor, running `previews/gpu_price.tscn`
-(fixture; F6) with Debugger → Visual Profiler, on **NVIDIA GeForce RTX 4060
-Laptop GPU** (CPU AMD Ryzen 9 7940HX), D3D12 / Forward+, 1280×720, vsync on.
-Keys U / I / O toggle Effect A at peak (≈8 HitSparks alive), Effect B (all 3
-pits at 300 s, ratio 1.0) and vsync. (F7/F8 were tried first: they are the
-editor's pause/stop for a running scene, found by the user; keys moved.)
-The table reads one selected frame per state, from the user's screenshots in
-`evidence/a6/gpu/`.
-
-| State | Render Viewport GPU (whole frame) | `Update GPU Particles` GPU (the process step) | Screenshot |
-|---|---|---|---|
-| both off | 3.73 ms | row absent | `visual_profiler_round3_both_off.png` |
-| A on (≈8 bursts) | 3.71 ms | **0.14 ms** | `visual_profiler_round2_U_A_on.png` |
-| B on (3 pits full) | 3.68 ms | **0.09 ms** | `visual_profiler_round2_I_B_on.png` |
-
-- The whole-frame difference (−0.02 / −0.05 ms) is smaller than frame-to-frame
-  variation (round-1 frames read 3.7–10.7 ms), so the whole-frame on/off
-  comparison cannot resolve either effect from single frames.
-- The `Update GPU Particles` row exists only while these GPU effects run (every
-  other particle system in the game is a `CPUParticles3D`), so it is a direct
-  reading of their process step on the GPU.
-- **Budget:** A 0.14 ms ≤ 0.25 ms; B 0.09 ms (3 pits) ≤ 0.15 ms (budget set for
-  4 pits). Both within budget on the process step. Predicted 0.05 / 0.06 ms:
-  the readings are about 2–3× the prediction.
-- **Not measured:** the draw step (particles' share of the transparent pass was
-  not isolated in the screenshots), averages over many frames, and the vsync-off
-  FPS comparison (optional; not done).
-
-## In-play checks (human check, 2026-11-07)
-
-**Executor: the user**, running `previews/play_check.tscn` (fixture: real
-Sami floor, seed 2026, simulation running, fuel in the pack; extra keys Y =
-tree pause, H = hide pit effects), windowed 1280×720, RTX 4060 Laptop.
-Checklist given: (1) Effect A on every hit, including held-button rapid
-repeats; (2) a pit lit with E: full at once, then dwindling and dying out;
-(3) Esc menu (flames keep moving, fuel frozen) and Y tree pause (frozen);
-(4) H hide/show (shown again at the current fuel); (5) camera zoom/rotate so
-a burning pit or a burst sits at the screen edge (no pop-out); (6) size of
-both effects against the character.
-User's verdict, snow (lightest ground): "No problems with any of them."
-
-City (darkest ground), `play_check.tscn -- --city`, Effect A from normal
-melee play: "Very clear."
-Scene load, `play_check.tscn -- --lit` (every pit fed in the frame the floor
-finishes loading; an approximation of the camp fire lit at floor build, which
-the fixture cannot reach): "Burning in full."
-Not checked by the user: the boss arena's first fire and the boss hammer's
-fuel cost (same code paths, covered headlessly only for the hammer's `burn()`
-path in general, not on a boss floor).
-
-**Order note.** The GPU readings above and the headless price were taken
-before Effect A r1 (Puff quad 0.5 → 1.0, kept later the same day). That change
-affects only the draw step of 4 puff particles per burst (larger quads, more
-overdraw), not the process step that the `Update GPU Particles` row measures;
-it was not re-priced.
-
-## Fresh-clone check (agent, 2026-11-07)
-
-Sparse clone of the course repo into a scratch folder, then `--import` once
-and every suite through `scripts/run-baseline.sh` (60 fps, 8 jobs).
-
-**Clone of tag `a6` (`1fe584aa`): 75 of 93.** All four A6 suites passed. The
-check found a real gap in the upload: four existing suites read files that
-the export whitelist leaves out (`test_a3_assets`: `art/models/asset_preview.tscn`
-and two `.glb`; `test_audio`: `audio/asset_log.json`; `test_i18n`:
-`i18n/keys.json`; `test_materials`: the two A5 cargo materials and their
-textures). Those 13 files and their sidecars were added
-(`scripts/a6_tracked_files.py`, `TEST_SUPPORT`; commit `b1f0cbb6`). One file
-(the film receipt) did not check out at first because the clone sat in a
-271-character path; `core.longpaths=true` fixed it. Reviewers cloning deep on
-Windows may need the same.
-
-**Clean clone at `b1f0cbb6` (every untracked and ignored file removed, so no
-`.godot` cache): 78 of 93 in parallel.** All four A6 suites pass. The ten
-pre-existing failures are the same as in the baselines above (`amiya_input`,
-`base_crew`, `builds`, `combat`, `hotbar_input`, `item_icons`,
-`lappland_input`, `loot_input`, `market`, `ui_v1`). Five more failed under
-load from a cold cache and were rerun alone in the same clone:
-
-| Suite | Parallel | Alone |
+| Check | Result | Evidence |
 |---|---|---|
-| test_audio | FAIL | PASS |
-| test_arenas | timeout | PASS |
-| test_boss_show | timeout | PASS |
-| test_bridges | timeout | PASS |
-| test_elevation | FAIL | FAIL, PASS, FAIL (three runs) |
+| Baseline before the change | 93 of 103 suites pass | `logs/baseline-before/summary.txt` (commit `573e244b`) |
+| Baseline after the change | 99 of 108 pass (5 new A7 suites, all pass) | `logs/baseline-after/summary.txt` (`a49e1495`) |
+| Behaviour pins before / after | 16/16 before; 11/16 after wiring (the 5 predicted); 16/16 after the re-pin | `tests/test_a7_pins.gd`; `logs/test_a7_pins_after_step3_60fps.log`; `logs/test_a7_pins_60fps.log` |
+| Read-back, `npc_idle` | 55/55 | `tests/test_npc_idle_readback.gd`, `logs/test_npc_idle_readback_60fps.log` |
+| Read-back, `wave_release` rig | 136/136 | `tests/test_wave_rig_readback.gd`, `logs/test_wave_rig_readback_60fps.log` |
+| State machine structure + state test | 51/51, identical over three runs | `tests/test_wave_state_machine.gd`, `logs/test_wave_state_machine_60fps.log` |
+| Edges (interrupt before / on / after each boundary) | 39/39, identical over three runs | `tests/test_wave_edges.gd`, `logs/test_wave_edges_60fps.log` |
+| Mutations (4, each in its own worktree) | m1–m3 exit 1 as required; m4 (fresh cache) passes | `logs/a7_mutations/` (`1dc09f6a`) |
+| Headless facts probe | 47/47 | `tests/a7_probe_headless.gd`, `logs/a7_probe_headless_60fps.log` |
 
-`test_elevation` passes all 17 checks every time; the failures are
-`SCRIPT ERROR` lines from a race in the floor build that the wrapper counts as
-failure (`GameManager._trap_spot_ok` at `game/game_manager.gd:4752` touching a
-freed node, once `FieldLight.build` at `world/field_light.gd:71`). That file
-is unchanged since the A6 starting commit; it passes alone in the working
-folder. Recorded as pre-existing and timing-dependent, not fixed.
+## Baseline
 
-Resolved result: 83 of 93 pass when the load-sensitive suites run alone,
-`test_elevation` counted as passing only on its clean run; the ten failures
-are the pre-existing ones.
+Every earlier suite, before (`573e244b`, A7 starting code) and after
+(`a49e1495`), each at 60 through `scripts/run-baseline.sh` (12 in parallel).
+
+- **Before: 93 of 103.** Failing: `test_amiya_input`, `test_base_crew`,
+  `test_hotbar_input`, `test_loot_input` (timeouts; they need a real
+  window), `test_lappland_input`, `test_ui_v1` (also failing in every A6
+  baseline), and `test_audio`, `test_loot`, `test_progression`,
+  `test_siracusa_enemies`.
+- **After: 99 of 108.** The 5 new A7 suites pass. `test_audio`, `test_loot`
+  and `test_progression` now pass (A7 did not touch them; read as earlier
+  parallel-run flakes). Two flipped to fail in the parallel run, neither
+  caused by A7:
+  - `test_combat` `wave-spawned` (an enemy spawn wave, not the sword wave),
+    `enemy_count 0`: it failed the same way in all four A6 baselines;
+    brief r5 (c).
+  - `test_recruit_kits`, the Santalla check "icicles fall round the aim"
+    (another operator's random icicle scatter): passes 3 of 3 run alone.
+
+## Pins
+
+`tests/test_a7_pins.gd` drives `res://game/main.tscn` with real input
+(`Input.parse_input_event`, plus `root.push_input` under `--headless`, the A6
+finding). Committed before any clip existed (`573e244b`), 16/16.
+
+| Pin | Before | After wiring | After re-pin | Brief source |
+|---|---|---|---|---|
+| N0–N3 NPC cells 0→1→2→3→0, 20 frames each | pass | pass (now the `npc_idle` clip) | pass | unchanged |
+| S1 state order | attack_1, 2, 3, **wave**, 1 | fail | the sprite plays no "wave"; the release tick is STARTUP | r3 (1) (should have been marked at Step 2: the agent's miss) |
+| T1–T5 swing interval 42 ticks, swing lock 0.25 s, dodge 17 ticks, click walk 26 ticks / 2.38 units | pass | pass | pass | unchanged |
+| G1 release move lock | 0.25 s | fail (0.6667) | 20/30 s | change 1 |
+| G2 release is the 4th swing | pass | pass | pass | unchanged |
+| G3 / G4 wave and charge-clear tick after the release swing | 0 | fail (16) | 16 = 12 unfrozen + 4 hitstop | change 1, r3 (3), r5 (b) |
+| G5 dodge 2 ticks after a release click | wave out, charge 0 | fail | no wave, charge kept | change 1 |
+
+Each re-pinned suite is its own commit with its reason: `e3a9f825` (pins),
+`84ab0ac2` (`test_lappland`), `e04089a4` (`test_builds`), `14403048`
+(`test_growth`), `4d76441f` (`test_lappland_input` :78; that suite fails
+headless at baseline, so the change cannot be shown passing). No other
+expected value changed (diff audited before committing).
+
+## Read-back
+
+- **`npc_idle`** (route: Sprite3D + AnimationPlayer frame track): every track
+  resolves (`track_problems`, branched on track type); 4 keys at frames
+  0/4/8/12 of 12 fps (tolerance half a frame period, never `==`); length
+  16/12 s; `step` 1/12 (also checked exactly, since half a frame cannot tell
+  1/12 from 1/30); `loop_mode == LOOP_LINEAR`; `UPDATE_DISCRETE` (asked only
+  of a value track); interpolation nearest; every key value inside the sheet
+  (< `hframes*vframes` = 4); seam: last value ≠ first, no key at length, gap
+  last key → length = key interval; all five NPC sheets 256×64.
+- **`wave_release`** (route: cutout rig keyed as resource text): every track
+  resolves; 5 tracks × keys at f0/6/10/20 of 30 fps; length 20/30 s; `step`
+  1/30; `LOOP_NONE`; no track keys `Billboard` or `Rig.scale`; f0 and f20 equal
+  `RESET`; manual clock (process frames do not move it; 6 × `advance(1/30)` →
+  0.2 s).
+
+## Mutations
+
+`scripts/a7_mutations.sh`: each mutation in its own sparse git worktree of the
+course repository at HEAD, imported from an empty cache, its read-back run
+through that worktree's wrapper, the worktree then removed.
+
+| # | Mutation | Read-back | Exit | Caught by |
+|---|---|---|---|---|
+| m1 | `ArmFront:rotation` → `ArmFront:rotaton` in `wave_release` only | rig | **1** | `track_problems`: "wave_release track 4: ArmFront has no property rotaton" |
+| m2 | `npc_idle` `loop_mode` → `LOOP_NONE` | npc | **1** | `loop_mode == LOOP_LINEAR` (0) |
+| m3 | `npc_idle` key 3 → 4 (= `hframes*vframes`) | npc | **1** | "key 3 value inside the sheet (0..3)" (4) |
+| m4 | delete the cache (fresh worktree), `--import`, no mutation | both | 0 / 0 | the rig is a keyed cutout, not imported, so no importer setting can be lost; 136/136 and 55/55 from an empty cache |
+
+The first run of the script checked out nothing (FRICTIONAL.md) and was
+redone after the fix (`5cc51a16`).
+
+## Fresh cache
+
+m4 above: both read-backs pass after a fresh `--import` in an empty cache.
+There is no imported rig, so "its loop mode survived" does not apply.
+
+## State machine
+
+`tests/test_wave_state_machine.gd` (51/51): the code's state table
+(`WaveState`, `WAVE_CLIPS`, `WAVE_TRANSITIONS`) equals the brief's and exists
+in the live rig resource; there is no `AnimationTree` (so the
+`advance_expression_base_node` / `advance_mode` checks do not apply, stated in
+the output); the rig's clip is read through `current_animation`. Through the
+real loop and real input, at r = 1 and r = 1.5: STARTUP → ACTIVE → RECOVERY →
+READY at 6/10/20 unfrozen design frames (12/20/40 ticks at r = 1, 8/14/27 at
+r = 1.5); the wave and charge clear on the ACTIVE tick only; sprite hidden and
+rig shown in every wave state; a dodge in each state returns to READY; a swing
+in RECOVERY cuts it. Source scan: the rig's AnimationPlayer is called only
+from the Player's state machine; nothing else writes the NPC frame or the
+operator sprite's `visible`. Not exercised by a test: death, loss of control,
+operator swap and leaving the floor mid-release (they share `_wave_to_ready`).
+
+## Edges
+
+`tests/test_wave_edges.gd` (39/39): a real dodge read on design frame 5/6/7,
+9/10/11, 19/20/21 at r = 1, with the release's 4 hitstop ticks counted. f5:
+READY, no wave, charge kept (3). f6 and later: the wave is out, charge 0,
+READY (on f6 the spawn runs before the dodge in that tick). f20: the release
+ends on its own that tick, then an ordinary dodge. f21: already READY. At the
+f6 spawn tick the clip position is 0.200 s in every case that reaches it.
+Edges at r > 1 are not tested.
+
+## Two clocks
+
+| Clip | Advances on | Gameplay reads |
+|---|---|---|
+| `npc_idle` | process tick (`ANIMATION_CALLBACK_MODE_PROCESS_IDLE`) | nothing |
+| `wave_release` | the player's physics tick (`ANIMATION_CALLBACK_MODE_PROCESS_MANUAL`, `advance(delta*r)` from `Player._physics_process`) | the active window (the wave on frame 6), on the physics tick, from `wave_frame` |
+| operator sprite (`AnimatedSprite3D`) | process tick (no such setting) | — |
+
+**Measured largest disagreement: ≤ 1e-4 s** — the state test asserts clip
+position = `_wave_time` at every wave tick at both rates, including through
+hitstop (both stop together).
+
+## Frame strips (fixture captures)
+
+`captures/wave_release/r0/` (run by the user, 2026-11-22): capture 27 click,
+29 first STARTUP, 36/37 the f5/f6 boundary (the wave leaves on 37), 40/41
+f9/f10, 49/50 end. One strip, r0; no revision (TUNING.md).
+
+## Human checks
+
+| Check | Result (the user's words) | Source |
+|---|---|---|
+| The cycle seam (5+ wraps, normal speed) | "All fine" (wired, base store and field squad) — and "same" on the side-by-side fixture | human-checks.md |
+| The action in play, interrupt in each phase | "Reads well"; then (translated) "I tried interrupting it during all combat states, during item searching, and while standing still; pass." | human-checks.md |
+| Registration | "All fine" covered "no drift in the cell" for the NPCs | human-checks.md |
+| Against the background | (translated) "The light/dark contrast is clear; pass." | human-checks.md |
+| Strip verdict r0 | "I saw the record. everything is nice, we did a good job." then "Keep r0, no revision" | TUNING.md |
+
+## Claude against the user
+
+Claude's r0 strip reading flagged two possible issues (the click's hit flash
+landing on the first startup frame; facing possibly away from the enemy). The
+user kept r0 without a revision. That is a difference in emphasis, recorded
+as such; the user did not report seeing either issue. No other disagreement
+occurred.
+
+## Not met / limits
+
+- **No observation-driven tuning revision** (rubric: a prediction, two
+  strips, the user's verdict). The user kept r0.
+- Death, loss of control, operator swap and leaving the floor mid-release are
+  not tested; edges are tested at r = 1 only.
+- `test_lappland_input` and the other window-only input suites cannot run
+  headless (pre-existing).
