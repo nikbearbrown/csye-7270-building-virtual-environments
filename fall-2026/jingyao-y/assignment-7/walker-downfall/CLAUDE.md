@@ -5,7 +5,7 @@
 - Engine: Godot 4.7.2-stable. The wrapper runs `Godot_v4.7.2-stable_win64_console.exe` five
   folders above the repo (`scripts/run-test.sh:11`); `project.godot:16` records only "4.7".
   The repo root is the Godot project: `--path .` (`scripts/run-test.sh:10,19`).
-- Renderer: Forward+, D3D12 on Windows (`README.md:4-5`; `CHANGE-BRIEF.md:11`).
+- Renderer: Forward+, D3D12, RTX 4060 Laptop GPU (engine, windowed: `logs/a7_renderer_windowed.log:1`).
   `project.godot` sets only `rendering_device/driver.windows="d3d12"` (`:27`), no
   `rendering_method` and no `physics_ticks_per_second` (default 60, `CHANGE-BRIEF.md:14-15`).
 - Main scene `res://game/main.tscn` (`project.godot:15`) is one `PixelDisplay` node
@@ -34,20 +34,16 @@
   `GameManager`, `game/game_manager.gd:5861`); swings need `simulation_active()`
   (`entities/player.gd:841`), so it plays on field floors, not in the base walk.
 - Tests, always through the wrapper: `./scripts/run-test.sh <file>.gd <fps|realtime> [timeout_s]`
-  (`scripts/run-test.sh:2`). It runs `--headless [--fixed-fps N] --path . --script
-  res://tests/<file>`, logs to `logs/<name>_<N>fps.log` or `logs/<name>_realtime.log`; timeout
-  `$3`, else `TEST_TIMEOUT`, else 120 s; fails on non-zero exit or `SHADER ERROR`,
-  `SCRIPT ERROR`, `Failed loading resource` (`:13-22`).
-  - Realtime mode drops `--fixed-fps`: `./scripts/run-test.sh <file>.gd realtime`
-    (`scripts/run-test.sh:13-14`). The brief pins no suite to realtime.
+  (`scripts/run-test.sh:2`): `--headless [--fixed-fps N] --path . --script res://tests/<file>`,
+  log `logs/<name>_<N>fps.log`/`_realtime.log`; timeout `$3`, else `TEST_TIMEOUT`, else 120 s;
+  fails on non-zero exit, `SHADER ERROR`, `SCRIPT ERROR`, `Failed loading resource` (`:13-22`).
+  - Realtime drops `--fixed-fps`: `./scripts/run-test.sh <file>.gd realtime` (`:13-14`). No
+    suite in the brief is pinned to realtime.
   - Existing suites run at 60 (`scripts/run-baseline.sh:3,14`), e.g. `./scripts/run-test.sh
-    test_lappland.gd 60`, `test_lappland_input.gd 60`, `test_base_scene.gd 60`; test_bosses,
-    test_elevation, test_layout, test_run_save, test_v1 take `1200` (`:10,13`). Baseline:
-    `./scripts/run-baseline.sh <label> [jobs]` → `logs/baseline-<label>/summary.txt`.
-  - New suites, none written yet (`CHANGE-BRIEF.md:249-256`; 60 fps stated only at `:254-255`):
-    `./scripts/run-test.sh test_npc_idle_readback.gd 60`, `./scripts/run-test.sh
-    test_wave_rig_readback.gd 60`, `./scripts/run-test.sh test_wave_state_machine.gd 60`,
-    `./scripts/run-test.sh test_wave_edges.gd 60`, `./scripts/run-test.sh test_a7_pins.gd 60`.
+    test_lappland.gd 60`; test_bosses, test_elevation, test_layout, test_run_save, test_v1 take
+    `1200` (`:10,13`). Baseline: `./scripts/run-baseline.sh <label> [jobs]` (`:2-20`).
+  - New suites, not written yet, each `./scripts/run-test.sh <suite>.gd 60` (`CHANGE-BRIEF.md:249-256`):
+    test_npc_idle_readback, test_wave_rig_readback, test_wave_state_machine, test_wave_edges, test_a7_pins.
 
 ## Current change
 
@@ -73,8 +69,8 @@ Exactly one node writes each animated property. Never add a second writer to a n
   Its only caller (`play`, `stop`, `advance`) is `Player`'s wave state machine, which is also
   the only writer of `Billboard.visible` and `Rig.scale.x`; those are never keyed.
 - Operator sprite frames/animation/`flip_h`: `LapplandAnimator3D` itself; `player.gd` and kits
-  only call its methods (`entities/operator_kit.gd:245-250`). Its `visible` is today written
-  by `Player` (`entities/player.gd:1867`, `:1963`, Amiya's shadow). See Unconfirmed.
+  only call its methods (`entities/operator_kit.gd:245-250`). Its `visible`: `Player` only
+  (`entities/player.gd:1867,1963`); the wave state hides/shows it; no `show_rig()` (brief r1).
 - `wave_frame`/`wave_state`: `Player._physics_process` only; gameplay never reads the clip.
 
 ## Godot 4 names
@@ -89,8 +85,8 @@ Exactly one node writes each animated property. Never add a second writer to a n
   `SubViewport.transparent_bg`, `render_target_update_mode` (`SubViewport.UPDATE_ALWAYS` is used
   in this repo, `game/pixel_display.gd:26,67`); `ViewportTexture`; `Node2D.rotation` (radians).
 - Never: `loop = true` on an Animation, `playback_speed`, `playback_process_mode`,
-  `AnimatedSprite`, `Spatial`. No file or probe here confirms the first bullet's names in
-  4.7.2 except the `SubViewport` ones: probe before relying on one; if unsure, say so.
+  `AnimatedSprite`, `Spatial`. Every name above, present or absent, is confirmed in 4.7.2 by
+  `tests/a7_probe_headless.gd` (`logs/a7_probe_headless_60fps.log`). Unsure of another? Say so.
 
 ## Out of scope
 
@@ -104,15 +100,16 @@ Exactly one node writes each animated property. Never add a second writer to a n
   `shaders/`, `effects/`, `project.godot`, `scripts/run-test.sh`, base crew walkers
   (`tests/test_base_crew.gd:57`), and no `AnimationTree`, no method tracks.
 
+## Headless facts
+
+Confirmed on this machine by `tests/a7_probe_headless.gd` (`logs/a7_probe_headless_60fps.log`):
+- A headless run advances clips and reads their structure. It draws
+  nothing, so whether the motion reads is not observable here.
+- Key times are 32-bit floats; compare them with a tolerance.
+- value_track_get_update_mode applies only to value tracks.
+- Frame strips come from a windowed Movie Maker run, which I start.
+
 ## Unconfirmed
 
-- AGENTS.md does not exist. No runtime log in this repo shows the renderer actually reported
-  (`forward_plus`); A6's `captures/` was not carried over. README.md:51 says the wrapper finds
-  Godot "three folders up"; `scripts/run-test.sh:11` uses five.
-- Second writer conflict: the brief has `LapplandAnimator3D.show_rig()` write its own `visible`
-  (`CHANGE-BRIEF.md:106-109`), but `Player` already writes `_sprite.visible`
-  (`entities/player.gd:1867,1963`). Resolve with the user before Step 4.
-- Test conflict: the brief keeps existing expectations (`CHANGE-BRIEF.md:226-227`), yet
-  `tests/test_lappland.gd:100,147` expect the wave and charge clear on the click call, and
-  `:100`/`tests/test_lappland_input.gd:78` expect `action_name == "wave"`. Change 1 breaks them.
+- AGENTS.md does not exist. `README.md:51` says "three folders up"; the wrapper uses five (`:11`).
 - Rig source sheet path and model/terms: "pending" (`CHANGE-BRIEF.md:116-127`). Lines drift.
