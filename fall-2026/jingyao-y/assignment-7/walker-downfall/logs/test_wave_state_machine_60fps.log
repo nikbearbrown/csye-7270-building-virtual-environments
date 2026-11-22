@@ -1,0 +1,67 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS S1 WaveState is exactly READY, STARTUP, ACTIVE, RECOVERY (brief state table rows)  [["READY", "STARTUP", "ACTIVE", "RECOVERY"]]
+PASS S2 every clip the code requests exists on the live rig and matches the brief's state table
+PASS S3 the code's transitions are the brief's: STARTUP@6->ACTIVE, ACTIVE@10->RECOVERY, RECOVERY@20->READY  [[["STARTUP", 6, "ACTIVE"], ["ACTIVE", 10, "RECOVERY"], ["RECOVERY", 20, "READY"]]]
+PASS S3b each transition frame lies in wave_release and every track has a key there
+S4 note: there is no AnimationTree (brief: "No AnimationTree"), so the AnimationTree checks (advance_expression_base_node set, each transition's advance_mode) do not apply; asserting there is none.
+PASS S4 no AnimationTree in the game, the player or the rig scene  [0]
+PASS S5 the player's rig is an instance of res://animations/lappland_wave_rig.tscn (not built in code)  [res://animations/lappland_wave_rig.tscn]
+PASS S5b rig clock is ANIMATION_CALLBACK_MODE_PROCESS_MANUAL, no autoplay
+PASS S5c Billboard is in upright_sprites (brief r3)
+PASS S6 the rig AnimationPlayer's play/advance/seek/stop are called only from the wave state machine  [["_wave_begin", "_tick_wave", "_wave_to_ready"]]
+PASS S6b no other script (outside tests/, previews/) touches the rig or the operator sprite's visible (212 scripts read)  [[]]
+PASS S6c NpcIdle.frame has no second writer: FieldArt.npc_idle, _set_piece and _add_closure never write .frame; only field_art.gd instances the scene  [[]]
+PASS S7 base 可露希尔 is a Sprite3D from res://animations/npc_idle.tscn playing idle (current_animation)
+S7 squad phases [0.3333325, 0.3333325, 0.666665]
+PASS S7b field squad: 3 figures from the scene, each seeked once to a cell start that its frame shows  [[0.3333325, 0.3333325, 0.666665]]
+PASS S7c field squad does not breathe in step (phases differ)  [[0.3333325, 0.3333325, 0.666665]]
+PASS D0 Lappland in the field, simulation running
+D1 at rest: current_animation '' (nothing has been played yet at start)
+PASS D1 READY at start: Billboard hidden, sprite shown, viewport not drawing, rig at the RESET pose
+PASS D2a rate r == 1 for the base case (current_cooldown 0.700)
+[r=1] r=1.0000 frozen=4 changes={ "STARTUP>ACTIVE": 16, "ACTIVE>RECOVERY": 24, "RECOVERY>READY": 44 } order=["STARTUP", "ACTIVE", "RECOVERY", "READY"]
+PASS [r=1] D2 states in order STARTUP -> ACTIVE -> RECOVERY -> READY from the click tick  [["STARTUP", "ACTIVE", "RECOVERY", "READY"]]
+PASS [r=1] D4 STARTUP>ACTIVE after 12 unfrozen ticks (frame 6 at rate 1.000)  [tick 16, unfrozen 12]
+PASS [r=1] D4 ACTIVE>RECOVERY after 20 unfrozen ticks (frame 10 at rate 1.000)  [tick 24, unfrozen 20]
+PASS [r=1] D4 RECOVERY>READY after 40 unfrozen ticks (frame 20 at rate 1.000)  [tick 44, unfrozen 40]
+PASS [r=1] D3 the clip is wave_release in STARTUP/ACTIVE/RECOVERY and RESET in READY (current_animation)
+PASS [r=1] D4 every wave tick: clip position == state machine time == unfrozen ticks x r / 60, floor(position x 30) == wave_frame
+PASS [r=1] D6 operator sprite hidden and Billboard shown in every wave state, the reverse in READY
+PASS [r=1] D6b rig viewport draws (UPDATE_ALWAYS) only during the release
+PASS [r=1] D7 swing_remaining > 0 through RECOVERY
+PASS [r=1] D5 STARTUP: no wave, charge unchanged (3)
+PASS [r=1] D5 on the ACTIVE-entry tick: one wave out, charge 0  [waves 0 -> 1, charge 0]
+PASS [r=1] D7b move lock set on the click to 20/(30 r) s  [0.66667]
+PASS D5b landed release: the wave leaves 16 ticks after the click (12 unfrozen + 4 hitstop, brief r5)  [16 (frozen 4)]
+PASS D3b back in READY the rig plays RESET
+D8 dodge in STARTUP at frame 0: state now READY, waves 0 -> 0, charge 3
+PASS D8 dodge in STARTUP (frame 0) -> READY, sprite back, rig hidden, RESET
+PASS D8 dodge in STARTUP: no wave, charge kept (3)  [waves 0 charge 3]
+D8 dodge in ACTIVE at frame 6: state now READY, waves 0 -> 1, charge 0
+PASS D8 dodge in ACTIVE (frame 6) -> READY, sprite back, rig hidden, RESET
+PASS D8 dodge in ACTIVE: the wave is already out, charge spent  [waves 1 charge 0]
+D8 dodge in RECOVERY at frame 10: state now READY, waves 0 -> 1, charge 0
+PASS D8 dodge in RECOVERY (frame 10) -> READY, sprite back, rig hidden, RESET
+PASS D8 dodge in RECOVERY: the wave is already out, charge spent  [waves 1 charge 0]
+D9 recovery cut: prev state RECOVERY frame 18, swing on that tick true, action 'attack_1'
+PASS D9 a new swing during RECOVERY (frame < 20) ends it: READY on the swing's tick, sprite back playing the swing
+PASS D10a attack speed raised through a weapon affix: r = 1.5000 > 1 (current_cooldown 0.4667)
+[r=1.50] r=1.5000 frozen=4 changes={ "STARTUP>ACTIVE": 12, "ACTIVE>RECOVERY": 18, "RECOVERY>READY": 31 } order=["STARTUP", "ACTIVE", "RECOVERY", "READY"]
+PASS [r=1.50] D2 states in order STARTUP -> ACTIVE -> RECOVERY -> READY from the click tick  [["STARTUP", "ACTIVE", "RECOVERY", "READY"]]
+PASS [r=1.50] D4 STARTUP>ACTIVE after 8 unfrozen ticks (frame 6 at rate 1.500)  [tick 12, unfrozen 8]
+PASS [r=1.50] D4 ACTIVE>RECOVERY after 14 unfrozen ticks (frame 10 at rate 1.500)  [tick 18, unfrozen 14]
+PASS [r=1.50] D4 RECOVERY>READY after 27 unfrozen ticks (frame 20 at rate 1.500)  [tick 31, unfrozen 27]
+PASS [r=1.50] D3 the clip is wave_release in STARTUP/ACTIVE/RECOVERY and RESET in READY (current_animation)
+PASS [r=1.50] D4 every wave tick: clip position == state machine time == unfrozen ticks x r / 60, floor(position x 30) == wave_frame
+PASS [r=1.50] D6 operator sprite hidden and Billboard shown in every wave state, the reverse in READY
+PASS [r=1.50] D6b rig viewport draws (UPDATE_ALWAYS) only during the release
+PASS [r=1.50] D7 swing_remaining > 0 through RECOVERY
+PASS [r=1.50] D5 STARTUP: no wave, charge unchanged (3)
+PASS [r=1.50] D5 on the ACTIVE-entry tick: one wave out, charge 0  [waves 0 -> 1, charge 0]
+PASS [r=1.50] D7b move lock set on the click to 20/(30 r) s  [0.44444]
+TEST_WAVE_STATE_MACHINE: 51 passed / 0 failed
+WARNING: 96 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 9 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
