@@ -1,0 +1,30 @@
+Read CLAUDE.md first. The rig is res://animations/lappland_wave_rig.tscn,
+and its route is keyed cutout. The phase table for wave_release is in
+CHANGE-BRIEF.md, in frames at 30 fps.
+
+Build the rig as the brief describes: WaveRig (Node3D) with a Billboard
+(Sprite3D drawing the Viewport's ViewportTexture at the game's sprite
+scale) and a Viewport (SubViewport, 96x96, transparent) holding Rig
+(Node2D) -> Body (Sprite2D), ArmBack (Node2D pivot) -> BladeBack
+(Sprite2D), ArmFront (Node2D pivot) -> BladeFront (Sprite2D), and an
+AnimationPlayer child of WaveRig with root_node ../Viewport/Rig. Cut the
+parts from the brief's cell of godot_assets/lappland_combat_64.png (row
+west, column 10) with a committed tool script, tools/a7_cut_rig_parts.py,
+into animations/lappland_rig/. Do not edit the sheet.
+
+For a keyed cutout rig: write the wave_release clip (and RESET) for the
+AnimationPlayer in that scene, using Godot 4 Animation properties for the
+version in CLAUDE.md (loop_mode, not loop). Put a key at every phase
+boundary in the table, and list each key's time beside the frame it
+comes from.
+
+Add a read-back test, tests/test_wave_rig_readback.gd, that asserts every
+track resolves to a real node and property, bone or blend shape (reuse
+track_problems in tests/a7_readback.gd, branched on track type); that the
+key times and clip length match the brief, compared with a tolerance;
+that step is one frame period at 30 fps; and that the loop mode is as
+stated.
+
+Run it through ./scripts/run-test.sh and show the real output. Do not
+wire the clip into the state machine yet: do not change entities/,
+godot_assets/ or any other existing script. Do not commit.
