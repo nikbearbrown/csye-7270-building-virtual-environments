@@ -1,59 +1,53 @@
-# CLAUDE.md — downfall-godot (Assignment 6: particle effects)
+# CLAUDE.md — downfall-godot (Assignment 7: two animations)
 
 ## Project context
 
-- Engine: Godot 4.7.2-stable. The wrapper runs `Godot_v4.7.2-stable_win64_console.exe`, five
-  folders above the repo, in `D:\CSYE 7370` (`scripts/run-test.sh:11`; `CHANGE-BRIEF.md:9`).
-  `project.godot:16` records only the feature tag "4.7". The repo root is the Godot project
-  (`--path .`, `scripts/run-test.sh:10,19`).
-- Renderer: Forward+ with D3D12 on Windows (`README.md:3`, `CHANGE-BRIEF.md:9`). `project.godot`
-  sets no `rendering_method`, only `driver.windows="d3d12"` (`project.godot:24-27`).
-  `tests/run_all.ps1:70` forces `gl_compatibility` for older visual suites; the wrapper doesn't.
-- Main scene: `res://game/main.tscn` (`project.godot:15`), which holds one `PixelDisplay`
-  (`game/main.tscn:5-6`). That node makes a `SubViewport`, creates the `GameManager` and adds it
-  to the viewport (`game/pixel_display.gd:22,44,80`). Field maps are built in code, not scenes.
-- Effect A `hit_spark`: three `GPUParticles3D` under a `Node3D` named `HitSpark`, in
-  `res://effects/hit_spark.tscn` (`CHANGE-BRIEF.md:44-48,94`).
-  - Event: a landed operator melee hit, a direct call, not a signal. Each site in
-    `entities/player.gd` calls `CombatVfx.spawn(game, <enemy>.global_position, direction,
-    "spark"|"amiya_spark")`: the basic hit in `attack_direction()` (`:838`, `:901-914`);
-    Lappland's cross cut in `_lappland_cross()` (`:947-962`); Amiya's cut in `_amiya_cut()`
-    (`:1762-1768`). Her later cuts are queued 0.08 s apart (`:80`, `:1756-1758`, `:1798-1802`).
-  - The current spark is not a particle system: unlit meshes in `game/combat_vfx.gd:163-192`.
-  - Signal `Enemy.died(enemy)` (`entities/enemy.gd:12`) fires at `:1500`, before `queue_free()`
-    (`:1501`). Appears on field floors under the `GameManager` (`CHANGE-BRIEF.md:132-133`).
-- Effect B `fire_pit_flames`: two `GPUParticles3D` under a `Node3D` named `FirePitFlames`, in
-  `res://effects/fire_pit_flames.tscn` (`CHANGE-BRIEF.md:200-201,237`). It replaces the
-  code-made `CPUParticles3D` "Flames" and "Embers" (`entities/fire_pit.gd:18-19,37-42,74-103`).
-  - Condition: `FirePit.burn_left` (`entities/fire_pit.gd:17`). The pit is lit while `lit()`
-    is true (`burn_left > 0`, `:105-106`). `FirePit` declares no signals.
-  - Fuel goes up through `feed()` (`:113-115`). Callers: the player picking fuel with E
-    (`game/gm_features.gd:227`), the boss arena's first fire (`:152`), and the camp rest fire
-    (`game/gm_route.gd:225`).
-  - Fuel goes down through `burn()` (`entities/fire_pit.gd:117-120`). Callers: `_tick_features()`
-    (`game/gm_features.gd:114-116`), which `GameManager._physics_process()` runs only while
-    `simulation_active()` is true (`game/game_manager.gd:441-442,848-853`); and the boss hammer
-    (`entities/boss.gd:1724-1728`).
-  - Constants: `FIRE_RADIUS` 4.5 and `FIRE_MAX` 300 (`game/feature_catalog.gd:91,95`).
-  - Appears on Sami (`snow`) floors only (`game/gm_features.gd:143`). Pits are added in code
-    under `world_map._generated_root`: ordinary floors (`:180-182`), the boss arena
-    (`:145-152`) and the camp rest stop (`game/gm_route.gd:218-226`).
-- Tests: always run through the wrapper: `./scripts/run-test.sh <file>.gd <fps|realtime> [timeout_s]`.
-  - It runs `--headless [--fixed-fps N] --path . --script res://tests/<file>`, logs to
-    `logs/<name>_<N>fps.log` or `logs/<name>_realtime.log`, and times out after `$3`, else
-    `TEST_TIMEOUT`, else 120 s. A non-zero exit or a `SHADER ERROR`/`SCRIPT ERROR` line fails
-    the run (`scripts/run-test.sh:2,13-22`). Suites `extends SceneTree` and `quit(1)` on
-    failure (`tests/test_new_enemies.gd:1,61`; `tests/test_map_features.gd:1,36`).
-  - Existing suites are pinned at 60 fps (`scripts/run-baseline.sh:3,14`), e.g.
-    `./scripts/run-test.sh test_map_features.gd 60` (fire pits). Realtime mode drops
-    `--fixed-fps`: `./scripts/run-test.sh <file>.gd realtime` (`scripts/run-test.sh:6,13-14`).
-  - Slow suites need a 1200 s timeout, e.g. `./scripts/run-test.sh test_bosses.gd 60 1200`:
-    test_bosses, test_elevation, test_layout, test_run_save, test_v1 (`scripts/run-baseline.sh:10,13`).
-  - Baseline: `./scripts/run-baseline.sh <label> [jobs]` writes
-    `logs/baseline-<label>/summary.txt` (`scripts/run-baseline.sh:2-20`).
-  - The brief names four new suites, none written yet: `test_hit_spark_config.gd`,
-    `test_hit_spark_state.gd` (60), `test_fire_pit_flames_config.gd` and
-    `test_fire_pit_flames_state.gd` (60) (`CHANGE-BRIEF.md:92,149,235,296`).
+- Engine: Godot 4.7.2-stable. The wrapper runs `Godot_v4.7.2-stable_win64_console.exe` five
+  folders above the repo (`scripts/run-test.sh:11`); `project.godot:16` records only "4.7".
+  The repo root is the Godot project: `--path .` (`scripts/run-test.sh:10,19`).
+- Renderer: Forward+, D3D12 on Windows (`README.md:4-5`; `CHANGE-BRIEF.md:11`).
+  `project.godot` sets only `rendering_device/driver.windows="d3d12"` (`:27`), no
+  `rendering_method` and no `physics_ticks_per_second` (default 60, `CHANGE-BRIEF.md:14-15`).
+- Main scene `res://game/main.tscn` (`project.godot:15`) is one `PixelDisplay` node
+  (`game/main.tscn:5-6`). Everything else is built in code: `GameManager` adds
+  `ContinuousWorldMap` and `BaseMap` (`game/game_manager.gd:379-382`) and the `Player`
+  (`:5857-5861`). Other scenes: `effects/*.tscn`, `tests/*.tscn`, `art/models/asset_preview.tscn`;
+  `animations/` does not exist yet.
+- Player state machine: `entities/player.gd`, no state enum; state is fields read in
+  `_physics_process` (`:478`): `swing_remaining` (`:143`), `_attack_cooldown` (`:140`),
+  `sword_charge` (`:168`), `hitstop_remaining`/`dash_remaining` (`:170-171`), `control_timer`
+  (`:236`). Swing `attack_direction()` (`:838`); release test `:849`; spawn on the click tick
+  (`:879-899`); interrupts `interrupt_actions_for()` (`:698-709`); Lappland only
+  `has_sword_wave()` (`:775-776`). Her sprite is `_sprite: LapplandAnimator3D` (`:160`, `:271`),
+  `extends AnimatedSprite3D` (`godot_assets/lappland_animator_3d.gd:1-2`), `ACTIONS.wave =
+  [10, 3]` (`:43`), own clock `action_time += delta` in `_process` (`:217`, `:229`).
+- Clip 1 `npc_idle` (`CHANGE-BRIEF.md:47-68,134-151`): route Sprite3D + AnimationPlayer frame
+  track. Planned node `res://animations/npc_idle.tscn`: `NpcIdle` (Sprite3D) / `AnimationPlayer`,
+  library `""`, clip `idle`, autoplay. Today: `FieldArt.npc_idle()` builds `SpriteFrames` in
+  code (`art/field_art.gd:162-183`). Appears in the base store as `store/Closure`
+  (`world/base_map.gd:762-770`) and in field set pieces (`world/continuous_world_map.gd:2681-2724`;
+  kinds chosen at `:2498-2504`), both built in code, not in scene files.
+- Clip 2 `wave_release` (`CHANGE-BRIEF.md:70-109,153-182`): route 2D cutout rig keyed as
+  resource text, in a `SubViewport` drawn by a `Sprite3D` billboard. Planned node
+  `res://animations/lappland_wave_rig.tscn`: `WaveRig` / `AnimationPlayer` (`root_node =
+  ../Viewport/Rig`, clips `RESET`, `wave_release`). Instanced on the `Player` (child of
+  `GameManager`, `game/game_manager.gd:5861`); swings need `simulation_active()`
+  (`entities/player.gd:841`), so it plays on field floors, not in the base walk.
+- Tests, always through the wrapper: `./scripts/run-test.sh <file>.gd <fps|realtime> [timeout_s]`
+  (`scripts/run-test.sh:2`). It runs `--headless [--fixed-fps N] --path . --script
+  res://tests/<file>`, logs to `logs/<name>_<N>fps.log` or `logs/<name>_realtime.log`; timeout
+  `$3`, else `TEST_TIMEOUT`, else 120 s; fails on non-zero exit or `SHADER ERROR`,
+  `SCRIPT ERROR`, `Failed loading resource` (`:13-22`).
+  - Realtime mode drops `--fixed-fps`: `./scripts/run-test.sh <file>.gd realtime`
+    (`scripts/run-test.sh:13-14`). The brief pins no suite to realtime.
+  - Existing suites run at 60 (`scripts/run-baseline.sh:3,14`), e.g. `./scripts/run-test.sh
+    test_lappland.gd 60`, `test_lappland_input.gd 60`, `test_base_scene.gd 60`; test_bosses,
+    test_elevation, test_layout, test_run_save, test_v1 take `1200` (`:10,13`). Baseline:
+    `./scripts/run-baseline.sh <label> [jobs]` → `logs/baseline-<label>/summary.txt`.
+  - New suites, none written yet (`CHANGE-BRIEF.md:249-256`; 60 fps stated only at `:254-255`):
+    `./scripts/run-test.sh test_npc_idle_readback.gd 60`, `./scripts/run-test.sh
+    test_wave_rig_readback.gd 60`, `./scripts/run-test.sh test_wave_state_machine.gd 60`,
+    `./scripts/run-test.sh test_wave_edges.gd 60`, `./scripts/run-test.sh test_a7_pins.gd 60`.
 
 ## Current change
 
@@ -61,56 +55,64 @@
 
 ## Ownership
 
-- Shaders: earlier prompts reserved shader edits for the student, and the user later
-  explicitly authorized the agent for the A5 shaders. In A6, existing files in `shaders/` stay
-  unchanged; only `shaders/particles_generated.gdshader` may be added, in Step 6
-  (`CHANGE-BRIEF.md:392-394`). SOURCES.md records the actual assistance.
-- Agents do not edit `scripts/run-test.sh`.
-- Effect settings live in scene files in `effects/`, not in code. Scripts only instance,
-  restart or free the effects and set `emitting`/`amount_ratio` from game state.
+- Shaders: existing files in `shaders/` stay unchanged (the A5/A6 rule; A6 added only
+  `shaders/particles_generated.gdshader`). A7 adds and edits nothing there.
+- Agents do not edit `scripts/run-test.sh`. A6 effect settings stay in `effects/` scene files.
+- Clips live as resources in `animations/` or in the scene that owns them, and are never
+  built in code at runtime. Scripts only instance, `play`/`seek`/`advance`/`stop`, set unkeyed props.
+
+## One authority
+
+Exactly one node writes each animated property. Never add a second writer to a node that has one.
+- `NpcIdle.frame`: its own `AnimationPlayer`, nothing else. Callers set `texture` and placement
+  only; `continuous_world_map.gd:2716` (`figure.frame = ...`) must go, replaced by one
+  `seek(offset, true)` (`CHANGE-BRIEF.md:65-68`). Unkeyed writers that stay: `GmCamera` writes
+  `scale.y` on `upright_figures` (`game/gm_camera.gd:84-85`) and `offset.y` on `upright_sprites`,
+  which includes base `Closure` (`:77-83`; `world/base_map.gd:769`). Never key `scale`/`offset`.
+- `Body`, `ArmBack`, `ArmFront`, `BladeBack`, `BladeFront`: the rig's `AnimationPlayer` alone.
+  Its only caller (`play`, `stop`, `advance`) is `Player`'s wave state machine, which is also
+  the only writer of `Billboard.visible` and `Rig.scale.x`; those are never keyed.
+- Operator sprite frames/animation/`flip_h`: `LapplandAnimator3D` itself; `player.gd` and kits
+  only call its methods (`entities/operator_kit.gd:245-250`). Its `visible` is today written
+  by `Player` (`entities/player.gd:1867`, `:1963`, Amiya's shadow). See Unconfirmed.
+- `wave_frame`/`wave_state`: `Player._physics_process` only; gameplay never reads the clip.
 
 ## Godot 4 names
 
-- Use Godot 4 classes: `GPUParticles3D`, `ParticleProcessMaterial`, `StandardMaterial3D`
-  (`BaseMaterial3D` enums), `QuadMesh`, `Gradient`, `GradientTexture2D`, `Curve`, `CurveTexture`.
-- Never use Godot 3 names: `Particles`, `ParticlesMaterial`, `SpatialMaterial`,
-  `flags_unshaded`, `params_billboard_mode`, `scale_random`.
-- Confirmed in 4.7.2 by `tests/a6_probe_headless.gd` (`logs/a6_probe_headless_60fps.log`): every
-  property and enum the brief names exists, including `BILLBOARD_PARTICLES`, `BLEND_MODE_MIX`,
-  `EMISSION_SHAPE_SPHERE`, `GradientTexture2D.FILL_RADIAL`, `turbulence_*`, `amount_ratio`.
-  `CPUParticles3D` has no `amount_ratio`; `ParticlesMaterial` and `scale_random` do not exist.
-- Trap: `initial_velocity` and `scale` still exist as Vector2 compatibility properties that
-  map onto `*_min/*_max`. Write `initial_velocity_min/max` and `scale_min/max` anyway.
-
-## Headless facts
-
-Measured by `tests/a6_probe_headless.gd` (`logs/a6_probe_headless_60fps.log`):
-- A headless run uses a dummy renderer (adapter name empty): it draws no particles and runs
-  no GPU particle process. Node state (amount_ratio, visibility, instance counts) is
-  observable; the look is not.
-- A one-shot `GPUParticles3D` reads `emitting == false` from the first frame after it is set,
-  and `finished` never fires headlessly. Do not use either to free or count bursts in a test.
-- A GPU effect's headless CPU price is near zero by construction (predicted; the cost script
-  in Step 7 measures it against an empty-scene control).
-- Frame strips come from a windowed Movie Maker run, which the agent starts.
+- Use: `AnimationPlayer`, `Animation`, `AnimationLibrary`, `Animation.loop_mode` with
+  `LOOP_NONE`/`LOOP_LINEAR`, `Animation.step`, `Animation.length`,
+  `value_track_set_update_mode(..., Animation.UPDATE_DISCRETE)`,
+  `track_set_interpolation_type(..., Animation.INTERPOLATION_NEAREST)`,
+  `AnimationPlayer.speed_scale`, `autoplay`, `root_node`, `callback_mode_process` with
+  `AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE`/`_MANUAL`, `advance()`, `seek()`,
+  `current_animation_position`; `Sprite3D.hframes`/`vframes`/`frame`; `AnimatedSprite3D`;
+  `SubViewport.transparent_bg`, `render_target_update_mode` (`SubViewport.UPDATE_ALWAYS` is used
+  in this repo, `game/pixel_display.gd:26,67`); `ViewportTexture`; `Node2D.rotation` (radians).
+- Never: `loop = true` on an Animation, `playback_speed`, `playback_process_mode`,
+  `AnimatedSprite`, `Spatial`. No file or probe here confirms the first bullet's names in
+  4.7.2 except the `SubViewport` ones: probe before relying on one; if unsure, say so.
 
 ## Out of scope
 
-- Hit gameplay: damage, hitstop, aggro, charge, hit timing, which hits land, and the `Enemy`
-  kill and `queue_free()` path.
-- Fuel: `burn_left` and every rule that reads or writes it (warmth, cold, fuel values,
-  `FIRE_RADIUS`/`FIRE_MAX`, the hammer cost, the burn loop). Presentation reads state only.
-- Collision, movement, input, the player/enemy state machines and timings, and the expected
-  values in every existing test.
-- The mesh `CombatVfx` spark and the fire pit model and `Glow` halo stay. No effect on ranged
-  hits, enemy-to-player hits or misses.
-- Other code-made particles (shower, traces, boss VFX, weather), A5 shaders and materials,
-  source textures, the `project.godot` renderer/driver settings and `scripts/run-test.sh`.
+- Hit and wave gameplay values: damage, crit, multipliers (still computed on the click,
+  `CHANGE-BRIEF.md:166-167`), cooldowns, hitstop, dodge, control, combo and charge rules, other
+  than the release changes the brief lists (`:231-239`).
+- Collision, movement, input, enemies, every non-release swing and every other operator's
+  sprites and kits; NPC placement, scale, billboard mode, look and names (`Closure` is
+  excluded by name in `tests/test_base_scene.gd:109`).
+- The delivered sheets (`godot_assets/lappland_combat_64.png`, `art/characters/npc/*`),
+  `shaders/`, `effects/`, `project.godot`, `scripts/run-test.sh`, base crew walkers
+  (`tests/test_base_crew.gd:57`), and no `AnimationTree`, no method tracks.
 
 ## Unconfirmed
 
-- `rendering_method` is left at the default; runs report `forward_plus`/`d3d12`; the GPU is an
-  NVIDIA GeForce RTX 4060 Laptop GPU (`captures/hit_spark/r0/capture.log`, `evidence/a6/gpu/`).
-- Effects, previews and the four suites now exist (`effects/`, `previews/`, `tests/`); results
-  in `TEST-REPORT.md`. Fixtures must call `game.seed_rng(seed)`: `fixed_map_seed` alone does not
-  make a floor repeatable (`TUNING.md`, Effect B r1). Line numbers drift; recheck before citing.
+- AGENTS.md does not exist. No runtime log in this repo shows the renderer actually reported
+  (`forward_plus`); A6's `captures/` was not carried over. README.md:51 says the wrapper finds
+  Godot "three folders up"; `scripts/run-test.sh:11` uses five.
+- Second writer conflict: the brief has `LapplandAnimator3D.show_rig()` write its own `visible`
+  (`CHANGE-BRIEF.md:106-109`), but `Player` already writes `_sprite.visible`
+  (`entities/player.gd:1867,1963`). Resolve with the user before Step 4.
+- Test conflict: the brief keeps existing expectations (`CHANGE-BRIEF.md:226-227`), yet
+  `tests/test_lappland.gd:100,147` expect the wave and charge clear on the click call, and
+  `:100`/`tests/test_lappland_input.gd:78` expect `action_name == "wave"`. Change 1 breaks them.
+- Rig source sheet path and model/terms: "pending" (`CHANGE-BRIEF.md:116-127`). Lines drift.
