@@ -410,3 +410,16 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   (one place scales time: the state machine's `delta * r`). Tests and pins run
   at r = 1, so their expected frame numbers are unchanged; the structure test
   adds one case at r > 1 asserting the boundaries at 6/10/20 scaled frames.
+- **2026-11-22 r5 (agent, from the Step 5 plan-step-3 run; user: "Commit, then let me play").**
+  (a) Five more `tests/test_builds.gd` expectations fail from r3's cause:
+  `:287, :297, :299, :314, :324`. With the player's physics off (`:269`) an
+  incidental release in `_attack()` leaves `wave_state` in `STARTUP`, and the
+  STARTUP/ACTIVE gate then refuses the ordinary swings these checks make. In
+  the re-pin step they change only how the suite reaches the next swing
+  (advance the player until `wave_state` is `READY`), not their expected
+  values. (b) Measured on a landed release: the wave leaves 16 physics ticks
+  after the click = 12 unfrozen ticks + 4 hitstop ticks (0.05 s), as r3 (3)
+  says. (c) `tests/test_combat.gd` `wave-spawned` (an enemy spawn wave, not
+  the sword wave) fails intermittently with `enemy_count 0`; it failed the
+  same way in all four A6 baselines, before A7, and is not caused by this
+  change. Recorded, not fixed (out of scope).
