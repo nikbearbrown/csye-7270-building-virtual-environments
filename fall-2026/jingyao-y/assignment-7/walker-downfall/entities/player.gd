@@ -348,6 +348,9 @@ func _build_wave_rig() -> void:
 	_wave_viewport = _wave_rig.get_node("Viewport") as SubViewport
 	# Hidden at rest: the viewport draws nothing until a release plays.
 	_wave_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	# READY plays RESET from the start (brief state table).
+	_wave_player.play(&"RESET")
+	_wave_player.seek(0.0, true)
 	# On the sprites' render layer, so ground decals never land on it.
 	_wave_billboard.layers = LapplandAnimator3D.SPRITE_LAYER
 	# Kept on her feet at any camera tilt like her sprite (brief r3:
