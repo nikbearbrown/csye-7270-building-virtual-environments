@@ -43,6 +43,9 @@ TEST_SUPPORT = (
     "textures/cargo_panel/rusty_metal_sheet_nor_gl_1k.png",
     "textures/cargo_panel/rusty_metal_sheet_rough_1k.png",
     "textures/hint_experiment/greys_3x1.png",
+    # Found by the fresh-clone check of A7 (2026-11-22): test_builds reads this
+    # research table as data ("every relic appears in the PRTS research table").
+    "局内构筑调研_集成战略藏品.md",
 )
 for f in TEST_SUPPORT:
     for side in ("", ".import", ".uid"):
