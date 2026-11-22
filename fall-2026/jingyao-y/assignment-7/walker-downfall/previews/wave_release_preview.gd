@@ -11,7 +11,7 @@ extends Node
 ## 10 as the brief first said (brief r6). Instead the release is triggered 10
 ## capture frames after the floor is ready, by a real left click on the enemy
 ## (Input.parse_input_event), and every capture frame is logged to
-## logs/wave_release_preview.log: capture frame, wave_state, wave_frame,
+## logs/wave_release_preview_<run>.log (r0, r1 ... for a capture): capture frame, wave_state, wave_frame,
 ## waves out, charge, hitstop, sprite/billboard visibility. Read the trigger
 ## frame and each phase boundary from that log.
 ##
@@ -102,7 +102,14 @@ func _click(point: Vector3, pressed: bool) -> void:
 func _exit_tree() -> void:
 	var header := "# wave_release_preview: ready at capture frame %d, click pressed at capture frame %d; 30 fps capture = 1 design frame per capture frame, 60 Hz physics
 # first capture frame of each state: %s (STARTUP includes the click's hitstop frames; ACTIVE = the wave leaves)" % [ready_frame, trigger_frame, str(firsts)]
-	var file := FileAccess.open(ProjectSettings.globalize_path("res://logs/wave_release_preview.log"), FileAccess.WRITE)
+	# One log per run, so a windowed look never overwrites a capture's log
+	# (the user's --time-scale 0.25 look overwrote r0's, 2026-11-22): the
+	# movie's folder name when --write-movie is given, else the time scale.
+	var tag := "look_x%s" % str(Engine.time_scale)
+	var args := OS.get_cmdline_args()
+	var at := args.find("--write-movie")
+	if at >= 0 and at + 1 < args.size(): tag = args[at + 1].get_base_dir().get_file()
+	var file := FileAccess.open(ProjectSettings.globalize_path("res://logs/wave_release_preview_%s.log" % tag), FileAccess.WRITE)
 	if file != null:
 		file.store_string(header + "\n" + "\n".join(log_lines) + "\n")
 		file.close()
