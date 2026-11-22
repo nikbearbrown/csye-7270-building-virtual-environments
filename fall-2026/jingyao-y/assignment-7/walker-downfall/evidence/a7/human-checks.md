@@ -68,3 +68,11 @@ the user's request (all documents in English). Observer: the user.
   still; pass."
 - **Provenance:** the image model is "gpt sol 6.1"; the user asked to record
   only that ("mark just this, nothing else needed").
+
+## 2026-11-22 — the final film
+
+- **What was checked:** the user watched and listened to the full final
+  export, `youtube/claude-liam-downfall-a7-animation-gamedev/exports/landscape/claude-liam-downfall-a7-animation-gamedev.mp4`
+  (SHA-256 `fff554fd…49fe`, 7:47, 4K).
+- **User's verdict (verbatim, translated from Chinese):** "No problems."
+- **Uploaded by the user:** https://youtu.be/OdQSCe0ZvaQ

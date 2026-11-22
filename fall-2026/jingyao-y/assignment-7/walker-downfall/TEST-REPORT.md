@@ -158,6 +158,7 @@ f9/f10, 49/50 end. One strip, r0; no revision (TUNING.md).
 | The action in play, interrupt in each phase | "Reads well"; then (translated) "I tried interrupting it during all combat states, during item searching, and while standing still; pass." | human-checks.md |
 | Registration | "All fine" covered "no drift in the cell" for the NPCs | human-checks.md |
 | Against the background | (translated) "The light/dark contrast is clear; pass." | human-checks.md |
+| The final film (watched and listened in full) | (translated) "No problems." | human-checks.md |
 | Strip verdict r0 | "I saw the record. everything is nice, we did a good job." then "Keep r0, no revision" | TUNING.md |
 
 ## Claude against the user

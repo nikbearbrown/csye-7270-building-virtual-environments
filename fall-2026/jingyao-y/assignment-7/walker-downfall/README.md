@@ -90,4 +90,19 @@ pre-existing and flaky failures).
 
 ## Film
 
-Pending.
+Brutalist godot-gamedev film, walker modifier, narrated by Liam (local Kokoro
+`am_onyx`): `youtube/claude-liam-downfall-a7-animation-gamedev/`.
+
+- **YouTube:** https://youtu.be/OdQSCe0ZvaQ
+- **Master** (not committed; media is excluded):
+  `exports/landscape/claude-liam-downfall-a7-animation-gamedev.mp4`, 7:47
+  (466.8 s), 3840×2160, 30 fps, H.264 + AAC 48 kHz, SHA-256
+  `fff554fd6910f4f7cfa4eff609870ee66307507fee587af67537d8fac18149fe`; its
+  receipt `exports/landscape/claude-liam-downfall-a7-animation-gamedev.verified.json`
+  is committed.
+- **Filmed at** commit `299ef973`; the game source is unchanged since
+  `45cf5845`.
+- **Checks:** `./art godot-gamedev --check` PASS (9 code→result pairs,
+  `CHECKS-REPORT.md`); final export gate 52 samples, 0 BLOCKER, 0 MAJOR.
+- **The user watched and listened to the final export** (verbatim,
+  translated from Chinese): "No problems."

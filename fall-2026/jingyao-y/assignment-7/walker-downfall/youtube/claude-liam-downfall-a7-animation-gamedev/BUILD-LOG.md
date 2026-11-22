@@ -1,0 +1,8 @@
+# Build log
+
+- Captures: film_wave_dodges first failed to parse (a member named `ready` clashed with Node.ready); the second run was unusable (her target lock auto-attacked into a release before take 2, so take 2's "startup dodge" landed in that one); the third run ends each take with a real ground click, which walks her back and drops the lock, and removes the teleport. Only the third run is used.
+- Pilot B03 (GodotDevWorkbench) showed 11 of 17 lines at 30 px: the keys were cut off. Every code beat was resized to fit and three excerpts trimmed to their teaching lines (B03 7–20, B13 380–388, B17 318–331); the beat sheet props were patched in place to keep the measured audio.
+- B12 narration said "frame twenty eight"; the committed r0 frames are 27 and 29, so it was corrected and that beat's audio regenerated.
+- Media boards: B08's m3 line first matched a PASS line (fixed to the key-3 FAIL); B02's transparent sheet was composited on paper; text sizes raised on B02/B14/B21/B22; B20's crop re-centred on Lappland.
+- The first master (13:32) kept "A clip is a movie." on B01: the hesitant writer matches single words, so the two-word trigger "a movie" never fired. Changed to "movie" → "list of keys"; B01 re-rendered with --force (remotion_scenes skips filled beats without it) and the master re-exported. That export was refused by Gate V (1 MAJOR: B01 underfill, 52% of the safe area at mid-beat, min 55%); B01 fontSize 88 → 100 and re-exported.
+- remotion_scenes.py updates the toolkit's gitignored runtime/remotion/_bench/consumers.json index; no other toolkit file was changed.
