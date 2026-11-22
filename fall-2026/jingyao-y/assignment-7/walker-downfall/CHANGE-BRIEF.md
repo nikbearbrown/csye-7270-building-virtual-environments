@@ -392,3 +392,21 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   simulation stopping mid-release → `READY`, no wave. The rig `Billboard`
   joins `upright_sprites`, so `GmCamera._keep_sprites_upright` becomes the
   writer of `Billboard.offset.y` (never keyed, not written by `Player`).
+- **2026-11-22 r4 (user decision: "Scale like today (Recommended)").**
+  Attack speed. Supersedes "Attack speed does not scale this clip" in the
+  phase-table section. The phase table stays the design, in frames at 30 fps
+  at playback rate 1. During a release, the rig clip and the state machine's
+  clock both run at `r = animation_rate()` (`entities/player.gd:1083`,
+  `max(1, 0.7 / current_cooldown())`), taken once on the release click and
+  held for the whole release: each physics tick that is not frozen by
+  hitstop, `_wave_time += delta * r`, `wave_frame = floor(_wave_time * 30)`,
+  and the AnimationPlayer is advanced by the same `delta * r`. So the phase
+  boundaries fall at 6/(30r), 10/(30r) and 20/(30r) s, the clocks still agree
+  by construction (largest disagreement 0 s), and the move lock is
+  20/(30r) s. **Buffs** (r > 1) play all three phases faster, as every other
+  swing does today. **Debuffs** never slow it: `r` is floored at 1, so a
+  slowed attack speed only lengthens the cooldown (`current_cooldown()`),
+  exactly as for normal swings now. `AnimationPlayer.speed_scale` is not used
+  (one place scales time: the state machine's `delta * r`). Tests and pins run
+  at r = 1, so their expected frame numbers are unchanged; the structure test
+  adds one case at r > 1 asserting the boundaries at 6/10/20 scaled frames.
