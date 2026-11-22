@@ -368,3 +368,27 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   `ArmBack:position` and `ArmFront:position` carry the body's lean/lunge
   offsets, because the arm pivots are siblings of `Body`, not children, and
   the blades would otherwise leave the hands. Keys at the same four frames.
+- **2026-11-22 r3 (agent, from the Step 5 plan; user: "Accept all five").**
+  (1) Existing expectations change 1 also alters, beyond r1's list: pin
+  `tests/test_a7_pins.gd` S1 (the sprite plays no `"wave"` action; it should
+  have been marked BRIEF-CHANGES at Step 2 and was not, the agent's miss);
+  `tests/test_lappland.gd:60-154`, `tests/test_builds.gd:116,269,586,608` and
+  `tests/test_growth.gd:68,377,422`, which switch the player's physics off and
+  expect the wave on the release call. In the re-pin step these suites change
+  only **how they reach the wave** (advance the player until `wave_state`
+  leaves `STARTUP`), never their expected values; each in its own commit with
+  this reason. `tests/test_hit_spark_state.gd` P0b is at risk (the wave leaves
+  later in its hold) and is re-run, not edited unless it fails for that reason.
+  (2) New transition: a swing during `RECOVERY` → `READY` (recovery cancelled,
+  the swing proceeds); swings stay refused in `STARTUP` and `ACTIVE`.
+  (3) "12 physics ticks after the click" means 12 ticks **not frozen by
+  hitstop**: `wave_frame` stops while `hitstop_remaining > 0`, as the clock
+  rule says, so a landed release spawns 12 + (frozen ticks) after the click;
+  the re-pin records the measured number. (4) Bonuses: damage, crit and
+  `attack_multiplier()` (incl. 赏善郎) are still taken on the click (that
+  swing's melee hit lands then); the gear signature bonus
+  (`gear_fx.spend_signature_bonus()`) is spent at frame 6 with the wave, so a
+  dodge in `STARTUP` keeps it, like the charge. (5) Leaving the floor or the
+  simulation stopping mid-release → `READY`, no wave. The rig `Billboard`
+  joins `upright_sprites`, so `GmCamera._keep_sprites_upright` becomes the
+  writer of `Billboard.offset.y` (never keyed, not written by `Player`).

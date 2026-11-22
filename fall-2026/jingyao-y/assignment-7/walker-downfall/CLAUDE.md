@@ -68,6 +68,7 @@ Exactly one node writes each animated property. Never add a second writer to a n
 - `Body`, `ArmBack`, `ArmFront`, `BladeBack`, `BladeFront`: the rig's `AnimationPlayer` alone.
   Its only caller (`play`, `stop`, `advance`) is `Player`'s wave state machine, which is also
   the only writer of `Billboard.visible` and `Rig.scale.x`; those are never keyed.
+  `GmCamera` writes `Billboard.offset.y` (unkeyed, `upright_sprites`; brief r3).
 - Operator sprite frames/animation/`flip_h`: `LapplandAnimator3D` itself; `player.gd` and kits
   only call its methods (`entities/operator_kit.gd:245-250`). Its `visible`: `Player` only
   (`entities/player.gd:1867,1963`); the wave state hides/shows it; no `show_rig()` (brief r1).
