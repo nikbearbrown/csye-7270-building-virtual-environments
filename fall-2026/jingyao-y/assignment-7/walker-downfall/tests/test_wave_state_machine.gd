@@ -317,8 +317,10 @@ func run() -> void:
 	var call := RegEx.create_from_string("_wave_player\\.(play|advance|seek|stop)\\(")
 	for block in blocks:
 		if call.search(block) != null: callers[block.get_slice("(", 0)] = true
+	# _build_wave_rig is the state machine starting in READY: it plays RESET once
+	# at build (brief state table; added in Step 5 plan step 5, user: "Yes, allow it").
 	check("S6 the rig AnimationPlayer's play/advance/seek/stop are called only from the wave state machine",
-		not callers.is_empty() and callers.keys().all(func(c): return c in ["_wave_begin", "_tick_wave", "_wave_to_ready"]), str(callers.keys()))
+		not callers.is_empty() and callers.keys().all(func(c): return c in ["_build_wave_rig", "_wave_begin", "_tick_wave", "_wave_to_ready"]), str(callers.keys()))
 	var others: Array = []
 	var player_sprite_visible := RegEx.create_from_string("(player|\\bp)\\._sprite\\.visible")
 	var scripts := _scripts("res://")
