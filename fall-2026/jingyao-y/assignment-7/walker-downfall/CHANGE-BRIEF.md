@@ -423,3 +423,18 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   the sword wave) fails intermittently with `enemy_count 0`; it failed the
   same way in all four A6 baselines, before A7, and is not caused by this
   change. Recorded, not fixed (out of scope).
+- **2026-11-22 r6 (agent, writing the Step 7 preview).** The strip cannot
+  trigger the release at capture frame 10 with `--quit-after 45`: Movie Maker
+  records from the first frame and loading the floor takes about 17 frames.
+  `res://previews/wave_release_preview.tscn` therefore clicks the enemy 10
+  capture frames after the floor is ready, runs `--quit-after 240`, and writes
+  `logs/wave_release_preview.log`: one line per capture frame (state,
+  `wave_frame`, waves, charge, hitstop, visibility) and a header with the first
+  capture frame of each state. At 30 fps capture one capture frame is one
+  design frame. The frames to read are taken from that header, not fixed
+  numbers: the click frame; the first STARTUP frame (the release's frame 0,
+  after the click's hitstop frames); the last STARTUP and first ACTIVE frames
+  (f5/f6, the wave leaves); the last ACTIVE and first RECOVERY frames (f9/f10);
+  the last RECOVERY and first READY frames (f19/f20). A smoke run (agent,
+  not a fixture capture) read STARTUP 29, ACTIVE 37, RECOVERY 41, READY 50.
+  The enemy stands to her west (screen left, the rig's own facing).
