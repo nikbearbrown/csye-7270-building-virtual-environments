@@ -271,6 +271,7 @@ func _build_visual() -> void:
 	_sprite = LapplandAnimator3D.new()
 	_sprite.character = operator_id
 	add_child(_sprite)
+	_build_wave_rig()
 	kit = OperatorKit.make(operator_id, self)
 	add_child(PlayerAura.new())
 	_stun_mark = Label3D.new()
@@ -295,6 +296,28 @@ func _build_visual() -> void:
 	capsule.height = 1.3
 	shape.shape = capsule
 	add_child(shape)
+
+## Lappland's release rig (A7 clip 2, CHANGE-BRIEF.md "Clip 2"): a 2D cutout
+## in a SubViewport drawn by a billboard at her. It starts at rest (the
+## scene's node values are the RESET pose) and hidden; the wave state
+## machine is its only driver, and that alone shows the Billboard.
+const WAVE_RIG := preload("res://animations/lappland_wave_rig.tscn")
+var _wave_rig: Node3D
+var _wave_player: AnimationPlayer
+var _wave_billboard: Sprite3D
+var _wave_rig_root: Node2D
+
+func _build_wave_rig() -> void:
+	_wave_rig = WAVE_RIG.instantiate() as Node3D
+	add_child(_wave_rig)
+	_wave_player = _wave_rig.get_node("AnimationPlayer") as AnimationPlayer
+	_wave_billboard = _wave_rig.get_node("Billboard") as Sprite3D
+	_wave_rig_root = _wave_rig.get_node("Viewport/Rig") as Node2D
+	# On the sprites' render layer, so ground decals never land on it.
+	_wave_billboard.layers = LapplandAnimator3D.SPRITE_LAYER
+	# Kept on her feet at any camera tilt like her sprite (brief r3:
+	# GmCamera writes its offset.y; nothing keys it).
+	_wave_billboard.add_to_group("upright_sprites")
 
 func is_amiya() -> bool:
 	return operator_id == Operators.AMIYA_GUARD
