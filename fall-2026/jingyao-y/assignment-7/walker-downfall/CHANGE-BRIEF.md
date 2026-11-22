@@ -334,3 +334,21 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
 7. **Imported rig:** not applicable; the rig is a keyed 2D cutout. Mutation 4
    (empty import cache) is still run: the rig's part PNGs and the NPC sheets
    reimport, and both read-backs must still pass.
+
+## Revisions
+
+- **2026-11-22 r1 (agent, from the Step 1 review; user: "Accept both").**
+  (a) One authority over the operator sprite's `visible`: `Player` already
+  writes `_sprite.visible` for Amiya's shadow (`entities/player.gd:1867,1963`),
+  so `Player` stays its only writer. The wave state machine (in `Player`)
+  hides the sprite on entering `STARTUP` and shows it again on `READY`; the
+  method `LapplandAnimator3D.show_rig()` named above is dropped, and the
+  animator never writes its own `visible`. (b) Existing expectations that
+  change 1 changes, predicted here and updated only in the re-pin step, each
+  in its own commit with this reason: `tests/test_lappland.gd:100` (wave out
+  and charge 0 on the release call; `action_name == "wave"`),
+  `tests/test_lappland.gd:147` (air-swing release: wave out and charge 0 on
+  the call) and `tests/test_lappland_input.gd:78` (held mouse sees the
+  `"wave"` pose). After the change the wave exists 12 physics ticks after the
+  release and the sprite plays no `"wave"` action (the rig does). Every other
+  existing expectation stays unchanged.
