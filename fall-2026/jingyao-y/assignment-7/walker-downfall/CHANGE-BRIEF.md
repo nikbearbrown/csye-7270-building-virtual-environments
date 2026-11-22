@@ -352,3 +352,19 @@ store, captured at `--fixed-fps 30 --quit-after 90`. A cell lasts 1/3 s =
   `"wave"` pose). After the change the wave exists 12 physics ticks after the
   release and the sprite plays no `"wave"` action (the rig does). Every other
   existing expectation stays unchanged.
+- **2026-11-22 r2 (agent, from the Step 4 review; user: "Commit Step 4").**
+  (a) The combat sheet's grid is **14 columns × 5 rows** (896×320 px,
+  measured), not "16 columns × 5 rows" as "The sheets" table says; the brief's
+  error, found by the Step 4 session. Row 2 = `west`, column 10 exists, and it
+  is the cell the parts were cut from. (b) Original as delivered for the rig
+  parts: `godot_assets/lappland_combat_source.png` (the image-generation
+  source), turned into `lappland_combat_64.png` by
+  `godot_assets/prepare_combat_atlas.py`; both are now committed. This closes
+  the "pending" path in "The sheets"; model name, version and terms are still
+  pending from the user. (c) With keys only at the phase boundaries, the
+  body's lean back peaks on the f6 key and the lunge runs f6→f10 with an
+  ease-out; the brief's "leans back in startup, lunges forward on frame 6"
+  reads that way from here on. (d) Two tracks beyond the brief's list:
+  `ArmBack:position` and `ArmFront:position` carry the body's lean/lunge
+  offsets, because the arm pivots are siblings of `Body`, not children, and
+  the blades would otherwise leave the hands. Keys at the same four frames.
