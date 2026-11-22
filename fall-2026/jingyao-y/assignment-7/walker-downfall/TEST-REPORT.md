@@ -150,6 +150,29 @@ hitstop (both stop together).
 29 first STARTUP, 36/37 the f5/f6 boundary (the wave leaves on 37), 40/41
 f9/f10, 49/50 end. One strip, r0; no revision (TUNING.md).
 
+## Fresh-clone check (agent, 2026-11-22)
+
+A sparse clone of the course repository with only this folder checked out
+(`D:/CSYE 7370/a7-check`), no `.godot` cache, `--import` once (exit 0), then
+each suite through the clone's own wrapper at 60.
+
+- **Clone at `dc4e8492`:** 4,233 files. All six A7 suites pass
+  (`test_npc_idle_readback`, `test_wave_rig_readback`, `test_a7_pins` 16/16,
+  `test_wave_state_machine` 51/51, `test_wave_edges` 39/39,
+  `a7_probe_headless`); `test_growth` 84/84 and `test_base_scene` pass. Two
+  packaging gaps showed up:
+  - `test_lappland`: 72/72 checks pass, then it fails writing its report to
+    `res://../evidence/`, a folder outside the project that the clone lacked.
+  - `test_builds`: 1 failure, "every relic appears in the PRTS research
+    table", because the research table it reads as data
+    (`tests/test_builds.gd:168`) was not in the upload list.
+- **Fix (`2418186c`):** the research table added to
+  `scripts/a7_tracked_files.py` (TEST_SUPPORT) and committed; the evidence
+  folder committed with a `.gitkeep`.
+- **Clone updated to `2418186c`:** `test_lappland` 72/72 and `test_builds`
+  131/131, both exit 0. No `SHADER ERROR`, `SCRIPT ERROR` or `Failed loading
+  resource` in any of these logs.
+
 ## Human checks
 
 | Check | Result (the user's words) | Source |
