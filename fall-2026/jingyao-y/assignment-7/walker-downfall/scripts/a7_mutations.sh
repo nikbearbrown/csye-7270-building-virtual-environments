@@ -27,9 +27,11 @@ run_one() {
 	{
 	echo "== $m at $REV, worktree $wt"
 	git -C "$REPO" worktree add --no-checkout "$wt" HEAD >/dev/null 2>&1 || { echo "worktree add failed"; return; }
-	git -C "$wt" sparse-checkout set --no-cone "/$SUB/" >/dev/null 2>&1
-	git -C "$wt" checkout -q HEAD
-	cd "$wt/$SUB" || return
+	# Cone mode, no leading slash: Git Bash rewrites "/fall-2026/..." into a
+	# Windows path (found on the first run, which therefore checked out nothing).
+	git -C "$wt" sparse-checkout set "$SUB" >/dev/null 2>&1
+	git -C "$wt" read-tree -mu HEAD
+	cd "$wt/$SUB" || { echo "checkout empty"; git -C "$REPO" worktree remove --force "$wt"; return; }
 	echo "-- .godot present before import: $([ -d .godot ] && echo yes || echo no)"
 	timeout 1500 "$GODOT" --headless --path . --import > "$OUT/$m.import.log" 2>&1
 	echo "-- import exit $?"
