@@ -65,9 +65,9 @@ python tools/make_strip.py captures/tablet_raise/r2-front logs/tablet_raise_r2-f
 - The game has no playable combat or extraction yet.
 
 ## Explainer film
-- **Title:** (to be filled in)
-- **Media link:** (to be filled in; the MP4 is not in GitHub)
-- **File / SHA-256:** (to be filled in)
-- **Game-source revision shown in the film:** (to be filled in)
-- **Engine images in the film:** (to be filled in)
-- **Film sources and evidence:** (to be filled in)
+- **Title:** claude-liam-walker-survival-shooting-a7-gamedev (Brutalist `godot-gamedev`, walker mode; narrated by Liam, local Kokoro `am_onyx`; 5 min 17 s, 1920 x 1080, 30 fps). Built under the deadline with a simplified pipeline (still cards plus ffmpeg) instead of the toolkit's Remotion scenes; the 1080p export is the submitted version.
+- **Media link:** (YouTube link added after upload; the MP4 is not in GitHub)
+- **File / SHA-256:** `claude-liam-walker-survival-shooting-a7-gamedev-1080p.mp4`, `b1ff19a6f0819032b61f685a844ab5a3ec37c6ae55b7388c023d865095d3b8e7`
+- **Game-source revision shown in the film:** `42d6cc0d` (the last commit that touches `godot/`; later commits change only documents, captures and logs).
+- **Engine images in the film:** the fixture frame strips in `captures/` (labelled FIXTURE), and one new scripted-input capture of the unmodified project at `42d6cc0d` (Movie Maker, 30 fps, an isolated copy; Tab sent through `Input.parse_input_event`: an uninterrupted raise, an interrupt in each phase, and the other switches), labelled as scripted input. In the two-hand state the film shows the game's first-person view, so only the tablet is visible.
+- **Film sources and evidence:** `youtube/claude-liam-walker-survival-shooting-a7-gamedev/`: beat sheet, narration script and prompts, shot list, fact check, capture record with its timeline, the capture script (`capture-tools/`), the film builder (`build.py.txt`) and the evidence ledger (`gamedev-evidence.json`). Media are not uploaded. Local paths are replaced by placeholders such as `<film-work>` and `<course-repo>`.
