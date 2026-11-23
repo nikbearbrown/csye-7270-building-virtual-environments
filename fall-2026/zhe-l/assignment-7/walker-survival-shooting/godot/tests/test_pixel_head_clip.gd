@@ -73,11 +73,13 @@ func _check_clip(player: AnimationPlayer, sprite: Sprite2D) -> void:
 	_check(String(anim.track_get_path(0)) == TRACK_PATH, "the track path is Sprite2D:frame")
 	var target := player.get_node(player.root_node).get_node_or_null(NodePath(String(anim.track_get_path(0)).get_slice(":", 0)))  # The node the track names, resolved from the player's root node
 	_check(target == sprite, "the track's node resolves to the real Sprite2D")
-	var has_frame := false
+	var path := anim.track_get_path(0)
+	var sub := String(path.get_subname(0)) if path.get_subname_count() > 0 else ""  # The property the track itself names (a value track's subname is a property)
+	var has_property := false
 	for prop in sprite.get_property_list():
-		if prop["name"] == "frame":
-			has_frame = true  # The property the track names really exists on that node
-	_check(has_frame, "the track's property \"frame\" exists on Sprite2D")
+		if target != null and prop["name"] == sub:
+			has_property = true  # The property the track names really exists on the node it resolves to
+	_check(has_property, "the track's own property \"%s\" exists on the node it names" % sub)
 	_check(anim.value_track_get_update_mode(0) == Animation.UPDATE_DISCRETE, "the frame track uses discrete updates")
 	_check(anim.loop_mode == Animation.LOOP_LINEAR, "loop mode is LOOP_LINEAR")
 	_check(absf(anim.length - LENGTH) < EPS, "length is 2.0 s")
