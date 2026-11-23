@@ -1,0 +1,79 @@
+# TEST-REPORT — Assignment 7 (animation)
+
+Godot 4.7.2-stable (`Godot Engine v4.7.2.stable.official.ed1daf0bf`), Forward+ / D3D12, Windows; headless runs through `scripts/run-test.sh`, all at `--fixed-fps 60`. Counts are `PASS` lines in each log (the `== ALL PASS ==` summary line is not counted). Sections marked *pending* are filled after the frame strips and my own playtest.
+
+## Baseline (before the change)
+
+Commit e466c00d, every earlier test through the A7 wrapper, all exit 0:
+
+| Test | PASS |
+|---|---|
+| `a3_asset_check.gd` | 55 |
+| `screen_glow_check.gd` | 24 |
+| `test_landing_dust_config.gd` | 157 |
+| `test_landing_dust_events.gd` | 27 |
+| `test_light_dust_config.gd` | 110 |
+| `test_light_dust_state.gd` | 41 |
+
+Correction: commit e466c00d's message says 56 / 25 for the first two; it counted the summary line. The logs have 55 / 24.
+
+## Pins
+
+`test_tablet_pins.gd`, 38 checks: the hold-state table and its signal in order for one scripted run, movement rules per hold, screen / demo tablet / tablet OS canvas once settled, the tablet's global scale, F only with the tablet put away. Input goes through `Input.parse_input_event` (flushed with `Input.flush_buffered_events()`).
+
+| When | Commit | Result |
+|---|---|---|
+| Before the change | ac082671 (re-run in a sparse worktree with the parse_input_event harness) | 38 PASS, exit 0 (`logs/test_tablet_pins_60fps_before-wiring.log`) |
+| After wiring | 0f7de1f0 onward | 38 PASS, exit 0 |
+| From an empty import cache, final | f1987ba3 + this commit | 38 PASS, exit 0 |
+
+No pin changed. The pins deliberately leave out the timings the brief changes (the 0.35 s slide, when the screen lights); those live in `screen_glow_check.gd` and the edge tests.
+
+`screen_glow_check.gd` changed as the brief allows (Boundaries item 5): the screen is reached through `get_tablet()`; the take-out lights after the raise instead of after 0.35 s; switching between one and two hands goes dark for the 0.2 s cross-fade. After: 29 PASS. A pin-like expectation that changed for a reason the brief did **not** predict: the screen lights 2 physics frames after clip frame 20 (0.70 s instead of 0.667 s from the press), see "Two clocks".
+
+## Read-back
+
+| Test | PASS | What it asserts |
+|---|---|---|
+| `test_pixel_head_clip.gd` | 37 | the one track resolves to the real `Sprite2D` and the property the track itself names; `UPDATE_DISCRETE`; 8 keys at 0.00–1.75 s keying frames 0–7 (tolerance 0.0001 s); every key inside the 8 × 1 sheet; `LOOP_LINEAR`; length 2.0 s; `step` 0.25; seam (last frame ≠ first, last key to length = 0.25 s); `hframes` 8 / `vframes` 1 on a 448 × 56 sheet; nearest filtering; far left of the taskbar; played at 60 fps it shows 0,1…7,0 across the wrap |
+| `test_tablet_raise_clip.gd` | 25 | every track of all three imported clips resolves to a `Skeleton3D` bone (branching on track type); the raise is 20 frames, `step` 1/30, `LOOP_NONE` in the clip and in `main_character.glb.import`; every key on the 30 fps grid 0–20; the tablet bone keyed on phase boundaries 0, 7, 16, 20 |
+
+Note: the `.glb` has a key on every frame 0–20, but Godot's importer drops repeated keys; the tablet bone keeps frames 0, 7–17 and 20. Frames 18–19 (the 8 mm overshoot) are among the dropped ones, so the overshoot may be flattened; to be judged in the strip.
+
+Finding from the subname mutation: the pixel head's property check first looked for a property literally named `frame`, so a track renamed to `Sprite2D:frme` passed it (the mutation was still caught by the path and playback checks). Fixed to check the track's own subname (commit after f68e40e9).
+
+## Mutations
+
+Each in its own sparse git worktree (`scripts/mutate.sh`), worktree removed afterwards.
+
+| Mutation | Test | Exit | Caught by |
+|---|---|---|---|
+| Track subname `Sprite2D:frame` → `Sprite2D:frme` (clip only) | `test_pixel_head_clip.gd` | 1 | path, the track's own property, playback |
+| Cycle `loop_mode` → `LOOP_NONE` | `test_pixel_head_clip.gd` | 1 | loop mode, playback stops on frame 7 |
+| Last frame key → 8 (= hframes × vframes) | `test_pixel_head_clip.gd` | 1 | key value, frame range, playback |
+| Delete `godot/.godot`, `--import`, rig read-back | `test_tablet_raise_clip.gd` | **0** | did not fail, as intended: the loop modes are set in the importer's per-animation settings, so a reimport keeps them |
+| Control: `settings/loop_mode` 0 → 1 in `main_character.glb.import`, fresh cache | `test_tablet_raise_clip.gd` | 1 | the clip loops after reimport, and the import-settings check |
+
+## Fresh cache
+
+`godot/.godot` deleted, `--import` (exit 0, no error lines), then every test, all exit 0: 55 / 29 / 157 / 27 / 110 / 41 / 38 / 37 / 25 / 26 / 126 PASS (order as under "Baseline", then pins, the two read-backs, the state machine, the edges). The imported raise still reads `LOOP_NONE`. In a fresh clone the first `--import` also prints errors for the two `.translation` files, which are generated by that same import; a second import is clean.
+
+## State machine
+
+`test_tablet_state_machine.gd`, 26 PASS: the four states and the clip each plays; all ten transitions with expression, cross-fade, switch mode and `ADVANCE_MODE_AUTO`; `advance_expression_base_node` resolves to `Humanoid`; process tick; the imported `AnimationPlayer` does not play on its own; the tablet hangs on bone `tablet` through `TabletMount` (scale 1 / 5.0684, +90° X). The state machine is driven through real input in the pins and the edge tests.
+
+## Edges
+
+`test_tablet_raise_edges.gd`, 126 PASS. Uninterrupted: screen dark and `is_raising_tablet()` true on every physics frame N+1…N+41, both flip on N+42; walking held from N+1 does not move the player until the raise is over; the clip position read on each boundary is 0.000 / 0.233 / 0.533 s. Interrupts one clip frame before, on, and one after each boundary (clip frames 6/7/8, 15/16/17, 19/20/21), each as a short press (put back) and a long press (to two hands): during the raise a short press puts the tablet back on the hip and the screen never lights, a long press blends to `hold_2h`, dark for the blend and lit right after; on clip frame 20 the press is read in the frame the raise finishes, before the screen lights; on clip frame 21 the screen is already lit and goes dark at once. The test lowers the brain's long-press time to 0.095 s so a long press fits inside the 7-frame startup.
+
+## Two clocks
+
+Measured (60 fps, `--fixed-fps`): the press is read on physics frame N; the state machine enters `raise_1h` in that frame's process step at position 0.0 and stays at 0.0 on the next process frame; the clip then advances 1/60 s per frame, ends and switches to `hold_1h` in the process step of N + 41; `Humanoid` reads it on physics frame N + 42. Largest disagreement between clip frame 20's time and the game's read: 2 physics frames = 0.033 s at 60 fps (1 frame stall + 1 frame process-to-physics). In a 30 fps Movie Maker dry run the press is read on movie frame 33 and the screen lights on 55. The brief's estimate (one rendered frame) missed the stall; recorded as a brief revision. Keep or remove: my decision, *pending*.
+
+## Frame strips (fixture) — *pending*
+
+Tooling ready: `previews/tablet_raise_preview.tscn` (player camera; `-- --front` for a front camera), `previews/pixel_head_preview.tscn`, `tools/make_strip.py`. I run the captures.
+
+## Human checks — *pending*
+
+The cycle seam over five wraps; the action in play with an interrupt in each phase; registration of the head; both clips against the darkest and lightest level art; Claude against me.
