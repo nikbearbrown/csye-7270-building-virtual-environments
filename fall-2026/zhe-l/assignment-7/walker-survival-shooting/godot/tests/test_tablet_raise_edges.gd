@@ -2,7 +2,8 @@
 # Class declaration: class name, what it extends, what the whole script does
 # ============================================================
 extends SceneTree  # Extends SceneTree: run directly with --script, no scene needed; it loads base.tscn itself
-## A7 edge tests for the committing action (the one-handed raise), at every phase boundary of CHANGE-BRIEF's phase table, with an interrupt in each phase.
+## A7 edge tests for the committing action (the one-handed raise), at every phase boundary of CHANGE-BRIEF's phase table, with an interrupt one clip frame
+## before, on, and one clip frame after each boundary (short press = put it back, long press = switch to two hands).
 ## Run: ./scripts/run-test.sh test_tablet_raise_edges.gd 60
 ## Frame map (measured, CHANGE-BRIEF revision "2 physics frames late"): the press is read on physics frame N (clip frame 0); the clip's position read on
 ## physics frame N + k is (k - 2) / 60 s, so clip frame f (f / 30 s) is read on N + 2 + 2f; "raise finished" is read on N + 42.
@@ -19,7 +20,8 @@ const PHYSICS_FPS := 60.0  # The wrapper pins --fixed-fps 60
 const READ_LAG := 2  # Measured: physics frames between a clip frame's time and the game reading it
 const FINISH_FRAME := 42  # Measured: "raise finished" (screen lit, raise over) is read on physics frame N + 42
 const PHASES := [["startup", 0], ["active", 7], ["recovery", 16], ["end", 20]]  # Phase name and the clip frame it begins on
-const INTERRUPT_AT := {"startup": 6, "active": 20, "recovery": 36}  # Physics frame N + k where we interrupt: clip frames about 2, 9 and 17
+const BOUNDARIES := [["startup -> active", 7], ["active -> recovery", 16], ["recovery -> end", 20]]  # Each phase boundary and the clip frame it falls on
+const OFFSETS := [["one frame before", -1], ["on", 0], ["one frame after", 1]]  # We interrupt one clip frame before, on, and one clip frame after each boundary
 const SETTLE_FRAMES := 90  # 1.5 s: enough for any raise or blend to finish
 const BLEND_FRAMES := 12  # The 0.2 s cross-fade at 60 fps
 const POS_EPS := 1.0 / PHYSICS_FPS + 0.0001  # Tolerance on the clip position: one physics frame
@@ -58,11 +60,24 @@ func _run() -> void:
 	player.get_node("PlayerController").tablet_long_press_seconds = TEST_LONG_PRESS  # A tuning value on the brain, changed only inside this test
 	hip_position = _tablet_local()  # The put-away tablet position, for checking that a put-away interrupt really goes back
 	await _uninterrupted_raise()
-	for phase in ["startup", "active", "recovery"]:
-		await _interrupt(phase, "short")
-		await _interrupt(phase, "long")
+	for boundary in BOUNDARIES:
+		for offset in OFFSETS:
+			var clip_frame: int = boundary[1] + offset[1]
+			var label := "%s, %s (clip frame %d)" % [boundary[0], offset[0], clip_frame]
+			await _interrupt(READ_LAG + 2 * clip_frame, label, "short")
+			await _interrupt(READ_LAG + 2 * clip_frame, label, "long")
 	print("== %s: %d failure(s) ==" % ["ALL PASS" if failures == 0 else "FAILED", failures])
 	quit(1 if failures > 0 else 0)
+
+
+## Sends one action press or release through Input.parse_input_event, the way a real key reaches the game (CHANGE-BRIEF / A7 rule: never Input.action_press).
+## The brain reads the action state on its next physics frame, exactly as for a real key.
+func _act(action: StringName, pressed: bool) -> void:
+	var event := InputEventAction.new()
+	event.action = action
+	event.pressed = pressed
+	Input.parse_input_event(event)
+	Input.flush_buffered_events()  # We let Godot handle the queued event now, so the brain sees it on this physics frame and not one frame later
 
 
 ## Records one check: prints PASS if it passed, otherwise prints FAIL and counts it.
@@ -91,7 +106,7 @@ func _tablet_local() -> Vector3:
 
 ## Puts the tablet away (if it is out), puts the player back on its spawn point and waits until everything has settled.
 func _reset() -> void:
-	Input.action_release(&"move_forward")
+	_act(&"move_forward", false)
 	if player.get_tablet_hold() != Humanoid.TabletHold.NONE:
 		await _short_press_now()
 		if player.get_tablet_hold() != Humanoid.TabletHold.NONE:
@@ -103,18 +118,18 @@ func _reset() -> void:
 
 ## A short Tab press whose release is read on the next physics frame; returns once that frame has run.
 func _short_press_now() -> void:
-	Input.action_press(&"tablet")
+	_act(&"tablet", true)
 	await _frames(2)
-	Input.action_release(&"tablet")  # The brain reads "released before the long-press time" on the next physics frame: that frame turns into a short press
+	_act(&"tablet", false)  # The brain reads "released before the long-press time" on the next physics frame: that frame turns into a short press
 	await _frames(2)
 
 
 ## Takes the tablet out with a short press and returns N, the physics frame on which the brain read it; it returns at the start of frame N + 1.
 func _take_out() -> int:
 	change_frame = -1
-	Input.action_press(&"tablet")
+	_act(&"tablet", true)
 	await _frames(2)
-	Input.action_release(&"tablet")  # The brain reads a short press on the next physics frame
+	_act(&"tablet", false)  # The brain reads a short press on the next physics frame
 	while change_frame == -1:
 		await physics_frame  # We wait only until the hold has changed, so the checks can start on the very next frame
 	return change_frame
@@ -125,7 +140,7 @@ func _take_out() -> int:
 func _uninterrupted_raise() -> void:
 	await _reset()
 	var n := await _take_out()
-	Input.action_press(&"move_forward")  # From just after the press we hold walk: the lock must hold it back for the whole raise
+	_act(&"move_forward", true)  # From just after the press we hold walk: the lock must hold it back for the whole raise
 	_check(n > 0 and player.get_tablet_hold() == Humanoid.TabletHold.ONE_HAND, "raise: the short press took the tablet out (read on physics frame N = %d)" % n)
 	var dark_ok := true  # Screen dark on every frame N .. N+41
 	var raising_ok := true  # Raise query true on every frame N .. N+41
@@ -145,7 +160,7 @@ func _uninterrupted_raise() -> void:
 			raising_ok = raising_ok and player.is_raising_tablet()
 		if body_k <= FINISH_FRAME:
 			still_ok = still_ok and speed < 0.01
-	Input.action_release(&"move_forward")
+	_act(&"move_forward", false)
 	_check(dark_ok, "raise: screen dark on every physics frame N+1 .. N+41")
 	_check(raising_ok, "raise: is_raising_tablet() true on every physics frame N+1 .. N+41 (no walking, running or jumping)")
 	_check(still_ok, "raise: walk held from N+1, the player does not move through N+42")
@@ -161,27 +176,33 @@ func _uninterrupted_raise() -> void:
 			"raise: %s begins on clip frame %d, read on N+%d at position %.3f s (got %.3f)" % [phase[0], f, k, want, positions.get(k, -9.0)])
 
 
-## One interrupt: start the raise, then on physics frame N + INTERRUPT_AT[phase] make a short press (put it back) or a long press (switch to two hands).
-func _interrupt(phase: String, kind: String) -> void:
+## One interrupt: start the raise, then on physics frame N + k (clip frame (k - 2) / 2) make a short press (put it back) or a long press (switch to two hands).
+## While the raise is still playing (k < 42) the brief says the raise is cancelled at once; on k = 42 the press is read in the same physics frame the raise
+## finishes, before the screen is lit; after that it is an ordinary change from holding one-handed.
+func _interrupt(k: int, label: String, kind: String) -> void:
 	await _reset()
 	var n := await _take_out()
-	var m: int = n + INTERRUPT_AT[phase]  # The physics frame on which the brain must read the interrupt
+	var m: int = n + k  # The physics frame on which the brain must read the interrupt
 	if kind == "short":
 		await _until_frame(m - 3)
-		Input.action_press(&"tablet")
+		_act(&"tablet", true)
 		await _until_frame(m)
-		Input.action_release(&"tablet")  # Released at the start of frame m: the brain reads a short press in m
+		_act(&"tablet", false)  # Released at the start of frame m: the brain reads a short press in m
 	else:
 		await _until_frame(m - LONG_FRAMES + 1)  # A long press fires on the frame the key has been down LONG_FRAMES physics frames, which is frame m
-		Input.action_press(&"tablet")
+		_act(&"tablet", true)
 		await _until_frame(m)
 	var position_at := playback.get_current_play_position()  # The clip position frame m reads, before the press changes anything
 	var in_raise := playback.get_current_node() == &"raise_1h"
 	await _frames(1)  # Let frame m run
 	if kind == "long":
-		Input.action_release(&"tablet")
-	var tag := "%s interrupt (%s press on N+%d)" % [phase, kind, INTERRUPT_AT[phase]]
-	_check(in_raise, "%s: the raise was still playing when the press was read (clip at %.3f s)" % [tag, position_at])
+		_act(&"tablet", false)
+	var tag := "%s: %s press read on N+%d" % [label, kind, k]
+	if k < FINISH_FRAME:
+		_check(in_raise, "%s: the raise was still playing when the press was read (clip at %.3f s)" % [tag, position_at])
+	else:
+		_check(not in_raise, "%s: the raise clip had already finished when the press was read" % tag)
+	var lit_before := player.is_tablet_screen_lit()  # Whether the screen was already lit before this press (only after the raise has finished)
 	_check(change_frame == m, "%s: the hold changed on exactly that physics frame (got N+%d)" % [tag, change_frame - n])
 	_check(not player.is_raising_tablet(), "%s: the raise is over at once (movement unlocked)" % tag)
 	var lit_frame := -1
@@ -191,7 +212,10 @@ func _interrupt(phase: String, kind: String) -> void:
 			lit_frame = i
 	if kind == "short":
 		_check(player.get_tablet_hold() == Humanoid.TabletHold.NONE, "%s: the tablet is put away" % tag)
-		_check(lit_frame == -1, "%s: the screen never lit" % tag)
+		if k <= FINISH_FRAME:
+			_check(lit_frame == -1, "%s: the screen never lit" % tag)
+		else:
+			_check(lit_frame == -1, "%s: the screen (lit before: %s) went dark at once and stayed dark" % [tag, lit_before])
 		_check(playback.get_current_node() == &"hip", "%s: the state machine is back in hip" % tag)
 		_check(_tablet_local().distance_to(hip_position) < HIP_EPS, "%s: the tablet is back on the hip (%.3f m away)" % [tag, _tablet_local().distance_to(hip_position)])
 	else:
