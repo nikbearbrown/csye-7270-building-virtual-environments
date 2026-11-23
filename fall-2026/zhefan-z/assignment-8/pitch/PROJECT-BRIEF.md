@@ -49,7 +49,7 @@ A reviewer could fairly conclude that the gameplay works as tested. The evidence
 
 ## 7. Why this project?
 
-Half learning, half showing. **New to me:** HD-2D itself: a 3D cave scene, its lighting and camera, and 2D sprites placed in 3D. **Already have, with evidence:** shaders and materials (Assignment 5, `2b68e0a`), particle effects with measured GPU cost (Assignment 6, `7672d5a`), animation, state machines, pins, edge tests and mutations (Assignment 7, `840b501`).
+Half learning, half showing. **New to me:** HD-2D itself: a whole 3D cave level with its lighting and camera, and 2D sprites that run and fight in it (in Assignment 3 the mage stood in a 3D prop room only as a static billboard). **Already have, with evidence:** shaders and materials (Assignment 5, `2b68e0a`), particle effects with measured GPU cost (Assignment 6, `7672d5a`), animation, state machines, pins, edge tests and mutations (Assignment 7, `840b501`).
 
 ## Appendix: is this realistic?
 
