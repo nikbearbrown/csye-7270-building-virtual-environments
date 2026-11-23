@@ -424,8 +424,10 @@ def b12():
     d.polygon([(x0 + 820, 560), (x0 + 900, 560), (x0 + 760, 1300), (x0 + 560, 1300)], fill=FIRE_SOFT)
     d.polygon([(x0 + 500, 1420), (x0 + 760, 1420), (x0 + 780, 980), (x0 + 520, 980)], fill=CARD, outline=INK)
     witch(d, x0 + 640, 1400, 0.85)
-    for i, s in enumerate(['a 3D cave scene, its lighting and camera', '2D sprites placed in 3D']):
-        d.text((300, 1640 + i * 100), '· ' + s, font=F('sans_med', 60), fill=INK)
+    # 2026-11-22: wording from the corrected PROJECT-BRIEF.md question 7 (770a2aaf)
+    for i, s in enumerate(['a whole 3D cave level, its lighting and camera',
+                           '2D sprites that run and fight in it (A3: one static billboard)']):
+        d.text((300, 1640 + i * 100), '· ' + s, font=F('sans_med', 48), fill=INK)
     rows = [('Shaders and materials', 'Assignment 5', REV_A5), ('Particles, GPU time measured', 'Assignment 6', REV_A6),
             ('Animation, state machines, pins, edge tests, mutations', 'Assignment 7', REV_A7)]
     for i, (s, a, r) in enumerate(rows):

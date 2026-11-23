@@ -2,7 +2,8 @@
 
 Written by Claude Code for the Assignment 8 pitch film. The audio is read from the game's files at 840b501
 (`git show 840b501:<game>/assets/audio/...`); those six files are byte-identical to Assignment 2's (same git blobs).
-Nothing is regenerated or edited except: the music excerpt is the loop's first 6 s with 0.4 s fades, played at -8 dB
+Nothing is regenerated or edited except: the music excerpt is the loop's first 1.5 s with 0.25 s fades (6 s and
+0.4 s before the 2026-11-22 tightening), played at -8 dB
 (the game's own Music bus level, default_bus_layout.tres); each effect is played whole, at its file level.
 
     python audio.py     # after generate_audio_kokoro.py and sheet.py --pad: writes mp3/beat-G11.mp3, media/G11.mp4,
@@ -24,16 +25,16 @@ STABILITY = ('This Stability AI Model is licensed under the Stability AI Communi
              'Ltd. All Rights Reserved.  Powered by Stability AI.')
 # file, what it is, how it was made (Assignment 2 SOURCES.md), length to play (None = whole file)
 CLIPS = [
-    ('music/MUS-LOOP.ogg', 'MUS-LOOP · the cave theme (first 6 s of the loop)',
+    ('music/MUS-LOOP.ogg', "MUS-LOOP · the cave theme (the loop's first 1.5 s)",
      'Lyria in the Gemini app, from my prompt; cut into a 54.6 s crossfaded loop · Google Terms of Service and '
-     'Generative AI Additional Terms · carries SynthID', 6.0),
+     'Generative AI Additional Terms · carries SynthID', 1.5),
     ('sfx/SFX-CAST.ogg', 'SFX-CAST · a fireball is cast', 'Stable Audio Open 1.0, run locally in ComfyUI; seed 3, trimmed to 0.4 s', None),
     ('sfx/SFX-HURT.ogg', 'SFX-HURT · the witch is hit', 'Stable Audio Open 1.0, run locally in ComfyUI; seed 3, trimmed to 0.3 s', None),
     ('sfx/SFX-WOLF-DOWN.ogg', 'SFX-WOLF-DOWN · a wolf is defeated', 'Stable Audio Open 1.0, run locally in ComfyUI; seed 1, trimmed to 0.6 s', None),
     ('sfx/SFX-FAIL.ogg', 'SFX-FAIL · a fail (pit or 0 HP)', 'Stable Audio Open 1.0, run locally in ComfyUI; seed 2, trimmed to 1.0 s', None),
     ('sfx/SFX-CLEAR.ogg', 'SFX-CLEAR · the level is cleared', 'Stable Audio Open 1.0, run locally in ComfyUI; seed 3, trimmed to 1.2 s', None),
 ]
-GAP_AFTER_VOICE, GAP, TAIL = 0.6, 0.8, 1.0
+GAP_AFTER_VOICE, GAP, TAIL = 0.3, 0.2, 0.4      # 2026-11-22 tightened cut (was 0.6, 0.8, 1.0)
 MUSIC_DB = -8.0
 SR = 48000
 
@@ -60,7 +61,7 @@ def build_audio(tmp):
         a = pcm(src)
         if length:
             a = a[:int(length * SR)]
-            n = int(0.4 * SR)
+            n = int(0.25 * SR)
             ramp = np.linspace(0, 1, n, dtype=np.float32)[:, None]
             a[:n] *= ramp
             a[-n:] *= ramp[::-1]

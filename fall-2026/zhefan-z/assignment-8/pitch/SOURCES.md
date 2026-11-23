@@ -102,3 +102,13 @@ The G11 picture shows the licence's required notice word for word: "This Stabili
 ### Third-party assets
 
 Still none added. The only third-party material in the film remains the three OFL typefaces listed above, and the comparable games are still named in narration and on-screen text only.
+
+## Added 2026-11-22 — tightened to under four minutes
+
+Written by Claude Code. Changed since the rebuild section:
+
+- **The music excerpt in G11** is now the first 1.5 s of `MUS-LOOP.ogg` (0.25 s fades, still at −8 dB). The five effects still play whole. The tools, licences and the Stability AI notice are still on screen, and the table above still applies.
+- **The question 7 card** now uses the wording of my corrected PROJECT-BRIEF.md (`770a2aaf`).
+- **What Claude contributed:** checked and committed the corrected brief with my message; rewrote the narration to the time budget; re-timed the footage and the sound cut; merged question 7's footage into one beat; fixed that beat's revision label; ran the gates; and wrote these dated additions.
+
+No asset was added; the third-party material is unchanged (the three OFL typefaces).

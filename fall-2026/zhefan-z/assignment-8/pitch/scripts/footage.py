@@ -38,23 +38,20 @@ SRC = {
 
 # beat: (layout, [(source, first, last, mode, caption)])   mode 'real' or 'replay' (x0.25: each 60 fps frame twice)
 PLAN = {
-    'G04': ('full', [('c840', 15, 439, 'real', 'Real speed: run (A/D), stop, run, jump the pit (Space), land'),
-                     ('c840', 280, 350, 'replay', 'the jump and the landing'),
-                     ('c840', 1500, 1560, 'real', 'Real speed: aim with the mouse, click to cast'),
-                     ('cfail', 240, 385, 'real', 'Real speed: no jump, into the pit: the fail and its reason')]),
-    'G05': ('full', [('c840', 860, 1088, 'real', 'Real speed: growl, lunge, recover; the second lunge lands'),
-                     ('c840', 995, 1015, 'replay', 'the lunge that lands, the hurt tint and blink'),
-                     ('c840', 1400, 1619, 'real', 'Real speed: a hit during the growl'),
-                     ('c840', 1524, 1560, 'replay', 'the hit during the growl: no lunge'),
-                     ('c840', 2040, 2148, 'real', 'Real speed: a hit during the lunge'),
-                     ('c840', 2080, 2115, 'replay', 'the hit during the lunge: the dash commits')]),
-    'Q07B': ('full', [('c2b6', 420, 560, 'real', 'Real speed: the lunge lands, the hurt tint fades'),
-                      ('c2b6', 470, 520, 'replay', 'the hurt tint')]),
-    'Q07C': ('full', [('a6', 230, 524, 'real', 'Real speed: impacts on the wolf, the ground, rapid fire')]),
-    'Q07D': ('full', [('c840', 140, 439, 'real', 'Real speed: run, stop, run, jump the pit, land')]),
-    'A01': ('side', [('c840', 15, 439, 'real', 'Real speed: the run cycle'),
-                     ('c840', 990, 1060, 'real', 'Real speed: the lunge rig, the afterimage'),
-                     ('c840', 1500, 1600, 'real', 'Real speed: the fireball, its particles, the growl cancel')]),
+    # 2026-11-22, tightened to under four minutes (prompt-3-tighten.txt): shorter spans, the same captures.
+    'G04': ('full', [('c840', 140, 360, 'real', 'Real speed: run (A/D), stop, run, jump the pit (Space), land'),
+                     ('c840', 1515, 1555, 'real', 'Real speed: aim with the mouse, click to cast'),
+                     ('cfail', 250, 385, 'real', 'Real speed: no jump, into the pit: the fail and its reason')]),
+    'G05': ('full', [('c840', 870, 1030, 'real', 'Real speed: growl, lunge, recover; the second lunge lands'),
+                     ('c840', 1520, 1590, 'real', 'Real speed: a hit during the growl'),
+                     ('c840', 1540, 1556, 'replay', 'the hit during the growl: no lunge')]),
+    'Q07X': ('full', [('c2b6', 440, 560, 'real', 'Assignment 5 · 2b68e0a · real speed: the hurt tint'),
+                      ('c2b6', 472, 500, 'replay', 'Assignment 5 · 2b68e0a: the hurt tint'),
+                      ('a6', 290, 420, 'real', 'Assignment 6 · 3c37fe0 · real speed: the fireball particles'),
+                      ('c840', 200, 380, 'real', 'Assignment 7 · 840b501 · real speed: the run cycle')]),
+    'A01': ('side', [('c840', 15, 330, 'real', 'Real speed: the run cycle'),
+                     ('c840', 990, 1040, 'real', 'Real speed: the lunge rig, the afterimage'),
+                     ('c840', 1520, 1590, 'real', 'Real speed: the fireball, its particles, the growl cancel')]),
 }
 EXISTS = [('The 2D game: mage, wolf, pit, exit', REV_A7), ('Run cycle and the lunge rig', REV_A7),
           ('Impact and trail particles (≈0.02 / 0.10 ms GPU, RTX 5060 Laptop)', REV_A6),
@@ -75,9 +72,13 @@ def label(spans):
     for s, *_ in spans:
         if s not in srcs:
             srcs.append(s)
-    revs = sorted({SRC[s]['rev'] for s in srcs})
-    note = SRC[srcs[0]].get('note', '')
-    return f"Real capture · scripted input · revision {', '.join(revs)}{note}", srcs
+    revs = []
+    for s in srcs:
+        if SRC[s]['rev'] not in revs:
+            revs.append(SRC[s]['rev'])
+    if len(revs) > 1:     # several revisions: each span's own chip names its assignment and revision
+        return f"Real captures · scripted input · revisions {', '.join(revs)} (each span labelled)", srcs
+    return f"Real capture · scripted input · revision {revs[0]}{SRC[srcs[0]].get('note', '')}", srcs
 
 
 def geometry(layout):
@@ -97,9 +98,9 @@ def header(heading, layout, spans):
     parts = []
     for s in srcs:
         fr = ', '.join(f'{a}–{b}' for ss, a, b, _, _ in spans if ss == s)
-        parts.append(f"{SRC[s]['name']} frames {fr}")
-    d.text((gx, 196), ' · '.join(parts) + f" · {SRC[srcs[0]]['fps']} fps · 640×360 game canvas, enlarged ×{k}, nearest "
-           'neighbour', font=cards.F('sans', 30), fill=INK_SOFT)
+        parts.append(f"{SRC[s]['name']} frames {fr} ({SRC[s]['fps']} fps)")
+    d.text((gx, 196), ' · '.join(parts) + f' · 640×360 game canvas, enlarged ×{k}, nearest neighbour',
+           font=cards.F('sans', 30), fill=INK_SOFT)
     if layout == 'side':
         x0 = gx + 640 * k + 80
         cards.panel(d, (x0, 330, W - 200, 2000), 'Exists today')

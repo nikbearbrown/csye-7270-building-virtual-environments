@@ -213,3 +213,87 @@ Report the file name, path, length, size and SHA-256, the beat list with
 each beat's part (brief, GDD section, question, appendix) and label, and
 stop. I will write README.md and FRICTIONAL.md after watching it.
 ```
+
+## Added 2026-11-22 — tightened to under four minutes (prompt-3-tighten.txt)
+
+Written by Claude Code. The sections above (first cut, rebuild) stay as written; this is how the current master was built. It replaced the rebuild's master (SHA-256 `a1f7ac0f…`, 7:11) in `exports/landscape/`.
+
+**Human input added:** `prompt-3-tighten.txt` (word for word below), and the corrected `PROJECT-BRIEF.md` question 7, which I checked against the Assignment 3 branch (`8141177b`: the prop room's mage is a billboarded `Sprite3D` of `mage_idle.png`, with no script or animation) and committed with the author's message in `770a2aaf`.
+
+**What changed, and what did not:**
+- **Narration:** rewritten from GDD.md and PROJECT-BRIEF.md to the time budget, one short sentence per GDD beat (`PLAN` in `scripts/sheet.py`), and regenerated with Kokoro at `--speed 1.05`. Default silences are now 0.2 s lead and 0.3 s tail. Minimum holds: G04 and G05 7 s, Q07X 10 s, A01 7 s, and A05 (the asset table) 6 s.
+- **Beats:** 31 instead of 33. Q07B, Q07C and Q07D became one footage beat, Q07X: the three revisions in one cut, each span captioned with its assignment and revision. Every required part is still its own beat: title (T00), the game in brief (P01), G01–G16, questions 1, 2, 3, 4, 5 and 7 (question 6 is G15), the appendix (A01–A05) and the outro.
+- **Footage** (`scripts/footage.py`, the same captures): G04 run 140–360, cast 1515–1555, pit fail 250–385; G05 lunges 870–1030, cancel 1520–1590 with a ×0.25 replay of 1540–1556; Q07X 2b68e0a 440–560 (+ replay 472–500), 3c37fe0 290–420, 840b501 200–380; A01 15–330, 990–1040, 1520–1590. The lunge-commit span (2040–2148) is no longer shown; `coverage.json` names it under "not shown".
+- **Sound cut** (`scripts/audio.py`): the music excerpt is now the loop's first 1.5 s with 0.25 s fades (was 6 s, 0.4 s), and the gaps are 0.2 s (were 0.8 s). The five effects still play whole, with every caption and the Stability AI notice on screen.
+- **Cards:** only question 7's "new to me" lines changed, to the corrected brief ("a whole 3D cave level, its lighting and camera"; "2D sprites that run and fight in it (A3: one static billboard)"), set at 48 px to fit. Every other picture is reused unchanged.
+- **Footage headers:** a beat that mixes revisions is now labelled "Real captures · scripted input · revisions 2b68e0a, 3c37fe0, 840b501 (each span labelled)". The first version of Q07X wrongly added "(Assignment 5)" to all three revisions and gave one frame rate for all three sources; I caught both on a sampled frame and fixed them before the export. The source line now gives each capture's own frame rate.
+
+**Length by part** (target → result): title + brief about 15 s → 15.8 s; GDD 1–16 about 1:50 → 1:47.3; questions about 1:10 → 1:05.0; appendix about 30 s → 32.9 s; outro about 5 s → 5.0 s. **Total 225.97 s (3:46).**
+
+**Gate results (this build):**
+
+| Gate | Result | Report |
+|---|---|---|
+| `art godot-waikthrough --check` (before and after the export) | PASS: 9 implemented features with evidence intervals inside the spans now shown, 9 planned | `_qc/walkthrough-check.json` |
+| `art final` | exit 0 on the first run: paperwork, beat lint, shape gate, decode and duration check, audible; **Gate V: 62 frames, 0 BLOCKER, 0 MAJOR** | `_qc/final.log`, `_qc/REPORT.md`, `_qc/contact_sheet.png` |
+| G11, by measurement | in the master the music plays from 82.81 s and the five effects from 84.51 s to 87.60 s, at −16 to −22 dB RMS | this entry |
+
+**Commands:** as in the rebuild section above; `generate_audio_kokoro.py` was run for every beat, and the capture steps were not repeated.
+
+**The prompt, word for word** (`prompt-3-tighten.txt`, the author's; the file itself is not committed):
+
+```text
+Same branch, folder and rules as prompt-2 (never push, no Co-Authored-By,
+nothing outside pitch/, media out of git, committed docs only gain dated
+additions). Read E:/7270/a8-spec-new.md again if needed.
+
+Goal: cut the film from 7:11 to between 3:30 and 3:59 while keeping every
+part the updated spec requires in the film: the title card with the GDD
+metadata, the game in brief with one picture, all sixteen GDD beats (each
+its own beat, art and sound shown), the seven questions answered once
+each, and the appendix. The full detail stays in GDD.md and
+PROJECT-BRIEF.md; the film is the fast version.
+
+I saved a revised PROJECT-BRIEF.md (question 7: what is new is a whole 3D
+level with sprites that run and fight in it; Assignment 3 had only a
+static billboard). Check it and commit it first as "PROJECT-BRIEF:
+question 7 corrected (mine)".
+
+Time budget (narration is the limit; pictures follow it):
+ - Title card + game in brief: about 15 s together.
+ - GDD 1-16: about 1:50 in total. One short sentence per beat (about 12-18
+   spoken words), one picture each. GDD 4 and 5 keep real 840b501 footage,
+   about 6-8 s each; GDD 11 keeps a quick cut of the real music and
+   effects, about 6-8 s, still captioned with tool and licence. GDD 10
+   keeps the real art beside the planned look. GDD 12 shows the
+   Must/Should/Could card, GDD 14 the stack card, GDD 16 the open
+   questions.
+ - The seven questions: about 1:10, without repeating the GDD: 1 the
+   artifact (a Windows .exe in a zip); 2 the unique value and the
+   comparable games, names only; 3 who opens it and the first sixty
+   seconds; 4 what it proves, with the pin and test table; 5 only the
+   first room and how anyone would know it ran; 6 is GDD 15, not
+   repeated; 7 why this project, with a short cut of the 2b68e0a,
+   3c37fe0 and 840b501 footage.
+ - Appendix: about 30 s: exists today beside real footage; started; not
+   started; one person and the cut order; the asset table as one card
+   held about 6 s (the full table is in PROJECT-BRIEF.md).
+ - Silent outro: about 5 s.
+Rewrite the narration from GDD.md and PROJECT-BRIEF.md to fit, in my
+voice, keeping every honesty rule: past tense only for what exists, every
+frame labelled real (with revision), generated or constructed, no
+comparable-game footage, no invented numbers, no instructor name,
+persona or credit line. Reuse every picture and capture already built;
+change only timing, narration and any card text that must shrink.
+
+If the narration cannot fit under 3:59 without dropping a required beat,
+stop and tell me the shortest you can reach and what you would cut.
+
+Run the checker and the final export's render-integrity gate; fix and
+re-render until both pass. Then append dated sections to the records
+(beat sheet, BUILD-PROMPT with this prompt word for word, SHOTLIST,
+FACTCHECK, CAPTURE, SOURCES if anything changed), commit as "Pitch film
+tightened to under four minutes (agent, Brutalist)", report the file
+name, length, size and SHA-256 and the beat list with each beat's
+duration and label, and stop.
+```

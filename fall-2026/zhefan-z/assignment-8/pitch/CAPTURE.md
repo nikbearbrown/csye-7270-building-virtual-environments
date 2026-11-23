@@ -69,3 +69,7 @@ Written by Claude Code. The sections above describe the first cut and stay as wr
 - capture/a5-run-01 (2b68e0a): Q07B, as in the first cut.
 - The Assignment 6 capture (3c37fe0): Q07C, as in the first cut, SHA-256 checked again.
 - G11's sound is not a capture: it is the game's own audio files at 840b501, listed in `evidence/audio-excerpts.json` and SOURCES.md.
+
+## Added 2026-11-22 — tightened to under four minutes
+
+Written by Claude Code. No new capture or render: the film reuses capture/run-01, capture/run-02, capture/a5-run-01, the Assignment 6 capture (SHA-256 checked again) and the prop render, with shorter spans (BUILD-PROMPT.md, "tightened"; per-beat spans in `evidence/footage-provenance.json`). The lunge-commit span of capture/run-01 (frames 2040–2148) is no longer shown.

@@ -21,123 +21,96 @@ from common import REEL, SLUG, TITLE, AUTHOR, FPS, W, H, REV_A7, load_json, save
 # id, part, heading, kind, label, narration, (lead_s, tail_s) silence added around the measured voice
 #   kind: still (a held PNG), capture (gameplay video), audio (G11: a video timed to the game's own sounds)
 PLAN = [
+    # ---- title + the game in brief (about 15 s)
     ('T00', 'title', 'Title: The Little Flame Witch, GDD 2.0', 'still', 'constructed',
-     "I'm Zhefan Zhang. This pitch is built from my game design document for The Little Flame Witch, "
-     "version 2.0, dated November 21, 2026.", (0.4, 0.8)),
+     "I'm Zhefan Zhang, and this pitch is built from my game design document, version 2.0.", (0.3, 0.5)),
     ('P01', 'brief', 'The game in brief', 'still', 'mixed',
-     "The Little Flame Witch is an HD-2D cave action game: you aim fireballs with the mouse to fight through a cold "
-     "cave. The goal is to reach the bottom and defeat the great wolf that guards it. A pit or losing all your HP "
-     "sends you back, and beating the great wolf will end the game.", (0.3, 0.8)),
+     "The Little Flame Witch is an HD-2D cave action game: aim fireballs with the mouse, fight through a cold cave, "
+     "and defeat the great wolf at the bottom.", (0.2, 0.4)),
+    # ---- the GDD, sections 1-16 (about 1:50)
     ('G01', 'GDD 1', 'GDD 1 · Design pillars', 'still', 'constructed',
-     "Section one, the design pillars. Your fire is the only warmth. Every failure is fair. "
-     "Readable at a glance, even muted. Small witch, big threat.", (0.3, 0.8)),
+     "Four pillars: your fire is the only warmth, every failure is fair, readable even muted, small witch, big threat.",
+     (0.2, 0.3)),
     ('G02', 'GDD 2', 'GDD 2 · Core gameplay loop', 'still', 'constructed',
-     "The core loop. Moment to moment, you move, jump, aim and fire, and decide whether to shoot a growling wolf early "
-     "or step out of reach. In one sitting, you'll clear a level, rest at a campfire and go on to the great wolf. "
-     "A short run brings you back for a cleaner one.", (0.3, 0.6)),
+     "The loop: move, jump, aim, fire and read each growl; the slice will chain short levels to the great wolf.",
+     (0.2, 0.3)),
     ('G03', 'GDD 3', 'GDD 3 · Player experience goals', 'still', 'constructed',
-     "The player should feel small but capable when an early fireball cancels a lunge, safe at a campfire, "
-     "tense when the great wolf enters, and relieved when the cave falls quiet.", (0.3, 0.6)),
+     "She should feel small but capable when an early shot cancels a lunge, and relieved when the cave falls quiet.",
+     (0.2, 0.3)),
     ('G04', 'GDD 4', 'GDD 4 · Core mechanics', 'capture', 'real',
-     "Core mechanics, built today: A and D or the arrows to run, Space to jump, with a 0.08-second coyote time and no "
-     "double jump, and the mouse to aim and cast. A pit or zero HP shows the reason, then the level restarts. "
-     "Heal and interact will come later.", (0.3, 1.0)),
+     "Built today: run, jump with coyote time, aim and cast; a pit or zero HP shows the reason and restarts.",
+     (0.2, 0.3)),
     ('G05', 'GDD 5', 'GDD 5 · Systems: the wolf and health', 'capture', 'real',
-     "Systems. Each wolf is a state machine with a phase table: growl 31 ticks, lunge 22, recover 36. A hit during "
-     "the growl cancels the lunge; once the dash starts, it commits. A hit on the witch costs one of five hearts, "
-     "with a tint, a blink and a second of invulnerability. The boss, hazards and campfire will follow.", (0.3, 1.0)),
+     "Each wolf runs a phase table, growl, lunge, recover, and a hit during the growl cancels the lunge.", (0.2, 0.3)),
     ('G06', 'GDD 6', 'GDD 6 · Progression', 'still', 'constructed',
-     "Progression: no levelling and no equipment. The witch will gain one thing, the heal spell, from the chest at "
-     "the end of level one, while each level adds more wolves, then spikes and a boulder, then the great wolf.",
-     (0.3, 0.6)),
+     "No levelling: she'll gain one heal spell from the first chest, and each level will add harder threats.",
+     (0.2, 0.3)),
     ('G07', 'GDD 7', 'GDD 7 · World and environment', 'still', 'constructed',
-     "The world is one cold cave under a mountain, in two to three short levels: the cave mouth, deeper tunnels if "
-     "there are three, and the great wolf's den. Its one rule: warmth comes only from fire, so lit places are safe.",
-     (0.3, 0.6)),
+     "One cold cave in two to three short levels, where warmth comes only from fire.", (0.2, 0.3)),
     ('G08', 'GDD 8', 'GDD 8 · Narrative', 'still', 'constructed',
-     "The narrative will be simple: four short, skippable scenes with portraits. She goes down with the only flame "
-     "she has, rests at a campfire, is told to turn back, and is let through after the fight.", (0.3, 0.6)),
+     "Four short, skippable scenes with portraits will tell a simple story, from the cave mouth to the great wolf.",
+     (0.2, 0.3)),
     ('G09', 'GDD 9', 'GDD 9 · Characters', 'still', 'mixed',
-     "Characters: the witch, a pixel sprite in play and a generated portrait in dialogue; the grey cave wolves that "
-     "growl before they lunge; and the great wolf, which so far exists only as concept art.", (0.3, 0.6)),
+     "The witch and the cave wolves exist as sprites; the great wolf exists only as concept art.", (0.2, 0.3)),
     ('G10', 'GDD 10', 'GDD 10 · Art direction', 'still', 'mixed',
-     "Art direction. On the left, what exists: the pixel sprites, the four-frame run cycle, the wolf's lunge rig, my "
-     "Assignment 3 props and the cave lights. On the right, the planned HD-2D look: depth of field, bloom, fog, and "
-     "the fireball as a moving light.", (0.3, 0.6)),
+     "On the left, the art that exists; on the right, the planned HD-2D look.", (0.2, 0.3)),
     ('G11', 'GDD 11', 'GDD 11 · Sound and music', 'audio', 'real',
-     "Sound and music, from Assignment 2: a cave theme made with Lyria and cut into a loop, and five effects made with "
-     "Stable Audio Open. A boss theme, a campfire theme and new effects will be added. Here they are, from the "
-     "game's own files.", (0.3, 0.4)),
+     "Music and effects, from Assignment 2:", (0.2, 0.2)),
     ('G12', 'GDD 12', 'GDD 12 · Feature list', 'still', 'constructed',
-     "The feature list. The must column: the 3D cave and camera, the core actions in 3D, wolves with the growl "
-     "cancel, two levels, the boss, HP and restart, and a Windows build with a test report. The smallest playable "
-     "version: one 3D room, one wolf, and my pin passing.", (0.3, 0.6)),
+     "Must, should and could; the smallest playable version is one 3D room, one wolf, and my pin passing.",
+     (0.2, 0.3)),
     ('G13', 'GDD 13', 'GDD 13 · Out of scope', 'still', 'constructed',
-     "Out of scope: no multiplayer, no save system, no levelling, equipment or shops, no web export, and none of "
-     "Assignment 4's later chapters.", (0.3, 0.6)),
+     "Out of scope: multiplayer, saves, levelling and shops, and a web export.", (0.2, 0.3)),
     ('G14', 'GDD 14', 'GDD 14 · Technical requirements', 'still', 'constructed',
-     "Technically: Godot 4.7.2 with Forward+, a Windows build, and a target of 60 frames per second at 1080p on my "
-     "RTX 5060 Laptop GPU, measured, not claimed. Rooms will go from grey boxes to low-poly Blender pieces, with the "
-     "sprites as camera-facing billboards.", (0.3, 0.6)),
+     "Godot 4.7.2, Forward+, a Windows build, aiming for 60 frames per second at 1080p, to be measured.", (0.2, 0.3)),
     ('G15', 'GDD 15', 'GDD 15 · Risks', 'still', 'constructed',
-     "The risks. Moving the 2D game into 3D could break what already works: I'll test one room first, judged by my "
-     "Assignment 7 pin, and if it fails, the 2D layer stays and the 3D becomes the backdrop. Three levels may not "
-     "fit, so the plan allows two. And if the look misses 60 fps, the costliest effect goes first.", (0.3, 0.6)),
+     "The main risk: 2D into 3D could break what works, so one room comes first, judged by my Assignment 7 pin.",
+     (0.2, 0.3)),
     ('G16', 'GDD 16', 'GDD 16 · Open questions', 'still', 'constructed',
-     "Open questions: a 2D layer or 3D bodies on a plane, two levels or three, and whether the pixel sprites read "
-     "under depth of field. Each has its test: the one-room spike, the first playable level, and captures from the "
-     "first room.", (0.3, 0.6)),
+     "Open questions: a 2D layer or 3D bodies, two levels or three, and pixel sprites under depth of field.",
+     (0.2, 0.3)),
+    # ---- the seven questions (about 1:10); question 6 is GDD 15
     ('Q01', 'Question 1', 'Question 1 · What it is', 'still', 'constructed',
-     "Now the seven questions. What it is: when it's done, a playable Windows desktop build, a zip with an exe, of a "
-     "vertical slice from title screen to end screen.", (0.3, 0.6)),
+     "Question one: the artifact will be a Windows exe in a zip, a vertical slice from title to end screen.",
+     (0.3, 0.3)),
     ('Q02', 'Question 2', 'Question 2 · Why anyone would care', 'still', 'constructed',
-     "Why care? It will put Octopath Traveler's HD-2D look together with Metal Slug-style side-scrolling, "
-     "with a mouse-aimed fireball. Octopath is turn-based, Metal Slug fires in fixed directions, "
-     "Hollow Knight is a large cave with progression; I've played all three. This will be a short action run.",
-     (0.3, 0.6)),
+     "Why care? It will put Octopath Traveler's HD-2D look together with Metal Slug-style shooting and a mouse-aimed "
+     "fireball; Octopath is turn-based, Metal Slug fires in fixed directions, Hollow Knight is a big cave with "
+     "progression, and I've played all three.", (0.2, 0.3)),
     ('Q03', 'Question 3', 'Question 3 · Who opens it, and the first sixty seconds', 'still', 'constructed',
-     "Who opens it? A hiring manager or a lead gameplay programmer; my target role is gameplay programmer. "
-     "In the first sixty seconds they'll unzip it, double-click the exe, see the controls on the title screen, "
-     "skip the opening line with one key, and be playing within a minute.", (0.3, 0.6)),
+     "For a gameplay programmer role, the reader, a hiring manager or lead, will unzip, double-click, and be playing "
+     "within a minute.", (0.2, 0.3)),
     ('Q04', 'Question 4', 'Question 4 · What it proves', 'still', 'figure',
-     "What will it prove? That I can build and verify gameplay systems. The evidence started in Assignment 7: I "
-     "pinned the wolf every physics tick before the growl cancel; only the two scenarios with a hit during the growl "
-     "changed; and thirty-eight headless test runs passed in a fresh clone.", (0.3, 0.6)),
+     "It will prove I build and verify gameplay systems: I pinned the wolf before the growl cancel, and thirty-eight "
+     "headless runs passed in a fresh clone.", (0.2, 0.3)),
     ('Q05', 'Question 5', 'Question 5 · What comes first, and how anyone would know it ran', 'still', 'constructed',
-     "What comes first: the core loop in one 3D cave room, where the witch runs, jumps and casts at a wolf. "
-     "It ran if my existing behaviour pin passes there and a windowed capture shows it, labelled with its revision.",
-     (0.3, 0.6)),
+     "First comes one 3D cave room; it ran if my behaviour pin passes there and a labelled capture shows it.",
+     (0.2, 0.3)),
     ('Q07', 'Question 7', 'Question 7 · Why this project: what is new', 'still', 'constructed',
-     "Why this project? Half learning, half showing. New to me: HD-2D itself, a lit 3D cave, its camera, "
-     "and 2D sprites placed in it.", (0.3, 0.6)),
-    ('Q07B', 'Question 7', 'Already have: the hurt tint (Assignment 5)', 'capture', 'real',
-     "Already mine: the hurt-tint shader from Assignment 5,", (0.2, 0.0)),
-    ('Q07C', 'Question 7', 'Already have: the particles (Assignment 6)', 'capture', 'real',
-     "the fireball particles from Assignment 6, measured at about 0.02 and 0.10 milliseconds of GPU time "
-     "on an RTX 5060 Laptop GPU,", (0.1, 0.0)),
-    ('Q07D', 'Question 7', 'Already have: the run cycle (Assignment 7)', 'capture', 'real',
-     "and the run cycle, state machines and tests from Assignment 7.", (0.1, 0.0)),
+     "Why this project? Half learning, half showing: new to me is a whole 3D level with sprites that run and fight in "
+     "it.", (0.2, 0.3)),
+    ('Q07X', 'Question 7', 'Question 7 · Already have, by revision', 'capture', 'real',
+     "Already mine: the hurt tint, the particles, measured at about 0.02 and 0.10 milliseconds of GPU time on an RTX "
+     "5060 Laptop GPU, and the run cycle.", (0.2, 0.3)),
+    # ---- the appendix (about 30 s)
     ('A01', 'Appendix', 'Appendix · Exists today', 'capture', 'real',
-     "Appendix: is this realistic? Today I have the 2D game, with its run cycle, lunge rig, cave lights, particles, "
-     "hurt tint and thirty-eight passing test runs, plus my Assignment 3 props and the concept portraits.", (0.3, 0.8)),
+     "Appendix. Today the 2D game exists, with its animation, effects and tests, my Assignment 3 props, and the "
+     "concept portraits.", (0.3, 0.3)),
     ('A02', 'Appendix', 'Appendix · Started, not finished', 'still', 'constructed',
-     "Started but not finished: this GDD and brief, and the story scenes, whose portraits exist but whose dialogue "
-     "box and triggers don't. Nothing of the 3D cave is started yet.", (0.3, 0.6)),
+     "Started: this GDD and brief, and the portraits for the story scenes; nothing of the 3D cave yet.", (0.2, 0.3)),
     ('A03', 'Appendix', 'Appendix · Not started (will exist)', 'still', 'constructed',
-     "Not started: the 3D levels and camera, the look, the story in the game, the heal spell, the great wolf, the "
-     "hazards, the rest point, title and end screens, the Windows export and its test report.", (0.3, 0.6)),
+     "Not started: the 3D levels, the look, the boss, hazards, rest point, screens and the Windows export.",
+     (0.2, 0.3)),
     ('A04', 'Appendix', 'Appendix · Can one person finish it?', 'still', 'constructed',
-     "Can one person finish it? Yes, at the must and should size with two levels. If I fall behind, I'll cut the "
-     "third level first, then the could items, then the story scenes, and keep the must column whole.", (0.3, 0.6)),
+     "One person can finish it at two levels; I'd cut the third level, then the extras, then the scenes.",
+     (0.2, 0.3)),
     ('A05', 'Appendix', 'Appendix · Where every asset comes from', 'still', 'mixed',
-     "Every asset's source: the sprites, run sheet and portraits from Gemini; the lunge rig and the 3D props, mine; "
-     "the music from Lyria and the effects from Stable Audio Open; the shaders and particles, my own. "
-     "Nothing bought, and no third-party game assets.", (0.3, 1.2)),
+     "Every asset is mine or generated, with its licence; nothing is bought.", (0.2, 0.3)),
     ('OUT', 'outro', 'Outro', 'still', 'constructed', '', (0.0, 0.0)),
 ]
-OUTRO_S = 4.0
-# The footage beats need at least this much time on screen; the shortfall becomes held-frame time, never retiming.
-MIN_S = {'Q07B': 6.0, 'Q07C': 7.0, 'Q07D': 5.0}
+OUTRO_S = 5.0
+# Pictures that need more time than their words: the shortfall is silence (held frames or a held card), never retiming.
+MIN_S = {'G04': 7.0, 'G05': 7.0, 'Q07X': 10.0, 'A01': 7.0, 'A05': 6.0}
 
 # The voice reads narration_text; these spoken forms keep Kokoro from guessing at tokens (the toolkit's normaliser only
 # maps symbols). PLAN keeps the written script, which FACTCHECK.md quotes and the screen shows.
@@ -145,6 +118,7 @@ SAY = [('HD-2D', 'H-D two-D'), ('2D', 'two-D'), ('3D', 'three-D'), ('RTX 5060', 
        ('0.02 and 0.10 milliseconds', 'zero point zero two and zero point one zero milliseconds'),
        ('0.08-second', 'zero point zero eight second'), ('Godot 4.7.2', 'Godot four point seven point two'),
        ('1080p', 'ten-eighty p'), ('60 fps', 'sixty frames per second'), ('the exe', 'the E-X-E'),
+       ('Windows exe', 'Windows E-X-E'),
        ('version 2.0', 'version two point oh'), ('GDD', 'G-D-D')]
 
 

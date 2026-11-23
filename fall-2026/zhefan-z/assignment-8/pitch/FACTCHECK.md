@@ -81,3 +81,30 @@ Written by Claude Code before the master compile. The tables above check the fir
 **Numbers in the rebuilt narration:** 2.0 and 2026-11-21 (GDD.md); 0.08 s (tuning.gd); 31, 22, 36 ticks and five hearts (A7 TEST-REPORT, tuning.gd); 4.7.2, 60 fps, 1080p (GDD.md §14, a target); 0.02 and 0.10 ms (A6 TEST-REPORT, RTX 5060 Laptop GPU); 38 runs (A7 fresh-clone check). On screen only: frame numbers and HP (capture logs), the excerpt seeds and trims and the 54.6 s loop (A2 SOURCES.md), the test table (committed logs).
 
 **Wording noted, not changed:** the brief's "New to me: … 2D sprites placed in 3D" holds for gameplay, but the Assignment 3 prop scene already placed the mage's idle sprite in 3D as a static billboarded `Sprite3D` (scale reference); G10 shows that render and says so in its caption.
+
+## Added 2026-11-22 — the tightened film (under four minutes)
+
+Written by Claude Code before the master compile. The tables above stay as written. The narration is now one short sentence per beat (`PLAN` in `scripts/sheet.py`); every claim in it is a shortened form of one checked above. The sources are unchanged unless noted.
+
+| Beat | Claim (shortened) | Source |
+|---|---|---|
+| T00 | version 2.0 | GDD.md |
+| P01 | genre, mouse-aimed fireballs, cold cave, the great wolf at the bottom (the goal) | GDD.md Vision |
+| G02 | "the slice *will* chain short levels to the great wolf" (future) | GDD.md §2, §7 |
+| G04 | run, jump with coyote time, aim and cast; a pit or 0 HP shows the reason and restarts | as in the rebuild (`tuning.gd`, `controls.gd`, capture/run-02, `main.gd`); the coyote-time number is no longer spoken |
+| G05 | the phase table growl → lunge → recover; a hit in the growl cancels | capture/run-01 (states on the chips); the tick counts are no longer spoken, and the commit-on-lunge clause is gone with its footage |
+| G06 | she *will* gain one heal spell from the first chest; each level *will* add harder threats | GDD.md §6 |
+| G09 | the witch and the wolves exist as sprites; the great wolf only as concept art | GDD.md §9; files at 840b501 |
+| G11 | music and effects from Assignment 2 | as in the rebuild; tools and licences in the captions |
+| G14 | Godot 4.7.2, Forward+, Windows, aiming for 60 fps at 1080p, to be measured | GDD.md §14 |
+| G15 | the main risk and the one-room test by the Assignment 7 pin | GDD.md §15 (answers question 6) |
+| Q01 | a Windows .exe in a zip, a vertical slice, title to end screen | PROJECT-BRIEF.md §1 |
+| Q02 | the comparable games, named only; "I've played all three" | PROJECT-BRIEF.md §2 |
+| Q03 | gameplay programmer role; a hiring manager or lead; playing within a minute | PROJECT-BRIEF.md §3 |
+| Q04 | the pin before the growl cancel; 38 headless runs in a fresh clone | as in the first cut (B09) |
+| Q05 | first one 3D room; it ran if the pin passes and a labelled capture shows it | PROJECT-BRIEF.md §5 |
+| Q07 | new: a whole 3D level with sprites that run and fight in it | PROJECT-BRIEF.md §7 as corrected in `770a2aaf`; the A3 static billboard checked at `8141177b` |
+| Q07X | already mine: hurt tint, particles (about 0.02 and 0.10 ms of GPU time, RTX 5060 Laptop GPU), run cycle | A5, A6, A7 records, as before |
+| A01–A05 | exists; started; not started; one person at two levels and the cut order; every asset mine or generated with its licence, nothing bought | PROJECT-BRIEF.md appendix |
+
+**Numbers now spoken:** 2.0; 4.7.2, 60, 1080p (a target); 38; 0.02 and 0.10 ms (with the machine named). No other number is spoken. On screen, the cards and chips are unchanged from the rebuild.
