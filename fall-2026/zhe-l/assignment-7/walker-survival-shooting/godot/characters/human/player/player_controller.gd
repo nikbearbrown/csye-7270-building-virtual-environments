@@ -91,6 +91,7 @@ func _physics_process(delta: float) -> void:
 	_rotate_camera()
 	var intent := _read_intent(delta)
 	_body.apply_intent(intent, delta)
+	_screen_tablet.set_screen_allowed(_body.is_tablet_screen_lit())  # Then we tell the demo tablet whether the tablet in hand is lit, so its screen lights at the same moment (CHANGE-BRIEF: frame 20)
 	_update_view(intent.aim)
 
 
@@ -122,11 +123,12 @@ func _rotate_camera() -> void:
 func _read_intent(delta: float) -> CharacterIntent:
 	var intent := CharacterIntent.new()  # Everything in a new intent defaults to "don't" (zero, false)
 	var hold := _body.get_tablet_hold()  # Ask the body: is the tablet held now, and how?
+	var raising := _body.is_raising_tablet()  # Then we ask the body whether the one-handed raise is still under way (a query point): while it is, no movement goes into the intent
 	intent.look_yaw = _camera_pivot.global_rotation.y  # The player's "look direction" = the camera's left/right facing in the world
-	if hold != Humanoid.TabletHold.TWO_HAND:  # Walking only when not holding the tablet in both hands
+	if hold != Humanoid.TabletHold.TWO_HAND and not raising:  # Walking only when not holding the tablet in both hands (and never during the raise)
 		# get_vector combines four direction keys into a 2D vector whose length stays at most 1 when moving diagonally
 		intent.move = Input.get_vector(&"move_left", &"move_right", &"move_back", &"move_forward")
-	if hold == Humanoid.TabletHold.NONE:  # Sprint, jump and aim only with no tablet in hand
+	if hold == Humanoid.TabletHold.NONE and not raising:  # Sprint, jump and aim only with no tablet in hand (and never during the raise)
 		intent.sprint = Input.is_action_pressed(&"sprint")  # True for as long as it is held
 		intent.jump = Input.is_action_just_pressed(&"jump")  # True only on the frame it was just pressed
 		intent.aim = Input.is_action_pressed(&"aim")  # True for as long as the right button is held

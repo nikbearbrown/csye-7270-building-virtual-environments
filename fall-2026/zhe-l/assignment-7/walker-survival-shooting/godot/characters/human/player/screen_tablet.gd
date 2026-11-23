@@ -17,12 +17,13 @@ const TABLET_MOVE_DONE := 1.0   # This trip has arrived at its target slot; once
 # ============================================================
 # Exported variables (@export): feel values shown in the Inspector that can be tuned directly
 # ============================================================
-@export var moving_time : float = 0.35  # How many seconds one slide takes; _process() uses it to work out how far to go each frame. 0.35 matches the tablet_move_seconds of the tablet in hand, so both arrive together
+@export var moving_time : float = 0.35  # How many seconds one slide takes; _process() uses it to work out how far to go each frame. since A7 the tablet in hand is moved by its raise animation instead, and the demo screen lights only when the tablet in hand is lit (set_screen_allowed())
 
 # ============================================================
 # Member variables: state used only inside this script (a leading underscore = internal)
 # All three are only "where the demo tablet is in the picture"; they are presentation, not game state, and neither saves nor co-op need them (rule 5)
 # ============================================================
+var _screen_allowed := false  # Whether the brain says the tablet in hand is lit; the demo screen may light only then (CHANGE-BRIEF: its screen waits for frame 20 of the raise)
 var _screen_want_show := false  # Our intent: should the demo tablet be out. Only set_shown() changes it; _process() reads it to decide which slot to head for
 var _slide_start_transform:= Transform3D.IDENTITY  # The start of this trip: the demo tablet's position and angle at the moment it set off. set_shown() records it and _process() starts from it; at first it is only a placeholder
 var _slide_progress := TABLET_MOVE_DONE  # How far this trip has gone. It starts as "arrived", because when the game starts the demo tablet is already off screen and needs no slide
@@ -70,6 +71,12 @@ func set_shown(shown: bool) -> void:
 	_slide_progress = TABLET_MOVE_START  # Finally we set the progress to the start; after this _process() pushes it bit by bit to TABLET_MOVE_DONE and moves the demo tablet
 
 
+## The brain calls this every physics frame with whether the tablet in hand is lit: the demo screen may light only while it is.
+## It only records the value; _update_screen() uses it on the next drawn frame. The slide itself does not wait for it.
+func set_screen_allowed(allowed: bool) -> void:
+	_screen_allowed = allowed  # We store what the brain told us; _update_screen() reads it
+
+
 ## The brain calls this when the game starts: it tells the demo tablet's screen which picture to show (the tablet OS canvas), the same one the tablet in hand shows.
 func set_screen_image(image: Texture2D) -> void:
 	_tablet.set_screen_image(image)  # We pass the picture on to the demo tablet itself, which hands it to its own screen shader
@@ -82,8 +89,8 @@ func get_screen_uv(ray_origin: Vector3, ray_direction: Vector3) -> Vector2:
 
 
 ## _process() calls this every frame after placing the demo tablet: we decide whether its screen is lit or dark this frame.
-## The screen lights only when the intent is "come out" and it has slid into the lower right and stopped; as soon as it starts sliding out, the screen goes dark, just like the tablet in hand when it is put away.
+## The screen lights only when the intent is "come out", it has slid into the lower right and stopped, and the tablet in hand is lit; as soon as it starts sliding out, the screen goes dark, just like the tablet in hand when it is put away.
 func _update_screen() -> void:
 	var arrived := _slide_progress == TABLET_MOVE_DONE  # First we check whether this trip is finished: once the progress is "arrived", the demo tablet stays still at the target slot
-	var screen_on := _screen_want_show and arrived  # Then it should be lit only if the intent is "come out" and it has arrived; while sliding in, sliding out or staying off screen, it should be dark
+	var screen_on := _screen_want_show and arrived and _screen_allowed  # Then it should be lit only if the intent is "come out", it has arrived and the tablet in hand is lit; otherwise it is dark
 	_tablet.set_screen_lit(screen_on)  # Finally we hand lit or dark to the demo tablet itself; it sets the screen material's brightness to light_strength_percentage (0.39) or 0, and that is the brightness of the screen drawn this frame

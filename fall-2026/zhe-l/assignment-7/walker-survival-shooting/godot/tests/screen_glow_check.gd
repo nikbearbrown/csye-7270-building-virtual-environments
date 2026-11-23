@@ -4,7 +4,10 @@
 extends SceneTree  # Extends SceneTree: run directly with --script, no scene needed; it loads base.tscn itself
 ## A5 headless test for the screen glow: checks the parameters of pad_base_light.gdshader, and whether the driver (humanoid.gd + tablet_device.gd)
 ## sets pad_light_data by the rules in CHANGE-BRIEF.
-## Run: ./scripts/run-test.sh screen_glow_check.gd 30 (and 60, 144)
+## Run: ./scripts/run-test.sh screen_glow_check.gd 60
+## A7 (CHANGE-BRIEF Boundaries item 5 and the 2026-11-22 revision): the screen is reached through Humanoid.get_tablet() (the tablet now hangs on a bone),
+## the take-out lights when the one-handed raise finishes (frame 20 = 0.667 s) instead of after the 0.35 s slide, and switching between one and two hands
+## goes dark for the 0.2 s cross-fade instead of staying lit. Every other rule is unchanged.
 ## What it can prove: the parameter names, types, hints and defaults are right; driven by real Tab key events at a fixed frame rate, pad_light_data follows the rules on every frame;
 ##           every tablet's value is independent.
 ## What it cannot prove: what colour the screen looks (headless mode renders nothing). Colour needs captures and a human eye.
@@ -15,15 +18,16 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 const SHADER_PATH := "res://shaders/pad_base_light.gdshader"  # Path of the screen shader
 const BASE_SCENE := "res://base.tscn"  # The main game scene: the player is in it
 const HUMANOID_SCENE := "res://characters/human/humanoid/humanoid.tscn"  # Humanoid body: used for the second character (no brain)
-const SCREEN_PATH := "Visual/TabletDevice/Screen"  # Path from a humanoid body to its screen node
 const PARAM := &"pad_light_data"  # Name of the driven shader parameter
 const LIT := 0.39  # Lit strength (CHANGE-BRIEF: light_strength_percentage = 0.39)
 const OFF := 0.0  # Screen off
-const MOVE_SECONDS := 0.35  # Tablet move time = from the state change to the screen lighting (CHANGE-BRIEF: 0.35 s ± one frame period)
+const MOVE_SECONDS := 20.0 / 30.0  # A7: from the state change to the screen lighting = the one-handed raise, frames 0-20 at 30 fps (CHANGE-BRIEF phase table)
+const READ_LAG_FRAMES := 2  # A7, measured: the game reads "raise finished" 2 physics frames after frame 20's time (the state machine's first frame in raise_1h does not advance the clip, and the clip advances on the process tick while the game reads on the next physics tick; CHANGE-BRIEF revision)
+const BLEND_SECONDS := 0.2  # A7: the cross-fade between hold poses; the screen is dark during it (CHANGE-BRIEF state machine)
 const SLOW_TIME_SCALE := 0.5  # Slow speed used for the Engine.time_scale rule
 const TAP_SECONDS := 0.1  # Short press: hold for 0.1 s, then release (a long press needs 0.4 s)
 const HOLD_SECONDS := 0.5  # Long press: hold for 0.5 s (more than 0.4 s)
-const SETTLE_SECONDS := 0.6  # Wait after each action: longer than the move, so the tablet has arrived
+const SETTLE_SECONDS := 1.0  # Wait after each action: longer than the raise (0.667 s), so the tablet has arrived
 const QUICK_BACK_SECONDS := 0.1  # The wait in "take it out and put it away after 0.1 s"
 const EPS := 0.0001  # Tolerance when comparing decimals
 
@@ -138,8 +142,9 @@ func _build_scene() -> void:
 	var brain := IdleBrain.new()
 	brain.body = other
 	other.add_child(brain)
-	player_mat = player.get_node(SCREEN_PATH).get_surface_override_material(0)
-	other_mat = other.get_node(SCREEN_PATH).get_surface_override_material(0)
+	await process_frame  # A7: we let one frame pass so both bodies have run _ready() and get_tablet() returns their tablet
+	player_mat = player.get_tablet().get_screen().get_surface_override_material(0)  # A7: the tablet hangs on a bone now, so we ask the body for it instead of using a fixed path
+	other_mat = other.get_tablet().get_screen().get_surface_override_material(0)
 	player.tablet_hold_changed.connect(_on_hold_changed)
 	sampler = Sampler.new()
 	sampler.process_priority = 1000  # Higher numbers run later: it reads the values after all of this frame's code has run
@@ -235,19 +240,20 @@ func _scenario() -> void:
 	if lit >= 0:
 		var delay := _lit_delay(lit)
 		print("     lit %.4f s after the state change (frame-based: %.4f s)" % [delay, sampler.samples[lit]["t"] - sampler.samples[changed_at]["t"]])
-		_check(absf(delay - MOVE_SECONDS) <= tolerance, "5  lit %.2f s +- one frame after the state change" % MOVE_SECONDS)
-	_check(lit >= 0 and absf(sampler.samples[lit]["pad"] - player.get_node("Visual/TabletDevice").light_strength_percentage) < EPS,
+		_check(absf(delay - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "5  lit %.2f s + 2 frames (measured read lag) +- one frame after the state change" % MOVE_SECONDS)
+	_check(lit >= 0 and absf(sampler.samples[lit]["pad"] - player.get_tablet().light_strength_percentage) < EPS,
 		"12 lit value equals light_strength_percentage (0.39)")
 
-	# 6: long press (ONE_HAND → TWO_HAND), then short press (TWO_HAND → ONE_HAND): no frame is 0
-	start = sampler.samples.size()
-	await _press(HOLD_SECONDS)
-	_check(change_hold == Humanoid.TabletHold.TWO_HAND, "6  long press: ONE_HAND -> TWO_HAND")
-	await _wait(SETTLE_SECONDS)
-	await _press(TAP_SECONDS)
-	_check(change_hold == Humanoid.TabletHold.ONE_HAND, "6  short press: TWO_HAND -> ONE_HAND")
-	await _wait(SETTLE_SECONDS)
-	_check(not _any_pad(start, OFF), "6  never 0.0 on any frame across ONE_HAND <-> TWO_HAND")
+	# 6 (A7): long press (ONE_HAND → TWO_HAND), then short press (TWO_HAND → ONE_HAND): dark during each 0.2 s cross-fade, lit again once the hold pose is reached
+	for step in [[HOLD_SECONDS, Humanoid.TabletHold.TWO_HAND, "long press: ONE_HAND -> TWO_HAND"], [TAP_SECONDS, Humanoid.TabletHold.ONE_HAND, "short press: TWO_HAND -> ONE_HAND"]]:
+		start = sampler.samples.size()
+		await _press(step[0])
+		_check(change_hold == step[1], "6  " + step[2])
+		await _wait(SETTLE_SECONDS)
+		_check(_any_pad(start, OFF), "6  dark during the cross-fade (%s)" % step[2])
+		lit = _first_lit(start)
+		_check(lit >= 0 and _lit_delay(lit) <= BLEND_SECONDS + 2.0 * tolerance, "6  lit again within 0.2 s + two frames (%s)" % step[2])
+		_check(absf(sampler.samples[-1]["pad"] - LIT) < EPS, "6  lit once settled (%s)" % step[2])
 
 	# 7: short press to put it away (ONE_HAND → NONE; in the switch table a short press while one-handed = put away): 0 on the frame the state becomes NONE
 	start = sampler.samples.size()
@@ -282,7 +288,7 @@ func _scenario() -> void:
 	lit = _first_lit(start)
 	if lit >= 0:
 		print("     lit %.4f s after the second take-out" % _lit_delay(lit))
-	_check(lit >= 0 and absf(_lit_delay(lit) - MOVE_SECONDS) <= tolerance, "9  restart: lit %.2f s +- one frame after the last take-out" % MOVE_SECONDS)
+	_check(lit >= 0 and absf(_lit_delay(lit) - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "9  restart: lit %.2f s + 2 frames +- one frame after the last take-out" % MOVE_SECONDS)
 	await _press(TAP_SECONDS)  # Put away, ready for the next part
 	await _wait(SETTLE_SECONDS)
 
@@ -295,7 +301,7 @@ func _scenario() -> void:
 	if lit >= 0:
 		var scaled := _lit_delay(lit)
 		print("     time_scale %.1f: lit %.4f s scaled game time = %.4f s real time" % [SLOW_TIME_SCALE, scaled, scaled / SLOW_TIME_SCALE])
-		_check(absf(scaled - MOVE_SECONDS) <= tolerance, "11 time_scale %.1f: %.2f s of scaled game time" % [SLOW_TIME_SCALE, MOVE_SECONDS])
+		_check(absf(scaled - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "11 time_scale %.1f: %.2f s + 2 frames of scaled game time" % [SLOW_TIME_SCALE, MOVE_SECONDS])
 	else:
 		_check(false, "11 time_scale %.1f: screen never lit" % SLOW_TIME_SCALE)
 	Engine.time_scale = 1.0

@@ -2,25 +2,80 @@
 
 [ext_resource type="Script" uid="uid://mcc6v4cvfnn4" path="res://characters/human/humanoid/humanoid.gd" id="1_humanoid"]
 [ext_resource type="PackedScene" uid="uid://bt1mbvrpgjc6g" path="res://items/tablet/tablet_device.tscn" id="2_r3ews"]
+[ext_resource type="PackedScene" uid="uid://dskhq88i8nugf" path="res://assets/characters/main_character/main_character.glb" id="3_mainchar"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.3
 height = 1.6
 
-[sub_resource type="StandardMaterial3D" id="Mat_body"]
-albedo_color = Color(0.35, 0.42, 0.5, 1)
+[sub_resource type="AnimationNodeAnimation" id="Anim_hip"]
+animation = &"tablet_hold_hip"
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
-material = SubResource("Mat_body")
-radius = 0.3
-height = 1.6
+[sub_resource type="AnimationNodeAnimation" id="Anim_raise_1h"]
+animation = &"tablet_raise_one_hand"
 
-[sub_resource type="StandardMaterial3D" id="Mat_facing"]
-albedo_color = Color(0.9, 0.55, 0.2, 1)
+[sub_resource type="AnimationNodeAnimation" id="Anim_hold_1h"]
+animation = &"tablet_hold_one_hand"
 
-[sub_resource type="BoxMesh" id="BoxMesh_facing"]
-material = SubResource("Mat_facing")
-size = Vector3(0.24, 0.08, 0.12)
+[sub_resource type="AnimationNodeAnimation" id="Anim_hold_2h"]
+animation = &"tablet_hold_one_hand"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_0"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_1"]
+advance_mode = 2
+advance_expression = "get_tablet_hold() == 1"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_2"]
+advance_mode = 2
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_3"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 0"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_4"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 2"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_5"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 2"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_6"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 2"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_7"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 1"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_8"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 0"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="Trans_9"]
+advance_mode = 2
+xfade_time = 0.2
+advance_expression = "get_tablet_hold() == 0"
+
+[sub_resource type="AnimationNodeStateMachine" id="TabletStates"]
+states/hip/node = SubResource("Anim_hip")
+states/hip/position = Vector2(300, 100)
+states/raise_1h/node = SubResource("Anim_raise_1h")
+states/raise_1h/position = Vector2(500, 0)
+states/hold_1h/node = SubResource("Anim_hold_1h")
+states/hold_1h/position = Vector2(700, 100)
+states/hold_2h/node = SubResource("Anim_hold_2h")
+states/hold_2h/position = Vector2(500, 250)
+transitions = ["Start", "hip", SubResource("Trans_0"), "hip", "raise_1h", SubResource("Trans_1"), "raise_1h", "hold_1h", SubResource("Trans_2"), "raise_1h", "hip", SubResource("Trans_3"), "raise_1h", "hold_2h", SubResource("Trans_4"), "hip", "hold_2h", SubResource("Trans_5"), "hold_1h", "hold_2h", SubResource("Trans_6"), "hold_2h", "hold_1h", SubResource("Trans_7"), "hold_1h", "hip", SubResource("Trans_8"), "hold_2h", "hip", SubResource("Trans_9")]
 
 [node name="Humanoid" type="CharacterBody3D" unique_id=786203335]
 script = ExtResource("1_humanoid")
@@ -33,22 +88,20 @@ shape = SubResource("CapsuleShape3D_body")
 
 [node name="human_model" type="Node3D" parent="Visual" unique_id=83003477]
 
-[node name="Body" type="MeshInstance3D" parent="Visual/human_model" unique_id=1952595622]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-mesh = SubResource("CapsuleMesh_body")
+[node name="main_character" parent="Visual/human_model" instance=ExtResource("3_mainchar")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 
-[node name="FacingMarker" type="MeshInstance3D" parent="Visual/human_model" unique_id=1255639843]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, -0.29)
-mesh = SubResource("BoxMesh_facing")
+[node name="TabletBone" type="BoneAttachment3D" parent="Visual/human_model/main_character/rig/Skeleton3D"]
+bone_name = "tablet"
 
-[node name="TabletHipSlot" type="Marker3D" parent="Visual" unique_id=1791902833]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.36551425, 0.66731036, 0.12020683)
+[node name="TabletMount" type="Node3D" parent="Visual/human_model/main_character/rig/Skeleton3D/TabletBone"]
+transform = Transform3D(0.197299, 0, 0, 0, 0, -0.197299, 0, 0.197299, 0, 0, 0, 0)
 
-[node name="TabletOneHandSlot" type="Marker3D" parent="Visual" unique_id=59603478]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45551458, 1.0311128, -0.5304817)
+[node name="TabletDevice" parent="Visual/human_model/main_character/rig/Skeleton3D/TabletBone/TabletMount" unique_id=1618067847 instance=ExtResource("2_r3ews")]
 
-[node name="TabletTwoHandSlot" type="Marker3D" parent="Visual" unique_id=2113295486]
-transform = Transform3D(1, 0, 0, 0, 0.93103504, 0.36493027, 0, -0.36493027, 0.93103504, 0, 1.4595144, -0.123027295)
-
-[node name="TabletDevice" parent="Visual" unique_id=1618067847 instance=ExtResource("2_r3ews")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.36551425, 0.66731036, 0.12020683)
+[node name="AnimationTree" type="AnimationTree" parent="."]
+root_node = NodePath("../Visual/human_model/main_character")
+tree_root = SubResource("TabletStates")
+anim_player = NodePath("../Visual/human_model/main_character/AnimationPlayer")
+advance_expression_base_node = NodePath("..")
+callback_mode_process = 1

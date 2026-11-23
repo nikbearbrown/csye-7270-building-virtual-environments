@@ -8,21 +8,21 @@ extends CharacterBody3D  # Extends CharacterBody3D: moved by code, handles its o
 ## It reads no input and has no camera. A brain (PlayerController, later AI) calls apply_intent() every physics frame.
 
 # ============================================================
-# Constants: the three tablet states (design document section 5.8) and the two ends of the tablet move progress
+# Constants: the three tablet states (design document section 5.8) and the animation states that show them
 # ============================================================
 enum TabletHold {
 	NONE,  # Not holding the tablet: the tablet is put away on the body, switched off
 	ONE_HAND,  # Holding the tablet one-handed: the character holds the tablet in one hand; an operable tablet slides in at the bottom right of the screen
 	TWO_HAND,  # Holding the tablet two-handed: first person, the tablet raised in front of the eyes, the character cannot move
 }
-const TABLET_MOVE_START := 0.0  # Tablet move progress: just started
-const TABLET_MOVE_DONE := 1.0  # Tablet move progress: arrived at the target slot
+const STATE_HOLD_ONE_HAND := &"hold_1h"  # Animation state (AnimationTree): the one-handed hold pose (CHANGE-BRIEF, state machine)
+const STATE_HOLD_TWO_HAND := &"hold_2h"  # Animation state: the two-handed hold pose
 const INTERACTABLE_GROUP := &"interactables"  # Everything you can press F at (now the wall light switch; later maybe doors and crates) joins this group
 
 # ============================================================
 # Signals: announce "what already happened", for presentation and side effects only (rule 3)
 # ============================================================
-## Emitted after the tablet state changes. Later power-on/off sounds, the slide-in animation and the raise animation listen to it.
+## Emitted after the tablet state changes. The brain listens to it; the animation state machine reads get_tablet_hold() on its own.
 signal tablet_hold_changed(old_hold: TabletHold, new_hold: TabletHold)
 ## Emitted once on the physics frame the body comes back to the floor from the air (is_on_floor() goes false -> true). Notify-only: it changes nothing.
 ## The landing dust (effects/landing_dust_trigger.gd) listens to it and replays the dust at the feet.
@@ -37,7 +37,6 @@ signal landed
 @export var turn_speed_degrees: float = 720.0  # Turn speed, degrees/s: larger = faster turning
 @export var acceleration: float = 42.0  # Horizontal acceleration, m/s^2: the most the speed can change per second; larger = snappier starts and stops
 @export var jump_velocity: float = 4.5  # Upward speed at take-off, m/s
-@export var tablet_move_seconds: float = 0.35  # Seconds for the tablet to move from one slot to another: smaller = faster, 0 = jump there instantly
 
 # ============================================================
 # Member variables: state used inside this script (leading underscore = internal to this script)
@@ -45,11 +44,8 @@ signal landed
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")  # Gravity from the project settings (default 9.8)
 var _facing_yaw := 0.0  # Character facing (radians, around Y). This is "state"; Visual only displays it (rule 5)
 var _tablet_hold := TabletHold.NONE  # The current tablet state. Changed only through _apply_tablet_press() (rule 4)
-# The next few only describe "where the tablet visual has moved to": presentation, not game state (rule 5)
-var _tablet_shown_hold := TabletHold.NONE  # Which state's slot the tablet is moving to (or has reached)
-var _tablet_move_from := Transform3D.IDENTITY  # The start of this move: the tablet's position and rotation when the move began
-var _tablet_move_progress := TABLET_MOVE_DONE  # How far this move has gone: TABLET_MOVE_START = just started, TABLET_MOVE_DONE = arrived
-var _tablet_screen_lit := false #Tracks whether the screen is in the lit state
+var _tablet_screen_lit := false  # Whether the screen is lit (and clickable); worked out every physics frame by _update_tablet_screen() from the animation state
+var _raising_tablet := false  # Whether the one-handed raise is under way: set when a short press takes the tablet out, cleared when the raise has finished; the brain asks is_raising_tablet()
 # Last physics frame's floor state, only for the landed notification. It starts true: a body placed on the floor has not "landed" on scene load
 var _was_on_floor := true
 # Whether the body has stood on the floor at least once, only for the landed notification. Until then nothing counts as "coming back":
@@ -61,11 +57,10 @@ var _has_touched_floor := false
 # ============================================================
 # @onready: assigned after the node enters the scene tree and its children are ready
 @onready var _visual: Node3D = $Visual  # Visual node: the character model and the tablet are under it; rotating it shows the facing
-@onready var _human_model: Node3D = $Visual/human_model  # Character model: a capsule and a small orange box for now, a real model later
-@onready var _tablet: TabletDevice = $Visual/TabletDevice  # This character's own tablet (every character has one)
-@onready var _tablet_hip_slot: Marker3D = $Visual/TabletHipSlot  # Slot: when not held, the tablet hangs on the hip
-@onready var _tablet_one_hand_slot: Marker3D = $Visual/TabletOneHandSlot  # Slot: holding the tablet one-handed
-@onready var _tablet_two_hand_slot: Marker3D = $Visual/TabletTwoHandSlot  # Slot: holding the tablet two-handed, raised in front of the eyes
+@onready var _human_model: Node3D = $Visual/human_model  # Character model: the main character imported from main_character.glb
+@onready var _tablet: TabletDevice = $Visual/human_model/main_character/rig/Skeleton3D/TabletBone/TabletMount/TabletDevice  # This character's own tablet; it hangs on the rig's "tablet" bone, so only the animation decides where it is
+@onready var _animation_tree: AnimationTree = $AnimationTree  # The one authority over the skeleton (and so over the tablet): its state machine follows _tablet_hold
+@onready var _tablet_states: AnimationNodeStateMachinePlayback = _animation_tree.get("parameters/playback")  # The state machine's playback: which animation state it is in, and whether a blend is still running
 
 
 # ============================================================
@@ -126,55 +121,28 @@ func _update_facing(direction: Vector3, delta: float) -> void:
 	_facing_yaw = rotate_toward(_facing_yaw, target_yaw, deg_to_rad(turn_speed_degrees) * delta)
 
 
-## Shows the state on the visuals: the facing and the tablet's position. A character model and animations will read the state here too.
+## Shows the state on the visuals: the facing, and the tablet screen. Where the tablet is comes from the AnimationTree, not from here.
 ## Called once at the end of apply_intent() every physics frame.
-func _update_visual(delta: float) -> void:
-	_visual.rotation.y = _facing_yaw
-	_update_tablet_visual(delta)
+func _update_visual(_delta: float) -> void:
+	_visual.rotation.y = _facing_yaw  # We turn the model to the stored facing
+	_update_tablet_screen()  # Then we work out whether the screen may be lit this frame
 
 
-## Moves the tablet smoothly, over tablet_move_seconds, from where it was to the slot for the current tablet state (the raise / lower animation).
-## When the tablet state changes, the move restarts from where the tablet is "right now", so pressing Tab mid-move does not jump.
-## Reads _tablet_hold only and never changes it: presentation does not write state (rule 5). Called by _update_visual() every physics frame.
-func _update_tablet_visual(delta: float) -> void:
-	# State changed: remember where the tablet is now as the start, and restart the progress
-	if _tablet_shown_hold != _tablet_hold:
-		_tablet_shown_hold = _tablet_hold
-		_tablet_move_from = _tablet.transform
-		_tablet_move_progress = TABLET_MOVE_START
-	# Advance the progress toward "arrived": 1 / tablet_move_seconds per second, so it finishes in exactly tablet_move_seconds, independent of frame rate
-	if tablet_move_seconds <= 0.0:
-		_tablet_move_progress = TABLET_MOVE_DONE  # Set to 0 seconds: arrive at once
-	else:
-		_tablet_move_progress = move_toward(_tablet_move_progress, TABLET_MOVE_DONE, delta / tablet_move_seconds)
-	# smoothstep: turns the even progress into "slow start, fast middle, slow stop", so it looks like a hand moving, not a machine
-	var eased := smoothstep(TABLET_MOVE_START, TABLET_MOVE_DONE, _tablet_move_progress)
-	var target := _get_tablet_slot(_tablet_shown_hold).transform
-	# The tablet and the slots are all children of Visual, the same frame of reference, so interpolate directly between the two transforms (position and rotation together)
-	_tablet.transform = _tablet_move_from.interpolate_with(target, eased)
-	_update_tablet_screen()
-
-##Checks the current state (not held, one hand, two hands) and sends it to the tablet, so the tablet lights up or not
-##Called once every physics frame by _update_tablet_visual().
-##Reads _tablet_hold only, never changes it (rule 5)
+## Works out, every physics frame, whether the tablet screen is lit (and clickable), hands that to the tablet, and notices when the raise has finished.
+## The rule (CHANGE-BRIEF, "light once in place"): put away = dark at once; otherwise lit only when the animation state machine is in the hold pose
+## that matches the tablet state and no blend is running. So the one-handed raise lights on its last frame (frame 20), and every 0.2 s cross-fade is dark.
+## It reads the animation state; it never writes it, and it never moves the tablet. Called by _update_visual() every physics frame.
 func _update_tablet_screen() -> void:
-	if _tablet_hold == TabletHold.NONE:
-		_tablet_screen_lit = false
-	elif _tablet_move_progress == TABLET_MOVE_DONE:
-		_tablet_screen_lit = true
-	_tablet.set_screen_lit(_tablet_screen_lit)
-
-
-
-## Lookup: tablet state -> which slot the tablet belongs in. Calculation only, changes nothing. Called by _update_tablet_visual().
-func _get_tablet_slot(hold: TabletHold) -> Marker3D:
-	match hold:
-		TabletHold.ONE_HAND:
-			return _tablet_one_hand_slot
-		TabletHold.TWO_HAND:
-			return _tablet_two_hand_slot
-		_:  # The remaining case: NONE (not holding the tablet)
-			return _tablet_hip_slot
+	var state := _tablet_states.get_current_node()  # First we ask the state machine which animation state it is in now
+	var blending := _tablet_states.get_fading_from_node() != &""  # and whether it is still blending away from an earlier state
+	if _raising_tablet and state == STATE_HOLD_ONE_HAND:  # If we were raising and the machine has reached the one-handed hold pose (the raise clip has finished),
+		_raising_tablet = false  # from this frame the brain lets the player walk again
+	if _tablet_hold == TabletHold.NONE:  # If the tablet is put away,
+		_tablet_screen_lit = false  # the screen is dark from this very frame
+	else:  # Otherwise it is lit only once the matching hold pose is reached with no blend running
+		var target := STATE_HOLD_ONE_HAND if _tablet_hold == TabletHold.ONE_HAND else STATE_HOLD_TWO_HAND
+		_tablet_screen_lit = state == target and not blending
+	_tablet.set_screen_lit(_tablet_screen_lit)  # Finally we hand lit or dark to the tablet, which sets its screen material's brightness
 
 
 ## apply_intent() calls this when the intent's interact is true: find something nearby to interact with and ask it to do its thing.
@@ -194,16 +162,30 @@ func _try_interact() -> void:
 		nearest.interact(self)  # we ask it to do its thing; the switch receives this request and then switches the lights
 
 
-## Shows or hides this body's character model (only human_model is hidden, not the tablet, so the tablet in hand stays visible in first person).
+## Shows or hides this body's character model. Only the model's meshes are hidden, not the skeleton: the tablet hangs on a bone inside the model,
+## so hiding the skeleton would hide the tablet too, and in first person the tablet in hand must stay visible (CHANGE-BRIEF revision 2026-11-22).
 ## Only affects the picture on the machine that calls it; not game state (rule 5).
 ## Called by the player brain when switching to first person; in co-op, teammates' machines don't call it, so they still see you.
 func set_visual_visible(visible_locally: bool) -> void:
-	_human_model.visible = visible_locally
+	for mesh in _human_model.find_children("*", "MeshInstance3D", true, false):  # We go through every mesh of the character model,
+		if not _tablet.is_ancestor_of(mesh):  # skipping the tablet's own meshes,
+			mesh.visible = visible_locally  # and show or hide it
 
 
-## Returns the current tablet state. The brain uses it to decide which inputs may go into the intent this frame.
+## Returns the current tablet state. The brain uses it to decide which inputs may go into the intent this frame; the animation state machine reads it in its transition expressions.
 func get_tablet_hold() -> TabletHold:
 	return _tablet_hold
+
+
+## Query point (rule 3): is the one-handed raise still under way? From the short press that takes the tablet out until the raise clip has finished.
+## The brain asks it every physics frame: while it is true the player may not walk, run, jump, aim or interact (CHANGE-BRIEF phase table).
+func is_raising_tablet() -> bool:
+	return _raising_tablet
+
+
+## Returns whether the tablet screen is lit (and clickable) this physics frame. The brain passes it to the demo tablet, whose screen follows the same moment.
+func is_tablet_screen_lit() -> bool:
+	return _tablet_screen_lit
 
 
 ## The player brain calls this at the start of the game to get the tablet in this character's hand, so it can hand the tablet system's picture to its screen.
@@ -219,6 +201,7 @@ func _apply_tablet_press(press: CharacterIntent.TabletPress) -> void:
 		return
 	var old_hold := _tablet_hold
 	_tablet_hold = _next_tablet_hold(old_hold, press)
+	_raising_tablet = old_hold == TabletHold.NONE and _tablet_hold == TabletHold.ONE_HAND  # Only a short press from put away starts the raise; any other change ends or skips it
 	tablet_hold_changed.emit(old_hold, _tablet_hold)
 
 
