@@ -22,7 +22,7 @@ const PARAM := &"pad_light_data"  # Name of the driven shader parameter
 const LIT := 0.39  # Lit strength (CHANGE-BRIEF: light_strength_percentage = 0.39)
 const OFF := 0.0  # Screen off
 const MOVE_SECONDS := 20.0 / 30.0  # A7: from the state change to the screen lighting = the one-handed raise, frames 0-20 at 30 fps (CHANGE-BRIEF phase table)
-const READ_LAG_FRAMES := 2  # A7, measured: the game reads "raise finished" 2 physics frames after frame 20's time (the state machine's first frame in raise_1h does not advance the clip, and the clip advances on the process tick while the game reads on the next physics tick; CHANGE-BRIEF revision)
+const READ_LAG_FRAMES := 1  # A7, measured after TUNING r1: the game reads "raise finished" 1 physics frame after frame 20's time (the clip advances on the process tick and the game reads on the next physics tick; CHANGE-BRIEF revisions)
 const BLEND_SECONDS := 0.2  # A7: the cross-fade between hold poses; the screen is dark during it (CHANGE-BRIEF state machine)
 const SLOW_TIME_SCALE := 0.5  # Slow speed used for the Engine.time_scale rule
 const TAP_SECONDS := 0.1  # Short press: hold for 0.1 s, then release (a long press needs 0.4 s)
@@ -240,7 +240,7 @@ func _scenario() -> void:
 	if lit >= 0:
 		var delay := _lit_delay(lit)
 		print("     lit %.4f s after the state change (frame-based: %.4f s)" % [delay, sampler.samples[lit]["t"] - sampler.samples[changed_at]["t"]])
-		_check(absf(delay - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "5  lit %.2f s + 2 frames (measured read lag) +- one frame after the state change" % MOVE_SECONDS)
+		_check(absf(delay - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "5  lit %.2f s + 1 frame (measured read lag) +- one frame after the state change" % MOVE_SECONDS)
 	_check(lit >= 0 and absf(sampler.samples[lit]["pad"] - player.get_tablet().light_strength_percentage) < EPS,
 		"12 lit value equals light_strength_percentage (0.39)")
 
@@ -288,7 +288,7 @@ func _scenario() -> void:
 	lit = _first_lit(start)
 	if lit >= 0:
 		print("     lit %.4f s after the second take-out" % _lit_delay(lit))
-	_check(lit >= 0 and absf(_lit_delay(lit) - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "9  restart: lit %.2f s + 2 frames +- one frame after the last take-out" % MOVE_SECONDS)
+	_check(lit >= 0 and absf(_lit_delay(lit) - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "9  restart: lit %.2f s + 1 frame +- one frame after the last take-out" % MOVE_SECONDS)
 	await _press(TAP_SECONDS)  # Put away, ready for the next part
 	await _wait(SETTLE_SECONDS)
 
@@ -301,7 +301,7 @@ func _scenario() -> void:
 	if lit >= 0:
 		var scaled := _lit_delay(lit)
 		print("     time_scale %.1f: lit %.4f s scaled game time = %.4f s real time" % [SLOW_TIME_SCALE, scaled, scaled / SLOW_TIME_SCALE])
-		_check(absf(scaled - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "11 time_scale %.1f: %.2f s + 2 frames of scaled game time" % [SLOW_TIME_SCALE, MOVE_SECONDS])
+		_check(absf(scaled - (MOVE_SECONDS + READ_LAG_FRAMES * sampler.frame_delta)) <= tolerance, "11 time_scale %.1f: %.2f s + 1 frame of scaled game time" % [SLOW_TIME_SCALE, MOVE_SECONDS])
 	else:
 		_check(false, "11 time_scale %.1f: screen never lit" % SLOW_TIME_SCALE)
 	Engine.time_scale = 1.0
