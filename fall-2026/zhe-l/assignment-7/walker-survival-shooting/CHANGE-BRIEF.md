@@ -261,4 +261,8 @@ Presentation (animation, the pixel head, the demo tablet) may read game state; i
 
 ## Revision history
 
-(Changes after the first commit go here.)
+### 2026-11-22 — three things the first version did not name (found in the CLAUDE.md review)
+
+1. **First person keeps the tablet.** Today `set_visual_visible(false)` hides the whole `human_model` in two-handed first person. With the tablet now on a bone inside the model, that would hide the tablet too. Change: it hides only the model's `MeshInstance3D` nodes, not the skeleton, so the tablet stays visible. (Adds to Boundaries item 4.)
+2. **The tablet's node path changes** from `Visual/TabletDevice` to `Visual/human_model/.../Skeleton3D/TabletBone/TabletMount/TabletDevice`. `TabletMount` carries a fixed offset measured in Godot (scale 1 / 5.0684, +90 degrees about X, the same on every key frame), so the tablet keeps its real size. `screen_glow_check.gd`'s screen path follows the move. (Adds to Boundaries items 1 and 5.)
+3. **How the pieces talk** (no new rule, only the means): `Humanoid` reads the state machine's current state and whether a blend is still running from the `AnimationTree` playback (`get_current_node()`, `get_fading_from_node()`); the brain passes the held screen's lit state to the demo tablet every physics frame; "no walking, running or jumping while raising" is a query on the body, `Humanoid.is_raising_tablet()`, that the brain's input filter asks.
