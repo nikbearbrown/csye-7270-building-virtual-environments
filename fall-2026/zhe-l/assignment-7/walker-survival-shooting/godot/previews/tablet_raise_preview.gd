@@ -31,6 +31,7 @@ var _frame := 0  # Rendered frames since the start
 # ============================================================
 ## Godot calls this once when the preview starts: we load the base scene, find the player, and turn its camera to the front if asked for.
 func _ready() -> void:
+	process_priority = 1000  # We run after every other node in each frame, so the log line shows the pose the AnimationTree has just set, the one this frame renders (found after r1: at the default priority the line showed the previous frame's clip position)
 	var base: Node = load(BASE_SCENE).instantiate()  # First we build the real subway base under the preview
 	add_child(base)
 	_player = base.get_node("Player") as Humanoid
