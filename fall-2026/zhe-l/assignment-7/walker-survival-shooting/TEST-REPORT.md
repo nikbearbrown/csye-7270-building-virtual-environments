@@ -72,7 +72,11 @@ Measured (60 fps, `--fixed-fps`). Before TUNING r1: the press is read on physics
 
 ## Frame strips (fixture)
 
-Captures I ran, all Movie Maker at 30 fps (pixel head at 8 fps): `captures/tablet_raise/r0` (player camera), `r0-front` and `r1-front` (the player camera turned 180 degrees in game), `captures/pixel_head/r0` (one wrap, cells 0..7 then 0). Every revision and its strips are in TUNING.md. The r0 and r1 frames show the pose one clip frame later than their labels (the preview logged before the AnimationTree updated; fixed afterwards).
+Captures I ran, all Movie Maker at 30 fps (pixel head at 8 fps): `captures/tablet_raise/r0` (player camera), `r0-front`, `r1-front` and `r2-front` (the player camera turned 180 degrees in game), `captures/pixel_head/r0` (one wrap, cells 0..7 then 0). Every revision and its strips are in TUNING.md. The r0 and r1 frames show the pose one clip frame later than their labels (the preview logged before the AnimationTree updated; fixed afterwards).
+
+## After TUNING r2 (new stowed pose)
+
+The raise keys were re-derived from my new stowed pose and the `.glb` re-exported (commit 42d6cc0d). After reimporting (not from an empty cache), every test, all exit 0: 55 / 29 / 157 / 27 / 110 / 41 / 38 / 37 / 25 / 26 / 126 PASS, the same counts as before. The screen still lights on physics frame N + 41 / movie frame 54.
 
 ## Human checks — *pending*
 
