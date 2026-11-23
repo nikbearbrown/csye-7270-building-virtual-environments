@@ -44,6 +44,14 @@
 - `screen_glow_check.gd` pins the 0.35 s slide (`MOVE_SECONDS`, line 22; cases 5, 6, 8, 9, 11 at lines 233–300) and the path `Visual/TabletDevice` (lines 18, 239); the brief lets the slide-dependent cases change (`CHANGE-BRIEF.md` line 176). `a3_asset_check.gd`, `screen_glow_check.gd` and the two dust event/state tests load `res://base.tscn`.
 - Headless runs use a dummy renderer: node and resource state can be read back, nothing is drawn. Frame strips are windowed Movie Maker runs at 30 fps that the human starts (`CHANGE-BRIEF.md` line 199).
 
+### Headless facts (confirmed on this machine, Godot 4.7.2 `--headless`, 2026-11-22)
+- A headless run advances clips and reads their structure. It draws nothing, so whether the motion reads is not observable here. (`DisplayServer.get_name()` = `headless`; `test_pixel_head_clip.gd` reads `Sprite2D.frame` stepping 0..7 and back to 0 while the clip plays.)
+- Key times are 32-bit floats; compare them with a tolerance. (The imported raise stores `step` = 0.033333335, not 1/30.)
+- `value_track_get_update_mode` applies only to value tracks. (On the raise's position track it prints `Condition "t->type != TYPE_VALUE" is true. Returning: UPDATE_CONTINUOUS`.)
+- Frame strips come from a windowed Movie Maker run, which I start.
+- Injected input goes through `Input.parse_input_event`, flushed with `Input.flush_buffered_events()` so the brain reads it on the same physics frame (`test_tablet_pins.gd`, `test_tablet_raise_edges.gd`).
+- Measured: the game reads "raise finished" on physics frame N + 42 after a press read on N (clip frame 20 is N + 40): one frame from the state machine's first frame in `raise_1h` not advancing, one from the process-tick clip read on the physics tick (`CHANGE-BRIEF.md`, revision of 2026-11-22).
+
 ## Current change
 
 @CHANGE-BRIEF.md
