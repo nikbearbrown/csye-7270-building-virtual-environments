@@ -596,7 +596,8 @@ def fit_safe(im):
     return out
 
 
-def main():
+def main_first_cut():
+    """The first cut's stills (B01-B17), kept for the record; the rebuilt film uses cards2.main()."""
     out = REEL / 'media'
     out.mkdir(exist_ok=True)
     made = {'B01': b01(), 'B02': b02(), 'B03': b03(), 'B07': b07(), 'B10': b10(), 'B11': b11(), 'B12': b12(),
@@ -622,4 +623,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import cards2
+    cards2.main()

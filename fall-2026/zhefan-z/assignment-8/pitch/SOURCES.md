@@ -62,3 +62,43 @@ None was added for this film: no stock footage, images, music, sound effects or 
 ## Kept out of git
 
 The film (`exports/landscape/zhefan-z-little-flame-witch-pitch.mp4`), the narration MP3s (`mp3/`), the compiled beats (`media/`, `clips/`) and the capture archives (`capture/run-01.mp4`, 1.76 GB; `capture/a5-run-01.mp4`). Their SHA-256s are in CAPTURE.md, `evidence/` and `exports/landscape/*.verified.json`.
+
+## Added 2026-11-22 — the rebuild from the GDD
+
+Written by Claude Code. The sections above stay as written; this adds what the rebuilt film uses.
+
+### The game's own music and sound effects (G11)
+
+Played from the game's files at 840b501 (`walker-magic-zhefan/assets/audio/`), which are the same git blobs as on my Assignment 2 branch. Made in Assignment 2; the tools, prompts, seeds and edits are recorded in Assignment 2's `walker-magic-zhefan/SOURCES.md`. Timeline: `evidence/audio-excerpts.json`.
+
+| File | Git blob | Played | Made with | Licence / terms |
+|---|---|---|---|---|
+| `music/MUS-LOOP.ogg` | `25867f8dd9…` | the loop's first 6.0 s, 0.4 s fades, at −8 dB (the game's Music bus) | Lyria in the Gemini app (model shown: Gemini 3.8 Flash), from my prompt; cut into a 54.624 s crossfaded loop with `tools/make_music_loop.py` | Google Terms of Service and Generative AI Additional Terms; carries Google's SynthID watermark |
+| `sfx/SFX-CAST.ogg` | `a17497e4a0…` | whole, 0.40 s | Stable Audio Open 1.0, run locally in ComfyUI v0.38.1; seed 3, trimmed to 0.4 s | Stability AI Community License |
+| `sfx/SFX-HURT.ogg` | `431ffd033d…` | whole, 0.30 s | the same; seed 3, trimmed to 0.3 s | Stability AI Community License |
+| `sfx/SFX-WOLF-DOWN.ogg` | `bf8a0b64f8…` | whole, 0.60 s | the same; seed 1, trimmed to 0.6 s | Stability AI Community License |
+| `sfx/SFX-FAIL.ogg` | `fb2150d7fb…` | whole, 1.00 s | the same; seed 2, trimmed to 1.0 s | Stability AI Community License |
+| `sfx/SFX-CLEAR.ogg` | `68e2baef56…` | whole, 1.20 s | the same; seed 3, trimmed to 1.2 s | Stability AI Community License |
+
+The G11 picture shows the licence's required notice word for word: "This Stability AI Model is licensed under the Stability AI Community License, Copyright © Stability AI Ltd. All Rights Reserved." and "Powered by Stability AI". This is coursework (non-commercial).
+
+### Other additions
+
+- **`A4-GDD.pdf`**: my Assignment 4 GDD as submitted on Canvas (2026-10-15), cited by GDD.md. Claude Code copied it unchanged from my Downloads folder (PROMPTS.md row 6). Not shown in the film.
+- **The Assignment 3 prop scene render** (`capture/props-840b501-frame20.png`): a real render of my rock, crystal and chest at 840b501 (CAPTURE.md), shown in G10.
+- **Game files shown as pictures** (G09, G10): `mage_idle.png`, `mage_cast.png`, `mage_run_cycle_sheet.png`, `wolf_run.png` and `wolf_lunge.png`, read at 840b501 and enlarged nearest neighbour; `captures/figures/lunge_onion.png` (Assignment 7, a figure drawn from the logs). Their sources are in the Assignment 7 SOURCES.md and `assets/sprites/mage/ATTRIBUTION.md` at 840b501.
+- **Concept art**: `witch_fullbody_smile.png` is now used too (G10). Every appearance of the Gemini images is labelled generated.
+- **A new capture**: `capture/run-02` (the pit fail), described in CAPTURE.md.
+
+### What Claude contributed to the rebuild
+
+- Checked GDD.md and the revised brief against 840b501 and the earlier records, and stopped on one wrong Built claim (PROMPTS.md).
+- Copied the A4 PDF, and made the three commits of the author's documents with the author's messages.
+- Wrote `driver_fail.gd`, `audio.py` and `cards2.py`, and the new parts of `sheet.py`, `footage.py` and `records.py`.
+- Wrote the narration from GDD.md and the brief, and drew the new constructed cards.
+- Ran the captures, Kokoro, the compiler and the gates, and fixed the Gate V failure.
+- Wrote these dated additions.
+
+### Third-party assets
+
+Still none added. The only third-party material in the film remains the three OFL typefaces listed above, and the comparable games are still named in narration and on-screen text only.

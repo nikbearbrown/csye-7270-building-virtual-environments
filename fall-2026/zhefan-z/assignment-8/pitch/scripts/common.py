@@ -6,6 +6,7 @@ Written by Claude Code for this film; the frame-log and hashing helpers follow t
 path is baked into the reel:
   BRUTALIST_HOME   the Brutalist toolkit checkout (brutalist.art): fonts, Kokoro, compiler, gates
   CAP_840B501      PNG frames Movie Maker wrote for capture/run-01 (the game at 840b501), frame%08d.png
+  CAP_840B501_FAIL PNG frames Movie Maker wrote for capture/run-02 (the pit fail, 840b501)
   CAP_2B68E0A      PNG frames Movie Maker wrote for capture/a5-run-01 (the Assignment 5 game at 2b68e0a)
   A6_RUN01         the Assignment 6 film's capture archive run-01.mp4 (game at 3c37fe0), checked by SHA-256
 """
@@ -39,6 +40,7 @@ A6_RUN01_SHA = '81f207048bb51d6370cc461ba0c00b4c4a4c37d60ca1fac6e240403c23322e80
 ART = Path(os.environ['BRUTALIST_HOME']) if os.environ.get('BRUTALIST_HOME') else None
 CAP_840 = Path(os.environ['CAP_840B501']) if os.environ.get('CAP_840B501') else None
 CAP_2B6 = Path(os.environ['CAP_2B68E0A']) if os.environ.get('CAP_2B68E0A') else None
+CAP_FAIL = Path(os.environ['CAP_840B501_FAIL']) if os.environ.get('CAP_840B501_FAIL') else None
 A6_RUN01 = Path(os.environ['A6_RUN01']) if os.environ.get('A6_RUN01') else None
 
 # Palette: the toolkit's cream page and ink, a cold cave blue and the one warm colour, fire.

@@ -41,3 +41,31 @@ The Assignment 6 film's `capture/run-01.mp4` (scripted input, windowed Movie Mak
 ## How the film uses footage
 
 `scripts/footage.py`: each gameplay beat plays its interval once at real speed (60 fps captures: every second frame; the 30 fps capture: every frame), then, where named, a ×0.25 replay of part of it labelled "Slowed replay ×0.25 of the same capture", then the last frame held and labelled, to the exact frame count of the beat's measured narration, so the compiler neither retimes nor cuts it. The canvas is enlarged ×5, nearest neighbour. Chips under the action are read from the frame and input logs and drawn outside the game image. Provenance per beat: `evidence/footage-provenance.json`.
+
+## Added 2026-11-22 — rebuild from the GDD (prompt-2-gdd.txt)
+
+Written by Claude Code. The sections above describe the first cut and stay as written; its beat names (B00–B17) no longer exist. The rebuilt film's per-beat spans are in `evidence/footage-provenance.json`.
+
+### capture/run-02 — losing to the pit, revision 840b501 (new)
+
+| | |
+|---|---|
+| Game | the same isolated copy of 840b501 as capture/run-01 (build ID `964c57fe…`), so `coverage.json` lists both captures under one build |
+| Driver | `capture/driver_fail.gd` (SHA-256 `89447b5aa4a23c700e9bbdc46f0e451abc00362bfceec58c9fad35c4cb220027`), adapted by Claude Code from `capture/driver_a5.gd`. One segment, "pit": D held from the start, no jump, so the mage walks into the pit. Key events only; it never calls `fail()` or sets a game value. `test_mode` keeps the fail from reloading the scene under the driver; the HUD's fail message is shown before that return, as in a normal run. |
+| Trials | Two headless trials (logs in scratch, not used). The first failed its own expectation although the fail happened: a GDScript lambda cannot assign an outer local, so the logged reason came back empty; the reason is now stored in the driver's `seen` dictionary. The second trial and the take passed. |
+| Recording | Movie Maker, windowed, `--fixed-fps 60 --resolution 1280x720 --quit-after 1500`: 390 PNG frames (0–389), one per frame-log row; exit 0. Movie Maker's summary line printed "386 frames"; the frame files and the log both count 390. |
+| Result | expectation `pit` true: FALL from frame 277, fail on frame 291 with the reason "Fell into the dark" (the HUD shows it), state FAIL, HP 5, no hit. |
+| Logs | `capture/run-02-inputs.jsonl` SHA-256 `a86d9689f8b9f33d5539bd8de05af5ae57e4bd7ad0d4b47111b5a0707e7b6ecf`; `capture/run-02-frames.jsonl` SHA-256 `42bbb66c348a172f4a2f78e117df96b8760a06b1870c75ff804ec76f6436395b` |
+| Archive | `capture/run-02.mp4`, ×6 nearest neighbour to 3840×2160, lossless, SHA-256 `0544cfdfbd9de149adcabf04bf413a455af27c112e80c84200c044fb47c7632e`, 243 MB, kept out of git |
+| Used in | G04 (frames 240–385, real speed). The level reload that follows a fail in a normal run is not shown (skipped by `test_mode`); the narration states it from `main.gd` (`_on_player_failed` reloads the scene after `RELOAD_DELAY`). |
+
+### The Assignment 3 prop scene, revision 840b501 (new render)
+
+`res://showcase3d/prop_room.tscn` in the 840b501 copy, rendered with Movie Maker (windowed, `--fixed-fps 30 --resolution 1920x1080 --quit-after 30`; Godot recorded the project's 640×360 canvas). Frame 20 is kept as `capture/props-840b501-frame20.png` (SHA-256 `9585b565a58ebf97f3df311625048801c8940b721dce2c1a6d5e1371196bc2c9`). It shows the rock, crystal and chest from Assignment 3 and, as that scene's scale reference, the mage's idle sprite as a billboarded `Sprite3D`. Used in G10, labelled as a real render at 840b501.
+
+### Reuse in the rebuild
+
+- capture/run-01 (840b501): G04 (run 15–439, jump replay 280–350, cast 1500–1560), G05 (lunges 860–1088, cancel 1400–1619, lunge hit 2040–2148, with ×0.25 replays), A01 (run, lunge, cancel beside the exists-today list), P01 (frame 1544, still), G10 (frame 15 crop, still).
+- capture/a5-run-01 (2b68e0a): Q07B, as in the first cut.
+- The Assignment 6 capture (3c37fe0): Q07C, as in the first cut, SHA-256 checked again.
+- G11's sound is not a capture: it is the game's own audio files at 840b501, listed in `evidence/audio-excerpts.json` and SOURCES.md.

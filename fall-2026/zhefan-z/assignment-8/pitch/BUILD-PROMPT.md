@@ -89,3 +89,127 @@ Two builds were exported (the first into a scratch folder, the second into `expo
 - **In the reel (`pitch/`):** `beat_sheet.json`, `coverage.json`, `SHOTLIST.md`, `FACTCHECK.md`, `PROMPTS.md`, `CAPTURE.md`, `BUILD-PROMPT.md`, `SOURCES.md`, `scripts/`, `capture/` (drivers and logs), `evidence/`, `_qc/`, and, kept out of git, `mp3/`, `media/`, `clips/`, `exports/` and the capture archives.
 - **Outside the repository:** the snapshots, capture copies and PNG frames in a scratch folder.
 - **Not touched:** no game file, no `shaders/` folder, no earlier assignment folder (the Assignment 6 capture archive was only read and hashed), and nothing in the toolkit checkout.
+
+## Added 2026-11-22 — rebuild from the GDD (prompt-2-gdd.txt)
+
+Written by Claude Code. Everything above describes the first cut and stays as written; this section is how the current master was built. This master replaced the first cut's (SHA-256 `00a4dde7…`) in `exports/landscape/`.
+
+**Human inputs added:** `prompt-2-gdd.txt`; `GDD.md` 2.0 (2026-11-21) with `A4-GDD.pdf`, the revised `PROJECT-BRIEF.md` and `ART-PROMPTS.md`, committed with the author's messages in `510f0f0a`, `336b5373`, `6045d283` after the Step 1 check (PROMPTS.md rows 4–6).
+
+**Structure** (the updated spec's order): T00 title with the GDD's metadata → P01 the game in brief → G01–G16 the GDD's sixteen beats → Q01, Q02, Q03, Q04, Q05, Q07 (+ Q07B–D footage), the questions the GDD beats have not already answered (question 6 is G15; in and out are G12 and G13) → A01–A05 the appendix → OUT the silent outro. 33 beats, 430.83 s.
+
+**Pipeline changes** (same environment variables as above, plus `CAP_840B501_FAIL`):
+
+```bash
+# the new capture (CAPTURE.md, "Added 2026-11-22"); trials first, headless, logs to scratch
+$GODOT --headless --path $BASE/cap840 --script $REEL/capture/driver_fail.gd --fixed-fps 60 --quit-after 1500 -- <in> <out>
+$GODOT --path $BASE/cap840 --script $REEL/capture/driver_fail.gd --write-movie $BASE/moviefail/frame.png \
+  --fixed-fps 60 --resolution 1280x720 --quit-after 1500 -- $REEL/capture/run-02-inputs.jsonl $REEL/capture/run-02-frames.jsonl
+ffmpeg -framerate 60 -i $BASE/moviefail/frame%08d.png -vf scale=3840:2160:flags=neighbor -c:v libx264rgb -crf 0 -preset veryfast $REEL/capture/run-02.mp4
+# the Assignment 3 prop scene, one render
+$GODOT --path $BASE/cap840 res://showcase3d/prop_room.tscn --write-movie $BASE/movieprops/frame.png --fixed-fps 30 --resolution 1920x1080 --quit-after 30
+cp $BASE/movieprops/frame00000020.png $REEL/capture/props-840b501-frame20.png
+export CAP_840B501_FAIL=$BASE/moviefail
+
+cd $REEL/scripts && python sheet.py && cd -
+python $BRUTALIST_HOME/runtime/scripts/generate_audio_kokoro.py $REEL --speed 1.05
+cd $REEL/scripts
+python sheet.py --pad        # every beat but G11
+python audio.py              # G11: the narration, then the game's own music and effects; its track and timed picture
+python cards2.py             # the stills (python cards.py now runs the same)
+python footage.py            # G04, G05, Q07B-D, A01
+python records.py            # coverage.json; SHOTLIST.md (the first-cut table kept, the rebuild appended)
+cd -
+$BRUTALIST_HOME/art final $REEL --height 2160 --fps 30 --out $REEL/exports/landscape > $REEL/_qc/final.log
+$BRUTALIST_HOME/art godot-waikthrough --check $REEL > $REEL/_qc/walkthrough-check.json
+```
+
+**Gate results (this build):**
+
+| Gate | Result | Report |
+|---|---|---|
+| `art godot-waikthrough --check` | PASS: 10 implemented features with evidence in two 3840×2160 captures of 840b501 (run-01, run-02), 9 planned with reasons | `_qc/walkthrough-check.json` |
+| `art final`, first run | **REFUSED** by Gate V: Q01 at 50 % and 85 %, "ink/background luminance separation 0.24 < 0.3" (the pale-blue zip drawing averaged too close to the page) | the failing report was overwritten by the passing run; this entry records it |
+| the fix | the zip drawing in `cards2.q01` filled with the darker cave blue; Q01 alone re-checked with `final_frame_check.py --frames-dir`: 0 BLOCKER, 0 MAJOR | — |
+| `art final`, second run | exit 0: paperwork, beat lint, shape gate, decode and duration check, audible; **Gate V: 66 frames, 0 BLOCKER, 0 MAJOR** (P01's text checked in its declared contrast region) | `_qc/final.log`, `_qc/REPORT.md`, `_qc/contact_sheet.png` |
+| G11, by measurement (not a toolkit gate) | in the master, each excerpt plays at its planned time (the music from 172.88 s, the five effects 179.68–185.17 s), at −16 to −22 dB RMS against silence in the gaps; the narration is about −24 dB RMS | this entry |
+
+The compiler again printed the "SKIN LINT: NO RENDERABLE BEATS" warning (no Remotion or Manim beats; 33/33 slots are filled from `media/`).
+
+**Deviations added in the rebuild:**
+- **G11's track is built by `audio.py`, not by Kokoro alone:** the measured narration, then the music excerpt (the loop's first 6 s, 0.4 s fades, at −8 dB, the game's own Music bus level) and the five effects whole at their file level, with gaps. Its picture lights each row while it plays. The compiler's narration-length check holds because `actual_duration_s` is the mixed track's measured length.
+- **Reused cards keep their first-cut headings:** Q02 "Why anyone would care", Q03 "Who opens it…", Q04 "What it proves…", Q07 "Why this project…" (no "Question n ·" prefix).
+- **The first cut's generated media were deleted** (B00–B17 in `media/`, `mp3/`, `clips/`) before the rebuild, so none could leak into it. They were never in git and can be rebuilt with `cards.main_first_cut()` and the first cut's sheet at `8a8e23ea`.
+
+**The prompt, word for word** (`prompt-2-gdd.txt`, the author's; the file itself is not committed):
+
+```text
+Assignment 8 changed on origin/main (135fc9d0, 2026-11-20): the film is now
+built from a GDD, in four parts: the game in brief, the GDD's sixteen beats,
+the seven questions, and an appendix. The full spec is at
+E:/7270/a8-spec-new.md; read it first. Same rules as before: work on
+zhefan-z/assignment-8 in fall-2026/zhefan-z/assignment-8/pitch/, never push,
+no Co-Authored-By, never touch shaders/ or earlier assignment folders, and
+never stage the crystal-palace deletions or anything outside pitch/.
+
+I saved into pitch/: GDD.md (new), PROJECT-BRIEF.md (revised: game in
+brief, appendix with the asset table) and ART-PROMPTS.md (your two
+corrections fixed).
+
+Step 1 - check, then commit.
+Check every "Built" claim and every number in GDD.md and PROJECT-BRIEF.md
+against my game at 840b501 and the earlier assignments' records: the
+controls (move keys, jump, aim, cast), the HP and what happens on a hit
+(tint, blink or invulnerability), fail and restart, the wolf phase table,
+the music and sound tools and their licences as recorded in Assignment 2's
+SOURCES.md, the commits cited. If a Built claim or a number is wrong,
+stop and tell me before anything else; do not change my wording. If all
+hold, commit in three commits: GDD.md as "GDD 2.0 for the final project
+(claude.ai drafted from my answers and my A4 GDD; mine)"; PROJECT-BRIEF.md
+as "PROJECT-BRIEF revised for the updated A8: game in brief, appendix
+(claude.ai drafted from my answers; mine)"; ART-PROMPTS.md as
+"ART-PROMPTS: two corrections (mine)".
+
+Step 2 - rebuild the film from the GDD, in the spec's order:
+ - Title card: the title, my name, and the GDD's version and date
+   (2.0, 2026-11-21) as the metadata section.
+ - The game in brief: what it is and the goal, with one picture (a real
+   840b501 frame, labelled; the concept portrait may sit beside it,
+   labelled generated).
+ - The GDD, sections 1-16 of GDD.md, one beat each, one picture and a
+   sentence or two. Show the thing itself wherever it exists: real
+   840b501 footage for mechanics and systems (the wolf's phases and the
+   growl cancel); the dialogue scenes and portraits for narrative and
+   characters; for art direction, the art itself (pixel sprites, run
+   cycle, lunge rig, 3D props, cave lights, the portraits) plus the planned
+   look as drawn pictures; for sound and music, play short excerpts of
+   the real Assignment 2 music and sound effects from the 840b501 game
+   files, captioned with what each is and how it was made.
+ - The seven questions, without repeating what the GDD beats already
+   said: 1 the artifact and its form; 2 the unique value with the
+   comparable games (names only); 3 who opens it and the first sixty
+   seconds; 4 what it proves, with the A7 evidence; 5 only the first
+   piece and how anyone would know it ran (in and out are GDD 12 and 13);
+   7 why this project, with the A5, A6 and A7 footage by revision.
+   Question 6 is GDD 15; do not repeat it.
+ - Appendix: exists today (real footage), started, not started, whether
+   one person can finish it and the cut order, and the asset table from
+   PROJECT-BRIEF.md shown as a card.
+ - The silent outro.
+ Reuse everything already built and checked (captures, stills, dialogue
+ scenes, the drivers); regenerate only what changes. No fixed length:
+ keep each beat to one picture and a sentence or two. Every rule from
+ the first prompt still holds: past tense only for what exists, every
+ frame labelled real (with its revision), generated or constructed, no
+ comparable-game footage, no invented numbers, Liam speaks as me, no
+ instructor name, persona or credit line. Run the checker and the final
+ export's render-integrity gate; fix and re-render until both pass.
+
+Step 3 - records. Update beat_sheet.json, BUILD-PROMPT.md (add this
+prompt), SOURCES.md (the music and sound excerpts with their tools and
+licences), CAPTURE/FACTCHECK/SHOTLIST and the gate reports. Keep media out
+of git. Commit as "Pitch film rebuilt from the GDD (agent, Brutalist)".
+Report the file name, path, length, size and SHA-256, the beat list with
+each beat's part (brief, GDD section, question, appendix) and label, and
+stop. I will write README.md and FRICTIONAL.md after watching it.
+```

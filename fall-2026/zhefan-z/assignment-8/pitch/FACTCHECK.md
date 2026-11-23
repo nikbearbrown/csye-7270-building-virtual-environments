@@ -48,3 +48,36 @@ Written by Claude Code, 2026-11-22, before the master compile. The script is `PL
 
 - ART-PROMPTS.md says the film labels the concept art "Generated (Gemini 4) · concept, not in the game"; the author's film request asks for "… · concept art, not in the game", which is what the film shows. ART-PROMPTS.md is left as written.
 - ART-PROMPTS.md says Gemini returned the expression sheet and the two wolves "on white"; the committed files have flat green (#00FE00-ish) backgrounds. Left as written; reported to the author.
+
+## Added 2026-11-22 — the rebuilt film (from GDD.md 2.0)
+
+Written by Claude Code before the master compile. The tables above check the first cut and stay as written. The rebuilt narration is `PLAN` in `scripts/sheet.py`; the voice reads it with tokens spelled for speech (`SAY`). Before the rebuild, every Built claim and number in GDD.md and PROJECT-BRIEF.md was checked against 840b501 and the earlier records; one Built claim was wrong (the Jump row's "only from the ground", against the 0.08 s coyote time and 0.10 s jump buffer in `tuning.gd:11–12`), the author fixed it, and the re-check passed (PROMPTS.md).
+
+| Beat | Claim | Source | Shown as |
+|---|---|---|---|
+| T00 | GDD version 2.0, dated 2026-11-21 | GDD.md line 3 | constructed title card |
+| P01 | genre, mouse-aimed fireballs, the goal; a pit or 0 HP sends you back; beating the great wolf *will* end the game | GDD.md Vision; restart: `main.gd` `_on_player_failed` | real frame 1544 (840b501) + generated portrait |
+| G01 | the four pillars | GDD.md §1 | constructed |
+| G02 | moment to moment (exists), one sitting and replay (will) | GDD.md §2; the moment-to-moment actions are in capture/run-01 | constructed; chips "built today" / "will" |
+| G03 | four experience goals | GDD.md §3 | constructed |
+| G04 | A/D or arrows, Space, mouse aim and cast; coyote time 0.08 s; no double jump; a pit or 0 HP shows the reason and the level restarts; heal and interact later | `game/controls.gd:5–7, 24–28`; `tuning.gd:11–12`; `player.gd:81`; capture/run-02 (fail on frame 291, "Fell into the dark"); `main.gd` reload after `RELOAD_DELAY` (stated, not shown) | real captures run-01 and run-02, 840b501 |
+| G05 | phase table 31 / 22 / 36 ticks; a hit in the growl cancels; once the dash starts it commits; one of five hearts, tint, blink, 1 s invulnerability; boss, hazards, campfire later | A7 TEST-REPORT.md "Pins" (31/22/36 measured); capture/run-01: GROWL 880 → LUNGE 911 → RECOVER 933 → PATROL 969; `wolf_hit` 1549 (GROWL → RECOVER) and 2094 (LUNGE, dash runs 22 ticks); `tuning.gd:15–16` (MAX_HP 5, INVULNERABLE_TIME 1.0); hurt on 1009 | real capture run-01 |
+| G06–G08 | progression, world (two to three levels, warmth only from fire), narrative (four scenes) | GDD.md §6, §7, §8 | constructed; the three dialogue scenes from the first cut; the campfire line marked "not written yet" |
+| G09 | the witch as pixel sprite and portrait; wolves that growl before they lunge; the great wolf only as concept art | GDD.md §9; sprites read from `assets/sprites` at 840b501; portraits from `art/` | real sprites + generated portraits |
+| G10 | what exists (sprites A2, run cycle and lunge rig A7, props A3, cave lights); the planned look | GDD.md §10; files at 840b501; `captures/figures/lunge_onion.png` at 840b501; the prop render (CAPTURE.md) | left real, right constructed |
+| G11 | cave theme with Lyria, cut into a loop; five effects with Stable Audio Open, Assignment 2; boss and campfire themes and new effects later | Assignment 2 SOURCES.md (Lyria in the Gemini app; Stable Audio Open 1.0; seeds and trims; the 54.624 s loop); the six files at 840b501 are the same git blobs as on the Assignment 2 branch; Music bus −8 dB in `default_bus_layout.tres` | the game's own audio, each excerpt captioned |
+| G12, G13 | Must column, smallest playable version; out of scope | GDD.md §12, §13 | constructed |
+| G14 | Godot 4.7.2, Forward+, Windows, 60 fps at 1080p on the RTX 5060 Laptop GPU as a target, measured not claimed; greybox to Blender to billboards | GDD.md §14 | constructed |
+| G15 | the three risks and their answers (question 6 is answered here) | GDD.md §15 | constructed; the first cut's risk drawing |
+| G16 | three open questions and their tests | GDD.md §16 | constructed |
+| Q01 | the artifact: a playable Windows build, a zip with an exe, of a vertical slice | PROJECT-BRIEF.md §1 | constructed |
+| Q02, Q03 | as in the first cut (B02, B07 above) | PROJECT-BRIEF.md §2, §3 | constructed |
+| Q04 | build and verify gameplay systems; the pin, the two changed scenarios, 38 runs in a fresh clone | as B09 above | figure from the logs, 840b501 |
+| Q05 | first: one 3D cave room; how anyone would know it ran | PROJECT-BRIEF.md §5 | constructed |
+| Q07–Q07D | as in the first cut (B12–B15 above) | PROJECT-BRIEF.md §7; A5, A6, A7 records | constructed, then real captures 2b68e0a, 3c37fe0, 840b501 |
+| A01 | exists today | PROJECT-BRIEF.md "Exists today" (checked against git, Part 1) | real capture run-01 beside the list |
+| A02–A05 | started; not started; one person and the cut order; the asset table | PROJECT-BRIEF.md appendix (revised 2026-11-21) | constructed cards |
+
+**Numbers in the rebuilt narration:** 2.0 and 2026-11-21 (GDD.md); 0.08 s (tuning.gd); 31, 22, 36 ticks and five hearts (A7 TEST-REPORT, tuning.gd); 4.7.2, 60 fps, 1080p (GDD.md §14, a target); 0.02 and 0.10 ms (A6 TEST-REPORT, RTX 5060 Laptop GPU); 38 runs (A7 fresh-clone check). On screen only: frame numbers and HP (capture logs), the excerpt seeds and trims and the 54.6 s loop (A2 SOURCES.md), the test table (committed logs).
+
+**Wording noted, not changed:** the brief's "New to me: … 2D sprites placed in 3D" holds for gameplay, but the Assignment 3 prop scene already placed the mage's idle sprite in 3D as a static billboarded `Sprite3D` (scale reference); G10 shows that render and says so in its caption.
