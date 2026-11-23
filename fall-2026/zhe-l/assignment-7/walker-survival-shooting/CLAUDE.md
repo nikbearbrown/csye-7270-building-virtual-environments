@@ -1,52 +1,48 @@
-# CLAUDE.md — Assignment 6 (landing dust + dust under the ceiling light)
+# CLAUDE.md — Assignment 7 (animation: pixel head in the taskbar + one-handed tablet raise)
 
 ## Project context
 
 ### Engine and project
-- **Godot version:** 4.7.2-stable: every baseline log starts with `Godot Engine v4.7.2.stable.official.ed1daf0bf` (`logs/a3_asset_check_60fps.log` line 1); the project declares `"4.7"` (`godot/project.godot` line 15).
-- **Renderer:** Forward+ (`godot/project.godot` line 15, `"Forward Plus"`; the `[rendering]` section, lines 90–92, sets no `rendering_method`). Windows driver D3D12 (line 92). Physics: Jolt (line 88). No `physics_ticks_per_second`, so physics runs at the default 60 ticks/s.
-- **Main scene:** `godot/base.tscn` (`project.godot` line 14 = `uid://b78l24afmav2c` = `base.tscn` line 1). Window 2048 × 1152 (`project.godot` lines 24–25).
-- `godot/effects/` does not exist yet; the brief creates `landing_dust.tscn` and `light_dust.tscn` there (`CHANGE-BRIEF.md` lines 50 and 148).
+- **Godot version:** 4.7.2-stable: every baseline log starts with `Godot Engine v4.7.2.stable.official.ed1daf0bf` (`logs/a3_asset_check_60fps.log` line 1); the project declares `"4.7"` (`godot/project.godot` line 15); the brief pins 4.7.2-stable (`CHANGE-BRIEF.md` line 12).
+- **Renderer:** Forward+ (`godot/project.godot` line 15, `"Forward Plus"`; the `[rendering]` section, lines 98–100, sets only the Windows driver `d3d12`). Physics engine: Jolt (line 96).
+- **Physics tick:** 60 ticks/s, the default: `project.godot` has no `physics_ticks_per_second`; the screen-glow baseline prints `physics 60 ticks/s` (`logs/screen_glow_check_60fps.log` line 11).
+- **Main scene:** `godot/base.tscn` (`project.godot` line 14 = `uid://b78l24afmav2c` = `base.tscn` line 1). The player is `Player` at (2, 0.25, 1.5) (`base.tscn` lines 194–195), an instance of `characters/human/player/player.tscn`, which inherits `characters/human/humanoid/humanoid.tscn` (`player.tscn` lines 3 and 12). Autoload: `FileService` (`project.godot` line 24).
 
-### Effect A — landing dust
-- **Node types:** root `Node3D` with two `GPUParticles3D` children, `Dust` and `GroundRing` (`CHANGE-BRIEF.md` lines 46–52); scene file `godot/effects/landing_dust.tscn` (line 50).
-- **Event owner:** `godot/characters/human/humanoid/humanoid.gd` (class `Humanoid`, line 4, extends `CharacterBody3D`, line 5). The signal `landed` does **not** exist yet; the brief allows adding it, notify-only, emitted once when `is_on_floor()` goes false → true (`CHANGE-BRIEF.md` lines 25 and 205). The only signal today is `tablet_hold_changed` (line 26).
-- Where landing becomes known: `apply_intent()` (lines 69–95) reads `is_on_floor()` at line 75 before moving, then calls `move_and_slide()` at line 94. `jump_velocity` = 4.5 (line 36); gravity from project settings (line 42).
-- `Humanoid` is shared by the player and future human enemies (line 6), so every humanoid would emit `landed`.
-- **Scene it appears in:** `godot/base.tscn`, in the world, not under the player (`CHANGE-BRIEF.md` line 54). The player is `Player` at `base.tscn` lines 189–190 (spawn y = 0.25), an instance of `godot/characters/human/player/player.tscn`, which inherits `humanoid.tscn` (`player.tscn` lines 3 and 11). Capsule radius 0.3, height 1.6 (`humanoid.tscn` lines 6–8).
-- Floor: `room/floor`, a `CSGBox3D` 16 × 0.5 × 10 at y = 0 (`base.tscn` lines 31–32), so its top is y = 0.25.
-- Retrigger must call `restart()`, not only `emitting = true` (`CHANGE-BRIEF.md` line 91).
+### Tablet hold state (the game state the rig clip follows)
+- Owner: `Humanoid` (`godot/characters/human/humanoid/humanoid.gd` line 4, extends `CharacterBody3D`, line 5). State = `_tablet_hold` (line 47), enum `TabletHold { NONE, ONE_HAND, TWO_HAND }` (lines 13–17); public read `get_tablet_hold()` (lines 205–206).
+- How it changes: the brain `PlayerController._physics_process()` calls `_body.apply_intent()` every physics frame (`player_controller.gd` lines 90–93). `_read_tablet_press()` turns Tab into SHORT / LONG (long = 0.4 s, lines 24 and 140–150). `apply_intent()` calls `_apply_tablet_press()` first (`humanoid.gd` line 78), which sets `_tablet_hold = _next_tablet_hold(...)` and emits `tablet_hold_changed(old, new)` (lines 217–222, signal line 26). Table: NONE + short → ONE_HAND, + long → TWO_HAND; ONE_HAND + short → NONE, + long → TWO_HAND; TWO_HAND + short → ONE_HAND, + long → NONE (lines 226–234).
+- Per-hold input filter, in the brain: ONE_HAND = walk only; TWO_HAND = no walk, sprint, jump or aim; F (`interact`) only with NONE (`player_controller.gd` lines 122–135).
 
-### Effect B — dust under the ceiling light
-- **Node type:** one `GPUParticles3D` (`CHANGE-BRIEF.md` line 149); scene file `godot/effects/light_dust.tscn` (line 148).
-- **Condition owner:** `godot/world/lights/ceiling_lights.gd` (class `CeilingLights`, line 4, extends `Node`): `signal lights_changed(lights_on: bool)` (line 19), emitted only from `set_lights_on()` when the state really changes (lines 45–50); `is_lights_on()` (lines 57–58); `start_on = true` (line 24). `_ready()` sets the start state and does **not** emit (lines 36–38), so the effect must query `is_lights_on()` once at start.
-- The switch: `godot/world/light_switch/light_switch.gd` `interact()` → `ceiling_lights.toggle()` (lines 40–41); action `interact` = physical key F (`project.godot` lines 80–84). Lights are found through group `ceiling_lights` (`ceiling_lights.gd` line 13).
-- **Scene it appears in:** `godot/base.tscn`, under `ceiling_light_1` (`OmniLight3D` at (0.02, 2.60, -3.66), shadows on, range 8; `base.tscn` lines 161–166). `CeilingLights` node: lines 158–159; `LightSwitch` wired to it: lines 192–194. Lights 2 and 3: lines 168–173 and 182–187.
-- Environment: background (0.03, 0.035, 0.045), ambient (0.45, 0.5, 0.6) energy 0.35 (`base.tscn` lines 12–18).
+### Where the tablet and its screen are driven today (removed or changed by the brief, `CHANGE-BRIEF.md` lines 105–107, 172–177)
+- Held tablet: `TabletDevice` instance at `Visual/TabletDevice` (`humanoid.tscn` lines 53–54; `humanoid.gd` line 65). `_update_tablet_visual()` (`humanoid.gd` lines 139–155) slides it between `TabletHipSlot` / `TabletOneHandSlot` / `TabletTwoHandSlot` (`humanoid.tscn` lines 44–51; lookup `_get_tablet_slot()`, `humanoid.gd` lines 170–177) over `tablet_move_seconds` = 0.35 (line 40), on the physics tick (called from `_update_visual()`, lines 131–133, at the end of `apply_intent()`, line 104).
+- Held screen: `_update_tablet_screen()` (`humanoid.gd` lines 160–165) lights it when the slide is done, darkens it on NONE, and calls `TabletDevice.set_screen_lit()` (`items/tablet/tablet_device.gd` lines 47–53), which writes `pad_light_data` (line 13) on the `Screen` `ShaderMaterial` (Local To Scene; `items/tablet/tablet_device.tscn` lines 10–15, 28–31).
+- Character look today: `Visual/human_model` = capsule `Body` + `FacingMarker` (`humanoid.tscn` lines 34–42); collision capsule r 0.3, h 1.6 (lines 6–8, 28–30). `set_visual_visible()` hides `human_model` in first person (`humanoid.gd` lines 200–201; called from `player_controller.gd` line 229).
+- Demo tablet (bottom right): `ScreenTablet` (`characters/human/player/screen_tablet.gd`) slides its own `TabletDevice` between `HiddenSlot` and `ShownSlot` over `moving_time` = 0.35 (line 20) in `_process()` (lines 47–58, process tick) and lights it in `_update_screen()` when shown and arrived (lines 86–89). `PlayerController._on_tablet_hold_changed()` calls `set_shown(new_hold == ONE_HAND)` (`player_controller.gd` line 197). Nodes: `player.tscn` lines 60–70.
+- Tablet OS canvas: `TabletOSViewport` 1280 × 768, starts with update mode 0 (`player.tscn` lines 72–76); drawn every frame while held, disabled when put away (`player_controller.gd` lines 198–201); its texture goes to both screens (lines 68–70).
+
+### Tablet OS taskbar (where the pixel head goes)
+- `godot/computer_system/tablet_os/tablet_os.tscn`: `Taskbar` `ColorRect`, 64 px high (`offset_top = -64`), lines 54–63 → `Row` `HBoxContainer` (lines 65–71) → `TaskbarButtons` `HBoxContainer` (expand-fill, lines 73–75) and `ShowDesktopButton` (lines 77–79). The brief puts the head at the far left, left of the window buttons (`CHANGE-BRIEF.md` line 43); cell 56 × 56 px at native size (line 42).
+- `tablet_os.gd` reaches these by path: `$Taskbar`, `$Taskbar/Row/TaskbarButtons`, `$Taskbar/Row/ShowDesktopButton` (lines 31–33). Existing system UI folder: `computer_system/tablet_os/system/desktop/` only.
+
+### Folders the brief names for new files (none in the committed tree, `git ls-files` at a399a863)
+- Head scene, its script, `avatar-idle-front-blink-8x1-56.png` and `ATTRIBUTION.md`: `godot/computer_system/tablet_os/system/pixel_head/` (`CHANGE-BRIEF.md` lines 21, 47, 58). The sheet exists today only in `design/avatar-sprite/`.
+- Character `.glb` exported from `xz_anim.blend` + `ATTRIBUTION.md`: `godot/assets/characters/main_character/` (`CHANGE-BRIEF.md` line 118); loop modes in its `.glb.import` (line 119). `godot/assets/` today has `furniture/`, `props/`, `shader/` only. No `godot/animations/` folder exists.
 
 ### Tests (always through `scripts/run-test.sh`, run from this folder)
-- Usage: `./scripts/run-test.sh <file.gd> <fps|realtime> [timeout-seconds]` (`scripts/run-test.sh` line 5). Project = `godot/` when `godot/project.godot` exists (lines 25–29). Binary = `$GODOT`, else `godot_console`, else `godot` (lines 32–38).
-- A number pins `--fixed-fps <fps>`; `realtime` adds no `--fixed-fps` and names the log `<test>_realtime.log` (lines 43–49). Timeout defaults to 120 s (line 56). Always `--headless` (line 56). Log: `logs/<test>_<mode>.log` (line 55). Fails on `SHADER ERROR` / `SCRIPT ERROR` (line 58); exit 124 = hung.
-- Baseline (`CHANGE-BRIEF.md` lines 209–211; logs in `logs/`):
+- Usage: `./scripts/run-test.sh <file.gd> <fps|realtime> [timeout-seconds]` (`scripts/run-test.sh` line 5). Project = `godot/` when `godot/project.godot` exists (lines 26–30). Binary = `$GODOT`, else `godot_console`, else `godot` (lines 33–39). A number adds `--fixed-fps`; `realtime` does not (lines 44–50). Always `--headless`, timeout 120 s by default, exit 124 = hung (lines 9, 57). Log: `logs/<test>_<mode>.log` (line 56). Fails on `SHADER ERROR`, `SCRIPT ERROR` or `Failed loading resource` (line 59).
+- Baseline, all at 60 fps (counts = `PASS` lines in each log; the summary is the log's last line):
 
 ```bash
-./scripts/run-test.sh a3_asset_check.gd 60       # 55 PASS, exit 0
-./scripts/run-test.sh screen_glow_check.gd 30    # 24 PASS (also 60 and 144)
-./scripts/run-test.sh normal_map_check.gd 60     # 2 PASS
-./scripts/run-test.sh test_materials.gd 60       # 168 PASS, 1 FAIL, exit 1
-./scripts/run-test.sh <test>.gd realtime         # realtime mode (no pinned fps)
-./scripts/run-test.sh <test>.gd 60 300           # longer timeout, e.g. a cost run
+./scripts/run-test.sh a3_asset_check.gd 60            # 55 PASS, 0 failures (logs/a3_asset_check_60fps.log line 73)
+./scripts/run-test.sh screen_glow_check.gd 60         # 24 PASS, 0 failures (logs/screen_glow_check_60fps.log line 31)
+./scripts/run-test.sh test_landing_dust_config.gd 60  # 157 passed, 0 failed (logs/test_landing_dust_config_60fps.log line 161)
+./scripts/run-test.sh test_landing_dust_events.gd 60  # 27 passed, 0 failed (logs/test_landing_dust_events_60fps.log line 30)
+./scripts/run-test.sh test_light_dust_config.gd 60    # 110 passed, 0 failed (logs/test_light_dust_config_60fps.log line 113)
+./scripts/run-test.sh test_light_dust_state.gd 60     # 41 passed, 0 failed (logs/test_light_dust_state_60fps.log line 44)
 ```
 
-- The one known failure: `FAIL base.tscn: 3 Light3D nodes (got 4)` (`logs/test_materials_60fps.log`), from `test_materials.gd` lines 369–370 counting every `Light3D`; the extra one is `ScreenTabletLight` (`player.tscn` line 56). Report "168 passed, 1 failed", never "all pass".
-- `screen_glow_check.gd` and `test_materials.gd` load `res://base.tscn` (lines 16 and 30); `a3_asset_check.gd` too (line 101). Whatever is added to `base.tscn` must keep these results.
-
-### Headless facts (observed on this machine, Godot 4.7.2 `--headless`)
-- A headless run uses a dummy renderer: it draws no particles and runs no GPU particle process. Node state (emitting, one_shot, amount_ratio, visibility, instance counts) is observable; the look is not. (2026-11-10: `DisplayServer.get_name()` = `headless`, `RenderingServer.get_rendering_device()` = null, adapter name empty; `emitting`, `one_shot`, `amount_ratio` and `visible` read back; a one-shot node's `emitting` turned false after its lifetime; `capture_aabb()` returned an empty AABB.)
-- Correction (2026-11-11): that `emitting` observation used `explosiveness` 0. A one-shot's `emitting` turns false once it has emitted every particle, not when they die: with `explosiveness` 1.0 (both Effect A emitters) it reads true on the `restart()` frame and false from the next frame on. The end of a burst is the `finished` signal, one lifetime after the last `restart()` (Dust: 96 physics frames at 60). Found by the Step 3 agent, confirmed by a probe on `effects/landing_dust.tscn`.
-- A GPU effect's headless CPU price is near zero by construction. (2026-11-10: 60 headless frames with a 24-particle `GPUParticles3D` took 1 ms of wall time.)
-- Frame strips come from a windowed Movie Maker run, which I start.
-- `--fixed-fps` pins each frame's `delta`; physics runs at the default 60 ticks per second (no `physics_ticks_per_second` in `godot/project.godot`). (Kept from Assignment 5.)
+- `screen_glow_check.gd` pins the 0.35 s slide (`MOVE_SECONDS`, line 22; cases 5, 6, 8, 9, 11 at lines 233–300) and the path `Visual/TabletDevice` (lines 18, 239); the brief lets the slide-dependent cases change (`CHANGE-BRIEF.md` line 176). `a3_asset_check.gd`, `screen_glow_check.gd` and the two dust event/state tests load `res://base.tscn`.
+- Headless runs use a dummy renderer: node and resource state can be read back, nothing is drawn. Frame strips are windowed Movie Maker runs at 30 fps that the human starts (`CHANGE-BRIEF.md` line 199).
 
 ## Current change
 
@@ -56,39 +52,42 @@
 
 - Every file in `godot/shaders/` is hand-written by the human. An agent never creates, edits, reformats or deletes anything there, even to fix an error; it reports the problem instead.
 - Material set-up done by the human in the editor (the tablet `Screen` `ShaderMaterial` with Local To Scene) is not reworked by an agent.
-- Effect settings (amounts, lifetimes, shapes, curves, ramps, materials, `visibility_aabb`, `preprocess`, `local_coords`) live in scene files in `godot/effects/`, not in code. Scripts only listen to events and call `restart()` / set `emitting` / `visible`.
+- Clips are resources: they live in `godot/animations/` or in the scene that owns them (the rig clips in the imported `.glb`, owned by the character scene; the head clip in the head scene's `AnimationPlayer`, `CHANGE-BRIEF.md` line 13). No `Animation` is built, keyed or edited in code at runtime. Loop modes of imported clips live in the `.glb.import` settings, never only in the imported scene (line 119).
+- Exactly one authority writes to each animated node (`CHANGE-BRIEF.md` lines 24, 105–107, 125, 150, 177):
+  - xz `Skeleton3D` (bone poses), and through the `tablet` bone the `BoneAttachment3D` and the held `TabletDevice`'s transform → the character's `AnimationTree` (root `AnimationNodeStateMachine`). No script writes the tablet's transform; the imported `.glb`'s own `AnimationPlayer` must not play the skeleton on its own.
+  - Head `Sprite2D`'s `frame` → the head scene's `AnimationPlayer` (autoplay, looping). Nothing else in the tablet OS writes `frame`.
+  - Held tablet's `pad_light_data` → `Humanoid` via `TabletDevice.set_screen_lit()`; the `AnimationTree` has no track on it.
+  - Demo tablet's transform and screen → `ScreenTablet` (`_process()` / `_update_screen()`).
+- Animation nodes only read game state (`get_tablet_hold()`); they never write it (`CHANGE-BRIEF.md` lines 149, 180).
 
 ## Godot 4 names
 
-- Use Godot 4 names for 4.7.2: `GPUParticles3D` (not `Particles`), `ParticleProcessMaterial` (not `ParticlesMaterial`), `StandardMaterial3D` (not `SpatialMaterial`), `GradientTexture2D`, `QuadMesh`, `Node3D` (not `Spatial`).
-- Material switches are properties, not Godot 3 `flags_*` / `params_*`: `shading_mode`, `transparency`, `blend_mode`, `vertex_color_use_as_albedo`, `billboard_mode`, `albedo_texture`. Shadows: `cast_shadow` on the node.
-- Velocity is the `initial_velocity_min` / `initial_velocity_max` pair. The brief records that 4.7.2's ClassDB still also lists `initial_velocity` (`CHANGE-BRIEF.md` line 276), so a write to it may not fail; read values back to prove a setting took effect.
-- I could not check the other property names against 4.7.2 here (no engine run was allowed outside this repo). The names in the brief's tables are the Godot 4.x names as I know them; before relying on one, confirm it with `ClassDB.class_get_property_list()` or by reading it back in a headless test, and say so if it is missing instead of guessing a replacement.
-- Review (2026-11-09, ClassDB on 4.7.2): every property name in the brief's tables exists on its class (`ParticleProcessMaterial`, `GPUParticles3D`, `QuadMesh`, `StandardMaterial3D`, `GradientTexture2D`). `lifetime_randomness` is on `ParticleProcessMaterial`, not on `GPUParticles3D`. `restart()` takes one argument, `keep_seed`.
+- Pinned version: Godot 4.7.2-stable. Use Godot 4 class and property names only: `AnimationPlayer`, `AnimationTree`, `AnimationNodeStateMachine`, `AnimationMixer` (base of both), `Animation.loop_mode` with `Animation.LOOP_NONE` / `Animation.LOOP_LINEAR`, `Animation.step`, `Animation.UPDATE_DISCRETE` (via `value_track_set_update_mode()`), `callback_mode_process` with `AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE`, `AnimationTree.advance_expression_base_node`, `BoneAttachment3D` (`bone_name`), `Skeleton3D`, `Sprite2D` `hframes` / `vframes` / `frame`.
+- Not Godot 3 or 4.0–4.1 names: no `AnimationTreePlayer`, `Spatial`, `Sprite`, `Skeleton`, `BoneAttachment`, `Animation.loop` (bool), `playback_process_mode`, `process_callback` / `process_mode` on animation nodes.
+- Transition names used by the brief (`CHANGE-BRIEF.md` lines 139, 148): `AnimationNodeStateMachineTransition` with `xfade_time`, `switch_mode` (`SWITCH_MODE_IMMEDIATE`, `SWITCH_MODE_AT_END`), `advance_mode` (`ADVANCE_MODE_AUTO`), `advance_expression`.
+- I could not check any of these against 4.7.2 here (no engine run was allowed in this step; no existing script uses them except `AnimationPlayer` in `a3_asset_check.gd` line 89). They are the Godot 4.2+ names as I know them. Before relying on one, confirm it with `ClassDB.class_exists()` / `class_get_property_list()` / `class_get_integer_constant_list()` in a headless test (as `test_landing_dust_config.gd` does, `logs/test_landing_dust_config_60fps.log` line 3), and if it is missing say so instead of guessing a replacement. I am least sure of the exact enum spelling `ANIMATION_CALLBACK_MODE_PROCESS_IDLE` and of the key names the importer writes into `.glb.import` for per-animation loop mode.
 
 ## Out of scope
 
-- No change to collision, movement, velocity, jumping, input actions or `project.godot`.
-- In `humanoid.gd`, only the notify-only `landed` signal may be added; nothing else there (tablet state machine, timings, facing) changes.
-- `CeilingLights`, the light switch and the three ceiling lights stay as they are; the dust only listens and queries.
-- Effect code reads game state and never writes it; it never decides whether the lights are on or whether the player is on the floor.
-- No change to the existing tests or their expected values (55 / 24 × 3 / 2 / 168 + 1 known failure).
-- Nothing in `godot/shaders/`, no `.glb` or Blender source, and no other object or scene is changed for this effect.
-- No extra effects beyond A (two emitters) and B (one emitter under light 1).
+- Movement speeds, collision (the capsule stays as it is), jumping, interaction, input bindings and `project.godot`.
+- The hold-state table and how Tab presses become states in `humanoid.gd` / `player_controller.gd`; the animation follows that logic, it does not replace it.
+- Both hand-written shaders in `godot/shaders/`, the Assignment 6 effects (`godot/effects/`, both dusts and their scripts), the light switch and ceiling lights, every other object in `base.tscn`, the existing `.glb` assets and their import settings.
+- The rest of the tablet OS (desktop, windows, This PC, the backend): only the head is added to the taskbar.
+- The demo tablet's 0.35 s slide stays; only when its screen lights changes.
+- No clips or poses beyond the two clips and the hold poses in the brief; the planned extra animations (`CHANGE-BRIEF.md` lines 248–260) are not part of this change. No method tracks.
+- Existing tests keep their expected values, except the slide-dependent screen-glow cases the brief names (`CHANGE-BRIEF.md` line 176), which are listed one by one before any pin changes.
 
 ## Unconfirmed
 
 - No `AGENTS.md` and no `README.md` exist in this folder.
-- Which script listens to `landed` / `lights_changed` and drives the emitters (a script on each effect root, or elsewhere), and how Effect A finds the player, are not stated in the files.
-- Where `landing_dust.tscn` is instanced (the brief says "in the world"; I assume `base.tscn`, not confirmed). Whether `light_dust.tscn` is placed by its own transform at (0, 1.45, -3.20) or under another node is not stated.
-- Whether `landed` should fire for every `Humanoid` or only the player; the brief says "the player lands".
-- If the dust node's `_ready()` runs before `CeilingLights._ready()`, `is_lights_on()` returns the field default `true`, not `start_on` (`ceiling_lights.gd` lines 24, 29, 37). Order in `base.tscn` decides this.
-- The rendered frame strips use `--quit-after` and real drawing; `run-test.sh` always passes `--headless` (line 56), so those captures cannot run through it. How they are run is not recorded. Review: they are windowed Movie Maker runs that I start (see "Headless facts").
-- The preview scenes for the frame strips (light off at start, retrigger switch) do not exist yet; their paths are not named.
-- New test file names (configuration, event, logic) are not named in the brief.
-- Brief "Unconfirmed" items (lines 274–277): whether `restart()` re-runs `preprocess`; whether a hidden `GPUParticles3D` keeps simulating in 4.7.2; why `initial_velocity` still exists; whether 0.006–0.012 m specks are visible.
-- The `interact` action's key event has `"device": 16` (`project.godot` line 82), not `-1` like the others; I did not check whether this affects F in the running game. Review: 16 is `InputEvent.DEVICE_ID_KEYBOARD`, which the 4.7 editor writes for keyboard bindings; it is not an error.
+- `godot/animations/` does not exist and the brief does not name it; whether any clip, hold pose or the state-machine resource goes there as a `.tres` (rather than in the `.glb` / owning scene) is not stated. `xz_anim.blend` is not in this repository and the character `.glb` is not committed.
+- How `Humanoid` reads "which state the state machine is in" and "the 0.2 s blend has ended" for the screen rule (`CHANGE-BRIEF.md` line 150) is not specified (no API named).
+- How `ScreenTablet` learns that frame 20 was reached (`CHANGE-BRIEF.md` lines 95, 177): today it only receives `set_shown()` from the brain and knows nothing of `TabletHold` (`screen_tablet.gd` line 9).
+- Where "no walking, running or jumping while raising" is enforced: the brain filters input by hold state only (`player_controller.gd` lines 122–135) and does not know the raise phase.
+- If the skeleton, `BoneAttachment3D` and `TabletDevice` end up under `Visual/human_model` (`CHANGE-BRIEF.md` line 175), `set_visual_visible(false)` in two-handed first person would also hide the tablet, against `humanoid.gd` line 197. Not resolved in the brief.
+- Moving `TabletDevice` under a bone breaks the path `$Visual/TabletDevice` (`humanoid.gd` line 65) and `screen_glow_check.gd` lines 18 and 239; the brief lists the timing cases as changing but not this path.
+- The 5.07× Blender scale and the axis conversion on export (`CHANGE-BRIEF.md` line 121) are not yet measured in Godot.
+- Baseline exit codes are not in the logs; commit e466c00d says exit 0 and reports 56 / 25 for `a3_asset_check` / `screen_glow_check`, counting the `== ALL PASS ==` summary line (the logs have 55 / 24 `PASS` lines). `screen_glow_check.gd` line 7 says to run it at 30, 60 and 144; only the 60 fps log is in `logs/`.
+- Untracked files appeared in the folder while I worked (not committed, not written by me): `godot/tests/test_tablet_pins.gd` + `logs/test_tablet_pins_60fps.log` (ends `== FAILED: 3 failure(s) ==`: 2.3, 2.5, 2.6), `godot/assets/characters/main_character/main_character.glb` (+ `.import`, textures), `godot/probe_glb.gd.uid`, `tools/blender/export_main_character.py`. I took no project facts from them; none is part of the committed baseline above.
+- The Godot 4 names above were not checked against 4.7.2's ClassDB in this step.
 - Which `godot_console` / `godot` is on `PATH` on the test machine is not recorded; set `GODOT` if neither is found.
-- (2026-11-12, Effect B wiring) `godot/previews/landing_dust_preview.tscn` also loads `base.tscn`. Since `LightDust` (with its listener) is in `base.tscn`, Effect A strips captured from now on also show the light dust under ceiling light 1, which the r0 / r1 strips did not have. That preview was not changed in this task; whether to hide the light dust there is not decided.
-- (2026-11-12, Effect B wiring) If other code shows `LightDust` again while the lights are off, the listener does not restart it and does not hide it again, so specks left from before the hide may show. The brief does not define this case and `test_light_dust_state.gd` does not cover it.
-- (2026-11-12, Effect B wiring) `test_light_dust_state.gd` counts restarts through the listener's own `restart_count`, which only `_restart()` raises. A direct `restart()` call that bypasses `_restart()` would not be counted; headless, a continuous emitter has no other observable sign of a restart.
