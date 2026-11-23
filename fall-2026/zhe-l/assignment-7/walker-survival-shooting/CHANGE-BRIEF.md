@@ -274,3 +274,7 @@ Wired up and traced frame by frame at 60 fps: the short press is read on physics
 ### 2026-11-22 — r1: start the raise on the press frame (removes the state machine's start stall)
 
 On the physics frame a short press takes the tablet out, `Humanoid` starts `raise_1h` through the `AnimationTree` playback (`start(&"raise_1h", true)`), instead of waiting for the `hip -> raise_1h` expression to be evaluated in the next process step. The `AnimationTree` is still the only writer of the skeleton and the tablet; the transition table is unchanged. Predicted (TUNING r1): the screen lights on N + 41 (one frame of clock gap, as the two-clocks section first estimated), not N + 42.
+
+### 2026-11-22 — r2: a new stowed pose (TUNING r2)
+
+I posed a new stowed pose on frame 0 of the raise: the tablet stands upright on the left hip (portrait, long edge vertical, screen towards the leg), about 8 cm lower and further back, so the hand takes it by its top edge. Claude re-derives the reach, lift and turn keys from it; the end pose, the phase table and every timing are unchanged. ("What is already set up" above describes the r0 stowed pose.)
