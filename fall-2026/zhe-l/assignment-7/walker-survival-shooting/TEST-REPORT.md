@@ -78,6 +78,17 @@ Captures I ran, all Movie Maker at 30 fps (pixel head at 8 fps): `captures/table
 
 The raise keys were re-derived from my new stowed pose and the `.glb` re-exported (commit 42d6cc0d). After reimporting (not from an empty cache), every test, all exit 0: 55 / 29 / 157 / 27 / 110 / 41 / 38 / 37 / 25 / 26 / 126 PASS, the same counts as before. The screen still lights on physics frame N + 41 / movie frame 54.
 
-## Human checks — *pending*
+## Human checks (2026-11-22, in the running game, after TUNING r2)
 
-The cycle seam over five wraps; the action in play with an interrupt in each phase; registration of the head; both clips against the darkest and lightest level art; Claude against me.
+I played the game (the main scene, `base.tscn`) and checked by eye:
+
+| Check | How | Result |
+|---|---|---|
+| The action in play, with interrupts | Short Tab presses, holding W during the raise, and a second press (short and long) early, midway and late in the raise | No problem |
+| The cycle seam over five wraps | Watched the taskbar head for about 10 s (five 2 s loops) | No problem |
+| Registration of the head | The same, plus the head on the bottom-right demo tablet | No problem |
+| Both clips against the darkest and lightest level art | Ceiling lights switched off and on with the wall switch (F); raised the tablet and watched the head in each | No problem |
+
+My words, translated from Chinese: "None of the four has a problem. But while raising, the character just stands there without moving; it has to wait until the raise animation is over before it moves again." That standstill is the brief's rule (no walking, running or jumping during frames 0–20), so it is behaviour as designed, not a failure of the check. My decision: keep it for this assignment, and later change it so the player can walk while raising the tablet (planned after A7, not part of this submission).
+
+Claude against me: see TUNING.md ("Where we differ").
