@@ -64,6 +64,16 @@ func _run() -> void:
 	quit(1 if failures > 0 else 0)
 
 
+## Sends one action press or release through Input.parse_input_event, the way a real key reaches the game (CHANGE-BRIEF / A7 rule: never Input.action_press).
+## The brain reads the action state on its next physics frame, exactly as for a real key.
+func _act(action: StringName, pressed: bool) -> void:
+	var event := InputEventAction.new()
+	event.action = action
+	event.pressed = pressed
+	Input.parse_input_event(event)
+	Input.flush_buffered_events()  # We let Godot handle the queued event now, so the brain sees it on this physics frame and not one frame later
+
+
 ## Records one check: prints PASS if it passed, otherwise prints FAIL and counts it.
 func _check(ok: bool, what: String) -> void:
 	print(("  PASS  " if ok else "  FAIL  ") + what)
@@ -87,11 +97,11 @@ func _wait(frames: int) -> void:
 		await physics_frame
 
 
-## Presses an action like a real key: down for the given frames, then up, then one more frame so the brain sees the release.
+## Presses an action like a real key (through Input.parse_input_event): down for the given frames, then up, then one more frame so the brain sees the release.
 func _press(action: StringName, frames: int) -> void:
-	Input.action_press(action)  # The key goes down; the brain reads it on its next physics frame
+	_act(action, true)  # The key goes down; the brain reads it on its next physics frame
 	await _wait(frames)
-	Input.action_release(action)  # The key comes up; for the tablet key, a release before 0.4 s is what makes a short press
+	_act(action, false)  # The key comes up; for the tablet key, a release before 0.4 s is what makes a short press
 	await _wait(1)
 
 
@@ -137,10 +147,10 @@ func _reset_position() -> void:
 ## Measures the player's horizontal speed after holding one movement key (forward) for a while.
 func _walk_speed() -> float:
 	await _reset_position()  # First we go back to the spawn point, so earlier walks never leave us against a wall
-	Input.action_press(&"move_forward")
+	_act(&"move_forward", true)
 	await _wait(WALK_FRAMES)
 	var speed := Vector2(player.velocity.x, player.velocity.z).length()  # We read the speed while the key is still down
-	Input.action_release(&"move_forward")
+	_act(&"move_forward", false)
 	await _wait(WALK_FRAMES)  # and let the player stop again before the next measurement
 	return speed
 
@@ -148,12 +158,12 @@ func _walk_speed() -> float:
 ## Measures how fast the player goes up right after a jump press (0 if the jump was ignored).
 func _jump_rise() -> float:
 	await _reset_position()  # First we stand still on the floor at the spawn point
-	Input.action_press(&"jump")
+	_act(&"jump", true)
 	var rise := 0.0
 	for i in JUMP_WATCH_FRAMES:  # Then for a few frames we keep the highest upward speed we see; a jump shows as one
 		await physics_frame
 		rise = maxf(rise, player.velocity.y)
-	Input.action_release(&"jump")
+	_act(&"jump", false)
 	await _wait(SETTLE_FRAMES)  # We wait until the player is back on the floor
 	return rise
 
@@ -161,9 +171,9 @@ func _jump_rise() -> float:
 ## Measures the speed while holding sprint and forward together.
 func _sprint_speed() -> float:
 	await _reset_position()
-	Input.action_press(&"sprint")
+	_act(&"sprint", true)
 	var speed := await _walk_speed()
-	Input.action_release(&"sprint")
+	_act(&"sprint", false)
 	return speed
 
 
