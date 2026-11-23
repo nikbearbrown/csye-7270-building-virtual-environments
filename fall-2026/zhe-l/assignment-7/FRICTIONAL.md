@@ -106,3 +106,4 @@ Later changes (added by Claude): the sheet was adopted, with a blink added (next
 | Date | Commit note |
 |---|---|
 | 2026-11-22 | First A7 upload: the whole A7 history in work order (start point, wrapper and baseline, brief, CLAUDE.md draft and review, pins, both clips with read-backs, wiring, edges, mutations, fresh cache, strips r0/r1/r2 with TUNING and my verdicts, human checks, FRICTIONAL, README), plus the film records and the README film section. |
+| 2026-11-22 | Final A7 submission: the README film link (https://youtu.be/Fy7e5xw1UjI); this commit carries the tag `zhe-l-a7`. Game source unchanged since `42d6cc0d`. |

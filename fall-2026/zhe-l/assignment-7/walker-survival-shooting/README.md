@@ -66,7 +66,7 @@ python tools/make_strip.py captures/tablet_raise/r2-front logs/tablet_raise_r2-f
 
 ## Explainer film
 - **Title:** claude-liam-walker-survival-shooting-a7-gamedev (Brutalist `godot-gamedev`, walker mode; narrated by Liam, local Kokoro `am_onyx`; 5 min 17 s, 1920 x 1080, 30 fps). Built under the deadline with a simplified pipeline (still cards plus ffmpeg) instead of the toolkit's Remotion scenes; the 1080p export is the submitted version.
-- **Media link:** (YouTube link added after upload; the MP4 is not in GitHub)
+- **Media link:** https://youtu.be/Fy7e5xw1UjI (unlisted; the MP4 is not in GitHub)
 - **File / SHA-256:** `claude-liam-walker-survival-shooting-a7-gamedev-1080p.mp4`, `b1ff19a6f0819032b61f685a844ab5a3ec37c6ae55b7388c023d865095d3b8e7`
 - **Game-source revision shown in the film:** `42d6cc0d` (the last commit that touches `godot/`; later commits change only documents, captures and logs).
 - **Engine images in the film:** the fixture frame strips in `captures/` (labelled FIXTURE), and one new scripted-input capture of the unmodified project at `42d6cc0d` (Movie Maker, 30 fps, an isolated copy; Tab sent through `Input.parse_input_event`: an uninterrupted raise, an interrupt in each phase, and the other switches), labelled as scripted input. In the two-hand state the film shows the game's first-person view, so only the tablet is visible.
