@@ -1,0 +1,20 @@
+# TUNING — Assignment 7 (the one-handed tablet raise)
+
+All strips are **fixture captures**: windowed Movie Maker runs at 30 fps that I started, of `previews/tablet_raise_preview.tscn` in the real subway base. Frames are picked from the per-frame log by `tools/make_strip.py`.
+
+## r0 (2026-11-22)
+
+- Captures: `captures/tablet_raise/r0/` (the player's game camera, from behind; logs `logs/tablet_raise_r0.log`) and `captures/tablet_raise/r0-front/` (the same player camera turned 180 degrees around her in game; `logs/tablet_raise_r0-front.log`).
+- Frames read: trigger = movie frame 33 (the press is read; hold = one-handed), clip frames 0 / 5 / 7 / 10 / 14 / 16 / 18 = movie frames 34 / 40 / 42 / 45 / 49 / 51 / 53, screen lit = movie frame 55. Both captures give the same frames, and so did a headless dry run.
+- **My verdict (first, before Claude's reading):** I had already reviewed the motion in Blender before it was exported, and it has no problem. (My words, translated from Chinese: "I saw the animation before; there is no problem with it.")
+- **Claude's reading (after my verdict):** from the front, the phases read as the table says: on clip frame 0 the hand hangs by the hip; by clip frame 7 (active) the hand holds the tablet's edge while the tablet is still on the hip; on clip frame 10 the tablet has been lifted beside the hip; on clip frame 14 it is in front of the body and turning; on clip frame 16 (recovery) the end pose is reached with the head lowered; frames 16, 18 and 20 differ only by a few hundred pixels around the hand and tablet, so the 8 mm overshoot is barely there (consistent with Godot's importer dropping the keys on frames 18–19). From the player's camera, behind her, the body hides the tablet for the whole raise; only the left elbow is seen to move. The demo tablet slides in from about movie frame 40 and stays dark until movie frame 55, when both screens light. On the hip the tablet is mostly hidden by the coat (accepted clipping). The screen lights 2 movie frames after clip frame 20's time would suggest, as measured in TEST-REPORT ("Two clocks").
+- Where we differ: — (to fill in)
+
+## Revisions
+
+### r1 — the screen lights a frame late (my choice of revision, 2026-11-22)
+
+- **What I saw:** the screen lights 0.70 s after the press instead of 0.667 s (clip frame 20). This was measured in the per-frame log and the edge tests, not felt in play; I chose it as a revision because the brief keys the screen to frame 20. (The revision driven by something I observed in play, the two-handed tablet being far away, is still to come.)
+- **Claude's reading:** two frames of lag: when the state machine enters `raise_1h` through the `hip -> raise_1h` transition, that transition's `reset` puts the clip at 0 and the clip does not advance on that frame (position 0.0 on two process frames), and then the process-tick clip is read on the next physics frame. A probe showed: turning `reset` off removes the stall but makes a second raise after an interrupt resume mid-clip (0.633 s), so it is not usable; switching the tree to the physics tick changes nothing under `--fixed-fps`; starting `raise_1h` from code on the take-out press (`playback.start(&"raise_1h", true)`) removes the stall.
+- **The change (one):** on the physics frame a short press takes the tablet out, `Humanoid` starts `raise_1h` itself through the state machine's playback; the expression transitions stay as in the brief. The clip's keys do not change.
+- **Prediction (before the change):** the screen lights 1 physics frame earlier: on N + 41 instead of N + 42 (only the one-frame clock gap the brief predicted remains); the clip position read on each phase boundary moves one physics frame earlier (clip frame f read on N + 1 + 2f); in a 30 fps capture the clip's position no longer holds 0.0 for two movie frames, and the screen lights on movie frame 54 instead of 55, with the same poses on the boundary frames. The read-back and structure tests do not change; the edge tests and `screen_glow_check.gd` change their lag from 2 frames to 1.
