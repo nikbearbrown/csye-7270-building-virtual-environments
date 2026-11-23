@@ -5,8 +5,8 @@ extends SceneTree  # Extends SceneTree: run directly with --script, no scene nee
 ## A7 edge tests for the committing action (the one-handed raise), at every phase boundary of CHANGE-BRIEF's phase table, with an interrupt one clip frame
 ## before, on, and one clip frame after each boundary (short press = put it back, long press = switch to two hands).
 ## Run: ./scripts/run-test.sh test_tablet_raise_edges.gd 60
-## Frame map (measured, CHANGE-BRIEF revision "2 physics frames late"): the press is read on physics frame N (clip frame 0); the clip's position read on
-## physics frame N + k is (k - 2) / 60 s, so clip frame f (f / 30 s) is read on N + 2 + 2f; "raise finished" is read on N + 42.
+## Frame map (measured after TUNING r1): the press is read on physics frame N (clip frame 0) and the raise starts on that frame; the clip's position read on
+## physics frame N + k is (k - 1) / 60 s, so clip frame f (f / 30 s) is read on N + 1 + 2f; "raise finished" is read on N + 41 (the one-frame clock gap).
 ## What it can prove: driven by real key events at 60 fps, the screen, the raise query, the movement lock, the clip position at each boundary, and what an
 ## interrupt in startup, active or recovery does. What it cannot prove: how the motion looks (frame strip and my eyes).
 
@@ -17,8 +17,8 @@ const BASE_SCENE := "res://base.tscn"  # The main game scene with the player
 const SPAWN := Vector3(2.0, 0.25, 1.5)  # The player's spawn point; we reset to it before each case
 const CLIP_FPS := 30.0  # The phase table's frame rate
 const PHYSICS_FPS := 60.0  # The wrapper pins --fixed-fps 60
-const READ_LAG := 2  # Measured: physics frames between a clip frame's time and the game reading it
-const FINISH_FRAME := 42  # Measured: "raise finished" (screen lit, raise over) is read on physics frame N + 42
+const READ_LAG := 1  # Measured after TUNING r1: physics frames between a clip frame's time and the game reading it (the process-tick clip read on the physics tick)
+const FINISH_FRAME := 41  # Measured after TUNING r1: "raise finished" (screen lit, raise over) is read on physics frame N + 41
 const PHASES := [["startup", 0], ["active", 7], ["recovery", 16], ["end", 20]]  # Phase name and the clip frame it begins on
 const BOUNDARIES := [["startup -> active", 7], ["active -> recovery", 16], ["recovery -> end", 20]]  # Each phase boundary and the clip frame it falls on
 const OFFSETS := [["one frame before", -1], ["on", 0], ["one frame after", 1]]  # We interrupt one clip frame before, on, and one clip frame after each boundary
@@ -135,7 +135,7 @@ func _take_out() -> int:
 	return change_frame
 
 
-## One uninterrupted raise, frame by frame: screen dark and raise under way through N + 41, both flip on N + 42; the clip position on each phase boundary;
+## One uninterrupted raise, frame by frame: screen dark and raise under way through N + 40, both flip on N + 41; the clip position on each phase boundary;
 ## and holding the walk key the whole time moves the player only after the raise.
 func _uninterrupted_raise() -> void:
 	await _reset()
@@ -144,8 +144,9 @@ func _uninterrupted_raise() -> void:
 	_check(n > 0 and player.get_tablet_hold() == Humanoid.TabletHold.ONE_HAND, "raise: the short press took the tablet out (read on physics frame N = %d)" % n)
 	var dark_ok := true  # Screen dark on every frame N .. N+41
 	var raising_ok := true  # Raise query true on every frame N .. N+41
-	var still_ok := true  # Player not moving on every frame N .. N+42 (the intent for N+42 is built before the raise ends)
+	var still_ok := true  # Player not moving on every frame N .. N+41 (the intent for N+41 is built before the raise ends)
 	var positions := {}  # Clip position as read by the game on each physics frame
+	positions[Engine.get_physics_frames() - n] = playback.get_current_play_position() if playback.get_current_node() == &"raise_1h" else -1.0  # We are at the start of frame N + 1: we record what it reads before waiting
 	while Engine.get_physics_frames() <= n + FINISH_FRAME + 4:
 		await physics_frame
 		# At the start of physics frame F the body's values are those its frame F - 1 left, and the clip position is the one frame F will read
@@ -161,10 +162,10 @@ func _uninterrupted_raise() -> void:
 		if body_k <= FINISH_FRAME:
 			still_ok = still_ok and speed < 0.01
 	_act(&"move_forward", false)
-	_check(dark_ok, "raise: screen dark on every physics frame N+1 .. N+41")
-	_check(raising_ok, "raise: is_raising_tablet() true on every physics frame N+1 .. N+41 (no walking, running or jumping)")
-	_check(still_ok, "raise: walk held from N+1, the player does not move through N+42")
-	_check(player.is_tablet_screen_lit() and not player.is_raising_tablet(), "raise: screen lit and raise over from N+42 (clip frame 20, read 2 frames late)")
+	_check(dark_ok, "raise: screen dark on every physics frame N+1 .. N+40")
+	_check(raising_ok, "raise: is_raising_tablet() true on every physics frame N+1 .. N+40 (no walking, running or jumping)")
+	_check(still_ok, "raise: walk held from N+1, the player does not move through N+41")
+	_check(player.is_tablet_screen_lit() and not player.is_raising_tablet(), "raise: screen lit and raise over from N+41 (clip frame 20, read 1 frame late)")
 	_check(Vector2(player.velocity.x, player.velocity.z).length() > 0.5, "raise: walking resumes right after the raise")
 	for phase in PHASES:
 		var f: int = phase[1]
@@ -177,7 +178,7 @@ func _uninterrupted_raise() -> void:
 
 
 ## One interrupt: start the raise, then on physics frame N + k (clip frame (k - 2) / 2) make a short press (put it back) or a long press (switch to two hands).
-## While the raise is still playing (k < 42) the brief says the raise is cancelled at once; on k = 42 the press is read in the same physics frame the raise
+## While the raise is still playing (k < FINISH_FRAME) the brief says the raise is cancelled at once; on k = FINISH_FRAME the press is read in the same physics frame the raise
 ## finishes, before the screen is lit; after that it is an ordinary change from holding one-handed.
 func _interrupt(k: int, label: String, kind: String) -> void:
 	await _reset()

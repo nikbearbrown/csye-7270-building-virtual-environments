@@ -15,6 +15,7 @@ enum TabletHold {
 	ONE_HAND,  # Holding the tablet one-handed: the character holds the tablet in one hand; an operable tablet slides in at the bottom right of the screen
 	TWO_HAND,  # Holding the tablet two-handed: first person, the tablet raised in front of the eyes, the character cannot move
 }
+const STATE_RAISE_ONE_HAND := &"raise_1h"  # Animation state: the one-handed raise clip
 const STATE_HOLD_ONE_HAND := &"hold_1h"  # Animation state (AnimationTree): the one-handed hold pose (CHANGE-BRIEF, state machine)
 const STATE_HOLD_TWO_HAND := &"hold_2h"  # Animation state: the two-handed hold pose
 const INTERACTABLE_GROUP := &"interactables"  # Everything you can press F at (now the wall light switch; later maybe doors and crates) joins this group
@@ -202,6 +203,8 @@ func _apply_tablet_press(press: CharacterIntent.TabletPress) -> void:
 	var old_hold := _tablet_hold
 	_tablet_hold = _next_tablet_hold(old_hold, press)
 	_raising_tablet = old_hold == TabletHold.NONE and _tablet_hold == TabletHold.ONE_HAND  # Only a short press from put away starts the raise; any other change ends or skips it
+	if _raising_tablet:  # If this press starts the raise,
+		_tablet_states.start(STATE_RAISE_ONE_HAND, true)  # we start the raise clip from its first frame right now (TUNING r1): waiting for the hip -> raise_1h expression costs a frame in which the clip does not move
 	tablet_hold_changed.emit(old_hold, _tablet_hold)
 
 

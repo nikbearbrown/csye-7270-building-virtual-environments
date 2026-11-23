@@ -50,7 +50,7 @@
 - `value_track_get_update_mode` applies only to value tracks. (On the raise's position track it prints `Condition "t->type != TYPE_VALUE" is true. Returning: UPDATE_CONTINUOUS`.)
 - Frame strips come from a windowed Movie Maker run, which I start.
 - Injected input goes through `Input.parse_input_event`, flushed with `Input.flush_buffered_events()` so the brain reads it on the same physics frame (`test_tablet_pins.gd`, `test_tablet_raise_edges.gd`).
-- Measured: the game reads "raise finished" on physics frame N + 42 after a press read on N (clip frame 20 is N + 40): one frame from the state machine's first frame in `raise_1h` not advancing, one from the process-tick clip read on the physics tick (`CHANGE-BRIEF.md`, revision of 2026-11-22).
+- Measured: the game reads "raise finished" on physics frame N + 41 after a press read on N (clip frame 20 is N + 40): the process-tick clip read on the physics tick. Before TUNING r1 it was N + 42, because entering `raise_1h` through the expression transition (with `reset`) left the clip at 0 for a frame; `Humanoid` now starts `raise_1h` on the press frame (`CHANGE-BRIEF.md`, revisions of 2026-11-22).
 
 ## Current change
 
