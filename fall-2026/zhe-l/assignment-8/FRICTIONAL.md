@@ -42,8 +42,34 @@ My Assignment 7 log is in `../assignment-7/FRICTIONAL.md`.
 - **What I understand now / still do not understand:**
 - **Evidence and next step:** `walker-survival-shooting/godot/`, `walker-survival-shooting/logs/`, `walker-survival-shooting/scripts/run-test.sh`. Next: capture the film's real play from this commit.
 
+---
+
+### 2026-11-26 — Capturing the footage and building the film with the toolkit
+
+- **Date and what I was working on:** 2026-11-25 night to 2026-11-26. The README key table, the game footage for every "exists" beat, the 10 drawn beats, and the finished film with the toolkit's gates.
+- **I tried / expected:**
+  - At first the plan was that I would record the clips that need the mouse myself. Then I asked Claude to record everything ("you capture it"), so all game footage is scripted input; there is no human-play footage in the film.
+  - I chose the show-tell isometric drawings, the style the assignment recommends, over the simpler figure layout I used in Assignment 6.
+  - I expected the gates to pass on the first run.
+- **What happened:**
+  - Capturing, from a `git archive` copy of f13431bf with Godot Movie Maker:
+    - In the first take the camera turned by itself: when the tablet went back to the hip, the game captured the mouse and the real cursor's jump turned the camera. The capture now drops real mouse events.
+    - The first tablet take's single clicks (Up, minimize, taskbar, show desktop) did nothing. Windows display scaling made the window 2048 × 1152 while the game draws at 1920 × 1080, so every click landed 6.7 % off; double-clicks worked only because their targets were large. After converting the coordinates, every click hit. Movie Maker does not record the system cursor, so the capture draws its own arrow.
+    - The engine log confirmed the rules on camera: the screen lit on frame 54 of the raise and never in the interrupted raise; holding W with two hands moved the body 0.000 m, with one hand 5.698 m.
+    - The dust in the light barely shows from the player camera (between two frames one second apart only 24 pixels change, by at most 19 of 255), so I decided the narration mentions only the landing dust.
+    - The tablet at f13431bf has no text field, so "typing goes into the tablet" could not be shown; the beat shows only that W does nothing with two hands.
+  - Building: the narration came to 210.5 s. Gates A and W passed. Gate B stopped the first build: two labels were outside the safe area. Gate V stopped the second: low contrast in one drawing and content touching the edge in two others. After the fixes every gate passed (A, W, B, V, T, bookend, fact check).
+  - Claude then checked frames itself and found that the CONSTRUCTED tag on each drawing appeared only a few seconds in, so the first seconds of each drawing were unlabelled; and that a "held final frame" label covered a window title. Both were fixed and the film rebuilt, although the earlier version had already passed every gate.
+  - The toolkit's bookends carry the instructor's name ("Liam, in for Bear", "At Nik Bear Brown"), which this assignment forbids. The narration speaks as me, the outro is a name card, and the beat sheet declares the exemptions; the bookend gate still passes. Two style warnings remain (cold open and outro not the standard components); they do not block.
+  - The local toolkit copy is 77 commits behind its upstream and was not updated.
+- **What I did:** Chose to have Claude record the footage; chose the show-tell style; decided the narration mentions only the landing dust; watched the finished film and approved it.
+- **What Claude or another person contributed:** Claude Code (Claude Opus 5.5) wrote the capture scripts, recorded and labelled all footage, wrote the 10 Manim scenes and the reel scripts, made the document frames, ran every gate and fixed what they flagged, and wrote FACTCHECK, SHOTLIST, PROMPTS, CAPTURE, BUILD-PROMPT, SOURCES and this entry.
+- **What I understand now / still do not understand:**
+- **Evidence and next step:** `pitch/CAPTURE.md`, `pitch/gate-reports/`, `pitch/film-scripts/`; the film `walker-survival-shooting-pitch-1080p.mp4`, SHA-256 `4ab1cd281cbb0afe7f93d5a4129e047a2b6885d6ce32f2261ca65cb577edf980`. Next: upload the film myself, add its link to the README, push, tag.
+
 ## GitHub pushes
 
 | Date | Commit note |
 |---|---|
 | 2026-11-25 | First A8 upload: the project copy with comments stripped (snapshot of 23:19), the test logs, run-test.sh, and this FRICTIONAL. |
+| 2026-11-26 | Second A8 upload: the `pitch/` folder (README with the film link, PROJECT-BRIEF, beat sheet, BUILD-PROMPT, SOURCES, the film's records, gate reports and scripts) and the film entry in this FRICTIONAL. |
